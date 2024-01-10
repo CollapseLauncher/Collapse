@@ -19,7 +19,7 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
             LoadConfigV2();
-            GameCategorySelect.ItemsSource = ConfigV2GameCategory;
+            GameCategorySelect.ItemsSource = BuildGameTitleListUI();
             BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG));
             this.RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
         }
@@ -27,8 +27,9 @@ namespace CollapseLauncher.Pages
         private void NextPage_Click(object sender, RoutedEventArgs e)
         {
             // Set and Save CurrentRegion in AppConfig
-            SetAppConfigValue("GameCategory", (string)GameCategorySelect.SelectedValue);
-            SetPreviousGameRegion((string)GameCategorySelect.SelectedValue, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
+            string categorySelected = GetComboBoxGameRegionValue(GameCategorySelect.SelectedValue);
+            SetAppConfigValue("GameCategory", categorySelected);
+            SetPreviousGameRegion(categorySelected, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
             SaveAppConfig();
 
             (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
@@ -96,7 +97,7 @@ namespace CollapseLauncher.Pages
 
         private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedCategory = (string)((ComboBox)sender).SelectedValue;
+            _selectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
             GetConfigV2Regions(_selectedCategory);
             GameRegionSelect.ItemsSource = BuildGameRegionListUI(_selectedCategory);
             GameRegionSelect.IsEnabled = true;

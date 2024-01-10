@@ -236,6 +236,26 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsUseCustomArgs
+        {
+            get
+            {
+                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+
+                if (value) CustomArgsTextBox.IsEnabled = true;
+                else CustomArgsTextBox.IsEnabled       = false;
+                
+                return value;
+            }
+            set
+            {
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+                
+                if (value) CustomArgsTextBox.IsEnabled = true;
+                else CustomArgsTextBox.IsEnabled       = false;
+            }
+        }
+        
         private void OnUnload(object sender, RoutedEventArgs e)
         {
             DispatcherQueue.TryEnqueue(() =>
@@ -420,11 +440,12 @@ namespace CollapseLauncher.Pages
 
         private void DrawHDRCalibrationImage1()
         {
-            CanvasSwapChainPanel panel = HDRCalibrationPanel1;
-            CanvasSwapChain swapChain = panel.SwapChain;
+            CanvasSwapChainPanel panel     = HDRCalibrationPanel1;
+            CanvasSwapChain      swapChain = panel.SwapChain;
+            
             if (swapChain == null) return;
-            float w = (float)panel.Width;
-            float h = (float)panel.Height;
+            float w      = (float)panel.Width;
+            float h      = (float)panel.Height;
             float bgGain = (float)MaxLuminosity / 80;
 
             using (CanvasDrawingSession ds = swapChain.CreateDrawingSession(Colors.White))
@@ -472,11 +493,12 @@ namespace CollapseLauncher.Pages
 
         private void DrawHDRCalibrationImage2()
         {
-            CanvasSwapChainPanel panel = HDRCalibrationPanel2;
-            CanvasSwapChain swapChain = panel.SwapChain;
+            CanvasSwapChainPanel panel     = HDRCalibrationPanel2;
+            CanvasSwapChain      swapChain = panel.SwapChain;
+            
             if (swapChain == null) return;
-            float w = (float)panel.Width;
-            float h = (float)panel.Height;
+            float w      = (float)panel.Width;
+            float h      = (float)panel.Height;
             float bgGain = (float)ScenePaperWhite / 80;
             float uiGain = (GammaCorrection(((float)UiPaperWhite - (float)ScenePaperWhite + 350) * 2, 1600) + 50) / 80;
 

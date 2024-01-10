@@ -85,6 +85,7 @@ namespace Hi3Helper.Shared.Region
         {
             SetAppConfigValue(key, value);
             SaveAppConfig();
+            Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile[SectionName][key] = value;
 
@@ -291,7 +292,8 @@ namespace Hi3Helper.Shared.Region
             { "ForceGIHDREnable", false },
             { "HI3IgnoreMediaPack", false },
             { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
-            { "MinimizeToTray", false }
+            { "MinimizeToTray", false },
+            { "UseExternalBrowser", false}
         };
         #endregion
     }

@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.WindowSize.WindowSize;
@@ -646,6 +645,12 @@ namespace CollapseLauncher.Pages
         {
             get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
+        }
+
+        private bool IsAlwaysUseExternalBrowser
+        {
+            get => GetAppConfigValue("UseExternalBrowser").ToBool();
+            set => SetAndSaveConfigValue("UseExternalBrowser", value);
         }
 
         private int AppGameLaunchedBehaviorIndex

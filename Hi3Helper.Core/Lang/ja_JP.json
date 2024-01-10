@@ -12,7 +12,7 @@
     "CDNHelpTitle_2": "​",
     "CDNHelpTitle_3": "コンテンツデリバリーネットワーク",
     "CDNHelpTitle_4": "の略",
-    "CDNHelpDetail_1": "\u200b",
+    "CDNHelpDetail_1": "​",
     "CDNHelpDetail_2": "CDN",
     "CDNHelpDetail_3": "はランチャーに必要なファイルをより多くのユーザーへ迅速かつ効率的に送信するためのシステムです。",
     "CDNHelpDetail_4": "CollapseのデフォルトプロバイダーはGitHubです。",
@@ -354,7 +354,7 @@
 
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
-    "AppThreads_Extract": "抽出スレッド",
+    "AppThreads_Extract": "展開スレッド",
     "AppThreads_Help1": "このスレッドは、ファイルのダウンロード中に分割されるチャンクの数を処理します。このメカニズムは、IDM および aria2c と同じように動作します。",
     "AppThreads_Help2": "デフォルト:",
     "AppThreads_Help3": "値の範囲:",
@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "背景をぼかす",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
+    "UseExternalBrowser": "リンクを常に外部ブラウザで開く",
 
     "LowerCollapsePrioOnGameLaunch": "ゲーム起動中のランチャーの使用リソースを削減",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "バナーの回転を無効化＆Collapseのプロセス優先度を「通常以下」に",
@@ -461,6 +462,7 @@
     "YesRelocate": "変更する",
     "YesMigrateIt": "紐づけする",
     "YesConvertIt": "変換する",
+    "YesImReallySure": "わかってます！",
     "YesIHaveBeefyPC": "はい、つよつよPCなので！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "場所を変更",
 
@@ -471,6 +473,7 @@
     "NoIgnoreIt": "無視する",
     "NoOtherLocation": "インストールを続ける",
     "NotSelected": "未選択",
+    "ExtractAnyway": "とりあえず展開！",
 
     "LangNameENUS": "英語(アメリカ)",
     "LangNameJP": "日本語",
@@ -482,7 +485,7 @@
     "Idle": "待機",
     "Change": "変更",
     "Cancelled": "キャンセルされました",
-    "Extracting": "抽出中",
+    "Extracting": "展開中",
     "Converting": "変換中",
     "Patching": "パッチ中",
     "Verifying": "検証中",
@@ -579,6 +582,10 @@
     "SteamConvertFailedSubtitle": "変換プロセスに失敗しました！:(\n変換プロセスをもう一度開始してください。",
     "InstallDataCorruptTitle": "ゲームのインストールが破損しています",
     "InstallDataCorruptSubtitle": "ダウンロードしたファイルが破損しています。\r\n\r\nサーバーハッシュ: {0}\r\nダウンロードしたハッシュ: {1}\r\n\r\nファイルを再ダウンロードしますか？",
+    "InstallCorruptDataAnywayTitle": "破損したデータを展開します",
+    "InstallCorruptDataAnywaySubtitle1": "破損したデータを展開しようとしています：",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} バイト)",
+    "InstallCorruptDataAnywaySubtitle3": "。データの展開に失敗したり、ゲームが正しく描画されない可能性があります。\r\n\r\n本当にこのデータを展開しますか？",
     "InstallDataDownloadResumeTitle": "ダウンロードを再開しますか？",
     "InstallDataDownloadResumeSubtitle": "既にゲームの {0}/{1}がダウンロードされています。\n\n引き続きダウンロードしますか？",
     "InsufficientDiskTitle": "ディスク容量不足",
@@ -750,7 +757,52 @@
 
     "UpdateCountdownMessage1": "ランチャーは {0} 秒後に更新されます...",
     "UpdateCountdownMessage2": "(カウントダウンを停止するには",
-    "UpdateCountdownMessage3": "をクリックしてください)"
+    "UpdateCountdownMessage3": "をクリックしてください)",
+
+    "ApplyUpdateTitle1": "Collapse Launcherを",
+    "ApplyUpdateTitle2": "アップデートします",
+    "ApplyUpdateCDNSelectorTitle": "アップデートに使用するCDNを選択してください",
+    "ApplyUpdateCDNSelectorSubtitle": "CDNを選択して\"{0}\"を押すとアップデートが始まります！",
+    "ApplyUpdateCDNSelectorSubtitleCount": "CDNはあと{0}秒で自動選択されます",
+    "ApplyUpdateUpdateNowBtn": "アップデート！",
+
+    "ApplyUpdateUpdateVersionTitle": "アップデート：",
+    "ApplyUpdateUpdateChannelTitle": "チャンネル：",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "不明",
+    "ApplyUpdateUpdateStatusTitle": "ステータス：",
+    "ApplyUpdateMiscIdle": "待機",
+    "ApplyUpdateMiscNone": "不明",
+    "ApplyUpdateVersionSeparator": "から",
+
+    "ApplyUpdateErrCollapseRunTitle": "アップデートを適用するにはCollapseを閉じてください！",
+    "ApplyUpdateErrCollapseRunSubtitle": "Collapseが閉じられるのを待っています…",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "エラー：\r\n\"release\"ファイルに\"stable\"か\"preview\"の記述がありません",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "\"release\"ファイルを確認してから再試行してください。",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/秒",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/秒",
+    "ApplyUpdateDownloadTimeEst": "あと{0:%h}時間 {0:%m}分 {0:%s}秒",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "あと--時間 --分 --秒",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "旧バージョンのCollapse v{0}がインストールされています！",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "旧バージョンのCollapse v{0}がPCにインストールされています。",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "更新のため旧バージョンのフォルダーに含まれる全てのファイルを削除します。\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Collapseフォルダー内に大事なファイルが含まれていないことをご確認ください。全部消えるよ！",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\n\"はい\"を押して続行、\"いいえ\"を押してキャンセルします。",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "確認のため、もう一度\"はい\"を押してください。",
+    "ApplyUpdateTaskLegacyCleanupCount": "クリーンアップを{0}秒後に開始します…",
+    "ApplyUpdateTaskLegacyDeleting": "削除中：{0}…",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "パッケージのダウンロード中",
+    "ApplyUpdateTaskExtractingPkgTitle": "パッケージの展開中",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "古いパッケージを削除中",
+    "ApplyUpdateTaskMovingExtractFileTitle": "展開したファイルを移動中",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "ランチャーがバージョン{0}に更新されました！",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Collapseを{0}秒後に起動します…",
+
+    "ApplyUpdateTaskError": "エラー：\r\nアップデート適用中にエラーが発生しました！\r\n{0}"
   },
 
   "_AppNotification": {
@@ -984,5 +1036,22 @@
     "ChangeShortcut_Help2": "・ 修飾キー - Shift、Control、Alt/Menu",
     "ChangeShortcut_Help3": "・ キー - アルファベット（AからZ）またはTab",
     "ChangeShortcut_Help4": "システムに割り当てられているか、すでに使用されている場合を除いて、各カテゴリから キーを1つずつ選んで任意の組み合わせを選択できます。"
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "崩壊3rd",
+    "Genshin Impact": "原神",
+    "Honkai: Star Rail": "崩壊：スターレイル",
+    "Zenless Zone Zero": "ゼンレスゾーンゼロ"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "東南アジア",
+    "Global": "グローバル",
+    "Mainland China": "中国大陸",
+    "TW/HK/MO": "台湾/香港/マカオ",
+    "Korea": "韓国",
+    "Japan": "日本",
+    "Bilibili": "Bilibili"
   }
 }

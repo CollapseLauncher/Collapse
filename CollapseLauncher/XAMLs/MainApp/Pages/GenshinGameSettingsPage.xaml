@@ -147,21 +147,21 @@
                                     </Expander.Header>
                                     <Expander.Content>
                                         <StackPanel Padding="10">
-                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel1" Width="360" Height="203" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8"/>
+                                            <xaml:CanvasSwapChainPanel x:Name="HDRCalibrationPanel1" Width="360" Height="203" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                                                <NumberBox Name="MaxLuminosityValue" HorizontalAlignment="Right" Minimum="300.0" Maximum="2000.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="MaxLuminosityValue_ValueChanged"/>
+                                                <NumberBox x:Name="MaxLuminosityValue" HorizontalAlignment="Right" Minimum="300.0" Maximum="2000.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="MaxLuminosityValue_ValueChanged"/>
                                             </Grid>
                                             <Slider x:Name="MaxLuminositySlider" Minimum="300.0" Maximum="2000.0" HorizontalAlignment="Center" MinWidth="350" MaxWidth="514" StepFrequency="50" TickFrequency="100" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind MaxLuminosity,Mode=TwoWay}" ValueChanged="MaxLuminositySlider_ValueChanged" Margin="0,0,0,4"/>
-                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel2" Width="360" Height="203" Loaded="SwapChainPanel2_OnLoaded" Margin="0,0,0,8"/>
+                                            <xaml:CanvasSwapChainPanel x:Name="HDRCalibrationPanel2" Width="360" Height="203" Loaded="SwapChainPanel2_OnLoaded" Margin="0,0,0,8"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                                                <NumberBox Name="ScenePaperWhiteValue" HorizontalAlignment="Right" Minimum="100.0" Maximum="500.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="ScenePaperWhiteValue_ValueChanged"/>
+                                                <NumberBox x:Name="ScenePaperWhiteValue" HorizontalAlignment="Right" Minimum="100.0" Maximum="500.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="ScenePaperWhiteValue_ValueChanged"/>
                                             </Grid>
                                             <Slider x:Name="ScenePaperWhiteSlider" Minimum="100.0" Maximum="500.0" HorizontalAlignment="Center" MinWidth="350" StepFrequency="5" TickFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind ScenePaperWhite, Mode=TwoWay}"  ValueChanged="ScenePaperWhiteSlider_ValueChanged"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                                                <NumberBox Name="UiPaperWhiteValue" HorizontalAlignment="Right" VerticalAlignment="Center" Minimum="150.0" Maximum="550.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" Height="32" ValueChanged="UiPaperWhiteValue_ValueChanged"/>
+                                                <NumberBox x:Name="UiPaperWhiteValue" HorizontalAlignment="Right" VerticalAlignment="Center" Minimum="150.0" Maximum="550.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" Height="32" ValueChanged="UiPaperWhiteValue_ValueChanged"/>
                                             </Grid>
                                             <Slider x:Name="UiPaperWhiteSlider" Minimum="150.0" Maximum="550.0" HorizontalAlignment="Center" MinWidth="350" StepFrequency="5" TickFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind UiPaperWhite, Mode=TwoWay}" ValueChanged="UiPaperWhiteSlider_ValueChanged" Margin="0,0,0,4"/>
                                         </StackPanel>
@@ -175,7 +175,7 @@
                                 <StackPanel>
                                     <Grid x:Name="GammaGrid">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Gamma}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                        <NumberBox Name="GammaValue" Minimum="1.4" Maximum="3.0" HorizontalAlignment="Right" Width="110" ValueChanged="GammaValue_ValueChanged" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,28,0"/>
+                                        <NumberBox x:Name="GammaValue" Minimum="1.4" Maximum="3.0" HorizontalAlignment="Right" Width="110" ValueChanged="GammaValue_ValueChanged" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,28,0"/>
                                     </Grid>
                                     <Slider x:Name="GammaSlider" Minimum="1.4" Maximum="3.0" Value="{x:Bind Gamma, Mode=TwoWay}"  TickFrequency="0.2" StepFrequency="0.000001" TickPlacement="Outside" Margin="0,0,28,8" IsThumbToolTipEnabled="False" ValueChanged="GammaSlider_ValueChanged"/>
                                 </StackPanel>
@@ -510,7 +510,8 @@
                     </StackPanel>
                     <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,0"/>
+                    <ToggleSwitch OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="0,0,0,16" IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"
                              HorizontalAlignment="Stretch" Margin="0,0,0,16"/>
                     <TextBlock>

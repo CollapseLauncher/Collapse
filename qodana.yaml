@@ -7,5 +7,15 @@ exclude:
     paths:
       - Hi3Helper.EncTool.Test
       - Hi3Helper.Core/Classes/DiscordPresence/src
+      - CollapseLauncher/XAMLs/Prototype
+  - name: Xaml.InvalidResourceType
+  - name: CheckNamespace
+  - name: Xaml.BindingWithContextNotResolved
+  - name: Xaml.ConstructorWarning
+  - name: UnusedParameter.Local
+  - name: UnusedMember.Local
+  - name: RedundantArgumentDefaultValue
+  - name: RedundantDefaultMemberInitializer
+  - name: Xaml.StaticResourceNotResolved
 include:
   - name: CheckDependencyLicenses

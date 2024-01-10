@@ -13,6 +13,8 @@ namespace CollapseLauncher.GameSettings.Universal
     {
         #region Fields
         private const string _ValueName = "CollapseLauncher_Misc";
+
+        private bool _UseCustomArguments = true;
         #endregion
 
         #region Properties
@@ -21,6 +23,20 @@ namespace CollapseLauncher.GameSettings.Universal
         /// Default: false
         /// </summary>
         public bool UseGameBoost { get; set; } = false;
+
+        /// <summary>
+        /// This defines if the game is launched with user provided Custom Launch Argument.<br/><br/>
+        /// Default: true
+        /// </summary>
+        public bool UseCustomArguments
+        {
+            get => _UseCustomArguments;
+            set
+            {
+                _UseCustomArguments = value;
+                Save();
+            }
+        }
         #endregion
 
         #region Methods

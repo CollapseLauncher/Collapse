@@ -1,9 +1,12 @@
-﻿using Hi3Helper.Shared.Region;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
+
+#if !APPLYUPDATE
+using System.Diagnostics;
+using System.Linq;
+using Hi3Helper.Shared.Region;
+#endif
 
 namespace Hi3Helper
 {
@@ -13,7 +16,9 @@ namespace Hi3Helper
         private FileStream _logStream { get; set; }
         private StreamWriter _logWriter { get; set; }
         private string _logFolder { get; set; }
+#if !APPLYUPDATE
         private string _logPath { get; set; }
+#endif
         private StringBuilder _stringBuilder { get; set; }
         #endregion
 
@@ -34,17 +39,20 @@ namespace Hi3Helper
             // Set the folder path of the stored log
             _logFolder = folderPath;
 
+#if !APPLYUPDATE
             // Check if the directory exist. If not, then create.
             if (!Directory.Exists(_logFolder))
             {
                 Directory.CreateDirectory(_logFolder);
             }
+#endif
 
             // Try dispose the _logWriter even though it's not initialized.
             // This will be used if the program need to change the log folder to another location.
             _logWriter?.Dispose();
             _logStream?.Dispose();
 
+#if !APPLYUPDATE
             try
             {
                 // Initialize writer and the path of the log file.
@@ -55,6 +63,7 @@ namespace Hi3Helper
                 // If the initialization above fails, then use fallback.
                 InitializeWriter(true, logEncoding);
             }
+#endif
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -70,7 +79,7 @@ namespace Hi3Helper
             _logWriter?.WriteLine(GetLine(line, type, false));
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        #endregion
+#endregion
 
         #region ProtectedMethods
         /// <summary>
@@ -124,6 +133,7 @@ namespace Hi3Helper
         #endregion
 
         #region PrivateMethods
+#if !APPLYUPDATE
         private void InitializeWriter(bool isFallback, Encoding logEncoding)
         {
             // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
@@ -157,6 +167,7 @@ namespace Hi3Helper
             // If the procCount > 0, then procCount - 1. Else, 0
             return procCount > 0 ? procCount - 1 : 0;
         }
+#endif
 
         private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, NoTag or Empty!");
 
@@ -193,6 +204,6 @@ namespace Hi3Helper
             LogType.NoTag => "      ",
             _ => throw ThrowInvalidType()
         };
-        #endregion
+#endregion
     }
 }

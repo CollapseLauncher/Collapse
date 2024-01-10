@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Reflection;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+#if !APPLYUPDATE
 using static Hi3Helper.Shared.Region.LauncherConfig;
+#else
+using ApplyUpdate;
+using Avalonia.Platform;
+using static ApplyUpdate.Statics;
+#endif
 
 namespace Hi3Helper
 {
@@ -20,7 +28,7 @@ namespace Hi3Helper
 
             try
             {
-                _ = LoadLang();
+                _ = LoadLang(filePath);
                 LogWriteLine($"Locale file: {langRelativePath} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
             }
             catch (Exception e)
@@ -29,18 +37,64 @@ namespace Hi3Helper
             }
         }
 
+#if APPLYUPDATE
+        public LangMetadata(Uri fileUri, int index)
+        {
+            this.LangFilePath = fileUri.AbsoluteUri;
+            this.LangIndex = index;
+            this.LangIsLoaded = false;
+
+            try
+            {
+                _ = LoadLang(fileUri);
+                LogWriteLine($"Locale file: {fileUri.AbsoluteUri} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"Failed while parsing locale file: {fileUri.AbsoluteUri}. Ignoring!\r\n{e}", LogType.Warning, true);
+            }
+        }
+#endif
+
         public LocalizationParams LoadLang()
         {
+#if APPLYUPDATE
+            return LoadLang(new Uri(LangFilePath));
+#else
             using (Stream s = new FileStream(this.LangFilePath, FileMode.Open, FileAccess.Read))
             {
-                LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), CoreLibraryFieldsJSONContext.Default);
-                this.LangAuthor = _langData.Author;
-                this.LangID = _langData.LanguageID.ToLower();
-                this.LangName = _langData.LanguageName;
-                this.LangIsLoaded = true;
-
-                return _langData;
+                return LoadLang(s);
             }
+#endif
+        }
+
+        public LocalizationParams LoadLang(string langPath)
+        {
+            using (Stream s = new FileStream(langPath, FileMode.Open, FileAccess.Read))
+            {
+                return LoadLang(s);
+            }
+        }
+
+#if APPLYUPDATE
+        public LocalizationParams LoadLang(Uri langUri)
+        {
+            using (Stream s = AssetLoader.Open(langUri))
+            {
+                return LoadLang(s);
+            }
+        }
+#endif
+
+        public LocalizationParams LoadLang(Stream langStream)
+        {
+            LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(langStream, typeof(LocalizationParams), CoreLibraryFieldsJSONContext.Default);
+            this.LangAuthor = _langData.Author;
+            this.LangID = _langData.LanguageID.ToLower();
+            this.LangName = _langData.LanguageName;
+            this.LangIsLoaded = true;
+
+            return _langData;
         }
 
         public int LangIndex;
@@ -54,14 +108,33 @@ namespace Hi3Helper
     public sealed partial class Locale
     {
         public const string FallbackLangID = "en-us";
+
+#if APPLYUPDATE
+        public static IEnumerable<Uri> GetLocaleUri()
+        {
+            Assembly thisAssembly = Assembly.GetExecutingAssembly();
+            AssetLoader.SetDefaultAssembly(thisAssembly);
+            foreach (Uri asset in AssetLoader
+                .GetAssets(new Uri($"avares://ApplyUpdate-Core/Assets/Locale"), null)
+                .Where(x => x.AbsoluteUri
+                    .EndsWith(".json", StringComparison.InvariantCultureIgnoreCase)))
+                yield return asset;
+        }
+#endif
+
         public static void InitializeLocale()
         {
-            TrySafeRenameOldEnFallback();
-
             int i = 0;
+#if APPLYUPDATE
+            foreach (Uri langPath in GetLocaleUri())
+            {
+                LangMetadata Metadata = new LangMetadata(langPath, i);
+#else
+            TrySafeRenameOldEnFallback();
             foreach (string langPath in Directory.EnumerateFiles(AppLangFolder, "*.json", SearchOption.AllDirectories))
             {
                 LangMetadata Metadata = new LangMetadata(langPath, i);
+#endif
                 if (Metadata.LangIsLoaded)
                 {
                     LanguageNames.Add(Metadata.LangID.ToLower(), Metadata);
@@ -76,6 +149,7 @@ namespace Hi3Helper
             }
         }
 
+#if !APPLYUPDATE
         private static void TrySafeRenameOldEnFallback()
         {
             string possibleOldPath = Path.Combine(AppLangFolder, "en.json");
@@ -84,6 +158,7 @@ namespace Hi3Helper
             if (File.Exists(possibleOldPath) && File.Exists(possibleNewPath)) File.Delete(possibleOldPath);
             if (File.Exists(possibleOldPath) && !File.Exists(possibleNewPath)) File.Move(possibleOldPath, possibleNewPath);
         }
+#endif
 
         public static void LoadLocale(string langID)
         {

@@ -37,6 +37,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 "kr" => 3,
                 "cn" => 2,
+                "tw" => 2, // Force Traditional Chinese value to use Simplified Chinese
                 "jp" => 1,
                 _ => 0,
             };

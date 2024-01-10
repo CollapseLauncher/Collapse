@@ -7,11 +7,12 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.SharpHDiffPatch;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using SevenZipExtractor;
+using SharpHDiffPatch.Core;
+using SharpHDiffPatch.Core.Event;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -416,6 +417,12 @@ namespace CollapseLauncher.InstallManager.Base
                         return 0;
                     case ContentDialogResult.None:
                         return -1;
+                    case ContentDialogResult.Secondary: // To proceed on extracting the file even it's corrupted
+                        string fileName = Path.GetFileName(asset.PathOutput);
+                        ContentDialogResult installCorruptDialogResult = await Dialog_GameInstallCorruptedDataAnyway(_parentUI, fileName, asset.Size);
+                        // If cancel is pressed, then cancel the whole process
+                        if (installCorruptDialogResult == ContentDialogResult.None) return -1;
+                        break;
                 }
             }
 
@@ -631,8 +638,13 @@ namespace CollapseLauncher.InstallManager.Base
             // Get the Game folder
             string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
+            // Get translated fullname
+            string translatedGameTitle = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager.GamePreset.GameName, Lang._GameClientTitles);
+            string translatedGameRegion = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager.GamePreset.ZoneName, Lang._GameClientRegions);
+            string translatedFullName = $"{translatedGameTitle} - {translatedGameRegion}";
+
             // Check if the dialog result is Okay (Primary). If not, then return false
-            ContentDialogResult DialogResult = await Dialog_UninstallGame(_parentUI, GameFolder, _gameVersionManager.GamePreset.ZoneFullname);
+            ContentDialogResult DialogResult = await Dialog_UninstallGame(_parentUI, GameFolder, translatedFullName);
             if (DialogResult != ContentDialogResult.Primary) return false;
 
             try

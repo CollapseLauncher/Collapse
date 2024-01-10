@@ -172,9 +172,7 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                double percentage = double.IsInfinity(e.ProgressPerFilePercentage) ? 0 : e.ProgressPerFilePercentage;
-                RepairPerFileProgressBar.Value = percentage;
-
+                RepairPerFileProgressBar.Value = e.ProgressPerFilePercentage;
                 RepairTotalProgressBar.Value = e.ProgressTotalPercentage;
             });
         }

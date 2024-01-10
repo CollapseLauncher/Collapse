@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -153,7 +154,8 @@ namespace CollapseLauncher.Dialogs
             {
                 TargetGame.IsEnabled = true;
                 Dialog.IsSecondaryButtonEnabled = false;
-                TargetGame.ItemsSource = InstallationConvert.GetConvertibleNameList((sender as ComboBox).SelectedItem.ToString());
+                TargetGame.ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(CurrentConfigV2GameCategory, InstallationConvert.GetConvertibleNameList(
+                    InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox).SelectedItem)));
             });
             SelectionChangedEventHandler TargetGameChangedArgs = new SelectionChangedEventHandler((object sender, SelectionChangedEventArgs e) =>
             {
@@ -163,7 +165,7 @@ namespace CollapseLauncher.Dialogs
             SourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = new List<string>(ConvertibleRegions.Keys),
+                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(CurrentConfigV2GameCategory, new List<string>(ConvertibleRegions.Keys)),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };
@@ -332,10 +334,36 @@ namespace CollapseLauncher.Dialogs
                         Content,
                         Lang._Misc.NoCancel,
                         Lang._Misc.YesRedownload,
-                        null,
+                        Lang._Misc.ExtractAnyway,
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Error
             );
+
+        public static async Task<ContentDialogResult> Dialog_GameInstallCorruptedDataAnyway(UIElement Content, string fileName, long fileSize)
+        {
+            TextBlock textBlock = new TextBlock()
+            {
+                TextWrapping = TextWrapping.Wrap
+            };
+            textBlock.Inlines.Add(new Run { Text = Lang._Dialogs.InstallCorruptDataAnywaySubtitle1 });
+            textBlock.Inlines.Add(new Run
+            {
+                Text = string.Format(Lang._Dialogs.InstallCorruptDataAnywaySubtitle2, fileName, SummarizeSizeSimple(fileSize), fileSize),
+                FontWeight = FontWeights.SemiBold
+            });
+            textBlock.Inlines.Add(new Run { Text = Lang._Dialogs.InstallCorruptDataAnywaySubtitle3 });
+
+            return await SpawnDialog(
+                Lang._Dialogs.InstallCorruptDataAnywayTitle,
+                textBlock,
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.YesImReallySure,
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning
+            );
+        }
 
         public static async Task<ContentDialogResult> Dialog_LocateFirstSetupFolder(UIElement Content, string defaultAppFolder) =>
             await SpawnDialog(

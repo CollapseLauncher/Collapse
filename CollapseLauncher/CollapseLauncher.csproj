@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<!-- Versioning -->
-		<Version>1.72.14</Version>
+		<Version>1.73.0</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
 		<Platforms>x64</Platforms>
@@ -84,7 +84,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.123" />
+		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
 		<PackageReference Include="ImageEx" Version="2.1.1" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
@@ -94,6 +94,7 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
+		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
@@ -107,10 +108,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
-		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
-		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 		<ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
 	</ItemGroup>
 
@@ -141,9 +140,9 @@
 			<TrimmableAssembly Include="Hi3Helper.Core" />
 			<TrimmableAssembly Include="Hi3Helper.EncTool" />
 			<TrimmableAssembly Include="Hi3Helper.Http" />
-			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
 			<TrimmableAssembly Include="InnoSetupHelper" />
 			<TrimmableAssembly Include="SevenZipExtractor" />
+			<TrimmableAssembly Include="SharpHDiffPatch.Core" />
       
 			<!-- Additional assemblies -->
 			<TrimmableAssembly Include="ColorCode.Core" />
@@ -153,6 +152,7 @@
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
 			<TrimmableAssembly Include="Google.Protobuf" />
 			<TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
@@ -174,13 +174,23 @@
 			<TrimmableAssembly Include="Microsoft.UI.Windowing.Core" />
 			<TrimmableAssembly Include="Microsoft.UI.Windowing" />
 			<TrimmableAssembly Include="Microsoft.Web.WebView2.Core" />
+			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
 			<TrimmableAssembly Include="Microsoft.Windows.Widgets" />
 			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime.Bootstrap" />
 			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
 			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
+			<TrimmableAssembly Include="SquirrelLib" />
 			<TrimmableAssembly Include="System.CommandLine" />
 			<TrimmableAssembly Include="System.Drawing.Common" />
+			<TrimmableAssembly Include="System.Linq.Expressions" />
+			<TrimmableAssembly Include="System.Net.Http" />
+			<TrimmableAssembly Include="System.Net.Security" />
+			<TrimmableAssembly Include="System.Security.Cryptography" />
+			<TrimmableAssembly Include="System.Text.Json" />
+			<TrimmableAssembly Include="System.Text.RegularExpressions" />
+			<TrimmableAssembly Include="WinRT.Runtime" />
 			<TrimmableAssembly Include="WinUIEdit" />
+			<TrimmableAssembly Include="ZstdSharp" />
 
 			<!-- Descriptor for all classes that cannot be trimmed -->
 			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />

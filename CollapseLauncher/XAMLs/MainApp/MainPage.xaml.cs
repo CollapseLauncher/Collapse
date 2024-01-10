@@ -2,10 +2,8 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using InnoSetupHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -181,6 +179,18 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Clear();
             Bindings.Update();
             UpdateLayout();
+
+            // Find the last selected category/title and region
+            string LastCategory = CurrentConfigV2GameCategory;
+            string LastRegion = CurrentConfigV2GameRegion;
+            int indexOfCategory = ConfigV2GameCategory.IndexOf(LastCategory);
+            int indexOfRegion = ConfigV2GameRegions.IndexOf(LastRegion);
+
+            // Rebuild Game Titles and Regions ComboBox items
+            ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
+            ComboBoxGameCategory.SelectedIndex = indexOfCategory;
+            ComboBoxGameRegion.SelectedIndex = indexOfRegion;
+
             InitializeNavigationItems(false);
             ChangeTitleDragArea.Change(DragAreaTemplate.Default);
         }
@@ -865,7 +875,7 @@ namespace CollapseLauncher
         #region Game Selector Method
         private PresetConfigV2 LoadSavedGameSelection()
         {
-            ComboBoxGameCategory.ItemsSource = ConfigV2GameCategory;
+            ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
 
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
 
@@ -883,19 +893,21 @@ namespace CollapseLauncher
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
             CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
             CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
-            return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
+            return LoadCurrentConfigV2(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue), GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
-            string SelectedCategoryString = (string)((ComboBox)sender).SelectedItem;
+            object? selectedItem = ((ComboBox)sender).SelectedItem;
+            if (selectedItem == null) return;
+            string SelectedCategoryString = GetComboBoxGameRegionValue(selectedItem);
             GetConfigV2Regions(SelectedCategoryString);
 
             List<StackPanel> CurRegionList = BuildGameRegionListUI(SelectedCategoryString);
             ComboBoxGameRegion.ItemsSource = CurRegionList;
             ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(SelectedCategoryString);
         }
-        
+
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
             if (ComboBoxGameCategory.SelectedIndex == CurrentGameCategory && ComboBoxGameRegion.SelectedIndex == CurrentGameRegion)
@@ -908,7 +920,7 @@ namespace CollapseLauncher
             object selValue = ((ComboBox)sender).SelectedValue;
             if (selValue != null)
             {
-                string category = (string)ComboBoxGameCategory.SelectedValue;
+                string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
                 string region = GetComboBoxGameRegionValue(selValue);
                 PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
                 ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
@@ -1382,8 +1394,9 @@ namespace CollapseLauncher
 
                 int numIndex = 0;
                 VirtualKeyModifiers keyModifier = StrToVKeyModifier(keys[keysIndex][0]);
-                foreach (string game in ComboBoxGameCategory.Items)
+                foreach (StackPanel gameTitlePanel in ComboBoxGameCategory.Items.OfType<StackPanel>())
                 {
+                    string game = GetComboBoxGameRegionValue(gameTitlePanel);
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
                         Modifiers = keyModifier,
@@ -1523,7 +1536,7 @@ namespace CollapseLauncher
             if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
             {
                 ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
-                ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(ComboBoxGameCategory.SelectedValue.ToString());
+                ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue));
                 ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
@@ -1538,7 +1551,7 @@ namespace CollapseLauncher
             RestoreCurrentRegion();
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
                 return;
-            
+
             if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index])
             {
                 ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
@@ -1557,15 +1570,15 @@ namespace CollapseLauncher
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
-               return;
+                return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) 
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0])
                 return;
 
             ChangeTimer();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
             NavigateInnerSwitch("launcher");
-            
+
         }
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1573,7 +1586,7 @@ namespace CollapseLauncher
             if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) 
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem)
                 return;
 
             ChangeTimer();
@@ -1669,10 +1682,10 @@ namespace CollapseLauncher
         }
         private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange) 
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2])
                 return;
 
             ChangeTimer();
@@ -1682,9 +1695,9 @@ namespace CollapseLauncher
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange) 
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                 return;
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3]) 
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
                 return;
 
             ChangeTimer();
@@ -1697,7 +1710,7 @@ namespace CollapseLauncher
             if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last()) 
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last())
                 return;
 
             ChangeTimer();

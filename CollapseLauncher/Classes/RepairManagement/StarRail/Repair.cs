@@ -64,7 +64,6 @@ namespace CollapseLauncher
             {
                 // Dispose _httpClient
                 _httpClient.Dispose();
-                await _httpClient.WaitUntilInstanceDisposed();
 
                 // Unassign downloader event
                 _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
