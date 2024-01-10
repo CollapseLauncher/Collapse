@@ -187,15 +187,17 @@ namespace Hi3Helper.Preset
         public string GetStarRailVoiceLanguageFullNameByID(int id) => id switch
         {
             0 => "Chinese(PRC)",
-            1 => "English",
-            2 => "Japanese",
-            3 => "Korean",
+            1 => "Chinese(PRC)", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
+            2 => "English",
+            3 => "Japanese",
+            4 => "Korean",
             _ => "Japanese" // Set to JP by default
         };
 
         public string GetStarRailVoiceLanguageFullNameByName(string name) => name switch
         {
             "cn" => "Chinese(PRC)",
+            "tw" => "Chinese(PRC)", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
             "en" => "English",
             "jp" => "Japanese",
             "kr" => "Korean",
