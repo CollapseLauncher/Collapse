@@ -8,6 +8,7 @@ using CollapseLauncher.Statics;
 using System.Text;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace CollapseLauncher
 {
@@ -61,8 +62,7 @@ namespace CollapseLauncher
 
             if (a == null || a.Length == 0) return;
 
-            foreach (string b in a)
-                LogWriteLine(b, Hi3Helper.LogType.Error);
+            LoadFile(a[0]);
 
 
         }
@@ -82,26 +82,26 @@ namespace CollapseLauncher
         /// Source:
         /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
         private static int entryCount = 0;
-        private static List<SteamShortcut> shortcuts;
+        private static List<SteamShortcut> shortcuts = [];
         private struct SteamShortcut
         {
             public int entryID = entryCount;
-            public ulong appid;
-            public string AppName;
-            public string Exe;
-            public string StartDir;
-            public string icon;
-            public string ShortcutPath;
-            public string LaunchOptions;
+            public string appid = "";
+            public string AppName = "";
+            public string Exe = "";
+            public string StartDir = "";
+            public string icon = "";
+            public string ShortcutPath = "";
+            public string LaunchOptions = "";
             public bool IsHidden = false;
             public bool AllowDesktopConfig = false;
             public bool AllowOverlay = false;
             public bool OpenVR = false;
-            public bool Devkit;
-            public string DevkitGameID;
-            public bool DevkitOverrideAppID;
-            public string LastPlayTime;
-            public string FlatpakAppID;
+            public bool Devkit = false;
+            public string DevkitGameID = "";
+            public bool DevkitOverrideAppID = false;
+            public string LastPlayTime = "\x00\x00\x00\x00";
+            public string FlatpakAppID = "";
             public string tags = "";
 
             public SteamShortcut() { }
@@ -110,14 +110,13 @@ namespace CollapseLauncher
             {
                 AppName = preset._GamePreset.ZoneFullname + " - Collapse Launcher";
                 Exe = Path.Combine(AppExecutablePath, AppExecutableName);
-                appid = generateAppId(Exe, AppName);
+                appid = generateAppId(Exe, AppName).ToString();
 
                 StartDir = AppExecutablePath;
                 LaunchOptions = string.Format("-g {0} -r {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
                 if (play)
                     LaunchOptions += " -p";
                 
-                LastPlayTime = "\x00\x00\x00\x00";
                 entryCount++;
                 shortcuts.Add(this);
             }
@@ -140,9 +139,54 @@ namespace CollapseLauncher
                         + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
                         + '\x02' + "DevkitOverrideAppID" + '\x00' + DevkitOverrideAppID + '\x00'
                         + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime + '\x00'
-                        + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID
+                        + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
                         + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
             }
+        }
+
+        private static void LoadFile(string path)
+        {
+            if (!File.Exists(path))
+                return;
+
+            var contents = File.ReadAllText(path);
+            contents = string.Concat(contents.Skip(11));
+
+            foreach (string line in contents.Split("\x08\x08"))
+            {
+                int pos = 0;
+                SteamShortcut newShortcut = new SteamShortcut();
+                Queue<char> ln = new Queue<char> {};
+                foreach (char c in line)
+                    ln.Enqueue(c);
+                ln.Enqueue('\x08');
+                newShortcut.entryID = (int)parseValue(ref ln);
+                newShortcut.appid = (string)parseValue(ref ln);
+                newShortcut.AppName = (string)parseValue(ref ln);
+                shortcuts.Add(newShortcut);
+            }
+            
+
+            foreach (SteamShortcut st in  shortcuts)
+            {
+                LogWriteLine(st.AppName, Hi3Helper.LogType.Warning);
+            }
+            
+        }
+
+        private static object parseValue(ref Queue<char> line, int leadingNulls = 1)
+        {
+            if (line.Count == 0)
+                return null;
+            
+            object res = null;
+            string name;
+            bool quote = false;
+            while (line.First() != '\x08' && line.Count > 0)
+            {
+                
+            }
+            return res;
         }
 
         private static ulong generateAppId(string exe, string appname)
@@ -154,29 +198,9 @@ namespace CollapseLauncher
             return top << 32 | 0x02000000;
         }
 
-        private static void LoadFile(string path)
-        {
-            path = Path.Combine(path, "shortcuts.vdf");
-            if (!File.Exists(path))
-                return;
-
-            var contents = File.ReadAllText(path);
-            contents = contents.Skip(11).ToString();
-
-            while (contents.Length > 0)
-            {
-                SteamShortcut newShortcut = new SteamShortcut();
-                shortcuts.Add(newShortcut);
-            }
-            
-        }
-
         private static void WriteFile(string path)
         {
-            string file = Path.Combine(path, "shortcuts.vdf");
-            File.Copy(file, Path.Combine(path, "shortcuts.vdf.old"));
-
-            FileStream fs = File.OpenWrite(file);
+            FileStream fs = File.OpenWrite(path + "2");
             StreamWriter sw = new StreamWriter(fs);
 
             sw.Write("\x00shortcuts\x00");
@@ -185,6 +209,9 @@ namespace CollapseLauncher
             {
                 sw.Write(st.ToEntry());
             }
+            sw.Write("\x08\x08");
+
+            sw.Flush();
         }
     }
 }
