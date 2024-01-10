@@ -4,7 +4,7 @@
 
 ##### ヘッダー背景画像クレジット: [Rafa](https://www.pixiv.net/artworks/102448848)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![fr](https://img.shields.io/badge/lang-fr-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.fr-fr.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![fr](https://img.shields.io/badge/lang-fr-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.fr-fr.md) [![ru](https://img.shields.io/badge/lang-ru-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ru-ru.md)
 
 **Collapse**は**崩壊3rd**のために開発されたPC用非公式ランチャーです。プロジェクトは進化を続け、現在は全ての**miHoYo/HoYoverse**のゲームに対応しています.
 
