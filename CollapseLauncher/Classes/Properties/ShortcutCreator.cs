@@ -8,6 +8,7 @@ using CollapseLauncher.Statics;
 using System.Text;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace CollapseLauncher
 {
@@ -126,23 +127,25 @@ namespace CollapseLauncher
                 shortcuts.Add(this);
             }
 
+            private char BoolToByte(bool b) => b ? '\x01' : '\x00'; 
+
             public string ToEntry()
             {
                 return    '\x00' + entryID + '\x00'
                         + '\x02' + "appid" + '\x00' + appid
                         + '\x01' + "AppName" + '\x00' + AppName + '\x00'
                         + '\x01' + "Exe" + '\x00' + Exe + '\x00'
-                        + '\x01' + "StartDir" + '\x00' + StartDir + '\x00' +
-                        + '\x01' + "icon" + '\x00' + icon + '\x00' +
-                        + '\x01' + "ShortcutPath" + '\x00' + ShortcutPath + '\x00' +
+                        + '\x01' + "StartDir" + '\x00' + StartDir + '\x00'
+                        + '\x01' + "icon" + '\x00' + icon + '\x00'
+                        + '\x01' + "ShortcutPath" + '\x00' + ShortcutPath + '\x00'
                         + '\x01' + "LaunchOptions" + '\x00' + LaunchOptions + '\x00'
-                        + '\x02' + "IsHidden" + '\x00' + IsHidden + "\x00\x00\x00"
-                        + '\x02' + "AllowDesktopConfig" + '\x00' + AllowDesktopConfig + "\x00\x00\x00"
-                        + '\x02' + "AllowOverlay" + '\x00' + AllowOverlay + "\x00\x00\x00"
-                        + '\x02' + "OpenVR" + '\x00' + OpenVR + "\x00\x00\x00"
-                        + '\x02' + "Devkit" + '\x00' + Devkit + "\x00\x00\x00"
+                        + '\x02' + "IsHidden" + '\x00' + BoolToByte(IsHidden) + "\x00\x00\x00"
+                        + '\x02' + "AllowDesktopConfig" + '\x00' + BoolToByte(AllowDesktopConfig) + "\x00\x00\x00"
+                        + '\x02' + "AllowOverlay" + '\x00' + BoolToByte(AllowOverlay) + "\x00\x00\x00"
+                        + '\x02' + "OpenVR" + '\x00' + BoolToByte(OpenVR) + "\x00\x00\x00"
+                        + '\x02' + "Devkit" + '\x00' + BoolToByte(Devkit) + "\x00\x00\x00"
                         + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
-                        + '\x02' + "DevkitOverrideAppID" + '\x00' + DevkitOverrideAppID + '\x00'
+                        + '\x02' + "DevkitOverrideAppID" + '\x00' + BoolToByte(DevkitOverrideAppID) + "\x00\x00\x00"
                         + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime + '\x00'
                         + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
                         + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
@@ -162,25 +165,26 @@ namespace CollapseLauncher
             ValueTags
         }
 
+        private static Encoding ANSI;
         private static void LoadFile(string path)
         {
             if (!File.Exists(path))
                 return;
 
-            var contents = File.ReadAllText(path);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            ANSI = Encoding.GetEncoding(1252);
+
+            var contents = File.ReadAllText(path, ANSI);
             contents = string.Concat(contents.Skip(11));
 
             foreach (string line in contents.Split("\x08\x08"))
             {
-                SteamShortcut? steamShortcut = parseShortcut(Encoding.Default.GetBytes(line + '\x08'));
+                SteamShortcut? steamShortcut = parseShortcut(ANSI.GetBytes(line + '\x08'));
                 if (steamShortcut == null) continue;
                 shortcuts.Add((SteamShortcut)steamShortcut);
             }
 
-            foreach (SteamShortcut a in shortcuts)
-            {
-                LogWriteLine(a.ToEntry());
-            }
+            WriteFile(path);
         }
 
         private static SteamShortcut? parseShortcut(byte[] ln)
@@ -211,7 +215,7 @@ namespace CollapseLauncher
                         if (ln[i] == 0)
                         {
                             parse = parse == ParseType.NameStr ? ParseType.ValueStr : ParseType.ValueBool;
-                            string key = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
+                            string key = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
                             if (key == "LastPlayTime")
                                 parse = ParseType.ValueTime;
                             if (key == "appid")
@@ -224,7 +228,7 @@ namespace CollapseLauncher
                     case ParseType.ValueTime:
                         if (ln[i] == 0)
                         {
-                            newShortcut.LastPlayTime = buffer.Count == 0 ? Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count) : "\x00\x00\x00\x00";
+                            newShortcut.LastPlayTime = buffer.Count != 0 ? ANSI.GetString(buffer.ToArray(), 0, buffer.Count) : "\x00\x00\x00";
                             buffer = [];
                             parse = ParseType.FindType;
                             while (i < ln.Length - 1 && ln[i + 1] == 0)
@@ -236,7 +240,7 @@ namespace CollapseLauncher
                     case ParseType.ValueAppid:
                         if (ln[i] == 1)
                         {
-                            newShortcut.appid = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
+                            newShortcut.appid = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
                             buffer = [];
                             parse = ParseType.NameStr;
                             continue;
@@ -255,7 +259,7 @@ namespace CollapseLauncher
                     case ParseType.ValueTags:
                         if (ln[i] == 8)
                         {
-                            newShortcut.tags = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
+                            newShortcut.tags = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
                             buffer = [];
                             continue;
                         }
@@ -264,7 +268,7 @@ namespace CollapseLauncher
                     case ParseType.ValueStr:
                         if (ln[i] == 0)
                         {
-                            strRes.Add(Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count));
+                            strRes.Add(ANSI.GetString(buffer.ToArray(), 0, buffer.Count));
                             buffer = [];
                             parse = ParseType.FindType;
                             continue;
@@ -318,8 +322,9 @@ namespace CollapseLauncher
 
         private static void WriteFile(string path)
         {
+            File.Delete(path + "2");
             FileStream fs = File.OpenWrite(path + "2");
-            StreamWriter sw = new StreamWriter(fs);
+            StreamWriter sw = new StreamWriter(fs, ANSI);
 
             sw.Write("\x00shortcuts\x00");
 
@@ -328,8 +333,9 @@ namespace CollapseLauncher
                 sw.Write(st.ToEntry());
             }
             sw.Write("\x08\x08");
-
-            sw.Flush();
+            sw.Close();
+            fs.Close();
+            shortcuts.Clear();
         }
     }
 }
