@@ -8,6 +8,7 @@ using CollapseLauncher.Statics;
 using System.Text;
 using System;
 using System.Collections.Generic;
+using Windows.Storage.Streams;
 
 namespace CollapseLauncher
 {
@@ -129,7 +130,8 @@ namespace CollapseLauncher
             {
                 AppName = preset._GamePreset.ZoneFullname;
                 Exe = AppExecutablePath;
-                appid = generateAppId(Exe, AppName).ToString();
+                var id = BitConverter.GetBytes(generateAppId(Exe, AppName));
+                appid = ANSI.GetString(id, 0, id.Length);
 
                 StartDir = Path.GetDirectoryName(AppExecutablePath);
                 LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
@@ -325,7 +327,7 @@ namespace CollapseLauncher
             var crc32 = new System.IO.Hashing.Crc32();
             crc32.Append(ANSI.GetBytes(key));
             uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
-            return top << 32 | 0x02000000;
+            return top - 0x10000000;
         }
 
         private static void WriteFile(string path)
