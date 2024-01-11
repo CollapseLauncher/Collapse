@@ -8,8 +8,6 @@ using CollapseLauncher.Statics;
 using System.Text;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace CollapseLauncher
 {
@@ -92,7 +90,7 @@ namespace CollapseLauncher
         private static List<SteamShortcut> shortcuts = [];
         private struct SteamShortcut
         {
-            public int entryID = entryCount;
+            public string entryID = "";
             public string appid = "";
             public string AppName = "";
             public string Exe = "";
@@ -151,6 +149,18 @@ namespace CollapseLauncher
             }
         }
 
+        enum ParseType
+        {
+            FindType,
+            NameStr,
+            ValueStr,
+            ValueAppid,
+            NameBool,
+            ValueBool,
+            NameTags,
+            ValueTags
+        }
+
         private static void LoadFile(string path)
         {
             if (!File.Exists(path))
@@ -161,16 +171,102 @@ namespace CollapseLauncher
 
             foreach (string line in contents.Split("\x08\x08"))
             {
-                int pos = 0;
                 SteamShortcut newShortcut = new SteamShortcut();
-                Queue<char> ln = new Queue<char> {};
-                foreach (char c in line)
-                    ln.Enqueue(c);
-                ln.Enqueue('\x08');
-                newShortcut.entryID = (int)parseValue(ref ln, null);
-                newShortcut.appid = (string)parseValue(ref ln, "appid");
-                newShortcut.AppName = (string)parseValue(ref ln, "AppName");
-                shortcuts.Add(newShortcut);
+                
+                byte[] ln = Encoding.ASCII.GetBytes(line + '\x08');
+
+                List<string> strRes = new List<string>();
+                List<bool> boolRes = new List<bool>();
+
+                List<byte> buffer = [];
+                ParseType parse = ParseType.NameStr;
+                for (int i = 0; i < ln.Length; i++)
+                {
+                    if (ln[0] != 0)
+                        return;
+                    switch (parse)
+                    {
+                        case ParseType.FindType:
+                            if (ln[i] == 0)
+                                parse = ParseType.NameTags;
+                            if (ln[i] == 1)
+                                parse = ParseType.NameStr;
+                            if (ln[i] == 2)
+                                parse = ParseType.NameBool;
+                            continue;
+                        case ParseType.NameStr:
+                        case ParseType.NameBool:
+                            if (ln[i] == 0)
+                            {
+                                parse = parse == ParseType.NameStr ? ParseType.ValueStr : ParseType.ValueBool;
+                                buffer = [];
+                                continue;
+                            }
+                            if (ln[i] == 129)
+                            {
+                                parse = ParseType.ValueAppid;
+                                buffer = [];
+                                continue;
+                            }
+                            buffer.Add(ln[i]);
+                            break;
+                        case ParseType.ValueAppid:
+                            if (ln[i] == 132)
+                            {
+                                newShortcut.appid = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
+                                buffer = [];
+                                parse = ParseType.FindType;
+                                continue;
+                            }
+                            buffer.Add(ln[i]);
+                            break;
+                        case ParseType.NameTags:
+                            if (ln[i] == 0)
+                            {
+                                parse = ParseType.ValueTags;
+                                buffer = [];
+                                continue;
+                            }
+                            buffer.Add(ln[i]);
+                            break;
+                        case ParseType.ValueTags:
+                            if (ln[i] == 8)
+                            {
+                                newShortcut.tags = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
+                                buffer = [];
+                                continue;
+                            }
+                            buffer.Add(ln[i]);
+                            break;
+                        case ParseType.ValueStr:
+                            if (ln[i] == 0)
+                            {
+                                strRes.Add(Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count));
+                                buffer = [];
+                                parse = ParseType.FindType;
+                                continue;
+                            }
+                            buffer.Add(ln[i]);
+                            break;
+                        case ParseType.ValueBool:
+                            boolRes.Add(ln[i] == 1);
+                            if (ln[i + 3] == 0)
+                                i += 3;
+                            parse = ParseType.FindType;
+                            break;
+                    }
+                }
+
+                LogWriteLine("ShortcutStart", Hi3Helper.LogType.Error);
+                foreach (var i in strRes)
+                {
+                    LogWriteLine(i, Hi3Helper.LogType.Warning);
+                }
+                foreach (var i in boolRes)
+                {
+                    LogWriteLine(i.ToString(), Hi3Helper.LogType.Warning);
+                }
+                LogWriteLine("ShortcutEnd", Hi3Helper.LogType.Error);
             }
             
 
