@@ -8,7 +8,6 @@ using CollapseLauncher.Statics;
 using System.Text;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace CollapseLauncher
 {
@@ -56,38 +55,52 @@ namespace CollapseLauncher
 
         }
 
-        public static void AddToSteam(GamePresetProperty preset)
+        public static void AddToSteam(GamePresetProperty preset, bool play)
         {
-            var a = GetShortcutsPath();
+            var paths = GetShortcutsPath();
 
-            if (a == null || a.Length == 0) return;
+            if (paths == null || paths.Length == 0) return;
 
-            try
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            ANSI = Encoding.GetEncoding(1252);
+
+            LoadFile(paths[0]);
+                
+            shortcuts.Add(new SteamShortcut(preset, play));
+
+            WriteFile(paths[0]);
+        }
+
+        public static void RemoveFromSteam(GamePresetProperty preset)
+        {
+
+        }
+
+        public static bool IsAddedToSteam(GamePresetProperty preset)
+        {
+            if (shortcuts.Count == 0)
             {
-                LoadFile(a[0]);
-            } catch (Exception e)
-            {
-                LogWriteLine(e.Message, Hi3Helper.LogType.Error);
+                var paths = GetShortcutsPath();
+
+                if (paths == null || paths.Length == 0) return false;
+
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                ANSI = Encoding.GetEncoding(1252);
+
+                LoadFile(paths[0]);
             }
 
-
-        }
-
-        public static void RemoveFromSteam(string zoneFullName)
-        {
-
-        }
-
-        public static bool IsAddedToSteam(string zoneFullName)
-        {
-            return false;
+            var res = shortcuts.Find(x => x.Exe == Path.Combine(AppExecutablePath, AppExecutableName) 
+                && (x.LaunchOptions == string.Format("-g \"{0}\" -r \"{1}\"", preset._GamePreset.GameName, preset._GamePreset.ZoneName) ||
+                    x.LaunchOptions == string.Format("-g \"{0}\" -r \"{1}\" -p", preset._GamePreset.GameName, preset._GamePreset.ZoneName)
+                ));
+            return res.entryID != "";
         }
 
         /// Based on CorporalQuesadilla's documentation on Steam Shortcuts.
         /// 
         /// Source:
         /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
-        private static int entryCount = 0;
         private static List<SteamShortcut> shortcuts = [];
         private struct SteamShortcut
         {
@@ -114,17 +127,16 @@ namespace CollapseLauncher
 
             public SteamShortcut(GamePresetProperty preset, bool play = false)
             {
-                AppName = preset._GamePreset.ZoneFullname + " - Collapse Launcher";
-                Exe = Path.Combine(AppExecutablePath, AppExecutableName);
+                AppName = preset._GamePreset.ZoneFullname;
+                Exe = AppExecutablePath;
                 appid = generateAppId(Exe, AppName).ToString();
 
-                StartDir = AppExecutablePath;
-                LaunchOptions = string.Format("-g {0} -r {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
+                StartDir = Path.GetDirectoryName(AppExecutablePath);
+                LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
                 if (play)
                     LaunchOptions += " -p";
-                
-                entryCount++;
-                shortcuts.Add(this);
+
+                entryID = shortcuts.Count.ToString();
             }
 
             private char BoolToByte(bool b) => b ? '\x01' : '\x00'; 
@@ -168,11 +180,10 @@ namespace CollapseLauncher
         private static Encoding ANSI;
         private static void LoadFile(string path)
         {
+            shortcuts.Clear();
+
             if (!File.Exists(path))
                 return;
-
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            ANSI = Encoding.GetEncoding(1252);
 
             var contents = File.ReadAllText(path, ANSI);
             contents = string.Concat(contents.Skip(11));
@@ -183,8 +194,6 @@ namespace CollapseLauncher
                 if (steamShortcut == null) continue;
                 shortcuts.Add((SteamShortcut)steamShortcut);
             }
-
-            WriteFile(path);
         }
 
         private static SteamShortcut? parseShortcut(byte[] ln)
@@ -290,7 +299,6 @@ namespace CollapseLauncher
                 return null;
             }
             
-
             newShortcut.entryID = strRes[0];
             newShortcut.AppName = strRes[1];
             newShortcut.Exe = strRes[2];
@@ -311,19 +319,26 @@ namespace CollapseLauncher
             return newShortcut;
         }
 
-        private static ulong generateAppId(string exe, string appname)
+        private static uint generateAppId(string exe, string appname)
         {
             string key = exe + appname;
             var crc32 = new System.IO.Hashing.Crc32();
-            crc32.Append(Encoding.UTF8.GetBytes(key));
-            ulong top = BitConverter.ToUInt64(crc32.GetCurrentHash()) | 0x80000000;
+            crc32.Append(ANSI.GetBytes(key));
+            uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
             return top << 32 | 0x02000000;
         }
 
         private static void WriteFile(string path)
         {
-            File.Delete(path + "2");
-            FileStream fs = File.OpenWrite(path + "2");
+            if (File.Exists(path + "_old"))
+            {
+                File.Delete(path + "_old");
+
+                if (File.Exists(path))
+                    File.Move(path, path + "_old");
+            }
+
+            FileStream fs = File.OpenWrite(path);
             StreamWriter sw = new StreamWriter(fs, ANSI);
 
             sw.Write("\x00shortcuts\x00");

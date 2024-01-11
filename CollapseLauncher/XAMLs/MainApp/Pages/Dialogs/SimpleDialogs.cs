@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Statics;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
@@ -645,8 +646,6 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_CreateShortcut(UIElement Content)
         {
-            bool play = false;
-
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
 
             StackPanel buttonStack = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
@@ -656,23 +655,25 @@ namespace CollapseLauncher.Dialogs
             {
                 Margin = new Thickness(0, 8, 20, 8),
                 Content = new TextBlock() { Text = "Add to Desktop", Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold },
-                DataContext = play ? 0 : 1
+                DataContext = false
             };
             desktop.Click += Shortcut_Click;
 
             Button steam = new Button() { 
                 Margin = new Thickness(20, 8, 0, 8),
                 Content = new TextBlock() { Text = "Add to Steam", Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold },
-                DataContext = play ? 2 : 3
+                DataContext = false
             };
             steam.Click += Steam_Click;
+
+            steam.IsEnabled = ShortcutCreator.IsAddedToSteam(GamePropertyVault.GetCurrentGameProperty());
 
             buttonStack.Children.Add(desktop);
             buttonStack.Children.Add(steam);
 
             CheckBox autoStart = new CheckBox() { Content = new TextBlock() { Text = "Auto-start game after using the shortcut" }, Margin = new Thickness(0, 8, 0, 8) };
-            autoStart.Checked += (o, e) => { play = true; };
-            autoStart.Unchecked += (o, e) => { play = false; };
+            autoStart.Checked += (o, e) => { steam.DataContext = true; desktop.DataContext = true; };
+            autoStart.Unchecked += (o, e) => { steam.DataContext = false; desktop.DataContext = false; };
             stack.Children.Add(autoStart);
 
             return await SpawnDialog(
@@ -685,7 +686,11 @@ namespace CollapseLauncher.Dialogs
 
         private static void Steam_Click(object sender, RoutedEventArgs e)
         {
-            ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty());
+            Button button = sender as Button;       
+            bool play = (bool)button.DataContext;
+            ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty(), play);
+            //button.FindParent<ContentDialogCollapse>().Hide();
+            
         }
 
         private static void Shortcut_Click(object sender, RoutedEventArgs e)
