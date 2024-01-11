@@ -181,29 +181,24 @@ artifacts:
 - path: CollapseLauncher\stable-build\
   name: BuildArtifact-Stable
 - path: PortableTarget\*.7z
-  name: Collapse-PortablePackage-Stable
+  name: Publish-Collapse-PortablePackage-Stable
 - path: InnoTarget\*.exe
-  name: InstallerPackage-Stable
+  name: Publish-InstallerPackage-Stable
 - path: SquirrelTarget
   name: SquirrelUpdateFiles-Stable
 - path: ApplyUpdateTarget
   name: ApplyUpdateFiles-Stable
 deploy:
-- provider: GitHub
-  tag: Artifacts-AppVeyor-Tag-${appveyor_build_version}
-  release: ZIP Artifacts for Build ${appveyor_build_version}
-  description: This is build result from AppVeyor, currently not tested please don't use other than for testing purposes.
-  auth_token:
-    secure: ZN3KdDNF7F2GrnkW2ZXRWuo9RBmeR3mvh9bB6tSX2st+8UT1v12rbn6XFUbWwFCNQZ6H2wPyyhZVm6bsdeOnrKtThoauwPQwsbly8icew3tWqu/h152wbNaRCzg5vPx0
-  repository: CollapseLauncher/Collapse-AppVeyorDeployTarget
-  artifact: /.*\.zip/
-  force_update: true
-- provider: GitHub
-  tag: Releases-AppVeyor-Tag-${appveyor_build_version}
-  release: Stable Appveyor Target for Build ${appveyor_build_version}
-  description: This is build result from AppVeyor, currently not tested please don't use other than for testing purposes.
-  auth_token:
-    secure: ZN3KdDNF7F2GrnkW2ZXRWuo9RBmeR3mvh9bB6tSX2st+8UT1v12rbn6XFUbWwFCNQZ6H2wPyyhZVm6bsdeOnrKtThoauwPQwsbly8icew3tWqu/h152wbNaRCzg5vPx0
-  repository: CollapseLauncher/Collapse-AppVeyorDeployTarget
-  artifact: /.*\.(exe|7z)/
-  force_update: true
+- provider: Webhook
+  url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=test-signing&ArtifactConfigurationSlug=initial
+  authorization:
+    secure: gMBkruj6QbtHREa3zPbDZ1JzCtadQjS1TsDHlqrX8gsj7/Hg2Qr8ae2gXVowb0v2jtWV6Bqv/9GPjBg7dIIrICYWZqKbj3BLXGHpxrFnXV/Ghj3IcD5AYuT7MKnpBF+WZECbHrU9xSLoK35gAu9mpjyMXqEdrN2SbMGdUKcRaJ2TPpu/kXR0HUdBs53hbEfx
+  on:
+    branch: stable
+notifications:
+- provider: Email
+  to:
+  - dzakibagus@gmail.com
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
