@@ -1,13 +1,13 @@
-﻿using Hi3Helper.Preset;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+﻿using System;
 using System.IO;
-using Microsoft.Win32;
 using System.Linq;
-using static Hi3Helper.Logger;
-using CollapseLauncher.Statics;
 using System.Text;
-using System;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using Hi3Helper.Preset;
+using CollapseLauncher.Statics;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -60,8 +60,16 @@ namespace CollapseLauncher
             ANSI = Encoding.GetEncoding(1252);
 
             LoadFile(paths[0]);
-                
-            shortcuts.Add(new SteamShortcut(preset, play));
+            
+            if (IsAddedToSteam(preset))
+            {
+                LogWriteLine("Already added to Steam!", Hi3Helper.LogType.Error);
+                return;
+            }
+
+            SteamShortcut shortcut = new SteamShortcut(preset, play);
+            shortcuts.Add(shortcut);
+            MoveImages(preset._GamePreset.GameType, shortcut.GetAppIDStr(), paths[0]);
 
             WriteFile(paths[0]);
         }
@@ -80,10 +88,36 @@ namespace CollapseLauncher
                 LoadFile(paths[0]);
             }
 
-            var res = shortcuts.Find(x => x.Exe == AppExecutablePath 
-                && x.LaunchOptions.Contains(preset._GamePreset.GameName) 
-                && x.LaunchOptions.Contains(preset._GamePreset.ZoneName));
-            return res.entryID != "";
+            var res = shortcuts.FindIndex(x => x.Exe == AppExecutablePath 
+                && x.AppName == string.Format("{0} - {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName));
+            return res != -1;
+        }
+
+        private static void MoveImages(GameType game, string appId, string path)
+        {
+            path = Path.GetDirectoryName(path);
+            string gridPath = Path.Combine(path, "grid");
+            if (!Directory.Exists(gridPath))
+                Directory.CreateDirectory(gridPath);
+
+            string backgroundPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
+            {
+                GameType.StarRail => "starrail-bg.png",
+                GameType.Genshin => "genshin-bg.png",
+                _ => "honkai-banner.png",
+            });
+            string backgroundSteamPath = Path.Combine(gridPath, appId + "_hero.png");
+
+            string logoPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
+            {
+                GameType.StarRail => "starrail-logo.png",
+                GameType.Genshin => "genshin-logo.png",
+                _ => "honkai-logo.png",
+            });
+            string logoSteamPath = Path.Combine(gridPath, appId + "_logo.png");
+
+            File.Copy(backgroundPath, backgroundSteamPath, true);
+            File.Copy(logoPath, logoSteamPath, true);
         }
 
         /// Based on CorporalQuesadilla's documentation on Steam Shortcuts.
@@ -112,7 +146,7 @@ namespace CollapseLauncher
             public string FlatpakAppID = "";
             public string tags = "";
 
-            public SteamShortcut() { }
+            public SteamShortcut() { entryID = "-1"; }
 
             public SteamShortcut(GamePresetProperty preset, bool play = false)
             {
@@ -121,7 +155,7 @@ namespace CollapseLauncher
                 var id = BitConverter.GetBytes(generateAppId(Exe, AppName));
                 appid = ANSI.GetString(id, 0, id.Length);
 
-                icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameLogo/" + preset._GamePreset.GameType switch
+                icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset._GamePreset.GameType switch
                 {
                     GameType.StarRail => "starrail-logo.ico",
                     GameType.Genshin => "genshin-logo.ico",
@@ -135,6 +169,8 @@ namespace CollapseLauncher
 
                 entryID = shortcuts.Count.ToString();
             }
+
+            public string GetAppIDStr() => generateAppId(Exe, AppName).ToString();
 
             private char BoolToByte(bool b) => b ? '\x01' : '\x00'; 
 
@@ -158,6 +194,30 @@ namespace CollapseLauncher
                         + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime + '\x00'
                         + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
                         + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
+            }
+
+            private uint generatePreliminaryId(string exe, string appname)
+            {
+                string key = exe + appname;
+                var crc32 = new System.IO.Hashing.Crc32();
+                crc32.Append(ANSI.GetBytes(key));
+                uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
+                //LogWriteLine("hashsize: " + crc32.GetCurrentHash().Length);
+                return (top << 32) | 0x02000000;
+            }
+
+            private uint generateAppId(string exe, string appname)
+            {
+                uint appId = generatePreliminaryId(exe, appname);
+
+                return appId >> 32;
+            }
+
+            private uint generateGridId(string exe, string appname)
+            {
+                uint appId = generatePreliminaryId(exe, appname);
+
+                return (appId >> 32) - 0x10000000;
             }
         }
 
@@ -315,29 +375,6 @@ namespace CollapseLauncher
             newShortcut.DevkitOverrideAppID = boolRes[5];
             
             return newShortcut;
-        }
-
-        private static uint generatePreliminaryId(string exe, string appname)
-        {
-            string key = exe + appname;
-            var crc32 = new System.IO.Hashing.Crc32();
-            crc32.Append(ANSI.GetBytes(key));
-            uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
-            return (top << 32) | 0x02000000;
-        }
-
-        private static uint generateAppId(string exe, string appname)
-        {
-            uint appId = generatePreliminaryId(exe, appname);
-
-            return appId >> 32;
-        }
-
-        private static uint generateGridId(string exe, string appname)
-        {
-            uint appId = generatePreliminaryId(exe, appname);
-
-            return (appId >> 32) - 0x10000000;
         }
 
         private static void WriteFile(string path)
