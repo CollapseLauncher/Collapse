@@ -104,9 +104,11 @@ namespace CollapseLauncher
             {
                 GameType.StarRail => "starrail-bg.png",
                 GameType.Genshin => "genshin-bg.png",
-                _ => "honkai-banner.png",
+                _ => "honkai-bg.png",
             });
             string backgroundSteamPath = Path.Combine(gridPath, appId + "_hero.png");
+
+            File.Copy(backgroundPath, backgroundSteamPath, true);
 
             string logoPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
             {
@@ -116,8 +118,17 @@ namespace CollapseLauncher
             });
             string logoSteamPath = Path.Combine(gridPath, appId + "_logo.png");
 
-            File.Copy(backgroundPath, backgroundSteamPath, true);
             File.Copy(logoPath, logoSteamPath, true);
+
+            string bannerPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
+            {
+                GameType.StarRail => "starrail-banner.png",
+                GameType.Genshin => "genshin-banner.png",
+                _ => "honkai-banner.png",
+            });
+            string bannerSteamPath = Path.Combine(gridPath, appId + "p.png");
+
+            File.Copy(bannerPath, bannerSteamPath, true);
         }
 
         /// Based on CorporalQuesadilla's documentation on Steam Shortcuts.
