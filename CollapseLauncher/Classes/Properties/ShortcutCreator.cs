@@ -5,7 +5,6 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using Hi3Helper.Preset;
-using CollapseLauncher.Statics;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -50,7 +49,7 @@ namespace CollapseLauncher
             return res;
         }
 
-        public static void AddToSteam(GamePresetProperty preset, bool play)
+        public static void AddToSteam(PresetConfigV2 preset, bool play)
         {
             var paths = GetShortcutsPath();
 
@@ -69,12 +68,13 @@ namespace CollapseLauncher
 
             SteamShortcut shortcut = new SteamShortcut(preset, play);
             shortcuts.Add(shortcut);
-            MoveImages(preset._GamePreset.GameType, shortcut.GetAppIDStr(), paths[0]);
+            MoveImages(preset.GameType, shortcut.GetAppIDStr(), paths[0]);
+            LogWriteLine(string.Format("Shortcut created for {0} with Steam Appid: {1}", preset.ZoneFullname, shortcut.GetAppIDStr()));
 
             WriteFile(paths[0]);
         }
 
-        public static bool IsAddedToSteam(GamePresetProperty preset)
+        public static bool IsAddedToSteam(PresetConfigV2 preset)
         {
             if (shortcuts.Count == 0)
             {
@@ -89,7 +89,7 @@ namespace CollapseLauncher
             }
 
             var res = shortcuts.FindIndex(x => x.Exe == AppExecutablePath 
-                && x.AppName == string.Format("{0} - {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName));
+                && x.AppName == string.Format("{0} - {1}", preset.GameName, preset.ZoneName));
             return res != -1;
         }
 
@@ -159,14 +159,14 @@ namespace CollapseLauncher
 
             public SteamShortcut() { entryID = "-1"; }
 
-            public SteamShortcut(GamePresetProperty preset, bool play = false)
+            public SteamShortcut(PresetConfigV2 preset, bool play = false)
             {
-                AppName = string.Format("{0} - {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
+                AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
                 Exe = AppExecutablePath;
                 var id = BitConverter.GetBytes(generateAppId(Exe, AppName));
                 appid = ANSI.GetString(id, 0, id.Length);
 
-                icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset._GamePreset.GameType switch
+                icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
                 {
                     GameType.StarRail => "starrail-logo.ico",
                     GameType.Genshin => "genshin-logo.ico",
@@ -174,7 +174,7 @@ namespace CollapseLauncher
                 });
 
                 StartDir = Path.GetDirectoryName(AppExecutablePath);
-                LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
+                LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
                 if (play)
                     LaunchOptions += " -p";
 
@@ -213,7 +213,6 @@ namespace CollapseLauncher
                 var crc32 = new System.IO.Hashing.Crc32();
                 crc32.Append(ANSI.GetBytes(key));
                 uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
-                //LogWriteLine("hashsize: " + crc32.GetCurrentHash().Length);
                 return (top << 32) | 0x02000000;
             }
 
