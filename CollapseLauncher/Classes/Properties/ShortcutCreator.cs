@@ -317,13 +317,27 @@ namespace CollapseLauncher
             return newShortcut;
         }
 
-        private static uint generateAppId(string exe, string appname)
+        private static uint generatePreliminaryId(string exe, string appname)
         {
             string key = exe + appname;
             var crc32 = new System.IO.Hashing.Crc32();
             crc32.Append(ANSI.GetBytes(key));
             uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
-            return top - 0x10000000;
+            return (top << 32) | 0x02000000;
+        }
+
+        private static uint generateAppId(string exe, string appname)
+        {
+            uint appId = generatePreliminaryId(exe, appname);
+
+            return appId >> 32;
+        }
+
+        private static uint generateGridId(string exe, string appname)
+        {
+            uint appId = generatePreliminaryId(exe, appname);
+
+            return (appId >> 32) - 0x10000000;
         }
 
         private static void WriteFile(string path)
