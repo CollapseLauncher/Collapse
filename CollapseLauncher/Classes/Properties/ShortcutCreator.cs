@@ -129,7 +129,7 @@ namespace CollapseLauncher
             public string ToEntry()
             {
                 return    '\x00' + entryID + '\x00'
-                        + '\x02' + "appid" + '\x81' + appid + '\x84'
+                        + '\x02' + "appid" + '\x00' + appid
                         + '\x01' + "AppName" + '\x00' + AppName + '\x00'
                         + '\x01' + "Exe" + '\x00' + Exe + '\x00'
                         + '\x01' + "StartDir" + '\x00' + StartDir + '\x00' +
@@ -149,7 +149,7 @@ namespace CollapseLauncher
             }
         }
 
-        enum ParseType
+        private enum ParseType
         {
             FindType,
             NameStr,
@@ -211,14 +211,11 @@ namespace CollapseLauncher
                         if (ln[i] == 0)
                         {
                             parse = parse == ParseType.NameStr ? ParseType.ValueStr : ParseType.ValueBool;
-                            if (Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count) == "LastPlayTime")
+                            string key = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
+                            if (key == "LastPlayTime")
                                 parse = ParseType.ValueTime;
-                            buffer = [];
-                            continue;
-                        }
-                        if (ln[i] == 129)
-                        {
-                            parse = ParseType.ValueAppid;
+                            if (key == "appid")
+                                parse = ParseType.ValueAppid;
                             buffer = [];
                             continue;
                         }
@@ -230,18 +227,18 @@ namespace CollapseLauncher
                             newShortcut.LastPlayTime = buffer.Count == 0 ? Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count) : "\x00\x00\x00\x00";
                             buffer = [];
                             parse = ParseType.FindType;
-                            while (i < ln.Length && ln[i] == 0)
+                            while (i < ln.Length - 1 && ln[i + 1] == 0)
                                 i++;
                             continue;
                         }
                         buffer.Add(ln[i]);
                         break;
                     case ParseType.ValueAppid:
-                        if (ln[i] == 132)
+                        if (ln[i] == 1)
                         {
                             newShortcut.appid = Encoding.Default.GetString(buffer.ToArray(), 0, buffer.Count);
                             buffer = [];
-                            parse = ParseType.FindType;
+                            parse = ParseType.NameStr;
                             continue;
                         }
                         buffer.Add(ln[i]);
@@ -283,7 +280,12 @@ namespace CollapseLauncher
                 }
             }
 
-            LogWriteLine(strRes.Count.ToString() + " " + boolRes.Count.ToString(), Hi3Helper.LogType.Warning);
+            if (strRes.Count != 9 || boolRes.Count != 6)
+            {
+                LogWriteLine("Invalid shortcut! Skipping...", Hi3Helper.LogType.Error);
+                return null;
+            }
+            
 
             newShortcut.entryID = strRes[0];
             newShortcut.AppName = strRes[1];
