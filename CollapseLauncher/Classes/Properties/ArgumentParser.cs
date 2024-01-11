@@ -52,9 +52,15 @@ namespace CollapseLauncher
                     break;
                 case "tray":
                     m_appMode = AppMode.StartOnTray;
-                    ParseStartOnTrayArguments(args);
+                    break;
+                case "open":
+                    m_appMode = AppMode.Launcher;
                     break;
             }
+
+            AddPublicCommands();
+            rootCommand.Description = "Collapse Launcher is a game client for all currently released miHoYo/Hoyoverse games.\n" +
+                                      "It supports installing games, repairing game files and much more!";
 
             if (rootCommand.Invoke(args) > 0)
             {
@@ -135,11 +141,6 @@ namespace CollapseLauncher
             rootCommand.AddArgument(new Argument<string>("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup") { HelpName = null });
         }
 
-        public static void ParseStartOnTrayArguments(params string[] args)
-        {
-            rootCommand.AddArgument(new Argument<string>("tray", "Start Collapse in system tray") { HelpName = null });
-        }
-
         private static void AddMigrateOptions(bool isBHI3L)
         {
             var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Installation Source") { IsRequired = true };
@@ -207,6 +208,45 @@ namespace CollapseLauncher
             var rootCommand = new RootCommand();
             rootCommand.AddCommand(command);
         }
+
+        private static void AddPublicCommands()
+        {
+            rootCommand.AddCommand(new Command("tray", "Start Collapse in system tray"));
+            AddOpenCommand();
+        }
+
+        private static void AddOpenCommand()
+        {
+            var gameOption = new Option<string>(new string[] { "--game", "-g" },
+                description: "Game number/name\n" +
+                             "e.g. 0 or \"Honkai Impact 3rd\""){ IsRequired = true };
+            var regionOption = new Option<string>(new string[] { "--region", "-r" }, 
+                description: "Region number/name\n" +
+                             "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game") { IsRequired = false };
+            var startGameOption = new Option<bool>(new string[] { "--play", "-p" }, description: "Start Game after loading the Game/Region") { IsRequired = false };
+            var command = new Command("open", "Open the Launcher in a specific Game and Region (if specified).\n" +
+                                "Note that game/regions provided will be ignored if invalid.\n" +
+                                "Quotes are required if the game/region name has spaces.");
+            command.AddOption(gameOption);
+            command.AddOption(regionOption);
+            command.AddOption(startGameOption);
+            command.Handler = CommandHandler.Create(
+                (string Game, string Region, bool Play) =>
+                {
+                    m_arguments.StartGame = new ArgumentStartGame
+                    {
+                        Game = Game,
+                        Region = Region,
+                        Play = Play
+                    };
+                });
+            rootCommand.AddCommand(command);
+        }
+
+        public static void ResetRootCommand()
+        {
+            rootCommand = new RootCommand();
+        }
     }
 
     public class Arguments
@@ -215,6 +255,7 @@ namespace CollapseLauncher
         public ArgumentReindexer Reindexer { get; set; }
         public ArgumentReindexer TakeOwnership { get; set; }
         public ArgumentMigrate Migrate { get; set; }
+        public ArgumentStartGame StartGame { get; set; }
     }
 
     public class ArgumentUpdater
@@ -237,5 +278,12 @@ namespace CollapseLauncher
         public string RegLoc { get; set; }
         public string KeyName { get; set; }
         public bool IsBHI3L { get; set; }
+    }
+
+    public class ArgumentStartGame
+    {
+        public string Game { get; set; }
+        public string Region { get; set; }
+        public bool Play { get; set; }
     }
 }

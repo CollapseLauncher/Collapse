@@ -152,6 +152,7 @@ namespace CollapseLauncher
             else
             {
                 LoadConfigV2();
+                SetActivatedRegion();
                 Page = typeof(HomePage);
             }
 
@@ -1750,6 +1751,71 @@ namespace CollapseLauncher
                     break;
             }
         }
+        #endregion
+
+        #region AppActivation
+
+        private void SetActivatedRegion()
+        {
+            var args = m_arguments.StartGame;
+            if (args == null)
+                return;
+
+            string GameName = args.Game;
+
+            if (!GetConfigV2Regions(GameName))
+            {
+                bool res = int.TryParse(args.Game, out int Game);
+                if (!res || Game < 0 || Game >= ConfigV2GameCategory.Count)
+                    return;
+                GameName = ConfigV2GameCategory[Game];
+            }
+
+            SetAndSaveConfigValue("GameCategory", GameName);
+            GetConfigV2Regions(GameName);
+
+            if (args.Region != null)
+            {
+                string GameRegion = args.Region;
+                if (!ConfigV2GameRegions.Contains(GameRegion))
+                {
+                    bool res = int.TryParse(args.Region, out int Region);
+                    if (!res || Region < 0 || Region >= ConfigV2GameRegions.Count)
+                        return;
+                    GameRegion = ConfigV2GameRegions[Region];
+                }
+                SetPreviousGameRegion(GameName, GameRegion);
+                SetAndSaveConfigValue("GameRegion", GameRegion);
+            }
+        }
+
+        public void OpenAppActivation()
+        {
+            if (m_arguments.StartGame == null)
+                return;
+
+            DispatcherQueue.TryEnqueue(async () => {
+
+                if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+                    return;
+
+                SetActivatedRegion();
+
+                LockRegionChangeBtn = true;
+
+                PresetConfigV2 Preset = LoadSavedGameSelection();
+
+                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                if (await LoadRegionFromCurrentConfigV2(Preset))
+                {
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                    HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                }
+
+                LockRegionChangeBtn = false;
+            });
+        }
+
         #endregion
     }
 }

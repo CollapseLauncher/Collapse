@@ -6,7 +6,6 @@ using Hi3Helper.DiscordPresence;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.AppLifecycle;
 using Squirrel;
 using System;
 using System.Diagnostics;
@@ -114,7 +113,8 @@ namespace CollapseLauncher
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-                if (!DecideRedirection())
+                AppActivation.Enable();
+                if (!AppActivation.DecideRedirection())
                 {
                     XamlCheckProcessRequirements();
 
@@ -184,20 +184,6 @@ namespace CollapseLauncher
                 },
                 onEveryRun: (_, _, _) => { }
             );
-        }
-
-        private static bool DecideRedirection()
-        {
-            bool isRedirect = false;
-            AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
-            AppInstance keyInstance = AppInstance.FindOrRegisterForKey(m_appMode.ToString());
-
-            if (!keyInstance.IsCurrent && !IsMultipleInstanceEnabled)
-            {
-                isRedirect = true;
-                keyInstance.RedirectActivationToAsync(args).GetAwaiter().GetResult();
-            }
-            return isRedirect;
         }
 
         public static void InitializeAppSettings()
