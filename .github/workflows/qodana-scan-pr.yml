@@ -14,17 +14,22 @@ jobs:
         checks: write
         security-events: write
     steps:
+    # skip all the steps if the head repo is not the same as the main repo
+    # https://github.com/orgs/community/discussions/26829#discussioncomment-3253575
       - uses: actions/checkout@v3
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         with:
             ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
             fetch-depth: 0  # a full history is required for pull request analysis
             submodules: recursive # many many submodules  
           
       - name: 'Qodana Scan'
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }} 
         uses: JetBrains/qodana-action@v2023.2.6
         env:
             QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # read the steps about it below
 
       - uses: github/codeql-action/upload-sarif@v2
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
