@@ -121,6 +121,13 @@ namespace CollapseLauncher
                 var id = BitConverter.GetBytes(generateAppId(Exe, AppName));
                 appid = ANSI.GetString(id, 0, id.Length);
 
+                icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameLogo/" + preset._GamePreset.GameType switch
+                {
+                    GameType.StarRail => "starrail-logo.ico",
+                    GameType.Genshin => "genshin-logo.ico",
+                    _ => "honkai-logo.ico",
+                });
+
                 StartDir = Path.GetDirectoryName(AppExecutablePath);
                 LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
                 if (play)
@@ -167,6 +174,7 @@ namespace CollapseLauncher
 
             foreach (string line in contents.Split("\x08\x08"))
             {
+                if (line == "") continue;
                 SteamShortcut? steamShortcut = parseShortcut(ANSI.GetBytes(line + '\x08'));
                 if (steamShortcut == null) continue;
                 shortcuts.Add((SteamShortcut)steamShortcut);
