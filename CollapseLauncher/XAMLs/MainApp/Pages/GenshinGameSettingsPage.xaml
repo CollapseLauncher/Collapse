@@ -510,7 +510,8 @@
                     </StackPanel>
                     <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,0"/>
+                    <ToggleSwitch OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="0,0,0,16" IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"
                              HorizontalAlignment="Stretch" Margin="0,0,0,16"/>
                     <TextBlock>

@@ -720,7 +720,8 @@
                                                 </Button.Content>
                                             </Button>
                                             <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,0"/>
+                                                <ToggleSwitch OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="0,0,0,8" IsOn="{x:Bind UseCustomArgs, Mode=TwoWay}"/>
                                                 <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
                                             </StackPanel>
                                             <StackPanel x:Name="MiscPanel">

@@ -236,6 +236,26 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsUseCustomArgs
+        {
+            get
+            {
+                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+
+                if (value) CustomArgsTextBox.IsEnabled = true;
+                else CustomArgsTextBox.IsEnabled       = false;
+                
+                return value;
+            }
+            set
+            {
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+                
+                if (value) CustomArgsTextBox.IsEnabled = true;
+                else CustomArgsTextBox.IsEnabled       = false;
+            }
+        }
+        
         private void OnUnload(object sender, RoutedEventArgs e)
         {
             DispatcherQueue.TryEnqueue(() =>

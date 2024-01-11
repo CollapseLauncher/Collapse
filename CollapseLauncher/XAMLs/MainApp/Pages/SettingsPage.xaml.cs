@@ -647,6 +647,12 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
         }
 
+        private bool IsAlwaysUseExternalBrowser
+        {
+            get => GetAppConfigValue("UseExternalBrowser").ToBool();
+            set => SetAndSaveConfigValue("UseExternalBrowser", value);
+        }
+
         private int AppGameLaunchedBehaviorIndex
         {
             get => GetAppConfigValue("GameLaunchedBehavior").ToString() switch

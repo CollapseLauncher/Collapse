@@ -1,14 +1,14 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Squirrel;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
@@ -329,7 +329,22 @@ namespace CollapseLauncher
     internal static class SpawnWebView2
     {
         static SpawnWebView2Invoker invoker = new SpawnWebView2Invoker();
-        public static void SpawnWebView2Window(string URL) => invoker.SpawnWebView2Window(URL);
+        public static void SpawnWebView2Window(string URL, UIElement parentUI)
+        {
+            if (GetAppConfigValue("UseExternalBrowser").ToBool())
+            {
+                if (string.IsNullOrEmpty(URL)) return;
+                parentUI.DispatcherQueue.TryEnqueue(() =>
+                {
+                    Process.Start(new ProcessStartInfo
+                                  {
+                                      FileName = URL,
+                                      UseShellExecute = true,
+                                  });
+                });
+            }
+            else invoker.SpawnWebView2Window(URL);
+        } 
     }
 
     internal class SpawnWebView2Invoker

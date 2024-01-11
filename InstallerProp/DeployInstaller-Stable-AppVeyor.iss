@@ -52,4 +52,7 @@ Source: "..\DeployResource\*"; DestDir: "{app}"; Flags: ignoreversion createalls
 Name: StartAfterInstall; Description: Run application after install
 
 [Run]
-Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse (Stable)"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser
+Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse (Stable)"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser;
+
+[Registry]
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Collapse"; ValueType: string; ValueName: "AppUserModelId"; ValueData: "Collapse.CollapseLauncher"; Flags: uninsdeletevalue

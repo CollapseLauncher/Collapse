@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",

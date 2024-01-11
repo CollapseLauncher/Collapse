@@ -29,20 +29,20 @@ namespace CollapseLauncher
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
 
                 WebView2Runtime = new WebView2()
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch
-                };
+                                  {
+                                      HorizontalAlignment = HorizontalAlignment.Stretch,
+                                      VerticalAlignment   = VerticalAlignment.Stretch
+                                  };
                 WebViewWindowTitle.Text = string.Empty;
 
                 WebView2Runtime.CoreWebView2Initialized += WebView2Window_CoreWebView2Initialized;
-                WebView2Runtime.NavigationStarting += WebView2Window_PageLoading;
-                WebView2Runtime.NavigationCompleted += WebView2Window_PageLoaded;
+                WebView2Runtime.NavigationStarting      += WebView2Window_PageLoading;
+                WebView2Runtime.NavigationCompleted     += WebView2Window_PageLoaded;
 
                 WebView2WindowContainer.Children.Clear();
                 WebView2WindowContainer.Children.Add(WebView2Runtime);
 
-                WebView2Panel.Visibility = Visibility.Visible;
+                WebView2Panel.Visibility  =  Visibility.Visible;
                 WebView2Panel.Translation += Shadow32;
                 await WebView2Runtime.EnsureCoreWebView2Async();
 
@@ -64,7 +64,7 @@ namespace CollapseLauncher
                 }.Start();
 
                 WebView2Runtime?.Close();
-                SpawnWebView2.SpawnWebView2Window(null);
+                SpawnWebView2.SpawnWebView2Window(null, this.Content);
             }
         }
 
@@ -111,7 +111,7 @@ namespace CollapseLauncher
                 }
             }.Start();
         }
-        private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e) => SpawnWebView2.SpawnWebView2Window(null);
+        private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e) => SpawnWebView2.SpawnWebView2Window(null, this.Content);
 
         private void WebView2Unload(object sender, RoutedEventArgs e)
         {

@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "背景をぼかす",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
+    "UseExternalBrowser": "リンクを常に外部ブラウザで開く",
 
     "LowerCollapsePrioOnGameLaunch": "ゲーム起動中のランチャーの使用リソースを削減",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "バナーの回転を無効化＆Collapseのプロセス優先度を「通常以下」に",
@@ -461,6 +462,7 @@
     "YesRelocate": "変更する",
     "YesMigrateIt": "紐づけする",
     "YesConvertIt": "変換する",
+    "YesImReallySure": "わかってます！",
     "YesIHaveBeefyPC": "はい、つよつよPCなので！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "場所を変更",
 
@@ -471,6 +473,7 @@
     "NoIgnoreIt": "無視する",
     "NoOtherLocation": "インストールを続ける",
     "NotSelected": "未選択",
+    "ExtractAnyway": "とりあえず展開！",
 
     "LangNameENUS": "英語(アメリカ)",
     "LangNameJP": "日本語",
@@ -579,6 +582,10 @@
     "SteamConvertFailedSubtitle": "変換プロセスに失敗しました！:(\n変換プロセスをもう一度開始してください。",
     "InstallDataCorruptTitle": "ゲームのインストールが破損しています",
     "InstallDataCorruptSubtitle": "ダウンロードしたファイルが破損しています。\r\n\r\nサーバーハッシュ: {0}\r\nダウンロードしたハッシュ: {1}\r\n\r\nファイルを再ダウンロードしますか？",
+    "InstallCorruptDataAnywayTitle": "破損したデータを展開します",
+    "InstallCorruptDataAnywaySubtitle1": "破損したデータを展開しようとしています：",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} バイト)",
+    "InstallCorruptDataAnywaySubtitle3": "。データの展開に失敗したり、ゲームが正しく描画されない可能性があります。\r\n\r\n本当にこのデータを展開しますか？",
     "InstallDataDownloadResumeTitle": "ダウンロードを再開しますか？",
     "InstallDataDownloadResumeSubtitle": "既にゲームの {0}/{1}がダウンロードされています。\n\n引き続きダウンロードしますか？",
     "InsufficientDiskTitle": "ディスク容量不足",
@@ -1029,5 +1036,22 @@
     "ChangeShortcut_Help2": "・ 修飾キー - Shift、Control、Alt/Menu",
     "ChangeShortcut_Help3": "・ キー - アルファベット（AからZ）またはTab",
     "ChangeShortcut_Help4": "システムに割り当てられているか、すでに使用されている場合を除いて、各カテゴリから キーを1つずつ選んで任意の組み合わせを選択できます。"
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "崩壊3rd",
+    "Genshin Impact": "原神",
+    "Honkai: Star Rail": "崩壊：スターレイル",
+    "Zenless Zone Zero": "ゼンレスゾーンゼロ"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "東南アジア",
+    "Global": "グローバル",
+    "Mainland China": "中国大陸",
+    "TW/HK/MO": "台湾/香港/マカオ",
+    "Korea": "韓国",
+    "Japan": "日本",
+    "Bilibili": "Bilibili"
   }
 }

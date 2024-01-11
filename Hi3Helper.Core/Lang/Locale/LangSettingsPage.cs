@@ -78,6 +78,7 @@
                 public string EnableDownloadChunksMerging           { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
                 public string LowerCollapsePrioOnGameLaunch         { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
                 public string LowerCollapsePrioOnGameLaunch_Tooltip {get;  set;}  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
+                public string UseExternalBrowser                    { get; set; } = LangFallback?._SettingsPage.UseExternalBrowser;
 				public string KbShortcuts_Title                     { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn                   { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
                 public string KbShortcuts_ResetBtn                  { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ResetBtn;

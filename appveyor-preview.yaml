@@ -185,34 +185,20 @@ artifacts:
 - path: CollapseLauncher\preview-build\
   name: BuildArtifact-Preview
 - path: PortableTarget\*.7z
-  name: Collapse-PortablePackage-Preview
+  name: Publish-Collapse-PortablePackage-Preview
 - path: InnoTarget\*.exe
-  name: InstallerPackage-Preview
+  name: Publish-InstallerPackage-Preview
 - path: SquirrelTarget
   name: SquirrelUpdateFiles-Preview
 - path: ApplyUpdateTarget
   name: ApplyUpdateFiles-Preview
 deploy:
-- provider: GitHub
-  tag: Artifacts-AppVeyor-Tag-${appveyor_build_version}
-  release: ZIP Artifacts for Build ${appveyor_build_version}
-  description: This is build result from AppVeyor, currently not tested please don't use other than for testing purposes.
-  auth_token:
-    secure: ZN3KdDNF7F2GrnkW2ZXRWuo9RBmeR3mvh9bB6tSX2st+8UT1v12rbn6XFUbWwFCNQZ6H2wPyyhZVm6bsdeOnrKtThoauwPQwsbly8icew3tWqu/h152wbNaRCzg5vPx0
-  repository: CollapseLauncher/Collapse-AppVeyorDeployTarget
-  artifact: /.*\.zip/
-  draft: false
-  prerelease: true
-  force_update: true
-- provider: GitHub
-  tag: Releases-AppVeyor-Tag-${appveyor_build_version}
-  release: Preview Appveyor Target for Build ${appveyor_build_version}
-  description: This is build result from AppVeyor, currently not tested please don't use other than for testing purposes.
-  auth_token:
-    secure: ZN3KdDNF7F2GrnkW2ZXRWuo9RBmeR3mvh9bB6tSX2st+8UT1v12rbn6XFUbWwFCNQZ6H2wPyyhZVm6bsdeOnrKtThoauwPQwsbly8icew3tWqu/h152wbNaRCzg5vPx0
-  repository: CollapseLauncher/Collapse-AppVeyorDeployTarget
-  artifact: /.*\.(exe|7z)/
-  prerelease: true
+- provider: Webhook
+  url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=test-signing&ArtifactConfigurationSlug=initial
+  authorization:
+    secure: nmrYhw8U6OmPUBnob5OhTIGgFagDsm37iqvBfSr13IaH047BSKdkDrxStw5C0f6i/ZwIqSBGyiUkt4jxXBhi5vSTYrV1Q+qg8O8S51yvGc369W5HtYtpjITukPbr5oaT
+  on:
+    branch: preview
 notifications:
 - provider: Email
   to:

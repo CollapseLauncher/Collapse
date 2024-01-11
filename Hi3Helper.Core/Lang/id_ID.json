@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "Gunakan Efek Blur Akrilik",
     "EnableDownloadChunksMerging": "Gabung Potongan Unduhan Package",
+    "UseExternalBrowser": "Selalu Gunakan Browser Eksternal",
 
     "LowerCollapsePrioOnGameLaunch": "Turunkan Prioritas Collapse saat Game Berjalan",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan tayangan slide gambar di halaman utama dan menurunkan prioritas Collapse ke Dibawah Normal ",

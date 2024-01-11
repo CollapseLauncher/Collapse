@@ -164,24 +164,24 @@
     "ListCol6": "R.CRC",
     "Status1": "Haz clic en `Chequeo Rápido` o `Chequeo Completo` para verificar la integridad de los archivos del juego.",
     "Status2": "Cargando Índices...",
-    "Status3": "archivo(s) podrían estar rotos o corrompidos (en total). Haz clic en 'Reparar Juego' para comenzar el proceso de reparación.",
+    "Status3": "{0} archivo(s) podrían estar rotos o corrompidos ({1} en total). Haz clic en 'Reparar Juego' para comenzar el proceso de reparación.",
     "Status4": "¡No se ha detectado ningun archivo(s) rotos!",
     "Status5": "Chequeando Blk: {0}",
     "Status6": "Chequeando: {0}",
     "Status7": "¡Reparación Completada!",
-    "Status8": "Reparando: ",
-    "Status9": "Reparando Blk:",
+    "Status8": "Reparando: {0}",
+    "Status9": "Reparando Blk: {0}",
     "Status10": "Reparando en blanco: {0} | Desplazamiento: 0x{1} - Tamaño: 0x{2}",
     "Status11": "Esperando a que se inicie el proceso de reparación...",
-    "Status12": "Actualizando Audio: ",
-    "Status13": "Actualizando Bloque:",
+    "Status12": "Actualizando Audio: {0}",
+    "Status13": "Actualizando Bloque: {0}",
     "StatusNone": "Nada",
     "PerProgressTitle1": "Progreso Del Archivo",
     "PerProgressSubtitle1": "Esperando...",
-    "PerProgressSubtitle2": "Progreso: ",
-    "PerProgressSubtitle3": "Obteniendo Archivo/s",
-    "PerProgressSubtitle4": "Obteniendo Parche: ",
-    "PerProgressSubtitle5": "Parchando:/s",
+    "PerProgressSubtitle2": "Progreso: {0}/{1}",
+    "PerProgressSubtitle3": "Obteniendo {0} Archivo/s",
+    "PerProgressSubtitle4": "Obteniendo Parche: {0}/{1}",
+    "PerProgressSubtitle5": "Parchando: {0}/s",
     "TotalProgressTitle1": "Progreso Total",
     "RepairBtn1": "Reparar Archivos",
     "RepairBtn2": "Chequear Archivos",
@@ -404,10 +404,11 @@
     "DiscordBtn2": "Discord de Honkai Impact 3rd",
     "DiscordBtn3": "¡Discord Oficial de Collapse!",
 
-    "AppChangeReleaseChannel": "Cambiar a Canal de Lanzamiento",
+    "AppChangeReleaseChannel": "Cambiar Collapse a versión {0} ",
 
     "EnableAcrylicEffect": "Usar efecto de desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
+    "UseExternalBrowser": "Usar Navegador Web Externo ",
 
     "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desactiva el carrusel en la página principal y reduce la prioridad de Collapse a Baja.",
@@ -461,6 +462,7 @@
     "YesRelocate": "Sí, Reanudar",
     "YesMigrateIt": "Sí, Migrarlo",
     "YesConvertIt": "Sí, Convertirlo",
+    "YesImReallySure": "¡Sí, estoy seguro!",
     "YesIHaveBeefyPC": "Sí, tengo una buena computadora! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Sí, Cambiar ubicación",
 
@@ -471,6 +473,7 @@
     "NoIgnoreIt": "Ignorarlo",
     "NoOtherLocation": "Seguir instalándolo",
     "NotSelected": "No Seleccionado",
+    "ExtractAnyway": "¡Extraer de todas formas!",
 
     "LangNameENUS": "Inglés (EE.UU.)",
     "LangNameJP": "Japonés",
@@ -579,6 +582,10 @@
     "SteamConvertFailedSubtitle": "¡El proceso de conversión ha fallado! :(\nPor favor intenta iniciar el proceso de conversión de nuevo.",
     "InstallDataCorruptTitle": "Instalación del Juego Corrompida",
     "InstallDataCorruptSubtitle": "Uno de los archivos descargados está dañado.\n\nHash del servidor: {0}\nHash descargado: {1}\n\n¿Deseas redescargar el archivo?",
+    "InstallCorruptDataAnywayTitle": "Extraer Archivos Corruptos ",
+    "InstallCorruptDataAnywaySubtitle1": "Estas a punto de extraer estos datos corruptos:",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Ten en cuenta que extraer estos archivos puede fallar o hacer que el juego no funcione correctamente\r\n\r\n¿Estas seguro que quieres extraer estos datos?",
     "InstallDataDownloadResumeTitle": "Reanudar la Descarga?",
     "InstallDataDownloadResumeSubtitle": "Has descargado {0}/{1} del juego anteriormente.\n\n¿Deseas continuar la descarga?",
     "InsufficientDiskTitle": "Espacio de Almacenamiento Insuficiente",
@@ -607,7 +614,7 @@
     "CookbookLocateSubtitle3": " para descargar el archivo Cookbook y luego haz clic en",
     "CookbookLocateSubtitle4": "Siguiente",
     "CookbookLocateSubtitle5": "para ubicar el archivo de Cookbook descargado antes de continuar.\n\n",
-    "CookbookLocateSubtitle6": "Aviso:",
+    "CookbookLocateSubtitle6": "Aviso:\r\n",
     "CookbookLocateSubtitle7": "Aquí está el nombre del archivo de Cookbook que necesitas descargar:\n",
     "PrivilegeMustRunTitle": "¡Collapse requiere elevación de privilegios!",
     "PrivilegeMustRunSubtitle": "Collapse requiere privilegios administrativos para funcionar correctamente. ¿Deseas reiniciar Collapse y ejecutarlo como administrador?",
@@ -1029,5 +1036,22 @@
     "ChangeShortcut_Help2": "・ Modificador - Shift, Control o Alt/Menu",
     "ChangeShortcut_Help3": "・ Clave - Alfabético (A a Z) o Tab",
     "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Southeast Asia",
+    "Global": "Global",
+    "Mainland China": "Mainland China",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Japan",
+    "Bilibili": "Bilibili"
   }
 }
