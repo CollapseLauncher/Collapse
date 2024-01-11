@@ -192,7 +192,7 @@ deploy:
 - provider: Webhook
   url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=test-signing&ArtifactConfigurationSlug=initial
   authorization:
-    secure: gMBkruj6QbtHREa3zPbDZ1JzCtadQjS1TsDHlqrX8gsj7/Hg2Qr8ae2gXVowb0v2jtWV6Bqv/9GPjBg7dIIrICYWZqKbj3BLXGHpxrFnXV/Ghj3IcD5AYuT7MKnpBF+WZECbHrU9xSLoK35gAu9mpjyMXqEdrN2SbMGdUKcRaJ2TPpu/kXR0HUdBs53hbEfx
+    secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
   on:
     branch: stable
 notifications:
