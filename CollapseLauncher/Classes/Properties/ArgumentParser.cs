@@ -52,13 +52,15 @@ namespace CollapseLauncher
                     break;
                 case "tray":
                     m_appMode = AppMode.StartOnTray;
-                    ParseStartOnTrayArguments(args);
                     break;
                 case "open":
                     m_appMode = AppMode.Launcher;
-                    ParseStartGameArguments(args);
                     break;
             }
+
+            AddPublicCommands();
+            rootCommand.Description = "Collapse Launcher is a game client for all currently released miHoYo/Hoyoverse games.\n" +
+                                      "It supports installing games, repairing game files and much more!";
 
             if (rootCommand.Invoke(args) > 0)
             {
@@ -139,11 +141,6 @@ namespace CollapseLauncher
             rootCommand.AddArgument(new Argument<string>("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup") { HelpName = null });
         }
 
-        public static void ParseStartOnTrayArguments(params string[] args)
-        {
-            rootCommand.AddArgument(new Argument<string>("tray", "Start Collapse in system tray") { HelpName = null });
-        }
-
         private static void AddMigrateOptions(bool isBHI3L)
         {
             var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Installation Source") { IsRequired = true };
@@ -212,16 +209,20 @@ namespace CollapseLauncher
             rootCommand.AddCommand(command);
         }
 
-        private static void ParseStartGameArguments(params string[] args)
+        private static void AddPublicCommands()
         {
-            var gameOption = new Option<string>(new string[] { "--game", "-g" }, 
-                description:    "Game number/name\n" +
-                                "e.g. 0 or \"Honkai Impact 3rd\""
-                                ) { IsRequired = true, AllowMultipleArgumentsPerToken = true };
+            rootCommand.AddCommand(new Command("tray", "Start Collapse in system tray"));
+            AddOpenCommand();
+        }
+
+        private static void AddOpenCommand()
+        {
+            var gameOption = new Option<string>(new string[] { "--game", "-g" },
+                description: "Game number/name\n" +
+                             "e.g. 0 or \"Honkai Impact 3rd\""){ IsRequired = true };
             var regionOption = new Option<string>(new string[] { "--region", "-r" }, 
-                description:    "Region number/name\n" +
-                                "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game"
-                                ) { IsRequired = false, AllowMultipleArgumentsPerToken = true };
+                description: "Region number/name\n" +
+                             "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game") { IsRequired = false };
             var startGameOption = new Option<bool>(new string[] { "--play", "-p" }, description: "Start Game after loading the Game/Region") { IsRequired = false };
             var command = new Command("open", "Open the Launcher in a specific Game and Region (if specified).\n" +
                                 "Note that game/regions provided will be ignored if invalid.\n" +
