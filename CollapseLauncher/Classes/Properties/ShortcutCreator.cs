@@ -8,7 +8,6 @@ using CollapseLauncher.Statics;
 using System.Text;
 using System;
 using System.Collections.Generic;
-using Windows.Storage.Streams;
 
 namespace CollapseLauncher
 {
@@ -51,11 +50,6 @@ namespace CollapseLauncher
             return res;
         }
 
-        private static void WriteShortcutsFile(string path)
-        {
-
-        }
-
         public static void AddToSteam(GamePresetProperty preset, bool play)
         {
             var paths = GetShortcutsPath();
@@ -72,11 +66,6 @@ namespace CollapseLauncher
             WriteFile(paths[0]);
         }
 
-        public static void RemoveFromSteam(GamePresetProperty preset)
-        {
-
-        }
-
         public static bool IsAddedToSteam(GamePresetProperty preset)
         {
             if (shortcuts.Count == 0)
@@ -91,10 +80,9 @@ namespace CollapseLauncher
                 LoadFile(paths[0]);
             }
 
-            var res = shortcuts.Find(x => x.Exe == Path.Combine(AppExecutablePath, AppExecutableName) 
-                && (x.LaunchOptions == string.Format("-g \"{0}\" -r \"{1}\"", preset._GamePreset.GameName, preset._GamePreset.ZoneName) ||
-                    x.LaunchOptions == string.Format("-g \"{0}\" -r \"{1}\" -p", preset._GamePreset.GameName, preset._GamePreset.ZoneName)
-                ));
+            var res = shortcuts.Find(x => x.Exe == AppExecutablePath 
+                && x.LaunchOptions.Contains(preset._GamePreset.GameName) 
+                && x.LaunchOptions.Contains(preset._GamePreset.ZoneName));
             return res.entryID != "";
         }
 
@@ -128,7 +116,7 @@ namespace CollapseLauncher
 
             public SteamShortcut(GamePresetProperty preset, bool play = false)
             {
-                AppName = preset._GamePreset.ZoneFullname;
+                AppName = string.Format("{0} - {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
                 Exe = AppExecutablePath;
                 var id = BitConverter.GetBytes(generateAppId(Exe, AppName));
                 appid = ANSI.GetString(id, 0, id.Length);
@@ -166,19 +154,6 @@ namespace CollapseLauncher
             }
         }
 
-        private enum ParseType
-        {
-            FindType,
-            NameStr,
-            ValueStr,
-            ValueAppid,
-            NameBool,
-            ValueBool,
-            ValueTime,
-            NameTags,
-            ValueTags
-        }
-
         private static Encoding ANSI;
         private static void LoadFile(string path)
         {
@@ -196,6 +171,19 @@ namespace CollapseLauncher
                 if (steamShortcut == null) continue;
                 shortcuts.Add((SteamShortcut)steamShortcut);
             }
+        }
+
+        private enum ParseType
+        {
+            FindType,
+            NameStr,
+            ValueStr,
+            ValueAppid,
+            NameBool,
+            ValueBool,
+            ValueTime,
+            NameTags,
+            ValueTags
         }
 
         private static SteamShortcut? parseShortcut(byte[] ln)
