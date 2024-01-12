@@ -9,11 +9,11 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.ShortcutsUtils
 {
-    public class ShortcutCreator
+    public static class ShortcutCreator
     {
         #region ANSI
         private static List<SteamShortcut> shortcuts = [];
-        public static Encoding ANSI;
+        public static Encoding ANSI { get; private set; }
 
         private static void RegisterANSIEncoding()
         {
@@ -24,13 +24,18 @@ namespace CollapseLauncher.ShortcutsUtils
 
         public static void CreateShortcut(string path, PresetConfigV2 preset)
         {
-            string shortcutName = preset.ZoneFullname + " - Collapse Launcher" + ".lnk";
-            IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
-            IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(Path.Combine(path, shortcutName));
-            shortcut.Description = string.Format("Launches {0} using Collapse Launcher.", preset.ZoneFullname);
-            shortcut.TargetPath = AppExecutablePath;
-            shortcut.Arguments = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
-            shortcut.Save();
+            string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
+            string url = string.Format("collapse://open/-g/\"{0}\"/-r/\"{1}\"", preset.GameName, preset.ZoneName);
+            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
+            {
+                GameType.StarRail => "starrail-logo.ico",
+                GameType.Genshin => "genshin-logo.ico",
+                _ => "honkai-logo.ico",
+            });
+
+            StreamWriter writer = new StreamWriter(Path.Combine(path, shortcutName));
+            writer.WriteLine(string.Format("[InternetShortcut]\nURL={0}\nIconIndex=0\nIconFile={1}", url, icon));
+            writer.Close();
         }
 
         /// Heavily based on Heroic Games Launcher "Add to Steam" feature.

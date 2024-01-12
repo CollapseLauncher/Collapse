@@ -30,7 +30,7 @@ namespace CollapseLauncher.ShortcutsUtils
         public bool Devkit = false;
         public string DevkitGameID = "";
         public bool DevkitOverrideAppID = false;
-        public string LastPlayTime = "\x00\x00\x00\x00";
+        public string LastPlayTime = "\x00\x00\x00";
         public string FlatpakAppID = "";
         public string tags = "";
         #endregion
