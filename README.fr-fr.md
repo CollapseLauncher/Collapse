@@ -5,7 +5,7 @@
 
 ##### Crédits pour l'arrière-plan Nahida de GI : [Rafa sur Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![ru](https://img.shields.io/badge/lang-ru-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ru-ru.md)
 
 **Collapse** a été conçu à l'origine pour **Honkai Impact 3rd**. Cependant, avec l'évolution du projet, ce lanceur est maintenant un client de jeu pour tous les **jeux miHoYo** actuellement disponibles.
 

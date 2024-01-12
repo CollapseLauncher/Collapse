@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.CommandLine;
+using System.Text.RegularExpressions;
 using System.CommandLine.NamingConventionBinder;
 using static CollapseLauncher.InnerLauncherConfig;
 
@@ -14,6 +16,30 @@ namespace CollapseLauncher
             {
                 m_appMode = AppMode.Launcher;
                 return;
+            }
+
+            if (args[0].StartsWith("collapse://")) 
+            {
+                args[0] = args[0].Replace("collapse://", "");
+                
+                if (args[0] == "")
+                {
+                    m_appMode = AppMode.Launcher;
+                    return;
+                }
+
+                // Convert web browser format (contains %20 or %22 but no " or space)
+                if ((args[0].Contains("%20") || args[0].Contains("%22")) 
+                    && !(args[0].Contains(' ') || args[0].Contains('"')))
+                {
+                    string convertedArg = args[0].Replace("%20", " ").Replace("%22", "\"");
+
+                    args = Regex.Matches(convertedArg, @"[\""].+?[\""]|[^ ]+")
+                                    .Cast<Match>()
+                                    .Select(x => x.Value.Trim('"')).ToArray();
+                } 
+                
+                args = args.Select(x => x.Trim('/')).Where(x => x != "").ToArray();
             }
 
             switch (args[0].ToLower())
