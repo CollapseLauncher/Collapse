@@ -28,9 +28,9 @@ namespace CollapseLauncher.ShortcutsUtils
             string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
             string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
             {
-                GameType.StarRail => "starrail-logo.ico",
-                GameType.Genshin => "genshin-logo.ico",
-                _ => "honkai-logo.ico",
+                GameType.StarRail => "starrail/icon.ico",
+                GameType.Genshin => "genshin/icon.ico",
+                _ => "honkai/icon.ico",
             });
 
             StreamWriter writer = new StreamWriter(Path.Combine(path, shortcutName));
