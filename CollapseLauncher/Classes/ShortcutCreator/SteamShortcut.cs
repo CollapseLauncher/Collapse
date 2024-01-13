@@ -13,6 +13,7 @@ namespace CollapseLauncher.ShortcutsUtils
         /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
 
         public string preliminaryAppID = "";
+        private GameType gameType = GameType.Unknown;
 
         #region Shortcut fields
         public string entryID = "";
@@ -46,9 +47,9 @@ namespace CollapseLauncher.ShortcutsUtils
 
             icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
             {
-                GameType.StarRail => "starrail-logo.ico",
-                GameType.Genshin => "genshin-logo.ico",
-                _ => "honkai-logo.ico",
+                GameType.StarRail => "starrail/icon.ico",
+                GameType.Genshin => "genshin/icon.ico",
+                _ => "honkai/icon.ico",
             });
 
             preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
@@ -60,6 +61,7 @@ namespace CollapseLauncher.ShortcutsUtils
                 LaunchOptions += " -p";
 
             entryID = count.ToString();
+            gameType = preset.GameType;
         }
 
         private static char BoolToByte(bool b) => b ? '\x01' : '\x00';
@@ -103,49 +105,53 @@ namespace CollapseLauncher.ShortcutsUtils
             return appId >> 32;
         }
 
-        private uint GenerateGridId(string exe, string appname)
+        /*private uint GenerateGridId(string exe, string appname)
         {
             uint appId = GeneratePreliminaryId(exe, appname);
 
             return (appId >> 32) - 0x10000000;
-        }
+        }*/
 
-        public void MoveImages(GameType game, string path)
+        public void MoveImages(string path)
         {
+            if (gameType == GameType.Unknown)
+                return;
+
             path = Path.GetDirectoryName(path);
             string gridPath = Path.Combine(path, "grid");
             if (!Directory.Exists(gridPath))
                 Directory.CreateDirectory(gridPath);
 
-            string backgroundPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
+            // Game background
+            CopyImage(gridPath, "hero", "_hero");
+
+            // Game logo
+            CopyImage(gridPath, "logo", "_logo");
+
+            // Vertical banner
+            // Shows when viewing all games of category or in the Home page
+            CopyImage(gridPath, "banner", "p");
+
+            // Horizontal banner
+            // Appears in Big Picture mode when the game is the most recently played
+            CopyImage(gridPath, "preview", "");
+        }
+
+        private void CopyImage(string gridPath, string type, string steamSuffix)
+        {
+            string game = gameType switch
             {
-                GameType.StarRail => "starrail-bg.png",
-                GameType.Genshin => "genshin-bg.png",
-                _ => "honkai-bg.png",
-            });
-            string backgroundSteamPath = Path.Combine(gridPath, preliminaryAppID + "_hero.png");
+                GameType.StarRail => "starrail",
+                GameType.Genshin => "genshin",
+                _ => "honkai",
+            };
 
-            File.Copy(backgroundPath, backgroundSteamPath, true);
+            string originalPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), 
+                string.Format("Assets/Images/SteamShortcuts/{0}/{1}.png", game, type));
 
-            string logoPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
-            {
-                GameType.StarRail => "starrail-logo.png",
-                GameType.Genshin => "genshin-logo.png",
-                _ => "honkai-logo.png",
-            });
-            string logoSteamPath = Path.Combine(gridPath, preliminaryAppID + "_logo.png");
-
-            File.Copy(logoPath, logoSteamPath, true);
-
-            string bannerPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + game switch
-            {
-                GameType.StarRail => "starrail-banner.png",
-                GameType.Genshin => "genshin-banner.png",
-                _ => "honkai-banner.png",
-            });
-            string bannerSteamPath = Path.Combine(gridPath, preliminaryAppID + "p.png");
-
-            File.Copy(bannerPath, bannerSteamPath, true);
+            string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
+            
+            File.Copy(originalPath, steamPath, true);
         }
     }
 }
