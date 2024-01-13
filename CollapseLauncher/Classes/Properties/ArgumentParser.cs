@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.CommandLine;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using static Hi3Helper.Logger;
+using System.Linq;
+using System.Text.RegularExpressions;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
