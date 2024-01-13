@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.CommandLine;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.CommandLine.NamingConventionBinder;
 using static Hi3Helper.Logger;
@@ -10,7 +11,10 @@ namespace CollapseLauncher
 {
     public static partial class ArgumentParser
     {
-        static RootCommand rootCommand = new RootCommand();
+        private static List<string> allowedProtocolCommands = ["tray", "open"];
+
+        private static RootCommand rootCommand = new RootCommand();
+
         public static void ParseArguments(params string[] args)
         {
             if (args.Length == 0)
@@ -42,7 +46,7 @@ namespace CollapseLauncher
                 
                 args = args.Select(x => x.Trim('/')).Where(x => x != "").ToArray();
 
-                if (args[0] != "open" && args[0] != "tray")
+                if (allowedProtocolCommands.IndexOf(args[0]) == -1)
                 {
                     LogWriteLine("This command does not exist or cannot be activated using a protocol.", Hi3Helper.LogType.Error);
                     m_appMode = AppMode.Launcher;
