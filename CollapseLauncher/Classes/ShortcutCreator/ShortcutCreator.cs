@@ -25,7 +25,7 @@ namespace CollapseLauncher.ShortcutsUtils
         public static void CreateShortcut(string path, PresetConfigV2 preset)
         {
             string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
-            string url = string.Format("collapse://open/-g/\"{0}\"/-r/\"{1}\"", preset.GameName, preset.ZoneName);
+            string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
             string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
             {
                 GameType.StarRail => "starrail-logo.ico",
