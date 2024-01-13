@@ -24,10 +24,12 @@ namespace CollapseLauncher
             {
                 if ((string)reg.GetValue("") == string.Format("\"{0}\" %1", AppExecutablePath))
                 {
-                    LogWriteLine("Already activated.");
+                    LogWriteLine("The protocol is already activated.");
                     return;
                 }
             }
+
+            LogWriteLine("Protocol does not exist or paths are different. Activating protocol...");
 
             Registry.ClassesRoot.DeleteSubKeyTree(name, false);
 
