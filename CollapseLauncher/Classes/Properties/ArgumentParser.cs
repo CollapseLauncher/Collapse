@@ -3,6 +3,7 @@ using System.Linq;
 using System.CommandLine;
 using System.Text.RegularExpressions;
 using System.CommandLine.NamingConventionBinder;
+using static Hi3Helper.Logger;
 using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
@@ -40,6 +41,13 @@ namespace CollapseLauncher
                 } 
                 
                 args = args.Select(x => x.Trim('/')).Where(x => x != "").ToArray();
+
+                if (args[0] != "open" && args[0] != "tray")
+                {
+                    LogWriteLine("This command does not exist or cannot be activated using a protocol.", Hi3Helper.LogType.Error);
+                    m_appMode = AppMode.Launcher;
+                    return;
+                }
             }
 
             switch (args[0].ToLower())
