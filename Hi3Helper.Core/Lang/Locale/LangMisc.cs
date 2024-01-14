@@ -23,6 +23,7 @@
                 public string Cancel { get; set; } = LangFallback?._Misc.Cancel;
                 public string Close { get; set; } = LangFallback?._Misc.Close;
                 public string Skip { get; set; } = LangFallback?._Misc.Skip;
+                public string MoveToDifferentDir { get; set; } = LangFallback?._Misc.MoveToDifferentDir;
                 public string UseCurrentDir { get; set; } = LangFallback?._Misc.UseCurrentDir;
                 public string UseDefaultDir { get; set; } = LangFallback?._Misc.UseDefaultDir;
                 public string LocateDir { get; set; } = LangFallback?._Misc.LocateDir;
@@ -102,6 +103,11 @@
                 public string Taskbar_ShowConsole { get; set; } = LangFallback?._Misc.Taskbar_ShowConsole;
                 public string Taskbar_HideConsole { get; set; } = LangFallback?._Misc.Taskbar_HideConsole;
                 public string Taskbar_ExitApp     { get; set; } = LangFallback?._Misc.Taskbar_ExitApp;
+
+                public string LauncherNameOfficial { get; set; } = LangFallback?._Misc.LauncherNameOfficial;
+                public string LauncherNameBHI3L { get; set; } = LangFallback?._Misc.LauncherNameBHI3L;
+                public string LauncherNameSteam { get; set; } = LangFallback?._Misc.LauncherNameSteam;
+                public string LauncherNameUnknown { get; set; } = LangFallback?._Misc.LauncherNameUnknown;
             }
         }
         #endregion

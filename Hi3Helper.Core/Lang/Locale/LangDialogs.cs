@@ -32,6 +32,10 @@ namespace Hi3Helper
                 public string RepairCompletedSubtitleNoBroken { get; set; } = LangFallback?._Dialogs.RepairCompletedSubtitleNoBroken;
                 public string ExtremeGraphicsSettingsWarnTitle { get; set; } = LangFallback?._Dialogs.ExtremeGraphicsSettingsWarnTitle;
                 public string ExtremeGraphicsSettingsWarnSubtitle { get; set; } = LangFallback?._Dialogs.ExtremeGraphicsSettingsWarnSubtitle;
+                public string MigrateExistingMoveDirectoryTitle { get; set; } = LangFallback?._Dialogs.MigrateExistingMoveDirectoryTitle;
+                public string MigrateExistingInstallChoiceTitle { get; set; } = LangFallback?._Dialogs.MigrateExistingInstallChoiceTitle;
+                public string MigrateExistingInstallChoiceSubtitle1 { get; set; } = LangFallback?._Dialogs.MigrateExistingInstallChoiceSubtitle1;
+                public string MigrateExistingInstallChoiceSubtitle2 { get; set; } = LangFallback?._Dialogs.MigrateExistingInstallChoiceSubtitle2;
                 public string ExistingInstallTitle { get; set; } = LangFallback?._Dialogs.ExistingInstallTitle;
                 public string ExistingInstallSubtitle { get; set; } = LangFallback?._Dialogs.ExistingInstallSubtitle;
                 public string ExistingInstallBHI3LTitle { get; set; } = LangFallback?._Dialogs.ExistingInstallBHI3LTitle;
@@ -102,6 +106,14 @@ namespace Hi3Helper
                 public string MeteredConnectionWarningSubtitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningSubtitle;
                 public string ResetKbShortcutsTitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsTitle;
                 public string ResetKbShortcutsSubtitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsSubtitle;
+                public string OperationErrorDiskSpaceInsufficientTitle { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientTitle;
+                public string OperationErrorDiskSpaceInsufficientMsg { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientMsg;
+                public string OperationWarningNotCancellableTitle { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableTitle;
+                public string OperationWarningNotCancellableMsg1 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg1;
+                public string OperationWarningNotCancellableMsg2 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg2;
+                public string OperationWarningNotCancellableMsg3 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg3;
+                public string OperationWarningNotCancellableMsg4 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg4;
+                public string OperationWarningNotCancellableMsg5 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg5;
             }
         }
         #endregion
