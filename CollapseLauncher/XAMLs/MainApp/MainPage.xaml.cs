@@ -897,6 +897,7 @@ namespace CollapseLauncher
             return LoadCurrentConfigV2(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue), GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
+        #nullable enable
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
             object? selectedItem = ((ComboBox)sender).SelectedItem;
@@ -908,6 +909,7 @@ namespace CollapseLauncher
             ComboBoxGameRegion.ItemsSource = CurRegionList;
             ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(SelectedCategoryString);
         }
+        #nullable disable
 
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
