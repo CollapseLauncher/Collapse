@@ -1,5 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <msbuildcopycontenttransitively>false</msbuildcopycontenttransitively>
-  </PropertyGroup>
-</Project>
