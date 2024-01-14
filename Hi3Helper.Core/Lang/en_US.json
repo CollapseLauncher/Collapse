@@ -94,7 +94,7 @@
     "NotifNeverAsk": "Never show again",
     "NotifNoNewNotifs": "No new notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Utilities"
+    "NavigationUtilities": "Utilities"
   },
 
   "_HomePage": {
@@ -445,6 +445,7 @@
     "Close": "Close",
     "UseCurrentDir": "Use current directory",
     "UseDefaultDir": "Use default directory",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "Locate directory",
     "Okay": "Okay",
     "OkaySad": "Okay ;-;)",
@@ -528,7 +529,12 @@
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",
     "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ExitApp": "Exit Collapse Launcher",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -568,6 +574,10 @@
     "RepairCompletedSubtitleNoBroken": "No broken files found.",
     "ExtremeGraphicsSettingsWarnTitle": "Very High Setting Preset Selected!",
     "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting preset to Very High!\r\nVery High setting preset is essentially a 2x Render Scale with MSAA Enabled and is VERY UNOPTIMIZED!\r\n\r\nAre you sure you want to use this setting?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "Existing Installation Detected!",
     "ExistingInstallSubtitle": "Game has already been installed at:\r\n\r\n{0}\r\n\r\nIt is recommended to migrate the game to Collapse Launcher for better support and integration.\r\nRest assured, you can still use Official Launcher to start the game.\r\n\r\nDo you wish to proceed?",
     "ExistingInstallBHI3LTitle": "Existing Installation via BetterHI3Launcher Detected!",
@@ -638,7 +648,29 @@
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
     "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu.",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
