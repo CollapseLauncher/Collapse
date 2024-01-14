@@ -55,5 +55,6 @@ namespace CollapseLauncher
         public string IconGlyph { get; set; }
         public string Text { get; set; }
         public string URL { get; set; }
+        public List<string> Profiles { get; set; }
     }
 }

@@ -692,7 +692,10 @@ namespace CollapseLauncher.Pages
                 // DataTemplate from HomePage
                 foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.OfficialToolsDictionary[CurrentGameProperty._GameVersion.GameType])
                 {
-                    PageStatics._CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
+                    if (iconProperty.Profiles.Contains(CurrentGameProperty._GamePreset.ProfileName))
+                    {
+                        PageStatics._CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
+                    }
                 }
             }
 
@@ -703,7 +706,10 @@ namespace CollapseLauncher.Pages
                 // DataTemplate from HomePage
                 foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.CommunityToolsDictionary[CurrentGameProperty._GameVersion.GameType])
                 {
-                    PageStatics._CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
+                    if (iconProperty.Profiles.Contains(CurrentGameProperty._GamePreset.ProfileName))
+                    {
+                        PageStatics._CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
+                    }
                 }
             }
 
