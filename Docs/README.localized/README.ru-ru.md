@@ -4,7 +4,12 @@
 
 ##### Автор GI фона с Нахидой: [Rafa](https://www.pixiv.net/en/users/3970196)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![fr](https://img.shields.io/badge/lang-fr-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.fr-fr.md)
+[![en](https://img.shields.io/badge/README-en-red.svg)](../../README.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
+[![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
+[![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
+[![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
 
 Изначально **Collapse** был создан для **Honkai Impact 3rd**. Однако по мере развития проекта лаунчер получил возможность запускать все выпущенные **игры miHoYo**.
 
