@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
+using System.Threading;
+using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.ShortcutsUtils
@@ -112,10 +116,8 @@ namespace CollapseLauncher.ShortcutsUtils
             return (appId >> 32) - 0x10000000;
         }*/
 
-        public void MoveImages(string path)
+        public void MoveImages(PresetConfigV2 preset, string path)
         {
-            if (gameType == GameType.Unknown)
-                return;
 
             path = Path.GetDirectoryName(path);
             string gridPath = Path.Combine(path, "grid");
@@ -126,7 +128,7 @@ namespace CollapseLauncher.ShortcutsUtils
             CopyImage(gridPath, "hero", "_hero");
 
             // Game logo
-            CopyImage(gridPath, "logo", "_logo");
+            CopyImage(gridPath, preset.ZoneLogoURL, "_logo", true);
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
@@ -137,8 +139,17 @@ namespace CollapseLauncher.ShortcutsUtils
             CopyImage(gridPath, "preview", "");
         }
 
-        private void CopyImage(string gridPath, string type, string steamSuffix)
+        private void CopyImage(string gridPath, string type, string steamSuffix, bool url = false)
         {
+            string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
+
+            if (url)
+            {
+                FileInfo info = new FileInfo(steamPath);
+                DownloadImage(info, type, new CancellationToken());
+                return;
+            }
+
             string game = gameType switch
             {
                 GameType.StarRail => "starrail",
@@ -148,10 +159,57 @@ namespace CollapseLauncher.ShortcutsUtils
 
             string originalPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), 
                 string.Format("Assets/Images/SteamShortcuts/{0}/{1}.png", game, type));
-
-            string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
             
             File.Copy(originalPath, steamPath, true);
+        }
+
+        private async void DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
+        {
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+            try
+            {
+                // Try get the remote stream and download the file
+                using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                {
+                    Access = FileAccess.Write,
+                    Mode = FileMode.Create,
+                    Share = FileShare.ReadWrite,
+                    Options = FileOptions.Asynchronous
+                });
+
+                // Get the file length
+                long fileLength = netStream.Length;
+
+                // Create the prop file for download completeness checking
+                string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+                string outputFilename = Path.GetFileName(fileInfo.FullName);
+                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                File.Create(propFilePath).Dispose();
+
+                // Copy (and download) the remote streams to local
+                LogWriteLine($"Start downloading resource from: {url}", Hi3Helper.LogType.Default, true);
+                int read = 0;
+                while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                    await outStream.WriteAsync(buffer, 0, read, token);
+
+                LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
+                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", Hi3Helper.LogType.Default, true);
+            }
+#if DEBUG
+            catch
+            {
+                throw;
+#else
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.Connection);
+#endif
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
     }
 }

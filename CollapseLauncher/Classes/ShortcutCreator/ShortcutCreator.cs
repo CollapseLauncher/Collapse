@@ -61,7 +61,7 @@ namespace CollapseLauncher.ShortcutsUtils
 
             SteamShortcut shortcut = new SteamShortcut(shortcuts.Count, preset, play);
             shortcuts.Add(shortcut);
-            shortcut.MoveImages(paths[0]);
+            shortcut.MoveImages(preset, paths[0]);
             WriteFile(paths[0]);
 
             LogWriteLine("Steam Shortcut created for " + preset.ZoneFullname + "!");
