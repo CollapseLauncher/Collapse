@@ -15,7 +15,7 @@ namespace CollapseLauncher.ShortcutsUtils
         {
             string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
             string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
-            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcons/" + preset.GameType switch
+            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcon/" + preset.GameType switch
             {
                 GameType.StarRail => "icon-starrail.ico",
                 GameType.Genshin => "icon-genshin.ico",
