@@ -67,7 +67,7 @@ for:
 
         echo Getting app version...
 
-        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse-stable\\CollapseLauncher\\stable-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
+        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\preview-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
 
         set "version=%version_untrim:~0,-2%"
 
@@ -202,7 +202,7 @@ for:
 
         echo Getting app version...
 
-        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse-stable\\CollapseLauncher\\stable-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
+        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\stable-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
 
         set "version=%version_untrim:~0,-2%"
 
