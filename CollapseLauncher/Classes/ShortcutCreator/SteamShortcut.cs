@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CollapseLauncher.ShortcutUtils;
+using Hi3Helper.Data;
+using Hi3Helper.Preset;
+using System;
 using System.Buffers;
 using System.IO;
 using System.Threading;
-using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -17,7 +18,7 @@ namespace CollapseLauncher.ShortcutsUtils
         /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
 
         public string preliminaryAppID = "";
-        private GameType gameType = GameType.Unknown;
+        private PresetConfigV2 preset = null;
 
         #region Shortcut fields
         public string entryID = "";
@@ -42,12 +43,12 @@ namespace CollapseLauncher.ShortcutsUtils
 
         public SteamShortcut() { }
 
-        public SteamShortcut(int count, PresetConfigV2 preset, bool play = false)
+        public SteamShortcut(PresetConfigV2 preset, bool play = false)
         {
             AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
             Exe = AppExecutablePath;
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
-            appid = ShortcutCreator.ANSI.GetString(id, 0, id.Length);
+            appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
             icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
             {
@@ -64,15 +65,14 @@ namespace CollapseLauncher.ShortcutsUtils
             if (play)
                 LaunchOptions += " -p";
 
-            entryID = count.ToString();
-            gameType = preset.GameType;
+            this.preset = preset;
         }
 
         private static char BoolToByte(bool b) => b ? '\x01' : '\x00';
 
-        public string ToEntry()
+        public string ToEntry(int entryID = -1)
         {
-            return '\x00' + entryID + '\x00'
+            return '\x00' + entryID >= 0 ? entryID.ToString() : this.entryID + '\x00'
                     + '\x02' + "appid" + '\x00' + appid
                     + '\x01' + "AppName" + '\x00' + AppName + '\x00'
                     + '\x01' + "Exe" + '\x00' + Exe + '\x00'
@@ -97,7 +97,7 @@ namespace CollapseLauncher.ShortcutsUtils
         {
             string key = exe + appname;
             var crc32 = new System.IO.Hashing.Crc32();
-            crc32.Append(ShortcutCreator.ANSI.GetBytes(key));
+            crc32.Append(SteamShortcutParser.ANSI.GetBytes(key));
             uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
             return (top << 32) | 0x02000000;
         }
@@ -116,8 +116,19 @@ namespace CollapseLauncher.ShortcutsUtils
             return (appId >> 32) - 0x10000000;
         }*/
 
-        public void MoveImages(PresetConfigV2 preset, string path)
+        public static bool operator ==(SteamShortcut a, SteamShortcut b)
         {
+            return a.GenerateAppId(a.Exe, a.AppName) == b.GenerateAppId(b.Exe, b.AppName);
+        }
+
+        public static bool operator !=(SteamShortcut a, SteamShortcut b)
+        {
+            return a.GenerateAppId(a.Exe, a.AppName) != b.GenerateAppId(b.Exe, b.AppName);
+        }
+
+        public void MoveImages(string path)
+        {
+            if (preset == null) return;
 
             path = Path.GetDirectoryName(path);
             string gridPath = Path.Combine(path, "grid");
@@ -150,7 +161,7 @@ namespace CollapseLauncher.ShortcutsUtils
                 return;
             }
 
-            string game = gameType switch
+            string game = preset.GameType switch
             {
                 GameType.StarRail => "starrail",
                 GameType.Genshin => "genshin",
