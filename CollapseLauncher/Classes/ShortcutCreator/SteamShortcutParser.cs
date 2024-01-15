@@ -25,7 +25,8 @@ namespace CollapseLauncher.ShortcutUtils
 
         public bool Contains(SteamShortcut shortcut) => _shortcuts.FindIndex(x => x.preliminaryAppID == shortcut.preliminaryAppID) != -1;
 
-        public bool Insert(SteamShortcut shortcut) {
+        public bool Insert(SteamShortcut shortcut)
+        {
             if (Contains(shortcut))
                 return false;
 
@@ -56,13 +57,8 @@ namespace CollapseLauncher.ShortcutUtils
 
         public void Save()
         {
-            if (File.Exists(_path + "_old"))
-            {
-                File.Delete(_path + "_old");
-
-                if (File.Exists(_path))
-                    File.Move(_path, _path + "_old");
-            }
+            if (File.Exists(_path))
+                File.Move(_path, _path + "_old", true);
 
             FileStream fs = File.OpenWrite(_path);
             StreamWriter sw = new StreamWriter(fs, ANSI);
