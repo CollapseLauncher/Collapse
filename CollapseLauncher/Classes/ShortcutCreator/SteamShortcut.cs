@@ -126,42 +126,26 @@ namespace CollapseLauncher.ShortcutsUtils
                 Directory.CreateDirectory(gridPath);
 
             // Game background
-            CopyImage(gridPath, preset.ZoneSteamHeroURL, "_hero", true);
+            CopyImage(gridPath, preset.ZoneSteamHeroURL, "_hero");
 
             // Game logo
-            CopyImage(gridPath, preset.ZoneLogoURL, "_logo", true);
+            CopyImage(gridPath, preset.ZoneLogoURL, "_logo");
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            CopyImage(gridPath, preset.ZoneSteamBannerURL, "p", true);
+            CopyImage(gridPath, preset.ZoneSteamBannerURL, "p");
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            CopyImage(gridPath, preset.ZoneSteamPreviewURL, "", true);
+            CopyImage(gridPath, preset.ZoneSteamPreviewURL, "");
         }
 
-        private void CopyImage(string gridPath, string type, string steamSuffix, bool url = false)
+        private void CopyImage(string gridPath, string type, string steamSuffix)
         {
             string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
 
-            if (url)
-            {
-                FileInfo info = new FileInfo(steamPath);
-                DownloadImage(info, type, new CancellationToken());
-                return;
-            }
-
-            string game = preset.GameType switch
-            {
-                GameType.StarRail => "starrail",
-                GameType.Genshin => "genshin",
-                _ => "honkai",
-            };
-
-            string originalPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), 
-                string.Format("Assets/Images/SteamShortcuts/{0}/{1}.png", game, type));
-            
-            File.Copy(originalPath, steamPath, true);
+            FileInfo info = new FileInfo(steamPath);
+            DownloadImage(info, type, new CancellationToken());
         }
 
         private async void DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
@@ -197,15 +181,9 @@ namespace CollapseLauncher.ShortcutsUtils
                 LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
                     + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", Hi3Helper.LogType.Default, true);
             }
-#if DEBUG
-            catch
-            {
-                throw;
-#else
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex, ErrorType.Connection);
-#endif
             }
             finally
             {
