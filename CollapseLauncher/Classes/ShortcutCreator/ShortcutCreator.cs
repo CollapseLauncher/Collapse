@@ -46,14 +46,16 @@ namespace CollapseLauncher.ShortcutsUtils
             {
                 SteamShortcutParser parser = new SteamShortcutParser(path);
 
+                string userId = path.Split('\\')[path.Length - 3];
+
                 if (!parser.Insert(new SteamShortcut(preset, play)))
                 {
-                    LogWriteLine("Already added to Steam!", Hi3Helper.LogType.Error);
+                    LogWriteLine(string.Format("{0} already has this region added to Steam!", userId), Hi3Helper.LogType.Error);
                     return;
                 }
 
                 parser.Save();
-                LogWriteLine("Steam Shortcut created for " + preset.ZoneFullname + "!");
+                LogWriteLine(string.Format("Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
             }
         }
 
@@ -94,54 +96,5 @@ namespace CollapseLauncher.ShortcutsUtils
 
             return res;
         }
-
-        /*public static Dictionary<string, string> GetSteamIDName()
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>() { };
-
-            foreach (string id in GetSteamID3())
-            {
-                long id64 = ConvertSteamID3ToID64(id);
-                using (HttpClient wc = new HttpClient())
-                {
-                    string key = "42E55E051B80627D2DF6F63B47523ED3";
-                    var json = wc.GetStringAsync(string.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, id64.ToString()));
-                    string name = Regex.Match(json.Result, "(\"personaname\":\".*?\")").Value.Split("\"")[3];
-                    result.Add(id, name);
-                }
-            }
-            return result;
-        }
-
-        private static string[] GetSteamID3()
-        {
-            RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam", false);
-            if (reg == null)
-                return null;
-
-            string steamPath = (string)reg.GetValue("InstallPath", "C:\\Program Files (x86)\\Steam");
-
-            var res = Directory.GetDirectories(steamPath + @"\userdata")
-                .Where(x =>
-                    !(x.EndsWith("ac") || x.EndsWith("0") || x.EndsWith("anonymous"))
-                    ).ToArray();
-
-            for (int i = 0; i < res.Length; i++)
-            {
-                res[i] = res[i].Split("\\").Last();
-            }
-
-            return res;
-        }
-
-        private static long ConvertSteamID3ToID64(string steamID3)
-        {
-            if (!long.TryParse(steamID3, out long id))
-                return -1;
-
-            long acc_type = id % 2;
-            long acc_id = (id - acc_type) / 2;
-            return 76561197960265728 + (acc_id * 2) + acc_type;
-        }*/
     }
 }

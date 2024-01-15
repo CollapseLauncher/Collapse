@@ -687,11 +687,6 @@ namespace CollapseLauncher.Dialogs
 
         private static void Steam_Click(object sender, RoutedEventArgs e)
         {
-            /*foreach (var a in ShortcutCreator.GetSteamIDName())
-            {
-                Logger.LogWriteLine(string.Format("id: {0}, name: {1}", a.Key, a.Value));
-            }
-            return;*/
             Button button = sender as Button;       
             bool play = (bool)button.DataContext;
             ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, play);
