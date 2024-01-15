@@ -243,15 +243,14 @@ for:
 
         mkdir SignArtifact
 
-        mkdir SignArtifact\BuildArtifact
+        mkdir SignArtifact\BuildArtifact-%version%
 
         mkdir SignArtifact\Squirrel-Stub
 
         mkdir SignArtifact\InnoInstaller
 
-        echo . >SignArtifact\Version-%version%
 
-        xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact\" /E /K /Y /I
+        xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
 
         copy DeployResource\CollapseLauncher.exe SignArtifact\Squirrel-Stub\CollapseLauncher.exe
 
