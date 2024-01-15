@@ -24,7 +24,7 @@ jobs:
           submodules: recursive # many many submodules
 
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2023.2.6
+        uses: JetBrains/qodana-action@latest
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # read the steps about it below
 
