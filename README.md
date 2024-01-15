@@ -222,9 +222,15 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 ***
 
 # Prerequisites for Building Locally/Development
-> ### More information can be found in [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+> ### More information can be found in [**Contribution Guidelines**](CONTRIBUTING.md)
 
 ***
+
+# Code Signing Policy
+> Free code signing provided by [SignPath.io], certificate by [SignPath Foundation]
+- This program will not transfer any information to other networked systems.
+- Read our full [**Privacy Policy**](PRIVACY.md)
+- Also read our [**Third Party Notices**](THIRD_PARTY_NOTICES.md) for license used by third party libraries that we use.
 
 # Third-party repositories and libraries used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
@@ -269,3 +275,6 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+[SignPath Foundation]:https://signpath.org
+[SignPath.io]:https://signpath.io
