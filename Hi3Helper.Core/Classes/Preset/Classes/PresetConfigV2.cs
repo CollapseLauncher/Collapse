@@ -505,6 +505,12 @@ namespace Hi3Helper.Preset
         public string? ZoneURL { get; set; }
         public string? ZoneLogoURL { get; set; }
         public string? ZonePosterURL { get; set; }
+
+        // Steam shortcut images
+        public string? ZoneSteamBannerURL { get; set; }
+        public string? ZoneSteamPreviewURL { get; set; }
+        public string? ZoneSteamHeroURL { get; set; }
+        
 #nullable disable
         public string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
         public string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }

@@ -5,10 +5,6 @@ using Hi3Helper.Preset;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseLauncher.ShortcutUtils;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 
 
 namespace CollapseLauncher.ShortcutsUtils
@@ -19,11 +15,11 @@ namespace CollapseLauncher.ShortcutsUtils
         {
             string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
             string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
-            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
+            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcons/" + preset.GameType switch
             {
-                GameType.StarRail => "starrail/icon.ico",
-                GameType.Genshin => "genshin/icon.ico",
-                _ => "honkai/icon.ico",
+                GameType.StarRail => "icon-starrail.ico",
+                GameType.Genshin => "icon-genshin.ico",
+                _ => "icon-honkai.ico",
             });
 
             StreamWriter writer = new StreamWriter(Path.Combine(path, shortcutName));
@@ -46,7 +42,8 @@ namespace CollapseLauncher.ShortcutsUtils
             {
                 SteamShortcutParser parser = new SteamShortcutParser(path);
 
-                string userId = path.Split('\\')[path.Length - 3];
+                var splitPath = path.Split('\\');
+                string userId = splitPath[splitPath.Length - 3];
 
                 if (!parser.Insert(new SteamShortcut(preset, play)))
                 {

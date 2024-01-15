@@ -687,7 +687,8 @@ namespace CollapseLauncher.Dialogs
 
         private static void Steam_Click(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;       
+            Logger.LogWriteLine(GamePropertyVault.GetCurrentGameProperty()._GamePreset.ZoneSteamBannerURL, LogType.Warning);
+            Button button = sender as Button;
             bool play = (bool)button.DataContext;
             ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, play);
             button.FindParent<ContentDialogCollapse>().Hide();

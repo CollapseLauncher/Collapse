@@ -121,6 +121,11 @@ namespace CollapseLauncher.Statics
             ZoneName = GamePreset.ZoneName,
             ZonePosterURL = GamePreset.ZonePosterURL,
             ZoneURL = GamePreset.ZoneURL,
+
+            ZoneSteamBannerURL = GamePreset.ZoneSteamBannerURL,
+            ZoneSteamHeroURL = GamePreset.ZoneSteamHeroURL,
+            ZoneSteamPreviewURL = GamePreset.ZoneSteamPreviewURL,
+
             ChannelID = GamePreset.ChannelID,
             SubChannelID = GamePreset.SubChannelID,
             LauncherID = GamePreset.LauncherID,

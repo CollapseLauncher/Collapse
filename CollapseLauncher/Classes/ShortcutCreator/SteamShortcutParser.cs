@@ -17,22 +17,16 @@ namespace CollapseLauncher.ShortcutUtils
         {
             _path = path;
 
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
-
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             ANSI = Encoding.GetEncoding(1252);
 
             Load();
         }
 
-        public bool Contains(SteamShortcut shortcut)
-        {
-            return _shortcuts.Contains(shortcut);
-        }
+        public bool Contains(SteamShortcut shortcut) => _shortcuts.FindIndex(x => x.preliminaryAppID == shortcut.preliminaryAppID) != -1;
 
         public bool Insert(SteamShortcut shortcut) {
-            if (_shortcuts.Contains(shortcut))
+            if (Contains(shortcut))
                 return false;
 
             _shortcuts.Add(shortcut);
@@ -220,6 +214,8 @@ namespace CollapseLauncher.ShortcutUtils
             newShortcut.OpenVR = boolRes[3];
             newShortcut.Devkit = boolRes[4];
             newShortcut.DevkitOverrideAppID = boolRes[5];
+
+            newShortcut.preliminaryAppID = SteamShortcut.GenerateAppId(newShortcut.Exe, newShortcut.AppName).ToString();
 
             return newShortcut;
         }

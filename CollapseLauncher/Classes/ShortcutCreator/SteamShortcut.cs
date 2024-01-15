@@ -50,11 +50,11 @@ namespace CollapseLauncher.ShortcutsUtils
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
-            icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/SteamShortcuts/" + preset.GameType switch
+            icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcon/" + preset.GameType switch
             {
-                GameType.StarRail => "starrail/icon.ico",
-                GameType.Genshin => "genshin/icon.ico",
-                _ => "honkai/icon.ico",
+                GameType.StarRail => "icon-starrail.ico",
+                GameType.Genshin => "icon-genshin.ico",
+                _ => "icon-honkai.ico",
             });
 
             preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
@@ -72,7 +72,7 @@ namespace CollapseLauncher.ShortcutsUtils
 
         public string ToEntry(int entryID = -1)
         {
-            return '\x00' + entryID >= 0 ? entryID.ToString() : this.entryID + '\x00'
+            return '\x00' + (entryID >= 0 ? entryID.ToString() : this.entryID) + '\x00'
                     + '\x02' + "appid" + '\x00' + appid
                     + '\x01' + "AppName" + '\x00' + AppName + '\x00'
                     + '\x01' + "Exe" + '\x00' + Exe + '\x00'
@@ -93,7 +93,7 @@ namespace CollapseLauncher.ShortcutsUtils
         }
 
 
-        private uint GeneratePreliminaryId(string exe, string appname)
+        private static uint GeneratePreliminaryId(string exe, string appname)
         {
             string key = exe + appname;
             var crc32 = new System.IO.Hashing.Crc32();
@@ -102,7 +102,7 @@ namespace CollapseLauncher.ShortcutsUtils
             return (top << 32) | 0x02000000;
         }
 
-        private uint GenerateAppId(string exe, string appname)
+        public static uint GenerateAppId(string exe, string appname)
         {
             uint appId = GeneratePreliminaryId(exe, appname);
 
@@ -116,16 +116,6 @@ namespace CollapseLauncher.ShortcutsUtils
             return (appId >> 32) - 0x10000000;
         }*/
 
-        public static bool operator ==(SteamShortcut a, SteamShortcut b)
-        {
-            return a.GenerateAppId(a.Exe, a.AppName) == b.GenerateAppId(b.Exe, b.AppName);
-        }
-
-        public static bool operator !=(SteamShortcut a, SteamShortcut b)
-        {
-            return a.GenerateAppId(a.Exe, a.AppName) != b.GenerateAppId(b.Exe, b.AppName);
-        }
-
         public void MoveImages(string path)
         {
             if (preset == null) return;
@@ -136,18 +126,18 @@ namespace CollapseLauncher.ShortcutsUtils
                 Directory.CreateDirectory(gridPath);
 
             // Game background
-            CopyImage(gridPath, "hero", "_hero");
+            CopyImage(gridPath, preset.ZoneSteamHeroURL, "_hero", true);
 
             // Game logo
             CopyImage(gridPath, preset.ZoneLogoURL, "_logo", true);
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            CopyImage(gridPath, "banner", "p");
+            CopyImage(gridPath, preset.ZoneSteamBannerURL, "p", true);
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            CopyImage(gridPath, "preview", "");
+            CopyImage(gridPath, preset.ZoneSteamPreviewURL, "", true);
         }
 
         private void CopyImage(string gridPath, string type, string steamSuffix, bool url = false)
