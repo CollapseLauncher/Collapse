@@ -166,12 +166,6 @@ namespace CollapseLauncher.ShortcutsUtils
                 // Get the file length
                 long fileLength = netStream.Length;
 
-                // Create the prop file for download completeness checking
-                string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
-                string outputFilename = Path.GetFileName(fileInfo.FullName);
-                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                File.Create(propFilePath).Dispose();
-
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", Hi3Helper.LogType.Default, true);
                 int read = 0;
