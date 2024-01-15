@@ -124,7 +124,7 @@ for:
         
     test: off
     artifacts:
-    - path: CollapseLauncher\SignArtifact\
+    - path: SignArtifact\
       name: SignArtifact-Preview
 
     deploy:
@@ -261,7 +261,7 @@ for:
         
     test: off
     artifacts:
-    - path: CollapseLauncher\stable-build\
+    - path: SignArtifact\
       name: SignArtifact-Stable
 
     deploy:
