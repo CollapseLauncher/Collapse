@@ -687,7 +687,6 @@ namespace CollapseLauncher.Dialogs
 
         private static void Steam_Click(object sender, RoutedEventArgs e)
         {
-            Logger.LogWriteLine(GamePropertyVault.GetCurrentGameProperty()._GamePreset.ZoneSteamBannerURL, LogType.Warning);
             Button button = sender as Button;
             bool play = (bool)button.DataContext;
             ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, play);
@@ -697,8 +696,10 @@ namespace CollapseLauncher.Dialogs
 
         private static void Shortcut_Click(object sender, RoutedEventArgs e)
         {
+            Button button = sender as Button;
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             ShortcutCreator.CreateShortcut(desktop, GamePropertyVault.GetCurrentGameProperty()._GamePreset);
+            button.FindParent<ContentDialogCollapse>().Hide();
         }
 
         public static async Task<ContentDialogResult> SpawnDialog(

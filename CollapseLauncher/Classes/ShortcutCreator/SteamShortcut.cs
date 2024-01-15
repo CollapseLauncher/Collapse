@@ -140,12 +140,14 @@ namespace CollapseLauncher.ShortcutsUtils
             CopyImage(gridPath, preset.ZoneSteamPreviewURL, "");
         }
 
-        private void CopyImage(string gridPath, string type, string steamSuffix)
+        private async void CopyImage(string gridPath, string url, string steamSuffix)
         {
             string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
 
-            FileInfo info = new FileInfo(steamPath);
-            DownloadImage(info, type, new CancellationToken());
+            //FileInfo info = new FileInfo(steamPath);
+            //DownloadImage(info, type, new CancellationToken());
+            await MainPage.DownloadAndEnsureCompleteness(url, steamPath, new CancellationToken());
+            
         }
 
         private async void DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
