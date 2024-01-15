@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Microsoft.Windows.AppLifecycle;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.Activation;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -13,6 +15,32 @@ namespace CollapseLauncher
         public static void Enable()
         {
             AppInstance.GetCurrent().Activated += App_Activated;
+
+            string protocolName = "collapse";
+            RegistryKey reg = Registry.ClassesRoot.OpenSubKey(protocolName + "\\shell\\open\\command", true);
+
+            if (reg != null)
+            {
+                if ((string)reg.GetValue("") == string.Format("\"{0}\" %1", AppExecutablePath))
+                {
+                    LogWriteLine("The protocol is already activated.");
+                    return;
+                }
+            }
+
+            LogWriteLine("Protocol does not exist or paths are different. Activating protocol...");
+
+            Registry.ClassesRoot.DeleteSubKeyTree(protocolName, false);
+
+            RegistryKey protocol = Registry.ClassesRoot.CreateSubKey(protocolName, true);
+
+            protocol.SetValue("", "CollapseLauncher protocol");
+            protocol.SetValue("URL Protocol", "");
+            protocol.SetValue("Version", AppCurrentVersionString);
+
+            RegistryKey command = protocol.CreateSubKey("shell\\open\\command", true);
+
+            command.SetValue("", string.Format("\"{0}\" %1", AppExecutablePath));
         }
 
         private static void App_Activated(object sender, AppActivationArguments e)

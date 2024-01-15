@@ -55,4 +55,5 @@ Name: StartAfterInstall; Description: Run application after install
 Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse (Preview)"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser;
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Collapse"; ValueType: string; ValueName: "AppUserModelId"; ValueData: "Collapse.CollapseLauncher"; Flags: uninsdeletevalue;
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Collapse"; ValueType: string; ValueName: "AppUserModelId"; ValueData: "Collapse.CollapseLauncher"; Flags: uninsdeletekeyifempty uninsdeletevalue;
+Root: HKCR; SubKey: "collapse"; ValueType: string; ValueData: "CollapseLauncher protocol"; Flags: createvalueifdoesntexist, uninsdeletekey;

@@ -5,7 +5,12 @@
 
 ##### Crédits pour l'arrière-plan Nahida de GI : [Rafa sur Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![ru](https://img.shields.io/badge/lang-ru-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ru-ru.md)
+[![en](https://img.shields.io/badge/README-en-red.svg)](../../README.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
+[![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
+[![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
+[![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
 
 **Collapse** a été conçu à l'origine pour **Honkai Impact 3rd**. Cependant, avec l'évolution du projet, ce lanceur est maintenant un client de jeu pour tous les **jeux miHoYo** actuellement disponibles.
 
@@ -215,7 +220,6 @@ Pour voir toutes les versions, [**cliquez ici**](https://github.com/neon-nyan/Co
 # Comment puis-je soutenir ce projet ?
 Soutenir n'est jamais une obligation mais est toujours apprécié et nous motive à investir plus de temps dans le projet et à garder ce projet et d'autres projets en vie. À cette fin, si vous décidez de nous soutenir, voici comment vous pouvez le faire :smile: :
 - **[Sponsors GitHub](https://github.com/sponsors/neon-nyan)**
-- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Réalisé par tous les capitaines du monde entier avec ❤️. Luttez pour tout ce qui est beau dans ce monde !
