@@ -43,6 +43,7 @@ using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using CollapseLauncher.ShortcutsUtils;
+using Hi3Helper.Data;
 
 namespace CollapseLauncher.Pages
 {
@@ -2001,20 +2002,47 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        private async void CreateShortcutButton_Click(object sender, RoutedEventArgs e)
-        {
-            await Dialog_CreateShortcut(sender as Button);
-        }
-
-        private void DesktopShortcutButton_Click(object sender, RoutedEventArgs e)
+        private async void DesktopShortcutButton_Click(object sender, RoutedEventArgs e)
         {
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            ShortcutCreator.CreateShortcut(desktop, GamePropertyVault.GetCurrentGameProperty()._GamePreset, PlayOnBoot.IsChecked ?? false);
+
+            if (await Dialog_ShortcutCreationConfirm(this, desktop) != ContentDialogResult.Primary)
+                return;
+
+            bool play = PlayOnBoot.IsChecked ?? false;
+            ShortcutCreator.CreateShortcut(desktop, GamePropertyVault.GetCurrentGameProperty()._GamePreset, play);
+            await Dialog_ShortcutCreationSuccess(this, desktop, play);
         }
 
         private void SteamShortcutButton_Click(object sender, RoutedEventArgs e)
         {
             ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, PlayOnBoot.IsChecked ?? false);
+        }
+
+        private async void CustomFolderShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            string folder = "";
+            while (true)
+            {
+                folder = await FileDialogNative.GetFolderPicker();
+
+                if (!string.IsNullOrEmpty(folder))
+                {
+                    if (ConverterTool.IsUserHasPermission(folder))
+                    {
+                        break;
+                    }
+
+                    await Dialog_InsufficientWritePermission(sender as UIElement, folder);
+                }
+            }
+
+            if (await Dialog_ShortcutCreationConfirm(this, folder) != ContentDialogResult.Primary)
+                return;
+
+            bool play = PlayOnBoot.IsChecked ?? false;
+            ShortcutCreator.CreateShortcut(folder, GamePropertyVault.GetCurrentGameProperty()._GamePreset, play);
+            await Dialog_ShortcutCreationSuccess(this, folder, play);
         }
     }
 }
