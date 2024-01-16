@@ -42,6 +42,7 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+using CollapseLauncher.ShortcutsUtils;
 
 namespace CollapseLauncher.Pages
 {
@@ -2003,6 +2004,17 @@ namespace CollapseLauncher.Pages
         private async void CreateShortcutButton_Click(object sender, RoutedEventArgs e)
         {
             await Dialog_CreateShortcut(sender as Button);
+        }
+
+        private void DesktopShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            ShortcutCreator.CreateShortcut(desktop, GamePropertyVault.GetCurrentGameProperty()._GamePreset, PlayOnBoot.IsChecked ?? false);
+        }
+
+        private void SteamShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, PlayOnBoot.IsChecked ?? false);
         }
     }
 }

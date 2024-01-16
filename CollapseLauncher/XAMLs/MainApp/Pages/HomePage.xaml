@@ -527,6 +527,59 @@
                     </Grid>
                     <StackPanel Orientation="Horizontal"
                             Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right">
+                        <Button x:Name="ShortcutCreation"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Right"
+                            CornerRadius="20"
+                            Margin="0,0,8,0"  
+                            Shadow="{ThemeResource SharedShadow}">
+                            <Button.Content>
+                                <Grid>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
+                                    <StackPanel Orientation="Horizontal" Margin="8,0">
+                                        <AnimatedIcon x:Name='ShortcutCreationSettingIcon' Width="20">
+                                            <AnimatedIcon.Source>
+                                                <animatedvisuals:AnimatedSettingsVisualSource/>
+                                            </AnimatedIcon.Source>
+                                            <AnimatedIcon.FallbackIconSource>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
+                                            </AnimatedIcon.FallbackIconSource>
+                                        </AnimatedIcon>
+                                        <TextBlock Text="Create Shortcut" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <Flyout>
+                                    <ScrollViewer MaxHeight="474" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" Margin="-16,-16">
+                                        <StackPanel MaxWidth="224" Margin="16,16">
+                                            <Button x:Name="SteamShortcutButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="SteamShortcutButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xf3f6;" FontSize="18"/>
+                                                        <TextBlock Text="Add to Steam" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="DesktopShortcutButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="DesktopShortcutButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf08e;" FontSize="18"/>
+                                                        <TextBlock Text="Add to Desktop" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <TextBlock Text="Shortcut Options" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                            <CheckBox x:Name="PlayOnBoot" IsChecked="{x:Bind IsEventsPanelShow, Mode=TwoWay}">
+                                                <CheckBox.Content>
+                                                    <TextBlock Text="Add -p" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                </CheckBox.Content>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
                         <Button x:Name="CommunityToolsBtn"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Right"
@@ -728,14 +781,6 @@
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                                 <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
                                                 <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
-                                                <Button x:Name="CreateShortcutButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="CreateShortcutButton_Click"   >
-                                                    <Button.Content>
-                                                        <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf28d;" FontSize="18"/>
-                                                            <TextBlock Text="Create shortcut" Margin="8,0,0,0"/>
-                                                        </StackPanel>
-                                                    </Button.Content>
-                                                </Button>
                                             </StackPanel>
                                         </StackPanel>
                                     </ScrollViewer>
