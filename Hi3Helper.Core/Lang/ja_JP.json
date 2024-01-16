@@ -94,7 +94,7 @@
     "NotifNeverAsk": "次回から表示しない",
     "NotifNoNewNotifs": "通知はありません",
     "NavigationMenu": "メニュー",
-    "NavigationUtilities":  "機能"
+    "NavigationUtilities": "機能"
   },
 
   "_HomePage": {
@@ -445,6 +445,7 @@
     "Close": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
     "UseDefaultDir": "既定のディレクトリを使用",
+    "MoveToDifferentDir": "別のディレクトリへ移動",
     "LocateDir": "ディレクトリ検索",
     "Okay": "オッケー",
     "OkaySad": "オッケー ;-;)",
@@ -528,7 +529,12 @@
     "Taskbar_HideApp": "Collapseメインウィンドウを最小化",
     "Taskbar_ShowConsole": "コンソールを表示",
     "Taskbar_HideConsole": "コンソールを最小化",
-    "Taskbar_ExitApp": "Collapseを終了"
+    "Taskbar_ExitApp": "Collapseを終了",
+
+    "LauncherNameOfficial": "公式ランチャー",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "（ランチャー不明）"
   },
 
   "_BackgroundNotification": {
@@ -568,6 +574,10 @@
     "RepairCompletedSubtitleNoBroken": "壊れたファイルは見つかりませんでした。",
     "ExtremeGraphicsSettingsWarnTitle": "超すごい設定のプリセットが選択されました！",
     "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
+    "MigrateExistingMoveDirectoryTitle": "既存のインストールを移動させています：{0}",
+    "MigrateExistingInstallChoiceTitle": "{0}の既存のインストールを検出しました！",
+    "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
+    "MigrateExistingInstallChoiceSubtitle2": "ゲームデータを別のディレクトリに移動するか、現在のディレクトリを既定のディレクトリとして使用するかを選択できます。{0}を使用してゲームを確実に起動できるように、現在のディレクトリを既定のディレクトリとして使用することをお勧めします。",
     "ExistingInstallTitle": "既存のインストールが検出されました！",
     "ExistingInstallSubtitle": "ゲームは次の場所に既にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしても公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcherの既存のインストールが検出されました！",
@@ -607,7 +617,7 @@
     "GameConfigBrokenTitle1": "ゲーム設定が破損しています",
     "GameConfigBrokenSubtitle1": "ランチャーのスコープ設定が壊れています。以前のゲームパスを手動で選択してください。",
     "GameConfigBrokenSubtitle2": "\r\nゲームの場所がランチャーの config.ini ファイルのパスと同じでないことを確認してください:\r\n\r\n{0}\r\n\r\n",
-    "GameConfigBrokenSubtitle3": "パスが同じ場合は、すべてのゲームファイルを別の場所に移動し、\"ディレクトリを指定\"をクリックしてパスを選択してください。",
+    "GameConfigBrokenSubtitle3": "パスが同じ場合は、すべてのゲームファイルを別の場所に移動し、\"ディレクトリ検索\"をクリックしてパスを選択してください。",
     "CookbookLocateTitle": "Cookbookファイルの指定",
     "CookbookLocateSubtitle1": "作業を始める前にダウンロードしたCookbookを指定してください。\r\nまだダウンロードしていない場合は、",
     "CookbookLocateSubtitle2": "ここをクリック",
@@ -638,7 +648,29 @@
     "MeteredConnectionWarningSubtitle": "現在のインターネット接続は「従量制」として検出されました。更新を続行すると、インターネットプロバイダーから追加料金が発生する場合があります。続行しますか?",
 
     "ResetKbShortcutsTitle": "本当にすべてのショートカットをリセットしますか？",
-    "ResetKbShortcutsSubtitle": "リセットすると、ショートカットのキー割り当てがデフォルトに戻ります。\n\n本当にリセットしますか？\n\n注：リセットしてもCollapseの動作には影響しません。ショートカット一覧から、またいつでもキー割り当てを変更できます。"
+    "ResetKbShortcutsSubtitle": "リセットすると、ショートカットのキー割り当てがデフォルトに戻ります。\n\n本当にリセットしますか？\n\n注：リセットしてもCollapseの動作には影響しません。ショートカット一覧から、またいつでもキー割り当てを変更できます。",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "ドライブの空き容量：{0}が不足しています！",
+    "OperationErrorDiskSpaceInsufficientMsg": " {2} ドライブに操作を実行するために必要な空き容量がありません！\r\n\r\n現在の空き容量：{0}\r\n必要な空き容量：{1}\r\n\r\n必要なディスク容量を確保したことを確認してから続行してください。",
+
+    "OperationWarningNotCancellableTitle": "警告：この操作は中断できないよ！",
+    "OperationWarningNotCancellableMsg1": "プロセスの実行中に発生する可能性のある問題を回避するために、コンピューター上で動作の重いタスクが実行されていないことを確認してください。この操作は",
+    "OperationWarningNotCancellableMsg2": "絶っっ対に中断できない",
+    "OperationWarningNotCancellableMsg3": "ことをご了承ください！\r\n\r\n\"",
+    "OperationWarningNotCancellableMsg4": "\"を押してプロセスを開始、\"",
+    "OperationWarningNotCancellableMsg5": "\"を押して操作をキャンセルします。"
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "移動中：",
+    "SpeedIndicatorTitle": "速度：",
+    "FileCountIndicatorTitle": "移動完了したファイル：",
+    "LocateFolderSubtitle": "ファイル/フォルダーの移動先を選択してください。",
+    "ChoosePathTextBoxPlaceholder": "移動先を選択してください…",
+    "ChoosePathButton": "移動先を選ぶ",
+    "ChoosePathErrorPathUnselected": "パスを選択してから続行してください！",
+    "ChoosePathErrorPathNotExist": "存在しないパスです！",
+    "ChoosePathErrorPathNoPermission": "その場所にアクセスする権限がありません！別の場所を選択してください！"
   },
 
   "_InstallMgmt": {
