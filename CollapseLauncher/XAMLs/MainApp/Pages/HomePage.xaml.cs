@@ -2021,22 +2021,17 @@ namespace CollapseLauncher.Pages
 
         private async void CustomFolderShortcutButton_Click(object sender, RoutedEventArgs e)
         {
-            string folder = "";
-            while (true)
+            string folder = await FileDialogNative.GetFolderPicker();
+
+            if (string.IsNullOrEmpty(folder))
+                return;
+
+            if (!ConverterTool.IsUserHasPermission(folder))
             {
-                folder = await FileDialogNative.GetFolderPicker();
-
-                if (!string.IsNullOrEmpty(folder))
-                {
-                    if (ConverterTool.IsUserHasPermission(folder))
-                    {
-                        break;
-                    }
-
-                    await Dialog_InsufficientWritePermission(sender as UIElement, folder);
-                }
+                await Dialog_InsufficientWritePermission(sender as UIElement, folder);
+                return;
             }
-
+            
             if (await Dialog_ShortcutCreationConfirm(this, folder) != ContentDialogResult.Primary)
                 return;
 
