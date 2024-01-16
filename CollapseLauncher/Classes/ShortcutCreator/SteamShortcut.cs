@@ -5,6 +5,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -18,7 +19,6 @@ namespace CollapseLauncher.ShortcutsUtils
         /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
 
         public string preliminaryAppID = "";
-        private PresetConfigV2 preset = null;
 
         #region Shortcut fields
         public string entryID = "";
@@ -64,8 +64,6 @@ namespace CollapseLauncher.ShortcutsUtils
             LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
             if (play)
                 LaunchOptions += " -p";
-
-            this.preset = preset;
         }
 
         private static char BoolToByte(bool b) => b ? '\x01' : '\x00';
@@ -116,7 +114,7 @@ namespace CollapseLauncher.ShortcutsUtils
             return (appId >> 32) - 0x10000000;
         }*/
 
-        public void MoveImages(string path)
+        public void MoveImages(string path, PresetConfigV2 preset)
         {
             if (preset == null) return;
 
@@ -125,32 +123,58 @@ namespace CollapseLauncher.ShortcutsUtils
             if (!Directory.Exists(gridPath))
                 Directory.CreateDirectory(gridPath);
 
+            SteamAssetCollection assets = preset.ZoneSteamAssets;
+
             // Game background
-            CopyImage(gridPath, preset.ZoneSteamHeroURL, "_hero");
+            CopyImage(gridPath, assets.Hero, "_hero");
 
             // Game logo
-            CopyImage(gridPath, preset.ZoneLogoURL, "_logo");
+            CopyImage(gridPath, assets.Logo, "_logo");
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            CopyImage(gridPath, preset.ZoneSteamBannerURL, "p");
+            CopyImage(gridPath, assets.Banner, "p");
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            CopyImage(gridPath, preset.ZoneSteamPreviewURL, "");
+            CopyImage(gridPath, assets.Preview, "");
         }
 
-        private async void CopyImage(string gridPath, string url, string steamSuffix)
+        private static string SHA1Hash(string path)
+        {
+            FileStream stream = File.OpenRead(path);
+            var hash = System.Security.Cryptography.SHA1.Create().ComputeHash(stream);
+            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+        }
+
+        private async void CopyImage(string gridPath, SteamAsset asset, string steamSuffix)
         {
             string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
 
-            //FileInfo info = new FileInfo(steamPath);
-            //DownloadImage(info, type, new CancellationToken());
-            await MainPage.DownloadAndEnsureCompleteness(url, steamPath, new CancellationToken());
+            string hash = SHA1Hash(steamPath);
+
+            if (hash.ToLower() == asset.SHA1) return;
+
+            FileInfo info = new FileInfo(steamPath);
+            await DownloadImage(info, asset.URL, new CancellationToken());
+
+            for (int i = 0; i < 2; i++)
+            {
+                hash = SHA1Hash(steamPath);
+
+                if (hash.ToLower() == asset.SHA1) return;
+
+                File.Delete(steamPath);
+
+                LogWriteLine(string.Format("Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.SHA1), Hi3Helper.LogType.Error);
+                LogWriteLine("Trying again...", Hi3Helper.LogType.Error);
+            }
             
+            ErrorSender.SendException(new Exception("After two tries, " + asset.URL + " could not be downloaded successfully."), ErrorType.Connection);
+
         }
 
-        private async void DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
+        private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
         {
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try

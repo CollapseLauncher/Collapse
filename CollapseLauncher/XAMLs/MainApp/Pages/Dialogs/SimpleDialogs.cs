@@ -667,8 +667,6 @@ namespace CollapseLauncher.Dialogs
             };
             steam.Click += Steam_Click;
 
-            steam.IsEnabled = !ShortcutCreator.IsAddedToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset);
-
             buttonStack.Children.Add(desktop);
             buttonStack.Children.Add(steam);
 
@@ -691,7 +689,6 @@ namespace CollapseLauncher.Dialogs
             bool play = (bool)button.DataContext;
             ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, play);
             button.FindParent<ContentDialogCollapse>().Hide();
-            
         }
 
         private static void Shortcut_Click(object sender, RoutedEventArgs e)

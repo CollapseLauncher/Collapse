@@ -45,7 +45,7 @@ namespace CollapseLauncher.ShortcutsUtils
                 var splitPath = path.Split('\\');
                 string userId = splitPath[splitPath.Length - 3];
 
-                if (!parser.Insert(new SteamShortcut(preset, play)))
+                if (!parser.Insert(preset, play))
                 {
                     LogWriteLine(string.Format("{0} already has this region added to Steam!", userId), Hi3Helper.LogType.Error);
                     return;

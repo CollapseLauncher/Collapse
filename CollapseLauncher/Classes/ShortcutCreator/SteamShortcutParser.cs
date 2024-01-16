@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.ShortcutsUtils;
+using Hi3Helper.Preset;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,13 +26,15 @@ namespace CollapseLauncher.ShortcutUtils
 
         public bool Contains(SteamShortcut shortcut) => _shortcuts.FindIndex(x => x.preliminaryAppID == shortcut.preliminaryAppID) != -1;
 
-        public bool Insert(SteamShortcut shortcut)
+        public bool Insert(PresetConfigV2 preset, bool play = false)
         {
+            SteamShortcut shortcut = new SteamShortcut(preset, play);
+
             if (Contains(shortcut))
                 return false;
 
             _shortcuts.Add(shortcut);
-            shortcut.MoveImages(_path);
+            shortcut.MoveImages(_path, preset);
 
             return true;
         }
