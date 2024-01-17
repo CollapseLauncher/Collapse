@@ -67,8 +67,8 @@
 		<PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
 		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.230907" />
-		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.230907" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
+		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
     <!--
 		TODO:
 		Remove WinUI.UI.Controls entirely and replace it with equivalent supported packages. This has to be done due to WinUI.UI package is going out-of-support and will not be updated anymore.
@@ -91,7 +91,7 @@
 		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231219000" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
 		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
@@ -101,7 +101,7 @@
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Security.AccessControl" Version="6.0.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
-		<PackageReference Include="System.Text.Json" Version="8.0.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.1" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 		<PackageReference Include="TaskScheduler" Version="2.10.1" />
 	</ItemGroup>

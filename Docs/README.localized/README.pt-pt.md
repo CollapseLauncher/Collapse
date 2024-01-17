@@ -5,8 +5,12 @@
 
 ##### Créditos do papel de fundo da Nahida de GI: [Rafa on Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/lang-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![fr](https://img.shields.io/badge/lang-fr-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.fr-fr.md) [![ru](https://img.shields.io/badge/lang-ru-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ru-ru.md)
-
+[![en](https://img.shields.io/badge/README-en-red.svg)](../../README.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
+[![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
+[![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
+[![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
 O **Collapse** foi originalmente desenhado para **Honkai Impact 3rd**. No entanto, com a evolução do projeto, o launcher tornou-se numa aplicação para todos os **jogos da miHoYo/Hoyoverse** atualmente lançados.
 
 [![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
@@ -215,7 +219,6 @@ Para além disto, este launcher também possui algumas funcionalidades avançada
 # Como posso apoiar este projeto?
 Apoiar nunca será uma obrigação mas é sempre apreciado e motiva-nos a investir mais tempo no projeto e a manter este e outros projetos ativos. Para este fim, se decidires apoiar-nos, aqui estão algumas formas de como o podes fazer :smile::
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
-- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Em breve:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Feito por todos os capitães à volta do mundo com ❤️. Luta por tudo o que é belo neste mundo!

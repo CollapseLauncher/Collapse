@@ -5,7 +5,12 @@
 
 ##### Credit latar belakang Nahida oleh: [Rafa di Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![fr](https://img.shields.io/badge/lang-fr-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.fr-fr.md) [![ru](https://img.shields.io/badge/lang-ru-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ru-ru.md)
+[![en](https://img.shields.io/badge/README-en-red.svg)](../../README.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](README.ja-jp.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](README.id-id.md)
+[![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
+[![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
+[![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
 
 Pada saat pertama kali diciptakan, **Collapse** ditujukan hanya untuk **Honkai Impact 3rd**. Namun seiring dengan berjalannya waktu dan kemajuan dalam project ini, akhirnya launcher ini dapat digunakan untuk semua **Game miHoYo** yang saat ini sudah tersedia.
 
@@ -214,7 +219,6 @@ Untuk mengunduh versi terbaru yang tersedia pada Collapse, silahkan pergi ke hal
 # Bagaimana Caranya untuk Mendukung Project Ini?
 Kami tidak memaksa kamu untuk selalu mendukung project ini namun bentuk dukungan apapun yang kamu berikan kepada kami sangatlah berharga dan menjadi motivasi kami untuk memberikan banyak peluang untuk project ini dan tentunya, membuat project ini terus hidup! Kamu dapat mendukung kami dengan cara berikut 😃:
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
-- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Dibuat oleh seluruh kapten di penjuru dunia dengan **Cinta**❤️.<br/>

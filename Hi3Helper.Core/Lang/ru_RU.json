@@ -94,7 +94,7 @@
     "NotifNeverAsk": "Больше не показывать",
     "NotifNoNewNotifs": "No new notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Utilities"
+    "NavigationUtilities": "Utilities"
   },
 
   "_HomePage": {
@@ -401,13 +401,14 @@
     "Disclaimer3": "и полностью open-source, любой вклад приветствуется.",
 
     "DiscordBtn1": "Присоединяйтесь к нам в Discord!",
-    "DiscordBtn2": "Honkai Impact 3rd Discord",
+    "DiscordBtn2": "Дискорд Honkai Impact 3rd",
     "DiscordBtn3": "Официальный Discord сервер Collapse!",
 
     "AppChangeReleaseChannel": "Изменить на {0} канал релиза",
 
     "EnableAcrylicEffect": "Использовать эффект акрилового размытия",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "UseExternalBrowser": "Использовать внешний браузер",
 
     "LowerCollapsePrioOnGameLaunch": "Уменьшение использования ресурсов процесса Collapse при запуске игры",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
@@ -416,7 +417,7 @@
     "KbShortcuts_ShowBtn": "Показать сочетания",
     "KbShortcuts_ResetBtn": "Восстановить по умолчанию",
 
-    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_Title": "Поведение приложения",
     "AppBehavior_PostGameLaunch": "После запуска игры",
     "AppBehavior_PostGameLaunch_Minimize": "Свернуть",
     "AppBehavior_PostGameLaunch_ToTray": "Скрыть в меню скрытых значков",
@@ -444,6 +445,7 @@
     "Close": "Закрыть",
     "UseCurrentDir": "Использовать текущую директорию",
     "UseDefaultDir": "Использовать директорию по умолчанию",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "Определить директорию",
     "Okay": "Хорошо",
     "OkaySad": "Окей ;-;)",
@@ -461,6 +463,7 @@
     "YesRelocate": "Да, продолжить",
     "YesMigrateIt": "Да, переместить",
     "YesConvertIt": "Да, преобразовать",
+    "YesImReallySure": "Да, я действительно уверен!",
     "YesIHaveBeefyPC": "Да, у меня мощный ПК! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Да, изменить местоположение",
 
@@ -471,6 +474,7 @@
     "NoIgnoreIt": "Игнорировать",
     "NoOtherLocation": "Продолжить установку",
     "NotSelected": "Не выбрано",
+    "ExtractAnyway": "Распаковать в любом случае! ",
 
     "LangNameENUS": "Английский (США)",
     "LangNameJP": "Японский",
@@ -504,7 +508,7 @@
     "CDNDescription_Cloudflare": "Зеркало официального (основного) репозитория, развернутое на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Зеркало официального (основного) репозитория, развернутое на Bitbucket.",
 
-    "LocateExecutable": "Locate Executable",
+    "LocateExecutable": "Найти исполняемый файл",
     "OpenDownloadPage": "Открыть страницу загрузки",
 
     "DiscordRP_Play": "Играет в",
@@ -525,7 +529,12 @@
     "Taskbar_HideApp": "Скрыть окно Collapse на панель задач",
     "Taskbar_ShowConsole": "Показать окно консоли Collapse",
     "Taskbar_HideConsole": "Скрыть окно консоли Collapse на панель задач",
-    "Taskbar_ExitApp": "Выйти из Collapse Лаунчера"
+    "Taskbar_ExitApp": "Выйти из Collapse Лаунчера",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +574,10 @@
     "RepairCompletedSubtitleNoBroken": "Поврежденных файлов не найдено.",
     "ExtremeGraphicsSettingsWarnTitle": "Пресет \"Очень высокие\" выбран!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Вы собираетесь установить пресет \"Очень высокие\"!\nОчень высокими настройками, по сути, является 2x масштаб визуализации с включенным MSAA, что ОЧЕНЬ ПЛОХО ОПТИМИЗИРОВАНО!\n\nВы уверены, что хотите использовать эту настройку?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "Обнаружена существующая установка!",
     "ExistingInstallSubtitle": "Игра уже установлена в:\n\n{0}\n\nРекомендуется перенести игру на Collapse Launcher для лучшей поддержки и интеграции.\nНе беспокойтесь, Вы все еще можете использовать официальный лаунчер для начала игры.\n\nЖелаете продолжить?",
     "ExistingInstallBHI3LTitle": "Обнаружена существующая установка через BetterHI3Launcher!",
@@ -579,6 +592,10 @@
     "SteamConvertFailedSubtitle": "Процесс преобразования не удался! :(\nПожалуйста, попробуйте инициировать процесс снова.",
     "InstallDataCorruptTitle": "Сбой установки игры",
     "InstallDataCorruptSubtitle": "Один из загруженных файлов поврежден.\n\nСерверная хэш-сумма: {0}\nЗагруженная хэш-сумма: {1}\n\nХотите попробовать повторно загрузить файл?",
+    "InstallCorruptDataAnywayTitle": "Распаковать повреждённые данные",
+    "InstallCorruptDataAnywaySubtitle1": "Вы собираетесь распаковать эти поврежденные данные:",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} байта)",
+    "InstallCorruptDataAnywaySubtitle3": ". Имейте в виду, что распаковка этих данных может закончиться неудачей или привести к тому, что игра не запустится.\n\nУверены что распаковать эти данные все равно нужно?",
     "InstallDataDownloadResumeTitle": "Возобновить загрузку?",
     "InstallDataDownloadResumeSubtitle": "Ранее вы скачали {0}/{1} игры.\n\nХотите возобновить загрузку?",
     "InsufficientDiskTitle": "Недостаточно места на диске",
@@ -631,7 +648,29 @@
     "MeteredConnectionWarningSubtitle": "Ваше текущее подключение к Интернету было определено как \"Лимитное\"! Продолжение процесса обновления может повлечь за собой дополнительную плату со стороны вашего интернет-провайдера. Хотите ли вы продолжить?",
 
     "ResetKbShortcutsTitle": "Вы уверены что хотите сбросить все сочетания?",
-    "ResetKbShortcutsSubtitle": "Это означает, что каждое сочетание будет изменено на комбинацию клавиш по умолчанию.\n\nВы хотите продолжить?\n\nПримечание: Это никак не повлияет на работу Collapse, и вы по-прежнему сможете изменить комбинацию клавиш, зайдя в меню \"Сочетания клавиш\"."
+    "ResetKbShortcutsSubtitle": "Это означает, что каждое сочетание будет изменено на комбинацию клавиш по умолчанию.\n\nВы хотите продолжить?\n\nПримечание: Это никак не повлияет на работу Collapse, и вы по-прежнему сможете изменить комбинацию клавиш, зайдя в меню \"Сочетания клавиш\".",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -752,50 +791,50 @@
     "UpdateCountdownMessage2": "(Нажмите",
     "UpdateCountdownMessage3": "чтобы отменить обратный отсчёт)",
 
-    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle1": "Мы обновляем",
     "ApplyUpdateTitle2": "Collapse Launcher",
-    "ApplyUpdateCDNSelectorTitle": "Select your CDN for update",
-    "ApplyUpdateCDNSelectorSubtitle": "Select the CDN options and click \"{0}\" to start the update!",
+    "ApplyUpdateCDNSelectorTitle": "Выберите CDN для обновления",
+    "ApplyUpdateCDNSelectorSubtitle": "Выберите CDN и нажмите \"{0}\" для начала обновления!",
     "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
-    "ApplyUpdateUpdateNowBtn": "Update Now!",
+    "ApplyUpdateUpdateNowBtn": "Обновить сейчас!",
 
-    "ApplyUpdateUpdateVersionTitle": "Update:",
-    "ApplyUpdateUpdateChannelTitle": "Channel:",
-    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
-    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateUpdateVersionTitle": "Обновление:",
+    "ApplyUpdateUpdateChannelTitle": "Канал:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Неизвестный",
+    "ApplyUpdateUpdateStatusTitle": "Статус:",
     "ApplyUpdateMiscIdle": "Idle",
     "ApplyUpdateMiscNone": "None",
     "ApplyUpdateVersionSeparator": "to",
 
-    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
-    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
-    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
-    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+    "ApplyUpdateErrCollapseRunTitle": "Пожалуйста, закройте Collapse перед применением обновления!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Ждем закрытия Collapse...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ОШИБКА:\nВ файле \"release\" нет строки \"stable\" или \"preview\"",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Пожалуйста, проверьте файл \"release\" и повторите попытку.",
 
-    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
-    "ApplyUpdateDownloadSpeed": "{0}/s",
-    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
-    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
-    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s left",
+    "ApplyUpdateDownloadSizePlaceholder": "- Б / - Б",
+    "ApplyUpdateDownloadSpeed": "{0}/с",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- Б/с",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}ч{0:%m}м{0:%s}с осталось",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--ч--м--с осталось",
 
-    "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
-    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "We detected that you have a legacy Collapse v{0} installed on your PC. ",
-    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "The updater needs to clean-up all the old files inside its directory.\r\n",
-    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Please make sure you don't have any important files inside of the Collapse directory or it will be COMPLETELY WIPED OUT!",
-    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
-    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
-    "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
-    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+    "ApplyUpdateTaskLegacyVerFoundTitle": "Обнаружена предыдущая установка Collapse v{0}!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "Мы обнаружили, что на вашем компьютере установлена старая версия Collapse v{0}.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "Программа обновления должна очистить все старые файлы в своей папке.\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Убедитесь, что в папке Collapse нет важных файлов, иначе они будут потеряны НАВСЕГДА!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\n\nНажмите \"Да\" для продолжения или \"Нет\" для отмены.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Нажмите \"Да\" ещё раз для подтверждения.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Очистка будет запущена через {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Удаление: {0}...",
 
-    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
-    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
-    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
-    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+    "ApplyUpdateTaskDownloadingPkgTitle": "Загрузка пакета",
+    "ApplyUpdateTaskExtractingPkgTitle": "Распаковка пакета",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Удаление старых пакетов",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Перемещение распакованных файлов",
 
-    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
-    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Лаунчер был обновлен до: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Запуск Collapse {0}...",
 
-    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
+    "ApplyUpdateTaskError": "ОШИБКА:\nПроизошла ошибка при применении обновления!\n{0}"
   },
 
   "_AppNotification": {
@@ -922,7 +961,7 @@
     "Graphics_TeamPageBackground": "Фон экрана настройки отряда меняется в зависимости от текущего местоположения",
     "Graphics_GlobalIllumination": "Общее освещение",
     "Graphics_GlobalIllumination_Help1": "Только на поддерживаемом оборудовании!",
-    "Graphics_GlobalIllumination_Help2": "More information (en)",
+    "Graphics_GlobalIllumination_Help2": "Больше информации (en)",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Включить HDR",
     "Graphics_HDR_NotSupported1": "Ваш дисплей не поддерживает HDR",
@@ -947,7 +986,7 @@
     "SpecHigh": "Высокое",
     "SpecVeryHigh": "Очень высокое",
     "SpecExtreme": "Ультра",
-    "SpecPartiallyOff": "Partially Off",
+    "SpecPartiallyOff": "Частично",
 
     "ApplyBtn": "Применить настройки",
     "SettingsApplied": "Изменения сохранены!",
@@ -1029,5 +1068,22 @@
     "ChangeShortcut_Help2": "・ Модификатор - Shift, Control или Alt/Menu",
     "ChangeShortcut_Help3": "・ Клавиша - Алфавит (от А до Я) или Tab",
     "ChangeShortcut_Help4": "Вы можете выбрать любую комбинацию, состоящую из одного значения из каждой категории, если только оно не зарезервировано системой или уже используется."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Юго-Восточной Азии",
+    "Global": "Глобальный",
+    "Mainland China": "Материкового Китая",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Кореи",
+    "Japan": "Японии",
+    "Bilibili": "Bilibili"
   }
 }

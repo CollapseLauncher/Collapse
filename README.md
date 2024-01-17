@@ -5,7 +5,11 @@
 
 ##### GI Nahida Background Credit: [Rafa on Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![jp](https://img.shields.io/badge/README-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/README-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/README-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md) [![fr](https://img.shields.io/badge/README-fr-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.fr-fr.md) [![ru](https://img.shields.io/badge/README-ru-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ru-ru.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](Docs/README.localized/README.ja-jp.md)
+[![id](https://img.shields.io/badge/README-id-red.svg)](Docs/README.localized/README.id-id.md)
+[![pt](https://img.shields.io/badge/README-pt-red.svg)](Docs/README.localized/README.pt-pt.md)
+[![fr](https://img.shields.io/badge/README-fr-red.svg)](Docs/README.localized/README.fr-fr.md)
+[![ru](https://img.shields.io/badge/README-ru-red.svg)](Docs/README.localized/README.ru-ru.md)
 
 **Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
@@ -206,7 +210,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > **Note**: The version for this build is `1.72.14` (Released on: December 30th, 2023).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.72.14-pre/CL-1.72.14-preview_Installer.exe)
-> **Note**: The version for this build is `1.72.14` (Released on: December 30th, 2023).
+> **Note**: The version for this build is `1.73.1` (Released on: January 17th, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -218,9 +222,15 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 ***
 
 # Prerequisites for Building Locally/Development
-> ### More information can be found in [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+> ### More information can be found in [**Contribution Guidelines**](CONTRIBUTING.md)
 
 ***
+
+# Code Signing Policy
+> Free code signing provided by [SignPath.io], certificate by [SignPath Foundation]
+- This program will not transfer any information to other networked systems.
+- Read our full [**Privacy Policy**](PRIVACY.md)
+- Also read our [**Third Party Notices**](THIRD_PARTY_NOTICES.md) for license used by third party libraries that we use.
 
 # Third-party repositories and libraries used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
@@ -241,7 +251,6 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 # How can I support this project?
 Supporting is never an obligation but is always appreciated and motivates us to invest more time in the project and to keep this and other projects alive. To this end, should you decide to support us, here are ways you can do so :smile::
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
-- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Made by all captains around the world with ❤️. Fight for all that is beautiful in this world!
@@ -266,3 +275,6 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+[SignPath Foundation]:https://signpath.org
+[SignPath.io]:https://signpath.io

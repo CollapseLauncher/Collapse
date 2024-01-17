@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-#define AppVersion StringChange(GetFileVersion("..\CollapseLauncher\preview-build\CollapseLauncher.exe"), ".0", "")
+#define AppVersion StringChange(GetFileVersion("..\CollapseLauncher\stable-build\CollapseLauncher.exe"), ".0", "")
 
 AppName=Collapse
 AppVersion={#AppVersion}
@@ -14,7 +14,7 @@ VersionInfoDescription=Collapse - An advanced launcher for miHoYo Games
 VersionInfoCopyright=2023 - neon-nyan
 VersionInfoProductName=Collapse
 VersionInfoProductVersion={#AppVersion}
-VersionInfoProductTextVersion={#AppVersion}-preview
+VersionInfoProductTextVersion={#AppVersion}-stable
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -38,11 +38,11 @@ LZMANumFastBytes=64
 LZMANumBlockThreads=1
 PrivilegesRequired=admin
 OutputDir=..\InnoTarget
-OutputBaseFilename=CL-{#AppVersion}-preview_Installer
+OutputBaseFilename=CL-{#AppVersion}-stable_Installer
 
 [Icons]
-Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0; AppUserModelID: "Collapse.CollapseLauncher";
-Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0; Parameters: "hi3cacheupdate"; AppUserModelID: "Collapse.CollapseLauncher";
+Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0; Parameters: "hi3cacheupdate"
 Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
@@ -52,7 +52,8 @@ Source: "..\DeployResource\*"; DestDir: "{app}"; Flags: ignoreversion createalls
 Name: StartAfterInstall; Description: Run application after install
 
 [Run]
-Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse (Preview)"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser;
+Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse (Stable)"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser;
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Collapse"; ValueType: string; ValueName: "AppUserModelId"; ValueData: "Collapse.CollapseLauncher"; Flags: uninsdeletevalue;
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Collapse"; ValueType: string; ValueName: "AppUserModelId"; ValueData: "Collapse.CollapseLauncher"; Flags: uninsdeletekeyifempty uninsdeletevalue;
+Root: HKCR; SubKey: "collapse"; ValueType: string; ValueData: "CollapseLauncher protocol"; Flags: createvalueifdoesntexist uninsdeletekey

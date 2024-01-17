@@ -94,7 +94,7 @@
     "NotifNeverAsk": "Jangan munculkan ini lagi",
     "NotifNoNewNotifs": "Tidak ada notifikasi baru",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Perkakas"
+    "NavigationUtilities": "Perkakas"
   },
 
   "_HomePage": {
@@ -445,6 +445,7 @@
     "Close": "Tutup",
     "UseCurrentDir": "Pakai lokasi saat ini",
     "UseDefaultDir": "Pakai lokasi bawaan",
+    "MoveToDifferentDir": "Pindah ke direktori lain",
     "LocateDir": "Arahkan direktori",
     "Okay": "Oke",
     "OkaySad": "Oke deh... ;-;)",
@@ -528,7 +529,12 @@
     "Taskbar_HideApp": "Sembunyikan jendela Collapse ke taskbar",
     "Taskbar_ShowConsole": "Tampilkan jendela konsol Collapse",
     "Taskbar_HideConsole": "Sembunyikan jendela konsol Collapse ke taskbar",
-    "Taskbar_ExitApp": "Hentikan Collapse Launcher"
+    "Taskbar_ExitApp": "Hentikan Collapse Launcher",
+
+    "LauncherNameOfficial": "Launcher Resmi",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Nama launcher tidak diketahui)"
   },
 
   "_BackgroundNotification": {
@@ -568,6 +574,10 @@
     "RepairCompletedSubtitleNoBroken": "Tidak ada file yang rusak.",
     "ExtremeGraphicsSettingsWarnTitle": "Pengaturan \"Sangat Tinggi\" Terdeteksi!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Kamu telah memilih pengaturan \"Sangat Tinggi\"!\r\nPerlu diingat bahwa pengaturan ini adalah 2x Render Scale dengan MSAA dinyalakan dan pengaturan ini SANGAT TIDAK OPTIMAL! (kecuali kamu lagi pakai NASA Super Computer).\r\n\r\nYakin ingin pilih pengaturan ini?",
+    "MigrateExistingMoveDirectoryTitle": "Memindahkan Lokasi Instalasi untuk: {0}",
+    "MigrateExistingInstallChoiceTitle": "Instalasi Eksisting untuk {0} Terdeteksi!",
+    "MigrateExistingInstallChoiceSubtitle1": "Kamu memiliki instalasi game yang sudah terpasang menggunakan {0} pada direktori ini:",
+    "MigrateExistingInstallChoiceSubtitle2": "Kamu memiliki opsi untuk memindahkan data game yang sudah ada ke dalam direktori lainnya atau tetap menggunakan direktori yang sudah ada. Kamu direkomendasikan untuk menggunakan direktori yang sudah ada agar kamu masih tetap dapat menjalankan game menggunakan {0}.",
     "ExistingInstallTitle": "Instalasi yang sudah ada telah terdeteksi!",
     "ExistingInstallSubtitle": "Game sudah terpasang di lokasi ini:\r\n\r\n{0}\r\n\r\nKamu disarankan untuk pindahkan game ini ke Collapse Launcher.\r\nNamun, kamu masih dapat menggunakan launcher bawaan untuk menjalankan game ini.\r\n\r\nMau dilanjutkan?",
     "ExistingInstallBHI3LTitle": "Instalasi yang sudah ada pada BetterHI3Launcher telah terdeteksi!",
@@ -638,7 +648,29 @@
     "MeteredConnectionWarningSubtitle": "Koneksi internet anda saat ini terdeteksi sebagai koneksi \"berbayar\"! Melanjutkan proses update dapat menambah tagihan internet dari penyedia layanan internet. Apakah kamu ingin melanjutkan aksi ini?",
 
     "ResetKbShortcutsTitle": "Apa kamu yakin untuk mengatur ulang semua pintasan?",
-    "ResetKbShortcutsSubtitle": "Semua pintasan akan diatur ulang ke kombinasi tombol bawaan.\n\nApakah kamu ingin melanjutkan aksi ini?\n\nCatatan: Aksi ini tidak berdampak pada bagaimana Collapse bekerja dan kamu tetap dapat mengubah kombinasi pintasan di menu Pintasan Keyboard."
+    "ResetKbShortcutsSubtitle": "Semua pintasan akan diatur ulang ke kombinasi tombol bawaan.\n\nApakah kamu ingin melanjutkan aksi ini?\n\nCatatan: Aksi ini tidak berdampak pada bagaimana Collapse bekerja dan kamu tetap dapat mengubah kombinasi pintasan di menu Pintasan Keyboard.",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Ruang untuk Drive: {0} Tidak Cukup!",
+    "OperationErrorDiskSpaceInsufficientMsg": "Kamu tidak memiliki cukup ruang pada drive {2} untuk melakukan operasi ini!\r\n \r\nRuang Tersedia: {0}\r\nRuang yang Diperlukan: {1}\r\n\r\nPastikan kamu memiliki ruang yang cukup sebelum melanjutkan.",
+
+    "OperationWarningNotCancellableTitle": "Perhatian: Operasi ini TIDAK DAPAT DIBATALKAN!",
+    "OperationWarningNotCancellableMsg1": "Kamu perlu memastikan terlebih dahulu bahwa tidak ada task berat yang sedang berjalan pada komputermu untuk menghindari terjadinya issue saat operasi ini sedang berlangsung. Perlu diperhatikan bahwa kamu ",
+    "OperationWarningNotCancellableMsg2": "TIDAK DAPAT MEMBATALKAN PROSES INI",
+    "OperationWarningNotCancellableMsg3": " saat proses sedang berjalan!\r\n\r\nKlik \"",
+    "OperationWarningNotCancellableMsg4": "\" untuk memulai proses atau \"",
+    "OperationWarningNotCancellableMsg5": "\" untuk membatalkan."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Memindahkan: ",
+    "SpeedIndicatorTitle": "Kecepatan: ",
+    "FileCountIndicatorTitle": "File terproses: ",
+    "LocateFolderSubtitle": "Pilih lokasi untuk memindahkan file/folder ke dalam lokasi target.",
+    "ChoosePathTextBoxPlaceholder": "Pilih lokasi target...",
+    "ChoosePathButton": "Pilih Lokasi",
+    "ChoosePathErrorPathUnselected": "Pilih lokasi sebelum melanjutkan!",
+    "ChoosePathErrorPathNotExist": "Lokasi tidak ditemukan!",
+    "ChoosePathErrorPathNoPermission": "Kamu tidak memiliki izin untuk mengakses lokasi ini! Silahkan pilih lokasi lain!"
   },
 
   "_InstallMgmt": {
