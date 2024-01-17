@@ -287,6 +287,29 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Informational
             );
 
+
+        public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName)
+        {
+            string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
+
+            TextBlock contentTextBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle1, launcherName));
+            contentTextBlock.AddTextBlockNewLine(2);
+            contentTextBlock.AddTextBlockLine(existingGamePath, FontWeights.SemiBold);
+            contentTextBlock.AddTextBlockNewLine(2);
+            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle2, launcherName));
+
+            return await SpawnDialog(
+                string.Format(Lang._Dialogs.MigrateExistingInstallChoiceTitle, gameFullnameString),
+                contentTextBlock,
+                Content,
+                Lang._Misc.Cancel,
+                Lang._Misc.UseCurrentDir,
+                Lang._Misc.MoveToDifferentDir,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Informational
+            );
+        }
         public static async Task<ContentDialogResult> Dialog_SteamConversionNoPermission(UIElement Content) =>
             await SpawnDialog(
                         Lang._Dialogs.SteamConvertNeedMigrateTitle,
@@ -413,6 +436,29 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Error
                 );
+
+        public static async Task<ContentDialogResult> Dialog_WarningOperationNotCancellable(UIElement Content)
+        {
+            TextBlock warningMessage = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg1);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg2, FontWeights.Bold);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg3);
+            warningMessage.AddTextBlockLine(Lang._Misc.Yes, FontWeights.SemiBold);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg4);
+            warningMessage.AddTextBlockLine(Lang._Misc.NoCancel, FontWeights.SemiBold);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg5);
+
+            return await SpawnDialog(
+                        Lang._Dialogs.OperationWarningNotCancellableTitle,
+                        warningMessage,
+                        Content,
+                        Lang._Misc.NoCancel,
+                        Lang._Misc.Yes,
+                        null,
+                        ContentDialogButton.Primary,
+                        ContentDialogTheme.Warning
+                );
+        }
 
         public static async Task<ContentDialogResult> Dialog_RelocateFolder(UIElement Content) =>
             await SpawnDialog(
