@@ -113,8 +113,7 @@ namespace CollapseLauncher
                 mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang._Misc.Next : null;
             }
 
-            (InnerLauncherConfig.m_window as MainWindow).ContentDialog = mainDialogWindow;
-            ContentDialogResult mainDialogWindowResult = await (InnerLauncherConfig.m_window as MainWindow).ContentDialog.ShowAsync();
+            ContentDialogResult mainDialogWindowResult = await mainDialogWindow.ShowAsync();
             return mainDialogWindowResult == ContentDialogResult.Primary ? choosePathTextBox.Text : null;
         }
 
