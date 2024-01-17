@@ -9,21 +9,19 @@ namespace CollapseLauncher
     {
         private void UpdateCountProcessed(FileMigrationProcessUIRef uiRef, string currentPathProcessed)
         {
-            lock (this)
-            {
-                this.CurrentFileCountMoved++;
-                string fileCountProcessedString = string.Format(Locale.Lang._Misc.PerFromTo,
-                    this.CurrentFileCountMoved,
-                    this.TotalFileCount);
+            lock (this) { this.CurrentFileCountMoved++; }
 
-                lock (uiRef.fileCountIndicatorSubtitle)
+            string fileCountProcessedString = string.Format(Locale.Lang._Misc.PerFromTo,
+                this.CurrentFileCountMoved,
+                this.TotalFileCount);
+
+            lock (uiRef.fileCountIndicatorSubtitle)
+            {
+                this.parentUI.DispatcherQueue.TryEnqueue(() =>
                 {
-                    this.parentUI.DispatcherQueue.TryEnqueue(() =>
-                    {
-                        uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
-                        uiRef.pathActivitySubtitle.Text = currentPathProcessed;
-                    });
-                }
+                    uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
+                    uiRef.pathActivitySubtitle.Text = currentPathProcessed;
+                });
             }
         }
 
