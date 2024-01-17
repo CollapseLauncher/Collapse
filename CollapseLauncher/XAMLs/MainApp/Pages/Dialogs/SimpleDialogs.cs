@@ -664,7 +664,7 @@ namespace CollapseLauncher.Dialogs
                 panel,
                 Content,
                 Lang._Misc.Cancel,
-                "Yes, create it",
+                "Yes, continue",
                 dialogTheme: ContentDialogTheme.Warning
                 );
 
@@ -679,13 +679,13 @@ namespace CollapseLauncher.Dialogs
             pathText.Inlines.Add(new Run() { Text = "Location: " });
             pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
             panel.Children.Add(pathText);
-            
+
             if (play)
             {
                 panel.Children.Add(new TextBlock { Text = "Notes:", FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
-                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = " • Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
-            
+
             return await SpawnDialog(
                 "Success!",
                 panel,
@@ -699,8 +699,8 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
 
-            panel.Children.Add(new TextBlock { Text = "A shortcut will be added to every Steam profile in this computer.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = "If a profile already has this region added, the assets related to it will be checked and downloaded if corrupted/inexistant.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = "A shortcut will be added to every Steam profile in this computer.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = "If already added, the assets related to the shortcut will be verified.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
 
             CheckBox playOnLoad = new CheckBox()
             {
@@ -715,7 +715,7 @@ namespace CollapseLauncher.Dialogs
                 panel,
                 Content,
                 Lang._Misc.Cancel,
-                "Yes, create it",
+                "Yes, continue",
                 dialogTheme: ContentDialogTheme.Warning
                 );
 

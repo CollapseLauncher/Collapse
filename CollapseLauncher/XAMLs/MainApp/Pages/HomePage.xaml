@@ -729,7 +729,7 @@
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                                 <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
                                                 <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
-                                                <Button x:Name="ShortcutButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="ShortcutButton_Click">
+                                                <Button x:Name="ShortcutButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ShortcutButton_Click">
                                                     <Button.Content>
                                                         <StackPanel Orientation="Horizontal" Margin="4,0">
                                                             <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf08e;" FontSize="18"/>
@@ -737,10 +737,10 @@
                                                         </StackPanel>
                                                     </Button.Content>
                                                 </Button>
-                                                <Button x:Name="AddToSteamButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="AddToSteamButton_Click">
+                                                <Button x:Name="AddToSteamButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="AddToSteamButton_Click">
                                                     <Button.Content>
                                                         <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                            <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xf1b7;" FontSize="18"/>
+                                                            <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xf1b6;" FontSize="20"/>
                                                             <TextBlock Text="Add To Steam" FontWeight="Medium" Margin="8,0,0,0"/>
                                                         </StackPanel>
                                                     </Button.Content>
