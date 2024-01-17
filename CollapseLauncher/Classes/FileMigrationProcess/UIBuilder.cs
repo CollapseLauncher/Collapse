@@ -147,7 +147,11 @@ namespace CollapseLauncher
                     Text = Locale.Lang._FileMigrationProcess.PathActivityPanelTitle
                 });
             TextBlock pathActivitySubtitle = pathActivityPanel.AddElementToStackPanel(
-                new TextBlock { Text = Locale.Lang._Misc.Idle, FontSize = 18d, TextWrapping = TextWrapping.Wrap });
+                new TextBlock {
+                    Text = Locale.Lang._Misc.Idle,
+                    FontSize = 18d,
+                    TextTrimming = TextTrimming.CharacterEllipsis
+                });
 
             // Build speed indicator
             TextBlock speedIndicator = mainGrid.AddElementToGridRow(
