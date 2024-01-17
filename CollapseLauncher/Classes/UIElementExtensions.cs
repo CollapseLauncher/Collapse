@@ -103,7 +103,7 @@ namespace CollapseLauncher
             while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
         }
 
-        internal static void AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 11d)
+        internal static void AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
         {
             if (!weight.HasValue) weight = FontWeights.Normal;
             textBlock.Inlines.Add(new Run { Text = message, FontWeight = weight.Value, FontSize = size });
