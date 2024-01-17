@@ -1,25 +1,19 @@
+using CollapseLauncher.CustomControls;
+using Hi3Helper;
+using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
-using CommunityToolkit.WinUI;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hi3Helper;
-using Hi3Helper.Preset;
-using CollapseLauncher.Statics;
-using CollapseLauncher.ShortcutsUtils;
-using CollapseLauncher.CustomControls;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Windows.ApplicationModel.Preview.Notes;
-using Windows.Devices.Enumeration;
-using Microsoft.UI.Xaml.Shapes;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -651,10 +645,12 @@ namespace CollapseLauncher.Dialogs
         #region Shortcut Creator Dialogs
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
-            panel.Children.Add(new TextBlock { Text = "A shortcut will be created in the following path:", Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = path, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(8, 4, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = "If there is already a shortcut with the same name in this folder, it will be replaced.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = "A shortcut will be created in the following path:", Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
+            panel.Children.Add(pathText);
+            panel.Children.Add(new TextBlock { Text = "If there is already a shortcut with the same name in this folder, it will be replaced.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
 
             CheckBox playOnLoad = new CheckBox() { 
                 Content = new TextBlock { Text = "Automatically start game after using this shortcut", TextWrapping = TextWrapping.Wrap },
@@ -677,13 +673,17 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
-            panel.Children.Add(new TextBlock { Text = "A new shiny shortcut was added to:", Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = path, FontWeight = FontWeights.Bold, Margin = new Thickness(8, 4, 0, 4) });
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = "A shiny new shortcut was created!", HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            pathText.Inlines.Add(new Run() { Text = "Location: " });
+            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
+            panel.Children.Add(pathText);
             
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = "Notes:", FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
             
             return await SpawnDialog(
@@ -697,10 +697,10 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement Content)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
 
-            panel.Children.Add(new TextBlock { Text = "A shortcut will be added to every Steam profile in this computer.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = "If a profile already has this region added, the assets related to it will be checked and downloaded if corrupted/inexistant.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = "A shortcut will be added to every Steam profile in this computer.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = "If a profile already has this region added, the assets related to it will be checked and downloaded if corrupted/inexistant.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
 
             CheckBox playOnLoad = new CheckBox()
             {
@@ -722,15 +722,17 @@ namespace CollapseLauncher.Dialogs
             return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
         }
 
-        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFinal(UIElement Content, string[] info, bool play = false)
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
-            panel.Children.Add(new TextBlock { Text = "A new shiny shortcut was added to:", Margin = new Thickness(0, 2, 0, 4) });
-
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = "A new shiny shortcut was added every Steam profile in this computer!", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = "Notes:", FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = " • Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
+            panel.Children.Add(new TextBlock { Text = " • Running this process again will fix any corrupted/missing images belonging to the shortcut.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = " • New shortcuts will only be shown after Steam is reloaded.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
 
             return await SpawnDialog(
                 "Success!",

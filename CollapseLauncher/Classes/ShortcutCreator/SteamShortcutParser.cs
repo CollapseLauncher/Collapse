@@ -26,17 +26,17 @@ namespace CollapseLauncher.ShortcutUtils
 
         public bool Contains(SteamShortcut shortcut) => _shortcuts.FindIndex(x => x.preliminaryAppID == shortcut.preliminaryAppID) != -1;
 
-        public bool Insert(PresetConfigV2 preset, bool play = false)
+        public void Insert(PresetConfigV2 preset, bool play = false)
         {
             SteamShortcut shortcut = new SteamShortcut(preset, play);
 
             if (Contains(shortcut))
-                return false;
-
+            {
+                _shortcuts.RemoveAll(x => x.preliminaryAppID == shortcut.preliminaryAppID);
+            }
+                
             _shortcuts.Add(shortcut);
             shortcut.MoveImages(_path, preset);
-
-            return true;
         }
 
         private void Load()
@@ -80,19 +80,6 @@ namespace CollapseLauncher.ShortcutUtils
         }
 
         #region Individual Shortcut Parser
-        private enum ParseType
-        {
-            FindType,
-            NameStr,
-            ValueStr,
-            ValueAppid,
-            NameBool,
-            ValueBool,
-            ValueTime,
-            NameTags,
-            ValueTags
-        }
-
         public SteamShortcut ParseShortcut(string line)
         {
             byte[] ln = ANSI.GetBytes(line);
@@ -217,6 +204,19 @@ namespace CollapseLauncher.ShortcutUtils
             newShortcut.preliminaryAppID = SteamShortcut.GenerateAppId(newShortcut.Exe, newShortcut.AppName).ToString();
 
             return newShortcut;
+        }
+
+        private enum ParseType
+        {
+            FindType,
+            NameStr,
+            ValueStr,
+            ValueAppid,
+            NameBool,
+            ValueBool,
+            ValueTime,
+            NameTags,
+            ValueTags
         }
         #endregion
     }

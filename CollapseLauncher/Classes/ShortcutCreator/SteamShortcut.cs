@@ -142,8 +142,11 @@ namespace CollapseLauncher.ShortcutsUtils
 
         private static string SHA1Hash(string path)
         {
+            if (!File.Exists(path))
+                return "";
             FileStream stream = File.OpenRead(path);
             var hash = System.Security.Cryptography.SHA1.Create().ComputeHash(stream);
+            stream.Close();
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
@@ -155,11 +158,11 @@ namespace CollapseLauncher.ShortcutsUtils
 
             if (hash.ToLower() == asset.SHA1) return;
 
-            FileInfo info = new FileInfo(steamPath);
-            await DownloadImage(info, asset.URL, new CancellationToken());
-
             for (int i = 0; i < 2; i++)
             {
+                FileInfo info = new FileInfo(steamPath);
+                await DownloadImage(info, asset.URL, new CancellationToken());
+
                 hash = SHA1Hash(steamPath);
 
                 if (hash.ToLower() == asset.SHA1) return;
@@ -170,8 +173,8 @@ namespace CollapseLauncher.ShortcutsUtils
                 LogWriteLine("Trying again...", Hi3Helper.LogType.Error);
             }
             
-            ErrorSender.SendException(new Exception("After two tries, " + asset.URL + " could not be downloaded successfully."), ErrorType.Connection);
-
+            LogWriteLine("After two tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            return;
         }
 
         private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)

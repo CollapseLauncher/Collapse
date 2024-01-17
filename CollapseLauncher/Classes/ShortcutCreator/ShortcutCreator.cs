@@ -1,18 +1,18 @@
-﻿using System.IO;
-using System.Linq;
-using Microsoft.Win32;
+﻿using CollapseLauncher.ShortcutUtils;
 using Hi3Helper.Preset;
+using Microsoft.Win32;
+using System.IO;
+using System.Linq;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using CollapseLauncher.ShortcutUtils;
-using System.Threading.Tasks;
+
 
 
 namespace CollapseLauncher.ShortcutsUtils
 {
     public static class ShortcutCreator
     {
-        public static async void CreateShortcut(string path, PresetConfigV2 preset, bool play = false)
+        public static void CreateShortcut(string path, PresetConfigV2 preset, bool play = false)
         {
             string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
             string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
@@ -29,9 +29,7 @@ namespace CollapseLauncher.ShortcutsUtils
 
             string fullPath = Path.Combine(path, shortcutName);
 
-            File.Delete(fullPath);
-
-            using (StreamWriter writer = new StreamWriter(fullPath))
+            using (StreamWriter writer = new StreamWriter(fullPath, false))
             {
                 writer.WriteLine(string.Format("[InternetShortcut]\nURL={0}\nIconIndex=0\nIconFile={1}", url, icon));
             }
@@ -46,7 +44,11 @@ namespace CollapseLauncher.ShortcutsUtils
         {
             var paths = GetShortcutsPath();
 
-            if (paths == null || paths.Length == 0) return;
+            if (paths == null || paths.Length == 0)
+            {
+                ErrorSender.SendException(new System.Exception("There are no valid Steam profiles in your system."), ErrorType.Unhandled);
+                return;
+            }
 
             foreach (string path in paths)
             {
@@ -55,12 +57,8 @@ namespace CollapseLauncher.ShortcutsUtils
                 var splitPath = path.Split('\\');
                 string userId = splitPath[splitPath.Length - 3];
 
-                if (!parser.Insert(preset, play))
-                {
-                    LogWriteLine(string.Format("{0} already has this region added to Steam!", userId), Hi3Helper.LogType.Error);
-                    return;
-                }
-
+                parser.Insert(preset, play);
+                
                 parser.Save();
                 LogWriteLine(string.Format("Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
             }

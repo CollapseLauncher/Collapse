@@ -1,7 +1,8 @@
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
-using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.ShortcutsUtils;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
@@ -42,8 +43,6 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
-using CollapseLauncher.ShortcutsUtils;
-using Hi3Helper.Data;
 
 namespace CollapseLauncher.Pages
 {
@@ -2011,7 +2010,7 @@ namespace CollapseLauncher.Pages
                 return;
 
             ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2);
-            await Dialog_SteamShortcutCreationSuccess(this, null, result.Item2);
+            await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
         }
 
         private async void ShortcutButton_Click(object sender, RoutedEventArgs e)
@@ -2021,7 +2020,7 @@ namespace CollapseLauncher.Pages
             if (string.IsNullOrEmpty(folder))
                 return;
 
-            if (!ConverterTool.IsUserHasPermission(folder))
+            if (!IsUserHasPermission(folder))
             {
                 await Dialog_InsufficientWritePermission(sender as UIElement, folder);
                 return;
