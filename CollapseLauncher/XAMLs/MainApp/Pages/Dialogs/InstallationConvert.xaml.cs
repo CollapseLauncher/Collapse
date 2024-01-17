@@ -239,6 +239,9 @@ namespace CollapseLauncher.Dialogs
             PresetConfigV2 SourceRet = null;
             PresetConfigV2 TargetRet = null;
 
+            if (SourceGame.SelectedItem == null || TargetGame.SelectedItem == null)
+                throw new OperationCanceledException();
+
             string sourceGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(SourceGame.SelectedItem);
             string targetGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(TargetGame.SelectedItem);
 
