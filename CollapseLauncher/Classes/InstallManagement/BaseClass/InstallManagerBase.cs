@@ -629,9 +629,17 @@ namespace CollapseLauncher.InstallManager.Base
             // So checking the fully downloaded single package is unnecessary.
         }
 
-        public async Task MoveGameLocation()
+        public async ValueTask<bool> MoveGameLocation()
         {
+            // Get the Game folder
+            string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
+            // Initialize and run the FileMigration utility
+            int migrationOptionReturn = await PerformMigrationOption(GameFolder, MigrateFromLauncherType.Unknown, true);
+            if (migrationOptionReturn == -1) return false;
+
+            // If all the operation is complete, then return true as completed
+            return true;
         }
 
         public async ValueTask<bool> UninstallGame()
@@ -1108,7 +1116,7 @@ namespace CollapseLauncher.InstallManager.Base
             return 1;
         }
 
-        private async ValueTask<int> PerformMigrationOption(string pathIfUseExistingSelected, MigrateFromLauncherType launcherType)
+        private async ValueTask<int> PerformMigrationOption(string pathIfUseExistingSelected, MigrateFromLauncherType launcherType, bool isMoveOperation = false)
         {
             string launcherName = launcherType switch
             {
@@ -1118,15 +1126,18 @@ namespace CollapseLauncher.InstallManager.Base
                 _ => Lang._Misc.LauncherNameUnknown,
             };
 
-            ContentDialogResult dialogResult = await Dialog_MigrationChoiceDialog(
-                this._parentUI,
-                pathIfUseExistingSelected,
-                this._gameVersionManager.GamePreset.GameName,
-                this._gameVersionManager.GamePreset.ZoneName,
-                launcherName);
+            if (!isMoveOperation)
+            {
+                ContentDialogResult dialogResult = await Dialog_MigrationChoiceDialog(
+                    this._parentUI,
+                    pathIfUseExistingSelected,
+                    this._gameVersionManager.GamePreset.GameName,
+                    this._gameVersionManager.GamePreset.ZoneName,
+                    launcherName);
 
-            if (dialogResult == ContentDialogResult.None) return -1; // Cancel the installation
-            if (dialogResult == ContentDialogResult.Primary) return 1; // Use an existing path or continue to another routine
+                if (dialogResult == ContentDialogResult.None) return -1; // Cancel the installation
+                if (dialogResult == ContentDialogResult.Primary) return 1; // Use an existing path or continue to another routine
+            }
 
             // If secondary option is selected, then do the directory migration
             string translatedGameFullname = string.Format("{0} - {1}",
@@ -1145,6 +1156,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // If it's finished, then set the game data location to the new one
             _gameVersionManager.UpdateGamePath(newDirectoryPath, false);
+
             return 0; // Return 0 as completed.
         }
 

@@ -13,7 +13,7 @@ namespace CollapseLauncher.Interfaces
         Task StartPostInstallVerification();
         void ApplyGameConfig(bool forceUpdateToLatest = false);
 
-        Task MoveGameLocation();
+        ValueTask<bool> MoveGameLocation();
         ValueTask<bool> UninstallGame();
         void Flush();
         ValueTask<bool> IsPreloadCompleted(CancellationToken token = default);

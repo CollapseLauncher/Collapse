@@ -1656,6 +1656,23 @@ namespace CollapseLauncher.Pages
             if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
             StopGame(CurrentGameProperty._GameVersion.GamePreset);
         }
+
+        private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (await CurrentGameProperty._GameInstall.MoveGameLocation())
+                {
+                    CurrentGameProperty._GameInstall.ApplyGameConfig();
+                    ReturnToHomePage();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex, ErrorType.Unhandled);
+            }
+        }
         #endregion
 
         #region Playtime Buttons
