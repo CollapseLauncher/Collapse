@@ -2021,7 +2021,7 @@ namespace CollapseLauncher.Pages
 
         private async void ShortcutButton_Click(object sender, RoutedEventArgs e)
         {
-            string folder = await FileDialogNative.GetFolderPicker();
+            string folder = await FileDialogNative.GetFolderPicker(Lang._HomePage.CreateShortcut_FolderPicker);
 
             if (string.IsNullOrEmpty(folder))
                 return;

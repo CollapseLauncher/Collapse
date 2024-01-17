@@ -733,7 +733,7 @@
                                                     <Button.Content>
                                                         <StackPanel Orientation="Horizontal" Margin="4,0">
                                                             <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf08e;" FontSize="18"/>
-                                                            <TextBlock Text="Create shortcut" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
                                                         </StackPanel>
                                                     </Button.Content>
                                                 </Button>
@@ -741,7 +741,7 @@
                                                     <Button.Content>
                                                         <StackPanel Orientation="Horizontal" Margin="4,0">
                                                             <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xf1b6;" FontSize="20"/>
-                                                            <TextBlock Text="Add To Steam" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
                                                         </StackPanel>
                                                     </Button.Content>
                                                 </Button>

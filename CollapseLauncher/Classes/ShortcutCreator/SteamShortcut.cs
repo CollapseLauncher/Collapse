@@ -107,12 +107,12 @@ namespace CollapseLauncher.ShortcutsUtils
             return appId >> 32;
         }
 
-        /*private uint GenerateGridId(string exe, string appname)
+        private static uint GenerateGridId(string exe, string appname)
         {
             uint appId = GeneratePreliminaryId(exe, appname);
 
             return (appId >> 32) - 0x10000000;
-        }*/
+        }
 
         public void MoveImages(string path, PresetConfigV2 preset)
         {
@@ -126,18 +126,18 @@ namespace CollapseLauncher.ShortcutsUtils
             SteamAssetCollection assets = preset.ZoneSteamAssets;
 
             // Game background
-            CopyImage(gridPath, assets.Hero, "_hero");
+            GetImageFromUrl(gridPath, assets.Hero, "_hero");
 
             // Game logo
-            CopyImage(gridPath, assets.Logo, "_logo");
+            GetImageFromUrl(gridPath, assets.Logo, "_logo");
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            CopyImage(gridPath, assets.Banner, "p");
+            GetImageFromUrl(gridPath, assets.Banner, "p");
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            CopyImage(gridPath, assets.Preview, "");
+            GetImageFromUrl(gridPath, assets.Preview, "");
         }
 
         private static string MD5Hash(string path)
@@ -150,7 +150,7 @@ namespace CollapseLauncher.ShortcutsUtils
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
-        private async void CopyImage(string gridPath, SteamAsset asset, string steamSuffix)
+        private async void GetImageFromUrl(string gridPath, SteamAsset asset, string steamSuffix)
         {
             string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
 
@@ -158,7 +158,7 @@ namespace CollapseLauncher.ShortcutsUtils
 
             if (hash.ToLower() == asset.MD5) return;
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 FileInfo info = new FileInfo(steamPath);
                 await DownloadImage(info, asset.URL, new CancellationToken());
@@ -170,10 +170,9 @@ namespace CollapseLauncher.ShortcutsUtils
                 File.Delete(steamPath);
 
                 LogWriteLine(string.Format("Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
-                LogWriteLine("Trying again...", Hi3Helper.LogType.Error);
             }
             
-            LogWriteLine("After two tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            LogWriteLine("After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
             return;
         }
 

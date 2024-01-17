@@ -646,25 +646,25 @@ namespace CollapseLauncher.Dialogs
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = "A shortcut will be created in the following path:", Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1, Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
             TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
             pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
             panel.Children.Add(pathText);
-            panel.Children.Add(new TextBlock { Text = "If there is already a shortcut with the same name in this folder, it will be replaced.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
 
             CheckBox playOnLoad = new CheckBox() { 
-                Content = new TextBlock { Text = "Automatically start game after using this shortcut", TextWrapping = TextWrapping.Wrap },
+                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
                 Margin = new Thickness(0, 4, 0, -8),
                 HorizontalAlignment = HorizontalAlignment.Center
             };    
             panel.Children.Add(playOnLoad);
         
             ContentDialogResult result = await SpawnDialog(
-                "Are you sure you want to continue?",
+                Lang._Dialogs.ShortcutCreationConfirmTitle,
                 panel,
                 Content,
                 Lang._Misc.Cancel,
-                "Yes, continue",
+                Lang._Misc.YesContinue,
                 dialogTheme: ContentDialogTheme.Warning
                 );
 
@@ -674,20 +674,20 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = "A shiny new shortcut was created!", HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
             TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
-            pathText.Inlines.Add(new Run() { Text = "Location: " });
+            pathText.Inlines.Add(new Run() { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle2 });
             pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
             panel.Children.Add(pathText);
 
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = "Notes:", FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
-                panel.Children.Add(new TextBlock { Text = " • Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
 
             return await SpawnDialog(
-                "Success!",
+                Lang._Dialogs.ShortcutCreationSuccessTitle,
                 panel,
                 Content,
                 Lang._Misc.Close,
@@ -699,23 +699,23 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
 
-            panel.Children.Add(new TextBlock { Text = "A shortcut will be added to every Steam profile in this computer.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = "If already added, the assets related to the shortcut will be verified.", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
 
             CheckBox playOnLoad = new CheckBox()
             {
-                Content = new TextBlock { Text = "Automatically start game after using this shortcut", TextWrapping = TextWrapping.Wrap },
+                Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
                 Margin = new Thickness(0, 4, 0, -8),
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             panel.Children.Add(playOnLoad);
 
             ContentDialogResult result = await SpawnDialog(
-                "Are you sure you want to continue?",
+                Lang._Dialogs.SteamShortcutCreationConfirmTitle,
                 panel,
                 Content,
                 Lang._Misc.Cancel,
-                "Yes, continue",
+                Lang._Misc.YesContinue,
                 dialogTheme: ContentDialogTheme.Warning
                 );
 
@@ -725,17 +725,17 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = "A new shiny shortcut was added every Steam profile in this computer!", HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = "Notes:", FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = " • Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
-            panel.Children.Add(new TextBlock { Text = " • Running this process again will fix any corrupted/missing images belonging to the shortcut.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = " • New shortcuts will only be shown after Steam is reloaded.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
 
             return await SpawnDialog(
-                "Success!",
+                Lang._Dialogs.SteamShortcutCreationSuccessTitle,
                 panel,
                 Content,
                 Lang._Misc.Close,
