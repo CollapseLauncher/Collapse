@@ -749,6 +749,10 @@ namespace CollapseLauncher.Pages
                         ConvertVersionButton.IsEnabled = false;
                         CustomArgsTextBox.IsEnabled = false;
                         OpenScreenshotFolderButton.IsEnabled = false;
+                        ConvertVersionButton.Visibility = Visibility.Collapsed;
+                        RepairGameButton.Visibility = Visibility.Collapsed;
+                        UninstallGameButton.Visibility = Visibility.Collapsed;
+                        MoveGameLocationButton.Visibility = Visibility.Collapsed;
                     }
                     break;
             }
@@ -817,6 +821,7 @@ namespace CollapseLauncher.Pages
                         UninstallGameButton.IsEnabled = false;
                         ConvertVersionButton.IsEnabled = false;
                         CustomArgsTextBox.IsEnabled = false;
+                        MoveGameLocationButton.IsEnabled = false;
                         StopGameButton.IsEnabled = true;
 
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
@@ -839,6 +844,7 @@ namespace CollapseLauncher.Pages
 
                     //GameStartupSetting.IsEnabled = true;
                     RepairGameButton.IsEnabled = true;
+                    MoveGameLocationButton.IsEnabled = true;
                     UninstallGameButton.IsEnabled = true;
                     ConvertVersionButton.IsEnabled = true;
                     CustomArgsTextBox.IsEnabled = true;
