@@ -130,6 +130,7 @@
     "GameSettings_Panel2RepairGame": "Reparar Juego",
     "GameSettings_Panel2UninstallGame": "Desinstalar Juego",
     "GameSettings_Panel2ConvertVersion": "Convertir Versión",
+    "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
     "GameSettings_Panel3": "Argumentos Personalizados de Arranque",
     "GameSettings_Panel4": "Otros",
@@ -370,8 +371,8 @@
     "Update_CurVer": "Versión Actual:",
     "Update_CheckBtn": "Buscar Actualización",
     "Update_ForceBtn": "Forzar Actualización",
-    "Update_NewVer1": "¡Una actualización",
-    "Update_NewVer2": "está disponible!",
+    "Update_NewVer1": "¡Nueva",
+    "Update_NewVer2": "Actualización disponible!",
     "Update_LatestVer": "Estás usando la última versión.",
 
     "AppFiles": "Gestión de Archivos",
