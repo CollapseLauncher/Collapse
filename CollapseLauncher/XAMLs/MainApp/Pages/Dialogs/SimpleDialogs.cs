@@ -18,6 +18,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Windows.ApplicationModel.Preview.Notes;
+using Windows.Devices.Enumeration;
+using Microsoft.UI.Xaml.Shapes;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -646,41 +648,44 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
-        public static async Task<ContentDialogResult> Dialog_ShortcutCreationConfirm(UIElement Content, string path, bool play = false)
+        #region Shortcut Creator Dialogs
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical };
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
             panel.Children.Add(new TextBlock { Text = "A shortcut will be created in the following path:", Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = path, FontWeight = FontWeights.Bold, Margin = new Thickness(8, 4, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = path, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(8, 4, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = "If there is already a shortcut with the same name in this folder, it will be replaced.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
 
-            if (play)
-            {
-                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", Margin = new Thickness(0, 4, 0, 4) });
-            }
-
-            panel.Children.Add(new TextBlock { Text = "If there already is a shortcut with the same name in this folder, it will be replaced.", Margin = new Thickness(0, 4, 0, 4) });
-
-            return await SpawnDialog(
+            CheckBox playOnLoad = new CheckBox() { 
+                Content = new TextBlock { Text = "Automatically start game after using this shortcut", TextWrapping = TextWrapping.Wrap },
+                Margin = new Thickness(0, 4, 0, -8),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };    
+            panel.Children.Add(playOnLoad);
+        
+            ContentDialogResult result = await SpawnDialog(
                 "Are you sure you want to continue?",
                 panel,
                 Content,
                 Lang._Misc.Cancel,
-                Lang._Misc.Yes,
+                "Yes, create it",
                 dialogTheme: ContentDialogTheme.Warning
                 );
+
+            return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
         }
 
         public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical };
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
             panel.Children.Add(new TextBlock { Text = "A new shiny shortcut was added to:", Margin = new Thickness(0, 2, 0, 4) });
             panel.Children.Add(new TextBlock { Text = path, FontWeight = FontWeights.Bold, Margin = new Thickness(8, 4, 0, 4) });
             
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", Margin = new Thickness(0, 4, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
             }
-                
-
+            
             return await SpawnDialog(
                 "Success!",
                 panel,
@@ -690,16 +695,42 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, string[] info, bool play = false)
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement Content)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical };
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
+
+            panel.Children.Add(new TextBlock { Text = "A shortcut will be added to every Steam profile in this computer.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = "If a profile already has this region added, the assets related to it will be checked and downloaded if corrupted/inexistant.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+
+            CheckBox playOnLoad = new CheckBox()
+            {
+                Content = new TextBlock { Text = "Automatically start game after using this shortcut", TextWrapping = TextWrapping.Wrap },
+                Margin = new Thickness(0, 4, 0, -8),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            panel.Children.Add(playOnLoad);
+
+            ContentDialogResult result = await SpawnDialog(
+                "Are you sure you want to continue?",
+                panel,
+                Content,
+                Lang._Misc.Cancel,
+                "Yes, create it",
+                dialogTheme: ContentDialogTheme.Warning
+                );
+
+            return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
+        }
+
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFinal(UIElement Content, string[] info, bool play = false)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 400 };
             panel.Children.Add(new TextBlock { Text = "A new shiny shortcut was added to:", Margin = new Thickness(0, 2, 0, 4) });
 
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", Margin = new Thickness(0, 4, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = "Using this shortcut will start the game after loading the region.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
             }
-
 
             return await SpawnDialog(
                 "Success!",
@@ -709,6 +740,7 @@ namespace CollapseLauncher.Dialogs
                 dialogTheme: ContentDialogTheme.Success
                 );
         }
+        #endregion
 
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
