@@ -94,7 +94,7 @@
     "NotifNeverAsk": "Nicht mehr anzeigen",
     "NotifNoNewNotifs": "Keine neuen Benachrichtigungen",
     "NavigationMenu": "Menü",
-    "NavigationUtilities":  "Werkzeuge"
+    "NavigationUtilities": "Werkzeuge"
   },
 
   "_HomePage": {
@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "Acryl-Weichzeichner-Effekt verwenden",
     "EnableDownloadChunksMerging": "Heruntergeladene Paketstücke zusammenführen",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
@@ -444,6 +445,7 @@
     "Close": "Schließen",
     "UseCurrentDir": "Aktuelles Verzeichnis verwenden",
     "UseDefaultDir": "Standardverzeichnis verwenden",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "Verzeichnis auswählen",
     "Okay": "Okay",
     "OkaySad": "Okay ;-;)",
@@ -461,6 +463,7 @@
     "YesRelocate": "Ja, fortsetzen",
     "YesMigrateIt": "Ja, migriere es",
     "YesConvertIt": "Ja, konvertiere es",
+    "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "Ja, ich habe einen Starken Computer! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Ja, Ort ändern",
 
@@ -471,6 +474,7 @@
     "NoIgnoreIt": "Ignoriere es",
     "NoOtherLocation": "Weiter installieren",
     "NotSelected": "Nicht ausgewählt",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "Englisch (US)",
     "LangNameJP": "Japanisch",
@@ -525,7 +529,12 @@
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",
     "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ExitApp": "Exit Collapse Launcher",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +574,10 @@
     "RepairCompletedSubtitleNoBroken": "Keine fehlerhaften Dateien gefunden.",
     "ExtremeGraphicsSettingsWarnTitle": "Sehr hohe Voreinstellung gewählt!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Du bist dabei, die Voreinstellung auf \"Sehr Hoch\" zu setzen!\nDie Voreinstellung \"Sehr hoch\" ist im Wesentlichen ein 2-fache Render-Skalierung mit MSAA aktiviert und ist SEHR UNOPTIMIERT!\n\nBist du sicher, dass du diese Einstellung verwenden willst?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "Vorhandene Installation erkannt!",
     "ExistingInstallSubtitle": "Das Spiel wurde bereits installiert unter:\n\n{0}\n\nEs wird empfohlen das Spiel für bessere Unterstützung und Integration zum Collapse Launcher zu migrieren.\nDu kannst nach wie vor den offiziellen Launcher nutzen, um das Spiel zu starten.\n\nMöchtest du fortfahren?",
     "ExistingInstallBHI3LTitle": "Bestehende Installation über BetterHI3Launcher erkannt!",
@@ -579,6 +592,10 @@
     "SteamConvertFailedSubtitle": "Der Umwandlungsprozess ist fehlgeschlagen :(\nBitte versuche, den Konvertierungsprozess erneut zu starten.",
     "InstallDataCorruptTitle": "Spielinstallation beschädigt",
     "InstallDataCorruptSubtitle": "Eine der heruntergeladenen Dateien ist beschädigt.\n\nServer Hash: {0}\nHeruntergeladener Hash: {1}\n\nMöchtest du versuchen, die Datei erneut herunterzuladen?",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "Download fortsetzen?",
     "InstallDataDownloadResumeSubtitle": "Du hast bereits {0}/{1} des Spiels heruntergeladen.\n\nWillst du den Download fortsetzen?",
     "InsufficientDiskTitle": "Unzureichender Speicherplatz",
@@ -631,7 +648,29 @@
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
     "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu.",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -1029,5 +1068,22 @@
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
     "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Southeast Asia",
+    "Global": "Global",
+    "Mainland China": "Mainland China",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Japan",
+    "Bilibili": "Bilibili"
   }
 }

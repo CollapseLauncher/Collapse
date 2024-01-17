@@ -94,7 +94,7 @@
     "NotifNeverAsk": "ไม่ต้องแสดงอีก",
     "NotifNoNewNotifs": "ไม่มีการแจ้งเตือนใหม่ในขณะนี้",
     "NavigationMenu": "เมนู",
-    "NavigationUtilities":  "ยูทิลิตี้"
+    "NavigationUtilities": "ยูทิลิตี้"
   },
 
   "_HomePage": {
@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "ใช้งานเบลอแบบ Acrylic",
     "EnableDownloadChunksMerging": "รวมแพ็คเกจที่ดาวน์โหลด",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "ลดการใช้ทรัพยากรของ Collapse ลงเมื่อเกมถูกเปิดใช้งาน",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "ปิดการใช้งาน Carousel ในหน้าหลักและลดลำดับการยุติของ Collapse เป็น Below Normal",
@@ -444,6 +445,7 @@
     "Close": "ปิด",
     "UseCurrentDir": "ใช้ไดเรกทอรีปัจจุบัน",
     "UseDefaultDir": "ใช้ไดเรกทอรีเริ่มต้น",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "ค้นหาไดเรกทอรี",
     "Okay": "ตกลง",
     "OkaySad": "ตกลง ;-;)",
@@ -461,6 +463,7 @@
     "YesRelocate": "ยืนยัน, ดำเดินการต่อ",
     "YesMigrateIt": "ยืนยัน, ย้ายข้อมูล",
     "YesConvertIt": "ยืนยัน, แปลงข้อมูล",
+    "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "ยืนยัน, ฉันมีคอมที่โครตแรง! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "ยืนยัน, เปลี่ยนตำแหน่ง",
 
@@ -471,6 +474,7 @@
     "NoIgnoreIt": "ละเว้น",
     "NoOtherLocation": "ทำการติดตั้งต่อไป",
     "NotSelected": "ไม่ได้เลือก",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "ภาษาอังกฤษ (สหรัฐฯ)",
     "LangNameJP": "ภาษาญี่ปุ่น",
@@ -525,7 +529,12 @@
     "Taskbar_HideApp": "ซ่อนหน้าต่างยุบไปที่ทาสก์บาร์",
     "Taskbar_ShowConsole": "แสดงหน้าต่างคอนโซลยุบ",
     "Taskbar_HideConsole": "ซ่อนหน้าต่างคอนโซลยุบไปที่ทาสก์บาร์",
-    "Taskbar_ExitApp": "ออกจาก Collapse Launcher"
+    "Taskbar_ExitApp": "ออกจาก Collapse Launcher",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +574,10 @@
     "RepairCompletedSubtitleNoBroken": "ไม่พบไฟล์ที่เสียหาย",
     "ExtremeGraphicsSettingsWarnTitle": "เลือกพรีเซ็ตการตั้งค่า สูง!",
     "ExtremeGraphicsSettingsWarnSubtitle": "คุณกำลังจะตั้งค่าพรีเซ็ตเป็นสูงมาก!\nค่าพรีเซ็ตที่สูงมากนั้นโดยพื้นฐานแล้วจะเป็นการเรนเดอร์สเกล 2x พร้อมเปิดใช้งาน MSAA และไม่แนะนำเป็นอย่างมาก!\n\nคุณแน่ใจหรือไม่ว่าต้องการใช้การตั้งค่านี้",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "ตรวจพบการติดตั้ง!",
     "ExistingInstallSubtitle": "เกมได้รับการติดตั้งแล้วที่:\n\n{0}\n\nขอแนะนำให้ย้ายเกมไปยัง Collapse Launcher เพื่อการรองรับและปรับแต่งที่ดียิ่งขึ้น\nมั่นใจได้ว่าคุณยังคงสามารถใช้ Official Launcher เพื่อเริ่มเกมได้\n\nคุณต้องการดำเนินการต่อหรือไม่?",
     "ExistingInstallBHI3LTitle": "ตรวจพบการติดตั้งผ่าน BetterHI3Launcher!",
@@ -579,6 +592,10 @@
     "SteamConvertFailedSubtitle": "กระบวนการแปลงล้มเหลว! :(\nโปรดลองเริ่มกระบวนการแปลงอีกครั้ง.",
     "InstallDataCorruptTitle": "การติดตั้งเกมเสียหาย",
     "InstallDataCorruptSubtitle": "ไฟล์ที่ดาวน์โหลดมาไฟล์มีการเสียหาย\n\nแฮชของเซิร์ฟเวอร์: {0}\nแฮชที่ดาวน์โหลด: {1}\n\nคุณต้องการลองดาวน์โหลดไฟล์อีกครั้งหรือไม่",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "ดาวน์โหลดต่อ?",
     "InstallDataDownloadResumeSubtitle": "คุณได้ดาวน์โหลด {0}/{1} ของเกมก่อนหน้านี้\n\nคุณต้องการดาวน์โหลดต่อหรือไม่?",
     "InsufficientDiskTitle": "พื้นที่เก็บข้อมูลไม่เพียงพอ",
@@ -631,7 +648,29 @@
     "MeteredConnectionWarningSubtitle": "การเชื่อมต่ออินเทอร์เน็ตปัจจุบันของคุณถูกตรวจพบว่าเป็น 'ถูกจำกัด'! การดำเนินการอัปเดตต่ออาจมีค่าใช้จ่ายเพิ่มเติมจากผู้ให้บริการอินเทอร์เน็ตของคุณ คุณต้องการดำเนินการต่อหรือไม่?",
 
     "ResetKbShortcutsTitle": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตทางลัดทั้งหมด?",
-    "ResetKbShortcutsSubtitle": "ซึ่งหมายความว่าทุกทางลัดจะถูกเปลี่ยนเป็นคีย์ค่าเริ่มต้น. \n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของ Collapse และคุณยังคงสามารถเปลี่ยนชุดทางลัดได้โดยเข้าไปที่เมนูแป้นพิมพ์ลัด."
+    "ResetKbShortcutsSubtitle": "ซึ่งหมายความว่าทุกทางลัดจะถูกเปลี่ยนเป็นคีย์ค่าเริ่มต้น. \n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของ Collapse และคุณยังคงสามารถเปลี่ยนชุดทางลัดได้โดยเข้าไปที่เมนูแป้นพิมพ์ลัด.",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -1029,5 +1068,22 @@
     "ChangeShortcut_Help2": "・ ตัวแก้ไข - Shift, Control หรือ Alt/Menu",
     "ChangeShortcut_Help3": "・ คีย์ - ตัวอักษร (A ถึง Z) หรือแท็บ",
     "ChangeShortcut_Help4": "คุณสามารถเลือกคอมบิเนชั่นใดก็ได้ที่ประกอบด้วยค่าหนึ่งจากแต่ละหมวดหมู่ ยกเว้นกรณีที่ถูกสงวนโดยระบบหรือถูกใช้งานอยู่แล้ว."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Southeast Asia",
+    "Global": "Global",
+    "Mainland China": "Mainland China",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Japan",
+    "Bilibili": "Bilibili"
   }
 }
