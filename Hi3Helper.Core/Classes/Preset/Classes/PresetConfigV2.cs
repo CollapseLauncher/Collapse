@@ -573,7 +573,7 @@ namespace Hi3Helper.Preset
     public class SteamAsset
     {
         public string? URL { get; set; }
-        public string? SHA1 { get; set; }
+        public string? MD5 { get; set; }
     }
 
     public class GameDataTemplate

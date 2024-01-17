@@ -140,12 +140,12 @@ namespace CollapseLauncher.ShortcutsUtils
             CopyImage(gridPath, assets.Preview, "");
         }
 
-        private static string SHA1Hash(string path)
+        private static string MD5Hash(string path)
         {
             if (!File.Exists(path))
                 return "";
             FileStream stream = File.OpenRead(path);
-            var hash = System.Security.Cryptography.SHA1.Create().ComputeHash(stream);
+            var hash = System.Security.Cryptography.MD5.Create().ComputeHash(stream);
             stream.Close();
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
@@ -154,22 +154,22 @@ namespace CollapseLauncher.ShortcutsUtils
         {
             string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
 
-            string hash = SHA1Hash(steamPath);
+            string hash = MD5Hash(steamPath);
 
-            if (hash.ToLower() == asset.SHA1) return;
+            if (hash.ToLower() == asset.MD5) return;
 
             for (int i = 0; i < 2; i++)
             {
                 FileInfo info = new FileInfo(steamPath);
                 await DownloadImage(info, asset.URL, new CancellationToken());
 
-                hash = SHA1Hash(steamPath);
+                hash = MD5Hash(steamPath);
 
-                if (hash.ToLower() == asset.SHA1) return;
+                if (hash.ToLower() == asset.MD5) return;
 
                 File.Delete(steamPath);
 
-                LogWriteLine(string.Format("Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.SHA1), Hi3Helper.LogType.Error);
+                LogWriteLine(string.Format("Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
                 LogWriteLine("Trying again...", Hi3Helper.LogType.Error);
             }
             
