@@ -16,7 +16,7 @@ namespace CollapseLauncher
 {
     internal partial class FileMigrationProcess
     {
-        private static async ValueTask<string> BuildCheckOutputPathUI(UIElement parentUI, string dialogTitle, string outputPath, bool isFileTransfer)
+        private static async ValueTask<string> BuildCheckOutputPathUI(UIElement parentUI, string dialogTitle, string inputPath, string outputPath, bool isFileTransfer)
         {
             ContentDialogCollapse mainDialogWindow = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
@@ -97,7 +97,7 @@ namespace CollapseLauncher
                     ToggleWarningText(Locale.Lang._FileMigrationProcess.ChoosePathErrorPathNotExist);
                     return;
                 }
-                if (!ConverterTool.IsUserHasPermission(parentPath))
+                if (!ConverterTool.IsUserHasPermission(parentPath) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
                 {
                     ToggleWarningText(Locale.Lang._FileMigrationProcess.ChoosePathErrorPathNoPermission);
                     return;
