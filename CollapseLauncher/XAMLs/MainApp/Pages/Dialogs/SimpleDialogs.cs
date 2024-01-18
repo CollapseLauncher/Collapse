@@ -788,6 +788,19 @@ namespace CollapseLauncher.Dialogs
                 dialogTheme: ContentDialogTheme.Success
                 );
         }
+
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure(UIElement Content)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 350 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            return await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationFailureTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Error
+                );
+        }
         #endregion
 
         public static async Task<ContentDialogResult> SpawnDialog(

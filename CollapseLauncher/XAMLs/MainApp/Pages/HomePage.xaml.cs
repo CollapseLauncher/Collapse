@@ -2038,8 +2038,13 @@ namespace CollapseLauncher.Pages
             if (result.Item1 != ContentDialogResult.Primary)
                 return;
 
-            ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2);
-            await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
+            if (ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
+            {
+                await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
+                return;
+            }
+
+            await Dialog_SteamShortcutCreationFailure(this);
         }
 
         private async void ShortcutButton_Click(object sender, RoutedEventArgs e)

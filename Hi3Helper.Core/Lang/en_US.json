@@ -684,7 +684,10 @@
     "SteamShortcutCreationSuccessSubtitle2": "Notes:",
     "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
-    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded."
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
   },
 
   "_FileMigrationProcess": {

@@ -6,8 +6,6 @@ using System.Linq;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-
-
 namespace CollapseLauncher.ShortcutsUtils
 {
     public static class ShortcutCreator
@@ -40,15 +38,12 @@ namespace CollapseLauncher.ShortcutsUtils
         /// Source:
         /// https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/blob/8bdee1383446d3b81e240a4300baaf337d48ec92/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
 
-        public static void AddToSteam(PresetConfigV2 preset, bool play)
+        public static bool AddToSteam(PresetConfigV2 preset, bool play)
         {
             var paths = GetShortcutsPath();
 
             if (paths == null || paths.Length == 0)
-            {
-                ErrorSender.SendException(new System.Exception("There are no valid Steam profiles in your system."), ErrorType.Unhandled);
-                return;
-            }
+                return false;
 
             foreach (string path in paths)
             {
@@ -62,19 +57,22 @@ namespace CollapseLauncher.ShortcutsUtils
                 parser.Save();
                 LogWriteLine(string.Format("Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
             }
+
+            return true;
         }
 
         public static bool IsAddedToSteam(PresetConfigV2 preset)
         {
             var paths = GetShortcutsPath();
 
-            if (paths == null || paths.Length == 0) return false;
+            if (paths == null || paths.Length == 0)
+                return false;
 
             foreach (string path in paths)
             {
                 SteamShortcutParser parser = new SteamShortcutParser(path);
 
-                if (!parser.Contains(new SteamShortcut(preset)))
+                if (!parser.Contains(new SteamShortcut(preset))) 
                     return false;
             }
 
@@ -84,12 +82,18 @@ namespace CollapseLauncher.ShortcutsUtils
         private static string[] GetShortcutsPath()
         {
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam", false);
+
             if (reg == null)
                 return null;
 
             string steamPath = (string)reg.GetValue("InstallPath", "C:\\Program Files (x86)\\Steam");
 
-            var res = Directory.GetDirectories(steamPath + @"\userdata")
+            string steamUserData = steamPath + @"\userdata";
+
+            if (!Directory.Exists(steamUserData))
+                return null;
+
+            var res = Directory.GetDirectories(steamUserData)
                 .Where(x =>
                     !(x.EndsWith("ac") || x.EndsWith("0") || x.EndsWith("anonymous"))
                     ).ToArray();
