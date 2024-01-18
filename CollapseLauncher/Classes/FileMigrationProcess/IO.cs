@@ -114,7 +114,7 @@ namespace CollapseLauncher
             if (IsSameOutputDrive = inputDriveInfo.Name == outputDriveInfo.Name)
                 return true;
 
-            bool isSpaceSufficient = outputDriveInfo.TotalFreeSpace < this.TotalFileSize;
+            bool isSpaceSufficient = outputDriveInfo.TotalFreeSpace > this.TotalFileSize;
             if (!isSpaceSufficient)
             {
                 string errStr = $"Free Space on {outputDriveInfo.Name} is not sufficient! (Free space: {outputDriveInfo.TotalFreeSpace}, Req. Space: {this.TotalFileSize}, Drive: {outputDriveInfo.Name})";
