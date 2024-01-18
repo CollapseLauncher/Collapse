@@ -258,10 +258,18 @@
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch
                             x:Name="ToggleDiscordGameStatus"
-                            Margin="0,4"
+                            Margin="4, 4, 0,4"
                             Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_GameStatusToggle}"
                             IsEnabled="False"
                             IsOn="{x:Bind IsDiscordGameStatusEnabled, Mode=TwoWay}"
+                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                            Visibility="Collapsed" />
+                        <ToggleSwitch
+                            x:Name="ToggleDiscordIdleStatus"
+                            Margin="4, 4, 0,4"
+                            Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_IdleStatusToggle}"
+                            IsOn="{x:Bind IsDiscordIdleStatusEnabled, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                             Visibility="Collapsed" />

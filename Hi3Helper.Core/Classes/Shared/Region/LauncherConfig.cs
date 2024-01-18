@@ -283,6 +283,7 @@ namespace Hi3Helper.Shared.Region
             #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
             { "EnableDiscordGameStatus", true },
+            { "EnableDiscordIdleStatus", true},
             #endif
             { "EnableAcrylicEffect", true },
             { "IncludeGameLogs", false },

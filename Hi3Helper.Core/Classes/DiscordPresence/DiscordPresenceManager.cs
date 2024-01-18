@@ -13,6 +13,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 #pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
 {
+    #region Enums
     public enum ActivityType
     {
         None,
@@ -24,6 +25,8 @@ namespace Hi3Helper.DiscordPresence
         GameSettings,
         AppSettings
     }
+    #endregion
+
 
     public class DiscordPresenceManager : IDisposable, IAsyncDisposable
     {
@@ -32,12 +35,30 @@ namespace Hi3Helper.DiscordPresence
         private CancellationTokenSource _clientToken = new CancellationTokenSource();
         private readonly object _sdkLock = new object();
 
-        private int _updateInterval = 250; // in Milliseconds
-        private Activity _activity;
-        private Activity _previousActivity;
+        private int             _updateInterval = 250; // in Milliseconds
+        private Activity        _activity;
+        private Activity        _previousActivity;
         private ActivityManager _activityManager;
-        private ActivityType _activityType;
-        private int? _lastUnixTimestamp;
+        private ActivityType    _activityType;
+        private int?            _lastUnixTimestamp;
+        private bool            _isDisposed;
+
+        private bool _cachedIsIdleEnabled = true;
+
+        public bool IdleEnabled
+        {
+            get
+            {
+                bool value = GetAppConfigValue("EnableDiscordIdleStatus").ToBool();
+                _cachedIsIdleEnabled = value;
+                return value;
+            }
+            set
+            {
+                SetAndSaveConfigValue("EnableDiscordIdleStatus", value);
+                _cachedIsIdleEnabled = value;
+            }
+        }
         #endregion
 
         public DiscordPresenceManager(bool initialStart = true)
@@ -45,6 +66,9 @@ namespace Hi3Helper.DiscordPresence
             // If it's set to be initially started, then enable the presence
             if (initialStart)
             {
+                // Prepare idle cached setting
+                Logger.LogWriteLine($"Doing initial start for Discord RPC!\r\n\tIdle status : {IdleEnabled}", LogType.Scheme);
+
                 SetupPresence(true);
                 SetActivity(ActivityType.None);
             }
@@ -61,20 +85,25 @@ namespace Hi3Helper.DiscordPresence
 
         public async ValueTask DisposeAsync()
         {
-            // Trigger cancellation
-            _clientToken.Cancel();
-
-            // Wait until cancellation has been triggered
-            while (!_clientToken.IsCancellationRequested)
+            if (!_isDisposed)
             {
-                await Task.Delay(_updateInterval);
-            }
+                // Trigger cancellation
+                _clientToken.Cancel();
 
-            // Dispose Discord RPC client
-            // _client?.Dispose();
-            UpdateCallbacksRoutine();
-            _client?.Dispose();
-            _client = null;
+                // Wait until cancellation has been triggered
+                while (!_clientToken.IsCancellationRequested)
+                {
+                    await Task.Delay(_updateInterval);
+                }
+
+                // Dispose Discord RPC client
+                // _client?.Dispose();
+                UpdateCallbacksRoutine();
+                _client?.Dispose();
+                _client     = null;
+                _isDisposed = true;
+                Logger.LogWriteLine($"Discord Presence is Disabled!");
+            }
         }
 
         public void EnablePresence(bool isInitialStart, long applicationId = AppDiscordApplicationID)
@@ -88,7 +117,8 @@ namespace Hi3Helper.DiscordPresence
                     lock (_sdkLock)
                     {
                         // Initialize Discord Presence client and Activity property
-                        _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
+                        _client     = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
+                        _isDisposed = false;
                         if (isInitialStart) _activity = new Activity();
                         else SetActivity(_activityType);
 
@@ -114,13 +144,11 @@ namespace Hi3Helper.DiscordPresence
                     Logger.LogWriteLine($"Error initializing Discord Presence. Please ensure that Discord is running! ({ex.GetType().Name}: {ex.Message})", LogType.Warning, true);
                 }
             }
-
             Logger.LogWriteLine($"Discord Presence DLL: {dllPath} doesn't exist! The Discord presence feature could not be used.");
         }
 
         public async void DisablePresence()
         {
-            Logger.LogWriteLine($"Discord Presence is Disabled!");
             await DisposeAsync();
         }
 
@@ -195,7 +223,8 @@ namespace Hi3Helper.DiscordPresence
                             break;
                         case ActivityType.Idle:
                             _lastUnixTimestamp = null;
-                            BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
+                            if (_cachedIsIdleEnabled) BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
+                            else DisablePresence();
                             break;
                         default:
                             _activity = new Activity
@@ -220,6 +249,7 @@ namespace Hi3Helper.DiscordPresence
 
         private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
         {
+            if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
                 Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}"),
@@ -250,6 +280,7 @@ namespace Hi3Helper.DiscordPresence
 
         private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled)
         {
+            if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
                 Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}"),

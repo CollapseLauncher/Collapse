@@ -462,10 +462,12 @@ namespace CollapseLauncher.Pages
                 if (IsEnabled)
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 return IsEnabled;
             }
@@ -475,11 +477,13 @@ namespace CollapseLauncher.Pages
                 {
                     AppDiscordPresence.SetupPresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     AppDiscordPresence.DisablePresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
                 ToggleDiscordGameStatus.IsEnabled = value;
@@ -496,16 +500,11 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private bool IsAcrylicEffectEnabled
+        private bool IsDiscordIdleStatusEnabled
         {
-            get => GetAppConfigValue("EnableAcrylicEffect").ToBool();
-            set
-            {
-                SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                App.ToggleBlurBackdrop(value);
-            }
+            get => AppDiscordPresence.IdleEnabled;
+            set => AppDiscordPresence.IdleEnabled = value;
         }
-
 #else
         private bool IsDiscordRPCEnabled
         {
@@ -518,7 +517,22 @@ namespace CollapseLauncher.Pages
             get => false;
             set => _ = value;
         }
+
+        private bool IsDiscordIdleStatusEnabled
+        {
+            get => false;
+            set => _ = value;
+        }
 #endif
+        private bool IsAcrylicEffectEnabled
+        {
+            get => GetAppConfigValue("EnableAcrylicEffect").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableAcrylicEffect", value);
+                App.ToggleBlurBackdrop(value);
+            }
+        }
 
         private int CurrentThemeSelection
         {
