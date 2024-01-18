@@ -366,6 +366,7 @@
     "DiscordRPC": "Estado de actividad en Discord (Rich Presence)",
     "DiscordRPC_Toggle": "Mostrar Presencia de Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
+    "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
 
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
