@@ -252,7 +252,7 @@ namespace Hi3Helper.DiscordPresence
             if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
-                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}"),
+                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : null)}"),
                 State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
@@ -283,7 +283,7 @@ namespace Hi3Helper.DiscordPresence
             if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
-                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}"),
+                Details = StrToByteUtf8($"{activityName}"),
                 State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
