@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace CollapseLauncher.ShortcutsUtils
+namespace CollapseLauncher.ShortcutUtils
 {
     public sealed class SteamShortcut
     {

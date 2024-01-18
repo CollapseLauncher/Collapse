@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.ShortcutsUtils;
-using Hi3Helper.Preset;
+﻿using Hi3Helper.Preset;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

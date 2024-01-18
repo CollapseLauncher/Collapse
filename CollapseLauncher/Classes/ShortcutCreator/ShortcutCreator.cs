@@ -1,12 +1,11 @@
-﻿using CollapseLauncher.ShortcutUtils;
-using Hi3Helper.Preset;
+﻿using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
 using System.Linq;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace CollapseLauncher.ShortcutsUtils
+namespace CollapseLauncher.ShortcutUtils
 {
     public static class ShortcutCreator
     {
@@ -72,7 +71,7 @@ namespace CollapseLauncher.ShortcutsUtils
             {
                 SteamShortcutParser parser = new SteamShortcutParser(path);
 
-                if (!parser.Contains(new SteamShortcut(preset))) 
+                if (!parser.Contains(new SteamShortcut(preset)))
                     return false;
             }
 

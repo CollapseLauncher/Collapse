@@ -2,7 +2,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
-using CollapseLauncher.ShortcutsUtils;
+using CollapseLauncher.ShortcutUtils;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
