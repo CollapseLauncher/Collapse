@@ -4,6 +4,10 @@ pull_requests:
 skip_tags: true
 skip_branch_with_pr: true
 image: Visual Studio 2022
+branches:
+  only:
+  - preview
+  - stable
 for:
   -
     branches:
@@ -24,6 +28,17 @@ for:
 
         echo.
 
+        echo Install InnoSetup
+
+        set innoinstall=%temp%\innosetup.exe
+
+        curl "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" --output %innoinstall%
+
+
+        cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+
+        echo.
+
     build_script:
     - cmd: >-
         @echo on
@@ -36,8 +51,11 @@ for:
 
         set channel=preview
 
-        echo.
+        set squirrel="C:\Users\appveyor\.nuget\packages\clowd.squirrel\2.11.1\tools"
 
+        set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+
+        echo.
 
 
         echo Build app...
@@ -47,15 +65,71 @@ for:
         dotnet publish CollapseLauncher -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\"
 
 
+        echo Getting app version...
 
+        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\preview-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
+
+        set "version=%version_untrim:~0,-2%"
+
+        echo Got version %version%
+
+        echo.
+
+
+        echo Setting up Deployable Resources...
+
+        mkdir DeployResource
+
+        mkdir DeployResource\app-%version%
+
+        xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
+
+
+        echo Preparing stub and updater...
+
+        copy %squirrel%\stubexecutable.exe DeployResource\CollapseLauncher.exe
+
+        copy %squirrel%\Update.exe DeployResource\Update.exe
+
+
+        %squirrel%\rcedit.exe DeployResource\CollapseLauncher.exe --set-file-version %version% --set-product-version %version% --set-icon CollapseLauncher\icon.ico --set-requested-execution-level requireAdministrator
+
+
+        echo Making innosetup file...
+
+        mkdir InnoTarget
+
+        %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
+
+        echo.
+
+
+        echo Moving all the files into artifact to be pushed to SignPath
+
+        mkdir SignArtifact
+
+        mkdir SignArtifact\BuildArtifact-%version%
+
+        mkdir SignArtifact\Squirrel-Stub
+
+        mkdir SignArtifact\InnoInstaller
+
+        xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
+
+        copy DeployResource\CollapseLauncher.exe SignArtifact\Squirrel-Stub\CollapseLauncher.exe
+
+        xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
+
+
+        
     test: off
     artifacts:
-    - path: CollapseLauncher\preview-build\
-      name: BuildArtifact-Preview
+    - path: SignArtifact\
+      name: SignArtifact-Preview
 
     deploy:
     - provider: Webhook
-      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=test-signing&ArtifactConfigurationSlug=initial
+      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=initial
       authorization:
         secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
       on:
@@ -87,6 +161,18 @@ for:
 
         echo.
 
+        echo Install InnoSetup
+
+        set innoinstall=%temp%\innosetup.exe
+
+        curl "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" --output %innoinstall%
+
+
+        cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+
+        echo.
+
+
 
     build_script:
     - cmd: >-
@@ -100,7 +186,13 @@ for:
 
         set channel=stable
 
-        
+        set squirrel="C:\Users\appveyor\.nuget\packages\clowd.squirrel\2.11.1\tools"
+
+        set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+
+        echo.
+
+
         echo Build app...
 
         dotnet restore
@@ -108,15 +200,72 @@ for:
         dotnet publish CollapseLauncher -p:PublishProfile=Publish-StableRelease -p:PublishDir=".\stable-build\"
 
 
+        echo Getting app version...
 
+        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\stable-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
+
+        set "version=%version_untrim:~0,-2%"
+
+        echo Got version %version%
+
+        echo.
+
+
+        echo Setting up Deployable Resources...
+
+        mkdir DeployResource
+
+        mkdir DeployResource\app-%version%
+
+        xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
+
+
+        echo Preparing stub and updater...
+
+        copy %squirrel%\stubexecutable.exe DeployResource\CollapseLauncher.exe
+
+        copy %squirrel%\Update.exe DeployResource\Update.exe
+
+
+        %squirrel%\rcedit.exe DeployResource\CollapseLauncher.exe --set-file-version %version% --set-product-version %version% --set-icon CollapseLauncher\icon.ico --set-requested-execution-level requireAdministrator
+
+
+        echo Making innosetup file...
+
+        mkdir InnoTarget
+
+        %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
+
+        echo.
+
+
+        echo Moving all the files into artifact to be pushed to SignPath
+
+        mkdir SignArtifact
+
+        mkdir SignArtifact\BuildArtifact-%version%
+
+        mkdir SignArtifact\Squirrel-Stub
+
+        mkdir SignArtifact\InnoInstaller
+
+
+        xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
+
+        copy DeployResource\CollapseLauncher.exe SignArtifact\Squirrel-Stub\CollapseLauncher.exe
+
+        xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
+
+
+        
     test: off
     artifacts:
-    - path: CollapseLauncher\stable-build\
-      name: BuildArtifact-Stable
+    - path: SignArtifact\
+      name: SignArtifact-Stable
 
     deploy:
     - provider: Webhook
-      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=test-signing&ArtifactConfigurationSlug=initial
+      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=initial
       authorization:
         secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
       on:
