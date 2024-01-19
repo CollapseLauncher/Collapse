@@ -211,31 +211,31 @@ namespace Discord
         PushToTalk,
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct User
     {
         public Int64 Id;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Username;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] Username;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
-        public string Discriminator;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] Discriminator;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Avatar;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Avatar;
 
         public bool Bot;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct OAuth2Token
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string AccessToken;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] AccessToken;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1024)]
-        public string Scopes;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
+        public byte[] Scopes;
 
         public Int64 Expires;
     }
@@ -256,20 +256,20 @@ namespace Discord
         public Int64 End;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivityAssets
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string LargeImage;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] LargeImage;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string LargeText;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] LargeText;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string SmallImage;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] SmallImage;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string SmallText;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] SmallText;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -280,45 +280,45 @@ namespace Discord
         public Int32 MaxSize;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivityParty
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Id;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Id;
 
         public PartySize Size;
 
         public ActivityPartyPrivacy Privacy;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivitySecrets
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Match;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Match;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Join;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Join;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Spectate;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Spectate;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct Activity : IEquatable<Activity>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Activity
     {
         public ActivityType Type;
 
         public Int64 ApplicationId;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Name;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string State;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] State;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Details;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Details;
 
         public ActivityTimestamps Timestamps;
 
@@ -363,7 +363,7 @@ namespace Discord
         public Presence Presence;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Lobby
     {
         public Int64 Id;
@@ -372,8 +372,8 @@ namespace Discord
 
         public Int64 OwnerId;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Secret;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Secret;
 
         public UInt32 Capacity;
 
@@ -406,11 +406,11 @@ namespace Discord
         public Int32 Bottom;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct FileStat
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        public string Filename;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
+        public byte[] Filename;
 
         public UInt64 Size;
 
@@ -427,38 +427,38 @@ namespace Discord
         public Int64 SkuId;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct SkuPrice
     {
         public UInt32 Amount;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public string Currency;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] Currency;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Sku
     {
         public Int64 Id;
 
         public SkuType Type;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] Name;
 
         public SkuPrice Price;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct InputMode
     {
         public InputModeType Type;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Shortcut;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] Shortcut;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct UserAchievement
     {
         public Int64 UserId;
@@ -467,8 +467,8 @@ namespace Discord
 
         public byte PercentComplete;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string UnlockedAt;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] UnlockedAt;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -909,9 +909,6 @@ namespace Discord
             internal UInt32 AchievementVersion;
         }
 
-        [DllImport(Constants.DllName, ExactSpelling = true, CallingConvention = CallingConvention.Winapi)]
-        private static extern Result DiscordCreate(UInt32 version, ref FFICreateParams createParams, out IntPtr manager);
-
         public delegate void SetLogHookHandler(LogLevel level, string message);
 
         private GCHandle SelfHandle;
@@ -1070,7 +1067,7 @@ namespace Discord
             createParams.AchievementEvents = AchievementEventsPtr;
             createParams.AchievementVersion = 1;
             InitEvents(EventsPtr, ref Events);
-            var result = DiscordCreate(3, ref createParams, out MethodsPtr);
+            var result = Extern.DiscordCreate(3, ref createParams, out MethodsPtr);
             if (result != Result.Ok)
             {
                 Dispose();

@@ -228,10 +228,10 @@ namespace Hi3Helper.DiscordPresence
                         default:
                             _activity = new Activity
                             {
-                                Details = Lang._Misc.DiscordRP_Default,
+                                Details = Lang._Misc.DiscordRP_Default.StrToByteUtf8(),
                                 Assets = new ActivityAssets
                                 {
-                                    LargeImage = "launcher-logo"
+                                    LargeImage = "launcher-logo".StrToByteUtf8()
                                 }
                             };
                             break;
@@ -251,14 +251,14 @@ namespace Hi3Helper.DiscordPresence
             if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
-                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : null)}",
-                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
+                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : null)}".StrToByteUtf8(),
+                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}".StrToByteUtf8(),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
-                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}",
-                    SmallImage = $"launcher-logo",
-                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo".StrToByteUtf8(),
+                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}".StrToByteUtf8(),
+                    SmallImage = "launcher-logo".StrToByteUtf8(),
+                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}".StrToByteUtf8()
                 },
                 Timestamps = new ActivityTimestamps
                 {
@@ -282,21 +282,21 @@ namespace Hi3Helper.DiscordPresence
             if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
-                Details = activityName,
-                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
+                Details = activityName.StrToByteUtf8(),
+                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}".StrToByteUtf8(),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
-                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory}",
-                    SmallImage = "launcher-logo",
-                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo".StrToByteUtf8(),
+                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory}".StrToByteUtf8(),
+                    SmallImage = "launcher-logo".StrToByteUtf8(),
+                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}".StrToByteUtf8()
                 },
             };
         }
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
         {
-            Logger.LogWriteLine($"Activity updated! => {_activity.Details} - {_activity.State}");
+            Logger.LogWriteLine($"Activity updated! => {_activity.Details.ReadUtf8Byte()} - {_activity.State.ReadUtf8Byte()}");
         });
 
         private void UpdateCallbacksRoutine()
