@@ -35,7 +35,6 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string _ValueName = "GraphicsSettings_Model_h2986158309";
-        private const string _AbValueName = "App_Settings_h2319593470";
         public static readonly int[] FPSIndex = new int[] { 30, 60, 120 };
         public const int FPSDefaultIndex = 1; // 60 in FPSIndex[]
         public static Dictionary<int, int> FPSIndexDict = GenerateStaticFPSIndexDict();
@@ -145,17 +144,6 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
                 object? value = RegistryRoot.GetValue(_ValueName, null);
-
-                // A/B Testing as of 2023-12-26 (HSR v1.6.0)
-                object? abValue = RegistryRoot.GetValue(_AbValueName);
-                if (abValue != null)
-                {
-                    ErrorSender.SendException(new Exception(
-                        $"Due to miHoYo/Cognosphere A/B testing, Collapse currently does not support reading the" +
-                        $"following key: {_AbValueName}\r\n\n" +
-                        $"This may also cause the modifications of Game Settings through this page to behave unexpectedly.\r\n\n" +
-                        $"We apologize for the inconvenience we may have caused. Please try again later.\r\n"));
-                }
                 
                 if (value != null)
                 {

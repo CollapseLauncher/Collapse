@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Oops, it seems like you've been disconnected from the Internet~ Or is it something else?",
     "UnhandledTitle3": "Game Crashed",
     "UnhandledSubtitle3": "The game has crashed with error details below:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:",
     "CopyClipboardBtn1": "Copy All to Clipboard",
     "CopyClipboardBtn2": "Copied to Clipboard!",
     "GoBackPageBtn1": "Go Back to Previous Page"
@@ -660,7 +662,11 @@
     "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
     "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
     "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:"
   },
 
   "_FileMigrationProcess": {

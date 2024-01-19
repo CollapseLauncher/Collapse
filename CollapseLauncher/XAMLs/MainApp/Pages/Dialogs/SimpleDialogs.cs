@@ -600,6 +600,21 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
+        {
+            return await SpawnDialog(
+                Lang._UnhandledExceptionPage.UnhandledTitle4,
+                Lang._UnhandledExceptionPage.UnhandledSubtitle4,
+                Content,
+                Lang._Misc.Okay,
+                null,
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning
+            );
+               
+        }
+
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
             void CopyTextToClipboard(object sender, RoutedEventArgs e)
