@@ -39,7 +39,7 @@ namespace CollapseLauncher
                 {
                     string convertedArg = args[0].Replace("%20", " ").Replace("%22", "\"");
 
-                    args = Regex.Matches(convertedArg, @"[\""].+?[\""]|[^ ]+")
+                    args = Regex.Matches(convertedArg, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
                                     .Cast<Match>()
                                     .Select(x => x.Value.Trim('"')).ToArray();
                 } 
