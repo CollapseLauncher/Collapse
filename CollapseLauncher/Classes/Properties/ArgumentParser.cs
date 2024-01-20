@@ -142,12 +142,12 @@ namespace CollapseLauncher
             Option<AppReleaseChannel> o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "App release channel") { IsRequired = true }.FromAmong();
             command.AddOption(o_Input);
             command.AddOption(o_Channel);
-            command.Handler = CommandHandler.Create((string Input, AppReleaseChannel ReleaseChannel) =>
+            command.Handler = CommandHandler.Create((string Input, AppReleaseChannel Channel) =>
             {
                 m_arguments.Updater = new ArgumentUpdater
                 {
                     AppPath = Input,
-                    UpdateChannel = ReleaseChannel
+                    UpdateChannel = Channel
                 };
             });
         }
