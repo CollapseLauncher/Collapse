@@ -47,8 +47,9 @@ namespace Hi3Helper.DiscordPresence
         {
             get
             {
-                bool value = GetAppConfigValue("EnableDiscordIdleStatus").ToBool();
-                _cachedIsIdleEnabled = value;
+                //bool value = GetAppConfigValue("EnableDiscordIdleStatus").ToBool();
+                //_cachedIsIdleEnabled = value;
+                bool value = true;
                 return value;
             }
             set
