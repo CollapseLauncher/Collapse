@@ -505,8 +505,6 @@ namespace Hi3Helper.Preset
         public string? ZoneURL { get; set; }
         public string? ZoneLogoURL { get; set; }
         public string? ZonePosterURL { get; set; }
-
-        public SteamAssetCollection? ZoneSteamAssets { get; set; }
         
 #nullable disable
         public string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
@@ -560,17 +558,10 @@ namespace Hi3Helper.Preset
         public string? InternalGameNameFolder { get; set; }
         public string? InternalGameNameInConfig { get; set; }
         public Dictionary<string, GameDataTemplate>? GameDataTemplates { get; set; }
+        public Dictionary<string, SteamGameProp>? ZoneSteamAssets { get; set; } = new Dictionary<string, SteamGameProp>();
     }
 
-    public class SteamAssetCollection
-    {
-        public SteamAsset? Logo { get; set; }
-        public SteamAsset? Hero { get; set; }
-        public SteamAsset? Banner { get; set; }
-        public SteamAsset? Preview { get; set; }
-    }
-
-    public class SteamAsset
+    public class SteamGameProp
     {
         public string? URL { get; set; }
         public string? MD5 { get; set; }

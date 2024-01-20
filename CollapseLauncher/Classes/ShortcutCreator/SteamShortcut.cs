@@ -1,8 +1,8 @@
-﻿using CollapseLauncher.ShortcutUtils;
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -123,21 +123,21 @@ namespace CollapseLauncher.ShortcutUtils
             if (!Directory.Exists(gridPath))
                 Directory.CreateDirectory(gridPath);
 
-            SteamAssetCollection assets = preset.ZoneSteamAssets;
+            Dictionary<string, SteamGameProp> assets = preset.ZoneSteamAssets;
 
             // Game background
-            GetImageFromUrl(gridPath, assets.Hero, "_hero");
+            GetImageFromUrl(gridPath, assets["Hero"], "_hero");
 
             // Game logo
-            GetImageFromUrl(gridPath, assets.Logo, "_logo");
+            GetImageFromUrl(gridPath, assets["Logo"], "_logo");
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            GetImageFromUrl(gridPath, assets.Banner, "p");
+            GetImageFromUrl(gridPath, assets["Banner"], "p");
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            GetImageFromUrl(gridPath, assets.Preview, "");
+            GetImageFromUrl(gridPath, assets["Preview"], "");
         }
 
         private static string MD5Hash(string path)
@@ -150,7 +150,7 @@ namespace CollapseLauncher.ShortcutUtils
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
-        private async void GetImageFromUrl(string gridPath, SteamAsset asset, string steamSuffix)
+        private async void GetImageFromUrl(string gridPath, SteamGameProp asset, string steamSuffix)
         {
             string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
 
