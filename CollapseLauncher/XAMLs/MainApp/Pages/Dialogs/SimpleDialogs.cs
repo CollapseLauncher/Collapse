@@ -723,7 +723,7 @@ namespace CollapseLauncher.Dialogs
                 DefaultButton = defaultButton,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
-                XamlRoot = Content.XamlRoot
+                XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
             };
             return await (InnerLauncherConfig.m_window as MainWindow).ContentDialog.ShowAsync();
         }
