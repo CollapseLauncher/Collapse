@@ -7,9 +7,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -579,7 +579,7 @@ namespace CollapseLauncher.Dialogs
                         null,
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Warning
-                );   
+                );
         }
 
         public static async Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts(UIElement Content)
@@ -598,16 +598,26 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
-            void CopyTextToClipboard(object sender, RoutedEventArgs e)
+            async void CopyTextToClipboard(object sender, RoutedEventArgs e)
             {
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
 
                 Button btn = sender as Button;
                 FontIcon fontIcon = (btn.Content as StackPanel).Children[0] as FontIcon;
                 TextBlock textBlock = (btn.Content as StackPanel).Children[1] as TextBlock;
+
+                string lastGlyph = fontIcon.Glyph;
+                string lastText = textBlock.Text;
+
                 fontIcon.Glyph = "";
                 textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
                 btn.IsEnabled = false;
+
+                await Task.Delay(1000);
+
+                fontIcon.Glyph = lastGlyph;
+                textBlock.Text = lastText;
+                btn.IsEnabled = true;
             }
 
             Button copyButton = null;

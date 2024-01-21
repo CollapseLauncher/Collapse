@@ -1493,8 +1493,10 @@ namespace CollapseLauncher
                     string Tag = PreviousTag;
                     PreviousTag = "Empty";
                     NavigateInnerSwitch(Tag);
-                    LauncherFrame.BackStack.RemoveAt(LauncherFrame.BackStack.Count - 1);
-                    PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
+                    if (LauncherFrame != null && LauncherFrame.BackStack != null && LauncherFrame.BackStack.Count > 0)
+                        LauncherFrame.BackStack.RemoveAt(LauncherFrame.BackStack.Count - 1);
+                    if (PreviousTagString != null && PreviousTagString.Count > 0)
+                        PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
                     return;
             }
         }

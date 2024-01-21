@@ -265,6 +265,14 @@
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                             Visibility="Collapsed" />
+                        <ToggleSwitch
+                            x:Name="ToggleDiscordIdleStatus"
+                            Margin="0,4"
+                            Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_IdleStatusToggle}"
+                            IsOn="{x:Bind IsDiscordIdleStatusEnabled, Mode=TwoWay}"
+                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                            Visibility="Collapsed" />
                         <TextBlock
                             Margin="0,16,0,8"
                             Style="{ThemeResource SubtitleTextBlockStyle}"

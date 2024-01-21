@@ -4,7 +4,6 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using System;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -13,6 +12,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 #pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
 {
+    #region Enums
     public enum ActivityType
     {
         None,
@@ -24,13 +24,14 @@ namespace Hi3Helper.DiscordPresence
         GameSettings,
         AppSettings
     }
+    #endregion
+
 
     public class DiscordPresenceManager : IDisposable, IAsyncDisposable
     {
         #region Properties
         private Discord.Discord _client;
         private CancellationTokenSource _clientToken = new CancellationTokenSource();
-        private readonly object _sdkLock = new object();
 
         private int _updateInterval = 250; // in Milliseconds
         private Activity _activity;
@@ -38,6 +39,25 @@ namespace Hi3Helper.DiscordPresence
         private ActivityManager _activityManager;
         private ActivityType _activityType;
         private int? _lastUnixTimestamp;
+        private bool _isDisposed;
+
+        private bool _cachedIsIdleEnabled = true;
+
+        public bool IdleEnabled
+        {
+            get
+            {
+                //bool value = GetAppConfigValue("EnableDiscordIdleStatus").ToBool();
+                //_cachedIsIdleEnabled = value;
+                bool value = true;
+                return value;
+            }
+            set
+            {
+                SetAndSaveConfigValue("EnableDiscordIdleStatus", value);
+                _cachedIsIdleEnabled = value;
+            }
+        }
         #endregion
 
         public DiscordPresenceManager(bool initialStart = true)
@@ -45,6 +65,9 @@ namespace Hi3Helper.DiscordPresence
             // If it's set to be initially started, then enable the presence
             if (initialStart)
             {
+                // Prepare idle cached setting
+                Logger.LogWriteLine($"Doing initial start for Discord RPC!\r\n\tIdle status : {IdleEnabled}", LogType.Scheme);
+
                 SetupPresence(true);
                 SetActivity(ActivityType.None);
             }
@@ -61,13 +84,16 @@ namespace Hi3Helper.DiscordPresence
 
         public async ValueTask DisposeAsync()
         {
-            // Trigger cancellation
-            _clientToken.Cancel();
-
-            // Wait until cancellation has been triggered
-            while (!_clientToken.IsCancellationRequested)
+            if (!_isDisposed)
             {
-                await Task.Delay(_updateInterval);
+                // Trigger cancellation
+                _clientToken.Cancel();
+
+                // Wait until cancellation has been triggered
+                while (!_clientToken.IsCancellationRequested)
+                {
+                    await Task.Delay(_updateInterval);
+                }
             }
 
             // Dispose Discord RPC client
@@ -75,6 +101,9 @@ namespace Hi3Helper.DiscordPresence
             UpdateCallbacksRoutine();
             _client?.Dispose();
             _client = null;
+
+            // Suppress the GC from finalization
+            GC.SuppressFinalize(this);
         }
 
         public void EnablePresence(bool isInitialStart, long applicationId = AppDiscordApplicationID)
@@ -85,10 +114,11 @@ namespace Hi3Helper.DiscordPresence
             {
                 try
                 {
-                    lock (_sdkLock)
+                    lock (this)
                     {
                         // Initialize Discord Presence client and Activity property
                         _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
+                        _isDisposed = false;
                         if (isInitialStart) _activity = new Activity();
                         else SetActivity(_activityType);
 
@@ -114,13 +144,11 @@ namespace Hi3Helper.DiscordPresence
                     Logger.LogWriteLine($"Error initializing Discord Presence. Please ensure that Discord is running! ({ex.GetType().Name}: {ex.Message})", LogType.Warning, true);
                 }
             }
-
             Logger.LogWriteLine($"Discord Presence DLL: {dllPath} doesn't exist! The Discord presence feature could not be used.");
         }
 
         public async void DisablePresence()
         {
-            Logger.LogWriteLine($"Discord Presence is Disabled!");
             await DisposeAsync();
         }
 
@@ -131,7 +159,7 @@ namespace Hi3Helper.DiscordPresence
 
             if (IsGameStatusEnabled)
             {
-                lock (_sdkLock)
+                lock (this)
                 {
                     if (_client != null) Dispose();
 
@@ -154,7 +182,7 @@ namespace Hi3Helper.DiscordPresence
             }
             else
             {
-                lock (_sdkLock)
+                lock (this)
                 {
                     if (_client != null) Dispose();
                     EnablePresence(isInitialStart);
@@ -171,7 +199,7 @@ namespace Hi3Helper.DiscordPresence
 
                 _activityType = activity;
 
-                lock (_sdkLock)
+                lock (this)
                 {
                     switch (activity)
                     {
@@ -195,17 +223,18 @@ namespace Hi3Helper.DiscordPresence
                             break;
                         case ActivityType.Idle:
                             _lastUnixTimestamp = null;
-                            BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
+                            if (_cachedIsIdleEnabled) BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
+                            else DisablePresence();
                             break;
                         default:
                             _activity = new Activity
-                                        {
-                                            Details = StrToByteUtf8(Lang._Misc.DiscordRP_Default),
-                                            Assets = new ActivityAssets
-                                                     {
-                                                         LargeImage = StrToByteUtf8($"launcher-logo")
-                                                     }
-                                        };
+                            {
+                                Details = Lang._Misc.DiscordRP_Default.StrToByteUtf8(),
+                                Assets = new ActivityAssets
+                                {
+                                    LargeImage = "launcher-logo".StrToByteUtf8()
+                                }
+                            };
                             break;
                     }
                 }
@@ -220,16 +249,17 @@ namespace Hi3Helper.DiscordPresence
 
         private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
         {
+            if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
-                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}"),
-                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : null)}".StrToByteUtf8(),
+                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}".StrToByteUtf8(),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
-                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}"),
-                    SmallImage = StrToByteUtf8($"launcher-logo"),
-                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
+                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo".StrToByteUtf8(),
+                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}".StrToByteUtf8(),
+                    SmallImage = "launcher-logo".StrToByteUtf8(),
+                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}".StrToByteUtf8()
                 },
                 Timestamps = new ActivityTimestamps
                 {
@@ -250,23 +280,24 @@ namespace Hi3Helper.DiscordPresence
 
         private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled)
         {
+            if (_isDisposed) SetupPresence();
             _activity = new Activity
             {
-                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}"),
-                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                Details = activityName.StrToByteUtf8(),
+                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}".StrToByteUtf8(),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
-                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}"),
-                    SmallImage = StrToByteUtf8($"launcher-logo"),
-                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
+                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo".StrToByteUtf8(),
+                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory}".StrToByteUtf8(),
+                    SmallImage = "launcher-logo".StrToByteUtf8(),
+                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}".StrToByteUtf8()
                 },
             };
         }
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
         {
-            Logger.LogWriteLine($"Activity updated! => {ReadUtf8Byte(_activity.Details)} - {ReadUtf8Byte(_activity.State)}");
+            Logger.LogWriteLine($"Activity updated! => {_activity.Details.ReadUtf8Byte()} - {_activity.State.ReadUtf8Byte()}");
         });
 
         private void UpdateCallbacksRoutine()
@@ -275,7 +306,7 @@ namespace Hi3Helper.DiscordPresence
             {
                 while (!_clientToken.IsCancellationRequested)
                 {
-                    lock (_sdkLock)
+                    lock (this)
                     {
                         try
                         {
@@ -290,18 +321,6 @@ namespace Hi3Helper.DiscordPresence
                     await Task.Delay(_updateInterval);
                 }
             }, _clientToken.Token);
-        }
-
-        private string ReadUtf8Byte(byte[] input) => input == null || input.Length == 0 ? string.Empty : Encoding.UTF8.GetString(input);
-
-        private byte[] StrToByteUtf8(string s)
-        {
-            // Use fixed width (128 bytes) as defined in field's SizeConst
-            byte[] bufferOut = new byte[128];
-            // Get the UTF-8 bytes (converting 16-bit (UTF-16) to 8-bit (UTF-8) char (as byte))
-            Encoding.UTF8.GetBytes(s, bufferOut);
-            // return the buffer
-            return bufferOut;
         }
     }
 }

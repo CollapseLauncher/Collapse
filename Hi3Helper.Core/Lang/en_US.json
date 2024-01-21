@@ -130,6 +130,7 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "Force Close Game",
     "GameSettings_Panel3": "Custom Start-up Args",
     "GameSettings_Panel4": "Miscellaneous",
@@ -369,6 +370,7 @@
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Show Discord Presence",
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Check for Updates",
     "Update_CurVer": "Current Version:",
