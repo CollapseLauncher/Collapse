@@ -1,6 +1,5 @@
 using CollapseLauncher.CustomControls;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -10,10 +9,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -583,7 +579,7 @@ namespace CollapseLauncher.Dialogs
                         null,
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Warning
-                );   
+                );
         }
 
         public static async Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts(UIElement Content)
@@ -617,7 +613,7 @@ namespace CollapseLauncher.Dialogs
                 textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
                 btn.IsEnabled = false;
 
-                await Task.Delay(5000);
+                await Task.Delay(1000);
 
                 fontIcon.Glyph = lastGlyph;
                 textBlock.Text = lastText;
