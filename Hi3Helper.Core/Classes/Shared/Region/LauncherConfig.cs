@@ -133,7 +133,7 @@ namespace Hi3Helper.Shared.Region
         #region CDN List
         public static List<CDNURLProperty> CDNList => new List<CDNURLProperty>
                                                       {
-                                                          /*new CDNURLProperty
+                                                          new CDNURLProperty
                                                           {
                                                               Name = "GitHub",
                                                               URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main",
@@ -152,12 +152,6 @@ namespace Hi3Helper.Shared.Region
                                                               Name = "Bitbucket",
                                                               URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
                                                               Description = Lang._Misc.CDNDescription_Bitbucket
-                                                          }*/
-                                                          new CDNURLProperty
-                                                          {
-                                                              Name = "Testing Git",
-                                                              URLPrefix = "https://github.com/gablm/CollapseLauncher-ReleaseRepo/raw/main",
-                                                              Description = Lang._Misc.CDNDescription_Github
                                                           }
                                                       };
 
