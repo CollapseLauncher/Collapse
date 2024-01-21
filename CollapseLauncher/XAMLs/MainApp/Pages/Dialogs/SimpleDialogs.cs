@@ -543,16 +543,26 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
-            void CopyTextToClipboard(object sender, RoutedEventArgs e)
+            async void CopyTextToClipboard(object sender, RoutedEventArgs e)
             {
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
 
                 Button btn = sender as Button;
                 FontIcon fontIcon = (btn.Content as StackPanel).Children[0] as FontIcon;
                 TextBlock textBlock = (btn.Content as StackPanel).Children[1] as TextBlock;
+
+                string lastGlyph = fontIcon.Glyph;
+                string lastText = textBlock.Text;
+
                 fontIcon.Glyph = "";
                 textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
                 btn.IsEnabled = false;
+
+                await Task.Delay(5000);
+
+                fontIcon.Glyph = lastGlyph;
+                textBlock.Text = lastText;
+                btn.IsEnabled = true;
             }
 
             Button copyButton = null;

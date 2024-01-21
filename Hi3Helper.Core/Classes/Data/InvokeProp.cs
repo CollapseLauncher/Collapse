@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Hi3Helper
 {
@@ -31,6 +32,16 @@ namespace Hi3Helper
             HWND_NOTOPMOST = -2
         }
 
+        [Flags]
+        public enum GLOBAL_ALLOC_FLAGS : uint
+        {
+            GHND = 0x0042,
+            GMEM_FIXED = 0x00000000,
+            GMEM_MOVEABLE = 0x00000002,
+            GMEM_ZEROINIT = 0x00000040,
+            GPTR = 0x00000040,
+        }
+
         public static IntPtr m_consoleHandle;
 
         public enum HandleEnum
@@ -50,146 +61,165 @@ namespace Hi3Helper
             MDT_Default = MDT_Effective_DPI
         }
 
-        public delegate int BrowseCallBackProc(IntPtr hwnd, int msg, IntPtr lp, IntPtr wp);
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public struct BROWSEINFO
-        {
-            public IntPtr hwndOwner;
-            public IntPtr pidlRoot;
-            public string pszDisplayName;
-            public string lpszTitle;
-            public uint ulFlags;
-            public BrowseCallBackProc lpfn;
-            public IntPtr lParam;
-            public int iImage;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public class OpenFileName
-        {
-            public int structSize = 0;
-            public IntPtr dlgOwner = IntPtr.Zero;
-            public IntPtr instance = IntPtr.Zero;
-
-            public string filter = null;
-            public string customFilter = null;
-            public int maxCustFilter = 0;
-            public int filterIndex = 0;
-
-            public string file = null;
-            public int maxFile = 0;
-
-            public string fileTitle = null;
-            public int maxFileTitle = 0;
-
-            public string initialDir = null;
-
-            public string title = null;
-
-            public int flags = 0;
-            public short fileOffset = 0;
-            public short fileExtension = 0;
-
-            public string defExt = null;
-
-            public IntPtr custData = IntPtr.Zero;
-            public IntPtr hook = IntPtr.Zero;
-
-            public string templateName = null;
-
-            public IntPtr reservedPtr = IntPtr.Zero;
-            public int reservedInt = 0;
-            public int flagsEx = 0;
-        }
-
         [DllImport("kernel32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
         [DllImport("kernel32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
         [DllImport("kernel32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GetConsoleWindow();
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetStdHandle(int nStdHandle, IntPtr hHandle);
 
         [DllImport("kernel32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint GetLastError();
 
         [DllImport("Kernel32.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool AllocConsole();
 
         [DllImport("Kernel32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool FreeConsole();
 
         [DllImport("Kernel32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
 
         [DllImport("user32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetSystemMetrics(int nIndex);
 
         [DllImport("user32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
         [DllImport("user32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForWindow(IntPtr hWnd);
 
         [DllImport("Shcore.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
 
-        [DllImport("shell32.dll")]
-        public static extern IntPtr SHBrowseForFolder(ref BROWSEINFO lpbi);
-
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        public static extern bool SHGetPathFromIDList(IntPtr pidl, IntPtr pszPath);
-
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
-        [DllImport("comdlg32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
-
-        [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int HPatch(string oldFileName, string diffFileName, string outNewFileName,
-            bool isLoadOldAll, UIntPtr patchCacheSize, long diffDataOffert, long diffDataSize);
-
-        [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch_cmd_line", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int HPatchCommand(int argc, string[] argv);
-
         [DllImport("user32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GetActiveWindow();
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool OpenClipboard(IntPtr hWndNewOwner);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseClipboard();
 
-        [DllImport("user32.dll")]
-        public static extern bool SetClipboardData(uint uFormat, IntPtr data);
+        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr SetClipboardData(uint uFormat, IntPtr data);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EmptyClipboard();
 
-        public static void CopyStringToClipboard(string str)
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GlobalAlloc(GLOBAL_ALLOC_FLAGS uFlags, nuint uBytes);
+        
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GlobalFree(IntPtr hMem);
+
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GlobalLock(IntPtr hMem);
+
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GlobalUnlock(IntPtr hMem);
+
+        public unsafe static void CopyStringToClipboard(string inputString)
         {
-            IntPtr ptr = Marshal.StringToHGlobalUni(str);
-            OpenClipboard(IntPtr.Zero);
-            EmptyClipboard();
-            SetClipboardData(13, ptr);
-            CloseClipboard();
-            Marshal.FreeHGlobal(ptr);
+            // Initialize the memory pointer
+            IntPtr stringBufferPtr = IntPtr.Zero;
+            IntPtr hMem = IntPtr.Zero;
+
+            // Set the Clipboard bool status
+            bool isOpenClipboardSuccess = false;
+
+            try
+            {
+                // If inputString is null or empty, then return
+                if (string.IsNullOrEmpty(inputString))
+                {
+                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
+                    return;
+                }
+
+                // Try open the Clipboard
+                if (!(isOpenClipboardSuccess = OpenClipboard(IntPtr.Zero)))
+                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+
+                // Set the bufferSize + 1, the additional 1 byte will be used to interpret the null byte
+                int bufferSize = (inputString.Length + 1);
+
+                // Allocate the Global-Moveable buffer to the kernel with given size and lock the buffer
+                hMem = GlobalAlloc(GLOBAL_ALLOC_FLAGS.GMEM_MOVEABLE, (nuint)bufferSize);
+                stringBufferPtr = GlobalLock(hMem);
+
+                // Write the inputString as a UTF-8 bytes into the string buffer
+                if (!Encoding.UTF8.TryGetBytes(inputString, new Span<byte>((byte*)stringBufferPtr, inputString.Length), out int bufferWritten))
+                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
+
+                // Always set the null byte at the end of the buffer
+                ((byte*)stringBufferPtr)[bufferWritten] = 0x00; // Write the null (terminator) byte
+
+                // Unlock the buffer
+                GlobalUnlock(hMem);
+
+                // Empty the previous Clipboard and set to the new one from this buffer. If
+                // the clearance is failed, then clear the buffer at "finally" block
+                if (!EmptyClipboard() || SetClipboardData(1, hMem) == IntPtr.Zero)
+                {
+                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    return;
+                }
+            }
+            finally
+            {
+                // If the buffer is allocated (not zero), then free it.
+                if (hMem != IntPtr.Zero) GlobalFree(hMem);
+
+                // Close the buffer if the clipboard is successfully opened.
+                if (isOpenClipboardSuccess) CloseClipboard();
+            }
         }
 
         public struct WindowRect
