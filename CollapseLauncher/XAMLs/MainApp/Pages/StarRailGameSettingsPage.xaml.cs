@@ -86,11 +86,6 @@ namespace CollapseLauncher.Pages
             if (abValue != null)
             {
                 await SimpleDialogs.Dialog_GenericWarning(Content);
-                // ErrorSender.SendWarning(new Exception(
-                //     $"Due to miHoYo/Cognosphere A/B testing, Collapse currently does not support reading the" +
-                //     $"following key: {_AbValueName}\r\n\n" +
-                //     $"This may also cause the modifications of Game Settings through this page to behave unexpectedly.\r\n\n" +
-                //     $"We apologize for the inconvenience we may have caused. Please try again later.\r\n"));
                 LogWriteLine($"A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
             }
         }
