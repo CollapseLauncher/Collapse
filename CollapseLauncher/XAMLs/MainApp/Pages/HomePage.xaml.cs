@@ -1317,7 +1317,11 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(3000);
             }
 
-            if (ResizableWindowHookToken != null) ResizableWindowHookToken.Cancel();
+            if (ResizableWindowHookToken != null)
+            {
+                ResizableWindowHookToken.Cancel();
+                ResizableWindowHookToken.Dispose();
+            }
 
             // Stopping GameLogWatcher
             if (GetAppConfigValue("EnableConsole").ToBool())
@@ -1382,13 +1386,6 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
                 ErrorSender.SendException(ex, ErrorType.GameError);
-            }
-            finally
-            {
-                if (ResizableWindowHookToken != null)
-                {
-                    ResizableWindowHookToken.Dispose();
-                }
             }
         }
         #endregion
