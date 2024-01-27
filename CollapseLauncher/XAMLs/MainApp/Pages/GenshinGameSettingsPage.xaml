@@ -36,14 +36,42 @@
                             <StackPanel x:Name="GameResolutionPanel" Margin="0,0">
                                 <StackPanel>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ResolutionPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
-                                    <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,0">
+                                    <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,8">
                                         <CheckBox x:Name="VSyncToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VerticalSync, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
                                             HorizontalAlignment="Left" VerticalAlignment="Center"
-                                            IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}" Margin="0,0,0,0"/>
+                                            IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionBorderless" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
                                             HorizontalAlignment="Left" VerticalAlignment="Center"
-                                            IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}" Margin="0,0,0,8"/>
+                                            IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox x:Name="GameWindowResizable" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}"
+                                                  IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"/>
+                                            <Button Grid.Column="1" Margin="8,-4,0,0" Style="{ThemeResource ButtonRevealStyle}">
+                                                <Button.Content>
+                                                    <FontIcon
+                                                        FontFamily="{ThemeResource FontAwesome}"
+                                                        FontSize="12"
+                                                        Glyph="&#x3f;" />
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout AllowFocusOnInteraction="True">
+                                                        <TextBlock
+                                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
+                                                            MaxWidth="360"
+                                                            TextWrapping="Wrap"
+                                                            TextAlignment="Center"
+                                                            FontWeight="SemiBold"/>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
                                         <!--
                                         Exclusive Fullscreen option is disabled for Genshin due to the amount of bugs it caused
                                         Ref: https://www.pcgamingwiki.com/wiki/Genshin_Impact#G-Sync_.2F_Variable_Refresh_Rate_Does_Not_Work

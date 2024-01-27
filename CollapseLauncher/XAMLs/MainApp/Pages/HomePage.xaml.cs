@@ -42,6 +42,7 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+using Hi3Helper.EncTool.WindowTool;
 
 namespace CollapseLauncher.Pages
 {
@@ -1267,6 +1268,9 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
+                // Start the resizable window payload (also use the same token as PlaytimeToken)
+                StartResizableWindowPayload(CurrentGameProperty._GameVersion.GamePreset, PlaytimeToken.Token);
+
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
 
@@ -1344,6 +1348,33 @@ namespace CollapseLauncher.Pages
             catch (System.ComponentModel.Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            }
+        }
+        #endregion
+
+        #region Game Resizable Window Payload
+        public async void StartResizableWindowPayload(PresetConfigV2 gamePreset, CancellationToken token)
+        {
+            try
+            {
+                // Check if the game is using Resizable Window settings
+                IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
+                if (!_Settings.SettingsCollapseScreen.UseResizableWindow) return;
+
+                string executableName = Path.GetFileNameWithoutExtension(gamePreset.GameExecutableName);
+                ResizableWindowHook resizableWindowHook = new ResizableWindowHook();
+
+                // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
+                // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
+                // it impossible to use custom resolution (but since you are using Collapse, it's now
+                // possible :teriStare:)
+                bool isNeedToResetPos = gamePreset.GameType == GameType.StarRail;
+                await resizableWindowHook.StartHook(executableName, token, isNeedToResetPos);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
+                ErrorSender.SendException(ex, ErrorType.GameError);
             }
         }
         #endregion
