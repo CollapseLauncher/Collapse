@@ -238,6 +238,8 @@
     "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
@@ -868,6 +870,7 @@
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
