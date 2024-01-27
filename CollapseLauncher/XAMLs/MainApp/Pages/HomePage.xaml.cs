@@ -1,7 +1,8 @@
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
-using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.ShortcutUtils;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
@@ -2026,6 +2027,46 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
             }
+        }
+        #endregion
+
+        #region Shortcut Creation
+        private async void AddToSteamButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tuple<ContentDialogResult, bool> result = await Dialog_SteamShortcutCreationConfirm(this);
+
+            if (result.Item1 != ContentDialogResult.Primary)
+                return;
+
+            if (ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
+            {
+                await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
+                return;
+            }
+
+            await Dialog_SteamShortcutCreationFailure(this);
+        }
+
+        private async void ShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            string folder = await FileDialogNative.GetFolderPicker(Lang._HomePage.CreateShortcut_FolderPicker);
+
+            if (string.IsNullOrEmpty(folder))
+                return;
+
+            if (!IsUserHasPermission(folder))
+            {
+                await Dialog_InsufficientWritePermission(sender as UIElement, folder);
+                return;
+            }
+
+            Tuple<ContentDialogResult, bool> result = await Dialog_ShortcutCreationConfirm(this, folder);
+
+            if (result.Item1 != ContentDialogResult.Primary)
+                return;
+
+            ShortcutCreator.CreateShortcut(folder, GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2);
+            await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
         }
         #endregion
     }

@@ -43,6 +43,7 @@
                 public string YesImReallySure { get; set; } = LangFallback?._Misc.YesImReallySure;
                 public string YesIHaveBeefyPC { get; set; } = LangFallback?._Misc.YesIHaveBeefyPC;
                 public string YesChangeLocation { get; set; } = LangFallback?._Misc.YesChangeLocation;
+                public string YesContinue { get; set; } = LangFallback?._Misc.YesContinue;
                 public string No { get; set; } = LangFallback?._Misc.No;
                 public string NoStartFromBeginning { get; set; } = LangFallback?._Misc.NoStartFromBeginning;
                 public string NoCancel { get; set; } = LangFallback?._Misc.NoCancel;
