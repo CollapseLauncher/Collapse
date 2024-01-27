@@ -14,6 +14,8 @@
                 public string Graphics_Fullscreen { get; set; } = LangFallback?._GameSettingsPage.Graphics_Fullscreen;
                 public string Graphics_Borderless { get; set; } = LangFallback?._GameSettingsPage.Graphics_Borderless;
                 public string Graphics_ExclusiveFullscreen { get; set; } = LangFallback?._GameSettingsPage.Graphics_ExclusiveFullscreen;
+                public string Graphics_ResizableWindow { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResizableWindow;
+                public string Graphics_ResizableWindowTooltip { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResizableWindowTooltip;
                 public string Graphics_ResSelectPlaceholder { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResSelectPlaceholder;
                 public string Graphics_ResCustom { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResCustom;
                 public string Graphics_ResCustomW { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResCustomW;

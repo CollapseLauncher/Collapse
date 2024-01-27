@@ -35,8 +35,36 @@
                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
                                                   IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionBorderless" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
-          HorizontalAlignment="Left" VerticalAlignment="Center"
-          IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}"/>
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox x:Name="GameWindowResizable" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}"
+                                                  IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"/>
+                                            <Button Grid.Column="1" Margin="8,-4,0,0" Style="{ThemeResource ButtonRevealStyle}">
+                                                <Button.Content>
+                                                    <FontIcon
+                                                        FontFamily="{ThemeResource FontAwesome}"
+                                                        FontSize="12"
+                                                        Glyph="&#x3f;" />
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout AllowFocusOnInteraction="True">
+                                                        <TextBlock
+                                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
+                                                            MaxWidth="360"
+                                                            TextWrapping="Wrap"
+                                                            TextAlignment="Center"
+                                                            FontWeight="SemiBold"/>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
                                         <!--
                                         Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
                                         Delete `Visibility="Collapsed"' to revert this change
@@ -51,10 +79,34 @@
                                                   PlaceholderText="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResSelectPlaceholder}" Width="128"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}"/>
-                                        <CheckBox x:Name="GameCustomResolutionCheckbox" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustom}"
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox x:Name="GameCustomResolutionCheckbox" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustom}"
                                                   VerticalAlignment="Center" Margin="16,0,0,0"
-                                                  IsEnabled="{x:Bind IsExclusiveFullscreenEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
+                                                  IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}"
                                                   IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"/>
+                                            <Button Grid.Column="1" Margin="8,-4,0,0" Style="{ThemeResource ButtonRevealStyle}">
+                                                <Button.Content>
+                                                    <FontIcon
+                                                        FontFamily="{ThemeResource FontAwesome}"
+                                                        FontSize="12"
+                                                        Glyph="&#x3f;" />
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout AllowFocusOnInteraction="True">
+                                                        <TextBlock
+                                                            Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"
+                                                            MaxWidth="360"
+                                                            TextWrapping="Wrap"
+                                                            TextAlignment="Center"
+                                                            FontWeight="SemiBold"/>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel x:Name="GameCustomResolutionPanel" Orientation="Horizontal">
