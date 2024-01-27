@@ -136,6 +136,8 @@
     "GameSettings_Panel4": "Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
+    "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
+    "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
     "GamePlaytime_Panel1": "Editar tiempo de juego",
     "GamePlaytime_Idle_Panel1Hours": "Horas",
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
@@ -152,7 +154,9 @@
     "CommunityToolsBtn": "Herramientas",
     "CommunityToolsBtn_OfficialText": "Oficiales",
     "CommunityToolsBtn_CommunityText": "De la Comunidad",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Selecciona el Ejecutable: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Selecciona el Ejecutable: {0}",
+
+    "CreateShortcut_FolderPicker": "Selecciona donde crear el acceso directo"
   },
 
   "_GameRepairPage": {
@@ -238,8 +242,10 @@
     "Graphics_Borderless": "Usar modo ventana sin bordes",
     "Graphics_Fullscreen": "Pantalla Completa",
     "Graphics_ExclusiveFullscreen": "Usar Pantalla Completa Exclusiva",
+    "Graphics_ResizableWindow": "Permitir Redimensionar Ventana",
+    "Graphics_ResizableWindowTooltip": "Solo disponible cuando el modo Pantalla Completa está deshabilitado",
     "Graphics_ResSelectPlaceholder": "Seleccionar",
-    "Graphics_ResCustom": "Usar resolución personalizada",
+    "Graphics_ResCustom": "Usar Resolución Personalizada",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
@@ -253,8 +259,8 @@
     "Graphics_APIHelp3": "Usar DirectX 12 puede causar fallos en algunos escenarios, ya que el juego no fue compilado nativamente con la API de DirectX 12",
 
     "Graphics_SpecPanel": "Configuración Global de Gráficos",
-    "Graphics_Preset": "Configuraciones pre-hechas de Gráficos",
-    "Graphics_Render": "Calidad de Renderizado",
+    "Graphics_Preset": "Ajustes Gráficos Predefinidos",
+    "Graphics_Render": "Calidad Renderizado",
     "Graphics_Shadow": "Calidad de Sombras",
     "Graphics_Reflection": "Calidad del Reflejo",
     "Graphics_FX": "Efectos Visuales",
@@ -319,7 +325,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver más parámetros.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Aumentar Prioridad del Juego [Experimental]"
   },
 
   "_SettingsPage": {
@@ -468,6 +474,7 @@
     "YesImReallySure": "¡Sí, estoy seguro!",
     "YesIHaveBeefyPC": "Sí, tengo una buena computadora! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Sí, Cambiar ubicación",
+    "YesContinue": "Si, Continuar",
 
     "No": "No",
     "NoStartFromBeginning": "No, Comenzar Desde Cero",
@@ -660,7 +667,31 @@
     "OperationWarningNotCancellableMsg2": "NO PUEDES CANCELAR EL PROCESO",
     "OperationWarningNotCancellableMsg3": " mientras se está ejecutando!\r\n\r\nHace clic en \"",
     "OperationWarningNotCancellableMsg4": "\" para iniciar el proceso, o \"",
-    "OperationWarningNotCancellableMsg5": "\" para cancelarlo."
+    "OperationWarningNotCancellableMsg5": "\" para cancelarlo.",
+
+    "ShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
+    "ShortcutCreationConfirmSubtitle1": "El acceso directo se creara en la siguiente ubicación:",
+    "ShortcutCreationConfirmSubtitle2": "Si ya existe un acceso directo con el mismo nombre en esta carpeta, será reemplazado.",
+    "ShortcutCreationConfirmCheckBox": "Automáticamente iniciar el juego al usar el acceso directo",
+    "ShortcutCreationSuccessTitle": "¡Éxito!",
+    "ShortcutCreationSuccessSubtitle1": "¡Se creó un nuevo Acceso Directo! ",
+    "ShortcutCreationSuccessSubtitle2": "Ubicación: ",
+    "ShortcutCreationSuccessSubtitle3": "Aviso: ",
+    "ShortcutCreationSuccessSubtitle4": " • Este acceso directo iniciará el juego después de cargar la región",
+
+    "SteamShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
+    "SteamShortcutCreationConfirmSubtitle1": "Un acceso directo será añadido a todos los perfiles de Steam en este computador",
+    "SteamShortcutCreationConfirmSubtitle2": "Si ya fue añadido, se verificaran los datos del acceso directo.",
+    "SteamShortcutCreationConfirmCheckBox": "Automáticamente iniciar el juego al usar el acceso directo",
+    "SteamShortcutCreationSuccessTitle": "¡Éxito!",
+    "SteamShortcutCreationSuccessSubtitle1": "¡Se creó un nuevo Acceso Directo para cada perfil de Steam en este PC! ",
+    "SteamShortcutCreationSuccessSubtitle2": "Aviso: ",
+    "SteamShortcutCreationSuccessSubtitle3": " • Este acceso directo iniciará el juego después de cargar la región.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Realizar el proceso otra vez arreglara cualquier imagen corrupta/faltante del acceso directo.",
+    "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
+
+    "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
+    "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función."
   },
 
   "_FileMigrationProcess": {
@@ -867,7 +898,8 @@
     "Graphics_Fullscreen": "Pantalla Completa",
     "Graphics_ExclusiveFullscreen": "Pantalla Completa Exclusiva",
     "Graphics_ResSelectPlaceholder": "Seleccionar",
-    "Graphics_ResCustom": "Usar Resolucion Personalizada",
+    "Graphics_ResCustom": "Usar Resolución Personalizada",
+    "Graphics_ResCustomTooltip": "Resolución Personalizada solo puede ser usada cuando Redimensionar Ventana esta habilitado",
     "Graphics_ResCustomW": "An",
     "Graphics_ResCustomH": "Al",
 
@@ -938,7 +970,7 @@
     "Graphics_ExclusiveFullscreen": "Usar Pantalla Completa Exclusiva",
     "Graphics_ExclusiveFullscreen_Help": "¡La pantalla completa exclusiva puede causar que el juego se detenga aleatoriamente!",
     "Graphics_ResSelectPlaceholder": "Seleccionar",
-    "Graphics_ResCustom": "Usar Resolucion Personalizada",
+    "Graphics_ResCustom": "Usar Resolución Personalizada",
     "Graphics_ResCustomW": "An",
     "Graphics_ResCustomH": "Al",
 
