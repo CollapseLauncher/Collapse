@@ -1249,7 +1249,7 @@ namespace CollapseLauncher.Pages
 
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
                 StartResizableWindowPayload(
-                    CurrentGameProperty._GameVersion.GamePreset.GameName,
+                    CurrentGameProperty._GameVersion.GamePreset.GameExecutableName,
                     _Settings,
                     CurrentGameProperty._GameVersion.GamePreset.GameType);
                 GameRunningWatcher();
