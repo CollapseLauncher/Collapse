@@ -680,11 +680,11 @@
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam profile in this computer.",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
     "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
     "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
     "SteamShortcutCreationSuccessTitle": "Success!",
-    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam profile in this computer!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
     "SteamShortcutCreationSuccessSubtitle2": "Notes:",
     "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
