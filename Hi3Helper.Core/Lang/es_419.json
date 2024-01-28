@@ -680,11 +680,11 @@
     "ShortcutCreationSuccessSubtitle4": " • Este acceso directo iniciará el juego después de cargar la región",
 
     "SteamShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
-    "SteamShortcutCreationConfirmSubtitle1": "Un acceso directo será añadido a todos los perfiles de Steam en este computador",
+    "SteamShortcutCreationConfirmSubtitle1": "Un acceso directo será añadido a todos los usuarios de Steam en este computador",
     "SteamShortcutCreationConfirmSubtitle2": "Si ya fue añadido, se verificaran los datos del acceso directo.",
     "SteamShortcutCreationConfirmCheckBox": "Automáticamente iniciar el juego al usar el acceso directo",
     "SteamShortcutCreationSuccessTitle": "¡Éxito!",
-    "SteamShortcutCreationSuccessSubtitle1": "¡Se creó un nuevo Acceso Directo para cada perfil de Steam en este PC! ",
+    "SteamShortcutCreationSuccessSubtitle1": "¡Se creó un nuevo Acceso Directo para cada usuario de Steam en este PC! ",
     "SteamShortcutCreationSuccessSubtitle2": "Aviso: ",
     "SteamShortcutCreationSuccessSubtitle3": " • Este acceso directo iniciará el juego después de cargar la región.",
     "SteamShortcutCreationSuccessSubtitle4": " • Realizar el proceso otra vez arreglara cualquier imagen corrupta/faltante del acceso directo.",
