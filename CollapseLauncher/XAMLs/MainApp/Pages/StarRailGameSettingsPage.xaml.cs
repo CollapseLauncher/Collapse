@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using RegistryUtils;
 using System;
 using System.IO;
+using CollapseLauncher.Dialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -28,6 +29,7 @@ namespace CollapseLauncher.Pages
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
         private bool IsNoReload { get; set; }
+        private const string _AbValueName = "App_Settings_h2319593470";
         public StarRailGameSettingsPage()
         {
             try
@@ -67,7 +69,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void LoadPage()
+        private async void LoadPage()
         {
             BackgroundImgChanger.ToggleBackground(true);
             Settings.ReloadSettings();
@@ -78,8 +80,16 @@ namespace CollapseLauncher.Pages
             GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
 
             InheritApplyTextColor = ApplyText.Foreground;
+#nullable enable
+            // A/B Testing as of 2023-12-26 (HSR v1.6.0)
+            object? abValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Cognosphere\Star Rail", _AbValueName, null);
+            if (abValue != null)
+            {
+                await SimpleDialogs.Dialog_GenericWarning(Content);
+                LogWriteLine($"A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
+            }
         }
-
+#nullable disable
         private void RegistryExportClick(object sender, RoutedEventArgs e)
         {
             try
