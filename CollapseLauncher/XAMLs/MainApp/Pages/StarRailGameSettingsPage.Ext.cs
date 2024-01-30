@@ -16,10 +16,13 @@ namespace CollapseLauncher.Pages
                 Settings.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
+                    GameWindowResizable.IsEnabled = false;
+                    GameWindowResizable.IsChecked = false;
                     GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
                     GameResolutionBorderless.IsChecked = false;
                     return;
                 }
+                GameWindowResizable.IsEnabled = true;
                 GameResolutionFullscreenExclusive.IsEnabled = false;
                 GameResolutionFullscreenExclusive.IsChecked = false;
                 GameResolutionBorderless.IsEnabled = true;
@@ -34,10 +37,16 @@ namespace CollapseLauncher.Pages
                 Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)
                 {
+                    GameWindowResizable.IsEnabled = false;
+                    GameWindowResizable.IsChecked = false;
                     GameResolutionFullscreen.IsEnabled = false;
                     GameResolutionFullscreen.IsChecked = false;
                 }
-                GameResolutionFullscreen.IsEnabled = true;
+                else
+                {
+                    GameWindowResizable.IsEnabled = true;
+                    GameResolutionFullscreen.IsEnabled = true;
+                }
             }
         }
 
@@ -98,6 +107,34 @@ namespace CollapseLauncher.Pages
                 }
                 GameCustomResolutionCheckbox.IsEnabled = true;
             }
+        }
+
+        public bool IsCanResizableWindow
+        {
+            get => !Settings.SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
+        }
+
+        public bool IsResizableWindow
+        {
+            get => Settings.SettingsCollapseScreen.UseResizableWindow;
+            set
+            {
+                Settings.SettingsCollapseScreen.UseResizableWindow = value;
+                if (value)
+                {
+                    GameCustomResolutionCheckbox.IsEnabled = true;
+                }
+                else
+                {
+                    GameCustomResolutionCheckbox.IsEnabled = false;
+                    GameCustomResolutionCheckbox.IsChecked = false;
+                }
+            }
+        }
+
+        public bool IsCanCustomResolution
+        {
+            get => Settings.SettingsCollapseScreen.UseResizableWindow && !IsExclusiveFullscreenEnabled;
         }
 
         public int ResolutionW

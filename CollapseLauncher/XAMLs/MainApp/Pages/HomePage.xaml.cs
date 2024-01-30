@@ -1,7 +1,8 @@
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
-using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.ShortcutUtils;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
@@ -42,6 +43,7 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+using Hi3Helper.EncTool.WindowTool;
 
 namespace CollapseLauncher.Pages
 {
@@ -1212,11 +1214,12 @@ namespace CollapseLauncher.Pages
             InstallGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
         }
-
-        CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
         #endregion
 
         #region Game Start/Stop Method
+
+        CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
+        CancellationTokenSource ResizableWindowHookToken;
         private async void StartGame(object sender, RoutedEventArgs e)
         {
             try
@@ -1229,10 +1232,10 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
                     GenshinHDREnforcer();
 
-                Process proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
-                proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = GetLaunchArguments();
+                Process proc                    = new Process();
+                proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+                proc.StartInfo.UseShellExecute  = true;
+                proc.StartInfo.Arguments        = GetLaunchArguments(_Settings);
                 LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
                 // proc.StartInfo.WorkingDirectory = CurrentGameProperty._GameVersion.GamePreset.ZoneName == "Bilibili" ||
                 //     (CurrentGameProperty._GameVersion.GameType == GameType.Genshin
@@ -1244,12 +1247,18 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb             = "runas";
                 proc.Start();
 
-                WatchOutputLog = new CancellationTokenSource();
-
+                // Start the resizable window payload (also use the same token as PlaytimeToken)
+                StartResizableWindowPayload(
+                    CurrentGameProperty._GameVersion.GamePreset.GameExecutableName,
+                    _Settings,
+                    CurrentGameProperty._GameVersion.GamePreset.GameType);
                 GameRunningWatcher();
 
                 if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    WatchOutputLog = new CancellationTokenSource();
                     ReadOutputLog();
+                }
 
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
@@ -1308,6 +1317,12 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(3000);
             }
 
+            if (ResizableWindowHookToken != null)
+            {
+                ResizableWindowHookToken.Cancel();
+                ResizableWindowHookToken.Dispose();
+            }
+
             // Stopping GameLogWatcher
             if (GetAppConfigValue("EnableConsole").ToBool())
                 WatchOutputLog.Cancel();
@@ -1348,13 +1363,39 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
+        #region Game Resizable Window Payload
+        internal async void StartResizableWindowPayload(string executableName, IGameSettingsUniversal settings, GameType gameType)
+        {
+            try
+            {
+                // Check if the game is using Resizable Window settings
+                if (!settings.SettingsCollapseScreen.UseResizableWindow) return;
+                ResizableWindowHookToken = new CancellationTokenSource();
+
+                executableName = Path.GetFileNameWithoutExtension(executableName);
+                ResizableWindowHook resizableWindowHook = new ResizableWindowHook();
+
+                // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
+                // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
+                // it impossible to use custom resolution (but since you are using Collapse, it's now
+                // possible :teriStare:)
+                bool isNeedToResetPos = gameType == GameType.StarRail;
+                await resizableWindowHook.StartHook(executableName, ResizableWindowHookToken.Token, isNeedToResetPos);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
+                ErrorSender.SendException(ex, ErrorType.GameError);
+            }
+        }
+        #endregion
+
         #region Game Launch Argument Builder
         bool RequireWindowExclusivePayload = false;
-        public string GetLaunchArguments()
+        internal string GetLaunchArguments(IGameSettingsUniversal _Settings)
         {
             StringBuilder parameter = new StringBuilder();
 
-            IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
             if (CurrentGameProperty._GameVersion.GameType == GameType.Honkai)
             {
                 if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
@@ -2026,6 +2067,46 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
             }
+        }
+        #endregion
+
+        #region Shortcut Creation
+        private async void AddToSteamButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tuple<ContentDialogResult, bool> result = await Dialog_SteamShortcutCreationConfirm(this);
+
+            if (result.Item1 != ContentDialogResult.Primary)
+                return;
+
+            if (ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
+            {
+                await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
+                return;
+            }
+
+            await Dialog_SteamShortcutCreationFailure(this);
+        }
+
+        private async void ShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            string folder = await FileDialogNative.GetFolderPicker(Lang._HomePage.CreateShortcut_FolderPicker);
+
+            if (string.IsNullOrEmpty(folder))
+                return;
+
+            if (!IsUserHasPermission(folder))
+            {
+                await Dialog_InsufficientWritePermission(sender as UIElement, folder);
+                return;
+            }
+
+            Tuple<ContentDialogResult, bool> result = await Dialog_ShortcutCreationConfirm(this, folder);
+
+            if (result.Item1 != ContentDialogResult.Primary)
+                return;
+
+            ShortcutCreator.CreateShortcut(folder, GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2);
+            await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
         }
         #endregion
     }

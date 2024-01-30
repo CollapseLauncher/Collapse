@@ -382,7 +382,21 @@ namespace Hi3Helper.Preset
             public string userLocalDataVersionId { get; set; } = "0.0.1";
             public int deviceLanguageType { get; set; } = 1;
             public int deviceVoiceLanguageType { get; set; } = 2;
-            public ServerRegionID selectedServerName { get; set; } = ServerRegionID.os_asia;
+            [JsonPropertyName("selectedServerName")]
+            public string _selectedServerName { get; set; } = "os_asia";
+            [JsonIgnore]
+            public ServerRegionID selectedServerName
+            {
+                get
+                {
+                    string valueFromReg = _selectedServerName;
+                    if (!Enum.TryParse<ServerRegionID>(valueFromReg, true, out ServerRegionID result))
+                        return ServerRegionID.os_asia;
+
+                    return result;
+                }
+                set => _selectedServerName = $"{value}";
+            }
             public int localLevelIndex { get; set; } = 0;
             public string deviceID { get; set; } = "";
             public string targetUID { get; set; } = "";
@@ -505,6 +519,7 @@ namespace Hi3Helper.Preset
         public string? ZoneURL { get; set; }
         public string? ZoneLogoURL { get; set; }
         public string? ZonePosterURL { get; set; }
+        
 #nullable disable
         public string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
         public string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }
@@ -557,6 +572,13 @@ namespace Hi3Helper.Preset
         public string? InternalGameNameFolder { get; set; }
         public string? InternalGameNameInConfig { get; set; }
         public Dictionary<string, GameDataTemplate>? GameDataTemplates { get; set; }
+        public Dictionary<string, SteamGameProp>? ZoneSteamAssets { get; set; } = new Dictionary<string, SteamGameProp>();
+    }
+
+    public class SteamGameProp
+    {
+        public string? URL { get; set; }
+        public string? MD5 { get; set; }
     }
 
     public class GameDataTemplate

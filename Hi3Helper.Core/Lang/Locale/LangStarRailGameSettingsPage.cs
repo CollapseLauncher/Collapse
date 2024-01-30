@@ -15,6 +15,7 @@
                 public string Graphics_ExclusiveFullscreen { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ExclusiveFullscreen;
                 public string Graphics_ResSelectPlaceholder { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ResSelectPlaceholder;
                 public string Graphics_ResCustom { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ResCustom;
+                public string Graphics_ResCustomTooltip { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ResCustomTooltip;
                 public string Graphics_ResCustomW { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ResCustomW;
                 public string Graphics_ResCustomH { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ResCustomH;
                 public string OverlayNotInstalledTitle { get; set; } = LangFallback?._StarRailGameSettingsPage.OverlayNotInstalledTitle;

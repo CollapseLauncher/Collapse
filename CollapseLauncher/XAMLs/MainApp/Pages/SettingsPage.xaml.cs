@@ -462,12 +462,12 @@ namespace CollapseLauncher.Pages
                 if (IsEnabled)
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
-                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
+                    //ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
-                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
+                    //ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 return IsEnabled;
             }
@@ -477,13 +477,13 @@ namespace CollapseLauncher.Pages
                 {
                     AppDiscordPresence.SetupPresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
-                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
+                    //ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     AppDiscordPresence.DisablePresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
-                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
+                    //ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
                 ToggleDiscordGameStatus.IsEnabled = value;
@@ -500,10 +500,17 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        // TODO: Fix this feature
+        // Temporarily force disable this
+        //private bool IsDiscordIdleStatusEnabled
+        //{
+        //    get => AppDiscordPresence.IdleEnabled;
+        //    set => AppDiscordPresence.IdleEnabled = value;
+        //}
         private bool IsDiscordIdleStatusEnabled
         {
-            get => AppDiscordPresence.IdleEnabled;
-            set => AppDiscordPresence.IdleEnabled = value;
+            get => true;
+            set => AppDiscordPresence.IdleEnabled = true;
         }
 #else
         private bool IsDiscordRPCEnabled

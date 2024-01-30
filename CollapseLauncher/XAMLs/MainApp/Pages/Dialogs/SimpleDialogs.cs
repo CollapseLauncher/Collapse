@@ -613,16 +613,26 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
-            void CopyTextToClipboard(object sender, RoutedEventArgs e)
+            async void CopyTextToClipboard(object sender, RoutedEventArgs e)
             {
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
 
                 Button btn = sender as Button;
                 FontIcon fontIcon = (btn.Content as StackPanel).Children[0] as FontIcon;
                 TextBlock textBlock = (btn.Content as StackPanel).Children[1] as TextBlock;
+
+                string lastGlyph = fontIcon.Glyph;
+                string lastText = textBlock.Text;
+
                 fontIcon.Glyph = "";
                 textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
                 btn.IsEnabled = false;
+
+                await Task.Delay(1000);
+
+                fontIcon.Glyph = lastGlyph;
+                textBlock.Text = lastText;
+                btn.IsEnabled = true;
             }
 
             Button copyButton = null;
@@ -702,6 +712,121 @@ namespace CollapseLauncher.Dialogs
                     copyButton.Click -= CopyTextToClipboard;
             }
         }
+
+        #region Shortcut Creator Dialogs
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1, Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
+            panel.Children.Add(pathText);
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+
+            CheckBox playOnLoad = new CheckBox() { 
+                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
+                Margin = new Thickness(0, 4, 0, -8),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };    
+            panel.Children.Add(playOnLoad);
+        
+            ContentDialogResult result = await SpawnDialog(
+                Lang._Dialogs.ShortcutCreationConfirmTitle,
+                panel,
+                Content,
+                Lang._Misc.Cancel,
+                Lang._Misc.YesContinue,
+                dialogTheme: ContentDialogTheme.Warning
+                );
+
+            return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
+        }
+
+        public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            pathText.Inlines.Add(new Run() { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle2 });
+            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
+            panel.Children.Add(pathText);
+
+            if (play)
+            {
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            }
+
+            return await SpawnDialog(
+                Lang._Dialogs.ShortcutCreationSuccessTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Success
+                );
+        }
+
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement Content)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+
+            CheckBox playOnLoad = new CheckBox()
+            {
+                Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
+                Margin = new Thickness(0, 4, 0, -8),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            panel.Children.Add(playOnLoad);
+
+            ContentDialogResult result = await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationConfirmTitle,
+                panel,
+                Content,
+                Lang._Misc.Cancel,
+                Lang._Misc.YesContinue,
+                dialogTheme: ContentDialogTheme.Warning
+                );
+
+            return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
+        }
+
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+            if (play)
+            {
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            }
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+
+            return await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationSuccessTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Success
+                );
+        }
+
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure(UIElement Content)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 350 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            return await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationFailureTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Error
+                );
+        }
+        #endregion
 
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
