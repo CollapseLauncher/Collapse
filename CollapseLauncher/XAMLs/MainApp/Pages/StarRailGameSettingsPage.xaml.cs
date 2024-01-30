@@ -80,7 +80,7 @@ namespace CollapseLauncher.Pages
             GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
 
             InheritApplyTextColor = ApplyText.Foreground;
-            
+#nullable enable
             // A/B Testing as of 2023-12-26 (HSR v1.6.0)
             object? abValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Cognosphere\Star Rail", _AbValueName, null);
             if (abValue != null)
@@ -89,7 +89,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
             }
         }
-        
+#nullable disable
         private void RegistryExportClick(object sender, RoutedEventArgs e)
         {
             try
