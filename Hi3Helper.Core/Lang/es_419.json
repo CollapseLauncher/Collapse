@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Vaya, parece que te has desconectado de Internet~ ¿O será por algo más?",
     "UnhandledTitle3": "El Juego se detuvo",
     "UnhandledSubtitle3": "El juego se detuvo por un error. Detalles a continuación:",
+    "UnhandledTitle4": "Advertencia:",
+    "UnhandledSubtitle4": "Esto no es un problema grave, pero creemos que deberíamos infórmate:\r\nDebido al A/B testing realizado por miHoYo , Collapse no soporta la lectura de la siguiente clave: App_Settings_h2319593470.\r\nLamentamos las molestias y agradecemos su comprensión.",
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior"
@@ -668,6 +670,9 @@
     "OperationWarningNotCancellableMsg3": " mientras se está ejecutando!\r\n\r\nHace clic en \"",
     "OperationWarningNotCancellableMsg4": "\" para iniciar el proceso, o \"",
     "OperationWarningNotCancellableMsg5": "\" para cancelarlo.",
+
+    "GenericWarningExceptionTitle": "Advertencia:",
+    "GenericWarningExceptionSubtitle": "Esto no es un problema grave, pero creemos que deberíamos infórmate:",
 
     "ShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
     "ShortcutCreationConfirmSubtitle1": "El acceso directo se creara en la siguiente ubicación:",
