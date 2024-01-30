@@ -672,7 +672,7 @@
     "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
 
     "GenericWarningExceptionTitle": "Warning",
-    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:"
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
 
     "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
     "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
