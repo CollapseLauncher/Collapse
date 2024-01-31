@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Упс, кажется, Вы были отключены от интернета~ Или это что-то другое?",
     "UnhandledTitle3": "Игра вылетела",
     "UnhandledSubtitle3": "Игра завершилась. Детали ошибки приведены ниже:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "Скопировать всё в буфер обмена",
     "CopyClipboardBtn2": "Скопировано в буфер обмена!",
     "GoBackPageBtn1": "Вернуться к предыдущей странице"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Восстановить игру",
     "GameSettings_Panel2UninstallGame": "Удалить игру",
     "GameSettings_Panel2ConvertVersion": "Изменить версию игры",
+    "GameSettings_Panel2MoveGameLocationGame": "Переместить игру",
     "GameSettings_Panel2StopGame": "Принудительно закрыть игру ",
     "GameSettings_Panel3": "Пользовательские команды запуска",
     "GameSettings_Panel4": "Разное",
     "GameSettings_Panel4ShowEventsPanel": "Показать панель событий",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "Изменить время в игре",
     "GamePlaytime_Idle_Panel1Hours": "Часов",
     "GamePlaytime_Idle_Panel1Minutes": "Минут",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "Инструменты сообщества",
     "CommunityToolsBtn_OfficialText": "Официальные инструменты",
     "CommunityToolsBtn_CommunityText": "Инструменты сообщества",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Полноэкранный режим (в окне)",
     "Graphics_ExclusiveFullscreen": "Использовать полноэкранный режим",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Выбрать",
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
     "Graphics_ResCustomW": "Ш",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Расширенная активность в Discord",
     "DiscordRPC_Toggle": "Показывать статус в Discord",
     "DiscordRPC_GameStatusToggle": "Показывать текущую игру в статусе в Discord",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Проверить наличие обновлений",
     "Update_CurVer": "Текущая версия:",
@@ -445,7 +455,7 @@
     "Close": "Закрыть",
     "UseCurrentDir": "Использовать текущую директорию",
     "UseDefaultDir": "Использовать директорию по умолчанию",
-    "MoveToDifferentDir": "Move to different directory",
+    "MoveToDifferentDir": "Переместить в другую папку",
     "LocateDir": "Определить директорию",
     "Okay": "Хорошо",
     "OkaySad": "Окей ;-;)",
@@ -466,6 +476,7 @@
     "YesImReallySure": "Да, я действительно уверен!",
     "YesIHaveBeefyPC": "Да, у меня мощный ПК! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Да, изменить местоположение",
+    "YesContinue": "Yes, Continue",
 
     "No": "Нет",
     "NoStartFromBeginning": "Нет, начать сначала",
@@ -531,10 +542,10 @@
     "Taskbar_HideConsole": "Скрыть окно консоли Collapse на панель задач",
     "Taskbar_ExitApp": "Выйти из Collapse Лаунчера",
 
-    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameOfficial": "Официальный лаунчер",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Launcher Name is Unknown)"
+    "LauncherNameUnknown": "(Название лаунчера неизвестно)"
   },
 
   "_BackgroundNotification": {
@@ -575,9 +586,9 @@
     "ExtremeGraphicsSettingsWarnTitle": "Пресет \"Очень высокие\" выбран!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Вы собираетесь установить пресет \"Очень высокие\"!\nОчень высокими настройками, по сути, является 2x масштаб визуализации с включенным MSAA, что ОЧЕНЬ ПЛОХО ОПТИМИЗИРОВАНО!\n\nВы уверены, что хотите использовать эту настройку?",
     "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
-    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
-    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
-    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
+    "MigrateExistingInstallChoiceTitle": "Обнаружена существующая установка {0}!",
+    "MigrateExistingInstallChoiceSubtitle1": "В этой папке уже установлена игра, использующая {0}:",
+    "MigrateExistingInstallChoiceSubtitle2": "У вас есть возможность переместить существующие данные игры в другую папку или использовать текущую папку в качестве существующей. Рекомендуется использовать текущий каталог в качестве уже установленного, чтобы гарантировать, что вы все еще сможете запустить игру, используя {0}.",
     "ExistingInstallTitle": "Обнаружена существующая установка!",
     "ExistingInstallSubtitle": "Игра уже установлена в:\n\n{0}\n\nРекомендуется перенести игру на Collapse Launcher для лучшей поддержки и интеграции.\nНе беспокойтесь, Вы все еще можете использовать официальный лаунчер для начала игры.\n\nЖелаете продолжить?",
     "ExistingInstallBHI3LTitle": "Обнаружена существующая установка через BetterHI3Launcher!",
@@ -650,27 +661,54 @@
     "ResetKbShortcutsTitle": "Вы уверены что хотите сбросить все сочетания?",
     "ResetKbShortcutsSubtitle": "Это означает, что каждое сочетание будет изменено на комбинацию клавиш по умолчанию.\n\nВы хотите продолжить?\n\nПримечание: Это никак не повлияет на работу Collapse, и вы по-прежнему сможете изменить комбинацию клавиш, зайдя в меню \"Сочетания клавиш\".",
 
-    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
-    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+    "OperationErrorDiskSpaceInsufficientTitle": "Свободного места на диске: {0} недостаточно!",
+    "OperationErrorDiskSpaceInsufficientMsg": "На диске {2} недостаточно свободного места для выполнения операции!\n\nСвободное пространство: {0}\nТребуемое пространство: {1}.\n\nУбедитесь, что на диске достаточно места, прежде чем приступать к работе.",
 
-    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
-    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
-    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
-    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
-    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+    "OperationWarningNotCancellableTitle": "Внимание: Эта операция НЕ ОТМЕНЯЕТСЯ!",
+    "OperationWarningNotCancellableMsg1": "Чтобы избежать возможных проблем во время процесса, убедитесь, что на компьютере не запущено никаких тяжелых программ. Помните, что ",
+    "OperationWarningNotCancellableMsg2": "ВЫ НЕ СМОЖЕТЕ ПРЕРВАТЬ ПРОЦЕСС",
+    "OperationWarningNotCancellableMsg3": "пока он запущен!\n\nНажмите \"",
+    "OperationWarningNotCancellableMsg4": "\" для начала процесса или \"",
+    "OperationWarningNotCancellableMsg5": "\" для отмены операции.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
   },
 
   "_FileMigrationProcess": {
-    "PathActivityPanelTitle": "Moving: ",
-    "SpeedIndicatorTitle": "Speed: ",
+    "PathActivityPanelTitle": "Перемещение: ",
+    "SpeedIndicatorTitle": "Скорость: ",
     "FileCountIndicatorTitle": "File processed: ",
-    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "LocateFolderSubtitle": "Выберите расположение для перемещения файла/папки по целевому пути.",
     "ChoosePathTextBoxPlaceholder": "Choose the target path...",
     "ChoosePathButton": "Choose Target",
     "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
     "ChoosePathErrorPathNotExist": "Path does not exist!",
-    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
+    "ChoosePathErrorPathNoPermission": "У Вас нет разрешения на доступ к этому месту! Пожалуйста, выберите другую папку!"
   },
 
   "_InstallMgmt": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "Использовать полноэкранный режим",
     "Graphics_ResSelectPlaceholder": "Выбрать",
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "Ш",
     "Graphics_ResCustomH": "В",
 
