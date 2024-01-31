@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Упс, кажется, Вы были отключены от интернета~ Или это что-то другое?",
     "UnhandledTitle3": "Игра вылетела",
     "UnhandledSubtitle3": "Игра завершилась. Детали ошибки приведены ниже:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "Скопировать всё в буфер обмена",
     "CopyClipboardBtn2": "Скопировано в буфер обмена!",
     "GoBackPageBtn1": "Вернуться к предыдущей странице"
@@ -94,7 +96,7 @@
     "NotifNeverAsk": "Больше не показывать",
     "NotifNoNewNotifs": "No new notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Utilities"
+    "NavigationUtilities": "Utilities"
   },
 
   "_HomePage": {
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Восстановить игру",
     "GameSettings_Panel2UninstallGame": "Удалить игру",
     "GameSettings_Panel2ConvertVersion": "Изменить версию игры",
+    "GameSettings_Panel2MoveGameLocationGame": "Переместить игру",
     "GameSettings_Panel2StopGame": "Принудительно закрыть игру ",
     "GameSettings_Panel3": "Пользовательские команды запуска",
     "GameSettings_Panel4": "Разное",
     "GameSettings_Panel4ShowEventsPanel": "Показать панель событий",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "Изменить время в игре",
     "GamePlaytime_Idle_Panel1Hours": "Часов",
     "GamePlaytime_Idle_Panel1Minutes": "Минут",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "Инструменты сообщества",
     "CommunityToolsBtn_OfficialText": "Официальные инструменты",
     "CommunityToolsBtn_CommunityText": "Инструменты сообщества",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Полноэкранный режим (в окне)",
     "Graphics_ExclusiveFullscreen": "Использовать полноэкранный режим",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Выбрать",
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
     "Graphics_ResCustomW": "Ш",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Расширенная активность в Discord",
     "DiscordRPC_Toggle": "Показывать статус в Discord",
     "DiscordRPC_GameStatusToggle": "Показывать текущую игру в статусе в Discord",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Проверить наличие обновлений",
     "Update_CurVer": "Текущая версия:",
@@ -401,13 +411,14 @@
     "Disclaimer3": "и полностью open-source, любой вклад приветствуется.",
 
     "DiscordBtn1": "Присоединяйтесь к нам в Discord!",
-    "DiscordBtn2": "Honkai Impact 3rd Discord",
+    "DiscordBtn2": "Дискорд Honkai Impact 3rd",
     "DiscordBtn3": "Официальный Discord сервер Collapse!",
 
     "AppChangeReleaseChannel": "Изменить на {0} канал релиза",
 
     "EnableAcrylicEffect": "Использовать эффект акрилового размытия",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "UseExternalBrowser": "Использовать внешний браузер",
 
     "LowerCollapsePrioOnGameLaunch": "Уменьшение использования ресурсов процесса Collapse при запуске игры",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
@@ -416,7 +427,7 @@
     "KbShortcuts_ShowBtn": "Показать сочетания",
     "KbShortcuts_ResetBtn": "Восстановить по умолчанию",
 
-    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_Title": "Поведение приложения",
     "AppBehavior_PostGameLaunch": "После запуска игры",
     "AppBehavior_PostGameLaunch_Minimize": "Свернуть",
     "AppBehavior_PostGameLaunch_ToTray": "Скрыть в меню скрытых значков",
@@ -444,6 +455,7 @@
     "Close": "Закрыть",
     "UseCurrentDir": "Использовать текущую директорию",
     "UseDefaultDir": "Использовать директорию по умолчанию",
+    "MoveToDifferentDir": "Переместить в другую папку",
     "LocateDir": "Определить директорию",
     "Okay": "Хорошо",
     "OkaySad": "Окей ;-;)",
@@ -461,8 +473,10 @@
     "YesRelocate": "Да, продолжить",
     "YesMigrateIt": "Да, переместить",
     "YesConvertIt": "Да, преобразовать",
+    "YesImReallySure": "Да, я действительно уверен!",
     "YesIHaveBeefyPC": "Да, у меня мощный ПК! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Да, изменить местоположение",
+    "YesContinue": "Yes, Continue",
 
     "No": "Нет",
     "NoStartFromBeginning": "Нет, начать сначала",
@@ -471,6 +485,7 @@
     "NoIgnoreIt": "Игнорировать",
     "NoOtherLocation": "Продолжить установку",
     "NotSelected": "Не выбрано",
+    "ExtractAnyway": "Распаковать в любом случае! ",
 
     "LangNameENUS": "Английский (США)",
     "LangNameJP": "Японский",
@@ -504,7 +519,7 @@
     "CDNDescription_Cloudflare": "Зеркало официального (основного) репозитория, развернутое на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Зеркало официального (основного) репозитория, развернутое на Bitbucket.",
 
-    "LocateExecutable": "Locate Executable",
+    "LocateExecutable": "Найти исполняемый файл",
     "OpenDownloadPage": "Открыть страницу загрузки",
 
     "DiscordRP_Play": "Играет в",
@@ -525,7 +540,12 @@
     "Taskbar_HideApp": "Скрыть окно Collapse на панель задач",
     "Taskbar_ShowConsole": "Показать окно консоли Collapse",
     "Taskbar_HideConsole": "Скрыть окно консоли Collapse на панель задач",
-    "Taskbar_ExitApp": "Выйти из Collapse Лаунчера"
+    "Taskbar_ExitApp": "Выйти из Collapse Лаунчера",
+
+    "LauncherNameOfficial": "Официальный лаунчер",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Название лаунчера неизвестно)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +585,10 @@
     "RepairCompletedSubtitleNoBroken": "Поврежденных файлов не найдено.",
     "ExtremeGraphicsSettingsWarnTitle": "Пресет \"Очень высокие\" выбран!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Вы собираетесь установить пресет \"Очень высокие\"!\nОчень высокими настройками, по сути, является 2x масштаб визуализации с включенным MSAA, что ОЧЕНЬ ПЛОХО ОПТИМИЗИРОВАНО!\n\nВы уверены, что хотите использовать эту настройку?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "Обнаружена существующая установка {0}!",
+    "MigrateExistingInstallChoiceSubtitle1": "В этой папке уже установлена игра, использующая {0}:",
+    "MigrateExistingInstallChoiceSubtitle2": "У вас есть возможность переместить существующие данные игры в другую папку или использовать текущую папку в качестве существующей. Рекомендуется использовать текущий каталог в качестве уже установленного, чтобы гарантировать, что вы все еще сможете запустить игру, используя {0}.",
     "ExistingInstallTitle": "Обнаружена существующая установка!",
     "ExistingInstallSubtitle": "Игра уже установлена в:\n\n{0}\n\nРекомендуется перенести игру на Collapse Launcher для лучшей поддержки и интеграции.\nНе беспокойтесь, Вы все еще можете использовать официальный лаунчер для начала игры.\n\nЖелаете продолжить?",
     "ExistingInstallBHI3LTitle": "Обнаружена существующая установка через BetterHI3Launcher!",
@@ -579,6 +603,10 @@
     "SteamConvertFailedSubtitle": "Процесс преобразования не удался! :(\nПожалуйста, попробуйте инициировать процесс снова.",
     "InstallDataCorruptTitle": "Сбой установки игры",
     "InstallDataCorruptSubtitle": "Один из загруженных файлов поврежден.\n\nСерверная хэш-сумма: {0}\nЗагруженная хэш-сумма: {1}\n\nХотите попробовать повторно загрузить файл?",
+    "InstallCorruptDataAnywayTitle": "Распаковать повреждённые данные",
+    "InstallCorruptDataAnywaySubtitle1": "Вы собираетесь распаковать эти поврежденные данные:",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} байта)",
+    "InstallCorruptDataAnywaySubtitle3": ". Имейте в виду, что распаковка этих данных может закончиться неудачей или привести к тому, что игра не запустится.\n\nУверены что распаковать эти данные все равно нужно?",
     "InstallDataDownloadResumeTitle": "Возобновить загрузку?",
     "InstallDataDownloadResumeSubtitle": "Ранее вы скачали {0}/{1} игры.\n\nХотите возобновить загрузку?",
     "InsufficientDiskTitle": "Недостаточно места на диске",
@@ -631,7 +659,56 @@
     "MeteredConnectionWarningSubtitle": "Ваше текущее подключение к Интернету было определено как \"Лимитное\"! Продолжение процесса обновления может повлечь за собой дополнительную плату со стороны вашего интернет-провайдера. Хотите ли вы продолжить?",
 
     "ResetKbShortcutsTitle": "Вы уверены что хотите сбросить все сочетания?",
-    "ResetKbShortcutsSubtitle": "Это означает, что каждое сочетание будет изменено на комбинацию клавиш по умолчанию.\n\nВы хотите продолжить?\n\nПримечание: Это никак не повлияет на работу Collapse, и вы по-прежнему сможете изменить комбинацию клавиш, зайдя в меню \"Сочетания клавиш\"."
+    "ResetKbShortcutsSubtitle": "Это означает, что каждое сочетание будет изменено на комбинацию клавиш по умолчанию.\n\nВы хотите продолжить?\n\nПримечание: Это никак не повлияет на работу Collapse, и вы по-прежнему сможете изменить комбинацию клавиш, зайдя в меню \"Сочетания клавиш\".",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Свободного места на диске: {0} недостаточно!",
+    "OperationErrorDiskSpaceInsufficientMsg": "На диске {2} недостаточно свободного места для выполнения операции!\n\nСвободное пространство: {0}\nТребуемое пространство: {1}.\n\nУбедитесь, что на диске достаточно места, прежде чем приступать к работе.",
+
+    "OperationWarningNotCancellableTitle": "Внимание: Эта операция НЕ ОТМЕНЯЕТСЯ!",
+    "OperationWarningNotCancellableMsg1": "Чтобы избежать возможных проблем во время процесса, убедитесь, что на компьютере не запущено никаких тяжелых программ. Помните, что ",
+    "OperationWarningNotCancellableMsg2": "ВЫ НЕ СМОЖЕТЕ ПРЕРВАТЬ ПРОЦЕСС",
+    "OperationWarningNotCancellableMsg3": "пока он запущен!\n\nНажмите \"",
+    "OperationWarningNotCancellableMsg4": "\" для начала процесса или \"",
+    "OperationWarningNotCancellableMsg5": "\" для отмены операции.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Перемещение: ",
+    "SpeedIndicatorTitle": "Скорость: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Выберите расположение для перемещения файла/папки по целевому пути.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "У Вас нет разрешения на доступ к этому месту! Пожалуйста, выберите другую папку!"
   },
 
   "_InstallMgmt": {
@@ -750,7 +827,52 @@
 
     "UpdateCountdownMessage1": "Ваш лаунчер будет обновлен через {0}...",
     "UpdateCountdownMessage2": "(Нажмите",
-    "UpdateCountdownMessage3": "чтобы отменить обратный отсчёт)"
+    "UpdateCountdownMessage3": "чтобы отменить обратный отсчёт)",
+
+    "ApplyUpdateTitle1": "Мы обновляем",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Выберите CDN для обновления",
+    "ApplyUpdateCDNSelectorSubtitle": "Выберите CDN и нажмите \"{0}\" для начала обновления!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
+    "ApplyUpdateUpdateNowBtn": "Обновить сейчас!",
+
+    "ApplyUpdateUpdateVersionTitle": "Обновление:",
+    "ApplyUpdateUpdateChannelTitle": "Канал:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Неизвестный",
+    "ApplyUpdateUpdateStatusTitle": "Статус:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
+
+    "ApplyUpdateErrCollapseRunTitle": "Пожалуйста, закройте Collapse перед применением обновления!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Ждем закрытия Collapse...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ОШИБКА:\nВ файле \"release\" нет строки \"stable\" или \"preview\"",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Пожалуйста, проверьте файл \"release\" и повторите попытку.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- Б / - Б",
+    "ApplyUpdateDownloadSpeed": "{0}/с",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- Б/с",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}ч{0:%m}м{0:%s}с осталось",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--ч--м--с осталось",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "Обнаружена предыдущая установка Collapse v{0}!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "Мы обнаружили, что на вашем компьютере установлена старая версия Collapse v{0}.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "Программа обновления должна очистить все старые файлы в своей папке.\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Убедитесь, что в папке Collapse нет важных файлов, иначе они будут потеряны НАВСЕГДА!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\n\nНажмите \"Да\" для продолжения или \"Нет\" для отмены.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Нажмите \"Да\" ещё раз для подтверждения.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Очистка будет запущена через {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Удаление: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Загрузка пакета",
+    "ApplyUpdateTaskExtractingPkgTitle": "Распаковка пакета",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Удаление старых пакетов",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Перемещение распакованных файлов",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Лаунчер был обновлен до: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Запуск Collapse {0}...",
+
+    "ApplyUpdateTaskError": "ОШИБКА:\nПроизошла ошибка при применении обновления!\n{0}"
   },
 
   "_AppNotification": {
@@ -782,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "Использовать полноэкранный режим",
     "Graphics_ResSelectPlaceholder": "Выбрать",
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "Ш",
     "Graphics_ResCustomH": "В",
 
@@ -877,7 +1000,7 @@
     "Graphics_TeamPageBackground": "Фон экрана настройки отряда меняется в зависимости от текущего местоположения",
     "Graphics_GlobalIllumination": "Общее освещение",
     "Graphics_GlobalIllumination_Help1": "Только на поддерживаемом оборудовании!",
-    "Graphics_GlobalIllumination_Help2": "More information (en)",
+    "Graphics_GlobalIllumination_Help2": "Больше информации (en)",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Включить HDR",
     "Graphics_HDR_NotSupported1": "Ваш дисплей не поддерживает HDR",
@@ -902,7 +1025,7 @@
     "SpecHigh": "Высокое",
     "SpecVeryHigh": "Очень высокое",
     "SpecExtreme": "Ультра",
-    "SpecPartiallyOff": "Partially Off",
+    "SpecPartiallyOff": "Частично",
 
     "ApplyBtn": "Применить настройки",
     "SettingsApplied": "Изменения сохранены!",
@@ -984,5 +1107,22 @@
     "ChangeShortcut_Help2": "・ Модификатор - Shift, Control или Alt/Menu",
     "ChangeShortcut_Help3": "・ Клавиша - Алфавит (от А до Я) или Tab",
     "ChangeShortcut_Help4": "Вы можете выбрать любую комбинацию, состоящую из одного значения из каждой категории, если только оно не зарезервировано системой или уже используется."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Юго-Восточной Азии",
+    "Global": "Глобальный",
+    "Mainland China": "Материкового Китая",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Кореи",
+    "Japan": "Японии",
+    "Bilibili": "Bilibili"
   }
 }

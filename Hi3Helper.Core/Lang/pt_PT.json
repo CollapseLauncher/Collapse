@@ -4,19 +4,19 @@
   "Author": "gablm",
 
   "_StartupPage": {
-    "SelectLang": "Select your language",
-    "SelectLangDesc": "Please select your language to start this launcher for the first time!",
-    "SelectWindowSize": "Select your preferred window size",
-    "SelectCDN": "Select your preferred CDN",
-    "CDNHelpTitle_1": "What is a CDN?",
-    "CDNHelpTitle_2": "short for ",
-    "CDNHelpTitle_3": "Content Delivery Network",
-    "CDNHelpTitle_4": "\u200b",
-    "CDNHelpDetail_1": "\u200b",
+    "SelectLang": "Seleciona o teu idioma",
+    "SelectLangDesc": "Seleciona o idioma em que iniciar o launcher pela primeira vez!",
+    "SelectWindowSize": "Seleciona o teu tamanho de janela preferido",
+    "SelectCDN": "Seleciona o teu CDN preferido",
+    "CDNHelpTitle_1": "O que é um CDN?",
+    "CDNHelpTitle_2": "ou ",
+    "CDNHelpTitle_3": "Content Delivery Network (Rede de distribuição de conteúdos)",
+    "CDNHelpTitle_4": "​",
+    "CDNHelpDetail_1": "​",
     "CDNHelpDetail_2": "CDN",
     "CDNHelpDetail_3": " is a system used to make launcher files available to a larger audience, quickly and efficiently.",
     "CDNHelpDetail_4": "Collapse selects GitHub as the default provider.",
-    "CDNsAvailable": "CDNs available:",
+    "CDNsAvailable": "CDNs disponíveis:",
     "SplashArt_1": "The splash art is a property of",
     "SplashArt_2": "miHoYo / HoYoverse",
     "ChooseFolderBtn": "Localizar pasta",
@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Oops, parece que foste desconectado da Internet~ Ou será que não?",
     "UnhandledTitle3": "Crash do jogo",
     "UnhandledSubtitle3": "O jogo parou inesperadamente devido aos erros detalhados abaixo:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "Copiar tudo para a clipboard",
     "CopyClipboardBtn2": "Copiado para a clipboard!",
     "GoBackPageBtn1": "Voltar à página anterior"
@@ -94,7 +96,7 @@
     "NotifNeverAsk": "Não mostrar novamente",
     "NotifNoNewNotifs": "Sem novas notificações",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Utilitários"
+    "NavigationUtilities": "Utilitários"
   },
 
   "_HomePage": {
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Reparar jogo",
     "GameSettings_Panel2UninstallGame": "Desinstalar jogo",
     "GameSettings_Panel2ConvertVersion": "Converter versão",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "Forçar o encerramento do jogo",
     "GameSettings_Panel3": "Args de inicialização",
     "GameSettings_Panel4": "Variado",
     "GameSettings_Panel4ShowEventsPanel": "Exibir painel de eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Exibir painel social",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "Editar tempo de jogo",
     "GamePlaytime_Idle_Panel1Hours": "Horas",
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "Ferramentas da comunidade",
     "CommunityToolsBtn_OfficialText": "Ferramentas oficiais",
     "CommunityToolsBtn_CommunityText": "Ferramentas da comunidade",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Seleciona o executável do programa: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Seleciona o executável do programa: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Tela cheia",
     "Graphics_ExclusiveFullscreen": "Usar tela cheia exclusiva",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Selecionar",
     "Graphics_ResCustom": "Usar resolução customizada",
     "Graphics_ResCustomW": "L",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Estado de atividade do Discord",
     "DiscordRPC_Toggle": "Mostrar presença no Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar o jogo atual como estado no Discord",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Atualizações",
     "Update_CurVer": "Versão atual:",
@@ -408,6 +418,7 @@
 
     "EnableAcrylicEffect": "Usar efeito de desfoque acrílico",
     "EnableDownloadChunksMerging": "Combinar porções de pacotes descarregados",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "Diminuir o uso de recursos do Collapse quando um jogo for iniciado",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desativa o carrousel da página principal e diminui a prioridade do Collapse para \"Abaixo do normal\" ",
@@ -444,6 +455,7 @@
     "Close": "Fechar",
     "UseCurrentDir": "Usar pasta atual",
     "UseDefaultDir": "Usar predefinição",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "Localizar pasta",
     "Okay": "Okay",
     "OkaySad": "Okay ;-;)",
@@ -461,8 +473,10 @@
     "YesRelocate": "Sim, realocar",
     "YesMigrateIt": "Sim, migrar",
     "YesConvertIt": "Sim, converter",
+    "YesImReallySure": "Sim, tenho a certeza!",
     "YesIHaveBeefyPC": "Sim, tenho um PC bom!",
     "YesChangeLocation": "Sim, mudar localização",
+    "YesContinue": "Yes, Continue",
 
     "No": "Não",
     "NoStartFromBeginning": "Não, começar do início",
@@ -471,6 +485,7 @@
     "NoIgnoreIt": "Não, ignorar",
     "NoOtherLocation": "Não, continuar a instalar",
     "NotSelected": "Não selecionado",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "Inglês (EUA)",
     "LangNameJP": "Japonês",
@@ -525,7 +540,12 @@
     "Taskbar_HideApp": "Esconder janela do Collapse na gaveta de aplicações",
     "Taskbar_ShowConsole": "Mostrar janela da consola do Collapse",
     "Taskbar_HideConsole": "Esconder janela da consola do Collapse na gaveta de aplicações",
-    "Taskbar_ExitApp": "Fechar o Collapse Launcher"
+    "Taskbar_ExitApp": "Fechar o Collapse Launcher",
+
+    "LauncherNameOfficial": "Launcher Oficial",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +585,10 @@
     "RepairCompletedSubtitleNoBroken": "Nenhum ficheiro está corrompido.",
     "ExtremeGraphicsSettingsWarnTitle": "Definição \"Muito alto\" selecionada!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Estás prestes a mudar esta definição para \"Muito alto\"!\r\nLembra-te que a definição \"Muito alto\" é basicamente 2x a escala de renderização com o MSAA ativo e NÃO É OTIMIZADO! (a não ser que tenhas um Super PC da NASA para rodá-lo).\r\n\r\nTens a certeza que queres usar esta definição?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "Instalação existente foi detetada!",
     "ExistingInstallSubtitle": "O jogo já está instalado nesta localização:\r\n\r\n{0}\r\n\r\nÉ recomendado migrá-lo para o Collapse Launcher para uma melhor integração e suporte.\r\nNo entanto, ainda poderás usar o Launcher oficial para iniciar o jogo.\r\n\r\nQueres continuar?",
     "ExistingInstallBHI3LTitle": "Instalação existente no BetterHI3Launcher detetada!",
@@ -579,6 +603,10 @@
     "SteamConvertFailedSubtitle": "Desculpa mas, o processo de conversão falhou! :(\nPor favor tenta começar de novo o processo de conversão.",
     "InstallDataCorruptTitle": "Oops! A instalação do jogo está corrompida",
     "InstallDataCorruptSubtitle": "Um dos ficheiros descarregados está corrompido.\r\n\r\nServer Hash: {0}\r\nDownload Hash: {1}\r\n\r\nQueres descarregar o ficheiro novamente?",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "Retomar descarregamento?",
     "InstallDataDownloadResumeSubtitle": "Já baixaste {0}/{1} do jogo anteriormente.\r\n\r\nQueres retomar?",
     "InsufficientDiskTitle": "Espaço de disco insuficiente",
@@ -631,7 +659,56 @@
     "MeteredConnectionWarningSubtitle": "A tua conexão à internet atual foi detectada como 'tráfego limitado'! Continuar o processo de atualização poderá resultar em taxas suplementares por parte da tua operadora. Queres continuar?",
 
     "ResetKbShortcutsTitle": "Tens a certeza que queres redefinir todos os atalhos?",
-    "ResetKbShortcutsSubtitle": "Isto significa que todos os atalhos irão ser mudados para a sua combinação predefinida.\n\nQueres continuar?\n\nNota: Isto não impacta o modo como o Collapse opera e poderás alterar os atalhos a qualquer momento através do menu \"Atalhos de teclado\"."
+    "ResetKbShortcutsSubtitle": "Isto significa que todos os atalhos irão ser mudados para a sua combinação predefinida.\n\nQueres continuar?\n\nNota: Isto não impacta o modo como o Collapse opera e poderás alterar os atalhos a qualquer momento através do menu \"Atalhos de teclado\".",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Velocidade: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -750,7 +827,52 @@
 
     "UpdateCountdownMessage1": "O Collapse vai ser atualizado em {0}...",
     "UpdateCountdownMessage2": "(Clica",
-    "UpdateCountdownMessage3": "para cancelar)"
+    "UpdateCountdownMessage3": "para cancelar)",
+
+    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Seleciona o CDN para a atualização",
+    "ApplyUpdateCDNSelectorSubtitle": "Seleciona uma opção de CDN e clica \"{0}\" para começar a atualização!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "O CDN irá ser selecionado automaticamente em: {0}",
+    "ApplyUpdateUpdateNowBtn": "Update Now!",
+
+    "ApplyUpdateUpdateVersionTitle": "Update:",
+    "ApplyUpdateUpdateChannelTitle": "Channel:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
+    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
+
+    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/s",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s restante",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "We detected that you have a legacy Collapse v{0} installed on your PC. ",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "The updater needs to clean-up all the old files inside its directory.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Please make sure you don't have any important files inside of the Collapse directory or it will be COMPLETELY WIPED OUT!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
+    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
   },
 
   "_AppNotification": {
@@ -782,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "Usar tela cheia exclusiva",
     "Graphics_ResSelectPlaceholder": "Selecionar",
     "Graphics_ResCustom": "Usar resolução personalizada",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "L",
     "Graphics_ResCustomH": "A",
 
@@ -984,5 +1107,22 @@
     "ChangeShortcut_Help2": "・ Modificador - Shift, Control ou Alt/Menu",
     "ChangeShortcut_Help3": "・ Tecla - Alfabética (A a Z) ou Tab",
     "ChangeShortcut_Help4": "Podes escolher qualquer combinação que consista de um valor de cada uma das categorias, a não ser que esteja reservada para o sistema ou já estiver a ser usada."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Sudeste asiático",
+    "Global": "Global",
+    "Mainland China": "China continental",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Coreia",
+    "Japan": "Japão",
+    "Bilibili": "Bilibili"
   }
 }
