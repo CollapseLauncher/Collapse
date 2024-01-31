@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Ups, sieht so aus als wenn deine Internetverbindung unterbrochen wurde~ Oder ist es etwas anderes?",
     "UnhandledTitle3": "Spiel abgestürzt",
     "UnhandledSubtitle3": "Das Spiel ist mit den folgenden Fehler abgestürzt:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "Alles in die Zwischenablage kopieren",
     "CopyClipboardBtn2": "In die Zwischenablage kopiert!",
     "GoBackPageBtn1": "Zur letzten Seite zurückkehren"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Spiel reparieren",
     "GameSettings_Panel2UninstallGame": "Spiel deinstallieren",
     "GameSettings_Panel2ConvertVersion": "Spielversion konvertieren",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "Schließen des Spiels erzwingen",
     "GameSettings_Panel3": "Benutzerdefinierte Startoptionen",
     "GameSettings_Panel4": "Andere Einstellungen",
     "GameSettings_Panel4ShowEventsPanel": "Aktionspanel anzeigen",
     "GameSettings_Panel4ShowSocialMediaPanel": "Social Media Panel anzeigen",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "Spielzeit bearbeiten",
     "GamePlaytime_Idle_Panel1Hours": "Stunden",
     "GamePlaytime_Idle_Panel1Minutes": "Minuten",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "Community-Werkzeuge",
     "CommunityToolsBtn_OfficialText": "Offizielle Werkzeuge",
     "CommunityToolsBtn_CommunityText": "Community-Werkzeuge",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Anwendung auswählen: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Anwendung auswählen: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "Randlosen Fenstermodus verwenden",
     "Graphics_Fullscreen": "Vollbild",
     "Graphics_ExclusiveFullscreen": "Exklusiven Vollbildmodus verwenden",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Auswählen",
     "Graphics_ResCustom": "Benutzerdefinierte Auflösung verwenden",
     "Graphics_ResCustomW": "B",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Discord Präsenz anzeigen",
     "DiscordRPC_GameStatusToggle": "Zeige aktuelles Spiel im Discord-Status",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Nach Updates suchen",
     "Update_CurVer": "Aktuelle Version:",
@@ -466,6 +476,7 @@
     "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "Ja, ich habe einen Starken Computer! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Ja, Ort ändern",
+    "YesContinue": "Yes, Continue",
 
     "No": "Nein",
     "NoStartFromBeginning": "Nein, neu starten",
@@ -658,7 +669,34 @@
     "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
     "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
     "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
   },
 
   "_FileMigrationProcess": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "Exklusiven Vollbildmodus verwenden",
     "Graphics_ResSelectPlaceholder": "Wähle",
     "Graphics_ResCustom": "Benutzerdefinierte Auflösung verwenden",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "B",
     "Graphics_ResCustomH": "H",
 
