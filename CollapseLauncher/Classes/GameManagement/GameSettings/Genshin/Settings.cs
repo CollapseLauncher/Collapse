@@ -8,12 +8,13 @@ namespace CollapseLauncher.GameSettings.Genshin
 {
     internal class GenshinSettings : SettingsBase, IGameSettings, IGameSettingsUniversal
     {
-        public CustomArgs SettingsCustomArgument { get; set; }
-        public BaseScreenSettingData SettingsScreen { get; set; }
-        public CollapseScreenSetting SettingsCollapseScreen { get; set; }
-        public CollapseMiscSetting SettingsCollapseMisc { get; set; }
-        public GeneralData SettingsGeneralData { get; set; }
-        public WindowsHDR SettingsWindowsHDR { get; set; }
+        public CustomArgs            SettingsCustomArgument   { get; set; }
+        public BaseScreenSettingData SettingsScreen           { get; set; }
+        public CollapseScreenSetting SettingsCollapseScreen   { get; set; }
+        public CollapseMiscSetting   SettingsCollapseMisc     { get; set; }
+        public GeneralData           SettingsGeneralData      { get; set; }
+        public VisibleBackground     SettingVisibleBackground { get; set; }
+        public WindowsHDR            SettingsWindowsHDR       { get; set; }
 
         public GenshinSettings(IGameVersionCheck GameVersionManager)
             : base(GameVersionManager)
@@ -35,11 +36,12 @@ namespace CollapseLauncher.GameSettings.Genshin
         private void InitializeSettings()
         {
             // Load Settings
-            SettingsCustomArgument = CustomArgs.Load();
-            SettingsCollapseScreen = CollapseScreenSetting.Load();
-            SettingsCollapseMisc = CollapseMiscSetting.Load();
-            SettingsScreen = ScreenManager.Load();
-            SettingsWindowsHDR = WindowsHDR.Load();
+            SettingsCustomArgument   = CustomArgs.Load();
+            SettingsCollapseScreen   = CollapseScreenSetting.Load();
+            SettingsCollapseMisc     = CollapseMiscSetting.Load();
+            SettingsScreen           = ScreenManager.Load();
+            SettingVisibleBackground = VisibleBackground.Load();
+            SettingsWindowsHDR       = WindowsHDR.Load();
         }
 
         public void ReloadSettings()
@@ -57,6 +59,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             SettingsCollapseMisc.Save();
             SettingsScreen.Save();
             SettingsGeneralData.Save();
+            SettingVisibleBackground.Save();
             SettingsWindowsHDR.Save();
         }
 
