@@ -14,10 +14,10 @@ namespace CollapseLauncher.GameSettings.Genshin
     internal class ScreenManager : BaseScreenSettingData, IGameSettingsValue<ScreenManager>
     {
         #region Fields
-        private const string _ValueNameScreenManagerWidth = "Screenmanager Resolution Width_h182942802";
-        private const string _ValueNameScreenManagerHeight = "Screenmanager Resolution Height_h2627697771";
-        private const string _ValueNameScreenManagerFullscreen = "Screenmanager Is Fullscreen mode_h3981298716";
-        private static Size currentRes = ScreenProp.currentResolution;
+        private const  string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
+        private const  string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
+        private const  string _ValueNameScreenManagerFullscreen = "Screenmanager Is Fullscreen mode_h3981298716";
+        private static Size   currentRes                        = ScreenProp.currentResolution;
         #endregion
 
         #region Properties
