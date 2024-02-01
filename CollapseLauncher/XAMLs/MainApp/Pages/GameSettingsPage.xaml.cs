@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Interfaces;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
