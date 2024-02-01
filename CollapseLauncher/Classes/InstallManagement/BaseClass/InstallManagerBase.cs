@@ -441,7 +441,7 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (GameInstallPackage asset in assetIndex)
             {
                 using (Stream stream = GetSingleOrSegmentedDownloadStream(asset))
-                using (ArchiveFile archiveFile = new ArchiveFile(stream, null, @"Lib\7z.dll"))
+                using (ArchiveFile archiveFile = new ArchiveFile(stream, null))
                 {
                     returnSize += archiveFile.Entries.Sum(x => (long)x.Size);
                 }
@@ -524,7 +524,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Load the zip
                     Stream stream = GetSingleOrSegmentedDownloadStream(asset);
-                    ArchiveFile archiveFile = new ArchiveFile(stream, null, @"Lib\7z.dll");
+                    ArchiveFile archiveFile = new ArchiveFile(stream, null);
 
                     try
                     {
