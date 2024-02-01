@@ -29,10 +29,22 @@ namespace CollapseLauncher.Pages
 
         public bool IsBorderlessEnabled
         {
-            get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
+            get
+            { 
+                bool valueCl = Settings.SettingsCollapseScreen.UseBorderlessScreen;
+                bool valueGi = Settings.SettingVisibleBackground.isBorderless;
+                if (valueCl || valueGi)
+                {
+                    Settings.SettingsCollapseScreen.UseBorderlessScreen = true;
+                    Settings.SettingVisibleBackground.isBorderless      = true;
+                    return true;
+                }
+                return false;
+            } 
             set
             {
                 Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+                Settings.SettingVisibleBackground.isBorderless      = value;
                 if (value)
                 {
                     GameResolutionFullscreen.IsEnabled = false;

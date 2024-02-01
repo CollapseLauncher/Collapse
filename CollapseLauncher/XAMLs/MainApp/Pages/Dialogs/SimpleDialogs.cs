@@ -526,6 +526,21 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
+        {
+            return await SpawnDialog(
+                Lang._UnhandledExceptionPage.UnhandledTitle4,
+                Lang._UnhandledExceptionPage.UnhandledSubtitle4,
+                Content,
+                Lang._Misc.Okay,
+                null,
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning
+            );
+
+        }
+
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
             void CopyTextToClipboard(object sender, RoutedEventArgs e)
@@ -634,7 +649,7 @@ namespace CollapseLauncher.Dialogs
                 DefaultButton = defaultButton,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
-                XamlRoot = Content.XamlRoot
+                XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
             };
             return await (InnerLauncherConfig.m_window as MainWindow).ContentDialog.ShowAsync();
         }
