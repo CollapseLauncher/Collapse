@@ -93,9 +93,9 @@ namespace CollapseLauncher
         {
             Option<string> o_Input = new Option<string>(new string[] { "--input", "-i" }, "App path") { IsRequired = true };
             Option<AppReleaseChannel> o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "App release channel") { IsRequired = true }.FromAmong();
-            command.AddOption(o_Input);
-            command.AddOption(o_Channel);
-            command.Handler = CommandHandler.Create((string Input, AppReleaseChannel Channel) =>
+            rootCommand.AddOption(o_Input);
+            rootCommand.AddOption(o_Channel);
+            rootCommand.Handler = CommandHandler.Create((string Input, AppReleaseChannel Channel) =>
             {
                 m_arguments.Updater = new ArgumentUpdater
                 {
