@@ -294,7 +294,7 @@ namespace CollapseLauncher
 
             while (true)
             {
-                switch (await dialog.ShowAsync())
+                switch (await dialog.QueueAndSpawnDialog())
                 {
                     case ContentDialogResult.Primary:
                         try
