@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -113,7 +114,7 @@ namespace CollapseLauncher
                 mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang._Misc.Next : null;
             }
 
-            ContentDialogResult mainDialogWindowResult = await mainDialogWindow.ShowAsync();
+            ContentDialogResult mainDialogWindowResult = await mainDialogWindow.QueueAndSpawnDialog();
             return mainDialogWindowResult == ContentDialogResult.Primary ? choosePathTextBox.Text : null;
         }
 
@@ -216,11 +217,11 @@ namespace CollapseLauncher
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
 
-            // Set the main dialog content
+            // Set the main dialog content and queue the dialog spawn
             mainDialogWindow.Content = mainGrid;
-            _ = mainDialogWindow.ShowAsync();
+            _ = mainDialogWindow.QueueAndSpawnDialog();
 
-            // Return the 
+            // Return the migration process UI ref struct 
             return new FileMigrationProcessUIRef
             {
                 mainDialogWindow = mainDialogWindow,

@@ -448,7 +448,7 @@ namespace CollapseLauncher.Dialogs
             };
 
 
-            if (await result.ShowAsync() == ContentDialogResult.Primary)
+            if (await result.QueueAndSpawnDialog() == ContentDialogResult.Primary)
             {
                 ChangeKeybind(oldKeys, newKeys);
             }

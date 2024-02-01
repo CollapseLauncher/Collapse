@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -201,7 +202,7 @@ namespace CollapseLauncher.Dialogs
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
                 XamlRoot = Content.XamlRoot
             };
-            return (await Dialog.ShowAsync(), SourceGame, TargetGame);
+            return (await Dialog.QueueAndSpawnDialog(), SourceGame, TargetGame);
         }
 
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement Content, string FileName)
@@ -828,13 +829,16 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        public static async Task<ContentDialogResult> SpawnDialog(
+        private static IAsyncOperation<ContentDialogResult> CurrentSpawnedDialogTask = null;
+
+        public static async ValueTask<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,
             string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary,
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
-            (InnerLauncherConfig.m_window as MainWindow).ContentDialog = new ContentDialogCollapse(dialogTheme)
+            // Create a new instance of dialog
+            ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
             {
                 Title = title,
                 Content = content,
@@ -846,7 +850,21 @@ namespace CollapseLauncher.Dialogs
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
                 XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
             };
-            return await (InnerLauncherConfig.m_window as MainWindow).ContentDialog.ShowAsync();
+
+            // Queue and spawn the dialog instance
+            return await dialog.QueueAndSpawnDialog();
+        }
+
+        public static async ValueTask<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
+        {
+            // If a dialog is currently spawned, then await until the task is completed
+            while (CurrentSpawnedDialogTask != null && CurrentSpawnedDialogTask.Status == AsyncStatus.Started) await Task.Delay(200);
+
+            // Assign the dialog to the global task
+            CurrentSpawnedDialogTask = dialog.ShowAsync();
+            // Spawn and await for the result
+            ContentDialogResult dialogResult = await CurrentSpawnedDialogTask;
+            return dialogResult; // Return the result
         }
     }
 }
