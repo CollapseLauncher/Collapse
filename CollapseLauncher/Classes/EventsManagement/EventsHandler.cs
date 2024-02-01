@@ -150,7 +150,7 @@ namespace CollapseLauncher
     }
     #endregion
     #region ErrorSenderRegion
-    public enum ErrorType { Unhandled, GameError, Connection }
+    public enum ErrorType { Unhandled, GameError, Connection, Warning }
 
     internal static class ErrorSender
     {
@@ -160,6 +160,8 @@ namespace CollapseLauncher
         public static string ExceptionTitle;
         public static string ExceptionSubtitle;
         public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled) => invoker.SendException(e, eT);
+        public static void SendWarning(Exception e, ErrorType eT = ErrorType.Warning) =>
+            invoker.SendException(e, eT);
         public static void SendExceptionWithoutPage(Exception e, ErrorType eT = ErrorType.Unhandled)
         {
             ExceptionContent = e.ToString();
@@ -182,6 +184,10 @@ namespace CollapseLauncher
                 case ErrorType.GameError:
                     ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle3;
                     ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle3;
+                    break;
+                case ErrorType.Warning:
+                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle4;
+                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle4;
                     break;
             }
         }

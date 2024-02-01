@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "哎呀，好像您的网络连接断开了呢~（不过也许是其他原因？）",
     "UnhandledTitle3": "游戏已崩溃",
     "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "修复游戏",
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换游戏版本",
+    "GameSettings_Panel2MoveGameLocationGame": "移动游戏位置",
     "GameSettings_Panel2StopGame": "强制关闭游戏",
     "GameSettings_Panel3": "自定义启动参数",
     "GameSettings_Panel4": "杂项",
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
+    "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
+    "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
     "GamePlaytime_Panel1": "编辑游玩时间",
     "GamePlaytime_Idle_Panel1Hours": "小时",
     "GamePlaytime_Idle_Panel1Minutes": "分钟",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "社区工具",
     "CommunityToolsBtn_OfficialText": "官方工具",
     "CommunityToolsBtn_CommunityText": "社区工具",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "选择程序文件：{0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "选择程序文件：{0}",
+
+    "CreateShortcut_FolderPicker": "选择放置快捷方式的位置"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "使用无边框窗口",
     "Graphics_Fullscreen": "全屏",
     "Graphics_ExclusiveFullscreen": "使用独占全屏",
+    "Graphics_ResizableWindow": "使用可调整大小的窗口",
+    "Graphics_ResizableWindowTooltip": "这项设置仅在全屏模式禁用的时候可用。",
     "Graphics_ResSelectPlaceholder": "选择",
     "Graphics_ResCustom": "使用自定义分辨率",
     "Graphics_ResCustomW": "宽",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord 活动状态",
     "DiscordRPC_Toggle": "显示 Discord 状态",
     "DiscordRPC_GameStatusToggle": "在 Discord 状态中显示当前游戏",
+    "DiscordRPC_IdleStatusToggle": "空闲时显示 RPC",
 
     "Update": "检查更新",
     "Update_CurVer": "当前版本：",
@@ -466,6 +476,7 @@
     "YesImReallySure": "是的，我非常确定！",
     "YesIHaveBeefyPC": "是的，我有强大的电脑！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "是的，改变位置",
+    "YesContinue": "是的，继续",
 
     "No": "不",
     "NoStartFromBeginning": "不，从头开始",
@@ -658,7 +669,34 @@
     "OperationWarningNotCancellableMsg2": "无！法！取！消！此！过！程！",
     "OperationWarningNotCancellableMsg3": "当它运行时！\r\n\r\n点击 \"",
     "OperationWarningNotCancellableMsg4": "\" 或 \" 以开始处理",
-    "OperationWarningNotCancellableMsg5": "\" 以取消操作。"
+    "OperationWarningNotCancellableMsg5": "\" 以取消操作。",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "您确定您想要继续吗？",
+    "ShortcutCreationConfirmSubtitle1": "将在如下路径创建一个快捷方式：",
+    "ShortcutCreationConfirmSubtitle2": "如果在这个文件夹下已存在同名的快捷方式，它将被覆盖。",
+    "ShortcutCreationConfirmCheckBox": "使用这个快捷方式后自动启动游戏",
+    "ShortcutCreationSuccessTitle": "成功！",
+    "ShortcutCreationSuccessSubtitle1": "一个闪亮的全新快捷方式已创建！",
+    "ShortcutCreationSuccessSubtitle2": "位置：",
+    "ShortcutCreationSuccessSubtitle3": "备注：",
+    "ShortcutCreationSuccessSubtitle4": "• 使用此快捷方式将在加载区域后启动游戏。",
+
+    "SteamShortcutCreationConfirmTitle": "您确定您想要继续吗？",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "如果已经添加，则将验证与快捷方式相关的资产。",
+    "SteamShortcutCreationConfirmCheckBox": "使用这个快捷方式后自动启动游戏",
+    "SteamShortcutCreationSuccessTitle": "成功！",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "备注：",
+    "SteamShortcutCreationSuccessSubtitle3": "• 使用此快捷方式将在加载区域后启动游戏。",
+    "SteamShortcutCreationSuccessSubtitle4": "• 再次运行此过程将修复属于快捷方式的任何损坏/丢失的图像。",
+    "SteamShortcutCreationSuccessSubtitle5": "• 新的快捷方式仅在 Steam 重新加载后才会显示。",
+
+    "SteamShortcutCreationFailureTitle": "无效的Steam数据文件夹",
+    "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。"
   },
 
   "_FileMigrationProcess": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "使用独占全屏",
     "Graphics_ResSelectPlaceholder": "选择",
     "Graphics_ResCustom": "使用自定义分辨率",
+    "Graphics_ResCustomTooltip": "自定义分辨率只能在启用可调整大小窗口的情况下使用",
     "Graphics_ResCustomW": "宽",
     "Graphics_ResCustomH": "高",
 

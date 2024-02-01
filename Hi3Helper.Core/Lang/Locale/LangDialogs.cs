@@ -32,6 +32,10 @@ namespace Hi3Helper
                 public string RepairCompletedSubtitleNoBroken { get; set; } = LangFallback?._Dialogs.RepairCompletedSubtitleNoBroken;
                 public string ExtremeGraphicsSettingsWarnTitle { get; set; } = LangFallback?._Dialogs.ExtremeGraphicsSettingsWarnTitle;
                 public string ExtremeGraphicsSettingsWarnSubtitle { get; set; } = LangFallback?._Dialogs.ExtremeGraphicsSettingsWarnSubtitle;
+                public string MigrateExistingMoveDirectoryTitle { get; set; } = LangFallback?._Dialogs.MigrateExistingMoveDirectoryTitle;
+                public string MigrateExistingInstallChoiceTitle { get; set; } = LangFallback?._Dialogs.MigrateExistingInstallChoiceTitle;
+                public string MigrateExistingInstallChoiceSubtitle1 { get; set; } = LangFallback?._Dialogs.MigrateExistingInstallChoiceSubtitle1;
+                public string MigrateExistingInstallChoiceSubtitle2 { get; set; } = LangFallback?._Dialogs.MigrateExistingInstallChoiceSubtitle2;
                 public string ExistingInstallTitle { get; set; } = LangFallback?._Dialogs.ExistingInstallTitle;
                 public string ExistingInstallSubtitle { get; set; } = LangFallback?._Dialogs.ExistingInstallSubtitle;
                 public string ExistingInstallBHI3LTitle { get; set; } = LangFallback?._Dialogs.ExistingInstallBHI3LTitle;
@@ -102,6 +106,35 @@ namespace Hi3Helper
                 public string MeteredConnectionWarningSubtitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningSubtitle;
                 public string ResetKbShortcutsTitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsTitle;
                 public string ResetKbShortcutsSubtitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsSubtitle;
+                public string ShortcutCreationConfirmTitle { get; set; } = LangFallback?._Dialogs.ShortcutCreationConfirmTitle;
+                public string ShortcutCreationConfirmSubtitle1 { get; set; } = LangFallback?._Dialogs.ShortcutCreationConfirmSubtitle1;
+                public string ShortcutCreationConfirmSubtitle2 { get; set; } = LangFallback?._Dialogs.ShortcutCreationConfirmSubtitle2;
+                public string ShortcutCreationConfirmCheckBox { get; set; } = LangFallback?._Dialogs.ShortcutCreationConfirmCheckBox;
+                public string ShortcutCreationSuccessTitle { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessTitle;
+                public string ShortcutCreationSuccessSubtitle1 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle1;
+                public string ShortcutCreationSuccessSubtitle2 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle2;
+                public string ShortcutCreationSuccessSubtitle3 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle3;
+                public string ShortcutCreationSuccessSubtitle4 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle4;
+                public string SteamShortcutCreationConfirmTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmTitle;
+                public string SteamShortcutCreationConfirmSubtitle1 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmSubtitle1;
+                public string SteamShortcutCreationConfirmSubtitle2 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmSubtitle2;
+                public string SteamShortcutCreationConfirmCheckBox { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmCheckBox;
+                public string SteamShortcutCreationSuccessTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessTitle;
+                public string SteamShortcutCreationSuccessSubtitle1 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle1;
+                public string SteamShortcutCreationSuccessSubtitle2 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle2;
+                public string SteamShortcutCreationSuccessSubtitle3 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle3;
+                public string SteamShortcutCreationSuccessSubtitle4 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle4;
+                public string SteamShortcutCreationSuccessSubtitle5 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle5;
+                public string SteamShortcutCreationFailureTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureTitle;
+                public string SteamShortcutCreationFailureSubtitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureSubtitle;
+                public string OperationErrorDiskSpaceInsufficientTitle { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientTitle;
+                public string OperationErrorDiskSpaceInsufficientMsg { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientMsg;
+                public string OperationWarningNotCancellableTitle { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableTitle;
+                public string OperationWarningNotCancellableMsg1 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg1;
+                public string OperationWarningNotCancellableMsg2 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg2;
+                public string OperationWarningNotCancellableMsg3 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg3;
+                public string OperationWarningNotCancellableMsg4 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg4;
+                public string OperationWarningNotCancellableMsg5 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg5;
             }
         }
         #endregion

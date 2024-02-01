@@ -40,6 +40,7 @@ namespace CollapseLauncher.InstallManager.Base
             public string[] foldersToDelete;
             public string[] foldersToKeepInData;
         }
+        protected enum MigrateFromLauncherType { Official, BetterHi3Launcher, Steam, Unknown }
         #endregion
 
         #region Properties
@@ -440,7 +441,7 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (GameInstallPackage asset in assetIndex)
             {
                 using (Stream stream = GetSingleOrSegmentedDownloadStream(asset))
-                using (ArchiveFile archiveFile = new ArchiveFile(stream, null, @"Lib\7z.dll"))
+                using (ArchiveFile archiveFile = new ArchiveFile(stream, null))
                 {
                     returnSize += archiveFile.Entries.Sum(x => (long)x.Size);
                 }
@@ -523,7 +524,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Load the zip
                     Stream stream = GetSingleOrSegmentedDownloadStream(asset);
-                    ArchiveFile archiveFile = new ArchiveFile(stream, null, @"Lib\7z.dll");
+                    ArchiveFile archiveFile = new ArchiveFile(stream, null);
 
                     try
                     {
@@ -628,9 +629,17 @@ namespace CollapseLauncher.InstallManager.Base
             // So checking the fully downloaded single package is unnecessary.
         }
 
-        public async Task MoveGameLocation()
+        public async ValueTask<bool> MoveGameLocation()
         {
+            // Get the Game folder
+            string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
+            // Initialize and run the FileMigration utility
+            int migrationOptionReturn = await PerformMigrationOption(GameFolder, MigrateFromLauncherType.Unknown, true);
+            if (migrationOptionReturn == -1) return false;
+
+            // If all the operation is complete, then return true as completed
+            return true;
         }
 
         public async ValueTask<bool> UninstallGame()
@@ -1025,6 +1034,11 @@ namespace CollapseLauncher.InstallManager.Base
             string pathOnSteam = "";
             if (TryGetExistingSteamPath(ref pathOnSteam))
             {
+                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
+                // If not, then return the migrationOptionReturn value.
+                int migrationOptionReturn = await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation, MigrateFromLauncherType.Official);
+                if (migrationOptionReturn != 1) return migrationOptionReturn;
+
                 switch (await Dialog_ExistingInstallationSteam(_parentUI))
                 {
                     // If action to migrate was taken, then update the game path (but don't save it to the config file)
@@ -1050,6 +1064,11 @@ namespace CollapseLauncher.InstallManager.Base
             string pathOnBHi3L = "";
             if (TryGetExistingBHI3LPath(ref pathOnBHi3L))
             {
+                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
+                // If not, then return the migrationOptionReturn value.
+                int migrationOptionReturn = await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation, MigrateFromLauncherType.Official);
+                if (migrationOptionReturn != 1) return migrationOptionReturn;
+
                 switch (await Dialog_ExistingInstallationBetterLauncher(_parentUI, pathOnBHi3L))
                 {
                     // If action to migrate was taken, then update the game path (but don't save it to the config file)
@@ -1073,11 +1092,16 @@ namespace CollapseLauncher.InstallManager.Base
         {
             if (_gameVersionManager.GamePreset.CheckExistingGame())
             {
+                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
+                // If not, then return the migrationOptionReturn value.
+                int migrationOptionReturn = await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation, MigrateFromLauncherType.Official);
+                if (migrationOptionReturn != 1) return migrationOptionReturn;
+
                 switch (await Dialog_ExistingInstallation(_parentUI, _gameVersionManager.GamePreset.ActualGameDataLocation))
                 {
                     // If action to migrate was taken, then update the game path (but don't save it to the config file)
                     case ContentDialogResult.Primary:
-                        _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation.Replace('\\', '/'), false);
+                        _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation, false);
                         return 0;
                     // If action to fresh install was taken, then return 2 (selecting path)
                     case ContentDialogResult.Secondary:
@@ -1090,6 +1114,50 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Return 1 to continue to another check
             return 1;
+        }
+
+        private async ValueTask<int> PerformMigrationOption(string pathIfUseExistingSelected, MigrateFromLauncherType launcherType, bool isMoveOperation = false)
+        {
+            string launcherName = launcherType switch
+            {
+                MigrateFromLauncherType.Official => Lang._Misc.LauncherNameOfficial,
+                MigrateFromLauncherType.Steam => Lang._Misc.LauncherNameSteam,
+                MigrateFromLauncherType.BetterHi3Launcher => Lang._Misc.LauncherNameBHI3L,
+                _ => Lang._Misc.LauncherNameUnknown,
+            };
+
+            if (!isMoveOperation)
+            {
+                ContentDialogResult dialogResult = await Dialog_MigrationChoiceDialog(
+                    this._parentUI,
+                    pathIfUseExistingSelected,
+                    this._gameVersionManager.GamePreset.GameName,
+                    this._gameVersionManager.GamePreset.ZoneName,
+                    launcherName);
+
+                if (dialogResult == ContentDialogResult.None) return -1; // Cancel the installation
+                if (dialogResult == ContentDialogResult.Primary) return 1; // Use an existing path or continue to another routine
+            }
+
+            // If secondary option is selected, then do the directory migration
+            string translatedGameFullname = string.Format("{0} - {1}",
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(this._gameVersionManager.GamePreset.GameName, Lang._GameClientTitles),
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(this._gameVersionManager.GamePreset.ZoneName, Lang._GameClientRegions)
+                );
+
+            FileMigrationProcess migrationProcessTool = await FileMigrationProcess.CreateJob(
+                this._parentUI,
+                string.Format(Lang._Dialogs.MigrateExistingMoveDirectoryTitle, translatedGameFullname),
+                pathIfUseExistingSelected);
+
+            // If the migration tool is null (meaning that it's cancelled), then return -1 as cancelled.
+            if (migrationProcessTool == null) return -1;
+            string newDirectoryPath = await migrationProcessTool.StartRoutine();
+
+            // If it's finished, then set the game data location to the new one
+            _gameVersionManager.UpdateGamePath(newDirectoryPath, false);
+
+            return 0; // Return 0 as completed.
         }
 
         private bool TryGetExistingSteamPath(ref string OutputPath)

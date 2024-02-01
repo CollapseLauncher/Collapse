@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "이런, 인터넷이 끊긴 것 같아요~ 아니면 다른 이유인가요?",
     "UnhandledTitle3": "게임 충돌",
     "UnhandledSubtitle3": "게임이 아래 오류로 인해 충돌했어요:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "클립보드에 모두 복사",
     "CopyClipboardBtn2": "클립보드에 복사되었어요!",
     "GoBackPageBtn1": "이전 페이지로 돌아가기"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "게임 복구",
     "GameSettings_Panel2UninstallGame": "게임 삭제",
     "GameSettings_Panel2ConvertVersion": "게임 버전 변경",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "강제 종료",
     "GameSettings_Panel3": "사용자 지정 시작 인수",
     "GameSettings_Panel4": "기타",
     "GameSettings_Panel4ShowEventsPanel": "이벤트 패널 표시",
     "GameSettings_Panel4ShowSocialMediaPanel": "소셜 미디어 패널 표시",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "플레이 시간 편집",
     "GamePlaytime_Idle_Panel1Hours": "시간",
     "GamePlaytime_Idle_Panel1Minutes": "분",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "커뮤니티 도구",
     "CommunityToolsBtn_OfficialText": "공식 도구",
     "CommunityToolsBtn_CommunityText": "커뮤니티 도구",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "테두리 없는 창모드 사용",
     "Graphics_Fullscreen": "전체 화면",
     "Graphics_ExclusiveFullscreen": "독점 전체 화면 사용",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
     "Graphics_ResCustomW": "너비",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord 활동 상태",
     "DiscordRPC_Toggle": "Discord 활동 상태 표시",
     "DiscordRPC_GameStatusToggle": "디스코드 활동 상태에 현재 게임 표시",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "업데이트 확인",
     "Update_CurVer": "현재 버전:",
@@ -466,6 +476,7 @@
     "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "네, 저는 강력한 컴퓨터를 가지고 있어요!",
     "YesChangeLocation": "네, 위치를 변경할게요",
+    "YesContinue": "Yes, Continue",
 
     "No": "아니요",
     "NoStartFromBeginning": "아니요, 처음부터 시작할게요",
@@ -658,7 +669,34 @@
     "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
     "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
     "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
   },
 
   "_FileMigrationProcess": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "독점 전체 화면 사용",
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "높이",
 

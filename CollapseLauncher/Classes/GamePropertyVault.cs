@@ -125,7 +125,8 @@ namespace CollapseLauncher.Statics
             SubChannelID = GamePreset.SubChannelID,
             LauncherID = GamePreset.LauncherID,
             LauncherPluginURL = GamePreset.LauncherPluginURL,
-            GameDataTemplates = new Dictionary<string, GameDataTemplate>(GamePreset.GameDataTemplates)
+            GameDataTemplates = new Dictionary<string, GameDataTemplate>(GamePreset.GameDataTemplates),
+            ZoneSteamAssets = new Dictionary<string, SteamGameProp>(GamePreset.ZoneSteamAssets),
         };
         #endregion
 

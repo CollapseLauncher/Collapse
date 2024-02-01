@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "哎呀，您的網路連線似乎斷開了～也有可能是其他原因？",
     "UnhandledTitle3": "遊戲已崩潰",
     "UnhandledSubtitle3": "遊戲已崩潰，錯誤訊息如下：",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "複製所有內容到剪貼簿",
     "CopyClipboardBtn2": "已複製到剪貼簿！",
     "GoBackPageBtn1": "返回上一頁"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "遊戲修復",
     "GameSettings_Panel2UninstallGame": "解除安裝遊戲",
     "GameSettings_Panel2ConvertVersion": "轉換遊戲版本",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "強制關閉遊戲",
     "GameSettings_Panel3": "自定義啟動參數",
     "GameSettings_Panel4": "雜項",
     "GameSettings_Panel4ShowEventsPanel": "顯示活動面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "顯示社交媒體面板",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "編輯遊玩時數",
     "GamePlaytime_Idle_Panel1Hours": "小時",
     "GamePlaytime_Idle_Panel1Minutes": "分鐘",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "社群工具",
     "CommunityToolsBtn_OfficialText": "官方工具",
     "CommunityToolsBtn_CommunityText": "社群工具",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "選擇執行檔: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "選擇執行檔: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "使用無邊框視窗模式",
     "Graphics_Fullscreen": "全螢幕",
     "Graphics_ExclusiveFullscreen": "使用獨占全螢幕",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "選擇",
     "Graphics_ResCustom": "使用自定義解析度",
     "Graphics_ResCustomW": "寬",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord 遊戲狀態",
     "DiscordRPC_Toggle": "顯示 Discord 狀態",
     "DiscordRPC_GameStatusToggle": "在 Discord 遊戲狀態上顯示當前的遊戲名稱",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "檢查更新",
     "Update_CurVer": "目前版本：",
@@ -466,6 +476,7 @@
     "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "是，我有台強大的電腦！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "是，更改位置",
+    "YesContinue": "Yes, Continue",
 
     "No": "不",
     "NoStartFromBeginning": "不，從頭開始",
@@ -658,7 +669,34 @@
     "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
     "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
     "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
   },
 
   "_FileMigrationProcess": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "使用獨占全螢幕",
     "Graphics_ResSelectPlaceholder": "選擇",
     "Graphics_ResCustom": "使用自定義解析度",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "寬",
     "Graphics_ResCustomH": "高",
 

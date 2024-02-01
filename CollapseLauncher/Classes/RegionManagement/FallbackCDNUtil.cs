@@ -86,7 +86,7 @@ namespace CollapseLauncher
         })
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version20,
+            DefaultRequestVersion = HttpVersion.Version30,
             Timeout = TimeSpan.FromMinutes(1)
         };
         private static readonly HttpClient _clientNoCompression = new HttpClient(new HttpClientHandler
@@ -97,7 +97,7 @@ namespace CollapseLauncher
         })
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version20,
+            DefaultRequestVersion = HttpVersion.Version30,
             Timeout = TimeSpan.FromMinutes(1)
         };
         public static event EventHandler<DownloadEvent> DownloadProgress;

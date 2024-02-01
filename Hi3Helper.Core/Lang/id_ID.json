@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Oops, sepertinya koneksi internetmu terputus. apakah betul?",
     "UnhandledTitle3": "Game Crash",
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
+    "UnhandledTitle4": "Peringatan",
+    "UnhandledSubtitle4": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:\r\nAkibat miHoYo A/B testing, Collapse tidak dapat memproses pengaturan ini: App_Settings_h2319593470.\r\nKami mohon maaf atas ketidaknyamanannya.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
     "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Perbaiki Game",
     "GameSettings_Panel2UninstallGame": "Hapus Game",
     "GameSettings_Panel2ConvertVersion": "Ubah Versi",
+    "GameSettings_Panel2MoveGameLocationGame": "Pindah Lokasi Game",
     "GameSettings_Panel2StopGame": "Tutup Paksa Game",
     "GameSettings_Panel3": "Penyesuaian Argumen Pemulaian",
     "GameSettings_Panel4": "Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
+    "GameSettings_Panel4CreateShortcutBtn": "Buat pintasan",
+    "GameSettings_Panel4AddToSteamBtn": "Tambahkan ke Steam",
     "GamePlaytime_Panel1": "Ubah Waktu Main",
     "GamePlaytime_Idle_Panel1Hours": "Jam",
     "GamePlaytime_Idle_Panel1Minutes": "Menit",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "Alat Komunitas",
     "CommunityToolsBtn_OfficialText": "Alat Resmi",
     "CommunityToolsBtn_CommunityText": "Alat Komunitas",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Pilih Executable Program: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Pilih Executable Program: {0}",
+
+    "CreateShortcut_FolderPicker": "Pilih tempat untuk menyimpan pintasan"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "Gunakan Mode Borderless Window",
     "Graphics_Fullscreen": "Layar Penuh",
     "Graphics_ExclusiveFullscreen": "Gunakan Layar Penuh Eksklusif",
+    "Graphics_ResizableWindow": "Gunakan Jendela Fleksibel",
+    "Graphics_ResizableWindowTooltip": "Pengaturan ini hanya dapat digunakan saat Layar Penuh dimatikan.",
     "Graphics_ResSelectPlaceholder": "Pilih",
     "Graphics_ResCustom": "Gunakan Resolusi Lainnya",
     "Graphics_ResCustomW": "P",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Perlihatkan Discord Presence",
     "DiscordRPC_GameStatusToggle": "Munculkan game yang dimainkan pada status Discord",
+    "DiscordRPC_IdleStatusToggle": "Tampilkan RPC saat idle",
 
     "Update": "Periksa Pembaruan",
     "Update_CurVer": "Versi saat ini:",
@@ -466,6 +476,7 @@
     "YesImReallySure": "Iya, Aku yakin banget!",
     "YesIHaveBeefyPC": "Ya, Aku punya PC gahar!",
     "YesChangeLocation": "Ya, Ubah lokasi",
+    "YesContinue": "Ya, Lanjutkan",
 
     "No": "Tidak",
     "NoStartFromBeginning": "Tidak, Dari awal",
@@ -658,7 +669,34 @@
     "OperationWarningNotCancellableMsg2": "TIDAK DAPAT MEMBATALKAN PROSES INI",
     "OperationWarningNotCancellableMsg3": " saat proses sedang berjalan!\r\n\r\nKlik \"",
     "OperationWarningNotCancellableMsg4": "\" untuk memulai proses atau \"",
-    "OperationWarningNotCancellableMsg5": "\" untuk membatalkan."
+    "OperationWarningNotCancellableMsg5": "\" untuk membatalkan.",
+
+    "GenericWarningExceptionTitle": "Peringatan",
+    "GenericWarningExceptionSubtitle": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:",
+
+    "ShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
+    "ShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat pada tempat ini:",
+    "ShortcutCreationConfirmSubtitle2": "Jika pintasan sudah ada dengan nama yang sama di folder ini, maka pintasan tersebut akan digantikan.",
+    "ShortcutCreationConfirmCheckBox": "Langsung memulai game setelah menggunakan pintasan ini",
+    "ShortcutCreationSuccessTitle": "Sukses!",
+    "ShortcutCreationSuccessSubtitle1": "Sebuah pintasan baru sudah dibuat!",
+    "ShortcutCreationSuccessSubtitle2": "Lokasi:",
+    "ShortcutCreationSuccessSubtitle3": "Catatan:",
+    "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+
+    "SteamShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
+    "SteamShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat untuk setiap pengguna Steam di komputer ini.",
+    "SteamShortcutCreationConfirmSubtitle2": "Jika sudah dibuat sebelumnya, asset yang berhubungan dengan pintasan ini akan diverifikasi.",
+    "SteamShortcutCreationConfirmCheckBox": "Langsung memulai game setelah menggunakan pintasan ini",
+    "SteamShortcutCreationSuccessTitle": "Sukses!",
+    "SteamShortcutCreationSuccessSubtitle1": "Pintasan telah dibuat untuk setiap pengguna Steam di komputer ini!",
+    "SteamShortcutCreationSuccessSubtitle2": "Catatan:",
+    "SteamShortcutCreationSuccessSubtitle3": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+    "SteamShortcutCreationSuccessSubtitle4": "• Mengulangi proses ini dapat memperbaiki gambar yang hilang/rusak pada pintasan.",
+    "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
+
+    "SteamShortcutCreationFailureTitle": "Folder data Steam tidak valid",
+    "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini."
   },
 
   "_FileMigrationProcess": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "Gunakan Layar Penuh Eksklusif",
     "Graphics_ResSelectPlaceholder": "Pilih",
     "Graphics_ResCustom": "Gunakan Resolusi Lainnya",
+    "Graphics_ResCustomTooltip": "Resolusi Kustom hanya dapat digunakan bersamaan dengan Jendela Fleksibel",
     "Graphics_ResCustomW": "P",
     "Graphics_ResCustomH": "T",
 

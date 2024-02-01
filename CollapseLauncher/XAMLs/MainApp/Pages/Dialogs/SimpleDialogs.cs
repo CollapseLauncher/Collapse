@@ -1,6 +1,5 @@
 using CollapseLauncher.CustomControls;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -10,10 +9,8 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -205,7 +202,7 @@ namespace CollapseLauncher.Dialogs
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
                 XamlRoot = Content.XamlRoot
             };
-            return (await Dialog.ShowAsync(), SourceGame, TargetGame);
+            return (await Dialog.QueueAndSpawnDialog(), SourceGame, TargetGame);
         }
 
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement Content, string FileName)
@@ -291,6 +288,29 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Informational
             );
 
+
+        public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName)
+        {
+            string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
+
+            TextBlock contentTextBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle1, launcherName));
+            contentTextBlock.AddTextBlockNewLine(2);
+            contentTextBlock.AddTextBlockLine(existingGamePath, FontWeights.SemiBold);
+            contentTextBlock.AddTextBlockNewLine(2);
+            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle2, launcherName));
+
+            return await SpawnDialog(
+                string.Format(Lang._Dialogs.MigrateExistingInstallChoiceTitle, gameFullnameString),
+                contentTextBlock,
+                Content,
+                Lang._Misc.Cancel,
+                Lang._Misc.UseCurrentDir,
+                Lang._Misc.MoveToDifferentDir,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Informational
+            );
+        }
         public static async Task<ContentDialogResult> Dialog_SteamConversionNoPermission(UIElement Content) =>
             await SpawnDialog(
                         Lang._Dialogs.SteamConvertNeedMigrateTitle,
@@ -418,6 +438,29 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Error
                 );
 
+        public static async Task<ContentDialogResult> Dialog_WarningOperationNotCancellable(UIElement Content)
+        {
+            TextBlock warningMessage = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg1);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg2, FontWeights.Bold);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg3);
+            warningMessage.AddTextBlockLine(Lang._Misc.Yes, FontWeights.SemiBold);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg4);
+            warningMessage.AddTextBlockLine(Lang._Misc.NoCancel, FontWeights.SemiBold);
+            warningMessage.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg5);
+
+            return await SpawnDialog(
+                        Lang._Dialogs.OperationWarningNotCancellableTitle,
+                        warningMessage,
+                        Content,
+                        Lang._Misc.NoCancel,
+                        Lang._Misc.Yes,
+                        null,
+                        ContentDialogButton.Primary,
+                        ContentDialogTheme.Warning
+                );
+        }
+
         public static async Task<ContentDialogResult> Dialog_RelocateFolder(UIElement Content) =>
             await SpawnDialog(
                         Lang._Dialogs.RelocateFolderTitle,
@@ -537,7 +580,7 @@ namespace CollapseLauncher.Dialogs
                         null,
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Warning
-                );   
+                );
         }
 
         public static async Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts(UIElement Content)
@@ -554,18 +597,43 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
+        {
+            return await SpawnDialog(
+                Lang._UnhandledExceptionPage.UnhandledTitle4,
+                Lang._UnhandledExceptionPage.UnhandledSubtitle4,
+                Content,
+                Lang._Misc.Okay,
+                null,
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning
+            );
+
+        }
+
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
-            void CopyTextToClipboard(object sender, RoutedEventArgs e)
+            async void CopyTextToClipboard(object sender, RoutedEventArgs e)
             {
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
 
                 Button btn = sender as Button;
                 FontIcon fontIcon = (btn.Content as StackPanel).Children[0] as FontIcon;
                 TextBlock textBlock = (btn.Content as StackPanel).Children[1] as TextBlock;
+
+                string lastGlyph = fontIcon.Glyph;
+                string lastText = textBlock.Text;
+
                 fontIcon.Glyph = "";
                 textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
                 btn.IsEnabled = false;
+
+                await Task.Delay(1000);
+
+                fontIcon.Glyph = lastGlyph;
+                textBlock.Text = lastText;
+                btn.IsEnabled = true;
             }
 
             Button copyButton = null;
@@ -646,13 +714,131 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
-        public static async Task<ContentDialogResult> SpawnDialog(
+        #region Shortcut Creator Dialogs
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1, Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
+            panel.Children.Add(pathText);
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+
+            CheckBox playOnLoad = new CheckBox() { 
+                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
+                Margin = new Thickness(0, 4, 0, -8),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };    
+            panel.Children.Add(playOnLoad);
+        
+            ContentDialogResult result = await SpawnDialog(
+                Lang._Dialogs.ShortcutCreationConfirmTitle,
+                panel,
+                Content,
+                Lang._Misc.Cancel,
+                Lang._Misc.YesContinue,
+                dialogTheme: ContentDialogTheme.Warning
+                );
+
+            return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
+        }
+
+        public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            pathText.Inlines.Add(new Run() { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle2 });
+            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
+            panel.Children.Add(pathText);
+
+            if (play)
+            {
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            }
+
+            return await SpawnDialog(
+                Lang._Dialogs.ShortcutCreationSuccessTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Success
+                );
+        }
+
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement Content)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+
+            CheckBox playOnLoad = new CheckBox()
+            {
+                Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
+                Margin = new Thickness(0, 4, 0, -8),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            panel.Children.Add(playOnLoad);
+
+            ContentDialogResult result = await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationConfirmTitle,
+                panel,
+                Content,
+                Lang._Misc.Cancel,
+                Lang._Misc.YesContinue,
+                dialogTheme: ContentDialogTheme.Warning
+                );
+
+            return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
+        }
+
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+            if (play)
+            {
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            }
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+
+            return await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationSuccessTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Success
+                );
+        }
+
+        public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure(UIElement Content)
+        {
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 350 };
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            return await SpawnDialog(
+                Lang._Dialogs.SteamShortcutCreationFailureTitle,
+                panel,
+                Content,
+                Lang._Misc.Close,
+                dialogTheme: ContentDialogTheme.Error
+                );
+        }
+        #endregion
+
+        private static IAsyncOperation<ContentDialogResult> CurrentSpawnedDialogTask = null;
+
+        public static async ValueTask<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,
             string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary,
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
-            (InnerLauncherConfig.m_window as MainWindow).ContentDialog = new ContentDialogCollapse(dialogTheme)
+            // Create a new instance of dialog
+            ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
             {
                 Title = title,
                 Content = content,
@@ -662,9 +848,23 @@ namespace CollapseLauncher.Dialogs
                 DefaultButton = defaultButton,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
-                XamlRoot = Content.XamlRoot
+                XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
             };
-            return await (InnerLauncherConfig.m_window as MainWindow).ContentDialog.ShowAsync();
+
+            // Queue and spawn the dialog instance
+            return await dialog.QueueAndSpawnDialog();
+        }
+
+        public static async ValueTask<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
+        {
+            // If a dialog is currently spawned, then await until the task is completed
+            while (CurrentSpawnedDialogTask != null && CurrentSpawnedDialogTask.Status == AsyncStatus.Started) await Task.Delay(200);
+
+            // Assign the dialog to the global task
+            CurrentSpawnedDialogTask = dialog.ShowAsync();
+            // Spawn and await for the result
+            ContentDialogResult dialogResult = await CurrentSpawnedDialogTask;
+            return dialogResult; // Return the result
         }
     }
 }

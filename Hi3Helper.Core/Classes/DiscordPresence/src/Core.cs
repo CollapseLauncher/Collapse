@@ -211,7 +211,7 @@ namespace Discord
         PushToTalk,
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct User
     {
         public Int64 Id;
@@ -228,7 +228,7 @@ namespace Discord
         public bool Bot;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct OAuth2Token
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
@@ -240,7 +240,7 @@ namespace Discord
         public Int64 Expires;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ImageDimensions
     {
         public UInt32 Width;
@@ -248,7 +248,7 @@ namespace Discord
         public UInt32 Height;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivityTimestamps
     {
         public Int64 Start;
@@ -256,7 +256,7 @@ namespace Discord
         public Int64 End;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivityAssets
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
@@ -272,7 +272,7 @@ namespace Discord
         public byte[] SmallText;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct PartySize
     {
         public Int32 CurrentSize;
@@ -280,7 +280,7 @@ namespace Discord
         public Int32 MaxSize;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivityParty
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
@@ -291,7 +291,7 @@ namespace Discord
         public ActivityPartyPrivacy Privacy;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ActivitySecrets
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
@@ -304,8 +304,8 @@ namespace Discord
         public byte[] Spectate;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct Activity : IEquatable<Activity>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Activity
     {
         public ActivityType Type;
 
@@ -338,14 +338,14 @@ namespace Discord
          && to.Name.AsSpan().SequenceEqual(Name)
          && to.State.AsSpan().SequenceEqual(State)
          && to.Details.AsSpan().SequenceEqual(Details)
-         && TypeExtensions.IsInstancePropertyEqual(Assets, to.Assets)
-         && TypeExtensions.IsInstancePropertyEqual(Party, to.Party)
-         && TypeExtensions.IsInstancePropertyEqual(Secrets, to.Secrets)
+         && TypeExtensions.IsStructEqual(Assets, to.Assets)
+         && TypeExtensions.IsStructEqual(Party, to.Party)
+         && TypeExtensions.IsStructEqual(Secrets, to.Secrets)
          && to.Instance == Instance
          && to.SupportedPlatforms == SupportedPlatforms;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Presence
     {
         public Status Status;
@@ -353,7 +353,7 @@ namespace Discord
         public Activity Activity;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Relationship
     {
         public RelationshipType Type;
@@ -363,7 +363,7 @@ namespace Discord
         public Presence Presence;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Lobby
     {
         public Int64 Id;
@@ -380,7 +380,7 @@ namespace Discord
         public bool Locked;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct ImeUnderline
     {
         public Int32 From;
@@ -394,7 +394,7 @@ namespace Discord
         public bool Thick;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Rect
     {
         public Int32 Left;
@@ -406,7 +406,7 @@ namespace Discord
         public Int32 Bottom;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct FileStat
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
@@ -417,7 +417,7 @@ namespace Discord
         public UInt64 LastModified;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Entitlement
     {
         public Int64 Id;
@@ -427,7 +427,7 @@ namespace Discord
         public Int64 SkuId;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct SkuPrice
     {
         public UInt32 Amount;
@@ -436,7 +436,7 @@ namespace Discord
         public byte[] Currency;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Sku
     {
         public Int64 Id;
@@ -449,7 +449,7 @@ namespace Discord
         public SkuPrice Price;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct InputMode
     {
         public InputModeType Type;
@@ -458,7 +458,7 @@ namespace Discord
         public byte[] Shortcut;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct UserAchievement
     {
         public Int64 UserId;
@@ -471,7 +471,7 @@ namespace Discord
         public byte[] UnlockedAt;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct LobbyTransaction
     {
         [StructLayout(LayoutKind.Sequential)]
@@ -598,7 +598,7 @@ namespace Discord
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct LobbyMemberTransaction
     {
         [StructLayout(LayoutKind.Sequential)]
@@ -657,7 +657,7 @@ namespace Discord
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct LobbySearchQuery
     {
         [StructLayout(LayoutKind.Sequential)]
@@ -909,9 +909,6 @@ namespace Discord
             internal UInt32 AchievementVersion;
         }
 
-        [DllImport(Constants.DllName, ExactSpelling = true, CallingConvention = CallingConvention.Winapi)]
-        private static extern Result DiscordCreate(UInt32 version, ref FFICreateParams createParams, out IntPtr manager);
-
         public delegate void SetLogHookHandler(LogLevel level, string message);
 
         private GCHandle SelfHandle;
@@ -1070,7 +1067,7 @@ namespace Discord
             createParams.AchievementEvents = AchievementEventsPtr;
             createParams.AchievementVersion = 1;
             InitEvents(EventsPtr, ref Events);
-            var result = DiscordCreate(3, ref createParams, out MethodsPtr);
+            var result = Extern.DiscordCreate(3, ref createParams, out MethodsPtr);
             if (result != Result.Ok)
             {
                 Dispose();

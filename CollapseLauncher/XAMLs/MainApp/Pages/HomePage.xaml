@@ -640,7 +640,8 @@
                             CornerRadius="20"
                             PointerEntered="AnimateGameRegSettingIcon_Start"
                             PointerExited="AnimateGameRegSettingIcon_End"
-                            Shadow="{ThemeResource SharedShadow}">
+                            Shadow="{ThemeResource SharedShadow}"
+                            Margin="0,0,8,0">
                             <Button.Content>
                                 <Grid>
                                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
@@ -711,6 +712,14 @@
                                                     </StackPanel>
                                                 </Button.Content>
                                             </Button>
+                                            <Button x:Name="MoveGameLocationButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="MoveGameLocationButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf56e;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
                                             <Button x:Name="StopGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="StopGameButton_Click">
                                                 <Button.Content>
                                                     <StackPanel Orientation="Horizontal" Margin="4,0">
@@ -728,6 +737,22 @@
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                                 <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
                                                 <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
+                                                <Button x:Name="ShortcutButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ShortcutButton_Click">
+                                                    <Button.Content>
+                                                        <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf08e;" FontSize="18"/>
+                                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                        </StackPanel>
+                                                    </Button.Content>
+                                                </Button>
+                                                <Button x:Name="AddToSteamButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="AddToSteamButton_Click">
+                                                    <Button.Content>
+                                                        <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                            <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xf1b6;" FontSize="20"/>
+                                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                        </StackPanel>
+                                                    </Button.Content>
+                                                </Button>
                                             </StackPanel>
                                         </StackPanel>
                                     </ScrollViewer>

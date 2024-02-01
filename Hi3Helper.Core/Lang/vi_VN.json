@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "Úi, có vẻ mạng đã bị mất kết nối với mạng hoặc sever!",
     "UnhandledTitle3": "Văng trò chơi",
     "UnhandledSubtitle3": "Trò chơi bị văng với các lỗi chi tiết dưới đây:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "Sao chép tất cả vào khe nhớ tạm",
     "CopyClipboardBtn2": "Đã sao chép thành công!",
     "GoBackPageBtn1": "Trở lại trang trước"
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Sửa trò chơi",
     "GameSettings_Panel2UninstallGame": "Gỡ cài đặt trò chơi",
     "GameSettings_Panel2ConvertVersion": "Chuyển đổi phiên bản",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "Buộc đóng trò chơi",
     "GameSettings_Panel3": "Tuỳ chọn khởi động cho trò chơi",
     "GameSettings_Panel4": "Cài đặt khác",
     "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
     "GameSettings_Panel4ShowSocialMediaPanel": "Hiển thị bảng mạng xã hội",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "Chỉnh sửa thời gian chơi",
     "GamePlaytime_Idle_Panel1Hours": "Giờ",
     "GamePlaytime_Idle_Panel1Minutes": "Phút",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "Công cụ cộng đồng",
     "CommunityToolsBtn_OfficialText": "Công cụ chính thức",
     "CommunityToolsBtn_CommunityText": "Công cụ cộng đồng",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Chọn chương trình có thể thực thi: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Chọn chương trình có thể thực thi: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "Sử dụng chế độ cửa sổ không viền",
     "Graphics_Fullscreen": "Toàn màn hình",
     "Graphics_ExclusiveFullscreen": "Toàn màn hình với độ phân giải đã chọn",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Chọn",
     "Graphics_ResCustom": "Chọn độ phân giải khác",
     "Graphics_ResCustomW": "W",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Hiện Trạng Thái Chi Tiết trên Discord",
     "DiscordRPC_GameStatusToggle": "Hiện trò chơi hiện tại trên trạng thái của Discord",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Cập nhật",
     "Update_CurVer": "Phiên bản hiện tại:",
@@ -466,6 +476,7 @@
     "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "Tôi có máy tính đủ mạnh! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Có, hãy thay đổi vị trí",
+    "YesContinue": "Yes, Continue",
 
     "No": "Không",
     "NoStartFromBeginning": "Không, hãy bắt đầu lại từ đầu",
@@ -658,7 +669,34 @@
     "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
     "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
     "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation."
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
   },
 
   "_FileMigrationProcess": {
@@ -866,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "Toàn màn hình với độ phân giải đã chọn",
     "Graphics_ResSelectPlaceholder": "Chọn",
     "Graphics_ResCustom": "Chọn độ phân giải khác",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 

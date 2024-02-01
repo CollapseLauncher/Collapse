@@ -35,6 +35,13 @@ namespace CollapseLauncher.GameSettings.Universal
         public bool UseBorderlessScreen { get; set; } = false;
 
         /// <summary>
+        /// This defines if the game should run in Resizable window. <br/>
+        /// The window should run in windowed-mode and would not work with any fullscreen modes. <br/><br/>
+        /// Default: false
+        /// </summary>
+        public bool UseResizableWindow { get; set; } = false;
+
+        /// <summary>
         /// This defines the Graphics API will be used for the game to run.<br/><br/>
         /// Values:<br/>
         ///     - 0 = DirectX 11 (Feature Level: 10.1)<br/>
