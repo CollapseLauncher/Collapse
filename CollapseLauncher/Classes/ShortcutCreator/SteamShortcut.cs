@@ -46,11 +46,11 @@ namespace CollapseLauncher.ShortcutUtils
         public SteamShortcut(PresetConfigV2 preset, bool play = false)
         {
             AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
-            Exe = AppExecutablePath;
+            Exe = MainEntryPoint.FindCollapseStubPath();
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
-            icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcon/" + preset.GameType switch
+            icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets\\Images\\GameIcon\\" + preset.GameType switch
             {
                 GameType.StarRail => "icon-starrail.ico",
                 GameType.Genshin => "icon-genshin.ico",
@@ -59,7 +59,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
 
-            StartDir = Path.GetDirectoryName(AppExecutablePath);
+            StartDir = Path.GetDirectoryName(Exe);
 
             LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
             if (play)

@@ -186,6 +186,20 @@ namespace CollapseLauncher
             );
         }
 
+        public static string FindCollapseStubPath()
+        {
+            var collapseExecName = "CollapseLauncher.exe";
+            var collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
+            var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
+            if (File.Exists(collapseStubPath))
+            {
+                LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
+                return collapseStubPath;
+            }
+            LogWriteLine($"Collapse stub does not exist, returning current executable path!\r\n\t{collapseStubPath}", LogType.Default, true);
+            return collapseMainPath;
+        }
+
         public static void InitializeAppSettings()
         {
             InitializeLocale();
