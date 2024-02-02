@@ -46,7 +46,11 @@ namespace CollapseLauncher.ShortcutUtils
         public SteamShortcut(PresetConfigV2 preset, bool play = false)
         {
             AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
-            Exe = MainEntryPoint.FindCollapseStubPath();
+            
+            string stubPath = MainEntryPoint.FindCollapseStubPath();
+            Exe = string.Format("\"{0}\"", stubPath);
+            StartDir = string.Format("\"{0}\"", Path.GetDirectoryName(stubPath));
+
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
@@ -58,8 +62,6 @@ namespace CollapseLauncher.ShortcutUtils
             });
 
             preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
-
-            StartDir = Path.GetDirectoryName(Exe);
 
             LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
             if (play)
