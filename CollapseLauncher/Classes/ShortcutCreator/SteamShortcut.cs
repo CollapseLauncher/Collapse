@@ -169,10 +169,10 @@ namespace CollapseLauncher.ShortcutUtils
 
                 File.Delete(steamPath);
 
-                LogWriteLine(string.Format("Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
+                LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
             }
             
-            LogWriteLine("After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
             return;
         }
 
