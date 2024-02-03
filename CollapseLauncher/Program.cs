@@ -199,7 +199,6 @@ namespace CollapseLauncher
                 LoadLocale(GetAppConfigValue("AppLanguage").ToString());
             }
 
-            SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
             string themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (!Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
@@ -236,7 +235,7 @@ namespace CollapseLauncher
         {
             OperatingSystem osDetail = Environment.OSVersion;
             w_windowsVersionNumbers = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
-            if (w_windowsVersionNumbers[2] >= 22000)
+            if (m_isWindows11 = w_windowsVersionNumbers[2] >= 22000)
             {
                 return $"Windows 11 (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
             }

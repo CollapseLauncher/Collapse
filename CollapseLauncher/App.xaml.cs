@@ -1,12 +1,16 @@
+using Google.Protobuf.WellKnownTypes;
 using H.NotifyIcon;
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
@@ -26,6 +30,16 @@ namespace CollapseLauncher
                 DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] {args.Message}", LogType.Error, true); };
                 DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] {args.Message}", LogType.Error, true); };
                 UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] {e.Exception} {e.Exception.InnerException}", LogType.Error, true); };
+                ThemeChangerInvoker.ThemeEvent += (sender, e) => {
+                    MainWindow.SetLegacyTitleBarColor();
+                    bool isThemeLight = IsAppThemeLight;
+                    Color color = isThemeLight ? Colors.Black : Colors.White;
+                    Current.Resources["WindowCaptionForeground"] = color;
+                    m_appWindow.TitleBar.ButtonForegroundColor = color;
+                    m_appWindow.TitleBar.ButtonInactiveBackgroundColor = color;
+
+                    (m_window.Content as FrameworkElement).RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+                };
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;

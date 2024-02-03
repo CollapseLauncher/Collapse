@@ -19,7 +19,7 @@
                 </TransitionCollection>
             </Frame.ContentTransitions>
         </Frame>
-        <Frame x:Name="overlayFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1">
+        <Frame x:Name="overlayFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1" x:FieldModifier="public">
             <Frame.ContentTransitions>
                 <TransitionCollection>
                     <NavigationThemeTransition/>

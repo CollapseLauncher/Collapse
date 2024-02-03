@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -77,9 +78,9 @@ namespace CollapseLauncher
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+            UnsubscribeEvents();
             if (IsChangeDragArea)
             {
-                UnsubscribeEvents();
                 MainWindow.SetDragArea(DragAreaMode_Full);
             }
         }
@@ -271,11 +272,45 @@ namespace CollapseLauncher
         private async void SetDefaultDragAreaAsync()
         {
             await Task.Delay(250);
-            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Full);
+
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
+            RectInt32[] inputArea = new RectInt32[]
+            {
+                GetElementPos(GridBG_RegionGrid),
+                GetElementPos(GridBG_IconGrid),
+                GetElementPos(GridBG_NotifBtn)
+            };
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, inputArea);
         }
+
+        private RectInt32 GetElementPos(FrameworkElement element)
+        {
+            GeneralTransform transformTransform = element.TransformToVisual(null);
+            Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+
+            return new RectInt32(
+                _X: (int)Math.Round(bounds.X * m_appDPIScale),
+                _Y: (int)Math.Round(bounds.Y * m_appDPIScale),
+                _Width: (int)Math.Round(bounds.Width * m_appDPIScale),
+                _Height: (int)Math.Round(bounds.Height * m_appDPIScale)
+            );
+
+        }
+
+        private void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
+
+        private void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
+            MainWindow window = m_window as MainWindow;
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
+            nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
+            window.EnableNonClientArea();
+
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:
@@ -444,6 +479,8 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
+            GridBG_RegionGrid.SizeChanged += GridBG_RegionGrid_SizeChanged;
+            MainPageGrid.SizeChanged += MainPageGrid_SizeChanged;
         }
 
         private void UnsubscribeEvents()
@@ -459,6 +496,8 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
+            GridBG_RegionGrid.SizeChanged -= GridBG_RegionGrid_SizeChanged;
+            MainPageGrid.SizeChanged -= MainPageGrid_SizeChanged;
         }
         #endregion
 

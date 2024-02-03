@@ -1,7 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -32,7 +31,7 @@ namespace CollapseLauncher
             get
             {
                 NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
-                return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);  
+                return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);
             }
         }
 
@@ -134,7 +133,18 @@ namespace CollapseLauncher
     internal static class ThemeChanger
     {
         static ThemeChangerInvoker invoker = new ThemeChangerInvoker();
-        public static void ChangeTheme(ElementTheme e) => invoker.ChangeTheme(e);
+        public static void ChangeTheme(ElementTheme e)
+        {
+            CurrentAppTheme = e switch
+            {
+                ElementTheme.Light => AppThemeMode.Light,
+                ElementTheme.Default => AppThemeMode.Default,
+                _ => AppThemeMode.Dark
+            };
+
+            SetAppConfigValue("ThemeMode", CurrentAppTheme.ToString());
+            invoker.ChangeTheme(e);
+        }
     }
 
     internal class ThemeChangerInvoker
@@ -343,14 +353,14 @@ namespace CollapseLauncher
                 parentUI.DispatcherQueue.TryEnqueue(() =>
                 {
                     Process.Start(new ProcessStartInfo
-                                  {
-                                      FileName = URL,
-                                      UseShellExecute = true,
-                                  });
+                    {
+                        FileName = URL,
+                        UseShellExecute = true,
+                    });
                 });
             }
             else invoker.SpawnWebView2Window(URL);
-        } 
+        }
     }
 
     internal class SpawnWebView2Invoker

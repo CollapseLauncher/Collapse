@@ -26,20 +26,20 @@
                     Margin="0,32,64,32" Padding="32" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource DialogAcrylicBrush}">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectLang}"
-                   TextAlignment="Left"
-                   HorizontalAlignment="Left" Margin="0,0,0,8"
-                   TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
+                               TextAlignment="Left"
+                               HorizontalAlignment="Left" Margin="0,0,0,8"
+                               TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectLangDesc}"
-                   TextAlignment="Left"
-                   HorizontalAlignment="Left"
-                   TextWrapping="Wrap"/>
+                               TextAlignment="Left"
+                               HorizontalAlignment="Left"
+                               TextWrapping="Wrap"/>
                     <ComboBox Name="SelectLang" SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
-                  Margin="0,16"
-                  HorizontalAlignment="Left" VerticalAlignment="Center"
-                  ItemsSource="{x:Bind LangList}"
-                  MaxDropDownHeight="1000"
-                  DropDownOpened="SelectLang_OnDropDownOpened"
-                  DropDownClosed="SelectLang_OnDropDownClosed"/>
+                              Margin="0,16"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                              ItemsSource="{x:Bind LangList}"
+                              MaxDropDownHeight="1000"
+                              DropDownOpened="SelectLang_OnDropDownOpened"
+                              DropDownClosed="SelectLang_OnDropDownClosed"/>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectWindowSize}"

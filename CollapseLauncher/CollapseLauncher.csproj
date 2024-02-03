@@ -36,18 +36,19 @@
 
 <!--
   Constants List:
-		- PREVIEW : States the version is a preview branch 
-		- DISABLEDISCORD : Disable Discord RPC module
-		- SIMULATEPRELOAD : Simulate downloading preload
-		- ENABLEHTTPREPAIR : Override HTTPS download scheme to HTTP while downloading repair files
-		- SIMULATEAPPLYPRELOAD : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
-		- DUMPGIJSON : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
-		- SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
-		- GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
-		- MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
+        - PREVIEW               : States the version is a preview branch 
+        - DISABLEDISCORD        : Disable Discord RPC module
+        - SIMULATEPRELOAD       : Simulate downloading preload
+        - ENABLEHTTPREPAIR      : Override HTTPS download scheme to HTTP while downloading repair files
+        - SIMULATEAPPLYPRELOAD  : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
+        - DUMPGIJSON            : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
+        - SIMULATEGIHDR         : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
+        - GSPBYPASSGAMERUNNING  : Bypass checks for Game Settings Pages for currently running game
+        - MHYPLUGINSUPPORT      : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
+        - PROTOTYPEUI           : Use prototype (and probably unfinished) new UI
 -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT;PROTOTYPEUI</DefineConstants>
 		<DebugType>portable</DebugType>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -67,7 +68,9 @@
 		<PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
 		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
     <!--
 		TODO:
@@ -90,8 +93,8 @@
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
 		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231219000" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26031-preview" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240124002-experimental2" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
 		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
@@ -225,4 +228,22 @@
 			-->
 		</ItemGroup>
 	</Target>
+
+	<ItemGroup>
+	  <NativeLibs Remove="XAMLs\Theme\CustomControls\ContentDialogOverlay.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="XAMLs\Theme\ContentDialogOverlay.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="XAMLs\Theme\ContentDialogOverlay.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <NativeLibs Remove="XAMLs\Theme\ContentDialogOverlay.xaml" />
+	</ItemGroup>
 </Project>

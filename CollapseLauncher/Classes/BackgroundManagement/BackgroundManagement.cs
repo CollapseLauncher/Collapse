@@ -211,11 +211,39 @@ namespace CollapseLauncher
 
         private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath, uint ToWidth, uint ToHeight)
+        {
+            Bitmap bitmapRet;
+            BitmapImage bitmapImageRet;
+
+            FileStream cachedFileStream = await ImageLoaderHelper.LoadImage(FilePath, false, false);
+            if (cachedFileStream == null) return (null, null);
+            using (cachedFileStream)
+            {
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+            }
+
+            return (bitmapRet, bitmapImageRet);
+        }
+
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(FileStream stream, uint ToWidth, uint ToHeight)
         {
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
+            using (stream)
+            using (FileStream cachedFileStream = await GetResizedImageStream(stream, ToWidth, ToHeight))
+            {
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+            }
+
+            return (bitmapRet, bitmapImageRet);
+        }
+
+        public static async Task<FileStream> GetResizedImageStream(FileStream stream, uint ToWidth, uint ToHeight)
+        {
             if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder);
 
             string cachedFileHash = ConverterTool.BytesToCRC32Simple(stream.Name + stream.Length);
@@ -224,23 +252,10 @@ namespace CollapseLauncher
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
 
             bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 1 << 15;
-            using (stream)
-            using (FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create())
-            {
-                try
-                {
-                    if (!isCachedFileExist)
-                    {
-                        await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
-                    }
+            FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create();
+            if (!isCachedFileExist) await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
 
-                    bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                    bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
-                }
-                catch { throw; }
-            }
-
-            return (bitmapRet, bitmapImageRet);
+            return cachedFileStream;
         }
 
         private static async Task GetResizedImageStream(FileStream input, FileStream output, uint ToWidth, uint ToHeight)
@@ -275,10 +290,9 @@ namespace CollapseLauncher
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
-            FileStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read);
-
             BitmapImage ReplacementBitmap;
-            (PaletteBitmap, ReplacementBitmap) = await GetResizedBitmap(stream, Width, Height);
+            (PaletteBitmap, ReplacementBitmap) = await GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, Width, Height);
+            if (PaletteBitmap == null || ReplacementBitmap == null) return;
 
             ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);
 

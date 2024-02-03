@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -45,6 +46,7 @@ namespace CollapseLauncher
         public static AppMode               m_appMode;
         public static Arguments             m_arguments = new Arguments();
         public static ushort[]              w_windowsVersionNumbers;
+        public static bool                  m_isWindows11;
         public static Window                m_window;
         public static Microsoft.UI.WindowId m_windowID;
         public static Rect                  m_windowPosSize;
@@ -63,7 +65,7 @@ namespace CollapseLauncher
         public static bool                  IsCustomBG            = false;
         public static bool                  IsSkippingUpdateCheck = false;
         public static GameVersion           AppCurrentVersion;
-        public static Color                 SystemAppTheme { get; set; }
+        public static Color                 SystemAppTheme { get => new UISettings().GetColorValue(UIColorType.Background); }
         public static AppThemeMode          CurrentAppTheme;
         public static bool IsAppThemeLight
         {

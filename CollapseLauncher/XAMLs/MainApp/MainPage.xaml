@@ -83,6 +83,7 @@
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="104"/>
             </Grid.ColumnDefinitions>
+            <Grid x:Name="GridBG_IconGrid" Grid.Column="0" Grid.ColumnSpan="2"/>
             <Grid x:Name="TitleBarDrag1" Grid.Column="1" Grid.ColumnSpan="2"/>
             <Grid x:Name="TitleBarDrag2" Grid.Column="4" Grid.ColumnSpan="2"/>
             <Grid Name="GridBG_RegionGrid" Height="47" Grid.Column="3"
@@ -143,7 +144,7 @@
                       VerticalAlignment="Top" HorizontalAlignment="Stretch"
                       CornerRadius="0,0,0,0" />
         </Grid>
-        <Button Name="GridBG_Icon" Style="{ThemeResource TransparentDefaultButtonStyle}" Height="33"
+        <Button x:Name="GridBG_Icon" Style="{ThemeResource TransparentDefaultButtonStyle}" Height="33"
                     VerticalAlignment="Top" HorizontalAlignment="Left" Margin="58,8,0,0" Grid.Column="0"
                     PointerEntered="GridBG_Icon_PointerEntered" PointerExited="GridBG_Icon_PointerExited"
                     Click="GridBG_Icon_Click">

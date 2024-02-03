@@ -35,6 +35,21 @@ namespace CollapseLauncher
             }
         }
 
+        public static void ToggleAcrylic(bool isOn = false)
+        {
+            MainWindow mainWindow = m_window as MainWindow;
+            if (!isOn)
+            {
+                mainWindow.SystemBackdrop = null;
+                return;
+            }
+
+            if (m_isWindows11)
+                mainWindow.SystemBackdrop = new MicaBackdrop() { Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base };
+            else
+                mainWindow.SystemBackdrop = new DesktopAcrylicBackdrop();
+        }
+
         public void InitializeWindowProperties(bool startOOBE = false)
         {
             try
@@ -42,14 +57,18 @@ namespace CollapseLauncher
                 InitializeWindowSettings();
                 if (m_appWindow.TitleBar.ExtendsContentIntoTitleBar) m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-                if (IsFirstInstall || startOOBE == true)
+                if (IsFirstInstall || startOOBE)
                 {
                     ExtendsContentIntoTitleBar = false;
                     SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
                     SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
+#if PROTOTYPEUI
+                    rootFrame.Navigate(typeof(Pages.OOBE.OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
+#else
                     rootFrame.Navigate(typeof(StartupLanguageSelect), null, new DrillInNavigationTransitionInfo());
+#endif
                 }
                 else
                     StartMainPage();
@@ -247,7 +266,7 @@ namespace CollapseLauncher
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
         }
 
-        private void SetLegacyTitleBarColor()
+        internal static void SetLegacyTitleBarColor()
         {
             Application.Current.Resources["WindowCaptionForeground"] = IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
             Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });

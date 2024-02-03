@@ -675,6 +675,7 @@
                 <!-- Custom controls styles -->
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

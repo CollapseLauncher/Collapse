@@ -298,13 +298,18 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
+            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
-                regionBackgroundProp.imgLocalPath = file;
-                SetAndSaveConfigValue("CustomBGPath", file);
-                BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(file);
+                FileStream dummyStream = await ImageLoaderHelper.LoadImage(file, true, true);
+                if (dummyStream != null)
+                {
+                    await dummyStream.DisposeAsync();
+                    regionBackgroundProp.imgLocalPath = file;
+                    SetAndSaveConfigValue("CustomBGPath", file);
+                    BGPathDisplay.Text = file;
+                    BackgroundImgChanger.ChangeBackground(file);
+                }
             }
         }
 

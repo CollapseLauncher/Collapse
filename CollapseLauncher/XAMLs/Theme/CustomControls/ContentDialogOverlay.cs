@@ -7,16 +7,14 @@ using NColor = Windows.UI.Color;
 
 namespace CollapseLauncher.CustomControls
 {
-    public enum ContentDialogTheme { Informational, Warning, Error, Success }
-
-    public class ContentDialogCollapse : ContentDialog
+    public class ContentDialogOverlay : ContentDialog
     {
         public string ThemeTitleGlyph { get; set; }
         public ContentDialogTheme Theme { get; set; }
-        public ContentDialogCollapse()
+        public ContentDialogOverlay()
             : this(ContentDialogTheme.Warning) { }
 
-        public ContentDialogCollapse(ContentDialogTheme theme = ContentDialogTheme.Warning, bool useFullScreen = false)
+        public ContentDialogOverlay(ContentDialogTheme theme = ContentDialogTheme.Warning)
             : base()
         {
             Theme = theme;
