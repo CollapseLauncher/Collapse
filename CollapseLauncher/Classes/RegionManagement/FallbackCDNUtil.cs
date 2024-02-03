@@ -272,7 +272,7 @@ namespace CollapseLauncher
                     return true;
                 }
                 await httpInstance.Download(urlStatus.Item2, outputPath, (byte)parallelThread, true, token);
-                await httpInstance.Merge();
+                await httpInstance.Merge(token);
                 return true;
             }
             // Handle the error and log it. If fails, then log it and return false
@@ -296,7 +296,7 @@ namespace CollapseLauncher
             LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
             // Try check the status of the URL
-            (int, bool) returnCode = await httpInstance.GetURLStatus(absoluteURL, token);
+            Tuple<int, bool> returnCode = await httpInstance.GetURLStatus(absoluteURL, token);
 
             // If it's not a successful code, then return false
             if (!returnCode.Item2)
