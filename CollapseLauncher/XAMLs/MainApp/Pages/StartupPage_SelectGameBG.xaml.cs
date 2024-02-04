@@ -97,17 +97,13 @@ namespace CollapseLauncher.Pages
                 _gamePosterPath = await MainPage.GetCachedSpritesAsync(config.ZonePosterURL, default);
                 _gameLogoPath = await MainPage.GetCachedSpritesAsync(config.ZoneLogoURL, default);
 
-                using (FileStream fs1 = new FileStream(_gamePosterPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream())
                 {
                     uint Width = (uint)((double)m_actualMainFrameSize.Width * m_appDPIScale);
                     uint Height = (uint)((double)m_actualMainFrameSize.Height * m_appDPIScale);
 
                     _gameLogoBitmapImage = await MainPage.Stream2BitmapImage(fs2);
-
-                    fs1.Seek(0, SeekOrigin.Begin);
-
-                    (_gamePosterBitmap, _gamePosterBitmapImage) = await MainPage.GetResizedBitmap(fs1, Width, Height);
+                    (_gamePosterBitmap, _gamePosterBitmapImage) = await MainPage.GetResizedBitmapNew(_gamePosterPath, Width, Height);
                 }
             }
             catch (Exception ex)

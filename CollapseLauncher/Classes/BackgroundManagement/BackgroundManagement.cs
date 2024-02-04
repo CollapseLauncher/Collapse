@@ -227,50 +227,6 @@ namespace CollapseLauncher
             return (bitmapRet, bitmapImageRet);
         }
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(FileStream stream, uint ToWidth, uint ToHeight)
-        {
-            Bitmap bitmapRet;
-            BitmapImage bitmapImageRet;
-
-            using (stream)
-            using (FileStream cachedFileStream = await GetResizedImageStream(stream, ToWidth, ToHeight))
-            {
-                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
-            }
-
-            return (bitmapRet, bitmapImageRet);
-        }
-
-        public static async Task<FileStream> GetResizedImageStream(FileStream stream, uint ToWidth, uint ToHeight)
-        {
-            if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder);
-
-            string cachedFileHash = ConverterTool.BytesToCRC32Simple(stream.Name + stream.Length);
-            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
-
-            FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
-
-            bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 1 << 15;
-            FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create();
-            if (!isCachedFileExist) await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
-
-            return cachedFileStream;
-        }
-
-        private static async Task GetResizedImageStream(FileStream input, FileStream output, uint ToWidth, uint ToHeight)
-        {
-            ProcessImageSettings settings = new ProcessImageSettings
-            {
-                Width = (int)ToWidth,
-                Height = (int)ToHeight,
-                HybridMode = HybridScaleMode.Off,
-                Interpolation = InterpolationSettings.CubicSmoother
-            };
-
-            await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
-        }
-
         public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
         {
             BitmapImage ret = new BitmapImage();
