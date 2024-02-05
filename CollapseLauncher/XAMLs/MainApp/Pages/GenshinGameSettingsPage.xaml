@@ -147,13 +147,13 @@
                                     </Expander.Header>
                                     <Expander.Content>
                                         <StackPanel Padding="10">
-                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel1" Width="360" Height="203" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8"/>
+                                            <xaml:CanvasSwapChainPanel x:Name="HDRCalibrationPanel1" Width="360" Height="203" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
                                                 <NumberBox Name="MaxLuminosityValue" HorizontalAlignment="Right" Minimum="300.0" Maximum="2000.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="MaxLuminosityValue_ValueChanged"/>
                                             </Grid>
                                             <Slider x:Name="MaxLuminositySlider" Minimum="300.0" Maximum="2000.0" HorizontalAlignment="Center" MinWidth="350" MaxWidth="514" StepFrequency="50" TickFrequency="100" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind MaxLuminosity,Mode=TwoWay}" ValueChanged="MaxLuminositySlider_ValueChanged" Margin="0,0,0,4"/>
-                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel2" Width="360" Height="203" Loaded="SwapChainPanel2_OnLoaded" Margin="0,0,0,8"/>
+                                            <xaml:CanvasSwapChainPanel x:Name="HDRCalibrationPanel2" Width="360" Height="203" Loaded="SwapChainPanel2_OnLoaded" Margin="0,0,0,8"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
                                                 <NumberBox Name="ScenePaperWhiteValue" HorizontalAlignment="Right" Minimum="100.0" Maximum="500.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="ScenePaperWhiteValue_ValueChanged"/>

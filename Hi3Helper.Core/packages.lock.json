@@ -2,16 +2,10 @@
   "version": 1,
   "dependencies": {
     "net8.0": {
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "B3etT5XQ2nlWkZGO2m/ytDYrOmSsQG1XNBaM6ZYlX5Ch/tDrMFadr0/mK6gjZwaQc55g+5+WZMw4Cz3m8VEF7g=="
-      },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.25.1",
-        "contentHash": "Sw9bq4hOD+AaS3RrnmP5IT25cyZ/T1qpM0e8+G+23Nojhv7+ScJFPEAQo1m4EFQWhXoI4FRZDrK+wjHCPw9yxg=="
+        "resolved": "3.25.2",
+        "contentHash": "g/xIIeLhR77bl4ajGGbPYRmZf5acJlCRaSBqUnU8+2aQYREnZnv+UccRNndHof4mWO1ORS0b5i6on40VOjBpsg=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
@@ -21,7 +15,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.25.1, )",
+          "Google.Protobuf": "[3.25.2, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
@@ -29,7 +23,6 @@
       "hi3helper.http": {
         "type": "Project"
       }
-    },
-    "net8.0/win-x64": {}
+    }
   }
 }

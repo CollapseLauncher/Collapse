@@ -16,14 +16,11 @@ namespace CollapseLauncher.Pages
                bool value = Settings.SettingsScreen.isfullScreen;
                if (value)
                {
-                   GameWindowResizable.IsEnabled      = false;
-                   GameWindowResizable.IsChecked      = false;
                    GameResolutionBorderless.IsEnabled = false;
                    GameResolutionBorderless.IsChecked = false;
                }
                else
                {
-                   GameWindowResizable.IsEnabled      = true;
                    GameResolutionBorderless.IsEnabled = true;
                }
                return value;
@@ -33,8 +30,6 @@ namespace CollapseLauncher.Pages
                 Settings.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
-                    GameWindowResizable.IsEnabled               = false;
-                    GameWindowResizable.IsChecked               = false;
                     GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
                     GameResolutionFullscreenExclusive.IsChecked = false;
                     GameResolutionBorderless.IsChecked          = false;
@@ -56,13 +51,10 @@ namespace CollapseLauncher.Pages
                     Settings.SettingsCollapseScreen.UseBorderlessScreen = true;
                     Settings.SettingVisibleBackground.isBorderless      = true;
 
-                    GameWindowResizable.IsEnabled      = false;
-                    GameWindowResizable.IsChecked      = false;
                     GameResolutionFullscreen.IsChecked = false;
 
                     return true;
                 }
-                GameWindowResizable.IsEnabled      = true;
                 GameResolutionFullscreen.IsEnabled = true;
 
                 return false;
@@ -73,8 +65,6 @@ namespace CollapseLauncher.Pages
                 Settings.SettingVisibleBackground.isBorderless      = value;
                 if (value)
                 {
-                    GameWindowResizable.IsEnabled = false;
-                    GameWindowResizable.IsChecked = false;
                     GameResolutionFullscreen.IsChecked = false;
                 }
                 GameResolutionFullscreen.IsEnabled = true;
@@ -137,32 +127,6 @@ namespace CollapseLauncher.Pages
                     return;
                 }
                 GameCustomResolutionCheckbox.IsEnabled = true;
-            }
-        }
-
-        public bool IsCanResizableWindow
-        {
-            get => !Settings.SettingsScreen.isfullScreen && !IsExclusiveFullscreenEnabled;
-        }
-
-        public bool IsResizableWindow
-        {
-            get => Settings.SettingsCollapseScreen.UseResizableWindow;
-            set
-            {
-                Settings.SettingsCollapseScreen.UseResizableWindow = value;
-                if (value)
-                {
-                    GameResolutionFullscreen.IsChecked = false;
-                    GameResolutionFullscreen.IsEnabled = false;
-                    GameResolutionBorderless.IsChecked = false;
-                    GameResolutionBorderless.IsEnabled = false;
-                }
-                else
-                {
-                    GameResolutionFullscreen.IsEnabled = true;
-                    GameResolutionBorderless.IsEnabled = true;
-                }
             }
         }
 
