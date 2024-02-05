@@ -142,4 +142,10 @@ namespace CollapseLauncher.GameSettings.Genshin.Enums
         High,
         Extreme
     }
+
+    enum DynamicCharacterResolutionOption
+    {
+        Off,
+        On
+    }
 }
