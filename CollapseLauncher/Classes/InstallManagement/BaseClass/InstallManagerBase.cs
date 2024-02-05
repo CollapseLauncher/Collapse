@@ -1595,7 +1595,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Check if the merge chunk is enabled and the download could perform multisession,
                 // then do merge.
                 if (_canMergeDownloadChunks && isCanMultiSession)
-                    await _httpClient.Merge();
+                    await _httpClient.Merge(token);
                 _stopwatch.Start();
             }
 
