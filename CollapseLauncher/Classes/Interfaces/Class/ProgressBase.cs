@@ -598,7 +598,7 @@ namespace CollapseLauncher.Interfaces
             if (assetSize >= _sizeForMultiDownload)
             {
                 await _httpClient.Download(assetURL, assetPath, _downloadThreadCount, true, token);
-                await _httpClient.Merge();
+                await _httpClient.Merge(token);
             }
             else
             {
