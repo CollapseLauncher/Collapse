@@ -6,6 +6,7 @@ using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace CollapseLauncher.InstallManager.Honkai
         }
 
         #region Public Methods
-        public override async ValueTask<int> StartPackageVerification()
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
         {
             IsRunning = true;
 
@@ -47,40 +48,16 @@ namespace CollapseLauncher.InstallManager.Honkai
             }
 
             // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
-            return await base.StartPackageVerification();
+            return await base.StartPackageVerification(gamePackage);
         }
 
-        protected override async Task StartPackageInstallationInner()
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false)
         {
             // If the delta patch is performed, then return
-            if (await StartDeltaPatch(_gameRepairManager, true)) return;
+            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, true)) return;
 
             // If no delta patch is happening, then do the base installation
-            await base.StartPackageInstallationInner();
-        }
-
-        public override async ValueTask<bool> TryShowFailedDeltaPatchState()
-        {
-            // Get the target and source path
-            string GamePath = _gameVersionManager.GameDirPath;
-            string GamePathIngredients = GamePath + "_Ingredients";
-            // If path doesn't exist, then return false
-            if (!Directory.Exists(GamePathIngredients)) return false;
-
-            LogWriteLine($"Previous failed delta patch has been detected on Game {_gameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
-            // Show action dialog
-            switch (await Dialog_PreviousDeltaPatchInstallFailed(_parentUI))
-            {
-                // If primary button clicked, then move the folder and get back to HomePage
-                case ContentDialogResult.Primary:
-                    MoveFolderContent(GamePathIngredients, GamePath);
-                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                    break;
-            }
-
-            // Then reinitialize the version manager
-            _gameVersionManager.Reinitialize();
-            return true;
+            await base.StartPackageInstallationInner(gamePackage);
         }
 
         public override async ValueTask<bool> TryShowFailedGameConversionState()
