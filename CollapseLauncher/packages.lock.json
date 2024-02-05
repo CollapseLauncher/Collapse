@@ -133,9 +133,9 @@
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
-        "requested": "[2.0.4, )",
-        "resolved": "2.0.4",
-        "contentHash": "ULRbWAcqUG2jLZRGpMGOOL1SokFDcWlTLCjKUXVzQSnh/TR+7vsvet+eICRT0JIN4W2XRkJOBhxjFUEmlmN3rA=="
+        "requested": "[2.0.6, )",
+        "resolved": "2.0.6",
+        "contentHash": "phcbmQdpWxxWSYoB8lmF2n4noKIpzrE1NtGcfPAuamNgYui0nmutpQZK5awSciaPiXPvU8/oZ1qkXpRhs6j2ag=="
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
