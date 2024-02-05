@@ -65,6 +65,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x1,
             GraphicsQuality = GraphicsQualityOption.Lowest,
             GlobalIllumination = GlobalIlluminationOption.Off,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
         };
 
         private static GlobalPerfData _LowPreset = new()
@@ -87,6 +88,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x2,
             GraphicsQuality = GraphicsQualityOption.Low,
             GlobalIllumination = GlobalIlluminationOption.Off,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
         };
 
         private static GlobalPerfData _MediumPreset = new()
@@ -109,6 +111,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x4,
             GraphicsQuality = GraphicsQualityOption.Medium,
             GlobalIllumination = GlobalIlluminationOption.Medium,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
         };
         #endregion
 
@@ -261,12 +264,21 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This defines "<c>Global Illumination</c>" combobox In-game settings. <br/>
-        /// Options: Off, Medium, High, Extreme
-        /// Default: High [2]  <br/>
-        /// Notes: Only work for PC who meet the specs for Global Illumination, specified by HYV  <br/>
+        /// Options: Off, Medium, High, Extreme <br/>
+        /// Default: High [2] <br/>
+        /// Notes: Only work for PC who meet the specs for Global Illumination, specified by HYV <br/>
         /// Further information: https://genshin.hoyoverse.com/en/news/detail/112690#:~:text=Minimum%20Specifications%20for%20Global%20Illumination
         /// </summary>
         public GlobalIlluminationOption GlobalIllumination = GlobalIlluminationOption.High;
+
+        /// <summary>
+        /// This defines "<c>Dynamic Character Resolution</c>" combobox In-game settings. <br/>
+        /// Options: Off, On <br/>
+        /// Default: On [1] <br/>
+        /// Notes: Only work for PC who meet the specs for Dynamic Character Resolution, specified by HYV <br/>
+        /// Further information: https://genshin.hoyoverse.com/en/news/detail/122141#:~:text=Dynamic%20Character%20Resolution
+        /// </summary>
+        public DynamicCharacterResolutionOption DynamicCharacterResolution = DynamicCharacterResolutionOption.On;
         #endregion
 
         #region Methods
@@ -442,6 +454,13 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
                         globalPerf.GlobalIllumination = (GlobalIlluminationOption)setting.index;
                         break;
+
+                    case 21:
+#if DEBUG
+                        LogWriteLine($"Loaded Genshin Settings: Graphics - Dynamic Character Resolution: {setting.index}", LogType.Debug, true);
+#endif
+                        globalPerf.DynamicCharacterResolution = (DynamicCharacterResolutionOption)setting.index;
+                        break;
                 }
             }
             return globalPerf;
@@ -468,7 +487,8 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem(15, (int)SubsurfaceScattering, portedVersion),
                 new PerfDataItem(17, (int)AnisotropicFiltering, portedVersion),
                 new PerfDataItem(18, (int)GraphicsQuality, portedVersion),
-                new PerfDataItem(19, (int)GlobalIllumination, portedVersion)
+                new PerfDataItem(19, (int)GlobalIllumination, portedVersion),
+                new PerfDataItem(21, (int)DynamicCharacterResolution, portedVersion),
             };
             string data = this.Serialize(GenshinSettingsJSONContext.Default, false);
 #if DEBUG

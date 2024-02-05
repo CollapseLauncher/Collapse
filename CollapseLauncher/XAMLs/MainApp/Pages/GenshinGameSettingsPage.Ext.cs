@@ -339,6 +339,12 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.SettingsGeneralData.globalPerfData.GlobalIllumination;
             set => Settings.SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)(value);
         }
+
+        public bool DynamicCharacterResolution
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution);
+            set => Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution = (DynamicCharacterResolutionOption)(Convert.ToInt32(value));
+        }
         #endregion
 
         #region Graphics Settings - HDR
