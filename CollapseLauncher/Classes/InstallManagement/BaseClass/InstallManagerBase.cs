@@ -275,21 +275,21 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Build the dialog UI
             TextBlock message = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            message.AddTextBlockLine("Additional file download is required for this game before applying delta patch. Around ");
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle1);
             message.AddTextBlockLine(ConverterTool.SummarizeSizeSimple(totalDownloadSize), FontWeights.SemiBold);
-            message.AddTextBlockLine(" is required to be downloaded and some of these files might contains audio package deltas.");
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle2);
             message.AddTextBlockNewLine(2);
-            message.AddTextBlockLine("Do you want to continue?");
-            message.AddTextBlockNewLine();
-            message.AddTextBlockLine("(Click \"", null, 10);
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle3);
+            message.AddTextBlockNewLine(2);
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle4, null, 10);
             message.AddTextBlockLine(Lang._Misc.YesContinue, FontWeights.SemiBold, 10);
-            message.AddTextBlockLine("\" to continue or \"", null, 10);
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle5, null, 10);
             message.AddTextBlockLine(Lang._Misc.No, FontWeights.SemiBold, 10);
-            message.AddTextBlockLine("\" to use normal update or \"", null, 10);
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle6, null, 10);
             message.AddTextBlockLine(Lang._Misc.Cancel, FontWeights.SemiBold, 10);
-            message.AddTextBlockLine("\" to cancel the update)", null, 10);
+            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle7, null, 10);
             ContentDialogResult dialogResult = await SpawnDialog(
-                "Additional File Download is Required for Delta Patch!",
+                Lang._Dialogs.DeltaPatchPreReqTitle,
                 message,
                 _parentUI,
                 Lang._Misc.Cancel,

@@ -12,6 +12,14 @@ namespace Hi3Helper
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchPrevFailedTitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedTitle;
                 public string DeltaPatchPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedSubtitle;
+                public string DeltaPatchPreReqTitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqTitle;
+                public string DeltaPatchPreReqSubtitle1 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle1;
+                public string DeltaPatchPreReqSubtitle2 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle2;
+                public string DeltaPatchPreReqSubtitle3 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle3;
+                public string DeltaPatchPreReqSubtitle4 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle4;
+                public string DeltaPatchPreReqSubtitle5 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle5;
+                public string DeltaPatchPreReqSubtitle6 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle6;
+                public string DeltaPatchPreReqSubtitle7 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle7;
                 public string GameConversionPrevFailedTitle { get; set; } = LangFallback?._Dialogs.GameConversionPrevFailedTitle;
                 public string GameConversionPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.GameConversionPrevFailedSubtitle;
                 public string PreloadVerifiedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
