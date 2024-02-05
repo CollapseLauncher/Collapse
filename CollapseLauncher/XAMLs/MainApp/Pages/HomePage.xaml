@@ -121,7 +121,7 @@
                         IsOpen="False" IsClosable="True"
                         Severity="Informational"
                         Title=""
-                        Message="{x:Bind helper:Locale.Lang._HomePage.PreloadNotifSubtitle}" Shadow="{ThemeResource SharedShadow}"
+                        Shadow="{ThemeResource SharedShadow}"
                         Margin="0,16,0,-32"
                         CornerRadius="16,16,0,0"
                         Grid.Column="0" Grid.ColumnSpan="2"
