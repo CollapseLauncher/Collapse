@@ -1001,6 +1001,8 @@
     "Graphics_GlobalIllumination": "Global Illumination",
     "Graphics_GlobalIllumination_Help1": "Only for supported hardware!",
     "Graphics_GlobalIllumination_Help2": "More information (en)",
+    "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Enable HDR",
     "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
