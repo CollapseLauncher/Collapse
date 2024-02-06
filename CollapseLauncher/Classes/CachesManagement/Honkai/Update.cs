@@ -106,7 +106,7 @@ namespace CollapseLauncher
                 if (asset.CS >= _sizeForMultiDownload)
                 {
                     await httpClient.Download(asset.ConcatURL, asset.ConcatPath, _downloadThreadCount, true, token);
-                    await httpClient.Merge();
+                    await httpClient.Merge(token);
                 }
                 // Do single-session download for others
                 else

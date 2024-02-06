@@ -53,7 +53,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             AllowOverlay = true;
             AllowDesktopConfig = true;
-
+          
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 

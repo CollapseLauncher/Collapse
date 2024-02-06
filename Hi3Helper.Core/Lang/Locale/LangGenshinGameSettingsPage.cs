@@ -79,6 +79,8 @@
                 public string Graphics_GlobalIllumination { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination;
                 public string Graphics_GlobalIllumination_Help1 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help1;
                 public string Graphics_GlobalIllumination_Help2 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help2;
+                public string Graphics_DynamicCharacterResolution { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution;
+                public string Graphics_DynamicCharacterResolution_Tooltip { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution_Tooltip;
 
                 public string Graphics_HDR { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR;
                 public string Graphics_HDR_Enable { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_Enable;

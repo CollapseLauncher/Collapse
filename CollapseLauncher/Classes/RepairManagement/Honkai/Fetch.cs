@@ -509,7 +509,7 @@ namespace CollapseLauncher
             {
                 // Check the status of the patch file
                 // If doesn't exist, then return an empty list
-                (int, bool) status = await _httpClient.GetURLStatus(urlPatchXMF, token);
+                Tuple<int, bool> status = await _httpClient.GetURLStatus(urlPatchXMF, token);
                 if (!status.Item2)
                 {
                     return null;

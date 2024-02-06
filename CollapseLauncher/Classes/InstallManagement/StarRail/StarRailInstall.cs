@@ -35,7 +35,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
         #region Public Methods
-        public override async ValueTask<int> StartPackageVerification()
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
         {
             IsRunning = true;
 
@@ -48,16 +48,16 @@ namespace CollapseLauncher.InstallManager.StarRail
             }
 
             // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
-            return await base.StartPackageVerification();
+            return await base.StartPackageVerification(gamePackage);
         }
 
-        protected override async Task StartPackageInstallationInner()
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false)
         {
             // If the delta patch is performed, then return
-            if (await StartDeltaPatch(_gameRepairManager, false)) return;
+            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false)) return;
 
             // Run the base installation process
-            await base.StartPackageInstallationInner();
+            await base.StartPackageInstallationInner(gamePackage);
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
@@ -66,10 +66,10 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Override Methods - GetInstallationPath
-        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
+        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
         {
-            // Do action from base method first
-            if (!await base.TryAddResourceVersionList(asset, packageList)) return false;
+            // Do action from base method first and add the main package
+            if (!await base.TryAddResourceVersionList(asset, packageList, isSkipMainPackage)) return false;
 
             // Initialize langID
             int langID;
@@ -117,7 +117,6 @@ namespace CollapseLauncher.InstallManager.StarRail
 
             return true;
         }
-
 
         private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
         {
