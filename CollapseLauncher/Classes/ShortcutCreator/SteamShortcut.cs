@@ -30,8 +30,8 @@ namespace CollapseLauncher.ShortcutUtils
         public string ShortcutPath = "";
         public string LaunchOptions = "";
         public bool IsHidden = false;
-        public bool AllowDesktopConfig = false;
-        public bool AllowOverlay = false;
+        public bool AllowDesktopConfig = true;
+        public bool AllowOverlay = true;
         public bool OpenVR = false;
         public bool Devkit = false;
         public string DevkitGameID = "";
@@ -51,9 +51,6 @@ namespace CollapseLauncher.ShortcutUtils
             Exe = string.Format("\"{0}\"", stubPath);
             StartDir = string.Format("\"{0}\"", Path.GetDirectoryName(stubPath));
 
-            AllowOverlay = true;
-            AllowDesktopConfig = true;
-          
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
