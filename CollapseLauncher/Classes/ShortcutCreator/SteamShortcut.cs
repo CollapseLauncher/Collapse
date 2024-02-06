@@ -30,8 +30,8 @@ namespace CollapseLauncher.ShortcutUtils
         public string ShortcutPath = "";
         public string LaunchOptions = "";
         public bool IsHidden = false;
-        public bool AllowDesktopConfig = false;
-        public bool AllowOverlay = false;
+        public bool AllowDesktopConfig = true;
+        public bool AllowOverlay = true;
         public bool OpenVR = false;
         public bool Devkit = false;
         public string DevkitGameID = "";
