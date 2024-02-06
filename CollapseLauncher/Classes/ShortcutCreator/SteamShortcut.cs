@@ -51,6 +51,9 @@ namespace CollapseLauncher.ShortcutUtils
             Exe = string.Format("\"{0}\"", stubPath);
             StartDir = string.Format("\"{0}\"", Path.GetDirectoryName(stubPath));
 
+            AllowOverlay = true;
+            AllowDesktopConfig = true;
+
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
