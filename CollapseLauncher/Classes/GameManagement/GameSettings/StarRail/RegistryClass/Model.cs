@@ -134,6 +134,9 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// </summary>
         public AntialiasingMode AAMode { get; set; } = AntialiasingMode.TAA;
 
+        // MetalFX config for Apple devices. Should not be used under Windows.
+        public bool EnableMetalFXSU { get; set; }
+
         #endregion
 
         #region Methods
