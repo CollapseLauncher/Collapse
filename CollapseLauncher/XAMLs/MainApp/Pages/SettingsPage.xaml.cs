@@ -322,7 +322,7 @@ namespace CollapseLauncher.Pages
 
         private Task CreateScheduledTask(string taskName)
         {
-            string collapseStartupTarget = FindCollapseStubPath();
+            string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
 
             using TaskService ts = new TaskService();
 
@@ -338,20 +338,6 @@ namespace CollapseLauncher.Pages
             Task task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
             return task;
-        }
-
-        public string FindCollapseStubPath()
-        {
-            var    collapseExecName = "CollapseLauncher.exe";
-            var    collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
-            var    collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
-            if (File.Exists(collapseStubPath))
-            {
-                LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
-                return  collapseStubPath;
-            }
-            LogWriteLine($"Collapse stub does not exist, returning current executable path!\r\n\t{collapseStubPath}", LogType.Default, true);
-            return collapseMainPath;
         }
         #endregion
 
@@ -765,7 +751,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                string collapseStartupTarget = FindCollapseStubPath();
+                string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
                 using TaskService ts = new TaskService();
 
                 Task task = ts.GetTask(_collapseStartupTaskName);

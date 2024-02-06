@@ -54,7 +54,7 @@ namespace CollapseLauncher.ShortcutUtils
                 parser.Insert(preset, play);
                 
                 parser.Save();
-                LogWriteLine(string.Format("Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
+                LogWriteLine(string.Format("[ShortcutCreator::AddToSteam] Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
             }
 
             return true;
@@ -90,16 +90,22 @@ namespace CollapseLauncher.ShortcutUtils
             string steamUserData = steamPath + @"\userdata";
 
             if (!Directory.Exists(steamUserData))
+            {
+                LogWriteLine("[ShortcutCreator::GetShortcutsPath] " + steamUserData + " is not a valid folder.", Hi3Helper.LogType.Error);
                 return null;
+            }
 
             var res = Directory.GetDirectories(steamUserData)
                 .Where(x =>
-                    !(x.EndsWith("ac") || x.EndsWith("0") || x.EndsWith("anonymous"))
-                    ).ToArray();
+                {
+                    string y = x.Split("\\").Last();
+                    return y != "ac" && y != "0" && y != "anonymous";
+                } ).ToArray();
 
             for (int i = 0; i < res.Length; i++)
             {
                 res[i] = Path.Combine(res[i], @"config\shortcuts.vdf");
+                LogWriteLine("[ShortcutCreator::GetShortcutsPath] Found profile: " + res[i], Hi3Helper.LogType.Debug);
             }
 
             return res;
