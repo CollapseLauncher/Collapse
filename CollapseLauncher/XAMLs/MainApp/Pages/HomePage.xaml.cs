@@ -166,10 +166,7 @@ namespace CollapseLauncher.Pages
                         StartGame(null, null);
                     m_arguments.StartGame.Play = false;
                 }
-                else
-                {
-                    AutoUpdatePlaytimeCounter(false, PlaytimeToken.Token);
-                }
+                AutoUpdatePlaytimeCounter(false, PlaytimeToken.Token);
 
                 StartCarouselAutoScroll(CarouselToken.Token);
             }
