@@ -1084,7 +1084,14 @@ namespace Discord
         {
             if (MethodsPtr != IntPtr.Zero)
             {
-                Methods.Destroy(MethodsPtr);
+                try
+                {
+                    Methods.Destroy(MethodsPtr);
+                }
+                catch (SEHException e)
+                {
+                    // Ignore CloseHandle SEH exception caused by Discord SDK
+                }
             }
             SelfHandle.Free();
             Marshal.FreeHGlobal(EventsPtr);
