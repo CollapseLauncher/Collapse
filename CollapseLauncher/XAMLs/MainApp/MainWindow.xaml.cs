@@ -172,14 +172,14 @@ namespace CollapseLauncher
             m_oldWndProc = SetWindowLongPtr(m_windowHandle, GWLP_WNDPROC, pWndProc);
         }
 
-        public void EnableNonClientArea()
+        public static void EnableNonClientArea()
         {
             var incps = InputNonClientPointerSource.GetForWindowId(m_windowID);
             var safeArea = new RectInt32[] { new(m_appWindow.Size.Width - (int)((144 + 12) * m_appDPIScale), 0, (int)((144 + 12) * m_appDPIScale), (int)(48 * m_appDPIScale)) };
             incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
         }
 
-        public void DisableNonClientArea()
+        public static void DisableNonClientArea()
         {
             var incps = InputNonClientPointerSource.GetForWindowId(m_windowID);
             var safeArea = new RectInt32[] { new(0, 0, m_appWindow.Size.Width, (int)(48 * m_appDPIScale)) };
