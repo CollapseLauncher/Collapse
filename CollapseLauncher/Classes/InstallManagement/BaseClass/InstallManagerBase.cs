@@ -326,53 +326,50 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async ValueTask StartDeltaPatchPreReqDownload(List<GameInstallPackage> gamePackage)
         {
+            // Set the progress bar to indetermined
+            _status.IsIncludePerFileIndicator = gamePackage.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
+            _status.IsProgressPerFileIndetermined = true;
+            _status.IsProgressTotalIndetermined = true;
+            UpdateStatus();
+
+            // Start getting the size of the packages
+            await GetPackagesRemoteSize(gamePackage, _token.Token);
+
+            // Get the remote total size and current total size
+            _progressTotalSize = gamePackage.Sum(x => x.Size);
+            _progressTotalSizeCurrent = GetExistingDownloadPackageSize(gamePackage);
+
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
             await CheckDriveFreeSpace(_parentUI, gamePackage);
 
             // Check for the existing download
             await CheckExistingDownloadAsync(_parentUI, gamePackage);
 
-            StartDeltaPatchPreReqVerification:
-            while (true)
+        StartDeltaPatchPreReqVerification:
+            // Set progress bar to not indetermined
+            _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressTotalIndetermined = false;
+
+            // Start downloading process
+            await InvokePackageDownloadRoutine(gamePackage, _token.Token);
+
+            // Reset the progress status
+            _progressTotalSizeCurrent = 0;
+            _progressTotalCountCurrent = 1;
+            RestartStopwatch();
+
+            // Start the verification routine
+            foreach (GameInstallPackage asset in gamePackage)
             {
-                // Set progress count to beginning
-                _progressTotalSize = gamePackage.Sum(x => x.Size);
-                _progressTotalSizeCurrent = 0;
-                _progressTotalCountCurrent = 1;
-                _progressTotalCount = gamePackage.Count;
-                _status.IsIncludePerFileIndicator = gamePackage.Count > 1;
-                RestartStopwatch();
-
-                // Set progress bar to not indetermined
-                _status.IsProgressPerFileIndetermined = false;
-                _status.IsProgressTotalIndetermined = false;
-
-                // Start downloading process
-                await InvokePackageDownloadRoutine(gamePackage, _token.Token);
-
-                // Set progress count to beginning
-                _progressTotalSize = gamePackage.Sum(x => x.Size);
-                _progressTotalSizeCurrent = 0;
-                _progressTotalCountCurrent = 1;
-                _progressTotalCount = gamePackage.Count;
-                _status.IsIncludePerFileIndicator = gamePackage.Count > 1;
-                RestartStopwatch();
-
-                // Start the verification routine
-                foreach (GameInstallPackage asset in gamePackage)
+                switch (await RunPackageVerificationRoutine(asset, _token.Token))
                 {
-                    switch (await RunPackageVerificationRoutine(asset, _token.Token))
-                    {
-                        // 0 means redownload the corrupted file 
-                        case 0:
-                            goto StartDeltaPatchPreReqVerification;
-                        // -1 means cancel
-                        case -1:
-                            throw new OperationCanceledException();
-                    }
+                    // 0 means redownload the corrupted file 
+                    case 0:
+                        goto StartDeltaPatchPreReqVerification;
+                    // -1 means cancel
+                    case -1:
+                        throw new OperationCanceledException();
                 }
-
-                return;
             }
         }
 
