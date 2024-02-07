@@ -75,7 +75,7 @@
     "UnhandledTitle3": "游戏已崩溃",
     "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
     "UnhandledTitle4": "警告",
-    "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于米哈游 A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470.\n给您带来的不便我们深表歉意，感谢您的理解。",
+    "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470.\n给您带来的不便我们深表歉意，感谢您的理解。",
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页"
@@ -702,6 +702,7 @@
     "SteamShortcutCreationSuccessSubtitle3": "• 使用此快捷方式将在加载区域后启动游戏。",
     "SteamShortcutCreationSuccessSubtitle4": "• 再次运行此过程将修复属于快捷方式的任何损坏/丢失的图像。",
     "SteamShortcutCreationSuccessSubtitle5": "• 新的快捷方式仅在 Steam 重新加载后才会显示。",
+    "SteamShortcutCreationSuccessSubtitle6": " • 要使用 Steam 叠加层，Steam 需要以管理员身份运行，而且 Collapse 必须完全关闭或在设置中启用“允许开启多个 Collapse”选项。",
 
     "SteamShortcutCreationFailureTitle": "无效的Steam数据文件夹",
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。"
