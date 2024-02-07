@@ -255,6 +255,9 @@ namespace CollapseLauncher
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
+                // Copy (and download) the remote streams to local
+                LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
+
                 // Try get the remote stream and download the file
                 using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
                 using Stream outStream = fileInfo.Open(new FileStreamOptions()
@@ -274,8 +277,6 @@ namespace CollapseLauncher
                 string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
                 File.Create(propFilePath).Dispose();
 
-                // Copy (and download) the remote streams to local
-                LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
                 int read = 0;
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer, 0, read, token);
