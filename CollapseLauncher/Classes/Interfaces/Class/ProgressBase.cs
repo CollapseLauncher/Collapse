@@ -60,7 +60,7 @@ namespace CollapseLauncher.Interfaces
         // Extension for IGameInstallManager
         protected double _progressTotalReadCurrent;
 
-        protected const int _refreshInterval = 100;
+        protected const int _refreshInterval = 33;
 
         #region ProgressEventHandlers - Fetch
         protected void _innerObject_ProgressAdapter(object sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
