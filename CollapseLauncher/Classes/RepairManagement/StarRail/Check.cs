@@ -209,6 +209,9 @@ namespace CollapseLauncher
                         null
                     )
                 ));
+
+                // Fix the asset detected as a used file even though it's actually unused
+                asset.FT = FileType.Unused;
                 targetAssetIndex.Add(asset);
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
@@ -250,8 +253,9 @@ namespace CollapseLauncher
                 return;
             }
 
-            // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName,
+            // Open and read fileInfo as FileStream
+            string fileNameToOpen = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+            using (FileStream filefs = new FileStream(fileNameToOpen,
                 FileMode.Open,
                 FileAccess.Read,
                 FileShare.None,
