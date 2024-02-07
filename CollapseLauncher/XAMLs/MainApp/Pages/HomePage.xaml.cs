@@ -1738,19 +1738,19 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int playtimemins = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int playtimehours = int.Parse("0" + HourPlaytimeTextBox.Text);
-            int FinalPlaytimeMinutes = playtimemins % 60;
-            int FinalPlaytimeHours = playtimehours + playtimemins / 60;
-            if (FinalPlaytimeHours > 99999) { FinalPlaytimeHours = 99999; FinalPlaytimeMinutes = 59; }
-            MinutePlaytimeTextBox.Text = FinalPlaytimeMinutes.ToString();
-            HourPlaytimeTextBox.Text = FinalPlaytimeHours.ToString();
+            int playtimeMins = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int playtimeHours = int.Parse("0" + HourPlaytimeTextBox.Text);
+            int finalPlaytimeMinutes = playtimeMins % 60;
+            int finalPlaytimeHours = playtimeHours + playtimeMins / 60;
+            if (finalPlaytimeHours > 99999) { finalPlaytimeHours = 99999; finalPlaytimeMinutes = 59; }
+            MinutePlaytimeTextBox.Text = finalPlaytimeMinutes.ToString();
+            HourPlaytimeTextBox.Text = finalPlaytimeHours.ToString();
 
-            int FinalPlaytime = FinalPlaytimeHours * 3600 + FinalPlaytimeMinutes * 60;
+            int finalPlaytime = finalPlaytimeHours * 3600 + finalPlaytimeMinutes * 60;
 
-            SavePlaytimetoRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, FinalPlaytime);
+            SavePlaytimeToRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
             LogWriteLine($"Playtime counter changed to {HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m"}. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, FinalPlaytime);
+            UpdatePlaytime(false, finalPlaytime);
             PlaytimeFlyout.Hide();
         }
 
@@ -1758,7 +1758,7 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
-            SavePlaytimetoRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
+            SavePlaytimeToRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
             LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, 0);
             PlaytimeFlyout.Hide();
@@ -1772,19 +1772,21 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Playtime Tracker Method
-        private void UpdatePlaytime(bool reg = true, int CPtV = 0)
+        private void UpdatePlaytime(bool readRegistry = true, int currentPlaytimeValue = 0)
         {
-            int CurrentPlaytimeValue = reg ? ReadPlaytimeFromRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation) : CPtV;
-            HourPlaytimeTextBox.Text = (CurrentPlaytimeValue / 3600).ToString();
-            MinutePlaytimeTextBox.Text = (CurrentPlaytimeValue % 3600 / 60).ToString();
+            if (readRegistry)
+                currentPlaytimeValue = ReadPlaytimeFromRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+
+            HourPlaytimeTextBox.Text = (currentPlaytimeValue / 3600).ToString();
+            MinutePlaytimeTextBox.Text = (currentPlaytimeValue % 3600 / 60).ToString();
             PlaytimeMainBtn.Text = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
         }
 
-        private static int ReadPlaytimeFromRegistry(string RegionRegKey)
+        private static int ReadPlaytimeFromRegistry(string regionRegistryKey)
         {
             try
             {
-                return (int)Registry.CurrentUser.OpenSubKey(RegionRegKey, true).GetValue("CollapseLauncher_Playtime", 0);
+                return (int)Registry.CurrentUser.OpenSubKey(regionRegistryKey, true).GetValue("CollapseLauncher_Playtime", 0);
             }
             catch (Exception ex)
             {
@@ -1794,11 +1796,11 @@ namespace CollapseLauncher.Pages
 
         }
 
-        private static void SavePlaytimetoRegistry(string RegionRegKey, int value)
+        private static void SavePlaytimeToRegistry(string regionRegistryKey, int value)
         {
             try
             {
-                Registry.CurrentUser.OpenSubKey(RegionRegKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.DWord);
+                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
@@ -1806,26 +1808,22 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async static void StartPlaytimeCounter(string oldRegionRegistryKey, Process proc, PresetConfigV2 gamePreset)
+        private static async void StartPlaytimeCounter(string regionRegistryKey, Process proc, PresetConfigV2 gamePreset)
         {
-            int saveFrequencyinSeconds = 60;
+            int currentPlaytime = ReadPlaytimeFromRegistry(regionRegistryKey);
 
-            int currentPlaytime = ReadPlaytimeFromRegistry(oldRegionRegistryKey);
-            int elapsedSeconds = 0;
+            DateTime begin = DateTime.Now;
 
-            var inGameTimer = new DispatcherTimer
+            System.Timers.Timer inGameTimer = new System.Timers.Timer();
+            inGameTimer.Interval = 60000;
+            inGameTimer.Elapsed += (o, e) =>
             {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-            inGameTimer.Tick += (o, e) =>
-            {
-                elapsedSeconds++;
-
-                if (elapsedSeconds % saveFrequencyinSeconds == 0)
-                {
-                    //LogWriteLine($"Added \"fake\" {saveFrequencyinSeconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
-                    SavePlaytimetoRegistry(oldRegionRegistryKey, currentPlaytime + elapsedSeconds);
-                }
+                DateTime now = DateTime.Now;
+                int elapsedSeconds = (int)(now - begin).TotalSeconds;
+#if DEBUG
+                LogWriteLine(string.Format("{0} - {1}s elapsed. ({2})", gamePreset.ProfileName, elapsedSeconds, now.ToLongTimeString()));
+#endif                    
+                SavePlaytimeToRegistry(regionRegistryKey, currentPlaytime + elapsedSeconds);
             };
             inGameTimer.Start();
 
@@ -1836,14 +1834,14 @@ namespace CollapseLauncher.Pages
                 {
                     while (true)
                     {
-                        Process[] pname = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
-                        switch (pname.Length)
+                        Process[] processName = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
+                        switch (processName.Length)
                         {
                             case 0:
                                 break;
                             case 1:
-                                proc = pname[0];
-                                LogWriteLine($"Found the main HI3 process [{pname[0].Id}]");
+                                proc = processName[0];
+                                LogWriteLine($"Found the main HI3 process [{processName[0].Id}]");
                                 await proc.WaitForExitAsync();
                                 break;
                             default:
@@ -1859,8 +1857,11 @@ namespace CollapseLauncher.Pages
                     LogWriteLine($"Failed to find the main BH3 process [{e}]");
                 }
             }
-            SavePlaytimetoRegistry(oldRegionRegistryKey, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
+
+            DateTime end = DateTime.Now;
+            int elapsedSeconds = (int)(end - begin).TotalSeconds;
+            SavePlaytimeToRegistry(regionRegistryKey, currentPlaytime + elapsedSeconds);
+            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
             inGameTimer.Stop();
         }
 
@@ -1921,7 +1922,7 @@ namespace CollapseLauncher.Pages
             {
             }
         }
-        #endregion
+#endregion
 
         #region Game Update Dialog
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
