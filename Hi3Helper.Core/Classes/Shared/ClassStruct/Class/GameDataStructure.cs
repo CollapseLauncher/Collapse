@@ -11,11 +11,22 @@ namespace Hi3Helper.Shared.ClassStruct
     public enum FileType : byte { Generic, Blocks, Audio, Video, Unused }
     public class FilePropertiesRemote : IAssetIndexSummary
     {
+        private string _crc;
+        private byte[] _crcArray;
+
         // public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
         public string RN { get; set; }
-        public string CRC { get; set; }
-        public byte[] CRCArray { get => HexTool.HexToBytesUnsafe(CRC); }
+        public string CRC
+        {
+            get => _crc;
+            set
+            {
+                _crc = value.ToLower();
+                _crcArray = HexTool.HexToBytesUnsafe(_crc);
+            }
+        }
+        public byte[] CRCArray { get => _crcArray; }
         public string M { get; set; }
         public FileType FT { get; set; }
         public List<XMFBlockList> BlkC { get; set; }
