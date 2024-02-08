@@ -1870,8 +1870,8 @@ namespace CollapseLauncher.Pages
             if (elapsedSeconds < 0)
             {
                 LogWriteLine(string.Format("[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({0}s)", elapsedSeconds.ToString()), LogType.Error);
-                Dialog_InvalidPlaytime(m_mainPage?.Content, numOfLoops);
                 elapsedSeconds = numOfLoops * 60;
+                Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
             }
 
             SavePlaytimeToRegistry(regionRegistryKey, currentPlaytime + elapsedSeconds);

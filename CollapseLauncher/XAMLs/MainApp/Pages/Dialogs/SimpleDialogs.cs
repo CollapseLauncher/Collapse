@@ -567,9 +567,8 @@ namespace CollapseLauncher.Dialogs
             );
         }
 
-        public static async void Dialog_InvalidPlaytime(UIElement Content, int numOfLoops = 0)
+        public static async void Dialog_InvalidPlaytime(UIElement Content, int elapsedSeconds = 0)
         {
-            int elapsedSeconds = numOfLoops * 60;
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
 
             stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });            
