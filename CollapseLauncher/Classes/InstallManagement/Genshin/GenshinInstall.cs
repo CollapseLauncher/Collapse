@@ -56,7 +56,7 @@ namespace CollapseLauncher.InstallManager.Genshin
         }
 
         #region Public Methods
-        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false)
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             if (!isOnlyInstallPackage)
                 // Starting from 3.6 update, the Audio files have been moved to "AudioAssets" folder

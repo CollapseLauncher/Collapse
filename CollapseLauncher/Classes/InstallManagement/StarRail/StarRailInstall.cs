@@ -23,15 +23,33 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Properties
-        // TODO: Need to look how the audio lang list works on HSR 1.5
-        private string _gameAudioLangListPath { get => null; }
+        private string _execName { get; set; }
+        private string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
+        private string _gameAudioLangListPath
+        {
+            get
+            {
+                // If the persistent folder is not exist, then return null
+                if (!Directory.Exists(_gameDataPersistentPath)) return null;
+
+                // Set the file list path
+                string audioRecordPath = Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt");
+
+                // Check if the file exist. If not, return null
+                if (!File.Exists(audioRecordPath)) return null;
+
+                // If exist, then return the path
+                return audioRecordPath;
+            }
+        }
+        private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt"); }
         private StarRailRepair _gameRepairManager { get; set; }
         #endregion
 
         public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
             : base(parentUI, GameVersionManager)
         {
-
+            _execName = Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
         }
 
         #region Public Methods
@@ -51,18 +69,60 @@ namespace CollapseLauncher.InstallManager.StarRail
             return await base.StartPackageVerification(gamePackage);
         }
 
-        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false)
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
-            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false)) return;
+            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false))
+            {
+                // Update the audio package list after delta patch has been initiated
+                WriteAudioLangList(_gameDeltaPatchPreReqList);
+                return;
+            }
 
             // Run the base installation process
-            await base.StartPackageInstallationInner(gamePackage);
+            await base.StartPackageInstallationInner(gamePackage, isOnlyInstallPackage, doNotDeleteZipExplicit);
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
             ApplyDeleteFileAction();
+
+            // Update the audio lang list if not in isOnlyInstallPackage mode
+            if (!isOnlyInstallPackage)
+                WriteAudioLangList(_assetIndex);
         }
+        #endregion
+
+        #region Override Methods - StartDeltaPatch
+        private void WriteAudioLangList(List<GameInstallPackage> gamePackage)
+        {
+            // Create persistent directory if not exist
+            if (!Directory.Exists(_gameDataPersistentPath))
+            {
+                Directory.CreateDirectory(_gameDataPersistentPath);
+            }
+
+            // Create the audio lang list file
+            using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
+                new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
+            {
+                // Iterate the package list
+                foreach (GameInstallPackage package in gamePackage.Where(x => x.PackageType == GameInstallPackageType.Audio))
+                {
+                    // Write the language string as per ID
+                    sw.WriteLine(GetLanguageStringByID(package.LanguageID));
+                }
+            }
+        }
+
+        private string GetLanguageStringByID(int id) => id switch
+        {
+            0 => "Chinese",
+            1 => "Chinese",
+            2 => "English(US)",
+            3 => "Japanese",
+            4 => "Korean",
+            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
         #endregion
 
         #region Override Methods - GetInstallationPath
@@ -160,7 +220,6 @@ namespace CollapseLauncher.InstallManager.StarRail
                 LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }
         }
-
 
         private List<string> EnumerateAudioLanguageString()
         {
