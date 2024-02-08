@@ -1779,7 +1779,7 @@ namespace CollapseLauncher.Pages
 
             HourPlaytimeTextBox.Text = (currentPlaytimeValue / 3600).ToString();
             MinutePlaytimeTextBox.Text = (currentPlaytimeValue % 3600 / 60).ToString();
-            PlaytimeMainBtn.Text = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
+            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, HourPlaytimeTextBox.Text, MinutePlaytimeTextBox.Text);
         }
 
         private static int ReadPlaytimeFromRegistry(string regionRegistryKey)
@@ -1815,11 +1815,16 @@ namespace CollapseLauncher.Pages
             DateTime begin = DateTime.Now;
 
             System.Timers.Timer inGameTimer = new System.Timers.Timer();
+            int numOfLoops = 0;
             inGameTimer.Interval = 60000;
             inGameTimer.Elapsed += (o, e) =>
             {
+                numOfLoops++;
+
                 DateTime now = DateTime.Now;
                 int elapsedSeconds = (int)(now - begin).TotalSeconds;
+                if (elapsedSeconds < 0)
+                    elapsedSeconds = numOfLoops * 60;
 #if DEBUG
                 LogWriteLine(string.Format("{0} - {1}s elapsed. ({2})", gamePreset.ProfileName, elapsedSeconds, now.ToLongTimeString()));
 #endif                    
@@ -1858,11 +1863,20 @@ namespace CollapseLauncher.Pages
                 }
             }
 
+            inGameTimer.Stop();
+
             DateTime end = DateTime.Now;
             int elapsedSeconds = (int)(end - begin).TotalSeconds;
+            if (elapsedSeconds < 0)
+            {
+                LogWriteLine(string.Format("[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({0}s)", elapsedSeconds.ToString()), LogType.Error);
+                Dialog_InvalidPlaytime(m_mainPage?.Content, numOfLoops);
+                elapsedSeconds = numOfLoops * 60;
+            }
+
             SavePlaytimeToRegistry(regionRegistryKey, currentPlaytime + elapsedSeconds);
             LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
-            inGameTimer.Stop();
+            
         }
 
         private async void AutoUpdatePlaytimeCounter(bool bootByCollapse = false, CancellationToken token = new CancellationToken())
