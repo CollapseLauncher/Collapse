@@ -64,8 +64,9 @@ namespace CollapseLauncher.InstallManager.Base
         protected bool _canMergeDownloadChunks { get => LauncherConfig.GetAppConfigValue("UseDownloadChunksMerging").ToBool(); }
         protected virtual bool _canDeltaPatch { get => false; }
         protected virtual DeltaPatchProperty _gameDeltaPatchProperty { get => null; }
-        protected bool _forceIgnoreDeltaPatch = false;
 
+        protected List<GameInstallPackage> _gameDeltaPatchPreReqList = new List<GameInstallPackage>();
+        protected bool _forceIgnoreDeltaPatch = false;
         private long _totalLastSizeCurrent = 0;
         #endregion
 
@@ -111,6 +112,9 @@ namespace CollapseLauncher.InstallManager.Base
             _gameRepairTool?.Dispose();
             _assetIndex.Clear();
             FlushingTrigger?.Invoke(this, EventArgs.Empty);
+
+            // Reset _forceIgnoreDeltaPatch state to false
+            _forceIgnoreDeltaPatch = false;
         }
 
         #region Public Methods
@@ -120,7 +124,7 @@ namespace CollapseLauncher.InstallManager.Base
             ResetToken();
 
             // Initialize the game state and game package list
-            List<GameInstallPackage> gamePackage = new List<GameInstallPackage>();
+            _gameDeltaPatchPreReqList.Clear();
             GameInstallStateEnum gameState = _gameInstallationStatus;
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
@@ -129,7 +133,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // If the requirement returns false, then cancel the delta patch
                 // and back to use the normal update (0)
-                if (!await GetAndDownloadDeltaPatchPreReq(gamePackage, gameState)) return 0;
+                if (!await GetAndDownloadDeltaPatchPreReq(_gameDeltaPatchPreReqList, gameState)) return 0;
 
                 switch (await Dialog_DeltaPatchFileDetected(_parentUI, patchProperty.SourceVer, patchProperty.TargetVer))
                 {
@@ -232,16 +236,27 @@ namespace CollapseLauncher.InstallManager.Base
                     // Remove ingredient folder
                     Directory.Delete(ingredientPath, true);
 
+                    // Delete the necessary files after delta patch operation
                     if (_canDeleteZip)
                     {
+                        // Delete the delta patch file
                         File.Delete(patchProperty.PatchPath);
+
+                        // Delete the pre-req delta patch file if there's one
+                        foreach (GameInstallPackage package in _gameDeltaPatchPreReqList)
+                        {
+                            DeleteSingleOrSegmentedDownloadStream(package);
+                        }
                     }
+
+                    UpdateCompletenessStatus(CompletenessStatus.Completed);
 
                     // Then return
                     return true;
                 }
                 catch (Exception ex)
                 {
+                    UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                     LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
                     throw;
                 }
@@ -312,7 +327,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await StartDeltaPatchPreReqDownload(gamePackage);
 
                 // Start the install routine
-                await StartPackageInstallationInner(gamePackage, true);
+                await StartPackageInstallationInner(gamePackage, true, true);
             }
             catch
             {
@@ -320,7 +335,6 @@ namespace CollapseLauncher.InstallManager.Base
                 throw;
             }
 
-            UpdateCompletenessStatus(CompletenessStatus.Completed);
             return true;
         }
 
@@ -613,7 +627,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false)
+        protected virtual async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             // If the gamePackage arg is null, then assign one from _assetIndex
             gamePackage ??= _assetIndex;
@@ -683,8 +697,8 @@ namespace CollapseLauncher.InstallManager.Base
                         // Make sure that the Stream is getting disposed first
                         stream?.Dispose();
 
-                        // If the _canDeleteZip flag is true, then delete the zip
-                        if (_canDeleteZip)
+                        // If the _canDeleteZip flag is true and not in doNotDeleteZipExplicit mode, then delete the zip
+                        if (_canDeleteZip && !doNotDeleteZipExplicit)
                         {
                             DeleteSingleOrSegmentedDownloadStream(asset);
                         }
@@ -1038,8 +1052,15 @@ namespace CollapseLauncher.InstallManager.Base
 
                         await Task.Run(() =>
                         {
-                            patcher.Initialize(patchPath);
-                            patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
+#if DEBUG
+                            try
+                            {
+#endif
+                                patcher.Initialize(patchPath);
+                                patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
+#if DEBUG
+                            } catch { }
+#endif
                         }, _token.Token);
 
                         File.Move(destPath, sourceBasePath, true);

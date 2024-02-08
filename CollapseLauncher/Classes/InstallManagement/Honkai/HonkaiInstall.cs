@@ -51,7 +51,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             return await base.StartPackageVerification(gamePackage);
         }
 
-        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false)
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
             if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, true)) return;
@@ -86,15 +86,6 @@ namespace CollapseLauncher.InstallManager.Honkai
             // Then reinitialize the version manager
             _gameVersionManager.Reinitialize();
             return true;
-        }
-
-        public override void Flush()
-        {
-            // Flush the base
-            base.Flush();
-
-            // Reset _forceIgnoreDeltaPatch state to false
-            _forceIgnoreDeltaPatch = false;
         }
         #endregion
 
