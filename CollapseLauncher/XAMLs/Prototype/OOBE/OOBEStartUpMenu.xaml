@@ -16,7 +16,7 @@
     mc:Ignorable="d"
     Background="Transparent">
     <Grid>
-        <Image Source="ms-appx:///Assets/Images/StartupBackground2.png" Opacity="0.5" Stretch="UniformToFill" VerticalAlignment="Center"/>
+        <Image Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png" Opacity="0.5" Stretch="UniformToFill" VerticalAlignment="Center"/>
         <Grid x:Name="ContainerGrid"
           VerticalAlignment="Stretch"
           HorizontalAlignment="Stretch"

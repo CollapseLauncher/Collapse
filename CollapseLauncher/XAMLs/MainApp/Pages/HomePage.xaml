@@ -334,7 +334,7 @@
                                   HorizontalAlignment="Center">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
-                                            <imageex:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                            <imageex:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                         </DataTemplate>
                                     </FlipView.ItemTemplate>
                                 </FlipView>
@@ -387,14 +387,14 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
                                                 <Grid>
-                                                    <Image Source="ms-appx:///Assets/Images/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                            Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
                                                            TextAlignment="Right"
                                                            FontSize="14"
-                                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
+                                                           Margin="{x:Bind NoNewsSplashMascotMargin}"
                                                            Opacity="0.8"
                                                            FontWeight="Black"/>
                                                 </Grid>
@@ -431,14 +431,14 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostNoticePanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
                                                 <Grid>
-                                                    <Image Source="ms-appx:///Assets/Images/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                            Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
                                                            TextAlignment="Right"
                                                            FontSize="14"
-                                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
+                                                           Margin="{x:Bind NoNewsSplashMascotMargin}"
                                                            Opacity="0.8"
                                                            FontWeight="Black"/>
                                                 </Grid>
@@ -475,14 +475,14 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostInfoPanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
                                                 <Grid>
-                                                    <Image Source="ms-appx:///Assets/Images/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                            Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
                                                            TextAlignment="Right"
                                                            FontSize="14"
-                                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
+                                                           Margin="{x:Bind NoNewsSplashMascotMargin}"
                                                            Opacity="0.8"
                                                            FontWeight="Black"/>
                                                 </Grid>

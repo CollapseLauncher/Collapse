@@ -17,7 +17,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/Images/StartupBackground.png" Stretch="UniformToFill" VerticalAlignment="Center" Margin="-16,-32,-16,-16"/>
+        <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/Images/PageBackground/StartupBackground.png" Stretch="UniformToFill" VerticalAlignment="Center" Margin="-16,-32,-16,-16"/>
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
             <StackPanel.Transitions>
                 <EntranceThemeTransition/>

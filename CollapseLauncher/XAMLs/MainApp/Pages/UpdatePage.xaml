@@ -15,7 +15,7 @@
             <ColumnDefinition Width="280"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image Source="ms-appx:///Assets/Images/AiHappy.png"
+        <Image Source="ms-appx:///Assets/Images/GameMascot/AiHappy-MonoTransparent.png"
                VerticalAlignment="Bottom" Margin="-32"
                HorizontalAlignment="Left" Opacity="0.30"
                Width="480" Grid.ColumnSpan="2"/>

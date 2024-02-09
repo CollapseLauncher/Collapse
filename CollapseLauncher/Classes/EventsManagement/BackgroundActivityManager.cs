@@ -100,7 +100,7 @@ namespace CollapseLauncher
                     GameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
                     GameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
                     GameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
-                    _ => "ms-appx:///Assets/Images/PaimonWhat.png"
+                    _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
                 })),
                 Width = 64,
                 Height = 64

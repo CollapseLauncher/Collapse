@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Preset;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
@@ -43,6 +44,38 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("ShowSocialMediaPanel", value);
                 ToggleSocmedPanelPanel(value);
+            }
+        }
+
+        public string NoNewsSplashMascot
+        {
+            get
+            {
+                GameType gameType = CurrentGameProperty._GamePreset.GameType;
+                return gameType switch
+                {
+                    GameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
+                    GameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
+                    GameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
+                    _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+                };
+            }
+        }
+
+        public Thickness NoNewsSplashMascotMargin
+        {
+            get
+            {
+                GameType gameType = CurrentGameProperty._GamePreset.GameType;
+                Thickness currentMargin = WindowSize.WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin;
+                currentMargin.Right += gameType switch
+                {
+                    GameType.Honkai => 16,
+                    GameType.StarRail => 0,
+                    GameType.Zenless => 0,
+                    _ => 0
+                };
+                return currentMargin;
             }
         }
 

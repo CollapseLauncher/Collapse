@@ -21,7 +21,7 @@
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}"/>
             </TextBlock>
         </Grid>
-        <Image Source="ms-appx:///Assets/Images/PaimonSleep.png" Width="467" Height="496"
+        <Image Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" Width="467" Height="496"
                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,32,32" PointerPressed="PaimonClicked"/>
     </Grid>
 </Page>
