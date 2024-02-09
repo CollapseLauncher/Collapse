@@ -334,7 +334,7 @@
                                   HorizontalAlignment="Center">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
-                                            <imageex:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                            <imageex:ImageEx IsCacheEnabled="True" Loaded="SetHandCursor" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                         </DataTemplate>
                                     </FlipView.ItemTemplate>
                                 </FlipView>
@@ -385,19 +385,19 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </ScrollViewer>
-                                            <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
-                                                <Grid>
-                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
-                                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
+                                                <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
                                                            TextAlignment="Right"
+                                                           Margin="0,26,8,0"
                                                            FontSize="14"
-                                                           Margin="{x:Bind NoNewsSplashMascotMargin}"
                                                            Opacity="0.8"
                                                            FontWeight="Black"/>
-                                                </Grid>
+                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </Grid>
                                     </PivotItem>
@@ -429,19 +429,19 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </ScrollViewer>
-                                            <StackPanel Visibility="{x:Bind IsPostNoticePanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
-                                                <Grid>
-                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
-                                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
+                                                <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
                                                            TextAlignment="Right"
+                                                           Margin="0,26,8,0"
                                                            FontSize="14"
-                                                           Margin="{x:Bind NoNewsSplashMascotMargin}"
                                                            Opacity="0.8"
                                                            FontWeight="Black"/>
-                                                </Grid>
+                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </Grid>
                                     </PivotItem>
@@ -473,19 +473,19 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </ScrollViewer>
-                                            <StackPanel Visibility="{x:Bind IsPostInfoPanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
-                                                <Grid>
-                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
-                                                           Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
+                                                <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
                                                            TextAlignment="Right"
+                                                           Margin="0,26,8,0"
                                                            FontSize="14"
-                                                           Margin="{x:Bind NoNewsSplashMascotMargin}"
                                                            Opacity="0.8"
                                                            FontWeight="Black"/>
-                                                </Grid>
+                                                    <Image Source="{x:Bind NoNewsSplashMascot}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </Grid>
                                     </PivotItem>

@@ -144,7 +144,7 @@ namespace CollapseLauncher.Pages
                 PlaytimeBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
-                    || MenuPanels.imageCarouselPanel != null)
+                    || MenuPanels.articlePanel != null)
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;

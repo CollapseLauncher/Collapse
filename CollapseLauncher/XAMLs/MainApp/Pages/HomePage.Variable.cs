@@ -62,23 +62,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public Thickness NoNewsSplashMascotMargin
-        {
-            get
-            {
-                GameType gameType = CurrentGameProperty._GamePreset.GameType;
-                Thickness currentMargin = WindowSize.WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin;
-                currentMargin.Right += gameType switch
-                {
-                    GameType.Honkai => 16,
-                    GameType.StarRail => 0,
-                    GameType.Zenless => 0,
-                    _ => 0
-                };
-                return currentMargin;
-            }
-        }
-
         public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);
         public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
     }
