@@ -46,7 +46,33 @@
                     </Image.ScaleTransition>
                 </Image>
             </StackPanel>
-            <Grid Grid.Row="1" Margin="0,0,64,0">
+            <Grid Grid.ColumnSpan="2"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Stretch">
+                <Button x:Name="PrevPageButton"
+                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                        VerticalAlignment="Top"
+                        Opacity="0"
+                        Visibility="Collapsed"
+                        Click="PrevPageButton_Click">
+                    <Button.OpacityTransition>
+                        <ScalarTransition/>
+                    </Button.OpacityTransition>
+                    <Button.Content>
+                        <StackPanel>
+                            <AnimatedIcon MinHeight="{ThemeResource ComboBoxMinHeight}" HorizontalAlignment="Center" Width="24">
+                                <animatedvisuals:AnimatedBackVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals" />
+                                <AnimatedIcon.FallbackIconSource>
+                                    <FontIconSource Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="12" Glyph="&#xE70D;" />
+                                </AnimatedIcon.FallbackIconSource>
+                            </AnimatedIcon>
+                            <TextBlock Text="Go Back"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </Grid>
+            <Grid Grid.Row="1" x:Name="TitleTextGrid">
                 <StackPanel x:Name="TitleTextContainer" Orientation="Vertical" Margin="0,16,0,0" VerticalAlignment="Top">
                     <TextBlock FontWeight="Light" Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" TextWrapping="Wrap" FontSize="48"/>
                     <TextBlock Margin="0,0,0,0" Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" TextWrapping="Wrap" FontWeight="Bold" FontSize="48"/>
@@ -152,11 +178,16 @@
                     </controls:SettingsExpander>
                 </StackPanel>
             </ScrollViewer>
-            <Button Style="{ThemeResource TransparentDefaultButtonStyle}"
+            <Button x:Name="NextPageButton"
+                    Style="{ThemeResource TransparentDefaultButtonStyle}"
                     Grid.Row="2"
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom" Margin="0,0,0,-32">
+                    VerticalAlignment="Bottom" Margin="0,0,0,-32"
+                    Click="NextPageButton_Click">
+                <Button.OpacityTransition>
+                    <ScalarTransition/>
+                </Button.OpacityTransition>
                 <Button.Content>
                     <StackPanel>
                         <TextBlock Text="Click Here to Continue" FontSize="16" FontWeight="SemiBold" FontStretch="UltraExpanded"/>

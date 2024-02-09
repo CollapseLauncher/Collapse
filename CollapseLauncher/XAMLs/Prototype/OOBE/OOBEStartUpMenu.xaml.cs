@@ -1,17 +1,20 @@
 ﻿using CollapseLauncher.FileDialogCOM;
+using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
+
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
@@ -25,6 +28,8 @@ namespace CollapseLauncher.Pages.OOBE
         public OOBEStartUpMenu()
         {
             this.InitializeComponent();
+            SaveInitialLogoAndTitleTextPos();
+
             MainWindow.ToggleAcrylic(true);
             ChangeFontIconSettingsCard(SettingsCardContainer.Children);
             MakeFlyoutBaseAcrylic(SelectLang);
@@ -45,6 +50,20 @@ namespace CollapseLauncher.Pages.OOBE
         #endregion
 
         #region UIStuffs
+        private Thickness? InitialMainContainerMargin = null;
+        private Vector3? LastLogoInitialScale = null;
+        private Vector3? LastTitleTextInitialScale = null;
+        private double InitialTitleTextSize = 0;
+        private double InitialFirstMainGridRowSize = 0;
+        private double SmallWindowFactor = 0.67d;
+        private int LastTitleTextInitialColumnSpan = 0;
+
+        private bool IsSmallSize = false;
+        private bool IsLastLogoShrinkMode = false;
+
+        private Compositor currentCompositor = CompositionTarget.GetCompositorForCurrentThread();
+        private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+
         private void ChangeFontIconSettingsCard(UIElementCollection uiCollection)
         {
             FontFamily iconFont = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
@@ -148,10 +167,6 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private double InitialTitleTextSize = 0;
-        private double InitialFirstMainGridRowSize = 0;
-        private double SmallWindowFactor = 0.67d;
-
         private int SelectedWindowSizeProfile
         {
             get
@@ -163,8 +178,10 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 if (value < 0) return;
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
+                ContainerGrid.Margin = value == 0 ? InitialMainContainerMargin.Value : new Thickness(InitialMainContainerMargin.Value.Top * SmallWindowFactor);
                 ContainerGrid.ColumnDefinitions[0].MaxWidth = InitialFirstMainGridRowSize * (value == 0 ? 1d : (SmallWindowFactor + 0.04d));
                 SetTitleTextContainerSize((int)(InitialTitleTextSize * (value == 0 ? 1d : SmallWindowFactor)));
+                ToggleLogoMode(IsLastLogoShrinkMode, IsSmallSize = value != 0);
             }
         }
 
@@ -193,7 +210,109 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+        private async void CustomBackgroundCheckedOpen(object sender, RoutedEventArgs e)
+        {
+            CheckBox senderSource = sender as CheckBox;
+            string selectedPath = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            if (string.IsNullOrEmpty(selectedPath))
+            {
+                senderSource.IsChecked = false;
+                return;
+            }
+
+            Stream a = await ImageLoaderHelper.LoadImage(selectedPath, true, true);
+            if (a != null)
+                a.Dispose();
+        }
+
+        private void SaveInitialLogoAndTitleTextPos()
+        {
+            InitialMainContainerMargin = ContainerGrid.Margin;
+            LastLogoInitialScale = CollapseLogoContainer.Scale;
+
+            LastTitleTextInitialScale = TitleTextGrid.Scale;
+            LastTitleTextInitialColumnSpan = Grid.GetColumnSpan(TitleTextGrid);
+        }
+
+        private async void ToggleLogoMode(bool shrink = false, bool isInSmallMode = false)
+        {
+            Vector3 titleTextAnimScaleVect = new Vector3(isInSmallMode ? (float)SmallWindowFactor + 0.09f : (float)SmallWindowFactor - 0.075f);
+            Vector3 logoAnimScaleVect = new Vector3(isInSmallMode ? (float)SmallWindowFactor - 0.2f : (float)SmallWindowFactor - 0.1f);
+
+            TimeSpan animDuration = TimeSpan.FromMilliseconds(250);
+            Vector3KeyFrameAnimation titleTextAnimScale,
+                                     titleTextAnimOffset,
+                                     logoAnimScale;
+
+            int titleTextXOffset = isInSmallMode ? 70 : 88;
+
+            if (IsLastLogoShrinkMode == shrink) return;
+            if ((IsLastLogoShrinkMode = shrink))
+            {
+                titleTextAnimScale = currentCompositor.CreateVector3KeyFrameAnimation(
+                    "Scale",
+                    titleTextAnimScaleVect,
+                    LastTitleTextInitialScale.Value);
+                titleTextAnimScale.Duration = animDuration;
+                titleTextAnimOffset = currentCompositor.CreateVector3KeyFrameAnimation(
+                    "Translation",
+                    new Vector3(titleTextXOffset, -128, 0),
+                    new Vector3(0, 0, 0));
+                titleTextAnimOffset.Duration = animDuration;
+
+                logoAnimScale = currentCompositor.CreateVector3KeyFrameAnimation(
+                    "Scale",
+                    logoAnimScaleVect,
+                    LastLogoInitialScale.Value);
+                logoAnimScale.Duration = animDuration;
+
+                Grid.SetColumnSpan(TitleTextGrid, 2);
+            }
+            else
+            {
+                titleTextAnimScale = currentCompositor.CreateVector3KeyFrameAnimation(
+                    "Scale",
+                    LastTitleTextInitialScale.Value,
+                    titleTextAnimScaleVect);
+                titleTextAnimScale.Duration = animDuration;
+                titleTextAnimOffset = currentCompositor.CreateVector3KeyFrameAnimation(
+                    "Translation",
+                    new Vector3(0, 0, 0),
+                    new Vector3(titleTextXOffset, -128, 0));
+                titleTextAnimOffset.Duration = animDuration;
+
+                logoAnimScale = currentCompositor.CreateVector3KeyFrameAnimation(
+                    "Scale",
+                    LastLogoInitialScale.Value,
+                    logoAnimScaleVect);
+                logoAnimScale.Duration = animDuration;
+
+                Grid.SetColumnSpan(TitleTextGrid, LastTitleTextInitialColumnSpan);
+            }
+
+            TitleTextGrid.StartAnimation(titleTextAnimScale);
+            TitleTextGrid.StartAnimation(titleTextAnimOffset);
+            CollapseLogoContainer.StartAnimation(logoAnimScale);
+
+            if (shrink)
+            {
+                PrevPageButton.Visibility = Visibility.Visible;
+                PrevPageButton.Opacity = 1;
+
+                NextPageButton.Opacity = 0;
+                await Task.Delay(200);
+                NextPageButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                NextPageButton.Visibility = Visibility.Visible;
+                NextPageButton.Opacity = 1;
+
+                PrevPageButton.Opacity = 0;
+                await Task.Delay(200);
+                PrevPageButton.Visibility = Visibility.Collapsed;
+            }
+        }
         #endregion
 
         #region LanguageSelectionStuffs
@@ -266,19 +385,14 @@ namespace CollapseLauncher.Pages.OOBE
         private List<string> CDNNameList = CDNList.Select(x => x.Name).ToList();
         #endregion
 
-        private async void CustomBackgroundCheckedOpen(object sender, RoutedEventArgs e)
+        private void NextPageButton_Click(object sender, RoutedEventArgs e)
         {
-            CheckBox senderSource = sender as CheckBox;
-            string selectedPath = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
-            if (string.IsNullOrEmpty(selectedPath))
-            {
-                senderSource.IsChecked = false;
-                return;
-            }
+            ToggleLogoMode(true, IsSmallSize);
+        }
 
-            Stream a = await ImageLoaderHelper.LoadImage(selectedPath, true, true);
-            if (a != null)
-                a.Dispose();
+        private void PrevPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleLogoMode(false, IsSmallSize);
         }
     }
 }
