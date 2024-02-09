@@ -309,7 +309,7 @@ namespace CollapseLauncher
             nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
             nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
             nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
-            window.EnableNonClientArea();
+            MainWindow.EnableNonClientArea();
 
             switch (e.Template)
             {
