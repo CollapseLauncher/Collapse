@@ -114,6 +114,10 @@ namespace CollapseLauncher
                 await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream(), BitmapFileFormat.Png, false);
             }
 
+            imageCropper = null;
+            GC.WaitForPendingFinalizers();
+            GC.WaitForFullGCComplete();
+
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
             return await GenerateCachedStream(cachedFileInfo, ToWidth, ToHeight, true);
         }
@@ -147,6 +151,9 @@ namespace CollapseLauncher
 
             StorageFile file = await StorageFile.GetFileFromPathAsync(filePath);
             await imageCropper.LoadImageFromFile(file);
+
+            GC.WaitForPendingFinalizers();
+            GC.WaitForFullGCComplete();
 
             Storyboard storyboardAnim = new Storyboard();
             DoubleAnimation loadingMsgPanelAnim = loadingMsgPanel.CreateDoubleAnimation("Opacity", 0, 1, null, TimeSpan.FromMilliseconds(500), EasingType.Cubic.ToEasingFunction());
