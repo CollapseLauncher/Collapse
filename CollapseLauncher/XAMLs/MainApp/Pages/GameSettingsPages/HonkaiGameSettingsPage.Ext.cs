@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class GameSettingsPage : Page, INotifyPropertyChanged
+    public partial class HonkaiGameSettingsPage : Page, INotifyPropertyChanged
     {
         #region Fields
         private int prevGraphSelect;
