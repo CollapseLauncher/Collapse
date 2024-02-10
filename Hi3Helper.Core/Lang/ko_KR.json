@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "이런, 인터넷이 끊긴 것 같아요~ 아니면 다른 이유인가요?",
     "UnhandledTitle3": "게임 충돌",
     "UnhandledSubtitle3": "게임이 아래 오류로 인해 충돌했어요:",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "클립보드에 모두 복사",
     "CopyClipboardBtn2": "클립보드에 복사되었어요!",
     "GoBackPageBtn1": "이전 페이지로 돌아가기"
@@ -94,7 +96,7 @@
     "NotifNeverAsk": "다시 표시하지 않기",
     "NotifNoNewNotifs": "새로운 알림 없음",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Utilities"
+    "NavigationUtilities": "Utilities"
   },
 
   "_HomePage": {
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "게임 복구",
     "GameSettings_Panel2UninstallGame": "게임 삭제",
     "GameSettings_Panel2ConvertVersion": "게임 버전 변경",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "강제 종료",
     "GameSettings_Panel3": "사용자 지정 시작 인수",
     "GameSettings_Panel4": "기타",
     "GameSettings_Panel4ShowEventsPanel": "이벤트 패널 표시",
     "GameSettings_Panel4ShowSocialMediaPanel": "소셜 미디어 패널 표시",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "플레이 시간 편집",
     "GamePlaytime_Idle_Panel1Hours": "시간",
     "GamePlaytime_Idle_Panel1Minutes": "분",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "커뮤니티 도구",
     "CommunityToolsBtn_OfficialText": "공식 도구",
     "CommunityToolsBtn_CommunityText": "커뮤니티 도구",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "테두리 없는 창모드 사용",
     "Graphics_Fullscreen": "전체 화면",
     "Graphics_ExclusiveFullscreen": "독점 전체 화면 사용",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
     "Graphics_ResCustomW": "너비",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord 활동 상태",
     "DiscordRPC_Toggle": "Discord 활동 상태 표시",
     "DiscordRPC_GameStatusToggle": "디스코드 활동 상태에 현재 게임 표시",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "업데이트 확인",
     "Update_CurVer": "현재 버전:",
@@ -408,6 +418,7 @@
 
     "EnableAcrylicEffect": "아크릴 흐림 효과 사용",
     "EnableDownloadChunksMerging": "다운로드한 패키지 청크 병합",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "게임이 실행됐을 때 Collapse 프로세스 리소스 사용량 감소",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "메인 페이지의 이미지 슬라이더 비활성화 및 Collapse의 우선순위를 보통 이하로 낮추기",
@@ -444,6 +455,7 @@
     "Close": "닫기",
     "UseCurrentDir": "현재 디렉터리 사용",
     "UseDefaultDir": "기본 디렉터리 사용",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "디렉터리 지정",
     "Okay": "알겠어요",
     "OkaySad": "알겠어요 ;-;)",
@@ -461,8 +473,10 @@
     "YesRelocate": "네, 다시 설정할게요",
     "YesMigrateIt": "네, 이동할게요",
     "YesConvertIt": "네, 변환할게요",
+    "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "네, 저는 강력한 컴퓨터를 가지고 있어요!",
     "YesChangeLocation": "네, 위치를 변경할게요",
+    "YesContinue": "Yes, Continue",
 
     "No": "아니요",
     "NoStartFromBeginning": "아니요, 처음부터 시작할게요",
@@ -471,6 +485,7 @@
     "NoIgnoreIt": "아니요, 무시할게요",
     "NoOtherLocation": "아니요, 계속 설치할게요",
     "NotSelected": "선택되지 않음",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "영어 (미국)",
     "LangNameJP": "일본어",
@@ -525,7 +540,12 @@
     "Taskbar_HideApp": "작업 표시줄에 Collapse 창 숨기기",
     "Taskbar_ShowConsole": "Collapse 콘솔 창 표시",
     "Taskbar_HideConsole": "작업 표시줄에 Collapse 콘솔 창 숨기기",
-    "Taskbar_ExitApp": "Collapse Launcher 종료"
+    "Taskbar_ExitApp": "Collapse Launcher 종료",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +585,10 @@
     "RepairCompletedSubtitleNoBroken": "손상된 파일을 찾을 수 없어요.",
     "ExtremeGraphicsSettingsWarnTitle": "매우 높은 설정 프리셋이 선택되었어요!",
     "ExtremeGraphicsSettingsWarnSubtitle": "설정 프리셋을 매우 높음으로 설정할려고 해요!\r\n매우 높음 설정 프리셋은 기본적으로 MSAA가 활성화되면 렌더 스케일이 2배가 되며 전혀 최적화되어있지 않아요! (NASA의 슈퍼컴퓨터를 가지고 있지 않다면 말이죠).\r\n\r\n이 설정을 사용하시겠어요?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "기존 설치가 감지되었어요!",
     "ExistingInstallSubtitle": "게임이 다음 위치에 이미 설치되어 있어요:\r\n\r\n{0}\r\n\r\n게임을 Collapse Launcher로 이동하는 것을 추천드려요.\r\n게임을 이동하더라도 공식 런처를 사용하여 게임을 시작할 수 있어요.\r\n\r\n계속하시겠어요?",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcher의 기존 설치가 감지되었어요!",
@@ -579,6 +603,10 @@
     "SteamConvertFailedSubtitle": "변환 작업이 실패했어요! :(\n변환 작업을 다시 시작해 보세요.",
     "InstallDataCorruptTitle": "게임 설치 손상됨",
     "InstallDataCorruptSubtitle": "다운로드된 파일이 손상되었어요.\r\n\r\n서버 해시: {0}\r\n다운로드된 해시: {1}\r\n\r\n파일을 다시 다운로드하시겠어요?",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "다운로드를 다시 시작하시겠어요?",
     "InstallDataDownloadResumeSubtitle": "이전에 게임의 {0}/{1}을(를) 다운로드했어요.\r\n\r\n다운로드를 다시 시작하시겠어요?",
     "InsufficientDiskTitle": "디스크 공간 부족",
@@ -631,7 +659,56 @@
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
     "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu.",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -750,7 +827,52 @@
 
     "UpdateCountdownMessage1": "런처가 {0}초 후에 업데이트돼요...",
     "UpdateCountdownMessage2": "(카운트다운을 취소하려면",
-    "UpdateCountdownMessage3": "를 클릭해 주세요.)"
+    "UpdateCountdownMessage3": "를 클릭해 주세요.)",
+
+    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Select your CDN for update",
+    "ApplyUpdateCDNSelectorSubtitle": "Select the CDN options and click \"{0}\" to start the update!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
+    "ApplyUpdateUpdateNowBtn": "Update Now!",
+
+    "ApplyUpdateUpdateVersionTitle": "Update:",
+    "ApplyUpdateUpdateChannelTitle": "Channel:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
+    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
+
+    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/s",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s left",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "We detected that you have a legacy Collapse v{0} installed on your PC. ",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "The updater needs to clean-up all the old files inside its directory.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Please make sure you don't have any important files inside of the Collapse directory or it will be COMPLETELY WIPED OUT!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
+    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
   },
 
   "_AppNotification": {
@@ -782,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "독점 전체 화면 사용",
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "높이",
 
@@ -984,5 +1107,22 @@
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
     "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Southeast Asia",
+    "Global": "Global",
+    "Mainland China": "Mainland China",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Japan",
+    "Bilibili": "Bilibili"
   }
 }

@@ -74,6 +74,8 @@
     "UnhandledSubtitle2": "哎呀，您的網路連線似乎斷開了～也有可能是其他原因？",
     "UnhandledTitle3": "遊戲已崩潰",
     "UnhandledSubtitle3": "遊戲已崩潰，錯誤訊息如下：",
+    "UnhandledTitle4": "Warning",
+    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "CopyClipboardBtn1": "複製所有內容到剪貼簿",
     "CopyClipboardBtn2": "已複製到剪貼簿！",
     "GoBackPageBtn1": "返回上一頁"
@@ -94,7 +96,7 @@
     "NotifNeverAsk": "不再顯示",
     "NotifNoNewNotifs": "沒有新的通知",
     "NavigationMenu": "目錄",
-    "NavigationUtilities":  "工具箱"
+    "NavigationUtilities": "工具箱"
   },
 
   "_HomePage": {
@@ -130,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "遊戲修復",
     "GameSettings_Panel2UninstallGame": "解除安裝遊戲",
     "GameSettings_Panel2ConvertVersion": "轉換遊戲版本",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "強制關閉遊戲",
     "GameSettings_Panel3": "自定義啟動參數",
     "GameSettings_Panel4": "雜項",
     "GameSettings_Panel4ShowEventsPanel": "顯示活動面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "顯示社交媒體面板",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "編輯遊玩時數",
     "GamePlaytime_Idle_Panel1Hours": "小時",
     "GamePlaytime_Idle_Panel1Minutes": "分鐘",
@@ -151,7 +156,9 @@
     "CommunityToolsBtn": "社群工具",
     "CommunityToolsBtn_OfficialText": "官方工具",
     "CommunityToolsBtn_CommunityText": "社群工具",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "選擇執行檔: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "選擇執行檔: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -237,6 +244,8 @@
     "Graphics_Borderless": "使用無邊框視窗模式",
     "Graphics_Fullscreen": "全螢幕",
     "Graphics_ExclusiveFullscreen": "使用獨占全螢幕",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "選擇",
     "Graphics_ResCustom": "使用自定義解析度",
     "Graphics_ResCustomW": "寬",
@@ -365,6 +374,7 @@
     "DiscordRPC": "Discord 遊戲狀態",
     "DiscordRPC_Toggle": "顯示 Discord 狀態",
     "DiscordRPC_GameStatusToggle": "在 Discord 遊戲狀態上顯示當前的遊戲名稱",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "檢查更新",
     "Update_CurVer": "目前版本：",
@@ -408,6 +418,7 @@
 
     "EnableAcrylicEffect": "使用壓克力模糊效果",
     "EnableDownloadChunksMerging": "合併已下載的軟體包區塊",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
@@ -444,6 +455,7 @@
     "Close": "關閉",
     "UseCurrentDir": "使用當前路徑",
     "UseDefaultDir": "使用預設路徑",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "定位目錄",
     "Okay": "好",
     "OkaySad": "好 ;-;)",
@@ -461,8 +473,10 @@
     "YesRelocate": "是，繼續",
     "YesMigrateIt": "是，進行遷移",
     "YesConvertIt": "是，進行轉換",
+    "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "是，我有台強大的電腦！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "是，更改位置",
+    "YesContinue": "Yes, Continue",
 
     "No": "不",
     "NoStartFromBeginning": "不，從頭開始",
@@ -471,6 +485,7 @@
     "NoIgnoreIt": "忽略它",
     "NoOtherLocation": "繼續安裝",
     "NotSelected": "尚未選擇",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "英文（美國）",
     "LangNameJP": "日文",
@@ -525,7 +540,12 @@
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",
     "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ExitApp": "Exit Collapse Launcher",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +585,10 @@
     "RepairCompletedSubtitleNoBroken": "未找到已損壞的文件。",
     "ExtremeGraphicsSettingsWarnTitle": "已選擇「非常高」的圖像預設方案！",
     "ExtremeGraphicsSettingsWarnSubtitle": "您正打算將畫面預設方案設定到「非常高」！\n「非常高」畫面預設方案實質上是兩倍的渲染比例並開啟 MSAA，並且優化非常差！\n\n您是否確定要使用這個預設方案？",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "檢測到現有安裝！",
     "ExistingInstallSubtitle": "此遊戲已經在以下目錄安裝：\n\n{0}\n\n建議將遊戲遷移至 Collapse 啟動器以獲得更好的支援和整合。\n然而，你仍然可以使用官方的啟動器來開始遊戲。\n\n是否繼續？",
     "ExistingInstallBHI3LTitle": "偵測到 BetterHi3 啟動器上已有安裝！",
@@ -579,6 +603,10 @@
     "SteamConvertFailedSubtitle": "轉換程序失敗了！ :(\n請嘗試重新開始轉換程序。",
     "InstallDataCorruptTitle": "遊戲檔案已損毀",
     "InstallDataCorruptSubtitle": "其中一個已下載的檔案發生損毀。\n\n伺服器雜湊值：{0}\n下載檔案的雜湊值：{1}\n\n是否要重新下載該檔案？",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "繼續下載？",
     "InstallDataDownloadResumeSubtitle": "您先前已下載遊戲的{0}/{1}。\n\n是否要繼續下載？",
     "InsufficientDiskTitle": "硬碟空間不足",
@@ -631,7 +659,56 @@
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
     "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu.",
+
+    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
+    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+
+    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
+    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
+    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
+    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
+    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
+    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+
+    "GenericWarningExceptionTitle": "Warning",
+    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+
+    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
+    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
+    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "ShortcutCreationSuccessTitle": "Success!",
+    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
+    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationSuccessSubtitle3": "Notes:",
+    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+
+    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
+    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
+    "SteamShortcutCreationSuccessTitle": "Success!",
+    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
+    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
+    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
+    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+
+    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -750,7 +827,52 @@
 
     "UpdateCountdownMessage1": "您的啟動器將在 {0} 秒後更新…",
     "UpdateCountdownMessage2": "（點擊",
-    "UpdateCountdownMessage3": "以終止倒計時）"
+    "UpdateCountdownMessage3": "以終止倒計時）",
+
+    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Select your CDN for update",
+    "ApplyUpdateCDNSelectorSubtitle": "Select the CDN options and click \"{0}\" to start the update!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
+    "ApplyUpdateUpdateNowBtn": "Update Now!",
+
+    "ApplyUpdateUpdateVersionTitle": "Update:",
+    "ApplyUpdateUpdateChannelTitle": "Channel:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
+    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
+
+    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/s",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s left",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "We detected that you have a legacy Collapse v{0} installed on your PC. ",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "The updater needs to clean-up all the old files inside its directory.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Please make sure you don't have any important files inside of the Collapse directory or it will be COMPLETELY WIPED OUT!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
+    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
   },
 
   "_AppNotification": {
@@ -782,6 +904,7 @@
     "Graphics_ExclusiveFullscreen": "使用獨占全螢幕",
     "Graphics_ResSelectPlaceholder": "選擇",
     "Graphics_ResCustom": "使用自定義解析度",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "寬",
     "Graphics_ResCustomH": "高",
 
@@ -984,5 +1107,22 @@
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
     "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Southeast Asia",
+    "Global": "Global",
+    "Mainland China": "Mainland China",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Japan",
+    "Bilibili": "Bilibili"
   }
 }

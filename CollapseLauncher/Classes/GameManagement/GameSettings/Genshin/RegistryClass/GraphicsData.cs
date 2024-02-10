@@ -42,6 +42,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new GenshinKeyValuePair(15, (int)globalPerf.SubsurfaceScattering + 1),
                 new GenshinKeyValuePair(17, (int)globalPerf.AnisotropicFiltering + 1),
                 new GenshinKeyValuePair(19, (int)globalPerf.GlobalIllumination + 1),
+                new GenshinKeyValuePair(21, (int)globalPerf.DynamicCharacterResolution + 1),
             };
 
             string data = this.Serialize(GenshinSettingsJSONContext.Default, false);

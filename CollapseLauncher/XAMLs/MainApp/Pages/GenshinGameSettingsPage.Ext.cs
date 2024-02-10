@@ -11,18 +11,31 @@ namespace CollapseLauncher.Pages
         #region GameResolution
         public bool IsFullscreenEnabled
         {
-            get => Settings.SettingsScreen.isfullScreen;
+            get
+            {
+               bool value = Settings.SettingsScreen.isfullScreen;
+               if (value)
+               {
+                   GameResolutionBorderless.IsEnabled = false;
+                   GameResolutionBorderless.IsChecked = false;
+               }
+               else
+               {
+                   GameResolutionBorderless.IsEnabled = true;
+               }
+               return value;
+            }
             set
             {
                 Settings.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
-                    GameResolutionBorderless.IsChecked = false;
+                    GameResolutionFullscreenExclusive.IsChecked = false;
+                    GameResolutionBorderless.IsChecked          = false;
                     return;
                 }
                 GameResolutionFullscreenExclusive.IsEnabled = false;
-                GameResolutionFullscreenExclusive.IsChecked = false;
                 GameResolutionBorderless.IsEnabled = true;
             }
         }
@@ -37,8 +50,13 @@ namespace CollapseLauncher.Pages
                 {
                     Settings.SettingsCollapseScreen.UseBorderlessScreen = true;
                     Settings.SettingVisibleBackground.isBorderless      = true;
+
+                    GameResolutionFullscreen.IsChecked = false;
+
                     return true;
                 }
+                GameResolutionFullscreen.IsEnabled = true;
+
                 return false;
             } 
             set
@@ -47,7 +65,6 @@ namespace CollapseLauncher.Pages
                 Settings.SettingVisibleBackground.isBorderless      = value;
                 if (value)
                 {
-                    GameResolutionFullscreen.IsEnabled = false;
                     GameResolutionFullscreen.IsChecked = false;
                 }
                 GameResolutionFullscreen.IsEnabled = true;
@@ -321,6 +338,12 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.GlobalIllumination;
             set => Settings.SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)(value);
+        }
+
+        public bool DynamicCharacterResolution
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution);
+            set => Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution = (DynamicCharacterResolutionOption)(Convert.ToInt32(value));
         }
         #endregion
 

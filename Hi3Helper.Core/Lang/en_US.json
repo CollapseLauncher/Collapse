@@ -96,7 +96,7 @@
     "NotifNeverAsk": "Never show again",
     "NotifNoNewNotifs": "No new notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities":  "Utilities"
+    "NavigationUtilities": "Utilities"
   },
 
   "_HomePage": {
@@ -132,11 +132,14 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "Force Close Game",
     "GameSettings_Panel3": "Custom Start-up Args",
     "GameSettings_Panel4": "Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
     "GameSettings_Panel4ShowSocialMediaPanel": "Show Social Media Panel",
+    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
     "GamePlaytime_Panel1": "Edit Playtime",
     "GamePlaytime_Idle_Panel1Hours": "Hours",
     "GamePlaytime_Idle_Panel1Minutes": "Minutes",
@@ -153,7 +156,9 @@
     "CommunityToolsBtn": "Community Tools",
     "CommunityToolsBtn_OfficialText": "Official Tools",
     "CommunityToolsBtn_CommunityText": "Community Tools",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}",
+
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
   },
 
   "_GameRepairPage": {
@@ -239,6 +244,8 @@
     "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_ResizableWindow": "Use Resizable Window",
+    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
@@ -367,6 +374,7 @@
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Show Discord Presence",
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
+    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "Update": "Check for Updates",
     "Update_CurVer": "Current Version:",
@@ -410,6 +418,7 @@
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
@@ -446,6 +455,7 @@
     "Close": "Close",
     "UseCurrentDir": "Use current directory",
     "UseDefaultDir": "Use default directory",
+    "MoveToDifferentDir": "Move to different directory",
     "LocateDir": "Locate directory",
     "Okay": "Okay",
     "OkaySad": "Okay ;-;)",
@@ -463,8 +473,10 @@
     "YesRelocate": "Yes, Resume",
     "YesMigrateIt": "Yes, Migrate it",
     "YesConvertIt": "Yes, Convert it",
+    "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "Yes, I have a beefy PC! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Yes, Change location",
+    "YesContinue": "Yes, Continue",
 
     "No": "No",
     "NoStartFromBeginning": "No, Start Over",
@@ -473,6 +485,7 @@
     "NoIgnoreIt": "Ignore it",
     "NoOtherLocation": "Keep installing it",
     "NotSelected": "Not Selected",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "English (US)",
     "LangNameJP": "Japanese",
@@ -527,7 +540,12 @@
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",
     "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ExitApp": "Exit Collapse Launcher",
+
+    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameSteam": "Steam",
+    "LauncherNameUnknown": "(Launcher Name is Unknown)"
   },
 
   "_BackgroundNotification": {
@@ -547,6 +565,14 @@
     "DeltaPatchDetectedSubtitle": "Delta patch will be used to update your game from {0} to {1}.\r\nRemember that you may still need to download some files in-game.\r\n\r\nDo you wish to proceed?",
     "DeltaPatchPrevFailedTitle": "Previous Delta Patch has been incorrectly applied or failed to finish applying!",
     "DeltaPatchPrevFailedSubtitle": "The previous Delta Patch failed to apply. Do you want to restore your game to prevent a redownload?",
+    "DeltaPatchPreReqTitle": "Additional File Download is Required for Delta Patch!",
+    "DeltaPatchPreReqSubtitle1": "Additional file download is required for this game before applying delta patch. Around ",
+    "DeltaPatchPreReqSubtitle2": " is required to be downloaded and some of these files might contains audio package deltas.",
+    "DeltaPatchPreReqSubtitle3": "Do you want to continue?",
+    "DeltaPatchPreReqSubtitle4": "(Click \"",
+    "DeltaPatchPreReqSubtitle5": "\" to continue or \"",
+    "DeltaPatchPreReqSubtitle6": "\" to use normal update or \"",
+    "DeltaPatchPreReqSubtitle7": "\" to cancel the update)",
     "GameConversionPrevFailedTitle": "Previous Game Conversion either failed or was not completed!",
     "GameConversionPrevFailedSubtitle": "The previous Game Conversion failed. Do you want to restore your game to prevent from redownloading?",
     "PreloadVerifiedTitle": "Pre-load Package Verified!",
@@ -567,6 +593,10 @@
     "RepairCompletedSubtitleNoBroken": "No broken files found.",
     "ExtremeGraphicsSettingsWarnTitle": "Very High Setting Preset Selected!",
     "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting preset to Very High!\r\nVery High setting preset is essentially a 2x Render Scale with MSAA Enabled and is VERY UNOPTIMIZED!\r\n\r\nAre you sure you want to use this setting?",
+    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
+    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
+    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
     "ExistingInstallTitle": "Existing Installation Detected!",
     "ExistingInstallSubtitle": "Game has already been installed at:\r\n\r\n{0}\r\n\r\nIt is recommended to migrate the game to Collapse Launcher for better support and integration.\r\nRest assured, you can still use Official Launcher to start the game.\r\n\r\nDo you wish to proceed?",
     "ExistingInstallBHI3LTitle": "Existing Installation via BetterHI3Launcher Detected!",
@@ -581,6 +611,10 @@
     "SteamConvertFailedSubtitle": "Conversion process has failed! :(\nPlease try to start the conversion process again.",
     "InstallDataCorruptTitle": "Game Installation Corrupted",
     "InstallDataCorruptSubtitle": "One of the downloaded file is corrupted.\r\n\r\nServer Hash: {0}\r\nDownloaded Hash: {1}\r\n\r\nDo you want to try and redownload the file?",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "Resume Download?",
     "InstallDataDownloadResumeSubtitle": "You have downloaded {0}/{1} of the game previously.\r\n\r\nDo you want to resume the download?",
     "InsufficientDiskTitle": "Insufficient Disk Space",
@@ -671,6 +705,18 @@
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+  },
+
+  "_FileMigrationProcess": {
+    "PathActivityPanelTitle": "Moving: ",
+    "SpeedIndicatorTitle": "Speed: ",
+    "FileCountIndicatorTitle": "File processed: ",
+    "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
+    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
+    "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
+    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
   },
 
   "_InstallMgmt": {
@@ -789,7 +835,52 @@
 
     "UpdateCountdownMessage1": "Your launcher will be updated in {0}...",
     "UpdateCountdownMessage2": "(Click",
-    "UpdateCountdownMessage3": "to abort the countdown)"
+    "UpdateCountdownMessage3": "to abort the countdown)",
+
+    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Select your CDN for update",
+    "ApplyUpdateCDNSelectorSubtitle": "Select the CDN options and click \"{0}\" to start the update!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
+    "ApplyUpdateUpdateNowBtn": "Update Now!",
+
+    "ApplyUpdateUpdateVersionTitle": "Update:",
+    "ApplyUpdateUpdateChannelTitle": "Channel:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
+    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
+
+    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/s",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s left",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "We detected that you have a legacy Collapse v{0} installed on your PC. ",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "The updater needs to clean-up all the old files inside its directory.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Please make sure you don't have any important files inside of the Collapse directory or it will be COMPLETELY WIPED OUT!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
+    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
   },
 
   "_AppNotification": {
@@ -821,6 +912,7 @@
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",
+    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
@@ -917,6 +1009,8 @@
     "Graphics_GlobalIllumination": "Global Illumination",
     "Graphics_GlobalIllumination_Help1": "Only for supported hardware!",
     "Graphics_GlobalIllumination_Help2": "More information (en)",
+    "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Enable HDR",
     "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
@@ -1023,5 +1117,22 @@
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
     "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Southeast Asia",
+    "Global": "Global",
+    "Mainland China": "Mainland China",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Japan",
+    "Bilibili": "Bilibili"
   }
 }

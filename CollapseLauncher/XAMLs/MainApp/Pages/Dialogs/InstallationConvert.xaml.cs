@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.FileDialogCOM;
+﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -60,7 +61,7 @@ namespace CollapseLauncher.Dialogs
                         IsAskContinue = false;
                     else
                     {
-                        await new ContentDialog
+                        await new ContentDialogCollapse(ContentDialogTheme.Error)
                         {
                             Title = Lang._InstallConvert.SelectDialogTitle,
                             Content = Lang._InstallConvert.SelectDialogSubtitleNotInstalled,
@@ -70,7 +71,7 @@ namespace CollapseLauncher.Dialogs
                             DefaultButton = ContentDialogButton.Primary,
                             Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                             XamlRoot = Content.XamlRoot
-                        }.ShowAsync();
+                        }.QueueAndSpawnDialog();
                     }
                 }
 
@@ -87,7 +88,7 @@ namespace CollapseLauncher.Dialogs
 
                 ApplyConfiguration();
 
-                await new ContentDialog
+                await new ContentDialogCollapse(ContentDialogTheme.Success)
                 {
                     Title = Lang._InstallConvert.ConvertSuccessTitle,
                     Content = new TextBlock
@@ -101,7 +102,7 @@ namespace CollapseLauncher.Dialogs
                     DefaultButton = ContentDialogButton.Primary,
                     Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                     XamlRoot = Content.XamlRoot
-                }.ShowAsync();
+                }.QueueAndSpawnDialog();
 
                 OperationCancelled();
             }
@@ -462,7 +463,7 @@ namespace CollapseLauncher.Dialogs
             else
                 ContentText = Lang._InstallConvert.CancelMsgSubtitle1;
 
-            ContentDialog Dialog = new ContentDialog
+            ContentDialog Dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
             {
                 Title = Lang._InstallConvert.CancelMsgTitle,
                 Content = new TextBlock
@@ -478,7 +479,7 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = Content.XamlRoot
             };
 
-            if (await Dialog.ShowAsync() == ContentDialogResult.Primary)
+            if (await Dialog.QueueAndSpawnDialog() == ContentDialogResult.Primary)
             {
                 tokenSource.Cancel();
                 return;

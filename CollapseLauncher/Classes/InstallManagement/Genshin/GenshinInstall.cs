@@ -56,13 +56,14 @@ namespace CollapseLauncher.InstallManager.Genshin
         }
 
         #region Public Methods
-        protected override async Task StartPackageInstallationInner()
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
-            // Starting from 3.6 update, the Audio files have been moved to "AudioAssets" folder
-            EnsureMoveOldToNewAudioDirectory();
+            if (!isOnlyInstallPackage)
+                // Starting from 3.6 update, the Audio files have been moved to "AudioAssets" folder
+                EnsureMoveOldToNewAudioDirectory();
 
             // Run the base installation process
-            await base.StartPackageInstallationInner();
+            await base.StartPackageInstallationInner(gamePackage);
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
@@ -167,10 +168,10 @@ namespace CollapseLauncher.InstallManager.Genshin
         #endregion
 
         #region Override Methods - GetInstallationPath
-        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
+        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
         {
             // Do action from base method first
-            if (!await base.TryAddResourceVersionList(asset, packageList)) return false;
+            if (!await base.TryAddResourceVersionList(asset, packageList, isSkipMainPackage)) return false;
 
             // Initialize langID
             int langID;

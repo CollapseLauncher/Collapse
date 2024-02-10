@@ -5,6 +5,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 
@@ -17,6 +18,35 @@ namespace CollapseLauncher
         private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
         private bool _isOnlyRecoverMain { get; set; }
         private List<FilePropertiesRemote> _originAssetIndex { get; set; }
+        private string _execName { get; set; }
+        private string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
+        private string _gameAudioLangListPath
+        {
+            get
+            {
+                // If the persistent folder is not exist, then return null
+                if (!Directory.Exists(_gameDataPersistentPath)) return null;
+
+                // Set the file list path
+                string audioRecordPath = Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt");
+
+                // Check if the file exist. If not, return null
+                if (!File.Exists(audioRecordPath)) return null;
+
+                // If exist, then return the path
+                return audioRecordPath;
+            }
+        }
+        private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt"); }
+
+        internal const string _assetGameAudioStreamingPath = @"{0}_Data\StreamingAssets\Audio\AudioPackage\Windows";
+        internal const string _assetGameAudioPersistentPath = @"{0}_Data\Persistent\Audio\AudioPackage\Windows";
+
+        internal const string _assetGameBlocksStreamingPath = @"{0}_Data\StreamingAssets\Asb\Windows";
+        internal const string _assetGameBlocksPersistentPath = @"{0}_Data\Persistent\Asb\Windows";
+
+        internal const string _assetGameVideoStreamingPath = @"{0}_Data\StreamingAssets\Video\Windows";
+        internal const string _assetGameVideoPersistentPath = @"{0}_Data\Persistent\Video\Windows";
         #endregion
 
         public StarRailRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, bool onlyRecoverMainAsset = false, string versionOverride = null)
@@ -25,6 +55,7 @@ namespace CollapseLauncher
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
             _innerGameVersionManager = GameVersionManager as GameTypeStarRailVersion;
+            _execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
         }
 
         ~StarRailRepair() => Dispose();
@@ -34,7 +65,7 @@ namespace CollapseLauncher
         public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
             _useFastMethod = useFastCheck;
-            return await TryRunExamineThrow(CheckRoutine());
+            return await TryRunExamineThrow(CheckRoutine()).ConfigureAwait(false);
         }
 
         public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null)
@@ -46,7 +77,7 @@ namespace CollapseLauncher
                 await SpawnRepairDialog(_assetIndex, actionIfInteractiveCancel);
             }
 
-            _ = await TryRunExamineThrow(RepairRoutine());
+            _ = await TryRunExamineThrow(RepairRoutine()).ConfigureAwait(false);
         }
 
         private async Task<bool> CheckRoutine()

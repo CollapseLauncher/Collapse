@@ -274,6 +274,9 @@ namespace CollapseLauncher
                     MainWindow.SetDragArea(DragAreaMode_Normal);
                     break;
             }
+
+            // Recalculate non-client area size
+            MainWindow.EnableNonClientArea();
         }
         #endregion
 
@@ -294,7 +297,7 @@ namespace CollapseLauncher
 
             while (true)
             {
-                switch (await dialog.ShowAsync())
+                switch (await dialog.QueueAndSpawnDialog())
                 {
                     case ContentDialogResult.Primary:
                         try

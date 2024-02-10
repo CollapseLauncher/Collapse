@@ -6,6 +6,7 @@ using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
 using System.Collections.Generic;
+using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -258,7 +259,7 @@ namespace CollapseLauncher
                 if (Entry.FileSize >= 20 << 20)
                 {
                     await _http.Download(InputURL, OutputPath, DownloadThread, true, Token);
-                    await _http.Merge();
+                    await _http.Merge(Token);
                 }
                 else
                     await _http.Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
