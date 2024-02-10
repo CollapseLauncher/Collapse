@@ -5,6 +5,6 @@ namespace CollapseLauncher.Interfaces
 {
     internal interface IAssetEntry<T> where T : Enum
     {
-        ObservableCollection<AssetProperty<T>> AssetEntry { get; set; }
+        ObservableCollection<IAssetProperty> AssetEntry { get; set; }
     }
 }

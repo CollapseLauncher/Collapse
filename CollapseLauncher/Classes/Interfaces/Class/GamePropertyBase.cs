@@ -26,7 +26,7 @@ namespace CollapseLauncher.Interfaces
             _gamePathField = gamePath;
             _gameRepoURL = gameRepoURL;
             _token = new CancellationTokenSource();
-            AssetEntry = new ObservableCollection<AssetProperty<T1>>();
+            AssetEntry = new ObservableCollection<IAssetProperty>();
 
             // If the version override is not null, then assign the override value
             if (_isVersionOverride = versionOverride != null)
@@ -54,7 +54,7 @@ namespace CollapseLauncher.Interfaces
         protected List<T2> _assetIndex { get; set; }
         protected bool _useFastMethod { get; set; }
 
-        public ObservableCollection<AssetProperty<T1>> AssetEntry { get; set; }
+        public ObservableCollection<IAssetProperty> AssetEntry { get; set; }
         public UIElement _parentUI { get; init; }
     }
 }
