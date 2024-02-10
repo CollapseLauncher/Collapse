@@ -389,11 +389,51 @@
                     <ToggleSwitch OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="0,0,0,16" IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"
                              HorizontalAlignment="Stretch" Margin="0,0,0,16"/>
-                    <TextBlock>
+                    <TextBlock TextWrapping="Wrap" Height="Auto">
                         <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer1}"/>
                         <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer2}" FontWeight="Bold"/></Hyperlink>
                         <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer3}"/>
                     </TextBlock>
+                    <MenuFlyoutSeparator Margin="0,16,0,16"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Advanced Settings" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,0,8,0"/>
+                        <ToggleSwitch Grid.Column="1" IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="8,0,0,8"/>
+                    </Grid>
+                    <StackPanel x:Name="AdvancedSettingsPanel" Visibility="Collapsed">
+                        <TextBlock Text="This contains advanced settings, use with caution."  Margin="0,0,0,4"/>
+                        <TextBlock Text="Collapse Launcher Team DOES NOT responsible for anything happened to your game, account or system while this settings is in use!" Margin="0,0,0,8"/>
+                        <TextBlock Text="Pre-Game Launch Command" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,8,8"/>
+                        <ToggleSwitch
+                            Header="Run command before the game is launched."
+                            IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}" 
+                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" 
+                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" 
+                            Margin="8,0,0,0"/>
+                        <ToggleSwitch
+                            x:Name="PreLaunchForceCloseToggle"
+                            Header="Exit Pre-Game Launch Command when Game is closed/stopped"
+                            Margin="8,0,0,8"
+                            IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
+                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                        <TextBox x:Name="PreLaunchCommandTextBox" Text="{x:Bind PreLaunchCommand, Mode=TwoWay}" CornerRadius="8,8,0,0"
+                             HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
+                        <TextBlock Text="WARNING: Commands provided will be run as Administrator!" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <TextBlock Text="Post-Game Launch Command" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,8,8"/>
+                        <ToggleSwitch
+                            Header="Run command before the game is launched."
+                            IsOn="{x:Bind IsUsePostLaunchCommand, Mode=TwoWay}" 
+                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" 
+                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" 
+                            Margin="8,0,0,0"/>
+                        <TextBox x:Name="PostLaunchCommandTextBox" Text="{x:Bind PostLaunchCommand, Mode=TwoWay}" CornerRadius="8,8,0,0"
+                                 HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
+                        <TextBlock Text="WARNING: Commands provided will be run as Administrator!" FontWeight="Bold" Margin="0,0,0,16"/>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
             <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource GameSettingsApplyGridBrush}"

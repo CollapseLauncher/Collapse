@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Drawing;
@@ -299,6 +300,99 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.UseGameBoost;
             set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+        }
+        #endregion
+
+        #region Advanced Settings
+        public bool IsUseAdvancedSettings
+        {
+            get
+            {
+                bool value                                  = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
+                if (value){AdvancedSettingsPanel.Visibility = Visibility.Visible;}
+                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
+                return value;
+            }
+            set
+            { 
+                Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                if (value) AdvancedSettingsPanel.Visibility = Visibility.Visible;
+                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
+            } 
+        }
+
+        public bool IsUsePreLaunchCommand
+        {
+            get 
+            { 
+                bool value = Settings.SettingsCollapseMisc.UseGamePreLaunchCommand;
+
+                if (value)
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = true;
+                    PreLaunchForceCloseToggle.IsEnabled = true;
+                }
+                else
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = false;
+                    PreLaunchForceCloseToggle.IsEnabled = false;
+                }
+
+                return value;
+            }
+            set
+            {
+                if (value)
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = true;
+                    PreLaunchForceCloseToggle.IsEnabled = true;
+                }
+                else
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = false;
+                    PreLaunchForceCloseToggle.IsEnabled = false;
+                }
+
+                Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+            }
+        }
+
+        public string PreLaunchCommand
+        {
+            get => Settings.SettingsCollapseMisc.GamePreLaunchCommand;
+            set => Settings.SettingsCollapseMisc.GamePreLaunchCommand = value;
+        }
+
+        public bool IsPreLaunchCommandExitOnGameClose
+        {
+            get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
+            set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+        }
+
+        public bool IsUsePostLaunchCommand
+        {
+            get 
+            {
+                bool value = Settings.SettingsCollapseMisc.UseGamePostLaunchCommand;
+
+                if (value) PostLaunchCommandTextBox.IsEnabled = true;
+                else PostLaunchCommandTextBox.IsEnabled       = false;
+
+                return value;
+            }
+            set
+            {
+                if (value) PostLaunchCommandTextBox.IsEnabled = true;
+                else PostLaunchCommandTextBox.IsEnabled       = false;
+
+                Settings.SettingsCollapseMisc.UseGamePostLaunchCommand = value;
+            }
+        }
+
+        public string PostLaunchCommand
+        {
+            get => Settings.SettingsCollapseMisc.GamePostLaunchCommand;
+            set => Settings.SettingsCollapseMisc.GamePostLaunchCommand = value;
         }
         #endregion
     }
