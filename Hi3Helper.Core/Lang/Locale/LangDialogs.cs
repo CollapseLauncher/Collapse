@@ -12,6 +12,14 @@ namespace Hi3Helper
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchPrevFailedTitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedTitle;
                 public string DeltaPatchPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedSubtitle;
+                public string DeltaPatchPreReqTitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqTitle;
+                public string DeltaPatchPreReqSubtitle1 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle1;
+                public string DeltaPatchPreReqSubtitle2 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle2;
+                public string DeltaPatchPreReqSubtitle3 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle3;
+                public string DeltaPatchPreReqSubtitle4 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle4;
+                public string DeltaPatchPreReqSubtitle5 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle5;
+                public string DeltaPatchPreReqSubtitle6 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle6;
+                public string DeltaPatchPreReqSubtitle7 { get; set; } = LangFallback?._Dialogs.DeltaPatchPreReqSubtitle7;
                 public string GameConversionPrevFailedTitle { get; set; } = LangFallback?._Dialogs.GameConversionPrevFailedTitle;
                 public string GameConversionPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.GameConversionPrevFailedSubtitle;
                 public string PreloadVerifiedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
@@ -125,6 +133,7 @@ namespace Hi3Helper
                 public string SteamShortcutCreationSuccessSubtitle3 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle3;
                 public string SteamShortcutCreationSuccessSubtitle4 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle4;
                 public string SteamShortcutCreationSuccessSubtitle5 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle5;
+                public string SteamShortcutCreationSuccessSubtitle6 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle6;
                 public string SteamShortcutCreationFailureTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureTitle;
                 public string SteamShortcutCreationFailureSubtitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureSubtitle;
                 public string OperationErrorDiskSpaceInsufficientTitle { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientTitle;

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,40 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
+    internal static partial class StarRailRepairExtension
+    {
+        private static Dictionary<string, int> _hashtable = new Dictionary<string, int>();
+
+        internal static void ClearHashtable() => _hashtable.Clear();
+
+        internal static void AddSanitize(this List<FilePropertiesRemote> assetIndex, FilePropertiesRemote assetProperty)
+        {
+            // Check if the asset has the key
+            if (_hashtable.ContainsKey(assetProperty.N))
+            {
+                // If yes (exist), then get the index of the asset from hashtable
+                int index = _hashtable[assetProperty.N];
+
+                // Get the property of the asset based on index from hashtable
+                FilePropertiesRemote oldAssetProperty = assetIndex[index];
+                // If the hash is not equal, then replace the existing property from assetIndex
+                if (!oldAssetProperty.CRCArray
+                    .AsSpan()
+                    .SequenceEqual(assetProperty.CRCArray))
+                {
+#if DEBUG
+                    LogWriteLine($"[StarRailRepairExtension::AddSanitize()] Replacing duplicate of: {assetProperty.N} from: {oldAssetProperty.CRC}|{oldAssetProperty.S} to {assetProperty.CRC}|{assetProperty.S}", LogType.Debug, true);
+#endif
+                    assetIndex[index] = assetProperty;
+                }
+                return;
+            }
+
+            _hashtable.Add(assetProperty.N, assetIndex.Count);
+            assetIndex.Add(assetProperty);
+        }
+    }
+
     internal partial class StarRailRepair
     {
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
@@ -28,13 +63,13 @@ namespace CollapseLauncher
             _status.ActivityStatus = Lang._GameRepairPage.Status2;
             _status.IsProgressTotalIndetermined = true;
             UpdateStatus();
+            StarRailRepairExtension.ClearHashtable();
 
             try
             {
                 // Get the primary manifest
                 using Http httpClient = new Http();
-                Dictionary<string, int> hashtable = new Dictionary<string, int>();
-                await GetPrimaryManifest(httpClient, token, assetIndex, hashtable);
+                await GetPrimaryManifest(httpClient, token, assetIndex);
 
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
                 if (this._isOnlyRecoverMain && base._isVersionOverride)
@@ -42,7 +77,10 @@ namespace CollapseLauncher
                     _originAssetIndex = new List<FilePropertiesRemote>();
                     foreach (FilePropertiesRemote asset in assetIndex)
                     {
-                        _originAssetIndex.Add(asset.Copy());
+                        FilePropertiesRemote newAsset = asset.Copy();
+                        ReadOnlyMemory<char> assetRelativePath = newAsset.N.AsMemory(_gamePath.Length).TrimStart('\\');
+                        newAsset.N = assetRelativePath.ToString();
+                        _originAssetIndex.Add(newAsset);
                     }
                 }
 
@@ -57,15 +95,15 @@ namespace CollapseLauncher
                     // Read block metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
                     await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
-                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex, hashtable);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
 
                     // Read Audio metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);
-                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, hashtable, true);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
 
                     // Read Video metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
-                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex, hashtable);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
                 }
 
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
@@ -77,12 +115,11 @@ namespace CollapseLauncher
                 {
                     EliminatePluginAssetIndex(assetIndex);
                 }
-
-                // Clear the hashtable
-                hashtable.Clear();
             }
             finally
             {
+                // Clear the hashtable
+                StarRailRepairExtension.ClearHashtable();
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
                 _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
@@ -100,7 +137,7 @@ namespace CollapseLauncher
         }
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(Http client, CancellationToken token, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable)
+        private async Task GetPrimaryManifest(Http client, CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Initialize pkgVersion list
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
@@ -190,7 +227,7 @@ namespace CollapseLauncher
             }
 
             // Convert the pkg version list to asset index
-            ConvertPkgVersionToAssetIndex(pkgVersion, assetIndex, hashtable);
+            ConvertPkgVersionToAssetIndex(pkgVersion, assetIndex);
 
             // Clear the pkg version list
             pkgVersion.Clear();
@@ -206,56 +243,95 @@ namespace CollapseLauncher
             return await stream.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
         }
 
-        private void ConvertPkgVersionToAssetIndex(List<PkgVersionProperties> pkgVersion, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable)
+        private void ConvertPkgVersionToAssetIndex(List<PkgVersionProperties> pkgVersion, List<FilePropertiesRemote> assetIndex)
         {
-            int count = 0;
             foreach (PkgVersionProperties entry in pkgVersion)
             {
-                // Get the lookup string for the hashtable
-                string lookupString = $"{Path.GetFileName(entry.remoteName)}|{entry.fileSize}|{entry.md5.ToLower()}";
-                // If the hashtable has the lookup string already, then skip it.
-                if (!hashtable.ContainsKey(lookupString))
-                {
-                    // Otherwise, add the lookup string to the hashtable
-                    hashtable.Add(lookupString, count);
-                }
-                count++;
-
                 // Add the pkgVersion entry to asset index
-                assetIndex.Add(new FilePropertiesRemote
-                {
-                    FT = FileType.Generic,
-                    CRC = entry.md5,
-                    N = entry.remoteName,
-                    RN = CombineURLFromString(_gameRepoURL, entry.remoteName),
-                    S = entry.fileSize
-                });
+                FilePropertiesRemote normalizedProperty = GetNormalizedFilePropertyTypeBased(
+                    _gameRepoURL,
+                    entry.remoteName,
+                    entry.fileSize,
+                    entry.md5,
+                    FileType.Generic,
+                    true);
+                assetIndex.AddSanitize(normalizedProperty);
             }
         }
         #endregion
 
         #region Utilities
+        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteAbsolutePath, string remoteRelativePath, long fileSize,
+            string hash, FileType type, bool isPatchApplicable, bool isHasHashMark) =>
+            GetNormalizedFilePropertyTypeBased(remoteAbsolutePath, remoteRelativePath, fileSize,
+                hash, type, false, isPatchApplicable, isHasHashMark);
+
+        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL, string remoteRelativePath, long fileSize,
+            string hash, FileType type = FileType.Generic, bool isPkgVersion = true, bool isPatchApplicable = false, bool isHasHashMark = false)
+        {
+            string localAbsolutePath,
+                   remoteAbsolutePath = type switch
+                   {
+                       FileType.Generic => CombineURLFromString(remoteParentURL, remoteRelativePath),
+                       _ => remoteParentURL
+                   },
+                   typeAssetRelativeParentPath = string.Format(type switch
+                   {
+                       FileType.Blocks => _assetGameBlocksStreamingPath,
+                       FileType.Audio => _assetGameAudioStreamingPath,
+                       FileType.Video => _assetGameVideoStreamingPath,
+                       _ => string.Empty
+                   }, _execName);
+
+            localAbsolutePath = Path.Combine(_gamePath, typeAssetRelativeParentPath, NormalizePath(remoteRelativePath));
+
+            return new FilePropertiesRemote
+            {
+                FT = type,
+                CRC = hash,
+                S = fileSize,
+                N = localAbsolutePath,
+                RN = remoteAbsolutePath,
+                IsPatchApplicable = isPatchApplicable,
+                IsHasHashMark = isHasHashMark,
+            };
+        }
+
         private unsafe string GetExistingGameRegionID()
         {
+            // Delegate the default return value
+            string GetDefaultValue() => _innerGameVersionManager.GamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
+
 #nullable enable
             // Try get the value as nullable object
             object? value = RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             // Check if the value is null, then return the default name
-            if (value == null)
-            {
-                // Return the dispatch default name. If none, then throw
-                return _innerGameVersionManager.GamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
-            }
+            // Return the dispatch default name. If none, then throw
+            if (value == null) return GetDefaultValue();
 #nullable disable
 
-            // Cast the value as byte span
-            ReadOnlySpan<byte> span = ((byte[])value).AsSpan();
-            // Get the name from the span and trim the \0 character at the end
-            string name = Encoding.UTF8.GetString(span.Slice(0, span.Length - 1));
-            return name;
+            // Cast the value as byte array
+            byte[] valueBytes = (byte[])value;
+            int count = valueBytes.Length;
+
+            // If the registry is empty, then return the default value;
+            if (valueBytes.Length == 0)
+                return GetDefaultValue();
+
+            // Get the pointer of the byte array
+            fixed (byte* ValuePtr = &valueBytes[0])
+            {
+                // Try check the byte value. If it's null, then continue the loop while
+                // also decreasing the count as its index
+                while (*(ValuePtr + (count - 1)) == 0) { --count; }
+
+                // Get the name from the span and trim the \0 character at the end
+                string name = Encoding.UTF8.GetString(ValuePtr, count);
+                return name;
+            }
         }
 
-        private void ConvertSRMetadataToAssetIndex(SRMetadataBase metadata, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable, bool writeAudioLangRedord = false)
+        private void ConvertSRMetadataToAssetIndex(SRMetadataBase metadata, List<FilePropertiesRemote> assetIndex, bool writeAudioLangRedord = false)
         {
             // Get the voice Lang ID
             int voLangID = _innerGameVersionManager.GamePreset.GetVoiceLanguageID();
@@ -276,63 +352,76 @@ namespace CollapseLauncher
                 File.WriteAllText(audioRedordPath, "{\"AudioLang\":\"" + voLangName + "\"}");
             }
 
-            int count = 0;
-            long countSize = 0;
+            // Get the audio lang list
+            string[] audioLangList = GetCurrentAudioLangList(voLangName);
 
             // Enumerate the Asset List
+            int lastAssetIndexCount = assetIndex.Count;
             foreach (SRAsset asset in metadata.EnumerateAssets())
             {
                 // Get the hash by bytes
                 string hash = HexTool.BytesToHexUnsafe(asset.Hash);
 
                 // Filter only current audio language file and other assets
-                if (FilterCurrentAudioLangFile(asset, voLangName, out bool IsHasHashMark))
+                if (FilterCurrentAudioLangFile(asset, audioLangList, out bool IsHasHashMark))
                 {
-                    // Get the lookup string and check whether the hashtable contains it.
-                    // If yes, then override the one from assetIndex list.
-                    string lookupString = $"{Path.GetFileName(asset.LocalName)}|{asset.Size}|{hash.ToLower()}";
-                    if (hashtable.ContainsKey(lookupString))
-                    {
-                        // Get the index of the asset index
-                        int indexOf = hashtable[lookupString];
-                        assetIndex[indexOf] = new FilePropertiesRemote
-                        {
-                            N = asset.LocalName,
-                            RN = asset.RemoteURL,
-                            CRC = hash,
-                            FT = ConvertFileTypeEnum(asset.AssetType),
-                            S = asset.Size,
-                            IsPatchApplicable = asset.IsPatch,
-                            IsHasHashMark = IsHasHashMark
-                        };
-                    }
-                    else
-                    {
-                        // Convert and add the asset as FilePropertiesRemote to assetIndex
-                        assetIndex.Add(new FilePropertiesRemote
-                        {
-                            N = asset.LocalName,
-                            RN = asset.RemoteURL,
-                            CRC = hash,
-                            FT = ConvertFileTypeEnum(asset.AssetType),
-                            S = asset.Size,
-                            IsPatchApplicable = asset.IsPatch,
-                            IsHasHashMark = IsHasHashMark
-                        });
-                        count++;
-                        countSize += asset.Size;
-
-#if DEBUG
-                        LogWriteLine($"Adding {asset.LocalName} [T: {asset.AssetType}] [S: {SummarizeSizeSimple(asset.Size)} / {asset.Size} bytes]", LogType.Default, true);
-#endif
-                    }
+                    // Convert and add the asset as FilePropertiesRemote to assetIndex
+                    FilePropertiesRemote assetProperty = GetNormalizedFilePropertyTypeBased(
+                        asset.RemoteURL,
+                        asset.LocalName,
+                        asset.Size,
+                        hash,
+                        ConvertFileTypeEnum(asset.AssetType),
+                        asset.IsPatch,
+                        IsHasHashMark
+                        );
+                    assetIndex.AddSanitize(assetProperty);
                 }
             }
 
-            LogWriteLine($"Added additional {count} assets with {SummarizeSizeSimple(countSize)}/{countSize} bytes in size", LogType.Default, true);
+            int addedCount = assetIndex.Count - lastAssetIndexCount;
+            long addedSize = 0;
+            ReadOnlySpan<FilePropertiesRemote> assetIndexSpan = CollectionsMarshal.AsSpan(assetIndex).Slice(lastAssetIndexCount);
+            for (int i = 0; i < assetIndexSpan.Length; i++) addedSize += assetIndexSpan[i].S;
+
+            LogWriteLine($"Added additional {addedCount} assets with {SummarizeSizeSimple(addedSize)}/{addedSize} bytes in size", LogType.Default, true);
         }
 
-        private bool FilterCurrentAudioLangFile(SRAsset asset, string langName, out bool isHasHashMark)
+        private string[] GetCurrentAudioLangList(string fallbackCurrentLangname)
+        {
+            // Initialize the variable.
+            string audioLangListPath = _gameAudioLangListPath;
+            string audioLangListPathStatic = _gameAudioLangListPathStatic;
+            string[] returnValue;
+
+            // Check if the audioLangListPath is null or the file is not exist,
+            // then create a new one from the fallback value
+            if (audioLangListPath == null || !File.Exists(audioLangListPathStatic))
+            {
+                // Try check if the folder is exist. If not, create one.
+                string audioLangPathDir = Path.GetDirectoryName(audioLangListPathStatic);
+                if (Directory.Exists(audioLangPathDir))
+                    Directory.CreateDirectory(audioLangPathDir);
+
+                // Assign the default value and write to the file, then return.
+                returnValue = new string[] { fallbackCurrentLangname };
+                File.WriteAllLines(audioLangListPathStatic, returnValue);
+                return returnValue;
+            }
+
+            // Read all the lines. If empty, then assign the default value and rewrite it
+            returnValue = File.ReadAllLines(audioLangListPathStatic);
+            if (returnValue.Length == 0)
+            {
+                returnValue = new string[] { fallbackCurrentLangname };
+                File.WriteAllLines(audioLangListPathStatic, returnValue);
+            }
+            
+            // Return the value
+            return returnValue;
+        }
+
+        private bool FilterCurrentAudioLangFile(SRAsset asset, string[] langNames, out bool isHasHashMark)
         {
             // Set output value as false
             isHasHashMark = false;
@@ -349,7 +438,7 @@ namespace CollapseLauncher
                     {
                         // Compare if the first name definition is equal to target langName.
                         // Also return if the file is an audio language file if it is a SFX file or not.
-                        return nameDef[0] == langName || nameDef[0] == "SFX";
+                        return langNames.Contains(nameDef[0], StringComparer.OrdinalIgnoreCase) || nameDef[0] == "SFX";
                     }
                     // If it's not in criteria of name definition, then return true as "normal asset"
                     return true;

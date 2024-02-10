@@ -285,6 +285,9 @@ namespace CollapseLauncher
                     MainWindow.SetDragArea(DragAreaMode_Normal);
                     break;
             }
+
+            // Recalculate non-client area size
+            MainWindow.EnableNonClientArea();
         }
         #endregion
 

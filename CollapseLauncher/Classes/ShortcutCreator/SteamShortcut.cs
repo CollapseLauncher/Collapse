@@ -30,8 +30,8 @@ namespace CollapseLauncher.ShortcutUtils
         public string ShortcutPath = "";
         public string LaunchOptions = "";
         public bool IsHidden = false;
-        public bool AllowDesktopConfig = false;
-        public bool AllowOverlay = false;
+        public bool AllowDesktopConfig = true;
+        public bool AllowOverlay = true;
         public bool OpenVR = false;
         public bool Devkit = false;
         public string DevkitGameID = "";
@@ -46,20 +46,15 @@ namespace CollapseLauncher.ShortcutUtils
         public SteamShortcut(PresetConfigV2 preset, bool play = false)
         {
             AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
-            Exe = AppExecutablePath;
+            
+            string stubPath = MainEntryPoint.FindCollapseStubPath();
+            Exe = string.Format("\"{0}\"", stubPath);
+            StartDir = string.Format("\"{0}\"", Path.GetDirectoryName(stubPath));
+
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
-            icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcon/" + preset.GameType switch
-            {
-                GameType.StarRail => "icon-starrail.ico",
-                GameType.Genshin => "icon-genshin.ico",
-                _ => "icon-honkai.ico",
-            });
-
             preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
-
-            StartDir = Path.GetDirectoryName(AppExecutablePath);
 
             LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
             if (play)
@@ -123,6 +118,22 @@ namespace CollapseLauncher.ShortcutUtils
             if (!Directory.Exists(gridPath))
                 Directory.CreateDirectory(gridPath);
 
+            string iconName = preset.GameType switch
+            {
+                GameType.StarRail => "icon-starrail.ico",
+                GameType.Genshin => "icon-genshin.ico",
+                _ => "icon-honkai.ico",
+            };
+
+            icon = Path.Combine(gridPath, iconName);
+            string iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets\\Images\\GameIcon\\" + iconName);
+
+            if (!Path.Exists(icon) && Path.Exists(iconAssetPath))
+            {
+                File.Copy(iconAssetPath, icon);
+                LogWriteLine(string.Format("[SteamShortcut::MoveImages] Copied icon from {0} to {1}.", iconAssetPath, icon));
+            }
+
             Dictionary<string, SteamGameProp> assets = preset.ZoneSteamAssets;
 
             // Game background
@@ -169,10 +180,10 @@ namespace CollapseLauncher.ShortcutUtils
 
                 File.Delete(steamPath);
 
-                LogWriteLine(string.Format("Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
+                LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
             }
             
-            LogWriteLine("After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
             return;
         }
 

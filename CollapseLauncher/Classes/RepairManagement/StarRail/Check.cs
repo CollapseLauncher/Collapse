@@ -13,6 +13,40 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
+    internal static partial class StarRailRepairExtension
+    {
+        internal static string ReplaceStreamingToPersistentPath(string inputPath, string execName, FileType type)
+        {
+            string parentStreamingRelativePath = string.Format(type switch
+            {
+                FileType.Blocks => StarRailRepair._assetGameBlocksStreamingPath,
+                FileType.Audio => StarRailRepair._assetGameAudioStreamingPath,
+                FileType.Video => StarRailRepair._assetGameVideoStreamingPath,
+                _ => string.Empty
+            }, execName);
+            string parentPersistentRelativePath = string.Format(type switch
+            {
+                FileType.Blocks => StarRailRepair._assetGameBlocksPersistentPath,
+                FileType.Audio => StarRailRepair._assetGameAudioPersistentPath,
+                FileType.Video => StarRailRepair._assetGameVideoPersistentPath,
+                _ => string.Empty
+            }, execName);
+
+            int indexOfStart = inputPath.IndexOf(parentStreamingRelativePath);
+            int indexOfEnd = indexOfStart + parentStreamingRelativePath.Length;
+
+            if (indexOfStart == -1) return inputPath;
+
+            ReadOnlySpan<char> startOfPath = inputPath.AsSpan(0, indexOfStart).TrimEnd('\\');
+            ReadOnlySpan<char> endOfPath = inputPath.AsSpan(indexOfEnd, inputPath.Length - indexOfEnd).TrimStart('\\');
+
+            string returnPath = Path.Join(startOfPath, parentPersistentRelativePath, endOfPath);
+            return returnPath;
+        }
+
+        internal static string GetFileRelativePath(string inputPath, string parentPath) => inputPath.AsSpan(parentPath.Length).ToString();
+    }
+
     internal partial class StarRailRepair
     {
         private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
@@ -34,18 +68,6 @@ namespace CollapseLauncher
                     // Reset stopwatch
                     RestartStopwatch();
 
-                    // Get persistent and streaming paths
-                    string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
-
-                    string baseBlocksPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Asb\Windows");
-                    string baseBlocksPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Asb\Windows");
-
-                    string baseAudioPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Audio\AudioPackage\Windows");
-                    string baseAudioPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Audio\AudioPackage\Windows");
-
-                    string baseVideoPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Video\Windows");
-                    string baseVideoPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Video\Windows");
-
                     // Iterate assetIndex and check it using different method for each type and run it in parallel
                     Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
                     {
@@ -56,13 +78,13 @@ namespace CollapseLauncher
                                 CheckGenericAssetType(asset, brokenAssetIndex, token);
                                 break;
                             case FileType.Blocks:
-                                CheckAssetType(asset, brokenAssetIndex, baseBlocksPathPersistent, baseBlocksPathStreaming, token);
+                                CheckAssetType(asset, brokenAssetIndex, token);
                                 break;
                             case FileType.Audio:
-                                CheckAssetType(asset, brokenAssetIndex, baseAudioPathPersistent, baseAudioPathStreaming, token);
+                                CheckAssetType(asset, brokenAssetIndex, token);
                                 break;
                             case FileType.Video:
-                                CheckAssetType(asset, brokenAssetIndex, baseVideoPathPersistent, baseVideoPathStreaming, token);
+                                CheckAssetType(asset, brokenAssetIndex, token);
                                 break;
                         }
                     });
@@ -82,7 +104,7 @@ namespace CollapseLauncher
         private void CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
             _progressTotalCountCurrent++;
@@ -91,14 +113,11 @@ namespace CollapseLauncher
             _progressPerFileSize = asset.S;
             _progressPerFileSizeCurrent = 0;
 
-            // Override the path
-            asset.N = Path.Combine(_gamePath, asset.N);
-
             // Get the file info
             FileInfo fileInfo = new FileInfo(asset.N);
 
-            // Check if the file exist or has unmached size
-            if (!fileInfo.Exists || (fileInfo.Exists && fileInfo.Length != asset.S))
+            // Check if the file exist or has unmatched size
+            if (!fileInfo.Exists)
             {
                 // Update the total progress and found counter
                 _progressTotalSizeFound += asset.S;
@@ -166,10 +185,10 @@ namespace CollapseLauncher
             }
         }
 
-        private void CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, string basePersistentPath, string baseStreamingPath, CancellationToken token)
+        private void CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
             _progressTotalCountCurrent++;
@@ -179,8 +198,8 @@ namespace CollapseLauncher
             _progressPerFileSizeCurrent = 0;
 
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistentPath, asset.N));
-            FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreamingPath, asset.N));
+            FileInfo fileInfoPersistent = new FileInfo(StarRailRepairExtension.ReplaceStreamingToPersistentPath(asset.N, _execName, asset.FT));
+            FileInfo fileInfoStreaming = new FileInfo(asset.N);
 
             bool UsePersistent = !fileInfoStreaming.Exists;
             bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.S;
@@ -188,9 +207,6 @@ namespace CollapseLauncher
 
             // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
             asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
-
-            // If the file has Hash Mark, then create the hash mark file
-            if (asset.IsHasHashMark && UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
 
             // Check if the file exist on both persistent and streaming path, then mark the
             // streaming path as redundant (unused)
@@ -209,10 +225,19 @@ namespace CollapseLauncher
                         null
                     )
                 ));
+
+                // Fix the asset detected as a used file even though it's actually unused
+                asset.FT = FileType.Unused;
                 targetAssetIndex.Add(asset);
+
+                // Set the file to be used from Persistent one
+                UsePersistent = true;
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
             }
+
+            // If the file has Hash Mark, then create the hash mark file
+            if (asset.IsHasHashMark && UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
 
             // Check if both location has the file exist or has the size right
             if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
@@ -250,11 +275,12 @@ namespace CollapseLauncher
                 return;
             }
 
-            // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName,
+            // Open and read fileInfo as FileStream
+            string fileNameToOpen = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+            using (FileStream filefs = new FileStream(fileNameToOpen,
                 FileMode.Open,
                 FileAccess.Read,
-                FileShare.None,
+                FileShare.Read,
                 _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation

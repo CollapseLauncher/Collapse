@@ -598,7 +598,7 @@ namespace CollapseLauncher.Interfaces
             if (assetSize >= _sizeForMultiDownload)
             {
                 await _httpClient.Download(assetURL, assetPath, _downloadThreadCount, true, token);
-                await _httpClient.Merge();
+                await _httpClient.Merge(token);
             }
             else
             {
@@ -626,7 +626,7 @@ namespace CollapseLauncher.Interfaces
                 lock (this)
                 {
                     // Increment total size counter
-                    if (updateTotalProgress) { _progressTotalSizeCurrent += read; }
+                    if (updateTotalProgress) _progressTotalSizeCurrent += read;
                     // Increment per file size counter
                     _progressPerFileSizeCurrent += read;
                 }
