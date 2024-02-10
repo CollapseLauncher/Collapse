@@ -1251,7 +1251,7 @@ namespace CollapseLauncher.Pages
                     CurrentGameProperty._GameVersion.GamePreset.GameExecutableName,
                     _Settings,
                     CurrentGameProperty._GameVersion.GamePreset.GameType);
-                GameRunningWatcher();
+                GameRunningWatcher(_Settings);
 
                 if (GetAppConfigValue("EnableConsole").ToBool())
                 {
@@ -1309,10 +1309,8 @@ namespace CollapseLauncher.Pages
         }
 
         // Use this method to do something when game is closed
-        private async void GameRunningWatcher()
+        private async void GameRunningWatcher(IGameSettingsUniversal _settings)
         {
-            IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
-
             await Task.Delay(5000);
             while (_cachedIsGameRunning)
             {
@@ -1330,7 +1328,7 @@ namespace CollapseLauncher.Pages
                 WatchOutputLog.Cancel();
 
             // Stop PreLaunchCommand process
-            if (_Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
+            if (_settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
 
             // Window manager on game closed
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
@@ -1350,7 +1348,7 @@ namespace CollapseLauncher.Pages
             }
 
             // Run Post Launch Command
-            if (_Settings.SettingsCollapseMisc.UseAdvancedGameSettings && _Settings.SettingsCollapseMisc.UseGamePostLaunchCommand) PostLaunchCommand(_Settings);
+            if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostLaunchCommand) PostLaunchCommand(_settings);
         }
 
         private void StopGame(PresetConfigV2 gamePreset)
