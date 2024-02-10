@@ -1229,6 +1229,8 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
                     GenshinHDREnforcer();
 
+                if (_Settings.SettingsCollapseMisc.UseAdvancedGameSettings && _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand) PreLaunchCommand(_Settings);
+
                 Process proc                    = new Process();
                 proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
                 proc.StartInfo.UseShellExecute  = true;
@@ -1302,12 +1304,15 @@ namespace CollapseLauncher.Pages
             catch (System.ComponentModel.Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
             }
         }
 
         // Use this method to do something when game is closed
         private async void GameRunningWatcher()
         {
+            IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
+
             await Task.Delay(5000);
             while (_cachedIsGameRunning)
             {
@@ -1323,6 +1328,9 @@ namespace CollapseLauncher.Pages
             // Stopping GameLogWatcher
             if (GetAppConfigValue("EnableConsole").ToBool())
                 WatchOutputLog.Cancel();
+
+            // Stop PreLaunchCommand process
+            if (_Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
 
             // Window manager on game closed
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
@@ -1340,6 +1348,9 @@ namespace CollapseLauncher.Pages
                     (m_window as MainWindow).Restore();
                     break;
             }
+
+            // Run Post Launch Command
+            if (_Settings.SettingsCollapseMisc.UseAdvancedGameSettings && _Settings.SettingsCollapseMisc.UseGamePostLaunchCommand) PostLaunchCommand(_Settings);
         }
 
         private void StopGame(PresetConfigV2 gamePreset)
@@ -2063,6 +2074,122 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
+            }
+        }
+        #endregion
+
+        #region Pre/Post Game Launch Command
+        private Process _procPreGLC;
+
+        private async void PreLaunchCommand(IGameSettingsUniversal _settings)
+        {
+            try
+            {
+                string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
+                if (preGameLaunchCommand == null) return;
+
+                LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n\t" +
+                             $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
+                             LogType.Warning, true);
+
+                _procPreGLC = new Process();
+
+                _procPreGLC.StartInfo.FileName               = "cmd.exe";
+                _procPreGLC.StartInfo.Arguments              = "/C " + preGameLaunchCommand;
+                _procPreGLC.StartInfo.CreateNoWindow         = true;
+                _procPreGLC.StartInfo.UseShellExecute        = false;
+                _procPreGLC.StartInfo.RedirectStandardOutput = true;
+                _procPreGLC.StartInfo.RedirectStandardError  = true;
+
+                _procPreGLC.OutputDataReceived += (sender, e) =>
+                                                  {
+                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+                                                  };
+
+                _procPreGLC.ErrorDataReceived += (sender, e) =>
+                                                 {
+                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t{e.Data}", LogType.GLC, true);
+                                                 };
+
+                _procPreGLC.Start();
+
+                _procPreGLC.BeginOutputReadLine();
+                _procPreGLC.BeginErrorReadLine();
+
+                await _procPreGLC.WaitForExitAsync();
+            }
+            catch ( System.ComponentModel.Win32Exception ex )
+            {
+                LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+            }
+            finally
+            {
+                if (_procPreGLC != null) _procPreGLC.Dispose();
+            }
+        }
+
+        private void PreLaunchCommand_ForceClose()
+        {
+            try
+            {
+                if (_procPreGLC != null && !_procPreGLC.HasExited)
+                {
+                    // Kill main and child processes
+                    Process taskKill = new Process();
+                    taskKill.StartInfo.FileName  = "taskkill";
+                    taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
+                    taskKill.Start();
+                    taskKill.WaitForExit();
+
+                    LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
+                }
+            }
+            // Ignore external error
+            catch ( InvalidOperationException ) {}
+            catch (System.ComponentModel.Win32Exception) {}
+        }
+
+        private async void PostLaunchCommand(IGameSettingsUniversal _settings)
+        {
+            try
+            {
+                string postGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePostLaunchCommand ?? null;
+                if (postGameLaunchCommand == null) return;
+
+                LogWriteLine($"Using Post-launch command : {postGameLaunchCommand}\r\n\t" +
+                             $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
+                             LogType.Warning, true);
+
+                Process procPostGLC = new Process();
+
+                procPostGLC.StartInfo.FileName               = "cmd.exe";
+                procPostGLC.StartInfo.Arguments              = "/C " + postGameLaunchCommand;
+                procPostGLC.StartInfo.CreateNoWindow         = true;
+                procPostGLC.StartInfo.UseShellExecute        = false;
+                procPostGLC.StartInfo.RedirectStandardOutput = true;
+                procPostGLC.StartInfo.RedirectStandardError  = true;
+
+                procPostGLC.OutputDataReceived += (sender, e) =>
+                                                  {
+                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+                                                  };
+
+                procPostGLC.ErrorDataReceived += (sender, e) =>
+                                                 {
+                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t{e.Data}", LogType.GLC, true);
+                                                 };
+
+                procPostGLC.Start();
+                procPostGLC.BeginOutputReadLine();
+                procPostGLC.BeginErrorReadLine();
+
+                await procPostGLC.WaitForExitAsync();
+            }
+            catch ( System.ComponentModel.Win32Exception ex )
+            {
+                LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
             }
         }
         #endregion

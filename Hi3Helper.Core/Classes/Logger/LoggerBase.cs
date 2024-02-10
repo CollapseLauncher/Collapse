@@ -184,6 +184,7 @@ namespace Hi3Helper
             LogType.Scheme => "\u001b[34;1m",
             LogType.Game => "\u001b[35;1m",
             LogType.Debug => "\u001b[36;1m",
+            LogType.GLC => "\u001b[37;1m",
             _ => string.Empty
         };
 
@@ -201,6 +202,7 @@ namespace Hi3Helper
             LogType.Scheme => "[Schm]",
             LogType.Game => "[Game]",
             LogType.Debug => "[DBG]",
+            LogType.GLC => "[GLC]",
             LogType.NoTag => "      ",
             _ => throw ThrowInvalidType()
         };
