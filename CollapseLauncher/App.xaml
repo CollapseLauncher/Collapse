@@ -673,10 +673,11 @@
                     <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="#00000000"/>
                 </ResourceDictionary>
                 <!-- Custom controls styles -->
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

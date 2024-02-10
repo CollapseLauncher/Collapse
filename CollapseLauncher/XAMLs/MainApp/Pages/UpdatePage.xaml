@@ -4,8 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
     xmlns:helper="using:Hi3Helper"
-    xmlns:control="using:CommunityToolkit.WinUI.Controls"
-    xmlns:control_legacy="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:markdown="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -81,15 +80,13 @@
                     CornerRadius="8"
                     Background="{ThemeResource WindowTrayBrush}">
                     <ScrollViewer>
-                        <control_legacy:MarkdownTextBlock
+                        <markdown:MarkdownTextBlock
                             x:Name="ReleaseNotesBox"
+                            Config="{x:Bind _markdownConfig, Mode=OneTime}"
+                            Text="# Loading content..."
                             Background="Transparent"
                             Padding="16"
-                            LinkClicked="ReleaseNotesBox_LinkClicked"
-                            ImageClicked="ReleaseNotesBox_ImageClicked"
-                            VerticalAlignment="Stretch"
-                            Header1FontSize="32">
-                        </control_legacy:MarkdownTextBlock>
+                            VerticalAlignment="Stretch"/>
                     </ScrollViewer>
                 </Grid>
             </Grid>
