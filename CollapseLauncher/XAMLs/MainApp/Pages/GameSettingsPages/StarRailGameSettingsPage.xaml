@@ -400,8 +400,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Advanced Settings" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,0,8,0"/>
-                        <ToggleSwitch Grid.Column="1" IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="8,0,0,8"/>
+                        <TextBlock Grid.Column="0" Text="Advanced Settings" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Top"/>
+                        <ToggleSwitch Grid.Column="1" IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" Margin="8,4,0,8"/>
                     </Grid>
                     <StackPanel x:Name="AdvancedSettingsPanel" Visibility="Collapsed">
                         <TextBlock Text="This contains advanced settings, use with caution."  Margin="0,0,0,4"/>
@@ -429,7 +429,7 @@
                             IsOn="{x:Bind IsUsePostLaunchCommand, Mode=TwoWay}" 
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" 
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" 
-                            Margin="8,0,0,0"/>
+                            Margin="8,0,0,8"/>
                         <TextBox x:Name="PostLaunchCommandTextBox" Text="{x:Bind PostLaunchCommand, Mode=TwoWay}" CornerRadius="8,8,0,0"
                                  HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
                         <TextBlock Text="WARNING: Commands provided will be run as Administrator!" FontWeight="Bold" Margin="0,0,0,16"/>
