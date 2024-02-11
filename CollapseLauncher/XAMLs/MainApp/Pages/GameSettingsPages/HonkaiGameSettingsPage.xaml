@@ -712,12 +712,16 @@
                         <TextBlock
                             Grid.Column="0"
                             Margin="0,0,8,0"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Stretch"
                             Style="{ThemeResource TitleLargeTextBlockStyle}"
                             Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
                         <ToggleSwitch
                             Grid.Column="1"
-                            Margin="8,4,0,8"
+                            FontWeight="SemiBold"
+                            FontSize="26"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Margin="8,12,0,8"
                             IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
