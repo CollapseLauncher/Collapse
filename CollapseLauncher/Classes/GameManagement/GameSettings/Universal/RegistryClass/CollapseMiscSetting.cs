@@ -68,13 +68,13 @@ namespace CollapseLauncher.GameSettings.Universal
         /// This control if GamePostLaunchCommand is going to be used. <br/><br/>
         /// Default: false
         /// </summary>
-        public bool UseGamePostLaunchCommand { get; set; } = false;
+        public bool UseGamePostExitCommand { get; set; } = false;
 
         /// <summary>
         /// This sets the command that is going to be launched after the game process is closed.<br/><br/>
         /// Command is launched as a shell with no window.<br/><br/>
         /// </summary>
-        public string GamePostLaunchCommand { get; set; } = "";
+        public string GamePostExitCommand { get; set; } = "";
         #endregion
 
         #region Methods

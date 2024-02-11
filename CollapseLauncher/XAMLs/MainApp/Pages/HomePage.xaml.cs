@@ -55,6 +55,9 @@ namespace CollapseLauncher.Pages
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
         private CancellationTokenSource PlaytimeToken { get; set; }
+
+        private int barwidth;
+        private int consoleWidth;
         
         public static  int RefreshRateDefault { get; } = 200;
         public static  int RefreshRateSlow    { get; } = 1000;
@@ -88,12 +91,21 @@ namespace CollapseLauncher.Pages
             RefreshRate =  RefreshRateDefault;
             this.Loaded += StartLoadedRoutine;
             m_homePage  =  this;
+
+            InitializeConsoleValues();
         }
 
         ~HomePage()
         {
             // HACK: Fix random crash by always unsubscribing the StartLoadedRoutine if the GC is calling the deconstructor.
             this.Loaded -= StartLoadedRoutine;
+        }
+
+        private void InitializeConsoleValues()
+        {
+            consoleWidth = 24;
+            try { consoleWidth = Console.BufferWidth; } catch { }
+            barwidth = ((consoleWidth - 22) / 2) - 1;
         }
 
         private bool IsPageUnload { get; set; }
@@ -1317,6 +1329,8 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(3000);
             }
 
+            LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", LogType.Warning, true);
+
             if (ResizableWindowHookToken != null)
             {
                 ResizableWindowHookToken.Cancel();
@@ -1348,7 +1362,7 @@ namespace CollapseLauncher.Pages
             }
 
             // Run Post Launch Command
-            if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostLaunchCommand) PostLaunchCommand(_settings);
+            if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostExitCommand) PostExitCommand(_settings);
         }
 
         private void StopGame(PresetConfigV2 gamePreset)
@@ -1590,11 +1604,8 @@ namespace CollapseLauncher.Pages
         #region Game Log Method
         public async void ReadOutputLog()
         {
-            int consoleWidth = 24;
-            try { consoleWidth = Console.BufferWidth; } catch { }
+            InitializeConsoleValues();
 
-            string line;
-            int barwidth = ((consoleWidth - 22) / 2) - 1;
             LogWriteLine($"Are Game logs getting saved to Collapse logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
             LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
             try
@@ -1611,6 +1622,7 @@ namespace CollapseLauncher.Pages
                     {
                         while (!reader.EndOfStream)
                         {
+                            string line;
                             line = await reader.ReadLineAsync(WatchOutputLog.Token);
                             if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
@@ -1623,14 +1635,10 @@ namespace CollapseLauncher.Pages
                     }
                 }
             }
-            catch (OperationCanceledException)
-            {
-                LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", LogType.Warning, true);
-                (m_window as MainWindow).Restore();
-            }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", LogType.Error);
+                LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
             }
         }
         #endregion
@@ -2084,7 +2092,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
-                if (preGameLaunchCommand == null) return;
+                if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
                 LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n\t" +
                              $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
@@ -2119,7 +2127,7 @@ namespace CollapseLauncher.Pages
             catch ( System.ComponentModel.Win32Exception ex )
             {
                 LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
             }
             finally
             {
@@ -2143,26 +2151,26 @@ namespace CollapseLauncher.Pages
                     LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
                 }
             }
-            // Ignore external error
+            // Ignore external errors
             catch ( InvalidOperationException ) {}
             catch (System.ComponentModel.Win32Exception) {}
         }
 
-        private async void PostLaunchCommand(IGameSettingsUniversal _settings)
+        private async void PostExitCommand(IGameSettingsUniversal _settings)
         {
             try
             {
-                string postGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePostLaunchCommand ?? null;
-                if (postGameLaunchCommand == null) return;
+                string postGameExitCommand = _settings?.SettingsCollapseMisc?.GamePostExitCommand ?? null;
+                if (string.IsNullOrEmpty(postGameExitCommand)) return;
 
-                LogWriteLine($"Using Post-launch command : {postGameLaunchCommand}\r\n\t" +
+                LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
                              $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                              LogType.Warning, true);
 
                 Process procPostGLC = new Process();
 
                 procPostGLC.StartInfo.FileName               = "cmd.exe";
-                procPostGLC.StartInfo.Arguments              = "/C " + postGameLaunchCommand;
+                procPostGLC.StartInfo.Arguments              = "/C " + postGameExitCommand;
                 procPostGLC.StartInfo.CreateNoWindow         = true;
                 procPostGLC.StartInfo.UseShellExecute        = false;
                 procPostGLC.StartInfo.RedirectStandardOutput = true;
@@ -2187,7 +2195,7 @@ namespace CollapseLauncher.Pages
             catch ( System.ComponentModel.Win32Exception ex )
             {
                 LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
         }
         #endregion
