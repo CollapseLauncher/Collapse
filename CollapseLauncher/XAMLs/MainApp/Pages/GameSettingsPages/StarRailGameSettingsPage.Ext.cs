@@ -3,11 +3,22 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Drawing;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class StarRailGameSettingsPage : Page
+    public partial class StarRailGameSettingsPage : Page, INotifyPropertyChanged
     {
+        #region Methods
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
         #region GameResolution
         public bool IsFullscreenEnabled
         {
@@ -369,30 +380,30 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
-        public bool IsUsePostLaunchCommand
+        public bool IsUsePostExitCommand
         {
             get 
             {
-                bool value = Settings.SettingsCollapseMisc.UseGamePostLaunchCommand;
+                bool value = Settings.SettingsCollapseMisc.UseGamePostExitCommand;
 
-                if (value) PostLaunchCommandTextBox.IsEnabled = true;
-                else PostLaunchCommandTextBox.IsEnabled       = false;
+                if (value) PostExitCommandTextBox.IsEnabled = true;
+                else PostExitCommandTextBox.IsEnabled       = false;
 
                 return value;
             }
             set
             {
-                if (value) PostLaunchCommandTextBox.IsEnabled = true;
-                else PostLaunchCommandTextBox.IsEnabled       = false;
+                if (value) PostExitCommandTextBox.IsEnabled = true;
+                else PostExitCommandTextBox.IsEnabled       = false;
 
-                Settings.SettingsCollapseMisc.UseGamePostLaunchCommand = value;
+                Settings.SettingsCollapseMisc.UseGamePostExitCommand = value;
             }
         }
 
-        public string PostLaunchCommand
+        public string PostExitCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePostLaunchCommand;
-            set => Settings.SettingsCollapseMisc.GamePostLaunchCommand = value;
+            get => Settings.SettingsCollapseMisc.GamePostExitCommand;
+            set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
         }
         #endregion
     }
