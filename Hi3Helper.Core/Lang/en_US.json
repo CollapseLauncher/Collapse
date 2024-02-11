@@ -327,7 +327,18 @@
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
     "CustomArgs_Footer3": "to see more parameters.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Boost Game Priority [Experimental]",
+
+    "Advanced_Title": "Advanced Settings",
+    "Advanced_Subtitle1": "Collapse Launcher Team",
+    "Advanced_Subtitle2": "IS NOT RESPONSIBLE",
+    "Advanced_Subtitle3": "for anything happened to your game, account or system while this settings is in use! Use at your own risk.",
+    "Advanced_GLC_WarningAdmin": "WARNING: Commands provided will be run as Administrator!",
+    "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
+    "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
+    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
+    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
 
   "_SettingsPage": {
