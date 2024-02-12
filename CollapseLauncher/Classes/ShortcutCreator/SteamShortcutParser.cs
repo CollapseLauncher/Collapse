@@ -33,7 +33,7 @@ namespace CollapseLauncher.ShortcutUtils
             {
                 _shortcuts.RemoveAll(x => x.preliminaryAppID == shortcut.preliminaryAppID);
             }
-                
+            
             _shortcuts.Add(shortcut);
             shortcut.MoveImages(_path, preset);
         }
@@ -110,7 +110,11 @@ namespace CollapseLauncher.ShortcutUtils
                             parse = parse == ParseType.NameStr ? ParseType.ValueStr : ParseType.ValueBool;
                             string key = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
                             if (key == "LastPlayTime")
+                            {
                                 parse = ParseType.ValueTime;
+                                if (i < ln.Length - 1 && ln[i + 1] == 0)
+                                    i++;
+                            }
                             if (key == "appid")
                                 parse = ParseType.ValueAppid;
                             buffer = [];
@@ -119,13 +123,12 @@ namespace CollapseLauncher.ShortcutUtils
                         buffer.Add(ln[i]);
                         break;
                     case ParseType.ValueTime:
-                        if (ln[i] == 0)
+                        if (ln[i] == 1 || ln[i] == 2)
                         {
-                            newShortcut.LastPlayTime = buffer.Count != 0 ? ANSI.GetString(buffer.ToArray(), 0, buffer.Count) : "\x00\x00\x00";
+                            newShortcut.LastPlayTime = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
                             buffer = [];
                             parse = ParseType.FindType;
-                            while (i < ln.Length - 1 && ln[i + 1] == 0)
-                                i++;
+                            i--;
                             continue;
                         }
                         buffer.Add(ln[i]);
