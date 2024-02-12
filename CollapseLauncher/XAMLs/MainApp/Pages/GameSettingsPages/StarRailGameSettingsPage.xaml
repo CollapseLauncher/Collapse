@@ -292,21 +292,12 @@
                                             Margin="0,0,0,8"
                                             CornerRadius="14"
                                             SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
-                                            <ComboBoxItem
-                                                Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
-                                                IsEnabled="False"
-                                                Visibility="Collapsed" />
-                                            <ComboBoxItem
-                                                Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"
-                                                IsEnabled="False"
-                                                Visibility="Collapsed" />
+                                            <!--dum workaround for the dum enum-->
+                                            <ComboBoxItem Content="" Visibility="Collapsed" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="" Visibility="Collapsed" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
-                                            <ComboBoxItem
-                                                Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"
-                                                IsEnabled="False"
-                                                Visibility="Collapsed" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>

@@ -29,7 +29,16 @@ namespace CollapseLauncher.GameSettings.StarRail
         TAA = 1,
         FXAA = 2
     }
-    #endregion
+
+    public enum CharacterQuality
+    {
+        Placeholder,
+        Low = 1,
+        Placeholder2,
+        Medium = 3,
+        High = 4
+    }
+    #endregion-
 
     internal class Model : IGameSettingsValue<Model>
     {
@@ -94,10 +103,10 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         /// <summary>
         /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
-        /// Options: Low (2), Medium(3), High(4)
+        /// Options: Low (1), Medium(3), High(4)
         /// Default: Medium
         /// </summary>
-        public Quality CharacterQuality { get; set; } = Quality.Medium;
+        public CharacterQuality CharacterQuality { get; set; } = CharacterQuality.Medium;
 
         /// <summary>
         /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>
