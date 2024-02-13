@@ -101,7 +101,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         /// <summary>
         /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
-        /// Options: Low (1), Medium(3), High(4)
+        /// Options: Low (2), Medium(3), High(4)
         /// Default: Medium
         /// </summary>
         public CharacterQualityEnum CharacterQuality { get; set; } = CharacterQualityEnum.Medium;
