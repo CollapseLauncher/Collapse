@@ -1829,7 +1829,7 @@ namespace CollapseLauncher
                         AppDiscordPresence.SetupPresence();
 #endif
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                    LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+                    LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
                     HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 }
 
