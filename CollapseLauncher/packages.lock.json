@@ -108,12 +108,6 @@
         "resolved": "6.0.0-preview.4.21253.7",
         "contentHash": "ipvxo/6FRdrmcsAtCGI9QPeaZZSyeCk9LiSVIJ4AN36IZQG7KFtk9ZbbYgvy4wzCzHkbBmTWaf2ESBqrYEtCRg=="
       },
-      "Microsoft.Windows.CsWinRT": {
-        "type": "Direct",
-        "requested": "[2.0.7, )",
-        "resolved": "2.0.7",
-        "contentHash": "l2PNM7ZpWh+0oGmESofqKcUz1PkkzOU4hmqM4DYi4gIjp36dJlQR6vuU9bAjZYX1SHYj360NqEireFVRntYhSQ=="
-      },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
         "requested": "[10.0.22621.2428, )",
