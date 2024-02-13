@@ -726,7 +726,7 @@
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </Grid>
-                    <StackPanel>
+                    <StackPanel x:Name="AdvancedSettingsPanel">
                         <TextBlock Margin="0,0,0,8" TextWrapping="WrapWholeWords">
                             <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle1}" />
                             <Run FontWeight="Bold" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle2}" />

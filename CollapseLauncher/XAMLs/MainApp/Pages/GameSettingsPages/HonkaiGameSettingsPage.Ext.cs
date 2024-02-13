@@ -454,39 +454,15 @@ namespace CollapseLauncher.Pages
             get
             {
                 bool value                                  = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
-                if (value)
-                {
-                    PreLaunchToggle.IsEnabled         = true;
-                    PostExitToggle.IsEnabled          = true;
-                    PreLaunchCommandTextBox.IsEnabled = true;
-                    PostExitCommandTextBox.IsEnabled  = true;
-                }
-                else
-                {
-                    PreLaunchToggle.IsEnabled         = false;
-                    PostExitToggle.IsEnabled          = false;
-                    PreLaunchCommandTextBox.IsEnabled = false;
-                    PostExitCommandTextBox.IsEnabled  = false;
-                }
+                if (value){AdvancedSettingsPanel.Visibility = Microsoft.UI.Xaml.Visibility.Visible;}
+                else AdvancedSettingsPanel.Visibility       = Microsoft.UI.Xaml.Visibility.Collapsed;
                 return value;
             }
             set
             { 
                 Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
-                if (value)
-                {
-                    PreLaunchToggle.IsEnabled         = true;
-                    PostExitToggle.IsEnabled          = true;
-                    PreLaunchCommandTextBox.IsEnabled = true;
-                    PostExitCommandTextBox.IsEnabled  = true;
-                }
-                else
-                {
-                    PreLaunchToggle.IsEnabled         = false;
-                    PostExitToggle.IsEnabled          = false;
-                    PreLaunchCommandTextBox.IsEnabled = false;
-                    PostExitCommandTextBox.IsEnabled  = false;
-                }
+                if (value) AdvancedSettingsPanel.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                else AdvancedSettingsPanel.Visibility       = Microsoft.UI.Xaml.Visibility.Collapsed;
             } 
         }
 
