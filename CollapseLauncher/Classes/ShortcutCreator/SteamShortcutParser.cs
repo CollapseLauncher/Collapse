@@ -134,7 +134,6 @@ namespace CollapseLauncher.ShortcutUtils
                             newShortcut.LastPlayTime = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
                             buffer = [];
                             parse = ParseType.FindType;
-                            continue;
                         }
                         break;
                     case ParseType.ValueAppid:
