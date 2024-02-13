@@ -2101,7 +2101,7 @@ namespace CollapseLauncher.Pages
                 _procPreGLC = new Process();
 
                 _procPreGLC.StartInfo.FileName               = "cmd.exe";
-                _procPreGLC.StartInfo.Arguments              = "/C " + preGameLaunchCommand;
+                _procPreGLC.StartInfo.Arguments              = "/S /C " + "\"" + preGameLaunchCommand + "\"";
                 _procPreGLC.StartInfo.CreateNoWindow         = true;
                 _procPreGLC.StartInfo.UseShellExecute        = false;
                 _procPreGLC.StartInfo.RedirectStandardOutput = true;
@@ -2170,7 +2170,7 @@ namespace CollapseLauncher.Pages
                 Process procPostGLC = new Process();
 
                 procPostGLC.StartInfo.FileName               = "cmd.exe";
-                procPostGLC.StartInfo.Arguments              = "/C " + postGameExitCommand;
+                procPostGLC.StartInfo.Arguments              = "/S /C " + "\"" + postGameExitCommand + "\"";
                 procPostGLC.StartInfo.CreateNoWindow         = true;
                 procPostGLC.StartInfo.UseShellExecute        = false;
                 procPostGLC.StartInfo.RedirectStandardOutput = true;
