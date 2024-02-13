@@ -179,12 +179,6 @@
         "resolved": "6.0.0-preview.4.21253.7",
         "contentHash": "ipvxo/6FRdrmcsAtCGI9QPeaZZSyeCk9LiSVIJ4AN36IZQG7KFtk9ZbbYgvy4wzCzHkbBmTWaf2ESBqrYEtCRg=="
       },
-      "Microsoft.Windows.CsWinRT": {
-        "type": "Direct",
-        "requested": "[2.0.7, )",
-        "resolved": "2.0.7",
-        "contentHash": "l2PNM7ZpWh+0oGmESofqKcUz1PkkzOU4hmqM4DYi4gIjp36dJlQR6vuU9bAjZYX1SHYj360NqEireFVRntYhSQ=="
-      },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
         "requested": "[10.0.22621.2428, )",
@@ -299,9 +293,9 @@
       },
       "System.Text.Json": {
         "type": "Direct",
-        "requested": "[8.0.1, )",
-        "resolved": "8.0.1",
-        "contentHash": "7AWk2za1hSEJBppe/Lg+uDcam2TrDqwIKa9XcPssSwyjC2xa39EKEGul3CO5RWNF+hMuZG4zlBDrvhBdDTg4lg==",
+        "requested": "[8.0.2, )",
+        "resolved": "8.0.2",
+        "contentHash": "29KA2StjWDYp32FvREifawRtNpTziLE1xyuDV9pVQ+MsaE9bIcIieP0io/eZZeLMxR+Nx9zI55RtUtpVpEIdeg==",
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
         }
@@ -555,8 +549,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "x0rAZECxIGx/YVjN28YRdpqka0+H7YMN9741FUDzipXPDzesd60gef/LI0ZCOcYSDsacTLTHvMAvxHG+TjbNNQ==",
+        "resolved": "8.0.2",
+        "contentHash": "oDedGrYVyzvtGZhgtURpeneHq9D3HQtrvU7q6iCRa+BbIXvTZayGFo0iK3b7qHrwQ/OOAn9B0ghzQH6AbW5LHg==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -950,7 +944,7 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.1, )"
+          "System.Drawing.Common": "[8.0.2, )"
         }
       },
       "hi3helper.core": {
