@@ -29,7 +29,7 @@ namespace Hi3Helper.Shared.Region
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
-                public static void InitAppPreset()
+        public static void InitAppPreset()
         {
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
@@ -271,7 +271,7 @@ namespace Hi3Helper.Shared.Region
             #endif
             { "EnableMultipleInstance", false },
             { "DontAskUpdate", false },
-            { "ThemeMode", new IniValue(AppThemeMode.Dark) },
+            { "ThemeMode", new IniValue(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
             { "ShowEventsPanel", true },

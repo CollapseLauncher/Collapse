@@ -39,23 +39,23 @@
                             <!-- Page brushes -->
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#000000" TintOpacity="0"/>
                             <AcrylicBrush x:Key="GameSettingsApplyGridBrush" TintColor="#666666" TintOpacity="0"  TintLuminosityOpacity="0.1" FallbackColor="#EE222222" />
-                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.7"  FallbackColor="#EE303030"/>
-                            <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush" TintColor="#000000" TintOpacity="0.0" />
-                            <AcrylicBrush x:Key="PageBackgroundAcrylicBrush" TintColor="#222222" TintOpacity="1" TintLuminosityOpacity="0.60" FallbackColor="#E1222222"/>
+                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"  FallbackColor="#EE303030"/>
+                            <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush" TintColor="#000000" TintOpacity="0" />
+                            <AcrylicBrush x:Key="PageBackgroundAcrylicBrush" TintColor="#222222" TintOpacity="1" TintLuminosityOpacity="0.00" FallbackColor="#E1222222"/>
                             <AcrylicBrush x:Key="UpdatePageAcrylicBrush" TintColor="#111111" TintOpacity="0.6" TintLuminosityOpacity="0.8" FallbackColor="#FF1F1F1F"/>
-                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#222222" TintOpacity="0.0"  TintLuminosityOpacity="0.4" FallbackColor="#E1222222"/>
+                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#222222" TintOpacity="0.0"  TintLuminosityOpacity="0.25" FallbackColor="#E1222222"/>
                             <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
 
                             <!-- Controls element brush -->
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush" TintColor="#000000" TintOpacity="0.33" FallbackColor="#AA222222"/>
-                            <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.50" FallbackColor="#FF222222"/>
-                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#333333"/>
-                            <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.4" FallbackColor="#EE333333"/>
+                            <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="1" FallbackColor="#FF222222"/>
+                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#333333"/>
+                            <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#EE333333"/>
                             <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0" TintLuminosityOpacity="0.9" FallbackColor="#DD222222"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
                             <AcrylicBrush x:Key="ButtonDisabledBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
                             <AcrylicBrush x:Key="LoadingPopupGridBrush" TintColor="{ThemeResource SystemAccentColorLight1}" TintOpacity="1" FallbackColor="{ThemeResource SystemAccentColorLight1}"/>
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.85" FallbackColor="#FF222222"/>
+                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="1" FallbackColor="#FF222222"/>
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#EE1D1D1D"/>
                             <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.80"/>
                             <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
@@ -107,8 +107,8 @@
                             <AcrylicBrush x:Key="ButtonDisabledBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#AAFFFFFF"/>
                             <AcrylicBrush x:Key="LoadingPopupGridBrush" TintColor="{ThemeResource SystemAccentColorDark1}" TintOpacity="1" FallbackColor="{ThemeResource SystemAccentColorDark1}"/>
                             <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="1" FallbackColor="#FFFFFFFF"/>
-                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.7" FallbackColor="#FFEEEEEE"/>
-                            <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5"/>
+                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#EFEFEF" TintOpacity="0" TintLuminosityOpacity="1" FallbackColor="#FFEEEEEE"/>
+                            <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="1"/>
                             <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
                                 <GradientStop Color="#00FFFFFF" Offset="0.50"/>
                                 <GradientStop Color="#A0FFFFFF" Offset="1"/>
