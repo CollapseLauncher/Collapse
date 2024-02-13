@@ -40,12 +40,19 @@
                                         x:Name="GameResolutionWindow"
                                         Margin="0,0,0,8"
                                         Orientation="Vertical">
-                                        <CheckBox
-                                            x:Name="VSyncToggle"
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Center"
-                                            Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
-                                            IsChecked="{x:Bind EnableVSync, Mode=TwoWay}" />
+                                        <Grid>
+                                            <Border
+                                                x:Name="VSyncTooltip"
+                                                Background="Transparent"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}"
+                                                />
+                                            <CheckBox
+                                                x:Name="VSyncToggle"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
+                                                IsChecked="{x:Bind EnableVSync, Mode=TwoWay}" />
+                                        </Grid>
                                         <CheckBox
                                             x:Name="GameResolutionFullscreen"
                                             HorizontalAlignment="Left"
@@ -292,10 +299,16 @@
                                             Margin="0,0,0,8"
                                             CornerRadius="14"
                                             SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
-                                            <!--dum workaround for the dum enum-->
-                                            <ComboBoxItem Content="" Visibility="Collapsed" IsEnabled="False"/>
+                                            <!--  dum workaround for the dum enum  -->
+                                            <ComboBoxItem
+                                                Content=""
+                                                IsEnabled="False"
+                                                Visibility="Collapsed" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="" Visibility="Collapsed" IsEnabled="False"/>
+                                            <ComboBoxItem
+                                                Content=""
+                                                IsEnabled="False"
+                                                Visibility="Collapsed" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
                                         </ComboBox>
@@ -685,11 +698,11 @@
                             Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
                         <ToggleSwitch
                             Grid.Column="1"
-                            FontWeight="SemiBold"
-                            FontSize="26"
+                            Margin="8,12,0,8"
                             VerticalAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
-                            Margin="8,12,0,8"
+                            FontSize="26"
+                            FontWeight="SemiBold"
                             IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />

@@ -188,11 +188,24 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int fpsValue = NormalizeFPSNumber(Settings.GraphicsSettings.FPS);
-                return Model.FPSIndexDict[fpsValue];
+                int value = Model.FPSIndexDict[NormalizeFPSNumber(Settings.GraphicsSettings.FPS)];
+                if (value == 2)
+                {
+                    VSyncToggle.IsChecked = false;
+                    VSyncToggle.IsEnabled = false;
+                }
+
+                return value;
             }
             set
             {
+                if (value == 2)
+                {
+                    VSyncToggle.IsChecked = false;
+                    VSyncToggle.IsEnabled = false;
+                }
+                else { VSyncToggle.IsEnabled = true; }
+
                 Settings.GraphicsSettings.FPS = Model.FPSIndex[value];
             }
         }
