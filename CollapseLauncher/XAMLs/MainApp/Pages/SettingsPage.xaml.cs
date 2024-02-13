@@ -22,6 +22,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using CollapseLauncher.Pages.OOBE;
 
 namespace CollapseLauncher.Pages
 {
@@ -90,7 +91,7 @@ namespace CollapseLauncher.Pages
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
                     catch { }
-                    MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+                    MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
                     break;
                 default:
                     break;

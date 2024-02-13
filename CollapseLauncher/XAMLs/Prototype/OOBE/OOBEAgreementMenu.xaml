@@ -2,10 +2,58 @@
     x:Class="CollapseLauncher.Pages.OOBE.OOBEAgreementMenu"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CollapseLauncher"
+    xmlns:local="using:CollapseLauncher.Pages.OOBE"
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
     mc:Ignorable="d"
     Background="Transparent">
-    <Grid></Grid>
+    <Grid Margin="48">
+        <Grid.ChildrenTransitions>
+            <PopupThemeTransition/>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <FlipView x:Name="ImageCarousel" Grid.RowSpan="2" ItemsSource="{x:Bind markdownFileList}" Background="Transparent" >
+            <FlipView.ItemsPanel >
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </FlipView.ItemsPanel>
+            <FlipView.ItemTemplate>
+                <DataTemplate x:DataType="local:AgreementProperty">
+                    <Grid>
+                        <Grid.ChildrenTransitions>
+                            <PopupThemeTransition/>
+                        </Grid.ChildrenTransitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock FontSize="32">
+                            <Run Text="Agreement:"/>
+                            <Run x:Name="AgreementTitle" Text="{x:Bind title}" FontWeight="Bold"/>
+                        </TextBlock>
+                        <Grid Grid.Row="1" Margin="0,16">
+                            <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8"/>
+                            <ScrollViewer IsDeferredScrollingEnabled="True">
+                                <markdown:MarkdownTextBlock Margin="24" Text="{x:Bind text, Mode=OneWay}" Config="{x:Bind markdownConfig, Mode=OneWay}"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+        <Button Grid.Row="2" HorizontalAlignment="Right" Style="{ThemeResource TransparentDefaultButtonStyle}" Click="Button_Click">
+            <StackPanel Orientation="Horizontal">
+                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="I accept the agreement" VerticalAlignment="Center" Margin="8,-1,0,0" FontSize="16" FontWeight="Medium"/>
+            </StackPanel>
+        </Button>
+    </Grid>
 </Page>

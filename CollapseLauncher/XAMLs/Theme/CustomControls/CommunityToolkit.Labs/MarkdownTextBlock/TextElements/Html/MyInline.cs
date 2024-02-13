@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements.Html;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
 internal class MyInline : IAddChild
 {

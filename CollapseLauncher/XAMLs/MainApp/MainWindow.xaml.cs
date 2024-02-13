@@ -1,13 +1,19 @@
+using CollapseLauncher.XAMLs.Elements;
+using CommunityToolkit.WinUI.Animations;
 using Microsoft.UI;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Composition.Core;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -55,6 +61,8 @@ namespace CollapseLauncher
             try
             {
                 InitializeWindowSettings();
+                LoadingMessageHelper.Initialize();
+
                 if (m_appWindow.TitleBar.ExtendsContentIntoTitleBar) m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
                 if (IsFirstInstall || startOOBE)
@@ -72,6 +80,10 @@ namespace CollapseLauncher
                 }
                 else
                     StartMainPage();
+
+                AnimationHelper.EnableImplicitAnimation(TitleBarFrameGrid, true);
+                AnimationHelper.EnableImplicitAnimation(BottomFrameGrid, true);
+                AnimationHelper.EnableImplicitAnimation(MainWindowGridContainer, true);
             }
             catch (Exception ex)
             {
@@ -98,6 +110,7 @@ namespace CollapseLauncher
             this.InitializeComponent();
             this.Activate();
             this.Closed += (_, _) => { App.IsAppKilled = true; };
+
             RunSetDragAreaQueue();
             // Initialize Window Handlers
             m_windowHandle = GetActiveWindow();

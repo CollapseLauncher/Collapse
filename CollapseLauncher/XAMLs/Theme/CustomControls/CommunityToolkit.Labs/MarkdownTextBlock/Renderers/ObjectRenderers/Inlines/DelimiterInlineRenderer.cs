@@ -5,7 +5,7 @@
 using Markdig.Syntax.Inlines;
 using System;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
 internal class DelimiterInlineRenderer : UWPObjectRenderer<DelimiterInline>
 {

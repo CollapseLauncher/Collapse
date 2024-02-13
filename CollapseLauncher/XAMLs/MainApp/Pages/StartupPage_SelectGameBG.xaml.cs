@@ -102,8 +102,8 @@ namespace CollapseLauncher.Pages
                     uint Width = (uint)((double)m_actualMainFrameSize.Width * m_appDPIScale);
                     uint Height = (uint)((double)m_actualMainFrameSize.Height * m_appDPIScale);
 
-                    _gameLogoBitmapImage = await MainPage.Stream2BitmapImage(fs2);
-                    (_gamePosterBitmap, _gamePosterBitmapImage) = await MainPage.GetResizedBitmapNew(_gamePosterPath, Width, Height);
+                    _gameLogoBitmapImage = await ImageLoaderHelper.Stream2BitmapImage(fs2);
+                    (_gamePosterBitmap, _gamePosterBitmapImage) = await ImageLoaderHelper.GetResizedBitmapNew(_gamePosterPath, Width, Height);
                 }
             }
             catch (Exception ex)

@@ -4,7 +4,7 @@
 
 using CommunityToolkit.WinUI.Controls.MarkdownTextBlockRns;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 public record MarkdownConfig
 {

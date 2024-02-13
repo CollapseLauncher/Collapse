@@ -184,7 +184,8 @@ namespace Hi3Helper.Shared.Region
         #region App Config Definitions
         public static AppIniStruct appIni = new AppIniStruct();
         public static string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-        public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "Images", "PageBackground", "default.png");
+        public static string AppImagesFolder = Path.Combine(AppFolder, "Assets", "Images");
+        public static string AppDefaultBG = Path.Combine(AppImagesFolder, "PageBackground", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder

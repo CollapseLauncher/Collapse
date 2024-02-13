@@ -5,7 +5,7 @@
 ﻿using Markdig.Renderers;
 using Markdig.Syntax;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers;
 
 public abstract class UWPObjectRenderer<TObject> : MarkdownObjectRenderer<WinUIRenderer, TObject>
     where TObject : MarkdownObject

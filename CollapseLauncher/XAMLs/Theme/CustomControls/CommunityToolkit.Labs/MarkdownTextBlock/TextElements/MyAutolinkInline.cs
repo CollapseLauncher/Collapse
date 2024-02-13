@@ -6,7 +6,7 @@ using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
 using System;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyAutolinkInline : IAddChild
 {

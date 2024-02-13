@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Documents;
 using System.Collections.Generic;
 using Windows.UI.Text;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements.Html;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
 internal class MyBlock : IAddChild
 {

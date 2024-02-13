@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Documents;
 using System;
 using Windows.UI.Text;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyEmphasisInline : IAddChild
 {

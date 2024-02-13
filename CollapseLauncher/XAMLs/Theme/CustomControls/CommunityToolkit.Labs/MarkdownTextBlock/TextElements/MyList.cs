@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Documents;
 using RomanNumerals;
 using System.Globalization;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyList : IAddChild
 {

@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 internal class DefaultSVGRenderer : ISVGRenderer
 {

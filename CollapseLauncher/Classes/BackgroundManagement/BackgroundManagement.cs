@@ -211,43 +211,13 @@ namespace CollapseLauncher
 
         private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath, uint ToWidth, uint ToHeight)
-        {
-            Bitmap bitmapRet;
-            BitmapImage bitmapImageRet;
-
-            FileStream cachedFileStream = await ImageLoaderHelper.LoadImage(FilePath, false, false);
-            if (cachedFileStream == null) return (null, null);
-            using (cachedFileStream)
-            {
-                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
-            }
-
-            return (bitmapRet, bitmapImageRet);
-        }
-
-        public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
-        {
-            BitmapImage ret = new BitmapImage();
-            image.Seek(0);
-            await ret.SetSourceAsync(image);
-            return ret;
-        }
-
-        public static Bitmap Stream2Bitmap(IRandomAccessStream image)
-        {
-            image.Seek(0);
-            return new Bitmap(image.AsStream());
-        }
-
         private async Task ApplyBackground(bool IsFirstStartup)
         {
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
             BitmapImage ReplacementBitmap;
-            (PaletteBitmap, ReplacementBitmap) = await GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, Width, Height);
+            (PaletteBitmap, ReplacementBitmap) = await ImageLoaderHelper.GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, Width, Height);
             if (PaletteBitmap == null || ReplacementBitmap == null) return;
 
             ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);

@@ -9,7 +9,7 @@ using System.Linq;
 using Windows.Foundation;
 using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
 
-namespace CommunityToolkit.WinUI.Controls;
+namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
 public partial class DataRow : Panel
 {

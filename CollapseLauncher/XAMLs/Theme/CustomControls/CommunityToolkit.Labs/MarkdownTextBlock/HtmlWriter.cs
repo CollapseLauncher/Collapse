@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers;
-using CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
-using CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements.Html;
+using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers;
+using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
+using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 using HtmlAgilityPack;
 using System.Linq;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 internal class HtmlWriter
 {

@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 
-namespace CommunityToolkit.WinUI.Controls;
+namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
 [TemplatePart(Name = nameof(PART_ColumnSizer), Type = typeof(ContentSizer))]
 public partial class DataColumn : ContentControl

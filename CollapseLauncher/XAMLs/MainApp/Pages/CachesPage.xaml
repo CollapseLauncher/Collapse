@@ -9,6 +9,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:control="using:CommunityToolkit.WinUI.Controls"
+    xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded" Loaded="InitializeLoaded">
     <Grid>
@@ -33,26 +34,26 @@
                             <interactivity:Interaction.Behaviors>
                                 <behaviors:StickyHeaderBehavior />
                             </interactivity:Interaction.Behaviors>
-                            <control:DataTable Margin="12,0,0,8">
-                                <control:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" CanResize="True" Tag="CacheName" MinWidth="276" DesiredWidth="296" FontSize="13"/>
-                                <control:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" CanResize="True" Tag="CacheType" FontSize="13"/>
-                                <control:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" CanResize="True" Tag="Source" MinWidth="276" DesiredWidth="436" FontSize="13"/>
-                                <control:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" CanResize="True" Tag="CacheSize" DesiredWidth="128" FontSize="13"/>
-                                <control:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" CanResize="True" Tag="CacheCurCRC" DesiredWidth="92" FontSize="13"/>
-                                <control:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" CanResize="True" Tag="CacheExptCRC" DesiredWidth="92" FontSize="13"/>
-                            </control:DataTable>
+                            <datatable:DataTable Margin="12,0,0,8">
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" CanResize="True" Tag="CacheName" MinWidth="276" DesiredWidth="296" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" CanResize="True" Tag="CacheType" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" CanResize="True" Tag="Source" MinWidth="276" DesiredWidth="436" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" CanResize="True" Tag="CacheSize" DesiredWidth="128" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" CanResize="True" Tag="CacheCurCRC" DesiredWidth="92" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" CanResize="True" Tag="CacheExptCRC" DesiredWidth="92" FontSize="13"/>
+                            </datatable:DataTable>
                         </Border>
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:IAssetProperty">
-                            <control:DataRow HorizontalAlignment="Left">
+                            <datatable:DataRow HorizontalAlignment="Left">
                                 <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind Name}" />
                                 <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind AssetTypeString}" />
                                 <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind Source}" />
                                 <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind SizeStr}" />
                                 <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind LocalCRC}" />
                                 <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind RemoteCRC}" />
-                            </control:DataRow>
+                            </datatable:DataRow>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     <ListView.ItemContainerStyle>

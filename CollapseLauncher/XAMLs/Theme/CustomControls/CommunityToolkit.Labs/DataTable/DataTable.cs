@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
 
-namespace CommunityToolkit.WinUI.Controls;
+namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
 /// <summary>
 /// A <see cref="DataTable"/> is a <see cref="Panel"/> which lays out <see cref="DataColumn"/>s based on

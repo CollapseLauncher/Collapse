@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource PageBackgroundAcrylicBrush}">
+    Background="Transparent">
     <Grid>
         <Frame x:Name="BackgroundFrame" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
         <Button x:Name="NextPage" Style="{ThemeResource AccentButtonStyle}"
@@ -18,7 +18,7 @@
                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
             </StackPanel>
         </Button>
-        <Button x:Name="PrevPage" Style="{ThemeResource AccentButtonStyle}"
+        <Button x:Name="PrevPage" Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}"
                 HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="32" IsEnabled="True"
                 Click="PrevPage_Click" CornerRadius="16">
             <StackPanel Orientation="Horizontal" Margin="8,0">

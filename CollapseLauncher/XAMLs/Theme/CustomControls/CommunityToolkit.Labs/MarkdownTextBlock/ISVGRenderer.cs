@@ -5,7 +5,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 public interface ISVGRenderer
 {

@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:labs="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock">
+                    xmlns:labs="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock">
 
     <Style BasedOn="{StaticResource DefaultMarkdownTextBlockStyle}"
            TargetType="labs:MarkdownTextBlock" />

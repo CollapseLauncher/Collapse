@@ -51,7 +51,7 @@
 		<DebugType>portable</DebugType>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT;PROTOTYPEUI</DefineConstants>
 		<Optimize>True</Optimize>
 		<GitSkipCache>true</GitSkipCache>
 		<DebugType>portable</DebugType>
@@ -132,6 +132,14 @@
 		</Content>
 
 		<None Include="..\.editorconfig" Link=".editorconfig" />
+
+		<Content Include="..\PRIVACY.md">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
+		<Content Include="..\THIRD_PARTY_NOTICES.md">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">

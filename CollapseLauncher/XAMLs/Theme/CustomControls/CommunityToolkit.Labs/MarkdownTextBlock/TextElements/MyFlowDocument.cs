@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Documents;
 using Block = Microsoft.UI.Xaml.Documents.Block;
 using Inline = Microsoft.UI.Xaml.Documents.Inline;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 public class MyFlowDocument : IAddChild
 {

@@ -5,7 +5,7 @@
 using Markdig.Syntax;
 using Microsoft.UI.Xaml.Documents;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyBlockContainer : IAddChild
 {

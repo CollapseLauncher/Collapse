@@ -33,6 +33,7 @@ namespace CollapseLauncher.Pages
             SaveAppConfig();
 
             (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            MainWindow.ToggleAcrylic();
         }
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)

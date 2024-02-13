@@ -9,13 +9,15 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-
+using Windows.Storage.Streams;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
 namespace CollapseLauncher
@@ -215,6 +217,36 @@ namespace CollapseLauncher
             };
 
             await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
+        }
+
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath, uint ToWidth, uint ToHeight)
+        {
+            Bitmap bitmapRet;
+            BitmapImage bitmapImageRet;
+
+            FileStream cachedFileStream = await ImageLoaderHelper.LoadImage(FilePath, false, false);
+            if (cachedFileStream == null) return (null, null);
+            using (cachedFileStream)
+            {
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+            }
+
+            return (bitmapRet, bitmapImageRet);
+        }
+
+        public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
+        {
+            BitmapImage ret = new BitmapImage();
+            image.Seek(0);
+            await ret.SetSourceAsync(image);
+            return ret;
+        }
+
+        public static Bitmap Stream2Bitmap(IRandomAccessStream image)
+        {
+            image.Seek(0);
+            return new Bitmap(image.AsStream());
         }
     }
 }

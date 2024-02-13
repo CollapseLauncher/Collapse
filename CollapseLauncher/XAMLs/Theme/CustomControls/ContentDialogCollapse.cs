@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using System.Linq;
 using Windows.Foundation;
 using NColor = Windows.UI.Color;
 
@@ -47,7 +48,7 @@ namespace CollapseLauncher.CustomControls
                 titleStack.Children.Add(new FontIcon
                 {
                     Glyph = ThemeTitleGlyph,
-                    Foreground = (SolidColorBrush)Application.Current.Resources["DefaultFGColorAccentBrush"],
+                    // Foreground = (SolidColorBrush)Application.Current.Resources["DefaultFGColorAccentBrush"],
                     Margin = new Thickness(0, 0, 10, 0),
                     FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
                     FontSize = 22

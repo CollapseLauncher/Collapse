@@ -5,7 +5,7 @@
 //using ColorCode;
 //using ColorCode.Common;
 //using ColorCode.Styling;
-using CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
@@ -18,7 +18,7 @@ using System.Xml.Linq;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 public static class Extensions
 {

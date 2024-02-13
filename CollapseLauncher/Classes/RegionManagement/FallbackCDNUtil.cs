@@ -4,6 +4,9 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
 using Squirrel.Sources;
 using System;
+using System.Collections.Generic;
+using System.CommandLine.Parsing;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -367,6 +370,48 @@ namespace CollapseLauncher
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
             => await BridgedNetworkStream.CreateStream(responseMsg, token);
+
+        public static async ValueTask<long[]> GetCDNLatencies(CancellationTokenSource tokenSource, int pingCount = 1)
+        {
+            const string fileAsPingTarget = "stable/release";
+
+            // Get the latency index
+            long[] latencies = new long[CDNList.Count];
+
+            // Warming up
+            CDNList.ForEach(async x => await TryGetURLStatus(x, fileAsPingTarget, tokenSource.Token, true));
+
+            using (tokenSource)
+            {
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                for (int i = 0; i < latencies.Length; i++)
+                {
+                    long[] latencyAvgArr = new long[pingCount];
+                    bool isSuccess = true;
+                    for (int j = 0; j < latencyAvgArr.Length; j++)
+                    {
+                        // If once is failed, then assign the max value and skip the entire check
+                        if (!isSuccess)
+                        {
+                            latencyAvgArr[j] = long.MaxValue;
+                            continue;
+                        }
+
+                        // Restart the stopwatch
+                        stopwatch.Restart();
+                        // Get the URL Status then return boolean and and URLStatus
+                        CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
+                        latencyAvgArr[j] = !(isSuccess = urlStatus.IsSuccessStatusCode) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
+                    }
+
+                    // Get the average latency of the CDN. If failed, then return -1
+                    long latencyAvg = (long)latencyAvgArr.Average();
+                    latencies[i] = latencyAvg;
+                }
+            }
+
+            return latencies;
+        }
 
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);

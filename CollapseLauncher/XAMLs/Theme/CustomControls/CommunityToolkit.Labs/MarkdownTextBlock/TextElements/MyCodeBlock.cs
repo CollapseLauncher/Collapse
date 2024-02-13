@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyCodeBlock : IAddChild
 {

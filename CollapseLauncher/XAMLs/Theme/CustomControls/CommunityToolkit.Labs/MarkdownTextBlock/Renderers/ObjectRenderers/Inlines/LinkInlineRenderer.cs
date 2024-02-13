@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
+using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Syntax.Inlines;
 using System;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
 internal class LinkInlineRenderer : UWPObjectRenderer<LinkInline>
 {
@@ -24,7 +24,7 @@ internal class LinkInlineRenderer : UWPObjectRenderer<LinkInline>
 
         if (link.IsImage)
         {
-            var image = new MyImage(link, WinUI.MarkdownTextBlock.Extensions.GetUri(url, renderer.Config.BaseUrl), renderer.Config);
+            var image = new MyImage(link, Labs.MarkdownTextBlock.Extensions.GetUri(url, renderer.Config.BaseUrl), renderer.Config);
             renderer.WriteInline(image);
         }
         else

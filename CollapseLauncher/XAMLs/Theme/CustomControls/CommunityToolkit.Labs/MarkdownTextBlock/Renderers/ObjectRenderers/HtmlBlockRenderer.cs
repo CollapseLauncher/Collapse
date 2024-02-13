@@ -8,7 +8,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers.ObjectRenderers;
+namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
 internal class HtmlBlockRenderer : UWPObjectRenderer<HtmlBlock>
 {
