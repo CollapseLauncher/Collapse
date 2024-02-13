@@ -301,14 +301,14 @@
                                             SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
                                             <!--  dum workaround for the dum enum  -->
                                             <ComboBoxItem
-                                                Content=""
+                                                Content="0"
+                                                IsEnabled="False"
+                                                Visibility="Collapsed" />
+                                            <ComboBoxItem
+                                                Content="1"
                                                 IsEnabled="False"
                                                 Visibility="Collapsed" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem
-                                                Content=""
-                                                IsEnabled="False"
-                                                Visibility="Collapsed" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
                                         </ComboBox>

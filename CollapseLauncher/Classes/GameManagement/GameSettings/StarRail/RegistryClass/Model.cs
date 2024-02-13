@@ -30,11 +30,9 @@ namespace CollapseLauncher.GameSettings.StarRail
         FXAA = 2
     }
 
-    public enum CharacterQuality
+    public enum CharacterQualityEnum
     {
-        Placeholder,
-        Low = 1,
-        Placeholder2,
+        Low = 2,
         Medium = 3,
         High = 4
     }
@@ -106,7 +104,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Options: Low (1), Medium(3), High(4)
         /// Default: Medium
         /// </summary>
-        public CharacterQuality CharacterQuality { get; set; } = CharacterQuality.Medium;
+        public CharacterQualityEnum CharacterQuality { get; set; } = CharacterQualityEnum.Medium;
 
         /// <summary>
         /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>

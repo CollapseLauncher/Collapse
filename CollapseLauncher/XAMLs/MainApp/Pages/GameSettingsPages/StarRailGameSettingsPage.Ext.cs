@@ -246,8 +246,17 @@ namespace CollapseLauncher.Pages
         //CharacterQuality
         public int CharacterQuality
         {
-            get => (int)Settings.GraphicsSettings.CharacterQuality;
-            set => Settings.GraphicsSettings.CharacterQuality = (CharacterQuality)value;
+            get
+            {
+                int value = (int)Settings.GraphicsSettings.CharacterQuality;
+
+                // Clamp value
+                if (value < 2) return 2; // Low
+                if (value > 4) return 4; // High
+
+                return value;
+            }
+            set => Settings.GraphicsSettings.CharacterQuality = (CharacterQualityEnum)value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
