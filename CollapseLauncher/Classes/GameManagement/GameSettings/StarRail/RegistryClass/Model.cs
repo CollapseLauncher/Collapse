@@ -38,7 +38,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         Medium = 3,
         High = 4
     }
-    #endregion-
+    #endregion
 
     internal class Model : IGameSettingsValue<Model>
     {

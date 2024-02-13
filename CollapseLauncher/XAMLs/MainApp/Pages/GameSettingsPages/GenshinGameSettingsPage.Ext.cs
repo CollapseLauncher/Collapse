@@ -2,8 +2,8 @@
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
