@@ -54,9 +54,9 @@ namespace CollapseLauncher.Pages
         private HomeMenuPanel MenuPanels { get => regionNewsProp; }
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
-        
-        public static  int RefreshRateDefault { get; } = 200;
-        public static  int RefreshRateSlow    { get; } = 1000;
+
+        public static int RefreshRateDefault { get; } = 200;
+        public static int RefreshRateSlow { get; } = 1000;
         private static int _refreshRate;
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace CollapseLauncher.Pages
             get => _refreshRate;
             set
             {
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"HomePage Refresh Rate changed to {value}", LogType.Debug, true);
-                #endif
+#endif
                 _refreshRate = value;
             }
         }
@@ -84,9 +84,9 @@ namespace CollapseLauncher.Pages
         #region PageMethod
         public HomePage()
         {
-            RefreshRate =  RefreshRateDefault;
+            RefreshRate = RefreshRateDefault;
             this.Loaded += StartLoadedRoutine;
-            m_homePage  =  this;
+            m_homePage = this;
         }
 
         ~HomePage()
@@ -441,7 +441,7 @@ namespace CollapseLauncher.Pages
         #region Open Link from Tag
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
-            if (!e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed) return;
+            if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
             SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString(), this.Content);
         }
 
@@ -786,7 +786,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
             }
         }
-        
+
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
             FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
@@ -812,7 +812,7 @@ namespace CollapseLauncher.Pages
                     while (CurrentGameProperty.IsGameRunning)
                     {
                         _cachedIsGameRunning = true;
-                            
+
                         if (StartGameBtn.IsEnabled)
                             LauncherBtn.Translation -= Shadow16;
 
@@ -830,15 +830,15 @@ namespace CollapseLauncher.Pages
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                        #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                         AppDiscordPresence.SetActivity(ActivityType.Play, 0);
-                        #endif
-                        
+#endif
+
                         await Task.Delay(RefreshRate, Token);
                     }
 
                     _cachedIsGameRunning = false;
-                    
+
                     if (!StartGameBtn.IsEnabled)
                         LauncherBtn.Translation += Shadow16;
 
@@ -855,11 +855,11 @@ namespace CollapseLauncher.Pages
 
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-                    
-                    #if !DISABLEDISCORD
+
+#if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
-                    #endif
-                    
+#endif
+
                     await Task.Delay(RefreshRate, Token);
                 }
             }
@@ -1227,19 +1227,19 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
                     GenshinHDREnforcer();
 
-                Process proc                    = new Process();
-                proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
-                proc.StartInfo.UseShellExecute  = true;
-                proc.StartInfo.Arguments        = GetLaunchArguments(_Settings);
+                Process proc = new Process();
+                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Arguments = GetLaunchArguments(_Settings);
                 LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
                 // proc.StartInfo.WorkingDirectory = CurrentGameProperty._GameVersion.GamePreset.ZoneName == "Bilibili" ||
                 //     (CurrentGameProperty._GameVersion.GameType == GameType.Genshin
                 //     && GetAppConfigValue("ForceGIHDREnable").ToBool()) ?
                 //         NormalizePath(GameDirPath) :
                 //         Path.GetDirectoryName(NormalizePath(GameDirPath));
-                proc.StartInfo.UseShellExecute  = false;
+                proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
-                proc.StartInfo.Verb             = "runas";
+                proc.StartInfo.Verb = "runas";
                 proc.Start();
 
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
@@ -1271,26 +1271,26 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                StartPlaytimeCounter(proc, CurrentGameProperty._GameVersion.GamePreset);
-
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
                     CollapsePrioControl(proc);
+
+                // Init new target process
+                Process toTargetProc;
+
+                // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
+                while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
+                {
+                    await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
+                    // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
+                    // it will instead returns a non-null value and assign it to "toTargetProc" variable,
+                    // which it will break the loop and execute the next code below it.
+                }
+
+                StartPlaytimeCounter(toTargetProc, CurrentGameProperty._GameVersion.GamePreset);
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc.UseGameBoost)
                 {
-                    // Init new target process
-                    Process toTargetProc;
-
-                    // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
-                    while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
-                    {
-                        await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
-                                                // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
-                                                // it will instead returns a non-null value and assign it to "toTargetProc" variable,
-                                                // which it will break the loop and execute the next code below it.
-                    }
-
                     // Assign the priority to the process and write a log (just for displaying any info)
                     toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
                     LogWriteLine($"Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
@@ -1810,66 +1810,45 @@ namespace CollapseLauncher.Pages
             int currentPlaytime = ReadPlaytimeFromRegistry(gamePreset.ConfigRegistryLocation);
 
             DateTime begin = DateTime.Now;
-
-            System.Timers.Timer inGameTimer = new System.Timers.Timer();
             int numOfLoops = 0;
-            inGameTimer.Interval = 60000;
-            inGameTimer.Elapsed += (o, e) =>
-            {
-                numOfLoops++;
 
-                DateTime now = DateTime.Now;
-                int elapsedSeconds = (int)(now - begin).TotalSeconds;
-                if (elapsedSeconds < 0)
-                    elapsedSeconds = numOfLoops * 60;
-
-                if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                    m_homePage?.DispatcherQueue.TryEnqueue(() => { m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds); });           
 #if DEBUG
-                LogWriteLine(string.Format("{0} - {1}s elapsed. ({2})", gamePreset.ProfileName, elapsedSeconds, now.ToLongTimeString()));
-#endif                    
-                SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
-            };
-            inGameTimer.Start();
+            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
+#endif
 
-            await proc.WaitForExitAsync();
-            if (gamePreset.GameType == GameType.Honkai)
+            using (var inGameTimer = new System.Timers.Timer())
             {
-                try
+                inGameTimer.Interval = 60000;
+                inGameTimer.Elapsed += (o, e) =>
                 {
-                    while (true)
-                    {
-                        Process[] processName = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
-                        switch (processName.Length)
+                    numOfLoops++;
+
+                    DateTime now = DateTime.Now;
+                    int elapsedSeconds = (int)(now - begin).TotalSeconds;
+                    if (elapsedSeconds < 0)
+                        elapsedSeconds = numOfLoops * 60;
+
+                    if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
+                        m_homePage?.DispatcherQueue.TryEnqueue(() =>
                         {
-                            case 0:
-                                break;
-                            case 1:
-                                proc = processName[0];
-                                LogWriteLine($"Found the main HI3 process [{processName[0].Id}]");
-                                await proc.WaitForExitAsync();
-                                break;
-                            default:
-                                await Task.Delay(5000);
-                                continue;
-                        }
-                        break;
-                    }
+                            m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
+                        });
+#if DEBUG
+                    LogWriteLine($"{gamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
+#endif
+                    SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
+                };
 
-                }
-                catch (Exception e)
-                {
-                    LogWriteLine($"Failed to find the main BH3 process [{e}]");
-                }
+                inGameTimer.Start();
+                await proc.WaitForExitAsync();
+                inGameTimer.Stop();
             }
-
-            inGameTimer.Stop();
 
             DateTime end = DateTime.Now;
             int elapsedSeconds = (int)(end - begin).TotalSeconds;
             if (elapsedSeconds < 0)
             {
-                LogWriteLine(string.Format("[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({0}s)", elapsedSeconds.ToString()), LogType.Error);
+                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
                 elapsedSeconds = numOfLoops * 60;
                 Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
             }
@@ -1877,7 +1856,10 @@ namespace CollapseLauncher.Pages
             SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
             LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
             if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                m_homePage?.DispatcherQueue.TryEnqueue(() => { m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds); });
+                m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                {
+                    m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
+                });
         }
         #endregion
 
