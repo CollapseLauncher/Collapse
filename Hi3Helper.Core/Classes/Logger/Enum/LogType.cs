@@ -8,6 +8,7 @@
         Scheme,
         NoTag,
         Game,
-        Debug
+        Debug,
+        GLC
     }
 }

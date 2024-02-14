@@ -626,7 +626,7 @@ namespace CollapseLauncher.Interfaces
                 lock (this)
                 {
                     // Increment total size counter
-                    if (updateTotalProgress) { _progressTotalSizeCurrent += read; }
+                    if (updateTotalProgress) _progressTotalSizeCurrent += read;
                     // Increment per file size counter
                     _progressPerFileSizeCurrent += read;
                 }

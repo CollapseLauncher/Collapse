@@ -285,6 +285,9 @@ namespace CollapseLauncher
                     MainWindow.SetDragArea(DragAreaMode_Normal);
                     break;
             }
+
+            // Recalculate non-client area size
+            MainWindow.EnableNonClientArea();
         }
         #endregion
 
@@ -1068,7 +1071,7 @@ namespace CollapseLauncher
             {
                 case GameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "honkaigamesettings" });
                     break;
                 case GameType.StarRail:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
@@ -1138,8 +1141,8 @@ namespace CollapseLauncher
                         Navigate(typeof(UnavailablePage), itemTag);
                     break;
 
-                case "gamesettings":
-                    Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                case "honkaigamesettings":
+                    Navigate(IsGameInstalled() ? typeof(HonkaiGameSettingsPage) : typeof(NotInstalledPage), itemTag);
                     break;
 
                 case "starrailgamesettings":
@@ -1723,7 +1726,7 @@ namespace CollapseLauncher
             switch (CurrentGameProperty._GamePreset.GameType)
             {
                 case GameType.Honkai:
-                    Navigate(typeof(GameSettingsPage), "gamesettings");
+                    Navigate(typeof(HonkaiGameSettingsPage), "honkaigamesettings");
                     break;
                 case GameType.Genshin:
                     Navigate(typeof(GenshinGameSettingsPage), "genshingamesettings");
