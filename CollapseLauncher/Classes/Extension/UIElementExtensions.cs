@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Windows.UI.Text;
 
-namespace CollapseLauncher
+namespace CollapseLauncher.Extension
 {
+    internal enum CornerRadiusKind { Normal, Rounded }
     internal static class UIElementExtensions
     {
         internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text, string iconGlyph, string iconFontFamily = "FontAwesome", string buttonStyle = "DefaultButtonStyle")
@@ -17,14 +18,14 @@ namespace CollapseLauncher
         {
             TButtonBase buttonReturn = new TButtonBase();
             StackPanel contentPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            contentPanel.Children.Add(new FontIcon
+            contentPanel.AddElementToStackPanel(new FontIcon
             {
                 Glyph = iconGlyph,
                 FontSize = 16,
                 Margin = new Thickness(0d, 1d, 0d, 0d),
                 FontFamily = GetApplicationResource<FontFamily>(iconFontFamily)
-            }); ;
-            contentPanel.Children.Add(new TextBlock
+            });
+            contentPanel.AddElementToStackPanel(new TextBlock
             {
                 Text = text,
                 FontWeight = FontWeights.SemiBold,
@@ -59,7 +60,7 @@ namespace CollapseLauncher
             });
         }
 
-        internal static ref TElement AddElementToGridRowColumn<TElement>(this Grid grid, TElement element, int rowIndex, int columnIndex, int rowSpan = 0, int columnSpan = 0)
+        internal static ref TElement AddElementToGridRowColumn<TElement>(this Grid grid, TElement element, int rowIndex = 0, int columnIndex = 0, int rowSpan = 0, int columnSpan = 0)
             where TElement : FrameworkElement
         {
             grid.Children.Add(element);
@@ -115,6 +116,28 @@ namespace CollapseLauncher
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
             return (TReturnType)Application.Current.Resources[resourceKey];
+        }
+
+        internal static CornerRadius GetElementCornerRadius<T>(object sender, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where T : Control
+        {
+            Control element = sender as Control;
+            switch (kind)
+            {
+                default:
+                    return element.CornerRadius;
+                case CornerRadiusKind.Rounded:
+                    double radiusSize = element.ActualHeight / 2;
+                    return new CornerRadius(radiusSize);
+            }
+        }
+
+        internal static CornerRadius AttachRoundedKindCornerRadius(Control element)
+        {
+            CornerRadius initialRadius = GetElementCornerRadius<Control>(element, CornerRadiusKind.Rounded);
+            element.SizeChanged += (sender, _) => (sender as Control).CornerRadius = GetElementCornerRadius<Control>(element, CornerRadiusKind.Rounded);
+
+            return initialRadius;
         }
     }
 }

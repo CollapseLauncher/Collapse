@@ -1,5 +1,7 @@
 ﻿using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.XAMLs.Elements;
+using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Loading;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -22,7 +24,6 @@ using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;

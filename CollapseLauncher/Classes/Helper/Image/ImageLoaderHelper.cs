@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
@@ -20,7 +21,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
-namespace CollapseLauncher
+namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
@@ -44,7 +45,7 @@ namespace CollapseLauncher
             {
                 FileInfo inputFileInfo = new FileInfo(path);
                 FileInfo resizedFileInfo = GetCacheFileInfo(inputFileInfo.FullName + inputFileInfo.Length);
-                if ((resizedFileInfo.Exists && resizedFileInfo.Length > 1 << 15) && !overwriteCachedImage)
+                if (resizedFileInfo.Exists && resizedFileInfo.Length > 1 << 15 && !overwriteCachedImage)
                 {
                     resizedImageFileStream = resizedFileInfo.OpenRead();
                     return resizedImageFileStream;
@@ -224,7 +225,7 @@ namespace CollapseLauncher
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            FileStream cachedFileStream = await ImageLoaderHelper.LoadImage(FilePath, false, false);
+            FileStream cachedFileStream = await LoadImage(FilePath, false, false);
             if (cachedFileStream == null) return (null, null);
             using (cachedFileStream)
             {

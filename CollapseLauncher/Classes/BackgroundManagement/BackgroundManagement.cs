@@ -1,4 +1,5 @@
-﻿using ColorThiefDotNet;
+﻿using CollapseLauncher.Helper.Image;
+using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -293,62 +294,6 @@ namespace CollapseLauncher
             Storyboard.SetTarget(Animation, objectToAnimate);
             Storyboard.SetTargetProperty(Animation, targetProperty);
             storyboard.Children.Add(Animation);
-        }
-
-        private async void HideLoadingPopup(bool hide, string title, string subtitle)
-        {
-            Storyboard storyboard = new Storyboard();
-
-            LoadingTitle.Text = title;
-            LoadingSubtitle.Text = subtitle;
-
-            if (hide)
-            {
-                LoadingRing.IsIndeterminate = false;
-
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = 1;
-                OpacityAnimation.To = 0;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.125));
-
-                Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboard.Children.Add(OpacityAnimation);
-
-                await Task.Delay(125);
-
-                Thickness lastMargin = LoadingPopupPill.Margin;
-                lastMargin.Bottom = -72;
-                LoadingPopupPill.Margin = lastMargin;
-
-                storyboard.Begin();
-
-                await Task.Delay(500);
-                LoadingPopup.Visibility = Visibility.Collapsed;
-                LoadingCancelBtn.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                LoadingRing.IsIndeterminate = true;
-
-                LoadingPopup.Visibility = Visibility.Visible;
-
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = 0;
-                OpacityAnimation.To = 1;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.125));
-
-                Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboard.Children.Add(OpacityAnimation);
-                storyboard.Begin();
-
-                await Task.Delay(125);
-
-                Thickness lastMargin = LoadingPopupPill.Margin;
-                lastMargin.Bottom = 28;
-                LoadingPopupPill.Margin = lastMargin;
-            }
         }
 
         private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)

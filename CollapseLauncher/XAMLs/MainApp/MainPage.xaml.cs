@@ -63,8 +63,6 @@ namespace CollapseLauncher
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 m_mainPage                             =  this;
-                LoadingPopupPill.Translation           += Shadow32;
-                LoadingCancelBtn.Translation           += Shadow16;
                 ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
@@ -138,7 +136,7 @@ namespace CollapseLauncher
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
                 LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
-                HideLoadingPopup(false, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
+                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
                 await DownloadConfigV2Files(true, true);
             }
 
@@ -163,11 +161,11 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
             InitKeyboardShortcuts();
-            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+            InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
-                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                InvokeLoadingRegionPopup(false);
             }
 
             // Unlock ChangeBtn for first start
@@ -200,7 +198,7 @@ namespace CollapseLauncher
         private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
             BackgroundImgChanger.ToggleBackground(e.Hide);
-            HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
+            InvokeLoadingRegionPopup(!e.Hide, e.Title, e.Subtitle);
         }
 
         private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e)
@@ -1851,11 +1849,11 @@ namespace CollapseLauncher
 
                 PresetConfigV2 Preset = LoadSavedGameSelection();
 
-                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 if (await LoadRegionFromCurrentConfigV2(Preset))
                 {
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                    HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                    InvokeLoadingRegionPopup(false);
                 }
 
                 LockRegionChangeBtn = false;

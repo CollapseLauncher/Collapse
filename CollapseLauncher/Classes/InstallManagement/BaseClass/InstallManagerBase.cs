@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;

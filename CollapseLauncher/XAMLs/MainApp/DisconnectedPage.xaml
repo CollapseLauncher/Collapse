@@ -6,6 +6,7 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uielementex="using:CollapseLauncher.Extension"
     mc:Ignorable="d"
     Background="{ThemeResource PageBackgroundAcrylicBrush}">
     <Grid>
@@ -13,7 +14,8 @@
             <StackPanel VerticalAlignment="Center" Margin="0,-32,0,0">
                 <TextBlock Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header1}" FontSize="76" FontWeight="Normal"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}" FontSize="80" FontWeight="Bold" Margin="0,-24,0,0"/>
-                <Button Content="{x:Bind helper:Locale.Lang._DisconnectedPage.ShowErrorBtn}" Margin="0,16,0,0" Click="ShowError" Style="{ThemeResource AccentButtonStyle}"/>
+                <Button x:Name="ShowErrorBtn" Content="{x:Bind helper:Locale.Lang._DisconnectedPage.ShowErrorBtn}" Margin="0,16,0,0" Click="ShowError" Style="{ThemeResource AccentButtonStyle}"
+                        CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ShowErrorBtn)}"/>
             </StackPanel>
             <TextBlock FontSize="16" VerticalAlignment="Bottom" Opacity="0.75">
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer1}"/>

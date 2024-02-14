@@ -41,34 +41,6 @@
                         <NavigationThemeTransition/>
                     </Frame.ContentTransitions>
                 </Frame>
-                <Grid x:Name="LoadingPopup" Margin="0,0,0,0"
-                      Visibility="Collapsed" Opacity="0" Background="{ThemeResource LoadingGradientBG}">
-                    <Grid x:Name="LoadingPopupPill" Background="{ThemeResource LoadingPopupGridBrush}" Margin="28" CornerRadius="8"
-                          VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="47" Shadow="{ThemeResource SharedShadow}">
-                        <Grid.Transitions>
-                            <RepositionThemeTransition/>
-                        </Grid.Transitions>
-                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="8" HorizontalAlignment="Center">
-                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="16,-2,16,0">
-                                <TextBlock x:Name="LoadingTitle" Text="Loading Region" Margin="0,0,8,0" Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                                   FontSize="14" FontWeight="Bold" Opacity="1"/>
-                                <TextBlock x:Name="LoadingSubtitle" Text="Honkai Impact 3rd - Global" Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                                   FontSize="14" FontWeight="Normal" Opacity="1"/>
-                            </StackPanel>
-                            <Button x:Name="LoadingCancelBtn" Style="{ThemeResource ButtonRevealStyle}"
-                                    Visibility="Collapsed" Shadow="{ThemeResource SharedShadow}" Click="CancelLoadRegion">
-                                <Button.Content>
-                                    <StackPanel Orientation="Horizontal">
-                                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Foreground="{ThemeResource DefaultFGColorAccentBrush}" Glyph="&#xf00d;" FontSize="16" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" Foreground="{ThemeResource DefaultFGColorAccentBrush}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-                        <ProgressBar x:Name="LoadingRing" IsIndeterminate="True" Value="100" Margin="0,0,0,0" Opacity="0.8"
-                                 Maximum="100" VerticalAlignment="Bottom" Foreground="{ThemeResource DefaultFGColorAccentBrush}"/>
-                    </Grid>
-                </Grid>
             </Grid>
         </NavigationView>
 

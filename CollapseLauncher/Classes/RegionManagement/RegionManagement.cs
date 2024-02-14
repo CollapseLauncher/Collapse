@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Pages;
+﻿using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -46,7 +47,8 @@ namespace CollapseLauncher
 
         private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
-        private bool IsExplicitCancel;
+        private bool IsExplicitCancel { get; set; } = false;
+        private bool IsLoadRegionCancellationRequestEnabled { get; set; } = false;
 
         private uint MaxRetry = 5; // Max 5 times of retry attempt
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
@@ -65,8 +67,9 @@ namespace CollapseLauncher
             RegionToChangeName = $"{GetGameTitleRegionTranslationString(CurrentConfigV2GameCategory, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(CurrentConfigV2GameRegion, Lang._GameClientRegions)}";
             LogWriteLine($"Initializing {RegionToChangeName}...", LogType.Scheme, true);
 
-            // Set IsLoadRegionComplete to false
+            // Set IsLoadRegionComplete and IsLoadRegionCancellationRequestEnabled to false
             IsLoadRegionComplete = false;
+            IsLoadRegionCancellationRequestEnabled = false;
 
             // Clear MainPage State, like NavigationView, Load State, etc.
             ClearMainPageState();
@@ -93,6 +96,8 @@ namespace CollapseLauncher
 
             if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
             {
+                IsLoadRegionComplete = true;
+                InvokeLoadingRegionPopup(false);
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
                 return false;
             }
@@ -546,9 +551,12 @@ namespace CollapseLauncher
                 if (ShowLoadingMsg)
                 {
                     // Send the message to loading status
-                    LoadingCancelBtn.Visibility = Visibility.Visible;
-                    LoadingTitle.Text = string.Empty;
-                    LoadingSubtitle.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", currentTimeout);
+                    LoadingMessageHelper.SetMessage(null, string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", currentTimeout));
+                    if (!IsLoadRegionCancellationRequestEnabled)
+                    {
+                        IsLoadRegionCancellationRequestEnabled = true;
+                        LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelRegionLoadingHandler);
+                    }
                 }
 
                 // Send the exception without changing into the Error page
@@ -561,6 +569,25 @@ namespace CollapseLauncher
 
             // Return new timeout second
             return currentTimeout;
+        }
+
+        private void CancelRegionLoadingHandler(object sender, RoutedEventArgs args)
+        {
+            IsExplicitCancel = true;
+            LockRegionChangeBtn = false;
+            IsLoadRegionCancellationRequestEnabled = false;
+
+            if (CurrentRegionLoadTokenSource != null && !CurrentRegionLoadTokenSource.IsDisposed)
+                CurrentRegionLoadTokenSource.Cancel();
+
+            ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
+            ChangeRegionConfirmBtn.IsEnabled = true;
+            ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
+            ChangeRegionBtn.IsEnabled = true;
+            InvokeLoadingRegionPopup(false);
+            LoadingMessageHelper.HideActionButton();
+
+            ChangeTimer();
         }
 
         private async void WatchAndCancelIfTimeout(CancellationTokenSourceWrapper TokenSource, uint Timeout)
@@ -671,7 +698,7 @@ namespace CollapseLauncher
             CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
             CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
             await LoadRegionRootButton();
-            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+            InvokeLoadingRegionPopup(false);
             MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
             LauncherFrame.BackStack.Clear();
         }
@@ -730,7 +757,7 @@ namespace CollapseLauncher
                 // Show element
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+                InvokeLoadingRegionPopup(false);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
                 LauncherFrame.BackStack.Clear();
             }
@@ -738,33 +765,29 @@ namespace CollapseLauncher
             (sender as Button).IsEnabled = !IsHide;
         }
 
-        private void CancelLoadRegion(object sender, RoutedEventArgs e)
-        {
-            IsExplicitCancel = true;
-            LockRegionChangeBtn = false;
-
-            if (CurrentRegionLoadTokenSource != null && !CurrentRegionLoadTokenSource.IsDisposed)
-                CurrentRegionLoadTokenSource.Cancel();
-
-            ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-            ChangeRegionConfirmBtn.IsEnabled = true;
-            ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
-            ChangeRegionBtn.IsEnabled = true;
-            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
-
-            (sender as Button).Visibility = Visibility.Collapsed;
-            ChangeTimer();
-        }
-
         private async void ShowAsyncLoadingTimedOutPill()
         {
             await Task.Delay(1000);
             if (!IsLoadRegionComplete)
             {
-                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
                 // MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
                 while (!IsLoadRegionComplete) { await Task.Delay(1000); }
             }
+            InvokeLoadingRegionPopup(false);
+        }
+
+        private void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string Title = null, string Content = null)
+        {
+            if (ShowLoadingMessage)
+            {
+                LoadingMessageHelper.SetMessage(Title, Content);
+                LoadingMessageHelper.SetProgressBarState(isProgressIndeterminate: true);
+                LoadingMessageHelper.ShowLoadingFrame();
+                return;
+            }
+
+            LoadingMessageHelper.HideLoadingFrame();
         }
     }
 }

@@ -23,6 +23,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Helper.Image;
 
 namespace CollapseLauncher.Pages
 {

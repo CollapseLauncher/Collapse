@@ -1,19 +1,15 @@
-using CollapseLauncher.XAMLs.Elements;
-using CommunityToolkit.WinUI.Animations;
+using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Loading;
 using Microsoft.UI;
-using Microsoft.UI.Composition;
-using Microsoft.UI.Composition.Core;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -227,54 +223,54 @@ namespace CollapseLauncher
             switch (msg)
             {
                 case WM_SYSCOMMAND:
-                {
-                    const uint SC_MAXIMIZE = 0xF030;
-                    const uint SC_MINIMIZE = 0xF020;
-                    const uint SC_RESTORE = 0xF120;
-                    switch (wParam)
                     {
-                        case SC_MAXIMIZE:
+                        const uint SC_MAXIMIZE = 0xF030;
+                        const uint SC_MINIMIZE = 0xF020;
+                        const uint SC_RESTORE = 0xF120;
+                        switch (wParam)
                         {
-                            // TODO: Apply to force disable the "double-click to maximize" feature.
-                            //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
-                            //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
-                            //
-                            //       Issues have been described here:
-                            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
-                            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
+                            case SC_MAXIMIZE:
+                                {
+                                    // TODO: Apply to force disable the "double-click to maximize" feature.
+                                    //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
+                                    //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
+                                    //
+                                    //       Issues have been described here:
+                                    //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
+                                    //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
 
-                            // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
-                            // Thank you Microsoft :)
-                            return 0;
-                        }
-                        case SC_MINIMIZE:
-                        {
-                            if (GetAppConfigValue("MinimizeToTray").ToBool())
-                            {
-                                // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
-                                TrayIcon.ToggleAllVisibility();
-                                return 0;
-                            }
+                                    // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
+                                    // Thank you Microsoft :)
+                                    return 0;
+                                }
+                            case SC_MINIMIZE:
+                                {
+                                    if (GetAppConfigValue("MinimizeToTray").ToBool())
+                                    {
+                                        // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
+                                        TrayIcon.ToggleAllVisibility();
+                                        return 0;
+                                    }
 
-                            m_homePage?.CarouselStopScroll();
-                            break;
+                                    m_homePage?.CarouselStopScroll();
+                                    break;
+                                }
+                            case SC_RESTORE:
+                                {
+                                    m_homePage?.CarouselRestartScroll();
+                                    break;
+                                }
                         }
-                        case SC_RESTORE:
-                        {
-                            m_homePage?.CarouselRestartScroll();
-                            break;
-                        }
+                        break;
                     }
-                    break;
-                }
                 case WM_SHOWWINDOW:
-                {
-                    if (wParam == 0)
-                        m_homePage?.CarouselStopScroll();
-                    else
-                        m_homePage?.CarouselRestartScroll();
-                    break;
-                }
+                    {
+                        if (wParam == 0)
+                            m_homePage?.CarouselStopScroll();
+                        else
+                            m_homePage?.CarouselRestartScroll();
+                        break;
+                    }
             }
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
         }

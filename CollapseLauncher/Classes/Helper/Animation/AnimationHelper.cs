@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Hosting;
 using System;
 using System.Threading.Tasks;
 
-namespace CollapseLauncher
+namespace CollapseLauncher.Helper.Animation
 {
     internal static class AnimationHelper
     {
@@ -73,14 +73,14 @@ namespace CollapseLauncher
             {
                 foreach (UIElement childrenElement in grid.Children)
                 {
-                    EnableImplicitAnimation(childrenElement);
+                    childrenElement.EnableImplicitAnimation();
                 }
             }
             if (element is Panel panel && recursiveAssignment)
             {
                 foreach (UIElement childrenElement in panel.Children)
                 {
-                    EnableImplicitAnimation(childrenElement);
+                    childrenElement.EnableImplicitAnimation();
                 }
             }
         }

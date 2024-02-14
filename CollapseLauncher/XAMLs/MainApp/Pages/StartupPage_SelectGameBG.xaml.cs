@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.WinUI;
+﻿using CollapseLauncher.Helper.Image;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;

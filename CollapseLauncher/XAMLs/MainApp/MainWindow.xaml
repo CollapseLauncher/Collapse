@@ -6,9 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+    xmlns:uiextension="using:CollapseLauncher.Extension"
     xmlns:s="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
     <Grid x:Name="MainWindowGridContainer">
+        <Grid.Resources>
+            <ThemeShadow x:Name="SharedThemeShadow"/>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
             <RowDefinition/>
@@ -39,17 +43,43 @@
                   Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
                   Padding="16"
                   Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RotationTransition>
                     <ScalarTransition />
                 </Grid.RotationTransition>
-                <StackPanel x:Name="LoadingStatusStackPanel" Orientation="Horizontal">
+                <StackPanel x:Name="LoadingStatusStackPanel" Orientation="Horizontal" Margin="0,0,16,0">
                     <ProgressRing x:Name="LoadingStatusProgressRing" x:FieldModifier="internal" IsIndeterminate="True" HorizontalAlignment="Left" Height="24" Width="24" Margin="0,0,16,0"/>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,-2,0,0">
                         <TextBlock x:Name="LoadingStatusTextTitle" x:FieldModifier="internal" VerticalAlignment="Center" Text="Loading Metadata" TextWrapping="WrapWholeWords" FontWeight="Bold"/>
                         <TextBlock VerticalAlignment="Center" Text="●" TextWrapping="WrapWholeWords" FontWeight="Bold" Margin="8,0"/>
                         <TextBlock x:Name="LoadingStatusTextSubtitle" x:FieldModifier="internal" VerticalAlignment="Center" Text="Settings things up for your game list..." TextWrapping="WrapWholeWords"/>
                     </StackPanel>
                 </StackPanel>
+                <Button x:Name="LoadingStatusActionButton"
+                        x:FieldModifier="internal"
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Shadow="{StaticResource SharedThemeShadow}"
+                        Translation="0,0,16"
+                        Visibility="Collapsed"
+                        CornerRadius="{x:Bind uiextension:UIElementExtensions.AttachRoundedKindCornerRadius(LoadingStatusActionButton)}">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon x:Name="LoadingStatusActionButtonIcon"
+                                  x:FieldModifier="internal"
+                                  Visibility="Collapsed"
+                                  FontFamily="{ThemeResource FontAwesomeSolid}"
+                                  Glyph="&#xf00c;"
+                                  FontSize="16"
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,8,0"/>
+                        <Grid x:Name="LoadingStatusActionButtonContentContainer"
+                              x:FieldModifier="internal"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </Grid>
         <Grid x:Name="TitleBarFrameGrid">

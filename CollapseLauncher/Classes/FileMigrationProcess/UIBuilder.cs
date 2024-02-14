@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
