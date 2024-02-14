@@ -327,7 +327,18 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver más parámetros.",
 
-    "GameBoost": "Aumentar Prioridad del Juego [Experimental]"
+    "GameBoost": "Aumentar Prioridad del Juego [Experimental]",
+
+    "Advanced_Title": "Ajustes Avanzados",
+    "Advanced_Subtitle1": "¡El equipo de Collapse Launcher",
+    "Advanced_Subtitle2": "NO ES RESPONSABLE",
+    "Advanced_Subtitle3": "de lo que pueda ocurrir con tu juego, cuenta o sistema mientras estos ajustes están en uso! Úselo bajo su propio riesgo",
+    "Advanced_GLC_WarningAdmin": "Advertencia: Los Comandos proporcionados se ejecutaran como Administrador! ",
+    "Advanced_GLC_PreLaunch_Title": "Comandos de Pre-lanzamiento",
+    "Advanced_GLC_PreLaunch_Subtitle": "Comandos que serán ejecutados antes de que se inicie el juego",
+    "Advanced_GLC_PreLaunch_Exit": "Forzar salida del proceso cuando el juego es cerrado/detenido",
+    "Advanced_GLC_PostExit_Title": "Comandos de Post-salida",
+    "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego"
   },
 
   "_SettingsPage": {
@@ -563,8 +574,16 @@
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Advertencia: ¡Una actualización al Delta Patch ha sido detectada!",
     "DeltaPatchDetectedSubtitle": "El Delta Patch se utilizará para actualizar tu juego de {0} a {1}.\nRecuerda que puede que necesite descargar algunos archivos dentro del juego.\n\n¿Desea continuar?",
-    "DeltaPatchPrevFailedTitle": "¡El Delta Patch anterior ha sido aplicado incorrectamente o no ha podido terminar de aplicarse!",
-    "DeltaPatchPrevFailedSubtitle": "La actualización del parche Delta a fallado. ¿Desea restaurar el juego para prevenir que se vuelva a descargar?",
+    "DeltaPatchPrevFailedTitle": "¡El Delta-Patch anterior ha sido aplicado incorrectamente o no ha podido terminar de aplicarse!",
+    "DeltaPatchPrevFailedSubtitle": "La actualización del Delta-Patch a fallado. ¿Desea restaurar el juego para prevenir que se vuelva a descargar?",
+    "DeltaPatchPreReqTitle": "¡Se requiere descargar un archivo adicional para el Delta-Patch!",
+    "DeltaPatchPreReqSubtitle1": "Es necesario descargar un archivo adicional antes de aplicar el Delta-Patch. Cerca de ",
+    "DeltaPatchPreReqSubtitle2": "es requerido para descargar y algunos de estos archivos contienen paquetes de audio.",
+    "DeltaPatchPreReqSubtitle3": "¿Quieres continuar?",
+    "DeltaPatchPreReqSubtitle4": "(Haz clic en \"",
+    "DeltaPatchPreReqSubtitle5": "\" para continuar, o \"",
+    "DeltaPatchPreReqSubtitle6": "\" para usar la actualización normal, o \"",
+    "DeltaPatchPreReqSubtitle7": "\" para cancelar la actualización)",
     "GameConversionPrevFailedTitle": "¡La conversión del juego a fallado o no fue completada!",
     "GameConversionPrevFailedSubtitle": "La conversión del juego a fallado. ¿Desea restaurar el juego para prevenir que se vuelva a descargar?",
     "PreloadVerifiedTitle": "¡Paquete de Pre-carga Verificado!",
@@ -694,6 +713,7 @@
     "SteamShortcutCreationSuccessSubtitle3": " • Este acceso directo iniciará el juego después de cargar la región.",
     "SteamShortcutCreationSuccessSubtitle4": " • Realizar el proceso otra vez arreglara cualquier imagen corrupta/faltante del acceso directo.",
     "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
+    "SteamShortcutCreationSuccessSubtitle6": " • Para usar el Steam overlay, es necesario iniciar Steam como administrador y Collapse debe estar cerrado completamente o tener la opción \"Multiples Ventanas\" habilitada en los ajustes.",
 
     "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función."
@@ -912,6 +932,7 @@
     "Graphics_FPS_Help": "¡120 FPS es EXPERIMENTAL! Usarlo con cuidado, bajo tu propio riesgo.",
     "Graphics_FPS_Help2": "Adicionalmente, Ajustar FPS a 120 romperá la pagina de configuración grafica del juego.\nEn su lugar, usa Collapse para cambiar la configuración.",
     "Graphics_VSync": "VSync",
+    "Graphics_VSync_Help": "Vsync no está disponible para 120 FPS",
     "Graphics_RenderScale": "Escala de Renderizado",
     "Graphics_ResolutionQuality": "Calidad de Resolución",
     "Graphics_ShadowQuality": "Calidad de Sombras",
@@ -1001,6 +1022,8 @@
     "Graphics_GlobalIllumination": "Iluminación global",
     "Graphics_GlobalIllumination_Help1": "¡Sólo para hardware compatible!",
     "Graphics_GlobalIllumination_Help2": "Más información (eng)",
+    "Graphics_DynamicCharacterResolution": "Resolución de Carácter Dinámico",
+    "Graphics_DynamicCharacterResolution_Tooltip": "¡Sólo para hardware compatible!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Habilitar HDR",
     "Graphics_HDR_NotSupported1": "Tu pantalla no es compatible con HDR.",
