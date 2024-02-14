@@ -133,9 +133,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.58, )",
-        "resolved": "1.11.58",
-        "contentHash": "/LzjIKoAWdyXOn6o+zJTN2qpNIwfaDWbSQ974pVRwnzHsUFohIOSILdtkPrSO6YC38MNj4nDbpr1RkVBDE1RWQ=="
+        "requested": "[1.11.59, )",
+        "resolved": "1.11.59",
+        "contentHash": "0tMaGzTJ5uFFMCYvprZ4hRYg6Dm5E+/WeMFJiD5K83Fe/Y6kyLaRKcfrfUwfb1j428XzB4/2RR7sdxoQX5eaEA=="
       },
       "ImageEx": {
         "type": "Direct",
@@ -181,9 +181,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.4.231219000, )",
-        "resolved": "1.4.231219000",
-        "contentHash": "UhLglTUCK+Qt19ivGjmxUuNfuRLk1kfR6+BgCS4UMjM9xjZ2zEUnrpfy0iGYBhn+PhCAw97bESZWLg8gjtKCSQ==",
+        "requested": "[1.4.240211001, )",
+        "resolved": "1.4.240211001",
+        "contentHash": "43PdPLNSbBfugbQ7fd5imnZPpg7TGNirCe1/f3KLLYCg1NgDJeTh7t2ihLPuIdmD7rf6mTaUtRXUJYw0HBOzFQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
@@ -982,9 +982,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.4.231219000, )",
-        "resolved": "1.4.231219000",
-        "contentHash": "UhLglTUCK+Qt19ivGjmxUuNfuRLk1kfR6+BgCS4UMjM9xjZ2zEUnrpfy0iGYBhn+PhCAw97bESZWLg8gjtKCSQ==",
+        "requested": "[1.4.240211001, )",
+        "resolved": "1.4.240211001",
+        "contentHash": "43PdPLNSbBfugbQ7fd5imnZPpg7TGNirCe1/f3KLLYCg1NgDJeTh7t2ihLPuIdmD7rf6mTaUtRXUJYw0HBOzFQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
