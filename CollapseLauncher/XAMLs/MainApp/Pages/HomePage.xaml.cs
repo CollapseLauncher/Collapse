@@ -55,6 +55,9 @@ namespace CollapseLauncher.Pages
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
         private CancellationTokenSource PlaytimeToken { get; set; }
+
+        private int barwidth;
+        private int consoleWidth;
         
         public static  int RefreshRateDefault { get; } = 200;
         public static  int RefreshRateSlow    { get; } = 1000;
@@ -88,12 +91,21 @@ namespace CollapseLauncher.Pages
             RefreshRate =  RefreshRateDefault;
             this.Loaded += StartLoadedRoutine;
             m_homePage  =  this;
+
+            InitializeConsoleValues();
         }
 
         ~HomePage()
         {
             // HACK: Fix random crash by always unsubscribing the StartLoadedRoutine if the GC is calling the deconstructor.
             this.Loaded -= StartLoadedRoutine;
+        }
+
+        private void InitializeConsoleValues()
+        {
+            consoleWidth = 24;
+            try { consoleWidth = Console.BufferWidth; } catch { }
+            barwidth = ((consoleWidth - 22) / 2) - 1;
         }
 
         private bool IsPageUnload { get; set; }
@@ -1230,6 +1242,8 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
                     GenshinHDREnforcer();
 
+                if (_Settings.SettingsCollapseMisc.UseAdvancedGameSettings && _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand) PreLaunchCommand(_Settings);
+
                 Process proc                    = new Process();
                 proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
                 proc.StartInfo.UseShellExecute  = true;
@@ -1250,7 +1264,7 @@ namespace CollapseLauncher.Pages
                     CurrentGameProperty._GameVersion.GamePreset.GameExecutableName,
                     _Settings,
                     CurrentGameProperty._GameVersion.GamePreset.GameType);
-                GameRunningWatcher();
+                GameRunningWatcher(_Settings);
 
                 if (GetAppConfigValue("EnableConsole").ToBool())
                 {
@@ -1303,17 +1317,20 @@ namespace CollapseLauncher.Pages
             catch (System.ComponentModel.Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
             }
         }
 
         // Use this method to do something when game is closed
-        private async void GameRunningWatcher()
+        private async void GameRunningWatcher(IGameSettingsUniversal _settings)
         {
             await Task.Delay(5000);
             while (_cachedIsGameRunning)
             {
                 await Task.Delay(3000);
             }
+
+            LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", LogType.Warning, true);
 
             if (ResizableWindowHookToken != null)
             {
@@ -1324,6 +1341,9 @@ namespace CollapseLauncher.Pages
             // Stopping GameLogWatcher
             if (GetAppConfigValue("EnableConsole").ToBool())
                 WatchOutputLog.Cancel();
+
+            // Stop PreLaunchCommand process
+            if (_settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
 
             // Window manager on game closed
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
@@ -1341,6 +1361,9 @@ namespace CollapseLauncher.Pages
                     (m_window as MainWindow).Restore();
                     break;
             }
+
+            // Run Post Launch Command
+            if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostExitCommand) PostExitCommand(_settings);
         }
 
         private void StopGame(PresetConfigV2 gamePreset)
@@ -1582,11 +1605,8 @@ namespace CollapseLauncher.Pages
         #region Game Log Method
         public async void ReadOutputLog()
         {
-            int consoleWidth = 24;
-            try { consoleWidth = Console.BufferWidth; } catch { }
+            InitializeConsoleValues();
 
-            string line;
-            int barwidth = ((consoleWidth - 22) / 2) - 1;
             LogWriteLine($"Are Game logs getting saved to Collapse logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
             LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
             try
@@ -1603,6 +1623,7 @@ namespace CollapseLauncher.Pages
                     {
                         while (!reader.EndOfStream)
                         {
+                            string line;
                             line = await reader.ReadLineAsync(WatchOutputLog.Token);
                             if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
@@ -1615,14 +1636,10 @@ namespace CollapseLauncher.Pages
                     }
                 }
             }
-            catch (OperationCanceledException)
-            {
-                LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", LogType.Warning, true);
-                (m_window as MainWindow).Restore();
-            }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", LogType.Error);
+                LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
             }
         }
         #endregion
@@ -2064,6 +2081,122 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
+            }
+        }
+        #endregion
+
+        #region Pre/Post Game Launch Command
+        private Process _procPreGLC;
+
+        private async void PreLaunchCommand(IGameSettingsUniversal _settings)
+        {
+            try
+            {
+                string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
+                if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
+
+                LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n\t" +
+                             $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
+                             LogType.Warning, true);
+
+                _procPreGLC = new Process();
+
+                _procPreGLC.StartInfo.FileName               = "cmd.exe";
+                _procPreGLC.StartInfo.Arguments              = "/S /C " + "\"" + preGameLaunchCommand + "\"";
+                _procPreGLC.StartInfo.CreateNoWindow         = true;
+                _procPreGLC.StartInfo.UseShellExecute        = false;
+                _procPreGLC.StartInfo.RedirectStandardOutput = true;
+                _procPreGLC.StartInfo.RedirectStandardError  = true;
+
+                _procPreGLC.OutputDataReceived += (sender, e) =>
+                                                  {
+                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+                                                  };
+
+                _procPreGLC.ErrorDataReceived += (sender, e) =>
+                                                 {
+                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t{e.Data}", LogType.GLC, true);
+                                                 };
+
+                _procPreGLC.Start();
+
+                _procPreGLC.BeginOutputReadLine();
+                _procPreGLC.BeginErrorReadLine();
+
+                await _procPreGLC.WaitForExitAsync();
+            }
+            catch ( System.ComponentModel.Win32Exception ex )
+            {
+                LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
+            }
+            finally
+            {
+                if (_procPreGLC != null) _procPreGLC.Dispose();
+            }
+        }
+
+        private void PreLaunchCommand_ForceClose()
+        {
+            try
+            {
+                if (_procPreGLC != null && !_procPreGLC.HasExited)
+                {
+                    // Kill main and child processes
+                    Process taskKill = new Process();
+                    taskKill.StartInfo.FileName  = "taskkill";
+                    taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
+                    taskKill.Start();
+                    taskKill.WaitForExit();
+
+                    LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
+                }
+            }
+            // Ignore external errors
+            catch ( InvalidOperationException ) {}
+            catch (System.ComponentModel.Win32Exception) {}
+        }
+
+        private async void PostExitCommand(IGameSettingsUniversal _settings)
+        {
+            try
+            {
+                string postGameExitCommand = _settings?.SettingsCollapseMisc?.GamePostExitCommand ?? null;
+                if (string.IsNullOrEmpty(postGameExitCommand)) return;
+
+                LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
+                             $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
+                             LogType.Warning, true);
+
+                Process procPostGLC = new Process();
+
+                procPostGLC.StartInfo.FileName               = "cmd.exe";
+                procPostGLC.StartInfo.Arguments              = "/S /C " + "\"" + postGameExitCommand + "\"";
+                procPostGLC.StartInfo.CreateNoWindow         = true;
+                procPostGLC.StartInfo.UseShellExecute        = false;
+                procPostGLC.StartInfo.RedirectStandardOutput = true;
+                procPostGLC.StartInfo.RedirectStandardError  = true;
+
+                procPostGLC.OutputDataReceived += (sender, e) =>
+                                                  {
+                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+                                                  };
+
+                procPostGLC.ErrorDataReceived += (sender, e) =>
+                                                 {
+                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t{e.Data}", LogType.GLC, true);
+                                                 };
+
+                procPostGLC.Start();
+                procPostGLC.BeginOutputReadLine();
+                procPostGLC.BeginErrorReadLine();
+
+                await procPostGLC.WaitForExitAsync();
+            }
+            catch ( System.ComponentModel.Win32Exception ex )
+            {
+                LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
         }
         #endregion

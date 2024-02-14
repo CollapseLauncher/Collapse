@@ -1,12 +1,24 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class StarRailGameSettingsPage : Page
+    public partial class StarRailGameSettingsPage : Page, INotifyPropertyChanged
     {
+        #region Methods
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
         #region GameResolution
         public bool IsFullscreenEnabled
         {
@@ -176,11 +188,24 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int fpsValue = NormalizeFPSNumber(Settings.GraphicsSettings.FPS);
-                return Model.FPSIndexDict[fpsValue];
+                int value = Model.FPSIndexDict[NormalizeFPSNumber(Settings.GraphicsSettings.FPS)];
+                if (value == 2)
+                {
+                    VSyncToggle.IsChecked = false;
+                    VSyncToggle.IsEnabled = false;
+                }
+
+                return value;
             }
             set
             {
+                if (value == 2)
+                {
+                    VSyncToggle.IsChecked = false;
+                    VSyncToggle.IsEnabled = false;
+                }
+                else { VSyncToggle.IsEnabled = true; }
+
                 Settings.GraphicsSettings.FPS = Model.FPSIndex[value];
             }
         }
@@ -221,8 +246,17 @@ namespace CollapseLauncher.Pages
         //CharacterQuality
         public int CharacterQuality
         {
-            get => (int)Settings.GraphicsSettings.CharacterQuality;
-            set => Settings.GraphicsSettings.CharacterQuality = (Quality)value;
+            get
+            {
+                int value = (int)Settings.GraphicsSettings.CharacterQuality;
+
+                // Clamp value
+                if (value < 2) return 2; // Low
+                if (value > 4) return 4; // High
+
+                return value;
+            }
+            set => Settings.GraphicsSettings.CharacterQuality = (CharacterQualityEnum)value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
@@ -299,6 +333,99 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.UseGameBoost;
             set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+        }
+        #endregion
+
+        #region Advanced Settings
+        public bool IsUseAdvancedSettings
+        {
+            get
+            {
+                bool value                                  = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
+                if (value){AdvancedSettingsPanel.Visibility = Visibility.Visible;}
+                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
+                return value;
+            }
+            set
+            { 
+                Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                if (value) AdvancedSettingsPanel.Visibility = Visibility.Visible;
+                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
+            } 
+        }
+
+        public bool IsUsePreLaunchCommand
+        {
+            get 
+            { 
+                bool value = Settings.SettingsCollapseMisc.UseGamePreLaunchCommand;
+
+                if (value)
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = true;
+                    PreLaunchForceCloseToggle.IsEnabled = true;
+                }
+                else
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = false;
+                    PreLaunchForceCloseToggle.IsEnabled = false;
+                }
+
+                return value;
+            }
+            set
+            {
+                if (value)
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = true;
+                    PreLaunchForceCloseToggle.IsEnabled = true;
+                }
+                else
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = false;
+                    PreLaunchForceCloseToggle.IsEnabled = false;
+                }
+
+                Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+            }
+        }
+
+        public string PreLaunchCommand
+        {
+            get => Settings.SettingsCollapseMisc.GamePreLaunchCommand;
+            set => Settings.SettingsCollapseMisc.GamePreLaunchCommand = value;
+        }
+
+        public bool IsPreLaunchCommandExitOnGameClose
+        {
+            get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
+            set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+        }
+
+        public bool IsUsePostExitCommand
+        {
+            get 
+            {
+                bool value = Settings.SettingsCollapseMisc.UseGamePostExitCommand;
+
+                if (value) PostExitCommandTextBox.IsEnabled = true;
+                else PostExitCommandTextBox.IsEnabled       = false;
+
+                return value;
+            }
+            set
+            {
+                if (value) PostExitCommandTextBox.IsEnabled = true;
+                else PostExitCommandTextBox.IsEnabled       = false;
+
+                Settings.SettingsCollapseMisc.UseGamePostExitCommand = value;
+            }
+        }
+
+        public string PostExitCommand
+        {
+            get => Settings.SettingsCollapseMisc.GamePostExitCommand;
+            set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
         }
         #endregion
     }
