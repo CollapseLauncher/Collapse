@@ -141,10 +141,6 @@
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="XAMLs\Elements\" />
-	</ItemGroup>
-
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
 			<!-- Trimmable submodule assemblies -->
