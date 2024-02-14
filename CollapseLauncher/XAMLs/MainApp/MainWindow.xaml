@@ -42,6 +42,7 @@
                   x:FieldModifier="internal"
                   Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
                   Padding="16"
+                  Margin="0,0,0,-64"
                   Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
