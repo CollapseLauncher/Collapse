@@ -26,6 +26,8 @@ namespace CollapseLauncher.Helper.Loading
         {
             if (!string.IsNullOrEmpty(title)) currentMainWindow.LoadingStatusTextTitle.Text = title;
             if (!string.IsNullOrEmpty(subtitle)) currentMainWindow.LoadingStatusTextSubtitle.Text = subtitle;
+
+            currentMainWindow.LoadingStatusTextSeparator.Visibility = string.IsNullOrEmpty(title) || string.IsNullOrEmpty(subtitle) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         internal static void SetProgressBarValue(double value) => currentMainWindow.LoadingStatusProgressRing.Value = value;

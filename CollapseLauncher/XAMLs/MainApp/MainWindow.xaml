@@ -54,7 +54,7 @@
                     <ProgressRing x:Name="LoadingStatusProgressRing" x:FieldModifier="internal" IsIndeterminate="True" HorizontalAlignment="Left" Height="24" Width="24" Margin="0,0,16,0"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,-2,0,0">
                         <TextBlock x:Name="LoadingStatusTextTitle" x:FieldModifier="internal" VerticalAlignment="Center" Text="Loading Metadata" TextWrapping="WrapWholeWords" FontWeight="Bold"/>
-                        <TextBlock VerticalAlignment="Center" Text="●" TextWrapping="WrapWholeWords" FontWeight="Bold" Margin="8,0"/>
+                        <TextBlock x:Name="LoadingStatusTextSeparator" x:FieldModifier="internal" VerticalAlignment="Center" Text="●" TextWrapping="WrapWholeWords" FontWeight="Bold" Margin="8,0"/>
                         <TextBlock x:Name="LoadingStatusTextSubtitle" x:FieldModifier="internal" VerticalAlignment="Center" Text="Settings things up for your game list..." TextWrapping="WrapWholeWords"/>
                     </StackPanel>
                 </StackPanel>
