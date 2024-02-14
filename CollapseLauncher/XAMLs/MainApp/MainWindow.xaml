@@ -82,6 +82,8 @@
                 </Button>
             </Grid>
         </Grid>
+        <customcontrol:ContentDialogCollapse x:Name="ContentDialog" x:FieldModifier="internal"/>
+        <local:TrayIcon x:Name="TrayIcon"/>
         <Grid x:Name="TitleBarFrameGrid">
             <Grid x:Name="AppTitleBar">
                 <Button x:Name="MinimizeButton" Width="48" Height="48"
@@ -115,7 +117,5 @@
                 </Button>
             </Grid>
         </Grid>
-        <customcontrol:ContentDialogCollapse x:Name="ContentDialog" x:FieldModifier="internal"/>
-        <local:TrayIcon x:Name="TrayIcon"/>
     </Grid>
 </Window>
