@@ -180,7 +180,8 @@ namespace CollapseLauncher
             foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
             {
                 // Dispose previous stream
-                await contentStream.DisposeAsync();
+                if (contentStream != null) await contentStream.DisposeAsync();
+
                 contentStream = await TryGetCDNContent(fallbackCDN, relativeURL, token, isForceUncompressRequest);
 
                 // If successful, then return
