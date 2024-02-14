@@ -96,12 +96,6 @@
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
       },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "B3etT5XQ2nlWkZGO2m/ytDYrOmSsQG1XNBaM6ZYlX5Ch/tDrMFadr0/mK6gjZwaQc55g+5+WZMw4Cz3m8VEF7g=="
-      },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
         "requested": "[8.0.0-preview.7.23375.6, )",
@@ -113,12 +107,6 @@
         "requested": "[6.0.0-preview.4.21253.7, )",
         "resolved": "6.0.0-preview.4.21253.7",
         "contentHash": "ipvxo/6FRdrmcsAtCGI9QPeaZZSyeCk9LiSVIJ4AN36IZQG7KFtk9ZbbYgvy4wzCzHkbBmTWaf2ESBqrYEtCRg=="
-      },
-      "Microsoft.Windows.CsWinRT": {
-        "type": "Direct",
-        "requested": "[2.0.6, )",
-        "resolved": "2.0.6",
-        "contentHash": "phcbmQdpWxxWSYoB8lmF2n4noKIpzrE1NtGcfPAuamNgYui0nmutpQZK5awSciaPiXPvU8/oZ1qkXpRhs6j2ag=="
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
