@@ -73,6 +73,7 @@ namespace CollapseLauncher.Helper.Loading
 
             bool isHasIcon = !string.IsNullOrEmpty(buttonIconGlyph);
             currentMainWindow.LoadingStatusActionButtonIcon.Visibility = isHasIcon ? Visibility.Visible : Visibility.Collapsed;
+            currentMainWindow.LoadingStatusActionButton.Visibility = Visibility.Visible;
             if (isHasIcon) currentMainWindow.LoadingStatusActionButtonIcon.Glyph = buttonIconGlyph;
 
             if (buttonContent is string buttonText)
@@ -84,7 +85,7 @@ namespace CollapseLauncher.Helper.Loading
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(0, isHasIcon ? -2 : 0, 0, 0)
                 };
-                textBlock.AddTextBlockLine(buttonText, FontWeights.Medium, 16);
+                textBlock.AddTextBlockLine(buttonText, FontWeights.SemiBold);
                 currentMainWindow.LoadingStatusActionButtonContentContainer.Children.Clear();
                 currentMainWindow.LoadingStatusActionButtonContentContainer.AddElementToGridRowColumn(textBlock);
                 return;
@@ -92,7 +93,6 @@ namespace CollapseLauncher.Helper.Loading
 
             currentMainWindow.LoadingStatusActionButtonContentContainer.Children.Clear();
             currentMainWindow.LoadingStatusActionButtonContentContainer.AddElementToGridRowColumn(buttonContent as FrameworkElement);
-            currentMainWindow.LoadingStatusActionButton.Visibility = Visibility.Visible;
         }
 
         internal static void HideActionButton()
