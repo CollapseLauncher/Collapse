@@ -42,25 +42,25 @@ namespace CollapseLauncher.Helper.Loading
         internal static async void ShowLoadingFrame()
         {
             if (isCurrentlyShow) return;
+
+            isCurrentlyShow = true;
             currentMainWindow.LoadingStatusGrid.Visibility = Visibility.Visible;
             currentMainWindow.LoadingStatusGrid.Margin = new Thickness(0);
             currentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Visible;
             await AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, TimeSpan.FromSeconds(0.25),
                 currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0));
-
-            isCurrentlyShow = true;
         }
 
         internal static async void HideLoadingFrame()
         {
             if (!isCurrentlyShow) return;
+
+            isCurrentlyShow = false;
             currentMainWindow.LoadingStatusGrid.Margin = new Thickness(0, 0, 0, -(currentMainWindow.LoadingStatusGrid.ActualHeight + 16));
             await AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, TimeSpan.FromSeconds(0.25),
                 currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1));
             currentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
             currentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Collapsed;
-
-            isCurrentlyShow = false;
         }
 
         internal static void ShowActionButton(object buttonContent, string buttonIconGlyph = null, RoutedEventHandler routedEvent = null)
