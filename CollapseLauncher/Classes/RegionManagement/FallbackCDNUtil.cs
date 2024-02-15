@@ -4,8 +4,6 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
 using Squirrel.Sources;
 using System;
-using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -68,15 +66,20 @@ namespace CollapseLauncher
     {
         internal readonly HttpStatusCode StatusCode;
         internal readonly bool IsSuccessStatusCode;
+        internal readonly bool IsInitializationError;
         internal readonly Uri AbsoluteURL;
         internal readonly HttpResponseMessage Message;
-        internal CDNUtilHTTPStatus(HttpResponseMessage message)
+        internal CDNUtilHTTPStatus(HttpResponseMessage message) : this(false)
         {
             Message = message;
             StatusCode = Message.StatusCode;
             IsSuccessStatusCode = Message.IsSuccessStatusCode;
             AbsoluteURL = Message.RequestMessage.RequestUri;
         }
+
+        private CDNUtilHTTPStatus(bool isInitializationError) => IsInitializationError = isInitializationError;
+
+        internal static CDNUtilHTTPStatus CreateInitializationError() => new CDNUtilHTTPStatus(true);
     }
 
     internal static class FallbackCDNUtil
@@ -212,7 +215,7 @@ namespace CollapseLauncher
                 CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(cdnProp, relativeURL, token, isForceUncompressRequest);
 
                 // If URL status is false, then return null
-                if (!urlStatus.IsSuccessStatusCode) return null;
+                if (urlStatus.IsInitializationError || !urlStatus.IsSuccessStatusCode) return null;
 
                 // Continue to get the content and return the stream if successful
                 return await GetHttpStreamFromResponse(urlStatus.Message, token);
@@ -315,20 +318,28 @@ namespace CollapseLauncher
 
         private static async ValueTask<CDNUtilHTTPStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isUncompressRequest)
         {
-            // Concat the URL Prefix and Relative URL
-            string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
+            try
+            {
+                // Concat the URL Prefix and Relative URL
+                string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
 
-            LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
+                LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
-            // Try check the status of the URL
-            HttpResponseMessage responseMessage = await GetURLHttpResponse(absoluteURL, token, isUncompressRequest);
+                // Try check the status of the URL
+                HttpResponseMessage responseMessage = await GetURLHttpResponse(absoluteURL, token, isUncompressRequest);
 
-            // If it's not a successful code, log the information
-            if (!responseMessage.IsSuccessStatusCode)
-                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {responseMessage.StatusCode} ({(int)responseMessage.StatusCode})", LogType.Error, true);
+                // If it's not a successful code, log the information
+                if (!responseMessage.IsSuccessStatusCode)
+                    LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {responseMessage.StatusCode} ({(int)responseMessage.StatusCode})", LogType.Error, true);
 
-            // Then return the status code
-            return new CDNUtilHTTPStatus(responseMessage);
+                // Then return the status code
+                return new CDNUtilHTTPStatus(responseMessage);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}", LogType.Error, true);
+                return CDNUtilHTTPStatus.CreateInitializationError();
+            }
         }
 
         public static CDNURLProperty GetPreferredCDN()
@@ -402,11 +413,11 @@ namespace CollapseLauncher
                         stopwatch.Restart();
                         // Get the URL Status then return boolean and and URLStatus
                         CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
-                        latencyAvgArr[j] = !(isSuccess = urlStatus.IsSuccessStatusCode) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
+                        latencyAvgArr[j] = !(isSuccess = urlStatus.IsSuccessStatusCode && !urlStatus.IsInitializationError) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
                     }
 
-                    // Get the average latency of the CDN. If failed, then return -1
-                    long latencyAvg = (long)latencyAvgArr.Average();
+                    // Get the average latency of the CDN.
+                    long latencyAvg = latencyAvgArr.Length > 1 ? (long)latencyAvgArr.Average() : latencyAvgArr[0];
                     latencies[i] = latencyAvg;
                 }
             }
