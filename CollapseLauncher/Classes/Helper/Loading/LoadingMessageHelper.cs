@@ -61,6 +61,7 @@ namespace CollapseLauncher.Helper.Loading
                 currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1));
             currentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
             currentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Collapsed;
+            HideActionButton();
         }
 
         internal static void ShowActionButton(object buttonContent, string buttonIconGlyph = null, RoutedEventHandler routedEvent = null)
