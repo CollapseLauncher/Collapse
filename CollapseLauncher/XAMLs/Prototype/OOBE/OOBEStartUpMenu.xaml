@@ -13,9 +13,9 @@
     Background="Transparent">
     <Grid>
         <Grid x:Name="MainUI" Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition/>
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Image x:Name="ContainerBackgroundImage"
                    Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
                    Opacity="0.5"
