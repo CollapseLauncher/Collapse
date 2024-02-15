@@ -84,16 +84,16 @@
         <local:TrayIcon x:Name="TrayIcon"/>
         <Grid x:Name="TitleBarFrameGrid">
             <Grid x:Name="AppTitleBar">
-                <Button x:Name="MinimizeButton" Width="48" Height="48"
+                <Button x:Name="MinimizeButton" x:FieldModifier="internal" Width="48" Height="48"
                     Margin="0,0,48,0" HorizontalAlignment="Right"
                     Style="{StaticResource WindowCaptionButton}"
                     Click="MinimizeButton_Click"
                     Content="M 0 0 H 10"/>
-                <Button x:Name="CloseButton" Width="48" Height="48"
-                Margin="0,0,0,0" HorizontalAlignment="Right"
-                Style="{StaticResource WindowCaptionButton}"
-                Click="CloseButton_Click"
-                Content="M 0 0 L 10 10 M 10 0 L 0 10">
+                <Button x:Name="CloseButton" x:FieldModifier="internal" Width="48" Height="48"
+                    Margin="0,0,0,0" HorizontalAlignment="Right"
+                    Style="{StaticResource WindowCaptionButton}"
+                    Click="CloseButton_Click"
+                    Content="M 0 0 L 10 10 M 10 0 L 0 10">
                     <Button.Resources>
                         <ResourceDictionary>
                             <ResourceDictionary.ThemeDictionaries>

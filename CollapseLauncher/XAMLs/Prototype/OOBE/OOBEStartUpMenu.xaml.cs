@@ -37,6 +37,7 @@ namespace CollapseLauncher.Pages.OOBE
         public OOBEStartUpMenu()
         {
             this.InitializeComponent();
+            MainWindow.EnableNonClientArea();
             SaveInitialLogoAndTitleTextPos();
 
             MainWindow.ToggleAcrylic(true);

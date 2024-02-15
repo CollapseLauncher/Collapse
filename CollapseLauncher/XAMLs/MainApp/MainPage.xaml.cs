@@ -165,11 +165,11 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
-                InvokeLoadingRegionPopup(false);
             }
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
+            InvokeLoadingRegionPopup(false);
         }
         #endregion
 
@@ -277,9 +277,15 @@ namespace CollapseLauncher
             {
                 GetElementPos(GridBG_RegionGrid),
                 GetElementPos(GridBG_IconGrid),
-                GetElementPos(GridBG_NotifBtn)
+                GetElementPos(GridBG_NotifBtn),
+                GetElementPos((m_window as MainWindow).MinimizeButton),
+                GetElementPos((m_window as MainWindow).CloseButton)
             };
+            nonClientInputSrc.ClearAllRegionRects();
+            MainWindow.EnableNonClientArea();
             nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, inputArea);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
         }
 
         private RectInt32 GetElementPos(FrameworkElement element)
@@ -293,7 +299,6 @@ namespace CollapseLauncher
                 _Width: (int)Math.Round(bounds.Width * m_appDPIScale),
                 _Height: (int)Math.Round(bounds.Height * m_appDPIScale)
             );
-
         }
 
         private void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
