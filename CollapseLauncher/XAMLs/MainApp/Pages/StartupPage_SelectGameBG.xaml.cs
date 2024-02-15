@@ -29,10 +29,7 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
 
             if (IsAppThemeLight)
-            {
                 (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.25;
-                (this.Resources["DetailsTextShadowController"] as AttachedDropShadow).Opacity = 0.25;
-            }
 
             if (!IsLoadDescription || !IsSuccess)
             {

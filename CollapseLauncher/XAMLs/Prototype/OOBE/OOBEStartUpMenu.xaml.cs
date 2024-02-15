@@ -155,7 +155,6 @@ namespace CollapseLauncher.Pages.OOBE
             LoadingMessageHelper.ShowLoadingFrame();
             LoadingMessageHelper.ShowActionButton("Skip CDN Check", "", (sender, _) => {
                 checkRecommendedCDNToken.Cancel();
-                LoadingMessageHelper.HideActionButton();
                 LoadingMessageHelper.HideLoadingFrame();
             });
 
