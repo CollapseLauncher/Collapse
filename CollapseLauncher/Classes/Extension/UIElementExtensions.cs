@@ -118,14 +118,12 @@ namespace CollapseLauncher.Extension
             return (TReturnType)Application.Current.Resources[resourceKey];
         }
 
-        internal static CornerRadius GetElementCornerRadius<T>(object sender, CornerRadiusKind kind = CornerRadiusKind.Normal)
-            where T : Control
+        internal static CornerRadius GetElementCornerRadius(FrameworkElement element, CornerRadiusKind kind = CornerRadiusKind.Normal)
         {
-            Control element = sender as Control;
             switch (kind)
             {
                 default:
-                    return element.CornerRadius;
+                    return new CornerRadius(8);
                 case CornerRadiusKind.Rounded:
                     double radiusSize = element.ActualHeight / 2;
                     return new CornerRadius(radiusSize);
@@ -134,8 +132,8 @@ namespace CollapseLauncher.Extension
 
         internal static CornerRadius AttachRoundedKindCornerRadius(Control element)
         {
-            CornerRadius initialRadius = GetElementCornerRadius<Control>(element, CornerRadiusKind.Rounded);
-            element.SizeChanged += (sender, _) => (sender as Control).CornerRadius = GetElementCornerRadius<Control>(element, CornerRadiusKind.Rounded);
+            CornerRadius initialRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
+            element.SizeChanged += (sender, _) => (sender as Control).CornerRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
 
             return initialRadius;
         }
