@@ -151,8 +151,13 @@ namespace CollapseLauncher.Pages.OOBE
             SelectCDN.ItemsSource = CDNNameList.Select(x => x + " (Checking latency...)").ToList();
 
             LoadingMessageHelper.SetMessage("Initializing Launcher's First Start-up", "Checking CDN Recommendation...");
-            LoadingMessageHelper.SetProgressBarState(100, true);
+            LoadingMessageHelper.SetProgressBarState(0, true);
             LoadingMessageHelper.ShowLoadingFrame();
+            LoadingMessageHelper.ShowActionButton("Skip CDN Check", "", (sender, _) => {
+                checkRecommendedCDNToken.Cancel();
+                LoadingMessageHelper.HideActionButton();
+                LoadingMessageHelper.HideLoadingFrame();
+            });
 
             // Get the CDN latencies
             int indexOfLatency = -1;
