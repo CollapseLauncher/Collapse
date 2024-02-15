@@ -1286,26 +1286,26 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
+                StartPlaytimeCounter(proc, CurrentGameProperty._GameVersion.GamePreset);
+
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
                     CollapsePrioControl(proc);
-
-                // Init new target process
-                Process toTargetProc;
-
-                // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
-                while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
-                {
-                    await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
-                    // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
-                    // it will instead returns a non-null value and assign it to "toTargetProc" variable,
-                    // which it will break the loop and execute the next code below it.
-                }
-
-                StartPlaytimeCounter(toTargetProc, CurrentGameProperty._GameVersion.GamePreset);
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc.UseGameBoost)
                 {
+                    // Init new target process
+                    Process toTargetProc;
+
+                    // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
+                    while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
+                    {
+                        await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
+                        // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
+                        // it will instead returns a non-null value and assign it to "toTargetProc" variable,
+                        // which it will break the loop and execute the next code below it.
+                    }
+
                     // Assign the priority to the process and write a log (just for displaying any info)
                     toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
                     LogWriteLine($"Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
@@ -1858,7 +1858,43 @@ namespace CollapseLauncher.Pages
                 };
 
                 inGameTimer.Start();
-                await proc.WaitForExitAsync();
+
+                if (gamePreset.GameType == GameType.Honkai)
+                {
+                    string processNameStr = Path.GetFileNameWithoutExtension(gamePreset.GameExecutableName);
+                    while (true)
+                    {
+                        // Try get the honkaiProc and auto-dispose it if the routine finishes,
+                        // then get the first process
+                        Process honkaiProc = Process.GetProcessesByName(processNameStr).FirstOrDefault();
+
+                        // If the honkaiProc is not null and also has the main window handle,
+                        // then continue to go through.
+                        // 
+                        // It replaces the switch statement where it checks for the .Length > 1
+                        // since the first process (process[0]) is not the actual active process.
+                        //
+                        // So, if it doesn't have one (IntPtr == Zero), then continue the loop until
+                        // the actual process found.
+                        if (honkaiProc != null && honkaiProc.MainWindowHandle != IntPtr.Zero)
+                        {
+                            // Assign the old proc with honkaiProc.
+                            proc = honkaiProc;
+
+                            // Wait the process
+                            LogWriteLine($"Found the main HI3 process [{proc.Id}]");
+                            await proc.WaitForExitAsync();
+                            break;
+                        }
+
+                        // If the process hasn't spawn yet or still has no MainWindowHandle,
+                        // then delay before continue to another loop routine.
+                        await Task.Delay(5000);
+                    }
+                }
+                // If not Honkai, then wait the process as usual
+                else await proc.WaitForExitAsync();
+
                 inGameTimer.Stop();
             }
 
