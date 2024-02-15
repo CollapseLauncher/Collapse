@@ -7,41 +7,49 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:s="using:CommunityToolkit.WinUI"
     xmlns:c="using:CommunityToolkit.WinUI.Controls"
+    xmlns:uiEx="using:CollapseLauncher.Extension"
     mc:Ignorable="d"
     Background="Transparent">
     <Page.Resources>
-        <s:AttachedDropShadow x:Key="DetailsLogoShadowController" BlurRadius="16" Opacity="1" CastTo="{x:Bind GameDetailsLogoShadow}"/>
-        <s:AttachedDropShadow x:Key="DetailsTextShadowController" BlurRadius="8" Opacity="1" CastTo="{x:Bind GameDetailsTextShadow}"/>
+        <s:AttachedDropShadow x:Key="DetailsLogoShadowController" BlurRadius="32" Opacity="1" CastTo="{x:Bind GameDetailsLogoShadow}"/>
     </Page.Resources>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Image Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
         <Grid x:Name="GameDetails">
-            <Image x:Name="GameDetailsPoster"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="GameDetailsPoster" Grid.ColumnSpan="2"
                VerticalAlignment="Stretch" HorizontalAlignment="Right" Stretch="UniformToFill"/>
-            <StackPanel Width="466" VerticalAlignment="Bottom"
-                    HorizontalAlignment="Right" Margin="0,0,40,110">
+            <StackPanel Grid.Column="1" VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right" Margin="32,0,40,110">
                 <Grid x:Name="GameDetailsLogoShadow"/>
                 <Image x:Name="GameDetailsLogo"
-                   Width="220" HorizontalAlignment="Right"
-                   s:Effects.Shadow="{ThemeResource DetailsLogoShadowController}"
-                   Margin="0,0,0,24"/>
-                <ScrollViewer MaxHeight="128" Margin="0,0,-16,0">
-                    <Grid Padding="0,0,16,0">
-                        <Grid x:Name="GameDetailsTextShadow"/>
-                        <TextBlock x:Name="GameDetailsDescription"
-                           s:Effects.Shadow="{ThemeResource DetailsTextShadowController}"
-                           TextWrapping="Wrap" TextAlignment="Right" FontSize="16" FontWeight="Medium"/>
-                    </Grid>
-                </ScrollViewer>
-                <Button x:Name="GameDetailsHomepage" HorizontalAlignment="Right" Margin="0,16,0,0"
+                       Width="220" HorizontalAlignment="Right"
+                       Margin="0,0,0,24"
+                       s:Effects.Shadow="{ThemeResource DetailsLogoShadowController}"/>
+                <Grid x:Name="GameDetailsDescriptionContainer"
+                      CornerRadius="8,8,0,0">
+                    <Grid x:Name="GameDetailsTextBackground" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"/>
+                    <ScrollViewer MaxHeight="192">
+                        <TextBlock x:Name="GameDetailsDescription" Margin="16,12" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" FontWeight="Medium"/>
+                    </ScrollViewer>
+                </Grid>
+                <Button x:Name="GameDetailsHomepage" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                         Tag="{x:Bind GameDetailsHomepageLink}"
                         ToolTipService.ToolTip="{x:Bind GameDetailsHomepageLink}"
                         Padding="16,4,16,8" Click="GameDetailsHomepage_Click"
+                        CornerRadius="0,0,8,8"
                         Style="{ThemeResource AccentButtonStyle}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="GameDetailsHomepageText" Text="{x:Bind GameDetailsHomepageLink}" MaxWidth="250" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf0c1;" FontSize="14" Margin="10,0,0,-3"/>
-                    </StackPanel>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="GameDetailsHomepageText" Text="{x:Bind GameDetailsHomepageLink}" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" FontWeight="SemiBold"/>
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Grid.Column="1" Glyph="&#xf0c1;" FontSize="14" Margin="10,0,0,-3" HorizontalAlignment="Right" />
+                    </Grid>
                 </Button>
             </StackPanel>
         </Grid>
