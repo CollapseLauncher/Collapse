@@ -123,6 +123,7 @@
     "PauseCancelDownloadBtn": "Pausar/Cancelar",
     "PauseCancelBtn": "Pausar/Cancelar",
     "DownloadBtn": "Descargar el Juego",
+
     "GameSettingsBtn": "Ajustes Rápidos",
     "GameSettings_Panel1": "Configuración Rápida",
     "GameSettings_Panel1OpenGameFolder": "Abrir Carpeta del Juego",
@@ -140,6 +141,7 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
     "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
+
     "GamePlaytime_Panel1": "Editar tiempo de juego",
     "GamePlaytime_Idle_Panel1Hours": "Horas",
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
@@ -148,6 +150,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "Valor inválido.",
     "GamePlaytime_Running_Info1": "El juego se está ejecutando, por lo tanto no se puede editar el tiempo de juego.",
     "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar Collapse se detendra el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto) y solo los juegos iniciados usando Collapse tendran seguimiento.",
+    "GamePlaytime_Display": "{0}h {1}m",
+
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Anuncios",
     "PostPanel_Info": "Información",
@@ -656,24 +660,35 @@
     "CookbookLocateSubtitle5": "para ubicar el archivo de Cookbook descargado antes de continuar.\n\n",
     "CookbookLocateSubtitle6": "Aviso:\r\n",
     "CookbookLocateSubtitle7": "Aquí está el nombre del archivo de Cookbook que necesitas descargar:\n",
+
     "PrivilegeMustRunTitle": "¡Collapse requiere elevación de privilegios!",
     "PrivilegeMustRunSubtitle": "Collapse requiere privilegios administrativos para funcionar correctamente. ¿Deseas reiniciar Collapse y ejecutarlo como administrador?",
+
     "ReleaseChannelChangeTitle": "Cambiar Canal de Lanzamiento",
     "ReleaseChannelChangeSubtitle1": "Estás a punto de cambiar el canal de lanzamiento a:",
     "ReleaseChannelChangeSubtitle2": "Aviso:",
     "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego.",
+
     "ChangePlaytimeTitle": "¿Estás seguro de que quieres cambiar tu tiempo de juego?",
     "ChangePlaytimeSubtitle": "Cambiar el tiempo de juego significa reemplazar los valores actuales con los que acabas de ingresar.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "ResetPlaytimeTitle": "¿Estás seguro de que quieres restablecer tu tiempo de juego?",
     "ResetPlaytimeSubtitle": "Restablecer el tiempo de juego significa volver a 0 el contador. Esta es una acción ",
     "ResetPlaytimeSubtitle2": "destructiva",
     "ResetPlaytimeSubtitle3": ", lo que significa que no puedes deshacer esto una vez confirmado.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
+    "InvalidPlaytimeTitle": "Hubo un problema al guardar el tiempo de esta sesión ",
+    "InvalidPlaytimeSubtitle1": "La diferencia entre los tiempo de inicio y final resultaron en un numero negativo.",
+    "InvalidPlaytimeSubtitle2": "Se guarda un valor de respaldo cada minuto y se utilizara en su lugar:",
+    "InvalidPlaytimeSubtitle3": "Por favor, no realices ajustes al reloj de tu PC mientras estés en el juego. ",
+
     "LocateExePathTitle": "Localiza la Carpeta del Ejecutable",
     "LocateExePathSubtitle": "Por favor, selecciona la ubicacion del ejecutable de la aplicación:",
+
     "CannotUseAppLocationForGameDirTitle": "¡La carpeta no es válida!",
     "CannotUseAppLocationForGameDirSubtitle": "No puede utilizar esta carpeta ya que está siendo usada como una carpeta del sistema o usada para el ejecutable principal de la aplicación. ¡Por favor, elige otra carpeta!",
+
     "StopGameTitle": "Forzar el cierre del juego",
     "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego.",
+
     "MeteredConnectionWarningTitle": "¡Conexión con límite de datos detectada!",
     "MeteredConnectionWarningSubtitle": "¡Se detectó que tu conexión a internet actual es 'Medida'! Continuar con el proceso de actualización puede generar cargos adicionales por parte de tu proveedor de internet. ¿Deseas continuar?",
 
