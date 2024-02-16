@@ -145,6 +145,7 @@
 		<ItemGroup>
 			<!-- Trimmable submodule assemblies -->
 			<TrimmableAssembly Include="ColorThief" />
+			<TrimmableAssembly Include="DiscordRPC" />
 			<TrimmableAssembly Include="Hi3Helper.Core" />
 			<TrimmableAssembly Include="Hi3Helper.EncTool" />
 			<TrimmableAssembly Include="Hi3Helper.Http" />

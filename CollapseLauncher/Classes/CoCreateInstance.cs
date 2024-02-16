@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#pragma warning disable IL2050
 namespace CollapseLauncher
 {
     internal enum CLSCTX : uint
@@ -133,27 +135,17 @@ namespace CollapseLauncher
 
     internal static partial class PInvoke
     {
-        internal static unsafe HRESULT CoCreateInstance<T>(in Guid rclsid, object pUnkOuter, CLSCTX dwClsContext, out T ppv)
+        internal static unsafe HRESULT CoCreateInstance<T>(Guid rclsid, object pUnkOuter, CLSCTX dwClsContext, out T ppv)
             where T : class
         {
-            HRESULT hr = CoCreateInstance(rclsid, pUnkOuter, dwClsContext, typeof(T).GUID, out object o);
+            Guid refTGuid = typeof(T).GUID; 
+            HRESULT hr = CoCreateInstanceInvoke(ref rclsid, pUnkOuter, dwClsContext, ref refTGuid, out object o);
             ppv = (T)o;
             return hr;
         }
 
-        private static unsafe HRESULT CoCreateInstance(in Guid rclsid, object pUnkOuter, CLSCTX dwClsContext, in Guid riid, out object ppv)
-        {
-            fixed (Guid* riidLocal = &riid)
-            {
-                fixed (Guid* rclsidLocal = &rclsid)
-                {
-                    HRESULT __result = CoCreateInstance(rclsidLocal, pUnkOuter, dwClsContext, riidLocal, out ppv);
-                    return __result;
-                }
-            }
-        }
-
         [DllImport("OLE32.dll", EntryPoint = "CoCreateInstance", ExactSpelling = true)]
-        private static extern unsafe HRESULT CoCreateInstance(Guid* rclsid, [MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter, CLSCTX dwClsContext, Guid* riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
+        private static unsafe extern HRESULT CoCreateInstanceInvoke(ref Guid rclsid, [MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter, CLSCTX dwClsContext, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppObj);
     }
 }
+#pragma warning restore IL2050
