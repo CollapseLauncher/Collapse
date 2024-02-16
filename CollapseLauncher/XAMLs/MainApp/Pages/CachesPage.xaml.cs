@@ -26,9 +26,6 @@ namespace CollapseLauncher.Pages
 
             this.InitializeComponent();
             BackgroundImgChanger.ToggleBackground(true);
-#if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.Cache);
-#endif
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -209,6 +206,12 @@ namespace CollapseLauncher.Pages
                 PageContent.Visibility = Visibility.Collapsed;
                 OverlayTitle.Text = Lang._CachesPage.OverlayGameRunningTitle;
                 OverlaySubtitle.Text = Lang._CachesPage.OverlayGameRunningSubtitle;
+            }
+            else
+            {
+#if !DISABLEDISCORD
+                AppDiscordPresence.SetActivity(ActivityType.Cache);
+#endif
             }
         }
 

@@ -61,9 +61,7 @@ namespace CollapseLauncher.Pages
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
-#if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.AppSettings);
-#else
+#if DISABLEDISCORD
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
@@ -73,6 +71,10 @@ namespace CollapseLauncher.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
+
+#if !DISABLEDISCORD
+            AppDiscordPresence.SetActivity(ActivityType.AppSettings);
+#endif
         }
         #endregion
 
@@ -448,12 +450,12 @@ namespace CollapseLauncher.Pages
                 if (IsEnabled)
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 return IsEnabled;
             }
@@ -463,13 +465,13 @@ namespace CollapseLauncher.Pages
                 {
                     AppDiscordPresence.SetupPresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     AppDiscordPresence.DisablePresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
                 ToggleDiscordGameStatus.IsEnabled = value;
@@ -486,17 +488,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        // TODO: Fix this feature
-        // Temporarily force disable this
-        //private bool IsDiscordIdleStatusEnabled
-        //{
-        //    get => AppDiscordPresence.IdleEnabled;
-        //    set => AppDiscordPresence.IdleEnabled = value;
-        //}
         private bool IsDiscordIdleStatusEnabled
         {
-            get => true;
-            set => AppDiscordPresence.IdleEnabled = true;
+            get => AppDiscordPresence.IdleEnabled;
+            set => AppDiscordPresence.IdleEnabled = value;
         }
 #else
         private bool IsDiscordRPCEnabled

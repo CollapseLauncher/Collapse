@@ -1290,9 +1290,16 @@
           "System.Drawing.Common": "[8.0.1, )"
         }
       },
+      "discordrpc": {
+        "type": "Project",
+        "dependencies": {
+          "System.Text.Json": "[8.0.1, )"
+        }
+      },
       "hi3helper.core": {
         "type": "Project",
         "dependencies": {
+          "DiscordRPC": "[1.0.0, )",
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Http": "[1.0.0, )"
         }

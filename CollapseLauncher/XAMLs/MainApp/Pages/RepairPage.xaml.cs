@@ -24,9 +24,6 @@ namespace CollapseLauncher.Pages
             CurrentGameProperty = GetCurrentGameProperty();
             BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
-#if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.Repair);
-#endif
         }
 
         private void StartGameCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -215,6 +212,12 @@ namespace CollapseLauncher.Pages
                 PageContent.Visibility = Visibility.Collapsed;
                 OverlayTitle.Text = Lang._GameRepairPage.OverlayGameRunningTitle;
                 OverlaySubtitle.Text = Lang._GameRepairPage.OverlayGameRunningSubtitle;
+            }
+            else
+            {
+#if !DISABLEDISCORD
+                AppDiscordPresence.SetActivity(ActivityType.Repair);
+#endif
             }
         }
     }
