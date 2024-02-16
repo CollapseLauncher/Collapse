@@ -833,7 +833,7 @@ namespace CollapseLauncher.Pages
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
                         #if !DISABLEDISCORD
-                        AppDiscordPresence.SetActivity(ActivityType.Play, 0);
+                        AppDiscordPresence.SetActivity(ActivityType.Play);
                         #endif
                         
                         await Task.Delay(RefreshRate, Token);
@@ -859,9 +859,9 @@ namespace CollapseLauncher.Pages
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
                     
                     #if !DISABLEDISCORD
-                    AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
+                    AppDiscordPresence.SetActivity(ActivityType.Idle);
                     #endif
-                    
+
                     await Task.Delay(RefreshRate, Token);
                 }
             }

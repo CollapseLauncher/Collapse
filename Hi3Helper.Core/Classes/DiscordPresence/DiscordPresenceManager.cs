@@ -2,11 +2,9 @@
 using DiscordRPC;
 using Hi3Helper.Preset;
 using System;
-using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-#pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
 {
     #region Enums
@@ -31,6 +29,7 @@ namespace Hi3Helper.DiscordPresence
 
         private RichPresence _presence;
         private ActivityType _activityType;
+        private ActivityType _lastAttemptedActivityType;
         private DateTime? _lastPlayTime;
         private long _lastApplicationId;
         private bool _firstTimeConnect = true;
@@ -110,7 +109,7 @@ namespace Hi3Helper.DiscordPresence
             {
                 if (msg.Presence == null)
                 {
-                    Logger.LogWriteLine($"Activity cleared!");
+                    Logger.LogWriteLine("Activity cleared!");
                 }
                 else
                 {
@@ -122,11 +121,11 @@ namespace Hi3Helper.DiscordPresence
 
             if (!_client.Initialize())
             {
-                Logger.LogWriteLine($"Error initializing Discord Presence.", LogType.Warning, true);
+                Logger.LogWriteLine("Error initializing Discord Presence.", LogType.Warning, true);
                 return;
             }
 
-            Logger.LogWriteLine($"Discord Presence is Enabled!");
+            Logger.LogWriteLine("Discord Presence is Enabled!");
         }
 
         public void DisablePresence()
@@ -155,7 +154,7 @@ namespace Hi3Helper.DiscordPresence
                         EnablePresence(AppDiscordApplicationID_GI);
                         return;
                     default:
-                        Logger.LogWriteLine($"Discord Presence (Unknown Game)");
+                        Logger.LogWriteLine("Discord Presence (Unknown Game)");
                         break;
                 }
             }
@@ -163,12 +162,17 @@ namespace Hi3Helper.DiscordPresence
             EnablePresence(AppDiscordApplicationID);
         }
 
-        public async void SetActivity(ActivityType activity, int delay = 500)
+        public void SetActivity(ActivityType activity)
         {
             if (GetAppConfigValue("EnableDiscordRPC").ToBool())
             {
-                await Task.Delay(delay);
-
+                // Only change activity for Idle or Play status the second time we call SetActivity
+                if ((activity == ActivityType.Idle || activity == ActivityType.Play) && _lastAttemptedActivityType != activity)
+                {
+                    _lastAttemptedActivityType = activity;
+                    return;
+                }
+                _lastAttemptedActivityType = activity;
                 _activityType = activity;
 
                 switch (activity)
