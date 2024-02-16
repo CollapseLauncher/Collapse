@@ -8,4 +8,6 @@
 		<!-- Preserve COM Interop used in project code when trimming -->
 		<type fullname="CollapseLauncher.PInvoke" preserve="all" />
 	</assembly>
+	<!-- Preserve everything for RPC submodule -->
+	<assembly fullname="DiscordRPC" preserve ="all"/>
 </linker>

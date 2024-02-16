@@ -21,3 +21,5 @@ echo 	Clearing InnoSetupHelper cache
 rmdir /S /Q InnoSetupHelper\bin && rmdir /S /Q InnoSetupHelper\obj
 echo 	Clearing 7z cache
 rmdir /S /Q Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\bin && rmdir /S /Q Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\obj
+echo	Clearing SharpDiscordRPC cache
+rmdir /S /Q Hi3Helper.SharpDiscordRPC\DiscordRPC\bin && rmdir /S /Q Hi3Helper.SharpDiscordRPC\DiscordRPC\obj

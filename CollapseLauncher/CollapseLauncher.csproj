@@ -143,6 +143,9 @@
 			<TrimmableAssembly Include="InnoSetupHelper" />
 			<TrimmableAssembly Include="SevenZipExtractor" />
 			<TrimmableAssembly Include="SharpHDiffPatch.Core" />
+
+			<!-- Untrimmable submodule assemblies-->
+			<TrimmerRootAssembly Include="DiscordRPC"/>
       
 			<!-- Additional assemblies -->
 			<TrimmableAssembly Include="ColorCode.Core" />
