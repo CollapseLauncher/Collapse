@@ -114,9 +114,9 @@
       },
       "GitInfo": {
         "type": "Direct",
-        "requested": "[3.3.3, )",
-        "resolved": "3.3.3",
-        "contentHash": "l7m4M/figjWz4B3eIL2Qy3UJiP2vvTOTeavlCT/GGH0khg0uxLanh/cwTZ27AZNhim56q1Mk0nbyRXtLqF4vmg==",
+        "requested": "[3.3.4, )",
+        "resolved": "3.3.4",
+        "contentHash": "uaK+WXIrHCkjJudwMfgVkI8tTNqjcB19bHpSBe4C5pOS4cx9JsPkCcaafN2vY2snkRiCQZCpt56yLslZOyvT2g==",
         "dependencies": {
           "ThisAssembly.Constants": "1.4.1"
         }
@@ -160,12 +160,6 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
-      },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.2, )",
-        "resolved": "8.0.2",
-        "contentHash": "hKTrehpfVzOhAz0mreaTAZgbz0DrMEbWq4n3hAo8Ks6WdxdqQhNPvzOqn9VygKuWf1bmxPdraqzTaXriO/sn0A=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
@@ -950,7 +944,7 @@
       "discordrpc": {
         "type": "Project",
         "dependencies": {
-          "System.Text.Json": "[8.0.1, )"
+          "System.Text.Json": "[8.0.2, )"
         }
       },
       "hi3helper.core": {
