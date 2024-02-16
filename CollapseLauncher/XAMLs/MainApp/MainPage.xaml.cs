@@ -1804,11 +1804,14 @@ namespace CollapseLauncher
 
         #region AppActivation
 
-        private void SetActivatedRegion()
+        private bool SetActivatedRegion()
         {
             var args = m_arguments.StartGame;
             if (args == null)
-                return;
+                return true;
+
+            string oldGameCategory = GetAppConfigValue("GameCategory").ToString();
+            string oldGameRegion = GetAppConfigValue("GameRegion").ToString();
 
             string GameName = args.Game;
 
@@ -1816,7 +1819,7 @@ namespace CollapseLauncher
             {
                 bool res = int.TryParse(args.Game, out int Game);
                 if (!res || Game < 0 || Game >= ConfigV2GameCategory.Count)
-                    return;
+                    return true;
                 GameName = ConfigV2GameCategory[Game];
             }
 
@@ -1830,12 +1833,18 @@ namespace CollapseLauncher
                 {
                     bool res = int.TryParse(args.Region, out int Region);
                     if (!res || Region < 0 || Region >= ConfigV2GameRegions.Count)
-                        return;
+                        return true;
                     GameRegion = ConfigV2GameRegions[Region];
                 }
+
                 SetPreviousGameRegion(GameName, GameRegion);
                 SetAndSaveConfigValue("GameRegion", GameRegion);
+
+                if (oldGameCategory == GameName && oldGameRegion == GameRegion)
+                    return true;
             }
+
+            return false;
         }
 
         public void OpenAppActivation()
@@ -1848,7 +1857,7 @@ namespace CollapseLauncher
                 if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                     return;
 
-                SetActivatedRegion();
+                bool sameRegion = SetActivatedRegion();
 
                 LockRegionChangeBtn = true;
 
@@ -1857,6 +1866,10 @@ namespace CollapseLauncher
                 InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 if (await LoadRegionFromCurrentConfigV2(Preset))
                 {
+#if !DISABLEDISCORD
+                    if (GetAppConfigValue("EnableDiscordRPC").ToBool() && !sameRegion)
+                        AppDiscordPresence.SetupPresence();
+#endif
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                     InvokeLoadingRegionPopup(false);
                 }
