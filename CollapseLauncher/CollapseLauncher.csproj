@@ -80,7 +80,7 @@
 					https://github.com/CommunityToolkit/Labs-Windows/discussions/415
     -->
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-		<PackageReference Include="GitInfo" Version="3.3.3">
+		<PackageReference Include="GitInfo" Version="3.3.4">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -100,7 +100,7 @@
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Security.AccessControl" Version="6.0.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
-		<PackageReference Include="System.Text.Json" Version="8.0.1" />
+		<PackageReference Include="System.Text.Json" Version="8.0.2" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 		<PackageReference Include="TaskScheduler" Version="2.10.1" />
 	</ItemGroup>
@@ -145,7 +145,7 @@
 			<TrimmableAssembly Include="SharpHDiffPatch.Core" />
 
 			<!-- Untrimmable submodule assemblies-->
-			<TrimmerRootAssembly Include="DiscordRPC"/>
+			<TrimmerRootAssembly Include="DiscordRPC" />
       
 			<!-- Additional assemblies -->
 			<TrimmableAssembly Include="ColorCode.Core" />

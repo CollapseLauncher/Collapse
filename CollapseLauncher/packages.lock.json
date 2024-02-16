@@ -61,9 +61,9 @@
       },
       "GitInfo": {
         "type": "Direct",
-        "requested": "[3.3.3, )",
-        "resolved": "3.3.3",
-        "contentHash": "l7m4M/figjWz4B3eIL2Qy3UJiP2vvTOTeavlCT/GGH0khg0uxLanh/cwTZ27AZNhim56q1Mk0nbyRXtLqF4vmg==",
+        "requested": "[3.3.4, )",
+        "resolved": "3.3.4",
+        "contentHash": "uaK+WXIrHCkjJudwMfgVkI8tTNqjcB19bHpSBe4C5pOS4cx9JsPkCcaafN2vY2snkRiCQZCpt56yLslZOyvT2g==",
         "dependencies": {
           "ThisAssembly.Constants": "1.4.1"
         }
@@ -95,12 +95,6 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
-      },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.2, )",
-        "resolved": "8.0.2",
-        "contentHash": "hKTrehpfVzOhAz0mreaTAZgbz0DrMEbWq4n3hAo8Ks6WdxdqQhNPvzOqn9VygKuWf1bmxPdraqzTaXriO/sn0A=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
@@ -222,9 +216,9 @@
       },
       "System.Text.Json": {
         "type": "Direct",
-        "requested": "[8.0.1, )",
-        "resolved": "8.0.1",
-        "contentHash": "7AWk2za1hSEJBppe/Lg+uDcam2TrDqwIKa9XcPssSwyjC2xa39EKEGul3CO5RWNF+hMuZG4zlBDrvhBdDTg4lg==",
+        "requested": "[8.0.2, )",
+        "resolved": "8.0.2",
+        "contentHash": "29KA2StjWDYp32FvREifawRtNpTziLE1xyuDV9pVQ+MsaE9bIcIieP0io/eZZeLMxR+Nx9zI55RtUtpVpEIdeg==",
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
         }
@@ -682,8 +676,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "x0rAZECxIGx/YVjN28YRdpqka0+H7YMN9741FUDzipXPDzesd60gef/LI0ZCOcYSDsacTLTHvMAvxHG+TjbNNQ==",
+        "resolved": "8.0.2",
+        "contentHash": "oDedGrYVyzvtGZhgtURpeneHq9D3HQtrvU7q6iCRa+BbIXvTZayGFo0iK3b7qHrwQ/OOAn9B0ghzQH6AbW5LHg==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -1293,13 +1287,13 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.1, )"
+          "System.Drawing.Common": "[8.0.2, )"
         }
       },
       "discordrpc": {
         "type": "Project",
         "dependencies": {
-          "System.Text.Json": "[8.0.1, )"
+          "System.Text.Json": "[8.0.2, )"
         }
       },
       "hi3helper.core": {
