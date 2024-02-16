@@ -39,21 +39,26 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         private void InitializeSettings()
         {
-            // Load Settings
+            // Load Settings required for MainPage
             SettingsCustomArgument = CustomArgs.Load();
-            GraphicsSettings = Model.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
-            SettingsCollapseMisc = CollapseMiscSetting.Load();
-            SettingsScreen = PCResolution.Load();
-            AudioSettings_BGM = BGMVolume.Load();
-            AudioSettings_Master = MasterVolume.Load();
-            AudioSettings_SFX = SFXVolume.Load();
-            AudioSettings_VO = VOVolume.Load();
-            AudioLanguage = LocalAudioLanguage.Load();
-            TextLanguage = LocalTextLanguage.Load();
+            SettingsCollapseMisc   = CollapseMiscSetting.Load();
+            SettingsScreen         = PCResolution.Load();
+            
         }
 
-        public void ReloadSettings() => InitializeSettings();
+        public void ReloadSettings()
+        {
+            // Load rest of the settings for GSP
+            AudioSettings_BGM    = BGMVolume.Load();
+            AudioSettings_Master = MasterVolume.Load();
+            AudioSettings_SFX    = SFXVolume.Load();
+            AudioSettings_VO     = VOVolume.Load();
+            AudioLanguage        = LocalAudioLanguage.Load();
+            TextLanguage         = LocalTextLanguage.Load();
+            GraphicsSettings     = Model.Load();
+            InitializeSettings();
+        } 
 
         public void SaveSettings()
         {

@@ -9,11 +9,12 @@ using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class GameSettingsPage : Page, INotifyPropertyChanged
+    public partial class HonkaiGameSettingsPage : Page, INotifyPropertyChanged
     {
         #region Fields
         private int prevGraphSelect;
         #endregion
+
         #region Methods
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -444,6 +445,99 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.UseGameBoost;
             set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+        }
+        #endregion
+
+        #region Advanced Settings
+        public bool IsUseAdvancedSettings
+        {
+            get
+            {
+                bool value                                  = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
+                if (value){AdvancedSettingsPanel.Visibility = Microsoft.UI.Xaml.Visibility.Visible;}
+                else AdvancedSettingsPanel.Visibility       = Microsoft.UI.Xaml.Visibility.Collapsed;
+                return value;
+            }
+            set
+            { 
+                Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
+                if (value) AdvancedSettingsPanel.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                else AdvancedSettingsPanel.Visibility       = Microsoft.UI.Xaml.Visibility.Collapsed;
+            } 
+        }
+
+        public bool IsUsePreLaunchCommand
+        {
+            get 
+            { 
+                bool value = Settings.SettingsCollapseMisc.UseGamePreLaunchCommand;
+
+                if (value)
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = true;
+                    PreLaunchForceCloseToggle.IsEnabled = true;
+                }
+                else
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = false;
+                    PreLaunchForceCloseToggle.IsEnabled = false;
+                }
+
+                return value;
+            }
+            set
+            {
+                if (value)
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = true;
+                    PreLaunchForceCloseToggle.IsEnabled = true;
+                }
+                else
+                {
+                    PreLaunchCommandTextBox.IsEnabled   = false;
+                    PreLaunchForceCloseToggle.IsEnabled = false;
+                }
+
+                Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
+            }
+        }
+
+        public string PreLaunchCommand
+        {
+            get => Settings.SettingsCollapseMisc.GamePreLaunchCommand;
+            set => Settings.SettingsCollapseMisc.GamePreLaunchCommand = value;
+        }
+
+        public bool IsPreLaunchCommandExitOnGameClose
+        {
+            get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
+            set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
+        }
+
+        public bool IsUsePostExitCommand
+        {
+            get 
+            {
+                bool value = Settings.SettingsCollapseMisc.UseGamePostExitCommand;
+
+                if (value) PostExitCommandTextBox.IsEnabled = true;
+                else PostExitCommandTextBox.IsEnabled       = false;
+
+                return value;
+            }
+            set
+            {
+                if (value) PostExitCommandTextBox.IsEnabled = true;
+                else PostExitCommandTextBox.IsEnabled       = false;
+
+                Settings.SettingsCollapseMisc.UseGamePostExitCommand = value;
+            }
+        }
+
+        public string PostExitCommand
+        {
+            get => Settings.SettingsCollapseMisc.GamePostExitCommand;
+            set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
         }
         #endregion
     }

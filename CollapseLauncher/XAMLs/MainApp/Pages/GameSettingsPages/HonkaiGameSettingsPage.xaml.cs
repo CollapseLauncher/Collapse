@@ -21,14 +21,14 @@ using CollapseLauncher.Statics;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class GameSettingsPage : Page
+    public partial class HonkaiGameSettingsPage : Page
     {
         private GamePresetProperty CurrentGameProperty { get; set; }
         private HonkaiSettings Settings { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
         private bool IsNoReload { get; set; }
-        public GameSettingsPage()
+        public HonkaiGameSettingsPage()
         {
             try
             {

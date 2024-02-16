@@ -36,7 +36,7 @@ namespace CollapseLauncher.ShortcutUtils
         public bool Devkit = false;
         public string DevkitGameID = "";
         public bool DevkitOverrideAppID = false;
-        public string LastPlayTime = "\x00\x00\x00";
+        public string LastPlayTime = "\x00\x00\x00\x00";
         public string FlatpakAppID = "";
         public string tags = "";
         #endregion
@@ -80,7 +80,7 @@ namespace CollapseLauncher.ShortcutUtils
                     + '\x02' + "Devkit" + '\x00' + BoolToByte(Devkit) + "\x00\x00\x00"
                     + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
                     + '\x02' + "DevkitOverrideAppID" + '\x00' + BoolToByte(DevkitOverrideAppID) + "\x00\x00\x00"
-                    + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime + '\x00'
+                    + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime
                     + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
                     + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
         }
