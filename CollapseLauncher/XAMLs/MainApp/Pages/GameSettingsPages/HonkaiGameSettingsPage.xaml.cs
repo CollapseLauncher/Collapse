@@ -143,7 +143,6 @@ namespace CollapseLauncher.Pages
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
                     #endif
-                    return;
                 }
                 else if (GameInstallationState == GameInstallStateEnum.NotInstalled
                       || GameInstallationState == GameInstallStateEnum.NeedsUpdate
@@ -154,12 +153,13 @@ namespace CollapseLauncher.Pages
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
-
-                    return;
                 }
+                else
+                {
 #if !DISABLEDISCORD
-                AppDiscordPresence.SetActivity(ActivityType.GameSettings);
+                    AppDiscordPresence.SetActivity(ActivityType.GameSettings);
 #endif
+                }
             }
             catch (Exception ex)
             {
