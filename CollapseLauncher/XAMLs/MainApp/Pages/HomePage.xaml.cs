@@ -54,13 +54,13 @@ namespace CollapseLauncher.Pages
         private HomeMenuPanel MenuPanels { get => regionNewsProp; }
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
-        private CancellationTokenSource PlaytimeToken { get; set; }
-
+        
         private int barwidth;
         private int consoleWidth;
         
         public static  int RefreshRateDefault { get; } = 200;
         public static  int RefreshRateSlow    { get; } = 1000;
+
         private static int _refreshRate;
 
         /// <summary>
@@ -72,9 +72,9 @@ namespace CollapseLauncher.Pages
             get => _refreshRate;
             set
             {
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"HomePage Refresh Rate changed to {value}", LogType.Debug, true);
-                #endif
+#endif
                 _refreshRate = value;
             }
         }
@@ -88,10 +88,10 @@ namespace CollapseLauncher.Pages
         #region PageMethod
         public HomePage()
         {
-            RefreshRate =  RefreshRateDefault;
+            RefreshRate = RefreshRateDefault;
             this.Loaded += StartLoadedRoutine;
-            m_homePage  =  this;
 
+            m_homePage  =  this;
             InitializeConsoleValues();
         }
 
@@ -130,7 +130,6 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 PageToken = new CancellationTokenSource();
                 CarouselToken = new CancellationTokenSource();
-                PlaytimeToken = new CancellationTokenSource();
 
                 this.InitializeComponent();
 
@@ -172,13 +171,14 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CheckRunningGameInstance(PageToken.Token);
+                UpdatePlaytime();
+
                 if (m_arguments.StartGame != null && m_arguments.StartGame.Play)
                 {
                     if (CurrentGameProperty._GameVersion.IsGameInstalled())
                         StartGame(null, null);
                     m_arguments.StartGame.Play = false;
                 }
-                AutoUpdatePlaytimeCounter(false, PlaytimeToken.Token);
 
                 StartCarouselAutoScroll(CarouselToken.Token);
             }
@@ -198,7 +198,6 @@ namespace CollapseLauncher.Pages
             IsPageUnload = true;
             PageToken.Cancel();
             CarouselToken.Cancel();
-            PlaytimeToken.Cancel();
         }
         #endregion
 
@@ -455,7 +454,7 @@ namespace CollapseLauncher.Pages
         #region Open Link from Tag
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
-            if (!e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed) return;
+            if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
             SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString(), this.Content);
         }
 
@@ -800,7 +799,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
             }
         }
-        
+
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
             FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
@@ -826,7 +825,7 @@ namespace CollapseLauncher.Pages
                     while (CurrentGameProperty.IsGameRunning)
                     {
                         _cachedIsGameRunning = true;
-                            
+
                         if (StartGameBtn.IsEnabled)
                             LauncherBtn.Translation -= Shadow16;
 
@@ -844,15 +843,15 @@ namespace CollapseLauncher.Pages
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                        #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                         AppDiscordPresence.SetActivity(ActivityType.Play);
-                        #endif
+#endif
                         
                         await Task.Delay(RefreshRate, Token);
                     }
 
                     _cachedIsGameRunning = false;
-                    
+
                     if (!StartGameBtn.IsEnabled)
                         LauncherBtn.Translation += Shadow16;
 
@@ -870,9 +869,9 @@ namespace CollapseLauncher.Pages
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
                     
-                    #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle);
-                    #endif
+#endif
 
                     await Task.Delay(RefreshRate, Token);
                 }
@@ -1253,9 +1252,9 @@ namespace CollapseLauncher.Pages
                 //     && GetAppConfigValue("ForceGIHDREnable").ToBool()) ?
                 //         NormalizePath(GameDirPath) :
                 //         Path.GetDirectoryName(NormalizePath(GameDirPath));
-                proc.StartInfo.UseShellExecute  = false;
+                proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
-                proc.StartInfo.Verb             = "runas";
+                proc.StartInfo.Verb = "runas";
                 proc.Start();
 
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
@@ -1287,8 +1286,7 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
-                AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
+                StartPlaytimeCounter(proc, CurrentGameProperty._GameVersion.GamePreset);
 
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
                     CollapsePrioControl(proc);
@@ -1303,9 +1301,9 @@ namespace CollapseLauncher.Pages
                     while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
                     {
                         await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
-                                                // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
-                                                // it will instead returns a non-null value and assign it to "toTargetProc" variable,
-                                                // which it will break the loop and execute the next code below it.
+                        // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
+                        // it will instead returns a non-null value and assign it to "toTargetProc" variable,
+                        // which it will break the loop and execute the next code below it.
                     }
 
                     // Assign the priority to the process and write a log (just for displaying any info)
@@ -1755,19 +1753,19 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int playtimemins = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int playtimehours = int.Parse("0" + HourPlaytimeTextBox.Text);
-            int FinalPlaytimeMinutes = playtimemins % 60;
-            int FinalPlaytimeHours = playtimehours + playtimemins / 60;
-            if (FinalPlaytimeHours > 99999) { FinalPlaytimeHours = 99999; FinalPlaytimeMinutes = 59; }
-            MinutePlaytimeTextBox.Text = FinalPlaytimeMinutes.ToString();
-            HourPlaytimeTextBox.Text = FinalPlaytimeHours.ToString();
+            int playtimeMins = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int playtimeHours = int.Parse("0" + HourPlaytimeTextBox.Text);
+            int finalPlaytimeMinutes = playtimeMins % 60;
+            int finalPlaytimeHours = playtimeHours + playtimeMins / 60;
+            if (finalPlaytimeHours > 99999) { finalPlaytimeHours = 99999; finalPlaytimeMinutes = 59; }
+            MinutePlaytimeTextBox.Text = finalPlaytimeMinutes.ToString();
+            HourPlaytimeTextBox.Text = finalPlaytimeHours.ToString();
 
-            int FinalPlaytime = FinalPlaytimeHours * 3600 + FinalPlaytimeMinutes * 60;
+            int finalPlaytime = finalPlaytimeHours * 3600 + finalPlaytimeMinutes * 60;
 
-            SavePlaytimetoRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, FinalPlaytime);
+            SavePlaytimeToRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
             LogWriteLine($"Playtime counter changed to {HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m"}. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, FinalPlaytime);
+            UpdatePlaytime(false, finalPlaytime);
             PlaytimeFlyout.Hide();
         }
 
@@ -1775,7 +1773,7 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
-            SavePlaytimetoRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
+            SavePlaytimeToRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
             LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, 0);
             PlaytimeFlyout.Hide();
@@ -1789,19 +1787,21 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Playtime Tracker Method
-        private void UpdatePlaytime(bool reg = true, int CPtV = 0)
+        public void UpdatePlaytime(bool readRegistry = true, int currentPlaytimeValue = 0)
         {
-            int CurrentPlaytimeValue = reg ? ReadPlaytimeFromRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation) : CPtV;
-            HourPlaytimeTextBox.Text = (CurrentPlaytimeValue / 3600).ToString();
-            MinutePlaytimeTextBox.Text = (CurrentPlaytimeValue % 3600 / 60).ToString();
-            PlaytimeMainBtn.Text = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
+            if (readRegistry)
+                currentPlaytimeValue = ReadPlaytimeFromRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+
+            HourPlaytimeTextBox.Text = (currentPlaytimeValue / 3600).ToString();
+            MinutePlaytimeTextBox.Text = (currentPlaytimeValue % 3600 / 60).ToString();
+            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, HourPlaytimeTextBox.Text, MinutePlaytimeTextBox.Text);
         }
 
-        private static int ReadPlaytimeFromRegistry(string RegionRegKey)
+        private static int ReadPlaytimeFromRegistry(string regionRegistryKey)
         {
             try
             {
-                return (int)Registry.CurrentUser.OpenSubKey(RegionRegKey, true).GetValue("CollapseLauncher_Playtime", 0);
+                return (int)Registry.CurrentUser.OpenSubKey(regionRegistryKey, true).GetValue("CollapseLauncher_Playtime", 0);
             }
             catch (Exception ex)
             {
@@ -1811,11 +1811,11 @@ namespace CollapseLauncher.Pages
 
         }
 
-        private static void SavePlaytimetoRegistry(string RegionRegKey, int value)
+        private static void SavePlaytimeToRegistry(string regionRegistryKey, int value)
         {
             try
             {
-                Registry.CurrentUser.OpenSubKey(RegionRegKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.DWord);
+                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
@@ -1823,120 +1823,97 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async static void StartPlaytimeCounter(string oldRegionRegistryKey, Process proc, PresetConfigV2 gamePreset)
+        private async void StartPlaytimeCounter(Process proc, PresetConfigV2 gamePreset)
         {
-            int saveFrequencyinSeconds = 60;
+            int currentPlaytime = ReadPlaytimeFromRegistry(gamePreset.ConfigRegistryLocation);
 
-            int currentPlaytime = ReadPlaytimeFromRegistry(oldRegionRegistryKey);
-            int elapsedSeconds = 0;
+            DateTime begin = DateTime.Now;
+            int numOfLoops = 0;
 
-            var inGameTimer = new DispatcherTimer
+#if DEBUG
+            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
+#endif
+
+            using (var inGameTimer = new System.Timers.Timer())
             {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-            inGameTimer.Tick += (o, e) =>
-            {
-                elapsedSeconds++;
-
-                if (elapsedSeconds % saveFrequencyinSeconds == 0)
+                inGameTimer.Interval = 60000;
+                inGameTimer.Elapsed += (o, e) =>
                 {
-                    //LogWriteLine($"Added \"fake\" {saveFrequencyinSeconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
-                    SavePlaytimetoRegistry(oldRegionRegistryKey, currentPlaytime + elapsedSeconds);
-                }
-            };
-            inGameTimer.Start();
+                    numOfLoops++;
 
-            await proc.WaitForExitAsync();
-            if (gamePreset.GameType == GameType.Honkai)
-            {
-                try
+                    DateTime now = DateTime.Now;
+                    int elapsedSeconds = (int)(now - begin).TotalSeconds;
+                    if (elapsedSeconds < 0)
+                        elapsedSeconds = numOfLoops * 60;
+
+                    if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
+                        m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                        {
+                            m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
+                        });
+#if DEBUG
+                    LogWriteLine($"{gamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
+#endif
+                    SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
+                };
+
+                inGameTimer.Start();
+
+                if (gamePreset.GameType == GameType.Honkai)
                 {
+                    string processNameStr = Path.GetFileNameWithoutExtension(gamePreset.GameExecutableName);
                     while (true)
                     {
-                        Process[] pname = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
-                        switch (pname.Length)
+                        // Try get the honkaiProc and auto-dispose it if the routine finishes,
+                        // then get the first process
+                        Process honkaiProc = Process.GetProcessesByName(processNameStr).FirstOrDefault();
+
+                        // If the honkaiProc is not null and also has the main window handle,
+                        // then continue to go through.
+                        // 
+                        // It replaces the switch statement where it checks for the .Length > 1
+                        // since the first process (process[0]) is not the actual active process.
+                        //
+                        // So, if it doesn't have one (IntPtr == Zero), then continue the loop until
+                        // the actual process found.
+                        if (honkaiProc != null && honkaiProc.MainWindowHandle != IntPtr.Zero)
                         {
-                            case 0:
-                                break;
-                            case 1:
-                                proc = pname[0];
-                                LogWriteLine($"Found the main HI3 process [{pname[0].Id}]");
-                                await proc.WaitForExitAsync();
-                                break;
-                            default:
-                                await Task.Delay(5000);
-                                continue;
+                            // Assign the old proc with honkaiProc.
+                            proc = honkaiProc;
+
+                            // Wait the process
+                            LogWriteLine($"Found the main HI3 process [{proc.Id}]");
+                            await proc.WaitForExitAsync();
+                            break;
                         }
-                        break;
+
+                        // If the process hasn't spawn yet or still has no MainWindowHandle,
+                        // then delay before continue to another loop routine.
+                        await Task.Delay(5000);
                     }
+                }
+                // If not Honkai, then wait the process as usual
+                else await proc.WaitForExitAsync();
 
-                }
-                catch (Exception e)
-                {
-                    LogWriteLine($"Failed to find the main BH3 process [{e}]");
-                }
+                inGameTimer.Stop();
             }
-            SavePlaytimetoRegistry(oldRegionRegistryKey, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
-            inGameTimer.Stop();
-        }
 
-        private async void AutoUpdatePlaytimeCounter(bool bootByCollapse = false, CancellationToken token = new CancellationToken())
-        {
-            string regionKey = CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation;
-            int oldTime = ReadPlaytimeFromRegistry(regionKey);
-            UpdatePlaytime(false, oldTime);
-
-            bool dynamicUpdate = true;
-
-            try
+            DateTime end = DateTime.Now;
+            int elapsedSeconds = (int)(end - begin).TotalSeconds;
+            if (elapsedSeconds < 0)
             {
-                await Task.Delay(2000, token);
-
-                if (!dynamicUpdate)
-                {
-                    while (_cachedIsGameRunning) { }
-                    UpdatePlaytime();
-                    return;
-                }
-
-                int elapsedSeconds = 0;
-
-                if (bootByCollapse)
-                {
-                    while (_cachedIsGameRunning)
-                    {
-                        await Task.Delay(60000, token);
-                        elapsedSeconds += 60;
-                        UpdatePlaytime(false, oldTime + elapsedSeconds);
-                    }
-                    UpdatePlaytime();
-                    return;
-                }
-
-                if (_cachedIsGameRunning)
-                {
-                    await Task.Delay(60000, token);
-                    int newTime = ReadPlaytimeFromRegistry(regionKey);
-                    if (newTime == oldTime) return;
-                    //int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
-                    //await Task.Delay(60000 - CurrentSeconds, token);
-
-                }
-
-                while (_cachedIsGameRunning)
-                {
-                    UpdatePlaytime(false, oldTime + elapsedSeconds);
-                    elapsedSeconds += 60;
-                    await Task.Delay(60000, token);
-                }
-
-                UpdatePlaytime();
+                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
+                elapsedSeconds = numOfLoops * 60;
+                Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
             }
 
-            catch
-            {
-            }
+            SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
+            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
+            if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
+                m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                {
+                    m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
+                });
         }
         #endregion
 

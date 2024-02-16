@@ -76,6 +76,10 @@ namespace Hi3Helper
                 public string ResetPlaytimeSubtitle { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle;
                 public string ResetPlaytimeSubtitle2 { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle2;
                 public string ResetPlaytimeSubtitle3 { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle3;
+                public string InvalidPlaytimeTitle { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle;
+                public string InvalidPlaytimeSubtitle1 { get; set; } = LangFallback?._Dialogs.InvalidPlaytimeSubtitle1;
+                public string InvalidPlaytimeSubtitle2 { get; set; } = LangFallback?._Dialogs.InvalidPlaytimeSubtitle2;
+                public string InvalidPlaytimeSubtitle3 { get; set; } = LangFallback?._Dialogs.InvalidPlaytimeSubtitle3;
                 public string MigrationTitle { get; set; } = LangFallback?._Dialogs.MigrationTitle;
                 public string MigrationSubtitle { get; set; } = LangFallback?._Dialogs.MigrationSubtitle;
                 public string NeedInstallMediaPackTitle { get; set; } = LangFallback?._Dialogs.NeedInstallMediaPackTitle;
