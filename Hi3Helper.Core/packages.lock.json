@@ -4,8 +4,8 @@
     "net8.0": {
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.25.2",
-        "contentHash": "g/xIIeLhR77bl4ajGGbPYRmZf5acJlCRaSBqUnU8+2aQYREnZnv+UccRNndHof4mWO1ORS0b5i6on40VOjBpsg=="
+        "resolved": "3.25.3",
+        "contentHash": "fDY/kt0gy2nVcoeMmiyDMtwgvDJG5qaU7+Ic77szKTvVkIvoo7tyf+d+QDlKSosB+FjoKocX/ObObxqKCq60uA=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
@@ -34,7 +34,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.25.2, )",
+          "Google.Protobuf": "[3.25.3, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
