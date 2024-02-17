@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<!-- Versioning -->
-		<Version>1.73.3</Version>
+		<Version>1.73.4</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
 		<Platforms>x64</Platforms>
@@ -164,8 +164,6 @@
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
 			<TrimmableAssembly Include="Google.Protobuf" />
 			<TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
 			<TrimmableAssembly Include="H.NotifyIcon" />
@@ -210,13 +208,6 @@
 			<!--
 			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
 			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Core" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
 			<TrimmerRootAssembly Include="ImageEx" />
 			<TrimmerRootAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
 			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
