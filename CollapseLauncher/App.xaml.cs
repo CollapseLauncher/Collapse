@@ -1,7 +1,5 @@
-using Google.Protobuf.WellKnownTypes;
 using H.NotifyIcon;
 using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -9,7 +7,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Runtime.InteropServices;
+using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
@@ -18,10 +16,7 @@ namespace CollapseLauncher
     public partial class App : Application
     {
         public static bool IsAppKilled = false;
-        
-        //[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        //public static extern int SetCurrentProcessExplicitAppUserModelID(string AppID);
-        
+
         public App()
         {
             try
