@@ -38,8 +38,8 @@ namespace CollapseLauncher.Pages.OOBE
     {
         private List<AgreementProperty> markdownFileList = new List<AgreementProperty>
         {
-            new AgreementProperty("Privacy Policy", "PRIVACY.md"),
-            new AgreementProperty("Third Party Notices", "THIRD_PARTY_NOTICES.md")
+            new AgreementProperty("Privacy Policy (EN)", "PRIVACY.md"),
+            new AgreementProperty("Third Party Notices (EN)", "THIRD_PARTY_NOTICES.md")
         };
 
         public OOBEAgreementMenu()
