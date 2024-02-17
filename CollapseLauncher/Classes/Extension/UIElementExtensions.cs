@@ -37,7 +37,7 @@ namespace CollapseLauncher.Extension
             return buttonReturn;
         }
 
-        internal static ref TElement AddElementToStackPanel<TElement>(this StackPanel stackPanel, TElement element)
+        internal static ref TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
             where TElement : FrameworkElement
         {
             stackPanel.Children.Add(element);
