@@ -50,6 +50,8 @@
                 public string NoKeepInstallIt { get; set; } = LangFallback?._Misc.NoKeepInstallIt;
                 public string NoIgnoreIt { get; set; } = LangFallback?._Misc.NoIgnoreIt;
                 public string NoOtherLocation { get; set; } = LangFallback?._Misc.NoOtherLocation;
+                public string IAcceptAgreement { get; set; } = LangFallback?._Misc.IAcceptAgreement;
+                public string IDoNotAcceptAgreement { get; set; } = LangFallback?._Misc.IDoNotAcceptAgreement;
                 public string NotSelected { get; set; } = LangFallback?._Misc.NotSelected;
                 public string ExtractAnyway { get; set; } = LangFallback?._Misc.ExtractAnyway;
                 public string LangNameENUS { get; set; } = LangFallback?._Misc.LangNameENUS;

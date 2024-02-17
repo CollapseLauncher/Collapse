@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Extension;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -29,6 +30,7 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Windows.UI.Text;
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -58,9 +60,42 @@ namespace CollapseLauncher.Pages.OOBE
         }
 
         #region Intro Sequence
+        private void CreateIntroWelcomeTextStack(Panel panel)
+        {
+            if (!Lang._OOBEStartUpMenu.WelcomeTitleString.ContainsKey("Upper")
+             || !Lang._OOBEStartUpMenu.WelcomeTitleString.ContainsKey("Lower"))
+                // If either Upper or Lower is not exist, then use the default one from XAML
+                return;
+
+            // Assign the value from each dictionary
+            string[] upperTexts = Lang._OOBEStartUpMenu.WelcomeTitleString["Upper"];
+            string[] lowerTexts = Lang._OOBEStartUpMenu.WelcomeTitleString["Lower"];
+
+            // Initial StackPanel for both upper and lower
+            StackPanel upperStackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            StackPanel lowerStackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+
+            // Clear the content and add the texts
+            panel.Children.Clear();
+            AddIntoTextToStackPanel(upperStackPanel, upperTexts, FontWeights.Normal, 32, 0);
+            AddIntoTextToStackPanel(lowerStackPanel, lowerTexts, FontWeights.Bold, 48, 0);
+
+            // Add the children StackPanel into parent StackPanel
+            panel.AddElementToStackPanel(upperStackPanel);
+            panel.AddElementToStackPanel(lowerStackPanel);
+        }
+
+        private void AddIntoTextToStackPanel(StackPanel panel, string[] texts, FontWeight weight, double size, double initialOpacity)
+        {
+            foreach (string textString in texts)
+                panel.AddElementToStackPanel(new TextBlock { Text = textString, FontWeight = weight, FontSize = size, Opacity = initialOpacity });
+        }
+
         private async void RunIntroSequence()
         {
-            TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(1);
+            await Task.Delay(250);
+            TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
+            CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
 
             await WelcomeVLogo.StartAnimation(logoAnimAppearanceDuration,
                 currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
@@ -89,7 +124,7 @@ namespace CollapseLauncher.Pages.OOBE
             OverlayFrame.Navigate(typeof(BlankPage), null, new DrillInNavigationTransitionInfo());
             MainUI.Visibility = Visibility.Visible;
 
-            TimeSpan mainUIAnimAppearanceDuration = TimeSpan.FromSeconds(1);
+            TimeSpan mainUIAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
             await MainUI.StartAnimation(mainUIAnimAppearanceDuration,
                 currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
                 currentCompositor.CreateVector3KeyFrameAnimation(
@@ -140,6 +175,8 @@ namespace CollapseLauncher.Pages.OOBE
             GetRecommendedCDN();
         }
 
+        private long[] latencies = null;
+        private int indexOfLatency = -1;
         private async void GetRecommendedCDN()
         {
             // Initialize the token source
@@ -147,20 +184,18 @@ namespace CollapseLauncher.Pages.OOBE
 
             // Set the selected CDN to -1
             SelectCDN.SelectedIndex = -1;
-            SelectCDN.PlaceholderText = "Checking CDN Recommendation...";
-            SelectCDN.ItemsSource = CDNNameList.Select(x => x + " (Checking latency...)").ToList();
+            SelectCDN.PlaceholderText = Lang._OOBEStartUpMenu.LoadingCDNCheckboxPlaceholder;
+            SelectCDN.ItemsSource = CDNNameList.Select(x => x + ' ' + Lang._OOBEStartUpMenu.LoadingCDNCheckboxCheckLatency).ToList();
 
-            LoadingMessageHelper.SetMessage("Initializing Launcher's First Start-up", "Checking CDN Recommendation...");
+            LoadingMessageHelper.SetMessage(Lang._OOBEStartUpMenu.LoadingInitializationTitle, Lang._OOBEStartUpMenu.LoadingCDNCheckingSubitle);
             LoadingMessageHelper.SetProgressBarState(0, true);
             LoadingMessageHelper.ShowLoadingFrame();
-            LoadingMessageHelper.ShowActionButton("Skip CDN Check", "", (sender, _) => {
+            LoadingMessageHelper.ShowActionButton(Lang._OOBEStartUpMenu.LoadingCDNCheckingSkipButton, "", (sender, _) => {
                 checkRecommendedCDNToken.Cancel();
                 LoadingMessageHelper.HideLoadingFrame();
             });
 
             // Get the CDN latencies
-            int indexOfLatency = -1;
-            long[] latencies = null;
             try
             {
                 latencies = await FallbackCDNUtil.GetCDNLatencies(checkRecommendedCDNToken);
@@ -172,6 +207,12 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 LoadingMessageHelper.HideLoadingFrame();
             }
+
+            PrintCDNList();
+        }
+
+        private void PrintCDNList()
+        {
             if (indexOfLatency < 0 || latencies == null)
             {
                 SelectCDN.ItemsSource = CDNNameList;
@@ -185,11 +226,13 @@ namespace CollapseLauncher.Pages.OOBE
             TextBlock[] CDNNameListWithLatency = new TextBlock[latencies.Length];
             for (int i = 0; i < latencies.Length; i++)
             {
-                string latencyString = " (" + (latencies[i] == long.MaxValue ? "- " : $"{latencies[i]}") + "ms)";
+                string latencyString = latencies[i] == long.MaxValue ?
+                    Lang._OOBEStartUpMenu.CDNCheckboxItemLatencyUnknownFormat
+                  : string.Format(Lang._OOBEStartUpMenu.CDNCheckboxItemLatencyFormat, latencies[i]);
                 CDNNameListWithLatency[i] = new TextBlock();
                 CDNNameListWithLatency[i].Inlines.Add(new Run() { Text = CDNNameList[i] + latencyString });
                 if (i == indexOfLatency)
-                    CDNNameListWithLatency[i].Inlines.Add(new Run() { Text = " [Recommended]", FontWeight = FontWeights.SemiBold });
+                    CDNNameListWithLatency[i].Inlines.Add(new Run() { Text = Lang._OOBEStartUpMenu.CDNCheckboxItemLatencyRecommendedFormat, FontWeight = FontWeights.SemiBold });
             }
             SelectCDN.ItemsSource = CDNNameListWithLatency;
             SelectCDN.SelectedIndex = indexOfLatency;
@@ -374,7 +417,7 @@ namespace CollapseLauncher.Pages.OOBE
 
             LoadingMessageHelper.ShowLoadingFrame();
             LoadingMessageHelper.SetProgressBarState();
-            LoadingMessageHelper.SetMessage("Loading Image", "The image might take a while to get processed.");
+            LoadingMessageHelper.SetMessage(Lang._OOBEStartUpMenu.LoadingBackgroundImageTitle, Lang._OOBEStartUpMenu.LoadingBackgroundImageSubtitle);
             Stream imageStream = await ImageLoaderHelper.LoadImage(selectedPath, true, true);
             if (imageStream != null)
             {
@@ -582,6 +625,7 @@ namespace CollapseLauncher.Pages.OOBE
                 if (langID == GetAppConfigValue("AppLanguage").ToString().ToLower()) return;
                 SetAppConfigValue("AppLanguage", langID);
                 LoadLocale(langID);
+                PrintCDNList();
 
                 // Update the view
                 LogWriteLine("Updating the view...");

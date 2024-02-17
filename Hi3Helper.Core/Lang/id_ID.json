@@ -487,6 +487,9 @@
     "NotSelected": "Belum dipilih",
     "ExtractAnyway": "Ekstrak Saja!",
 
+    "IAcceptAgreement": "Saya menyetujui persetujuan tersebut.",
+    "IDoNotAcceptAgreement": "Saya tidak setuju dengan persetujuan tersebut.",
+
     "LangNameENUS": "Inggris (AS)",
     "LangNameJP": "Jepang",
     "LangNameCN": "Tiongkok (RRC)",
@@ -1132,5 +1135,44 @@
     "Korea": "Korea",
     "Japan": "Jepang",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Persetujuan:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Selamat", " Datang", " di" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Klik untuk melanjutkan",
+    "SetupBackButton": "Kembali",
+
+    "CustomizationTitle": "Sesuaikan Launchermu",
+    "CustomizationSettingsLanguageHeader": "Bahasa",
+    "CustomizationSettingsLanguageDescription": "Bahasa yang ditentukan juga akan digunakan untuk konten yang ditampilkan.",
+    "CustomizationSettingsWindowSizeHeader": "Ukuran Jendela (Window)",
+    "CustomizationSettingsWindowSizeDescription": "Sesuaikan ukuran launchermu.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Pilih Content Delivery Network utama yang akan kamu gunakan.",
+    "CustomizationSettingsStyleHeader": "Pilihan Gaya (Style)",
+    "CustomizationSettingsStyleDescription": "Ubah tampilan dari launcher sesuai keinginanmu.",
+    "CustomizationSettingsStyleThemeHeader": "Tema",
+    "CustomizationSettingsStyleThemeDescription": "Ubah warna tampilan launchermu.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Gambar Latar Belakang Kustom",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Gunakan gambar kustom untuk latar belakang ketimbang menggunakan gambar bawaan.",
+
+    "LoadingInitializationTitle": "Menyiapkan Launcher untuk Pertama kalinya",
+    "LoadingCDNCheckboxCheckLatency": "(Memeriksa latensi...)",
+    "LoadingCDNCheckboxPlaceholder": "Memeriksa Rekomendasi CDN...",
+    "LoadingCDNCheckingSubitle": "Mencari server Content Delivery Network (CDN) terdekat untukmu...",
+    "LoadingCDNCheckingSkipButton": "Lewati Pemeriksaan CDN",
+    "LoadingBackgroundImageTitle": "Memuat Gambar",
+    "LoadingBackgroundImageSubtitle": "Butuh beberapa waktu untuk memproses gambarmu.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} md)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (tidak diketahui)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Direkomendasikan]"
   }
 }

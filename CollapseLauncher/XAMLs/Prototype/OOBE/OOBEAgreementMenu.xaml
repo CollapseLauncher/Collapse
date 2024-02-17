@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
     xmlns:uiEx="using:CollapseLauncher.Extension"
+    xmlns:helper="using:Hi3Helper"
     mc:Ignorable="d"
     Background="Transparent">
     <Grid Margin="48">
@@ -36,7 +37,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock FontSize="32">
-                            <Run Text="Agreement:"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._OOBEAgreementMenu.AgreementTitle}"/>
                             <Run x:Name="AgreementTitle" Text="{x:Bind title}" FontWeight="Bold"/>
                         </TextBlock>
                         <Grid Grid.Row="1" Margin="0,16">
@@ -54,7 +55,7 @@
                 CornerRadius="{x:Bind uiEx:UIElementExtensions.AttachRoundedKindCornerRadius(ApplyAgreementButton)}">
             <StackPanel Orientation="Horizontal">
                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="16" VerticalAlignment="Center"/>
-                <TextBlock Text="I accept the agreement" VerticalAlignment="Center" Margin="8,-1,0,0" FontSize="16" FontWeight="Medium"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.IAcceptAgreement}" VerticalAlignment="Center" Margin="8,-1,0,0" FontSize="16" FontWeight="Medium"/>
             </StackPanel>
         </Button>
     </Grid>

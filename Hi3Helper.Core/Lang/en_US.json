@@ -502,6 +502,9 @@
     "NotSelected": "Not Selected",
     "ExtractAnyway": "Extract Anyway!",
 
+    "IAcceptAgreement": "I accept the agreement",
+    "IDoNotAcceptAgreement": "I do not accept the agreement",
+
     "LangNameENUS": "English (US)",
     "LangNameJP": "Japanese",
     "LangNameCN": "Chinese (Simplified)",
@@ -1162,5 +1165,44 @@
     "Korea": "Korea",
     "Japan": "Japan",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Agreement:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Welcome", " To" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Click Here to Continue",
+    "SetupBackButton": "Go Back",
+
+    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
+    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
+    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsStyleThemeHeader": "Theme",
+    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
+    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
+    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
+    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
+    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   }
 }

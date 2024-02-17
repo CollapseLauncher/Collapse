@@ -71,8 +71,7 @@
                                         <FontIconSource Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="12" Glyph="&#xE70D;" />
                                     </AnimatedIcon.FallbackIconSource>
                                 </AnimatedIcon>
-                                <TextBlock Text="Go Back"
-                                       FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.SetupBackButton}" FontWeight="Bold"/>
                             </StackPanel>
                         </Button.Content>
                     </Button>
@@ -85,9 +84,9 @@
                 </Grid>
                 <ScrollViewer x:Name="LauncherFolderContainer" Grid.Row="1" Margin="0,0,0,0" Grid.Column="1" VerticalAlignment="Top">
                     <StackPanel VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left">
-                        <!--<StackPanel.Transitions>
+                        <StackPanel.Transitions>
                             <EntranceThemeTransition/>
-                        </StackPanel.Transitions>-->
+                        </StackPanel.Transitions>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" Style="{ThemeResource TitleLargeTextBlockStyle}" FontSize="32" Margin="0,0,0,16" Foreground="{ThemeResource SystemAccentColor}"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}" Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal" Margin="0,0,0,32"/>
@@ -109,10 +108,10 @@
                 </ScrollViewer>
                 <ScrollViewer x:Name="CustomizationContainer" Grid.Row="1" Margin="0,0,0,24" Grid.ColumnSpan="2" Visibility="Collapsed">
                     <StackPanel x:Name="SettingsCardContainer">
-                        <TextBlock Text="Customize Your Launcher" FontSize="32" Margin="0,0,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationTitle}" FontSize="32" Margin="0,0,0,16"/>
                         <controls:SettingsCard x:Name="SettingsCardItemLanguage"
-                                               Header="Language"
-                                               Description="This will adjust the language for the information displayed."
+                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageHeader}"
+                                               Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageDescription}"
                                                HeaderIcon="{ui:FontIcon Glyph=&#xf57d;}"
                                                Margin="0,2">
                             <ComboBox x:Name="SelectLang"
@@ -125,8 +124,8 @@
                                       DropDownClosed="SelectLang_OnDropDownClosed"/>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
-                                               Header="Window Size"
-                                               Description="Change the size of the launcher."
+                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader}"
+                                               Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeDescription}"
                                                HeaderIcon="{ui:FontIcon Glyph=&#xf2d2;}"
                                                Margin="0,2">
                             <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}"
@@ -136,8 +135,8 @@
                             </ComboBox>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="SettingsCardItemPreferredCDN"
-                                               Header="Content Delivery Network"
-                                               Description="Select your primary Content Delivery Network to be used."
+                                               Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsCDNHeader}"
+                                               Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsCDNDescription}"
                                                HeaderIcon="{ui:FontIcon Glyph=&#xf6ff;}"
                                                Margin="0,2">
                             <StackPanel Orientation="Horizontal">
@@ -153,16 +152,16 @@
                                     <Button.Flyout>
                                         <Flyout>
                                             <StackPanel MaxWidth="380">
-                                                <TextBlock>
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_1}" FontWeight="Bold" FontSize="20"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_2}" FontSize="12"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_3}" FontWeight="Bold" FontSize="12"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_4}" FontSize="12"/>
+                                                <TextBlock TextWrapping="WrapWholeWords">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_1}" FontWeight="Bold" FontSize="20"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_2}" FontSize="12"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_3}" FontWeight="Bold" FontSize="12"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_4}" FontSize="12"/>
                                                 </TextBlock>
                                                 <TextBlock TextWrapping="Wrap" MaxWidth="380" Margin="0,8,0,0">
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_1}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_2}" FontWeight="Bold"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_3}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_1}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_2}" FontWeight="Bold"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_3}"/>
                                                 </TextBlock>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_4}"/>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNsAvailable}" FontWeight="Bold" FontSize="20" Margin="0,12,0,0"/>
@@ -184,21 +183,22 @@
                                 </Button>
                             </StackPanel>
                         </controls:SettingsCard>
-                        <controls:SettingsExpander x:Name="SettingsCardItemTheme" Header="Style Preference"
-                                                   Description="Change the look of the launcher and prefer your choice."
+                        <controls:SettingsExpander x:Name="SettingsCardItemTheme"
+                                                   Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleHeader}"
+                                                   Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleDescription}"
                                                    HeaderIcon="{ui:FontIcon Glyph=&#xf53f;}"
                                                    Margin="0,2">
                             <controls:SettingsExpander.Items>
-                                <controls:SettingsCard Header="Theme"
-                                                       Description="Change the color that appear in your launcher.">
+                                <controls:SettingsCard Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeHeader}"
+                                                       Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeDescription}">
                                     <ComboBox x:Name="SettingsAppThemeCombobox" SelectedIndex="{x:Bind SelectedTheme, Mode=TwoWay}">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}"/>
                                     </ComboBox>
                                 </controls:SettingsCard>
-                                <controls:SettingsCard Header="Custom Background Image"
-                                                       Description="Use custom background image instead of default one.">
+                                <controls:SettingsCard Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader}"
+                                                       Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription}">
                                     <CheckBox Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
                                               Checked="CustomBackgroundCheckedOpen"
                                               Unchecked="CustomBackgroundCheckedClose"/>
@@ -220,7 +220,7 @@
                     </Button.OpacityTransition>
                     <Button.Content>
                         <StackPanel>
-                            <TextBlock Text="Click Here to Continue" FontSize="16" FontWeight="SemiBold" FontStretch="UltraExpanded"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.SetupNextButton}" FontSize="16" FontWeight="SemiBold" FontStretch="UltraExpanded"/>
                             <AnimatedIcon Margin="0,-4,0,-8" x:Name="DropDownGlyph" MinHeight="{ThemeResource ComboBoxMinHeight}" HorizontalAlignment="Center" Width="24">
                                 <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals" />
                                 <AnimatedIcon.FallbackIconSource>
