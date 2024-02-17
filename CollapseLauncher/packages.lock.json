@@ -148,9 +148,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.34.0, )",
-        "resolved": "0.34.0",
-        "contentHash": "3G/6tP/koKeMv7QzusXMBG3iHi4IOjf3RmMBoA3bKmNjtM5HIMOuxiiUBBwfU8Sjx8ztcqsC1BIP2hpJjI7EoQ=="
+        "requested": "[0.35.0, )",
+        "resolved": "0.35.0",
+        "contentHash": "fsEkLn84B3qNWbh0NyaL8xm5L01JE5TQBqwnj6SxRyhcrOr/tulZEfB6CmESKP+qE9hQCVJ9dSTL2DIx0TU6rg=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",

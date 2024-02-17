@@ -77,14 +77,14 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
 		
-		<PackageReference Include="GitInfo" Version="3.3.3">
+		<PackageReference Include="GitInfo" Version="3.3.4">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
 		<PackageReference Include="ImageEx" Version="2.1.1" />
-		<PackageReference Include="Markdig.Signed" Version="0.34.0" />
+		<PackageReference Include="Markdig.Signed" Version="0.35.0" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
 		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
