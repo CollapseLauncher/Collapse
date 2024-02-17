@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "Hi3Hel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoSetupHelper", "InnoSetupHelper\InnoSetupHelper.csproj", "{21691306-8D30-4993-98A2-A5AE0712D81A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordRPC", "Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj", "{2004AA88-FFC3-4186-B11A-3E4C577A3D25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRPC", "Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj", "{2004AA88-FFC3-4186-B11A-3E4C577A3D25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
