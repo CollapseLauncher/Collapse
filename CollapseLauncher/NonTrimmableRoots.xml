@@ -8,4 +8,16 @@
 		<!-- Preserve COM Interop used in project code when trimming -->
 		<type fullname="CollapseLauncher.PInvoke" preserve="all" />
 	</assembly>
+	<!-- Protect built-in libs COM from trimming -->
+  <assembly fullname="System.Private.CoreLib">
+    <namespace fullname="Internal.Runtime.InteropServices" preserve="all" />
+    <namespace fullname="System.Runtime.CompilerServices" preserve="all" />
+  </assembly>
+  <assembly fullname="WinRT.Runtime">
+		<type fullname="WinRT.TypeExtensions" preserve="all" />
+	</assembly>
+	<!-- Protect generated code from trimming -->
+	<assembly fullname="CollapseLauncher">
+		<namespace fullname="CollapseLauncher.CollapseLauncher_XamlTypeInfo" preserve="all" />
+	</assembly>
 </linker>
