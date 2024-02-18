@@ -638,7 +638,7 @@ public static class Extensions
     public static Size GetSvgSize(string svgString)
     {
         // Parse the SVG string as an XML document
-        XDocument? svgDocument = XDocument.Parse(svgString);
+        XDocument svgDocument = XDocument.Parse(svgString);
 
         // Get the root element of the document
         XElement? svgElement = svgDocument.Root;
