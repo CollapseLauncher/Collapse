@@ -34,7 +34,7 @@ using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 
 namespace CollapseLauncher.InstallManager.Base
 {
-    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackageType, GameInstallPackage> where T : IGameVersionCheck
+    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage> where T : IGameVersionCheck
     {
         #region Internal Struct
         protected struct UninstallGameProperty

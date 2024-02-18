@@ -22,7 +22,7 @@ internal class MyHyperlink : IAddChild
 
     public MyHyperlink(LinkInline linkInline, string? baseUrl)
     {
-        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() ?? linkInline.Url : linkInline.Url;
+        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
         _hyperlink = new Hyperlink()
         {
             NavigateUri = Extensions.GetUri(url, baseUrl),

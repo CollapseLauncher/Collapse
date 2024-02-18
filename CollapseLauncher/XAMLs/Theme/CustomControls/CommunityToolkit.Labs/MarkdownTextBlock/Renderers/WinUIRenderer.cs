@@ -70,17 +70,15 @@ public class WinUIRenderer : RendererBase
     public void WriteLeafRawLines(LeafBlock? leafBlock)
     {
         if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
-        if (leafBlock.Lines.Lines != null)
-        {
-            var lines = leafBlock.Lines;
-            var slices = lines.Lines;
-            for (var i = 0; i < lines.Count; i++)
-            {
-                if (i != 0)
-                    WriteInline(new MyLineBreak());
 
-                WriteText(ref slices[i].Slice);
-            }
+        var lines = leafBlock.Lines;
+        var slices = lines.Lines;
+        for (var i = 0; i < lines.Count; i++)
+        {
+            if (i != 0)
+                WriteInline(new MyLineBreak());
+
+            WriteText(ref slices[i].Slice);
         }
     }
 

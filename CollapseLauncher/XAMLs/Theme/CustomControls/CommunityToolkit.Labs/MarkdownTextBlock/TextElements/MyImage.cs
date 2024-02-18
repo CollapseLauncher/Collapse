@@ -108,28 +108,26 @@ internal class MyImage : IAddChild
                 // Get the Content-Type header
                 string contentType = response.Content.Headers.ContentType?.MediaType ?? string.Empty;
 
-                if (response != null && response.Content != null)
+                if (contentType == "image/svg+xml")
                 {
-                    if (contentType == "image/svg+xml")
+                    string svgString = await response.Content.ReadAsStringAsync();
+                    var resImage = await _svgRenderer.SvgToImage(svgString);
+                    if (resImage != null)
                     {
-                        string svgString = await response.Content.ReadAsStringAsync();
-                        var resImage = await _svgRenderer.SvgToImage(svgString);
-                        if (resImage != null)
-                        {
-                            _image = resImage;
-                            _container.Child = _image;
-                        }
+                        _image = resImage;
+                        _container.Child = _image;
                     }
-                    else
+                }
+                else
+                {
+                    byte[] data = await response.Content.ReadAsByteArrayAsync();
+                    // Create a BitmapImage for other supported formats
+                    BitmapImage bitmap = new BitmapImage();
+                    using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                     {
-                        byte[] data = await response.Content.ReadAsByteArrayAsync();
-                        // Create a BitmapImage for other supported formats
-                        BitmapImage bitmap = new BitmapImage();
-                        using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-                        {
-                            // Write the data to the stream
-                            await stream.WriteAsync(data.AsBuffer());
-                            stream.Seek(0);
+                        // Write the data to the stream
+                        await stream.WriteAsync(data.AsBuffer());
+                        stream.Seek(0);
 
                             // Set the source of the BitmapImage
                             await bitmap.SetSourceAsync(stream);

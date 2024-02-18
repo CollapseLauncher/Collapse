@@ -28,7 +28,7 @@ internal class MyHyperlinkButton : IAddChild
 
     public MyHyperlinkButton(LinkInline linkInline, string? baseUrl)
     {
-        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() ?? linkInline.Url ?? string.Empty : linkInline.Url ?? string.Empty;
+        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
         _linkInline = linkInline;
         Init(url, baseUrl);
     }

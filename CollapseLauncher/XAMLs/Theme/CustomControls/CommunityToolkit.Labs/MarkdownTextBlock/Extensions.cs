@@ -670,7 +670,7 @@ public static class Extensions
 
         // Try to parse the width and height from the URL
         var parts = url.Split('=');
-        if (parts?.Length == 2)
+        if (parts.Length == 2)
         {
             var dimensions = parts[1].Split('x');
             if (dimensions.Length == 2 && int.TryParse(dimensions[0], out int width) && int.TryParse(dimensions[1], out int height))

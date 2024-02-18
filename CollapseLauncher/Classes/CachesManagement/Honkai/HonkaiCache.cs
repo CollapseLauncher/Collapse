@@ -9,7 +9,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class HonkaiCache : ProgressBase<CacheAssetType, CacheAsset>, ICache, ICacheBase<HonkaiCache>
+    internal partial class HonkaiCache : ProgressBase<CacheAsset>, ICache, ICacheBase<HonkaiCache>
     {
         #region Properties
         private string _cacheRegionalCheckName = "sprite";
