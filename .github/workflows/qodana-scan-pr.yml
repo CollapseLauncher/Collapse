@@ -29,7 +29,7 @@ jobs:
         env:
             QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # read the steps about it below
 
-      - uses: github/codeql-action/upload-sarif@v2
+      - uses: github/codeql-action/upload-sarif@v3
         if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
