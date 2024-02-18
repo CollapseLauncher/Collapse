@@ -17,5 +17,7 @@ exclude:
   - name: RedundantArgumentDefaultValue
   - name: RedundantDefaultMemberInitializer
   - name: Xaml.StaticResourceNotResolved
-include:
-  - name: CheckDependencyLicenses
+licenseRules:
+  - keys:
+    - "PROPRIETARY-LICENSE"
+    allowed: ["MS-NET-LIBRARY-2019-06"]

@@ -17,7 +17,7 @@ internal class LinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, LinkIn
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (link == null) throw new ArgumentNullException(nameof(link));
 
-        var url = link.GetDynamicUrl != null ? link.GetDynamicUrl() ?? link.Url : link.Url;
+        var url = link.GetDynamicUrl != null ? link.GetDynamicUrl() : link.Url;
 
         if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
         {
