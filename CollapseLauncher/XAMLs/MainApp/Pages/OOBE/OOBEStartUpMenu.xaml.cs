@@ -322,19 +322,6 @@ namespace CollapseLauncher.Pages.OOBE
             obj.Opacity = 0.8f;
         }
 
-        private void SelectLang_OnDropDownOpened(object sender, object e)
-        {
-            // The dropdown panel collides with non-client area, making the first item not clickable.
-            // Use this to disable whole non-client area temporarily.
-            MainWindow.DisableNonClientArea();
-        }
-
-        private void SelectLang_OnDropDownClosed(object sender, object e)
-        {
-            // And restore the nc area to normal state.
-            MainWindow.EnableNonClientArea();
-        }
-
         private void RefreshSelection()
         {
             SelectLang.SelectedIndex = -1;

@@ -118,9 +118,7 @@
                                       SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
                                       ItemsSource="{x:Bind LangList}"
-                                      MaxDropDownHeight="200"
-                                      DropDownOpened="SelectLang_OnDropDownOpened"
-                                      DropDownClosed="SelectLang_OnDropDownClosed"/>
+                                      MaxDropDownHeight="200"/>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
                                                Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader}"

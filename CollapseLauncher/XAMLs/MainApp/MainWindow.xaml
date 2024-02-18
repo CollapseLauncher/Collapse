@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:customcontrol="using:CollapseLauncher.CustomControls"
     xmlns:uiextension="using:CollapseLauncher.Extension"
-    mc:Ignorable="d">
+    mc:Ignorable="d" SizeChanged="MainWindow_OnSizeChanged">
     <Grid x:Name="MainWindowGridContainer">
         <Grid.Resources>
             <ThemeShadow x:Name="SharedThemeShadow"/>

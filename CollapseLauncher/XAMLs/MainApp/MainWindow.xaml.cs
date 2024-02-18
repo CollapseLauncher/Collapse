@@ -402,5 +402,11 @@ namespace CollapseLauncher
         {
             this.Close();
         }
+
+        private void MainWindow_OnSizeChanged(object sender, WindowSizeChangedEventArgs args)
+        {
+            // Recalculate non-client area size
+            EnableNonClientArea();
+        }
     }
 }
