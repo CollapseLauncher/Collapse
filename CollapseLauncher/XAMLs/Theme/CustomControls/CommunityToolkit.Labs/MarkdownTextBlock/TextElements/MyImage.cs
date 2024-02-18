@@ -129,17 +129,16 @@ internal class MyImage : IAddChild
                         await stream.WriteAsync(data.AsBuffer());
                         stream.Seek(0);
 
-                            // Set the source of the BitmapImage
-                            await bitmap.SetSourceAsync(stream);
-                        }
-                        _image.Source = bitmap;
-                        // _image.Width = bitmap.PixelWidth == 0 ? bitmap.DecodePixelWidth : bitmap.PixelWidth;
-                        // _image.Height = bitmap.PixelHeight == 0 ? bitmap.DecodePixelHeight : bitmap.PixelHeight;
-
+                        // Set the source of the BitmapImage
+                        await bitmap.SetSourceAsync(stream);
                     }
 
-                    _loaded = true;
+                    _image.Source = bitmap;
+                    // _image.Width = bitmap.PixelWidth == 0 ? bitmap.DecodePixelWidth : bitmap.PixelWidth;
+                    // _image.Height = bitmap.PixelHeight == 0 ? bitmap.DecodePixelHeight : bitmap.PixelHeight;
                 }
+
+                _loaded = true;
             }
 
             if (_precedentWidth != 0)
