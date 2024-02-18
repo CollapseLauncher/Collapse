@@ -34,3 +34,4 @@ licenseRules:
       - "PROTOBUF"
     # System.CommandLine NuGet for some reason
       - "None"
+      
