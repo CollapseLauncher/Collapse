@@ -25,8 +25,8 @@ using static Hi3Helper.Logger;
 namespace CollapseLauncher.Interfaces
 {
     internal class ProgressBase<T1, T2> :
-        GamePropertyBase<T1, T2> where T1 : Enum
-                                 where T2 : IAssetIndexSummary
+        GamePropertyBase<T2> where T1 : Enum
+                             where T2 : IAssetIndexSummary
     {
         public ProgressBase(UIElement parentUI, IGameVersionCheck GameVersionManager, IGameSettings GameSettings, string gamePath, string gameRepoURL, string versionOverride)
             : base(parentUI, GameVersionManager, GameSettings, gamePath, gameRepoURL, versionOverride) => Init();

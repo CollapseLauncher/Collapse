@@ -45,7 +45,7 @@ public class WinUIRenderer : RendererBase
     public override object Render(MarkdownObject markdownObject)
     {
         Write(markdownObject);
-        return FlowDocument ?? new();
+        return FlowDocument;
     }
 
     public void ReloadDocument()
@@ -70,7 +70,7 @@ public class WinUIRenderer : RendererBase
     public void WriteLeafRawLines(LeafBlock? leafBlock)
     {
         if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
-        if (leafBlock?.Lines.Lines != null)
+        if (leafBlock.Lines.Lines != null)
         {
             var lines = leafBlock.Lines;
             var slices = lines.Lines;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.UI.Xaml;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -8,7 +7,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal class GamePropertyBase<T1, T2> : IAssetEntry
+    internal class GamePropertyBase<T1> : IAssetEntry
     {
         private string _gamePathField { get; init; }
         private GameVersion _gameVersionOverride { get; init; }
@@ -51,7 +50,7 @@ namespace CollapseLauncher.Interfaces
         protected IGameSettings _gameSettings { get; set; }
         protected string _gamePath { get => string.IsNullOrEmpty(_gamePathField) ? _gameVersionManager.GameDirPath : _gamePathField; }
         protected string _gameRepoURL { get; set; }
-        protected List<T2> _assetIndex { get; set; }
+        protected List<T1> _assetIndex { get; set; }
         protected bool _useFastMethod { get; set; }
 
         public ObservableCollection<IAssetProperty> AssetEntry { get; set; }

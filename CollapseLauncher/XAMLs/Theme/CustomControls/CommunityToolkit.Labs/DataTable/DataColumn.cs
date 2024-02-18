@@ -117,7 +117,7 @@ public class DataColumn : ContentControl
         // Notify the rest of the table to update
         if (_parent?.TryGetTarget(out DataTable? parent) == true)
         {
-            parent?.ColumnResized();
+            parent.ColumnResized();
         }
     }
 }

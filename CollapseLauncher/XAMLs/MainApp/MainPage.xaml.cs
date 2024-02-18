@@ -110,7 +110,8 @@ namespace CollapseLauncher
                 #endif
                 if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
-                m_actualMainFrameSize = new Size((float)(m_window as MainWindow)?.Bounds.Width, (float)(m_window as MainWindow)?.Bounds.Height);
+                if (m_window is MainWindow window)
+                    m_actualMainFrameSize = new Size(window.Bounds.Width, window.Bounds.Height);
 
                 SubscribeEvents();
                 SetDefaultDragAreaAsync();

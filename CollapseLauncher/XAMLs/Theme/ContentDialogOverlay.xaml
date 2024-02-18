@@ -330,7 +330,7 @@
                                                 <ColumnDefinition x:Name="CloseColumn" Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <Button
-                                            Grid.Row="0"
+                                            Grid.Column="0"
                                             x:Name="PrimaryButton"
                                             IsTabStop="False"
                                             IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"
@@ -345,7 +345,6 @@
                                                 TextWrapping="Wrap"/>
                                             </Button>
                                             <Button
-                                            Grid.Row="0"
                                             x:Name="SecondaryButton"
                                             IsTabStop="False"
                                             IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}"
@@ -360,7 +359,6 @@
                                                 TextWrapping="Wrap"/>
                                             </Button>
                                             <Button
-                                            Grid.Row="0"
                                             x:Name="CloseButton"
                                             IsTabStop="False"
                                             Grid.Column="4"

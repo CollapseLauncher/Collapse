@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Windows.Foundation;
 
@@ -117,10 +116,10 @@ public class DataTable : Panel
         double proportionalUnits = 0;
         double autoSized = 0;
 
-        var elements = Children.Where(static e => e.Visibility == Visibility.Visible && e is DataColumn);
+        DataColumn[] elements = Children.Where(e => e.Visibility == Visibility.Visible).OfType<DataColumn>().ToArray();
 
         // We only need to measure elements that are visible
-        foreach (DataColumn column in elements.OfType<DataColumn>())
+        foreach (DataColumn column in elements)
         {
             if (column.CurrentWidth.IsStar)
             {
@@ -140,10 +139,10 @@ public class DataTable : Panel
         // TODO: This can go out of bounds or something around here when pushing a resized column to the right...
         var proportionalAmount = (finalSize.Width - fixedWidth - autoSized) / proportionalUnits;
 
-
+        double x = 0;
         foreach (DataColumn column in elements)
         {
-            double x = 0, width;
+            double width;
             if (column.CurrentWidth.IsStar)
             {
                 width = proportionalAmount * column.CurrentWidth.Value;

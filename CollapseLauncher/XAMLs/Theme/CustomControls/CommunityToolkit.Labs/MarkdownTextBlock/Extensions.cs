@@ -419,8 +419,8 @@ public static class Extensions
         {
             //the url is relative, so append the base
             //trim any trailing "/" from the base and any leading "/" from the url
-            @base = @base?.TrimEnd('/');
-            validUrl = validUrl?.TrimStart('/');
+            @base = @base.TrimEnd('/');
+            validUrl = validUrl.TrimStart('/');
             //return the base and the url separated by a single "/"
             return new Uri(@base + "/" + validUrl);
         }
@@ -428,7 +428,7 @@ public static class Extensions
         {
             //the url is relative to the file system
             //add ms-appx
-            validUrl = validUrl?.TrimStart('/');
+            validUrl = validUrl.TrimStart('/');
             return new Uri("ms-appx:///" + validUrl);
         }
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -641,7 +641,7 @@ public static class Extensions
         XDocument? svgDocument = XDocument.Parse(svgString);
 
         // Get the root element of the document
-        XElement? svgElement = svgDocument?.Root;
+        XElement? svgElement = svgDocument.Root;
 
         // Get the height and width attributes of the root element
         XAttribute? heightAttribute = svgElement?.Attribute("height");
@@ -669,7 +669,7 @@ public static class Extensions
         }
 
         // Try to parse the width and height from the URL
-        var parts = url?.Split('=');
+        var parts = url.Split('=');
         if (parts?.Length == 2)
         {
             var dimensions = parts[1].Split('x');

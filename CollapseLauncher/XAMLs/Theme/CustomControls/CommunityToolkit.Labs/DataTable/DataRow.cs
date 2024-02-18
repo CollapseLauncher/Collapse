@@ -46,21 +46,22 @@ public class DataRow : Panel
         Panel? panel = null;
 
         // 1a. Get parent ItemsPresenter to find header
-        if (this.FindAscendant<ItemsPresenter>() is not null and ItemsPresenter itemsPresenter)
+        ItemsPresenter? presenter = this.FindAscendant<ItemsPresenter>();
+        if (presenter is not null)
         {
             // 2. Quickly check if the header is just what we're looking for.
-            if (itemsPresenter.Header is Grid or DataTable)
+            if (presenter.Header is Grid or DataTable)
             {
-                panel = itemsPresenter.Header as Panel;
+                panel = presenter.Header as Panel;
             }
             else
             {
                 // 3. Otherwise, try and find the inner thing we want.
-                panel = itemsPresenter.FindDescendant<Panel>(static (element) => element is Grid or DataTable);
+                panel = presenter.FindDescendant<Panel>(static (element) => element is Grid or DataTable);
             }
 
             // Check if we're in a TreeView
-            _isTreeView = itemsPresenter.FindAscendant<TreeView>() is not null and TreeView;
+            _isTreeView = presenter.FindAscendant<TreeView>() is not null;
         }
 
         // 1b. If we can't find the ItemsPresenter, then we reach up outside to find the next thing we could use as a parent

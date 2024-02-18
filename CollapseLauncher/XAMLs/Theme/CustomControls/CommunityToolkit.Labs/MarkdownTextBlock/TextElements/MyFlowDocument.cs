@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 #nullable enable
-using HtmlAgilityPack;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Block = Microsoft.UI.Xaml.Documents.Block;
@@ -23,10 +22,6 @@ public class MyFlowDocument : IAddChild
     {
         get => _richTextBlock;
         set => _richTextBlock = value;
-    }
-
-    public MyFlowDocument()
-    {
     }
 
     public void AddChild(IAddChild child)

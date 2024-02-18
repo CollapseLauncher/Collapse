@@ -105,14 +105,11 @@ public class MarkdownTextBlock : Control
 
     private void Build()
     {
-        if (Config != null)
+        if (_renderer == null)
         {
-            if (_renderer == null)
-            {
-                _renderer = new WinUIRenderer(_document, Config);
-            }
-            _pipeline.Setup(_renderer);
-            ApplyText(Text, false);
+            _renderer = new WinUIRenderer(_document, Config);
         }
+        _pipeline.Setup(_renderer);
+        ApplyText(Text, false);
     }
 }

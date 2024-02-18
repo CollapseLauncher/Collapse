@@ -106,13 +106,13 @@ internal class MyImage : IAddChild
                 HttpResponseMessage response = await client.GetAsync(_uri);
 
                 // Get the Content-Type header
-                string contentType = response?.Content?.Headers?.ContentType?.MediaType ?? string.Empty;
+                string contentType = response.Content.Headers.ContentType?.MediaType ?? string.Empty;
 
                 if (response != null && response.Content != null)
                 {
                     if (contentType == "image/svg+xml")
                     {
-                        string? svgString = await response.Content.ReadAsStringAsync();
+                        string svgString = await response.Content.ReadAsStringAsync();
                         var resImage = await _svgRenderer.SvgToImage(svgString);
                         if (resImage != null)
                         {
