@@ -841,5 +841,7 @@ namespace CollapseLauncher.Pages.OOBE
                 return;
             }
         }
+
+        private void RefreshCDNCheckButtonClick(object sender, RoutedEventArgs e) => GetRecommendedCDN();
     }
 }

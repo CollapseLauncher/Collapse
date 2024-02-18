@@ -116,10 +116,9 @@
                                                Margin="0,2">
                             <ComboBox x:Name="SelectLang"
                                       SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
-                                      MaxWidth="200"
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
                                       ItemsSource="{x:Bind LangList}"
-                                      MaxDropDownHeight="1000"
+                                      MaxDropDownHeight="200"
                                       DropDownOpened="SelectLang_OnDropDownOpened"
                                       DropDownClosed="SelectLang_OnDropDownClosed"/>
                         </controls:SettingsCard>
@@ -140,9 +139,16 @@
                                                HeaderIcon="{ui:FontIcon Glyph=&#xf6ff;}"
                                                Margin="0,2">
                             <StackPanel Orientation="Horizontal">
-                                <ComboBox x:Name="SelectCDN"
-                                        SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}"/>
-                                <Button Margin="8,0,0,0"
+                                <Button Margin="0,0,0,0"
+                                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                        Click="RefreshCDNCheckButtonClick">
+                                    <Button.Content>
+                                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                  Glyph="&#xf021;"
+                                                  FontSize="12"/>
+                                    </Button.Content>
+                                </Button>
+                                <Button Margin="0,0,8,0"
                                     Style="{ThemeResource TransparentDefaultButtonStyle}">
                                     <Button.Content>
                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
@@ -181,6 +187,7 @@
                                         </Flyout>
                                     </Button.Flyout>
                                 </Button>
+                                <ComboBox x:Name="SelectCDN" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}"/>
                             </StackPanel>
                         </controls:SettingsCard>
                         <controls:SettingsExpander x:Name="SettingsCardItemTheme"
