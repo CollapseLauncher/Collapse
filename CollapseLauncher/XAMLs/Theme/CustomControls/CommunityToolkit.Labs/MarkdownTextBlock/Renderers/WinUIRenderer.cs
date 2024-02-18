@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Extensions;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
@@ -66,10 +67,10 @@ public class WinUIRenderer : RendererBase
         }
     }
 
-    public void WriteLeafRawLines(LeafBlock leafBlock)
+    public void WriteLeafRawLines(LeafBlock? leafBlock)
     {
         if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
-        if (leafBlock.Lines.Lines != null)
+        if (leafBlock?.Lines.Lines != null)
         {
             var lines = leafBlock.Lines;
             var slices = lines.Lines;

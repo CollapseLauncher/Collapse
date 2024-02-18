@@ -82,7 +82,7 @@
                     <ScrollViewer>
                         <markdown:MarkdownTextBlock
                             x:Name="ReleaseNotesBox"
-                            Config="{x:Bind _markdownConfig, Mode=OneTime}"
+                            Config="{x:Bind _markdownConfig}"
                             Text="# Loading content..."
                             Background="Transparent"
                             Padding="16"

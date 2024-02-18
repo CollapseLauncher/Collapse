@@ -21,7 +21,7 @@ internal class HtmlWriter
             {
                 renderer.WriteText(node.InnerText);
             }
-            else if (node.NodeType == HtmlNodeType.Element && node.Name.TagToType() == TextElements.HtmlElementType.Inline)
+            else if (node.NodeType == HtmlNodeType.Element && node.Name.TagToType() == HtmlElementType.Inline)
             {
                 // detect br here
                 var inlineTagName = node.Name.ToLower();
@@ -51,13 +51,13 @@ internal class HtmlWriter
                 }
                 else
                 {
-                    var inline = new MyInline(node);
+                    var inline = new MyInline();
                     renderer.Push(inline);
                     WriteHtml(renderer, node.ChildNodes);
                     renderer.Pop();
                 }
             }
-            else if (node.NodeType == HtmlNodeType.Element && node.Name.TagToType() == TextElements.HtmlElementType.Block)
+            else if (node.NodeType == HtmlNodeType.Element && node.Name.TagToType() == HtmlElementType.Block)
             {
                 IAddChild block;
                 var tag = node.Name.ToLower();

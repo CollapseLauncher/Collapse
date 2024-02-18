@@ -14,9 +14,7 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyCodeBlock : IAddChild
 {
-    private CodeBlock _codeBlock;
     private Paragraph _paragraph;
-    private MarkdownConfig _config;
 
     public TextElement TextElement
     {
@@ -25,8 +23,7 @@ internal class MyCodeBlock : IAddChild
 
     public MyCodeBlock(CodeBlock codeBlock, MarkdownConfig config)
     {
-        _codeBlock = codeBlock;
-        _config = config;
+        MarkdownConfig _config = config;
         _paragraph = new Paragraph();
         var container = new InlineUIContainer();
         var border = new Border();
@@ -49,7 +46,7 @@ internal class MyCodeBlock : IAddChild
             var lines = fencedCodeBlock.Lines.Lines;
             var stack = new Stack<string>();
             var encounteredFirstNonEmptyLine = false;
-            if (lines != null)
+            if (lines.Length != 0)
             {
                 for (var i = lines.Length - 1; i >= 0; i--)
                 {

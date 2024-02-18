@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Markdig.Syntax;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,7 +12,6 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyThematicBreak : IAddChild
 {
-    private ThematicBreakBlock _thematicBreakBlock;
     private Paragraph _paragraph;
 
     public TextElement TextElement
@@ -21,9 +19,8 @@ internal class MyThematicBreak : IAddChild
         get => _paragraph;
     }
 
-    public MyThematicBreak(ThematicBreakBlock thematicBreakBlock)
+    public MyThematicBreak()
     {
-        _thematicBreakBlock = thematicBreakBlock;
         _paragraph = new Paragraph();
 
         var inlineUIContainer = new InlineUIContainer();
@@ -38,5 +35,5 @@ internal class MyThematicBreak : IAddChild
         _paragraph.Inlines.Add(inlineUIContainer);
     }
 
-    public void AddChild(IAddChild child) {}
+    public void AddChild(IAddChild child) { }
 }

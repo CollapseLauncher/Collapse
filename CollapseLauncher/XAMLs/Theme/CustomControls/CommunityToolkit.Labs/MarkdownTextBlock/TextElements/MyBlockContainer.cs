@@ -2,15 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Markdig.Syntax;
 using Microsoft.UI.Xaml.Documents;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyBlockContainer : IAddChild
 {
-    private ContainerBlock _containerBlock;
-    private InlineUIContainer _inlineUIContainer;
     private MyFlowDocument _flowDocument;
     private Paragraph _paragraph;
 
@@ -19,11 +16,10 @@ internal class MyBlockContainer : IAddChild
         get => _paragraph;
     }
 
-    public MyBlockContainer(ContainerBlock containerBlock)
+    public MyBlockContainer()
     {
-        _containerBlock = containerBlock;
-        _inlineUIContainer = new InlineUIContainer();
-        _flowDocument = new MyFlowDocument(containerBlock);
+        InlineUIContainer _inlineUIContainer = new InlineUIContainer();
+        _flowDocument = new MyFlowDocument();
         _inlineUIContainer.Child = _flowDocument.RichTextBlock;
         _paragraph = new Paragraph();
         _paragraph.Inlines.Add(_inlineUIContainer);

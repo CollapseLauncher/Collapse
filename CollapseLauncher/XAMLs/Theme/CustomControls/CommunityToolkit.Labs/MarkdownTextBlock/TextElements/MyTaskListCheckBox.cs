@@ -14,12 +14,10 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyTaskListCheckBox : IAddChild
 {
-    private TaskList _taskList;
     public TextElement TextElement { get; private set; }
 
     public MyTaskListCheckBox(TaskList taskList)
     {
-        _taskList = taskList;
         var grid = new Grid();
         CompositeTransform3D transform = new CompositeTransform3D();
         transform.TranslateY = 2;

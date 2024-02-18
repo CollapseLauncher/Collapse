@@ -1,6 +1,6 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -35,7 +35,7 @@ namespace CollapseLauncher.Helper.Image
             double dpiScale = InnerLauncherConfig.m_appDPIScale;
             uint targetSourceImageWidth = (uint)(aspectRatioX * 1.5 * dpiScale);
             uint targetSourceImageHeight = (uint)(aspectRatioY * 1.5 * dpiScale);
-            bool isCancelled = false, isError = false;
+            bool isError = false;
 
             if (!Directory.Exists(LauncherConfig.AppGameImgCachedFolder)) Directory.CreateDirectory(LauncherConfig.AppGameImgCachedFolder);
 
@@ -67,7 +67,7 @@ namespace CollapseLauncher.Helper.Image
             }
             finally
             {
-                if ((isCancelled || isError) && resizedImageFileStream != null)
+                if (isError && resizedImageFileStream != null)
                 {
                     await resizedImageFileStream.DisposeAsync();
                 }
@@ -102,7 +102,7 @@ namespace CollapseLauncher.Helper.Image
                 PrimaryButtonText = Locale.Lang._Misc.OkayHappy,
                 DefaultButton = ContentDialogButton.Primary,
                 IsPrimaryButtonEnabled = false,
-                XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
+                XamlRoot = (InnerLauncherConfig.m_window as MainWindow)?.Content.XamlRoot
             };
 
             LoadImageCropperDetached(filePath, imageCropper, parentGrid, dialogOverlay);
@@ -117,7 +117,6 @@ namespace CollapseLauncher.Helper.Image
                 await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream(), BitmapFileFormat.Png, false);
             }
 
-            imageCropper = null;
             GC.WaitForPendingFinalizers();
             GC.WaitForFullGCComplete();
 

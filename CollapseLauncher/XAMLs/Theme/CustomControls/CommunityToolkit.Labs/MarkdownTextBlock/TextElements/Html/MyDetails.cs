@@ -13,9 +13,6 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 // block
 internal class MyDetails : IAddChild
 {
-    private HtmlNode _htmlNode;
-    private InlineUIContainer _inlineUIContainer;
-    private Expander _expander;
     private MyFlowDocument _flowDocument;
     private Paragraph _paragraph;
 
@@ -26,17 +23,17 @@ internal class MyDetails : IAddChild
 
     public MyDetails(HtmlNode details)
     {
-        _htmlNode = details;
+        HtmlNode _htmlNode = details;
 
         var header = _htmlNode.ChildNodes
             .FirstOrDefault(
                 x => x.Name == "summary" ||
                 x.Name == "header");
 
-        _inlineUIContainer = new InlineUIContainer();
-        _expander = new Expander();
+        InlineUIContainer _inlineUIContainer = new InlineUIContainer();
+        Expander _expander = new Expander();
         _expander.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _flowDocument = new MyFlowDocument(details);
+        _flowDocument = new MyFlowDocument();
         _flowDocument.RichTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
         _expander.Content = _flowDocument.RichTextBlock;
         var headerBlock = new TextBlock()

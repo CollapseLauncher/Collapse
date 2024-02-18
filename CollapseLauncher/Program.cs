@@ -248,7 +248,8 @@ namespace CollapseLauncher
         {
             OperatingSystem osDetail = Environment.OSVersion;
             w_windowsVersionNumbers = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
-            if (m_isWindows11 = w_windowsVersionNumbers[2] >= 22000)
+            m_isWindows11 = w_windowsVersionNumbers[2] >= 22000;
+            if (m_isWindows11)
             {
                 return $"Windows 11 (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
             }

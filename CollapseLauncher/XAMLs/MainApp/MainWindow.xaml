@@ -7,7 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:customcontrol="using:CollapseLauncher.CustomControls"
     xmlns:uiextension="using:CollapseLauncher.Extension"
-    xmlns:s="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
     <Grid x:Name="MainWindowGridContainer">
         <Grid.Resources>
@@ -35,7 +34,7 @@
             </Frame>
         </Grid>
         <Grid x:Name="LoadingStatusBackgroundGrid" x:FieldModifier="internal" Background="{ThemeResource LoadingGradientBG}" Grid.RowSpan="3" Visibility="Collapsed"/>
-        <Grid x:Name="MiddleFrameGrid"/>
+        <Grid x:Name="MiddleFrameGrid" Grid.Row="1"/>
         <Grid x:Name="BottomFrameGrid" Grid.Row="2"
                   VerticalAlignment="Bottom">
             <Grid x:Name="LoadingStatusGrid"
@@ -82,7 +81,7 @@
         </Grid>
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog" x:FieldModifier="internal"/>
         <local:TrayIcon x:Name="TrayIcon"/>
-        <Grid x:Name="TitleBarFrameGrid">
+        <Grid x:Name="TitleBarFrameGrid" Grid.Row="0">
             <Grid x:Name="AppTitleBar">
                 <Button x:Name="MinimizeButton" x:FieldModifier="internal" Width="48" Height="48"
                     Margin="0,0,48,0" HorizontalAlignment="Right"

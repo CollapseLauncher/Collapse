@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
+using Markdig.Renderers;
 using Markdig.Syntax;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
-internal class CodeBlockRenderer : UWPObjectRenderer<CodeBlock>
+internal class CodeBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, CodeBlock>
 {
     protected override void Write(WinUIRenderer renderer, CodeBlock obj)
     {

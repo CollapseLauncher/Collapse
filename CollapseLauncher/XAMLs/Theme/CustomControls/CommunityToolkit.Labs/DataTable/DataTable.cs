@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Windows.Foundation;
 
@@ -15,7 +16,7 @@ namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 /// A <see cref="DataTable"/> is a <see cref="Panel"/> which lays out <see cref="DataColumn"/>s based on
 /// their configured properties (akin to <see cref="ColumnDefinition"/>); similar to a <see cref="Grid"/> with a single row.
 /// </summary>
-public partial class DataTable : Panel
+public class DataTable : Panel
 {
     // TODO: We should cache this result and update if column properties change
     internal bool IsAnyColumnAuto => Children.Any(static e => e is DataColumn { CurrentWidth.GridUnitType: GridUnitType.Auto });
@@ -57,7 +58,7 @@ public partial class DataTable : Panel
 
         double maxHeight = 0;
 
-        var elements = Children.Where(static e => e.Visibility == Visibility.Visible && e is DataColumn);
+        DataColumn[] elements = Children.Where(e => e.Visibility == Visibility.Visible).OfType<DataColumn>().ToArray();
 
         // We only need to measure elements that are visible
         foreach (DataColumn column in elements)
@@ -73,7 +74,7 @@ public partial class DataTable : Panel
         }
 
         // Add in spacing between columns to our fixed size allotment
-        fixedWidth += (elements.Count() - 1) * ColumnSpacing;
+        fixedWidth += (elements.Length > 0 ? elements.Length - 1 : 0) * ColumnSpacing;
 
         // TODO: Handle infinite width?
         var proportionalAmount = (availableSize.Width - fixedWidth) / proportionalUnits;
@@ -119,7 +120,7 @@ public partial class DataTable : Panel
         var elements = Children.Where(static e => e.Visibility == Visibility.Visible && e is DataColumn);
 
         // We only need to measure elements that are visible
-        foreach (DataColumn column in elements)
+        foreach (DataColumn column in elements.OfType<DataColumn>())
         {
             if (column.CurrentWidth.IsStar)
             {
@@ -139,11 +140,10 @@ public partial class DataTable : Panel
         // TODO: This can go out of bounds or something around here when pushing a resized column to the right...
         var proportionalAmount = (finalSize.Width - fixedWidth - autoSized) / proportionalUnits;
 
-        double width = 0;
-        double x = 0;
 
         foreach (DataColumn column in elements)
         {
+            double x = 0, width;
             if (column.CurrentWidth.IsStar)
             {
                 width = proportionalAmount * column.CurrentWidth.Value;

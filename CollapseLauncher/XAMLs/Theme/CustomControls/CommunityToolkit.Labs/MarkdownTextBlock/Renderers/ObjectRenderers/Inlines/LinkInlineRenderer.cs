@@ -2,20 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
+using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
-internal class LinkInlineRenderer : UWPObjectRenderer<LinkInline>
+internal class LinkInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, LinkInline>
 {
     protected override void Write(WinUIRenderer renderer, LinkInline link)
     {
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (link == null) throw new ArgumentNullException(nameof(link));
 
-        var url = link.GetDynamicUrl != null ? link.GetDynamicUrl() ?? link.Url : link.Url;
+        var url = link.GetDynamicUrl != null ? link.GetDynamicUrl() ?? link.Url ?? string.Empty : link.Url ?? string.Empty;
 
         if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
         {

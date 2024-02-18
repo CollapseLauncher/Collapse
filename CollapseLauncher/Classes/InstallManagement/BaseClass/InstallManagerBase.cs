@@ -815,7 +815,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UninstallGameProperty UninstallProperty = AssignUninstallFolders();
 
                 //Preparing paths
-                string? _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
+                string _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
 
                 string[]? foldersToKeepInDataFullPath = null;
                 if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0)

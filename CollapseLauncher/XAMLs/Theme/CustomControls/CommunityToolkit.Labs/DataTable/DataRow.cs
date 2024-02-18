@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -11,7 +12,7 @@ using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
-public partial class DataRow : Panel
+public class DataRow : Panel
 {
     // TODO: Create our own helper class here for the Header as well vs. straight-Grid.
     // TODO: WeakReference?
@@ -45,7 +46,7 @@ public partial class DataRow : Panel
         Panel? panel = null;
 
         // 1a. Get parent ItemsPresenter to find header
-        if (this.FindAscendant<ItemsPresenter>() is ItemsPresenter itemsPresenter)
+        if (this.FindAscendant<ItemsPresenter>() is not null and ItemsPresenter itemsPresenter)
         {
             // 2. Quickly check if the header is just what we're looking for.
             if (itemsPresenter.Header is Grid or DataTable)
@@ -59,7 +60,7 @@ public partial class DataRow : Panel
             }
 
             // Check if we're in a TreeView
-            _isTreeView = itemsPresenter.FindAscendant<TreeView>() is TreeView;
+            _isTreeView = itemsPresenter.FindAscendant<TreeView>() is not null and TreeView;
         }
 
         // 1b. If we can't find the ItemsPresenter, then we reach up outside to find the next thing we could use as a parent
@@ -126,7 +127,7 @@ public partial class DataRow : Panel
                         // TODO: Do we want this to ever shrink back?
                         var prev = col.MaxChildDesiredWidth;
                         col.MaxChildDesiredWidth = Math.Max(col.MaxChildDesiredWidth, Children[i].DesiredSize.Width + padding);
-                        if (col.MaxChildDesiredWidth != prev)
+                        if (!col.MaxChildDesiredWidth.Equals(prev))
                         {
                             // If our measure has changed, then we have to invalidate the arrange of the DataTable
                             _parentTable.ColumnResized();
@@ -191,7 +192,7 @@ public partial class DataRow : Panel
                 if (_parentPanel is Grid grid &&
                     column < grid.ColumnDefinitions.Count)
                 {
-                    width = grid.ColumnDefinitions[column++].ActualWidth;                    
+                    width = grid.ColumnDefinitions[column++].ActualWidth;
                 }
                 // TODO: Need to check Column visibility here as well...
                 else if (_parentPanel is DataTable table &&

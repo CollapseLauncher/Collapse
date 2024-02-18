@@ -4,12 +4,13 @@
 
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Extensions.Tables;
+using Markdig.Renderers;
 using Microsoft.UI.Xaml;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Extensions;
 
-public class TableRenderer : UWPObjectRenderer<Table>
+public class TableRenderer : MarkdownObjectRenderer<WinUIRenderer, Table>
 {
     protected override void Write(WinUIRenderer renderer, Table table)
     {

@@ -39,17 +39,19 @@ namespace CollapseLauncher
 
         public static void ToggleAcrylic(bool isOn = false)
         {
-            MainWindow mainWindow = m_window as MainWindow;
-            if (!isOn)
+            if (m_window != null && m_window is MainWindow mainWindow)
             {
-                mainWindow.SystemBackdrop = null;
-                return;
-            }
+                if (!isOn)
+                {
+                    mainWindow.SystemBackdrop = null;
+                    return;
+                }
 
-            if (m_isWindows11)
-                mainWindow.SystemBackdrop = new MicaBackdrop() { Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base };
-            else
-                mainWindow.SystemBackdrop = new DesktopAcrylicBackdrop();
+                if (m_isWindows11)
+                    mainWindow.SystemBackdrop = new MicaBackdrop() { Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base };
+                else
+                    mainWindow.SystemBackdrop = new DesktopAcrylicBackdrop();
+            }
         }
 
         public void InitializeWindowProperties(bool startOOBE = false)

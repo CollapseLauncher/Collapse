@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -10,10 +11,8 @@ using System;
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
 [TemplatePart(Name = nameof(PART_ColumnSizer), Type = typeof(ContentSizer))]
-public partial class DataColumn : ContentControl
+public class DataColumn : ContentControl
 {
-    private static GridLength StarLength = new GridLength(1, GridUnitType.Star);
-
     private ContentSizer? PART_ColumnSizer;
 
     private WeakReference<DataTable>? _parent;
@@ -116,10 +115,9 @@ public partial class DataColumn : ContentControl
         CurrentWidth = new(this.ActualWidth);
 
         // Notify the rest of the table to update
-        if (_parent?.TryGetTarget(out DataTable? parent) == true
-            && parent != null)
+        if (_parent?.TryGetTarget(out DataTable? parent) == true)
         {
-            parent.ColumnResized();
+            parent?.ColumnResized();
         }
     }
 }

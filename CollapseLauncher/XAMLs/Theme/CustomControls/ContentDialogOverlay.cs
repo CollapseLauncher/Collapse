@@ -1,4 +1,4 @@
-﻿// using Hi3Helper.Shared.ClassStruct;
+﻿#nullable enable
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -15,18 +15,23 @@ namespace CollapseLauncher.CustomControls
             : this(ContentDialogTheme.Warning) { }
 
         public ContentDialogOverlay(ContentDialogTheme theme = ContentDialogTheme.Warning)
-            : base()
         {
             Theme = theme;
-            NColor titleColor = (Theme switch
+            object? brushObj = Theme switch
             {
                 ContentDialogTheme.Success => Application.Current.Resources["SystemFillColorSuccessBrush"],
                 ContentDialogTheme.Warning => Application.Current.Resources["SystemFillColorCautionBrush"],
                 ContentDialogTheme.Error => Application.Current.Resources["SystemFillColorCriticalBrush"],
                 _ => Application.Current.Resources["SystemFillColorAttentionBrush"]
-            } as SolidColorBrush).Color;
-            titleColor.A = 255;
-            (Application.Current.Resources["DialogTitleBrush"] as SolidColorBrush).Color = titleColor;
+            };
+            if (brushObj is not null and SolidColorBrush brush)
+            {
+                NColor titleColor = brush.Color;
+                titleColor.A = 255;
+
+                if (Application.Current.Resources["DialogTitleBrush"] is not null and SolidColorBrush brushTitle)
+                    brushTitle.Color = titleColor;
+            }
 
             ThemeTitleGlyph = Theme switch
             {
@@ -39,7 +44,7 @@ namespace CollapseLauncher.CustomControls
 
         public new IAsyncOperation<ContentDialogResult> ShowAsync()
         {
-            if (Title != null && Title.GetType() == typeof(string) && Theme != ContentDialogTheme.Informational)
+            if (Title != null && Title is string && Theme != ContentDialogTheme.Informational)
             {
                 StackPanel titleStack = new StackPanel { Orientation = Orientation.Horizontal };
                 titleStack.Children.Add(new FontIcon

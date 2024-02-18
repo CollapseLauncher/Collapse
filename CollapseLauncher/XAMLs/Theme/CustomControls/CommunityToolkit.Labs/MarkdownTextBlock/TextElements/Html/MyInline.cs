@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using HtmlAgilityPack;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
@@ -11,22 +10,19 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
 internal class MyInline : IAddChild
 {
-    private HtmlNode _htmlNode;
     private Paragraph _paragraph;
     private InlineUIContainer _inlineUIContainer;
-    private RichTextBlock _richTextBlock;
 
     public TextElement TextElement
     {
         get => _inlineUIContainer;
     }
 
-    public MyInline(HtmlNode inline)
+    public MyInline()
     {
-        _htmlNode = inline;
         _paragraph = new Paragraph();
         _inlineUIContainer = new InlineUIContainer();
-        _richTextBlock = new RichTextBlock();
+        RichTextBlock _richTextBlock = new RichTextBlock();
         _richTextBlock.Blocks.Add(_paragraph);
 
         _richTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;

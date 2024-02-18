@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using HtmlAgilityPack;
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml;
@@ -15,7 +16,6 @@ internal class MyHyperlinkButton : IAddChild
     private HyperlinkButton? _hyperLinkButton;
     private InlineUIContainer _inlineUIContainer = new InlineUIContainer();
     private MyFlowDocument? _flowDoc;
-    private string? _baseUrl;
     private LinkInline? _linkInline;
     private HtmlNode? _htmlNode;
 
@@ -28,15 +28,13 @@ internal class MyHyperlinkButton : IAddChild
 
     public MyHyperlinkButton(LinkInline linkInline, string? baseUrl)
     {
-        _baseUrl = baseUrl;
-        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() ?? linkInline.Url : linkInline.Url;
+        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() ?? linkInline.Url ?? string.Empty : linkInline.Url ?? string.Empty;
         _linkInline = linkInline;
         Init(url, baseUrl);
     }
 
     public MyHyperlinkButton(HtmlNode htmlNode, string? baseUrl)
     {
-        _baseUrl = baseUrl;
         _htmlNode = htmlNode;
         var url = htmlNode.GetAttributeValue("href", "#");
         Init(url, baseUrl);
@@ -52,11 +50,11 @@ internal class MyHyperlinkButton : IAddChild
         _hyperLinkButton.Margin = new Thickness(0);
         if (IsHtml && _htmlNode != null)
         {
-            _flowDoc = new MyFlowDocument(_htmlNode);
+            _flowDoc = new MyFlowDocument();
         }
         else if (_linkInline != null)
         {
-            _flowDoc = new MyFlowDocument(_linkInline);
+            _flowDoc = new MyFlowDocument();
         }
         _inlineUIContainer.Child = _hyperLinkButton;
         _hyperLinkButton.Content = _flowDoc?.RichTextBlock;

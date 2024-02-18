@@ -777,11 +777,11 @@ namespace CollapseLauncher
             InvokeLoadingRegionPopup(false);
         }
 
-        private void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string Title = null, string Content = null)
+        private void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string Title = null, string Message = null)
         {
             if (ShowLoadingMessage)
             {
-                LoadingMessageHelper.SetMessage(Title, Content);
+                LoadingMessageHelper.SetMessage(Title, Message);
                 LoadingMessageHelper.SetProgressBarState(isProgressIndeterminate: true);
                 LoadingMessageHelper.ShowLoadingFrame();
                 return;

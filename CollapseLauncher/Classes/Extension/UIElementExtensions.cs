@@ -133,7 +133,11 @@ namespace CollapseLauncher.Extension
         internal static CornerRadius AttachRoundedKindCornerRadius(Control element)
         {
             CornerRadius initialRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
-            element.SizeChanged += (sender, _) => (sender as Control).CornerRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
+            element.SizeChanged += (sender, _) =>
+            {
+                if (sender != null && (sender is Control control))
+                    control.CornerRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
+            };
 
             return initialRadius;
         }

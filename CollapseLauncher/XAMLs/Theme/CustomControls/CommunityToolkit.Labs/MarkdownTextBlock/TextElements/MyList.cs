@@ -14,15 +14,11 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 internal class MyList : IAddChild
 {
     private Paragraph _paragraph;
-    private InlineUIContainer _container;
     private StackPanel _stackPanel;
-    private ListBlock _listBlock;
     private BulletType _bulletType;
     private bool _isOrdered;
-    private int _startIndex = 1;
     private int _index = 1;
     private const string _dot = "• ";
-    private string _spaceIndent = new string(' ', 4);
 
     public TextElement TextElement
     {
@@ -32,9 +28,8 @@ internal class MyList : IAddChild
     public MyList(ListBlock listBlock)
     {
         _paragraph = new Paragraph();
-        _container = new InlineUIContainer();
+        InlineUIContainer _container = new InlineUIContainer();
         _stackPanel = new StackPanel();
-        _listBlock = listBlock;
 
         if (listBlock.IsOrdered)
         {
@@ -43,7 +38,7 @@ internal class MyList : IAddChild
 
             if (listBlock.OrderedStart != null && (listBlock.DefaultOrderedStart != listBlock.OrderedStart))
             {
-                _startIndex = int.Parse(listBlock.OrderedStart, NumberFormatInfo.InvariantInfo);
+                int _startIndex = int.Parse(listBlock.OrderedStart, NumberFormatInfo.InvariantInfo);
                 _index = _startIndex;
             }
         }
@@ -97,7 +92,7 @@ internal class MyList : IAddChild
 
     private BulletType ToBulletType(char bullet)
     {
-        /// Gets or sets the type of the bullet (e.g: '1', 'a', 'A', 'i', 'I').
+        // Gets or sets the type of the bullet (e.g: '1', 'a', 'A', 'i', 'I').
         switch (bullet)
         {
             case '1':

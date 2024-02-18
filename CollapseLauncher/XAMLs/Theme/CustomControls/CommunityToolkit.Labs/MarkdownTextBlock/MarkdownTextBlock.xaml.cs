@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig;
@@ -11,7 +12,7 @@ using Microsoft.UI.Xaml.Controls;
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 [TemplatePart(Name = MarkdownContainerName, Type = typeof(Grid))]
-public partial class MarkdownTextBlock : Control
+public class MarkdownTextBlock : Control
 {
     private const string MarkdownContainerName = "MarkdownContainer";
     private Grid? _container;
@@ -76,8 +77,8 @@ public partial class MarkdownTextBlock : Control
     {
         base.OnApplyTemplate();
         _container = (Grid)GetTemplateChild(MarkdownContainerName);
-        _container.Children.Clear();
-        _container.Children.Add(_document.RichTextBlock);
+        _container?.Children.Clear();
+        _container?.Children.Add(_document.RichTextBlock);
         Build();
     }
 

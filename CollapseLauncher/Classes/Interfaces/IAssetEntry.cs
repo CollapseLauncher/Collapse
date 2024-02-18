@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IAssetEntry<T> where T : Enum
+    internal interface IAssetEntry
     {
         ObservableCollection<IAssetProperty> AssetEntry { get; set; }
     }

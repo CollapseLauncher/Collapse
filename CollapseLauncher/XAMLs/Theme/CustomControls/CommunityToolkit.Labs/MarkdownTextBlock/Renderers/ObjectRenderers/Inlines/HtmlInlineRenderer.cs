@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using HtmlAgilityPack;
+using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
-internal class HtmlInlineRenderer : UWPObjectRenderer<HtmlInline>
+internal class HtmlInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlInline>
 {
     protected override void Write(WinUIRenderer renderer, HtmlInline obj)
     {

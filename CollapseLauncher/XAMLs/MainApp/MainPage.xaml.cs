@@ -110,7 +110,7 @@ namespace CollapseLauncher
                 #endif
                 if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
-                m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
+                m_actualMainFrameSize = new Size((float)(m_window as MainWindow)?.Bounds.Width, (float)(m_window as MainWindow)?.Bounds.Height);
 
                 SubscribeEvents();
                 SetDefaultDragAreaAsync();
@@ -278,8 +278,8 @@ namespace CollapseLauncher
                 GetElementPos(GridBG_RegionGrid),
                 GetElementPos(GridBG_IconGrid),
                 GetElementPos(GridBG_NotifBtn),
-                GetElementPos((m_window as MainWindow).MinimizeButton),
-                GetElementPos((m_window as MainWindow).CloseButton)
+                GetElementPos((m_window as MainWindow)?.MinimizeButton),
+                GetElementPos((m_window as MainWindow)?.CloseButton)
             };
             nonClientInputSrc.ClearAllRegionRects();
             MainWindow.EnableNonClientArea();
@@ -307,7 +307,6 @@ namespace CollapseLauncher
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            MainWindow window = m_window as MainWindow;
             InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
             nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
             nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);

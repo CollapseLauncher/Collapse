@@ -195,7 +195,10 @@ namespace CollapseLauncher.Pages
                     OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;
                     await Task.Delay(2000);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    ErrorSender.SendException(ex, ErrorType.Connection);
+                }
             }
 
             // (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage_SelectGame), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });

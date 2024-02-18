@@ -10,13 +10,10 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyAutolinkInline : IAddChild
 {
-    private AutolinkInline _autoLinkInline;
-
     public TextElement TextElement { get; private set; }
 
     public MyAutolinkInline(AutolinkInline autoLinkInline)
     {
-        _autoLinkInline = autoLinkInline;
         TextElement = new Hyperlink()
         {
             NavigateUri = new Uri(autoLinkInline.Url),

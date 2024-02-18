@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
+using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
-internal class LineBreakInlineRenderer : UWPObjectRenderer<LineBreakInline>
+internal class LineBreakInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, LineBreakInline>
 {
     protected override void Write(WinUIRenderer renderer, LineBreakInline obj)
     {

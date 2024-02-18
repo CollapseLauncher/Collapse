@@ -15,7 +15,6 @@ internal class MyTableCell : IAddChild
     private TableCell _tableCell;
     private Paragraph _paragraph = new Paragraph();
     private MyFlowDocument _flowDocument;
-    private bool _isHeader;
     private int _columnIndex;
     private int _rowIndex;
     private Grid _container;
@@ -52,13 +51,12 @@ internal class MyTableCell : IAddChild
 
     public MyTableCell(TableCell tableCell, TextAlignment textAlignment, bool isHeader, int columnIndex, int rowIndex)
     {
-        _isHeader = isHeader;
         _tableCell = tableCell;
         _columnIndex = columnIndex;
         _rowIndex = rowIndex;
         _container = new Grid();
 
-        _flowDocument = new MyFlowDocument(tableCell);
+        _flowDocument = new MyFlowDocument();
         _flowDocument.RichTextBlock.TextWrapping = TextWrapping.Wrap;
         _flowDocument.RichTextBlock.TextAlignment = textAlignment;
         _flowDocument.RichTextBlock.HorizontalTextAlignment = textAlignment;
@@ -71,7 +69,7 @@ internal class MyTableCell : IAddChild
         };
 
         _container.Padding = new Thickness(4);
-        if (_isHeader)
+        if (isHeader)
         {
             _flowDocument.RichTextBlock.FontWeight = FontWeights.Bold;
         }

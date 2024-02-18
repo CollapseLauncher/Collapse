@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Markdig.Syntax;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,19 +14,17 @@ internal class MyQuote : IAddChild
 {
     private Paragraph _paragraph;
     private MyFlowDocument _flowDocument;
-    private QuoteBlock _quoteBlock;
 
     public TextElement TextElement
     {
         get => _paragraph;
     }
 
-    public MyQuote(QuoteBlock quoteBlock)
+    public MyQuote()
     {
-        _quoteBlock = quoteBlock;
         _paragraph = new Paragraph();
 
-        _flowDocument = new MyFlowDocument(quoteBlock);
+        _flowDocument = new MyFlowDocument();
         var inlineUIContainer = new InlineUIContainer();
 
         var grid = new Grid();

@@ -179,21 +179,23 @@ namespace CollapseLauncher
             // If the fail return code occurred by the token, then throw cancellation exception
             token.ThrowIfCancellationRequested();
 
+            // Dispose previous stream
+            await contentStream.DisposeAsync();
+
             // If not, then continue to get the content from another CDN
             foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
             {
-                // Dispose previous stream
-                if (contentStream != null) await contentStream.DisposeAsync();
-
+                // Reassign and try get the CDN stream
                 contentStream = await TryGetCDNContent(fallbackCDN, relativeURL, token, isForceUncompressRequest);
 
                 // If successful, then return
                 if (contentStream != null) return contentStream;
+
+                // If failed (null), then dispose the stream
+                await contentStream.DisposeAsync();
             }
 
-            // If all of them failed, then throw an exception
-            // Dispose previous stream
-            await contentStream.DisposeAsync();
+            // Throw if any attempt was failed
             throw new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
         }
 
@@ -391,7 +393,7 @@ namespace CollapseLauncher
             long[] latencies = new long[CDNList.Count];
 
             // Warming up
-            CDNList.ForEach(async x => await TryGetURLStatus(x, fileAsPingTarget, tokenSource.Token, true));
+            foreach (CDNURLProperty cdnProperty in CDNList) await TryGetURLStatus(cdnProperty, fileAsPingTarget, tokenSource.Token, true);
 
             using (tokenSource)
             {

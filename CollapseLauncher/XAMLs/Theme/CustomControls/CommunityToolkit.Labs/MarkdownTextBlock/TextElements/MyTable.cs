@@ -13,7 +13,6 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyTable : IAddChild
 {
-    private Table _table;
     private Paragraph _paragraph;
     private MyTableUIElement _tableElement;
 
@@ -24,7 +23,6 @@ internal class MyTable : IAddChild
 
     public MyTable(Table table)
     {
-        _table = table;
         _paragraph = new Paragraph();
         var row = table.FirstOrDefault() as TableRow;
         var column = row == null ? 0 : row.Count;

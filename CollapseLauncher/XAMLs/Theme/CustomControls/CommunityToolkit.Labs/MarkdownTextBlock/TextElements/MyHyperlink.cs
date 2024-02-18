@@ -2,20 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+using Hi3Helper;
 using HtmlAgilityPack;
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
+using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyHyperlink : IAddChild
 {
     private Hyperlink _hyperlink;
-    private LinkInline? _linkInline;
-    private HtmlNode? _htmlNode;
-    private string? _baseUrl;
-
-    public bool IsHtml => _htmlNode != null;
 
     public TextElement TextElement
     {
@@ -24,9 +22,7 @@ internal class MyHyperlink : IAddChild
 
     public MyHyperlink(LinkInline linkInline, string? baseUrl)
     {
-        _baseUrl = baseUrl;
-        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() ?? linkInline.Url : linkInline.Url;
-        _linkInline = linkInline;
+        var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() ?? linkInline.Url ?? string.Empty : linkInline.Url ?? string.Empty;
         _hyperlink = new Hyperlink()
         {
             NavigateUri = Extensions.GetUri(url, baseUrl),
@@ -35,9 +31,7 @@ internal class MyHyperlink : IAddChild
 
     public MyHyperlink(HtmlNode htmlNode, string? baseUrl)
     {
-        _baseUrl = baseUrl;
         var url = htmlNode.GetAttributeValue("href", "#");
-        _htmlNode = htmlNode;
         _hyperlink = new Hyperlink()
         {
             NavigateUri = Extensions.GetUri(url, baseUrl),
@@ -53,7 +47,10 @@ internal class MyHyperlink : IAddChild
                 _hyperlink.Inlines.Add(inlineChild);
                 // TODO: Add support for click handler
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[MyHyperlink::AddChild()] Failed while adding inlines\r\n{ex}", LogType.Error, true);
+            }
         }
     }
 }

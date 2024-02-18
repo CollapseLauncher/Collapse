@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using System.Linq;
 using Windows.Foundation;
 using NColor = Windows.UI.Color;
 
@@ -17,8 +16,7 @@ namespace CollapseLauncher.CustomControls
         public ContentDialogCollapse()
             : this(ContentDialogTheme.Warning) { }
 
-        public ContentDialogCollapse(ContentDialogTheme theme = ContentDialogTheme.Warning, bool useFullScreen = false)
-            : base()
+        public ContentDialogCollapse(ContentDialogTheme theme = ContentDialogTheme.Warning)
         {
             Theme = theme;
             NColor titleColor = (Theme switch
@@ -48,7 +46,6 @@ namespace CollapseLauncher.CustomControls
                 titleStack.Children.Add(new FontIcon
                 {
                     Glyph = ThemeTitleGlyph,
-                    // Foreground = (SolidColorBrush)Application.Current.Resources["DefaultFGColorAccentBrush"],
                     Margin = new Thickness(0, 0, 10, 0),
                     FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
                     FontSize = 22

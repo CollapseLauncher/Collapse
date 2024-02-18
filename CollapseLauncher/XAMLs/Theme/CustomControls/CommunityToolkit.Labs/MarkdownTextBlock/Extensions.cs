@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 //using ColorCode;
 //using ColorCode.Common;
 //using ColorCode.Styling;
@@ -22,22 +23,6 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 public static class Extensions
 {
-    private const string OneDarkBackground = "#282c34";
-    private const string OneDarkPlainText = "#abb2bf";
-
-    private const string OneDarkXMLDelimiter = "#e06c75";
-    private const string OneDarkXMLName = "#d19a66";
-    private const string OneDarkXMLAttribute = "#61afef";
-    private const string OneDarkXAMLCData = "#98c379";
-    private const string OneDarkXMLComment = "#5c6370";
-
-    private const string OneDarkComment = "#5c6370";
-    private const string OneDarkKeyword = "#c678dd";
-    private const string OneDarkGray = "#9b9b9b";
-    private const string OneDarkNumber = "#d19a66";
-    private const string OneDarkClass = "#e5c07b";
-    private const string OneDarkString = "#98c379";
-
     public const string Blue = "#FF0000FF";
     public const string White = "#FFFFFFFF";
     public const string Black = "#FF000000";
@@ -435,7 +420,7 @@ public static class Extensions
             //the url is relative, so append the base
             //trim any trailing "/" from the base and any leading "/" from the url
             @base = @base?.TrimEnd('/');
-            validUrl = validUrl.TrimStart('/');
+            validUrl = validUrl?.TrimStart('/');
             //return the base and the url separated by a single "/"
             return new Uri(@base + "/" + validUrl);
         }
@@ -443,7 +428,7 @@ public static class Extensions
         {
             //the url is relative to the file system
             //add ms-appx
-            validUrl = validUrl.TrimStart('/');
+            validUrl = validUrl?.TrimStart('/');
             return new Uri("ms-appx:///" + validUrl);
         }
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -653,18 +638,14 @@ public static class Extensions
     public static Size GetSvgSize(string svgString)
     {
         // Parse the SVG string as an XML document
-        XDocument svgDocument = XDocument.Parse(svgString);
+        XDocument? svgDocument = XDocument.Parse(svgString);
 
         // Get the root element of the document
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        XElement svgElement = svgDocument.Root;
+        XElement? svgElement = svgDocument?.Root;
 
         // Get the height and width attributes of the root element
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-        XAttribute heightAttribute = svgElement.Attribute("height");
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-        XAttribute widthAttribute = svgElement.Attribute("width");
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+        XAttribute? heightAttribute = svgElement?.Attribute("height");
+        XAttribute? widthAttribute = svgElement?.Attribute("width");
 
         // Convert the attribute values to double
         double.TryParse(heightAttribute?.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out double height);

@@ -6,8 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:s="using:CommunityToolkit.WinUI"
-    xmlns:c="using:CommunityToolkit.WinUI.Controls"
-    xmlns:uiEx="using:CollapseLauncher.Extension"
     mc:Ignorable="d"
     Background="Transparent">
     <Page.Resources>

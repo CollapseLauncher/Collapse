@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
+using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
-internal class ListRenderer : UWPObjectRenderer<ListBlock>
+internal class ListRenderer : MarkdownObjectRenderer<WinUIRenderer, ListBlock>
 {
     protected override void Write(WinUIRenderer renderer, ListBlock listBlock)
     {
@@ -22,7 +23,7 @@ internal class ListRenderer : UWPObjectRenderer<ListBlock>
         foreach (var item in listBlock)
         {
             var listItemBlock = (ListItemBlock)item;
-            var listItem = new MyBlockContainer(listItemBlock);
+            var listItem = new MyBlockContainer();
             renderer.Push(listItem);
             renderer.WriteChildren(listItemBlock);
             renderer.Pop();

@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
-internal class HtmlEntityInlineRenderer : UWPObjectRenderer<HtmlEntityInline>
+internal class HtmlEntityInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlEntityInline>
 {
     protected override void Write(WinUIRenderer renderer, HtmlEntityInline obj)
     {

@@ -2,28 +2,28 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Markdig.Syntax.Inlines;
+#nullable enable
+using Hi3Helper;
 using HtmlAgilityPack;
-using System.Globalization;
-using Windows.Storage.Streams;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Net.Http;
-using Microsoft.UI.Xaml.Media.Imaging;
-using System.Runtime.InteropServices.WindowsRuntime;
+using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Globalization;
+using System.Net.Http;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Storage.Streams;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyImage : IAddChild
 {
     private InlineUIContainer _container = new InlineUIContainer();
-    private LinkInline? _linkInline;
     private Image _image = new Image();
-    private Grid _imageGrid;
-    private Uri _uri;
-    private HtmlNode? _htmlNode;
+    private Grid? _imageGrid;
+    private Uri? _uri;
     private IImageProvider? _imageProvider;
     private ISVGRenderer _svgRenderer;
     private double _precedentWidth;
@@ -37,7 +37,6 @@ internal class MyImage : IAddChild
 
     public MyImage(LinkInline linkInline, Uri uri, MarkdownConfig config)
     {
-        _linkInline = linkInline;
         _uri = uri;
         _imageProvider = config.ImageProvider;
         _svgRenderer = config.SVGRenderer == null ? new DefaultSVGRenderer() : config.SVGRenderer;
@@ -53,14 +52,9 @@ internal class MyImage : IAddChild
         }
     }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public MyImage(HtmlNode htmlNode, MarkdownConfig? config)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
-#pragma warning disable CS8601 // Possible null reference assignment.
         Uri.TryCreate(htmlNode.GetAttributeValue("src", "#"), UriKind.RelativeOrAbsolute, out _uri);
-#pragma warning restore CS8601 // Possible null reference assignment.
-        _htmlNode = htmlNode;
         _imageProvider = config?.ImageProvider;
         _svgRenderer = config?.SVGRenderer == null ? new DefaultSVGRenderer() : config.SVGRenderer;
         Init();
@@ -99,9 +93,9 @@ internal class MyImage : IAddChild
         if (_loaded) return;
         try
         {
-            if (_imageProvider != null && _imageProvider.ShouldUseThisProvider(_uri.AbsoluteUri))
+            if (_imageProvider != null && _imageProvider.ShouldUseThisProvider(_uri?.AbsoluteUri))
             {
-                _image = await _imageProvider.GetImage(_uri.AbsoluteUri);
+                _image = await _imageProvider.GetImage(_uri?.AbsoluteUri);
                 _container.Child = _image;
             }
             else
@@ -111,45 +105,43 @@ internal class MyImage : IAddChild
                 // Download data from URL
                 HttpResponseMessage response = await client.GetAsync(_uri);
 
-
                 // Get the Content-Type header
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                string contentType = response.Content.Headers.ContentType.MediaType;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+                string contentType = response?.Content?.Headers?.ContentType?.MediaType ?? string.Empty;
 
-                if (contentType == "image/svg+xml")
+                if (response != null && response.Content != null)
                 {
-                    var svgString = await response.Content.ReadAsStringAsync();
-                    var resImage = await _svgRenderer.SvgToImage(svgString);
-                    if (resImage != null)
+                    if (contentType == "image/svg+xml")
                     {
-                        _image = resImage;
-                        _container.Child = _image;
+                        string? svgString = await response.Content.ReadAsStringAsync();
+                        var resImage = await _svgRenderer.SvgToImage(svgString);
+                        if (resImage != null)
+                        {
+                            _image = resImage;
+                            _container.Child = _image;
+                        }
                     }
-                }
-                else
-                {
-                    byte[] data = await response.Content.ReadAsByteArrayAsync();
-                    // Create a BitmapImage for other supported formats
-                    BitmapImage bitmap = new BitmapImage();
-                    using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                    else
                     {
-                        // Write the data to the stream
-                        await stream.WriteAsync(data.AsBuffer());
-                        stream.Seek(0);
+                        byte[] data = await response.Content.ReadAsByteArrayAsync();
+                        // Create a BitmapImage for other supported formats
+                        BitmapImage bitmap = new BitmapImage();
+                        using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                        {
+                            // Write the data to the stream
+                            await stream.WriteAsync(data.AsBuffer());
+                            stream.Seek(0);
 
-                        // Set the source of the BitmapImage
-                        await bitmap.SetSourceAsync(stream);
+                            // Set the source of the BitmapImage
+                            await bitmap.SetSourceAsync(stream);
+                        }
+                        _image.Source = bitmap;
+                        // _image.Width = bitmap.PixelWidth == 0 ? bitmap.DecodePixelWidth : bitmap.PixelWidth;
+                        // _image.Height = bitmap.PixelHeight == 0 ? bitmap.DecodePixelHeight : bitmap.PixelHeight;
+
                     }
-                    _image.Source = bitmap;
-                    // _image.Width = bitmap.PixelWidth == 0 ? bitmap.DecodePixelWidth : bitmap.PixelWidth;
-                    // _image.Height = bitmap.PixelHeight == 0 ? bitmap.DecodePixelHeight : bitmap.PixelHeight;
 
+                    _loaded = true;
                 }
-
-                _loaded = true;
             }
 
             if (_precedentWidth != 0)
@@ -161,8 +153,11 @@ internal class MyImage : IAddChild
                 _image.Height = _precedentHeight;
             }
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[MyImage::LoadImage()] Failed while loading image from {_uri}\r\n{ex}", LogType.Error, true);
+        }
     }
 
-    public void AddChild(IAddChild child) {}
+    public void AddChild(IAddChild child) { }
 }

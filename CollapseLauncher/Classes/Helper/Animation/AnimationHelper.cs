@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Composition;
+﻿using Hi3Helper;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
@@ -67,7 +68,10 @@ namespace CollapseLauncher.Helper.Animation
 
                 rootFrameVisual.ImplicitAnimations = animationCollection;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[AnimationHelper::EnableImplicitAnimation()] Error has occurred while assigning Implicit Animation to the element!\r\n{ex}", LogType.Error, true);
+            }
 
             if (element is Grid grid && recursiveAssignment)
             {

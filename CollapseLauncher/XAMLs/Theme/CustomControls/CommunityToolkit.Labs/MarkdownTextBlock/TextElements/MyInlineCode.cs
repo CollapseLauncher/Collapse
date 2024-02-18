@@ -2,20 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using Markdig.Syntax.Inlines;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media.Media3D;
-using Microsoft.UI.Xaml.Media;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyInlineCode : IAddChild
 {
-    private CodeInline _codeInline;
     private InlineUIContainer _inlineContainer;
-    private MarkdownConfig _config;
 
     public TextElement TextElement
     {
@@ -24,8 +22,7 @@ internal class MyInlineCode : IAddChild
 
     public MyInlineCode(CodeInline codeInline, MarkdownConfig config)
     {
-        _codeInline = codeInline;
-        _config = config;
+        MarkdownConfig _config = config;
         _inlineContainer = new InlineUIContainer();
         var border = new Border();
         border.VerticalAlignment = VerticalAlignment.Bottom;
@@ -41,7 +38,7 @@ internal class MyInlineCode : IAddChild
         textBlock.FontFamily = _config.Themes.InlineCodeFontFamily;
         textBlock.FontSize = _config.Themes.InlineCodeFontSize;
         textBlock.FontWeight = _config.Themes.InlineCodeFontWeight;
-        textBlock.Text = codeInline.Content.ToString();
+        textBlock.Text = codeInline.Content;
         border.Child = textBlock;
         _inlineContainer.Child = border;
     }

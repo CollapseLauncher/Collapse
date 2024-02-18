@@ -4,11 +4,12 @@
 
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Extensions.TaskLists;
+using Markdig.Renderers;
 using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Extensions;
 
-internal class TaskListRenderer : UWPObjectRenderer<TaskList>
+internal class TaskListRenderer : MarkdownObjectRenderer<WinUIRenderer, TaskList>
 {
     protected override void Write(WinUIRenderer renderer, TaskList taskList)
     {

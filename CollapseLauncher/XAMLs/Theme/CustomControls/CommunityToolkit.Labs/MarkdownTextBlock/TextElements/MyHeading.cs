@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using HtmlAgilityPack;
 using Markdig.Syntax;
 using Microsoft.UI.Xaml;
@@ -12,9 +13,7 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 internal class MyHeading : IAddChild
 {
     private Paragraph _paragraph;
-    private HeadingBlock? _headingBlock;
     private HtmlNode? _htmlNode;
-    private MarkdownConfig _config;
 
     public bool IsHtml => _htmlNode != null;
 
@@ -25,9 +24,8 @@ internal class MyHeading : IAddChild
 
     public MyHeading(HeadingBlock headingBlock, MarkdownConfig config)
     {
-        _headingBlock = headingBlock;
         _paragraph = new Paragraph();
-        _config = config;
+        MarkdownConfig _config = config;
 
         var level = headingBlock.Level;
         _paragraph.FontSize = level switch
@@ -62,9 +60,9 @@ internal class MyHeading : IAddChild
     {
         _htmlNode = htmlNode;
         _paragraph = new Paragraph();
-        _config = config;
+        MarkdownConfig _config = config;
 
-        var align = _htmlNode.GetAttributeValue("align", "left");
+        var align = _htmlNode?.GetAttributeValue("align", "left");
         _paragraph.TextAlignment = align switch
         {
             "left" => TextAlignment.Left,

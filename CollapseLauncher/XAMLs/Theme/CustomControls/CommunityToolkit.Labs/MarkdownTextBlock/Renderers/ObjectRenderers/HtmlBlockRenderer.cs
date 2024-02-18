@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using HtmlAgilityPack;
+using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
 using System.Text;
@@ -10,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
-internal class HtmlBlockRenderer : UWPObjectRenderer<HtmlBlock>
+internal class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlock>
 {
     protected override void Write(WinUIRenderer renderer, HtmlBlock obj)
     {

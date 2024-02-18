@@ -2,16 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Markdig.Syntax;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyParagraph : IAddChild
 {
-    private ParagraphBlock _paragraphBlock;
     private Paragraph _paragraph;
 
     public TextElement TextElement
@@ -19,9 +17,8 @@ internal class MyParagraph : IAddChild
         get => _paragraph;
     }
 
-    public MyParagraph(ParagraphBlock paragraphBlock)
+    public MyParagraph()
     {
-        _paragraphBlock = paragraphBlock;
         _paragraph = new Paragraph();
     }
 
@@ -31,7 +28,7 @@ internal class MyParagraph : IAddChild
         {
             _paragraph.Inlines.Add(inlineChild);
         }
-        else if (child.TextElement is Microsoft.UI.Xaml.Documents.Block blockChild)
+        else if (child.TextElement is Block blockChild)
         {
             var inlineUIContainer = new InlineUIContainer();
             var richTextBlock = new RichTextBlock();
