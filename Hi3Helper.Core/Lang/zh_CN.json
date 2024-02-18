@@ -123,6 +123,7 @@
     "PauseCancelDownloadBtn": "暂停/取消",
     "PauseCancelBtn": "暂停/取消",
     "DownloadBtn": "下载游戏",
+
     "GameSettingsBtn": "快速设置",
     "GameSettings_Panel1": "快速设置",
     "GameSettings_Panel1OpenGameFolder": "打开游戏文件夹",
@@ -140,7 +141,8 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
     "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
-    "GamePlaytime_Panel1": "编辑游玩时间",
+
+    "GamePlaytime_Panel1": "编辑游戏时间",
     "GamePlaytime_Idle_Panel1Hours": "小时",
     "GamePlaytime_Idle_Panel1Minutes": "分钟",
     "GamePlaytime_Idle_ResetBtn": "重置",
@@ -148,6 +150,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "提供的值无效。",
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
     "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 会导致游戏时间记录停止（之前的记录会被保存），并且时间会在下次 Collapse 启动时再次开始记录。",
+    "GamePlaytime_Display": "{0}小时 {1}分钟",
+
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
     "PostPanel_Info": "资讯",
@@ -656,24 +660,35 @@
     "CookbookLocateSubtitle5": "查找下载的 Cookbook 文件并继续。\n\n",
     "CookbookLocateSubtitle6": "注：\n",
     "CookbookLocateSubtitle7": "这里是您需要下载的 Cookbook 文件的名称：\n",
+
     "PrivilegeMustRunTitle": "Collapse 需要管理员权限！",
     "PrivilegeMustRunSubtitle": "Collapse 需要管理员权限才能正常工作。是否要重新启动 Collapse 并以管理员身份运行它？",
+
     "ReleaseChannelChangeTitle": "更改发布频道",
     "ReleaseChannelChangeSubtitle1": "您将要更改您的发布频道为：",
     "ReleaseChannelChangeSubtitle2": "注：",
     "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。我们不应对与您的游戏相关的任何数据丢失或损坏负责。",
+
     "ChangePlaytimeTitle": "是否确认更改游戏时间？",
-    "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游玩时间。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
+    "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
     "ResetPlaytimeTitle": "是否确认更改游戏时间？",
     "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间设置为 0。这是一个 ",
     "ResetPlaytimeSubtitle2": "破坏性的",
     "ResetPlaytimeSubtitle3": " 操作，一旦确认，此操作将无法撤销。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
+    "InvalidPlaytimeTitle": "保存此会话的游戏时间时出现问题",
+    "InvalidPlaytimeSubtitle1": "开始时间和结束时间之差为负数。",
+    "InvalidPlaytimeSubtitle2": "将使用每分钟保存的替代值：",
+    "InvalidPlaytimeSubtitle3": "请不要在游戏时调整计算机时钟。",
+
     "LocateExePathTitle": "定位程序文件的安装路径",
     "LocateExePathSubtitle": "请为 Collapse 定位应用程序文件的位置：",
+
     "CannotUseAppLocationForGameDirTitle": "文件夹无效！",
     "CannotUseAppLocationForGameDirSubtitle": "您无法使用此文件夹，因为它已被用作系统文件夹或被用于存放应用程序的主执行文件。请选择其他文件夹！",
+
     "StopGameTitle": "强制停止游戏",
     "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。",
+
     "MeteredConnectionWarningTitle": "检测到按流量计费的连接！",
     "MeteredConnectionWarningSubtitle": "检测到您当前的互联网连接'按流量计费'！继续更新可能会让互联网提供商收取额外费用。您希望继续吗？",
 

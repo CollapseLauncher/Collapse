@@ -16,7 +16,7 @@ namespace CollapseLauncher
     public partial class App : Application
     {
         public static bool IsAppKilled = false;
-
+        
         public App()
         {
             try

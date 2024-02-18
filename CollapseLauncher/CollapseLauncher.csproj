@@ -6,7 +6,7 @@
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
-		<!-- Versioning -->
+		<!-- Versioning --
 		<Version>1.73.4</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
@@ -76,7 +76,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
-		
+    
 		<PackageReference Include="GitInfo" Version="3.3.4">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
