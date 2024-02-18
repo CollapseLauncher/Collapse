@@ -6,7 +6,7 @@
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
-		<!-- Versioning --
+		<!-- Versioning -->
 		<Version>1.73.4</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
