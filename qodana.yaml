@@ -1,7 +1,7 @@
 version: "1.0"
 linter: jetbrains/qodana-dotnet:latest
 dotnet:
-  project: CollapseLauncher/CollapseLauncher.csproj
+  solution: CollapseLauncher.sln
 exclude:
   - name: All
     paths:
