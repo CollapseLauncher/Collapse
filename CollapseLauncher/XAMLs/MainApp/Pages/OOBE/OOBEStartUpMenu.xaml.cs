@@ -830,5 +830,29 @@ namespace CollapseLauncher.Pages.OOBE
         }
 
         private void RefreshCDNCheckButtonClick(object sender, RoutedEventArgs e) => GetRecommendedCDN();
+
+        private void FixComboBoxSize(object sender, SelectionChangedEventArgs e)
+        {
+            // Sync PlaceholderText with current selected item
+            // Fix https://github.com/microsoft/microsoft-ui-xaml/issues/4551
+            var comboBox = sender as ComboBox;
+            if (comboBox != null && comboBox.SelectedValue != null)
+            {
+                var selectedValueString = "";
+                switch (comboBox.SelectedValue)
+                {
+                    case ContentControl contentControl:
+                        selectedValueString = contentControl.Content as string ?? "";
+                        break;
+                    case TextBlock textBlock:
+                        selectedValueString = textBlock.Text;
+                        break;
+                    case string str:
+                        selectedValueString = str;
+                        break;
+                }
+                comboBox.PlaceholderText = selectedValueString;
+            }
+        }
     }
 }

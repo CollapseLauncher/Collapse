@@ -5,6 +5,7 @@
     xmlns:localUI="using:Microsoft.UI.Xaml.Controls"
     xmlns:ui="using:Windows.UI"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:interactions="using:Microsoft.Xaml.Interactions.Core">
     <Application.Resources>
@@ -413,7 +414,37 @@
                     <!-- END: Button styles -->
 
                     <!-- ComboBox style -->
-                    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                    <Style x:Key="DefaultComboBoxStyle" TargetType="ComboBox">
+                        <Setter Property="Padding" Value="{ThemeResource ComboBoxPadding}" />
+                        <Setter Property="MaxDropDownHeight" Value="504" />
+                        <Setter Property="Foreground" Value="{ThemeResource ComboBoxForeground}" />
+                        <Setter Property="Background" Value="{ThemeResource ComboBoxBackground}" />
+                        <Setter Property="BorderBrush" Value="{ThemeResource ComboBoxBorderBrush}" />
+                        <Setter Property="BorderThickness" Value="{ThemeResource ComboBoxBorderThemeThickness}" />
+                        <Setter Property="TabNavigation" Value="Once" />
+                        <Setter Property="TextBoxStyle" Value="{StaticResource ComboBoxTextBoxStyle}" />
+                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+                        <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
+                        <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="True" />
+                        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+                        <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                        <Setter Property="VerticalAlignment" Value="Top" />
+                        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                        <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                        <Setter Property="UseSystemFocusVisuals" Value="{ThemeResource IsApplicationFocusVisualKindReveal}" />
+                        <Setter Property="primitives:ComboBoxHelper.KeepInteriorCornersSquare" Value="true" />
+                        <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+                        <Setter Property="ItemsPanel">
+                            <Setter.Value>
+                                <ItemsPanelTemplate>
+                                    <CarouselPanel />
+                                </ItemsPanelTemplate>
+                            </Setter.Value>
+                        </Setter>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ComboBox">
@@ -635,6 +666,7 @@
                                         <ContentPresenter x:Name="DescriptionPresenter" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{ThemeResource SystemControlDescriptionTextForegroundBrush}" Content="{TemplateBinding Description}" x:Load="False" />
                                         <Popup x:Name="Popup">
                                             <!-- Force ShouldConstrainToRootBounds to True -->
+                                            <!-- Fix https://github.com/microsoft/microsoft-ui-xaml/issues/8657 -->
                                             <interactivity:Interaction.Behaviors>
                                                 <interactions:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}" ComparisonCondition="Equal" Value="False">
                                                     <interactions:ChangePropertyAction TargetObject="{Binding ElementName=Popup}" PropertyName="ShouldConstrainToRootBounds" Value="True"/>
@@ -666,6 +698,7 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}"/>
 
                     <!-- WindowChrome min max close styles -->
                     <x:Double x:Key="WindowCaptionButtonStrokeWidth">1</x:Double>

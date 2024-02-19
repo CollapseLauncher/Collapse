@@ -116,17 +116,16 @@
                                                Margin="0,2">
                             <ComboBox x:Name="SelectLang"
                                       SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
-                                      HorizontalAlignment="Left" VerticalAlignment="Center"
                                       ItemsSource="{x:Bind LangList}"
-                                      MaxDropDownHeight="200"/>
+                                      MaxDropDownHeight="200"
+                                      SelectionChanged="FixComboBoxSize"/>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
                                                Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeHeader}"
                                                Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsWindowSizeDescription}"
                                                HeaderIcon="{ui:FontIcon Glyph=&#xf2d2;}"
                                                Margin="0,2">
-                            <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}"
-                                  Name="SelectWindowSize">
+                            <ComboBox x:Name="SelectWindowSize" SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" SelectionChanged="FixComboBoxSize">
                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}"/>
                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}"/>
                             </ComboBox>
@@ -185,7 +184,7 @@
                                         </Flyout>
                                     </Button.Flyout>
                                 </Button>
-                                <ComboBox x:Name="SelectCDN" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}"/>
+                                <ComboBox x:Name="SelectCDN" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" SelectionChanged="FixComboBoxSize"/>
                             </StackPanel>
                         </controls:SettingsCard>
                         <controls:SettingsExpander x:Name="SettingsCardItemTheme"
@@ -196,7 +195,7 @@
                             <controls:SettingsExpander.Items>
                                 <controls:SettingsCard Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeHeader}"
                                                        Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleThemeDescription}">
-                                    <ComboBox x:Name="SettingsAppThemeCombobox" SelectedIndex="{x:Bind SelectedTheme, Mode=TwoWay}">
+                                    <ComboBox x:Name="SettingsAppThemeCombobox" SelectedIndex="{x:Bind SelectedTheme, Mode=TwoWay}" SelectionChanged="FixComboBoxSize">
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}"/>
