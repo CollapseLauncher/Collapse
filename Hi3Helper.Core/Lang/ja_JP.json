@@ -111,9 +111,9 @@
     "PreloadNotifIntegrityCheckBtn": "パッケージの整合性チェック",
     "StartBtn": "ゲーム開始",
     "StartBtnRunning": "ゲームが実行中です！",
-    "VerifyingPkgTitle": "パッケージのチェック中",
-    "PreloadDownloadNotifbarTitle": "プリロードパッケージのダウンロード中",
-    "PreloadDownloadNotifbarVerifyTitle": "プリロードパッケージのチェック中",
+    "VerifyingPkgTitle": "パッケージの検証中",
+    "PreloadDownloadNotifbarTitle": "事前ダウンロードパッケージのダウンロード中",
+    "PreloadDownloadNotifbarVerifyTitle": "事前ダウンロードパッケージの検証中",
     "PreloadDownloadNotifbarSubtitle": "必須パッケージ",
     "UpdatingVoicePack": "音声パックの更新中...",
     "InstallBtn": "ゲームをインストール/紐づけ",
@@ -123,6 +123,7 @@
     "PauseCancelDownloadBtn": "一時停止/キャンセル",
     "PauseCancelBtn": "一時停止/キャンセル",
     "DownloadBtn": "ダウンロード",
+
     "GameSettingsBtn": "クイック設定",
     "GameSettings_Panel1": "クイック設定",
     "GameSettings_Panel1OpenGameFolder": "ゲームフォルダーを開く",
@@ -140,6 +141,7 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
+
     "GamePlaytime_Panel1": "プレイ時間を編集",
     "GamePlaytime_Idle_Panel1Hours": "時間",
     "GamePlaytime_Idle_Panel1Minutes": "分",
@@ -148,6 +150,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "無効な値です。",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
     "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断される（閉じた瞬間までのプレイ時間が記録されます）ことと、Collapseから起動したプレイ時間のみが加算されることに注意してください。",
+    "GamePlaytime_Display": "{0}時間 {1}分",
+
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
     "PostPanel_Info": "インフォメーション",
@@ -196,7 +200,7 @@
     "RepairBtn2FullDesc": "ファイルのチェックサム/整合性、サイズ、可用性をチェックします。",
     "RepairBtn2Quick": "クイックチェック",
     "RepairBtn2QuickDesc": "ファイルサイズと可用性のみをチェックします。ファイルの整合性をチェックしたい場合は、フルチェックを使用してください。",
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！"
@@ -226,7 +230,7 @@
     "CachesBtn2FullDesc": "キャッシュのチェックサム/整合性、サイズ、可用性をチェックします。",
     "CachesBtn2Quick": "クイックチェック",
     "CachesBtn2QuickDesc": "キャッシュのサイズと可用性のみをチェックします。キャッシュの整合性をチェックしたい場合はフルチェックを使用してください。",
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！"
@@ -314,7 +318,7 @@
     "RegImportTitle": "インポート",
     "RegImportTooltip": "Collapse レジストリファイルからレジストリキーをインポートします。",
 
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
@@ -327,7 +331,18 @@
     "CustomArgs_Footer2": "Unity スタンドアロンプレイヤーのコマンドライン引数",
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
 
-    "GameBoost": "ゲームの優先度をブースト [実験的機能]"
+    "GameBoost": "ゲームの優先度をブースト [実験的機能]",
+
+    "Advanced_Title": "高度な設定",
+    "Advanced_Subtitle1": "Collapse Launcher開発チームはこの設定が原因であなたのゲーム・アカウント・システムに何らかの事態が発生しても",
+    "Advanced_Subtitle2": "一切の責任を負いません",
+    "Advanced_Subtitle3": "。ご利用は自己責任でお願いします。",
+    "Advanced_GLC_WarningAdmin": "警告：コマンドは管理者として実行されます！",
+    "Advanced_GLC_PreLaunch_Title": "起動前コマンド",
+    "Advanced_GLC_PreLaunch_Subtitle": "ゲームの起動前にコマンドを実行する",
+    "Advanced_GLC_PreLaunch_Exit": "ゲームが終了/停止した場合に実行中のプロセスを強制終了させる",
+    "Advanced_GLC_PostExit_Title": "終了後コマンド",
+    "Advanced_GLC_PostExit_Subtitle": "ゲームの終了後にコマンドを実行する"
   },
 
   "_SettingsPage": {
@@ -645,24 +660,35 @@
     "CookbookLocateSubtitle5": "をクリックしてダウンロードしたCookbookファイルを指定してください。\r\n\r\n",
     "CookbookLocateSubtitle6": "詳細:\r\n",
     "CookbookLocateSubtitle7": "ダウンロードが必要なCookbookファイルの名前です:\r\n",
+
     "PrivilegeMustRunTitle": "Collapseは管理者権限が必要です！",
     "PrivilegeMustRunSubtitle": "Collapseは管理者権限が必要です。Collapseを管理者権限で再起動しますか？",
+
     "ReleaseChannelChangeTitle": "リリースチャンネルの変更",
     "ReleaseChannelChangeSubtitle1": "リリースチャンネルを次のものに変更しようとしています：",
     "ReleaseChannelChangeSubtitle2": "注意：",
     "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。ゲームデータの消失や破損が発生しても責任を負いかねます。",
+
     "ChangePlaytimeTitle": "本当にプレイ時間を編集しますか？",
     "ChangePlaytimeSubtitle": "プレイ時間を編集すると、現在の値が入力した値で上書きされます。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "ResetPlaytimeTitle": "本当にプレイ時間をリセットしますか？",
     "ResetPlaytimeSubtitle": "プレイ時間をリセットすると、記録されたプレイ時間が0になります。これは",
     "ResetPlaytimeSubtitle2": "元に戻せない",
     "ResetPlaytimeSubtitle3": "変更です。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
+    "InvalidPlaytimeTitle": "プレイ時間の保存中に問題が発生しました",
+    "InvalidPlaytimeSubtitle1": "起動時刻と終了時刻の差が負の数になっています。",
+    "InvalidPlaytimeSubtitle2": "1分おきに保存されていたフォールバック値を代わりに保存します：",
+    "InvalidPlaytimeSubtitle3": "ゲーム起動中にコンピュータの時刻を調整することは避けてください。",
+
     "LocateExePathTitle": ".exeファイルのパスを指定",
     "LocateExePathSubtitle": "ツールの.exeファイルを指定すると、リンクから直接開けるようになります。",
+
     "CannotUseAppLocationForGameDirTitle": "無効なフォルダーです！",
     "CannotUseAppLocationForGameDirSubtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+
     "StopGameTitle": "ゲームを強制終了します",
     "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
+
     "MeteredConnectionWarningTitle": "従量制課金接続を検出しました！",
     "MeteredConnectionWarningSubtitle": "現在のインターネット接続は「従量制」として検出されました。更新を続行すると、インターネットプロバイダーから追加料金が発生する場合があります。続行しますか?",
 
@@ -918,9 +944,10 @@
     "Graphics_ResCustomH": "縦",
 
     "Graphics_FPS": "フレームレート",
-    "Graphics_FPS_Help": "120FPSは実験的な機能です！ご利用は自己責任でお願いします。",
-    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\n代わりにCollapseで画面設定を変更してください。",
+    "Graphics_FPS_Help": "120FPSは実験的な設定です！公式でサポートされていない設定のため、ご利用は自己責任でお願いします。",
+    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\nそうなった場合は、代わりにCollapseを使って画面設定を変更してください。",
     "Graphics_VSync": "垂直同期",
+    "Graphics_VSync_Help": "120FPS選択時は垂直同期が無効になります",
     "Graphics_RenderScale": "レンダリング精度",
     "Graphics_ResolutionQuality": "解像度",
     "Graphics_ShadowQuality": "シャドウ品質",
@@ -944,7 +971,7 @@
     "ApplyBtn": "設定を適用",
     "SettingsApplied": "変更が保存されました!",
 
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
@@ -1041,7 +1068,7 @@
     "ApplyBtn": "設定を適用",
     "SettingsApplied": "変更が保存されました！",
 
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
