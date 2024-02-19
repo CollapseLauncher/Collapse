@@ -1,7 +1,7 @@
 version: "1.0"
 linter: jetbrains/qodana-dotnet:latest
 dotnet:
-  solution: CollapseLauncher.sln
+  project: CollapseLauncher/CollapseLauncher.csproj
 exclude:
   - name: All
     paths:
@@ -19,3 +19,18 @@ exclude:
   - name: Xaml.StaticResourceNotResolved
 include:
   - name: CheckDependencyLicenses
+licenseRules:
+  - keys:
+      - "MIT"
+    allowed:
+    # WinAppSDK
+      - "MS-DXSDK-D3DX-9.29.952.3"
+    # .NET
+      - "MS-ASP-NET-WEB-OPTIMIZATION"
+      - "MS-NET-LIBRARY-2019-06"
+    # Windows SDK
+      - "PROPRIETARY-LICENSE"
+    # Protobuf, duh
+      - "PROTOBUF"
+    # System.CommandLine NuGet for some reason
+      - "None"
