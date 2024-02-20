@@ -20,7 +20,9 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <FlipView x:Name="ImageCarousel" Grid.RowSpan="2" ItemsSource="{x:Bind markdownFileList}" Background="Transparent" >
+        <FlipView x:Name="AgreementCarousel"
+                  Grid.RowSpan="2" ItemsSource="{x:Bind markdownFileList}" Background="Transparent"
+                  Style="{ThemeResource CollapseFlipViewStyle}">
             <FlipView.ItemsPanel >
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Vertical"/>
@@ -42,16 +44,19 @@
                         </TextBlock>
                         <Grid Grid.Row="1" Margin="0,16">
                             <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8"/>
-                            <ScrollViewer IsDeferredScrollingEnabled="True">
-                                <markdown:MarkdownTextBlock Margin="24" Text="{x:Bind text, Mode=OneWay}" Config="{x:Bind markdownConfig, Mode=OneWay}"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                            <ScrollViewer>
+                                <Grid>
+                                    <markdown:MarkdownTextBlock Margin="24" Text="{x:Bind text, Mode=OneWay}"
+                                                            Config="{x:Bind markdownConfig, Mode=OneWay}"
+                                                            TabNavigation="Once"/>
+                                </Grid>
                             </ScrollViewer>
                         </Grid>
                     </Grid>
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>
-        <Button x:Name="ApplyAgreementButton" Grid.Row="2" HorizontalAlignment="Right" Style="{ThemeResource TransparentDefaultButtonStyle}" Click="Button_Click"
+        <Button x:Name="ApplyAgreementButton" Grid.Row="2" HorizontalAlignment="Left" Style="{ThemeResource NewAccentButtonStyle}" Background="{ThemeResource SystemFillColorSuccessBrush}" Click="Button_Click"
                 CornerRadius="{x:Bind uiEx:UIElementExtensions.AttachRoundedKindCornerRadius(ApplyAgreementButton)}">
             <StackPanel Orientation="Horizontal">
                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="16" VerticalAlignment="Center"/>

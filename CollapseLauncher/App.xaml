@@ -167,7 +167,6 @@
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal"/>
-
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
@@ -264,14 +263,9 @@
                                             <BrushTransition Duration="0:0:0.083" />
                                         </ContentPresenter.BackgroundTransition>
 
-                                        <ContentPresenter.ScaleTransition>
-                                            <Vector3Transition Duration="0:0:0.11"/>
-                                        </ContentPresenter.ScaleTransition>
-
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal"/>
-
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
@@ -360,14 +354,24 @@
                                             <BrushTransition Duration="0:0:0.083" />
                                         </ContentPresenter.BackgroundTransition>
 
+                                        <ContentPresenter.OpacityTransition>
+                                            <ScalarTransition Duration="0:0:0.083" />
+                                        </ContentPresenter.OpacityTransition>
+
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
-                                                <VisualState x:Name="Normal"/>
+                                                <VisualState x:Name="Normal">
+                                                    <Storyboard>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background.Opacity">
+                                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:0"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBackgroundPointerOver}" />
-                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background.Opacity">
+                                                            <LinearDoubleKeyFrame Value="0.8" KeyTime="0:0:0"/>
+                                                        </DoubleAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushPointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -379,9 +383,9 @@
 
                                                 <VisualState x:Name="Pressed">
                                                     <Storyboard>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBackgroundPressed}" />
-                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background.Opacity">
+                                                            <LinearDoubleKeyFrame Value="0.75" KeyTime="0:0:0"/>
+                                                        </DoubleAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>

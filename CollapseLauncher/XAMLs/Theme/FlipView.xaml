@@ -104,7 +104,7 @@
         <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
         <Setter Property="ScrollViewer.IsHorizontalScrollChainingEnabled" Value="True" />
         <Setter Property="ScrollViewer.IsVerticalScrollChainingEnabled" Value="True" />
-        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True" />
         <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True" />
         <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
         <Setter Property="ItemsPanel">
@@ -131,7 +131,7 @@
                                     BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
                                     Margin="0,32"
                                     CornerRadius="8,0,0,8"
-                                    Opacity="0.90">
+                                    Opacity="1">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="Normal" />
@@ -194,7 +194,7 @@
                                     BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
                                     Margin="0,32"
                                     CornerRadius="0,8,8,0"
-                                    Opacity="0.90">
+                                    Opacity="1">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="Normal" />
@@ -254,7 +254,9 @@
                                 <Border x:Name="Root"
                                         Background="{ThemeResource FlipViewNextPreviousButtonBackground}"
                                         BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
-                                        BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}">
+                                        BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
+                                        Padding="32,8"
+                                        CornerRadius="8">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="Normal" />
@@ -295,10 +297,10 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
                                     <FontIcon x:Name="Arrow"
-                                        FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                        FontSize="{ThemeResource FlipViewButtonFontSize}"
+                                        FontFamily="{ThemeResource FontAwesomeSolid}"
+                                        FontSize="16"
                                         Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
-                                        Glyph="&#xEDDC;"
+                                        Glyph="&#xf107;"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         UseLayoutRounding="False"
@@ -311,9 +313,11 @@
                             </ControlTemplate>
                             <ControlTemplate x:Key="VerticalPreviousTemplate" TargetType="Button">
                                 <Border x:Name="Root"
-                                    Background="{ThemeResource FlipViewNextPreviousButtonBackground}"
-                                    BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
-                                    BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}">
+                                        Background="{ThemeResource FlipViewNextPreviousButtonBackground}"
+                                        BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
+                                        BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
+                                        Padding="32,8"
+                                        CornerRadius="8">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="Normal" />
@@ -354,10 +358,10 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
                                     <FontIcon x:Name="Arrow"
-                                        FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                        FontSize="{ThemeResource FlipViewButtonFontSize}"
+                                        FontFamily="{ThemeResource FontAwesomeSolid}"
+                                        FontSize="16"
                                         Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
-                                        Glyph="&#xEDDB;"
+                                        Glyph="&#xf106;"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         UseLayoutRounding="False"
@@ -405,23 +409,15 @@
                             VerticalAlignment="Stretch" />
                         <Button x:Name="PreviousButtonVertical"
                             Template="{StaticResource VerticalPreviousTemplate}"
-                            Width="38"
-                            Height="16"
-                            Margin="1"
-                            CornerRadius="{TemplateBinding CornerRadius}"
                             IsTabStop="False"
                             UseSystemFocusVisuals="False"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top" />
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"/>
                         <Button x:Name="NextButtonVertical"
                             Template="{StaticResource VerticalNextTemplate}"
-                            Width="38"
-                            Height="16"
-                            Margin="1"
-                            CornerRadius="{TemplateBinding CornerRadius}"
                             IsTabStop="False"
                             UseSystemFocusVisuals="False"
-                            HorizontalAlignment="Center"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Bottom" />
                     </Grid>
                 </ControlTemplate>
