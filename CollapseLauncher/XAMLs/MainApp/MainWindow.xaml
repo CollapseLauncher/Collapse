@@ -46,15 +46,31 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel x:Name="LoadingStatusStackPanel" Orientation="Horizontal" Margin="0,0,16,0">
-                    <ProgressRing x:Name="LoadingStatusProgressRing" x:FieldModifier="internal" IsIndeterminate="True" HorizontalAlignment="Left" Height="24" Width="24" Margin="0,0,16,0"/>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,-2,0,0">
-                        <TextBlock x:Name="LoadingStatusTextTitle" x:FieldModifier="internal" VerticalAlignment="Center" Text="Loading Metadata" TextWrapping="WrapWholeWords" FontWeight="Bold"/>
-                        <TextBlock x:Name="LoadingStatusTextSeparator" x:FieldModifier="internal" VerticalAlignment="Center" Text="●" TextWrapping="WrapWholeWords" FontWeight="Bold" Margin="8,0"/>
-                        <TextBlock x:Name="LoadingStatusTextSubtitle" x:FieldModifier="internal" VerticalAlignment="Center" Text="Settings things up for your game list..." TextWrapping="WrapWholeWords"/>
-                    </StackPanel>
-                </StackPanel>
+                <Grid x:Name="LoadingStatusUIContainer" VerticalAlignment="Stretch" Margin="0,0,16,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ProgressRing x:Name="LoadingStatusProgressRing" Grid.Column="0" x:FieldModifier="internal" IsIndeterminate="True" HorizontalAlignment="Left" Height="24" Width="24" Margin="0,0,16,0"/>
+                    <Grid VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,-2,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="LoadingStatusTextTitle" Grid.Column="0" x:FieldModifier="internal" VerticalAlignment="Center" Text="Never gonna give you up" TextWrapping="WrapWholeWords" FontWeight="Bold"/>
+                        <TextBlock x:Name="LoadingStatusTextSeparator" Grid.Column="1" x:FieldModifier="internal" VerticalAlignment="Center" Text="●" TextWrapping="WrapWholeWords" FontWeight="Bold" Margin="8,0"/>
+                        <TextBlock x:Name="LoadingStatusTextSubtitle"
+                                   Grid.Column="2"
+                                   x:FieldModifier="internal"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   Text="Never gonna let you down. Never gonna run around and desert you. Never gonna make you cry. Never gonna say goodbye. Never gonna tell a lie and hurt you."
+                                   TextWrapping="Wrap"/>
+                    </Grid>
+                </Grid>
                 <Button x:Name="LoadingStatusActionButton"
                         x:FieldModifier="internal"
                         Grid.Column="1"
