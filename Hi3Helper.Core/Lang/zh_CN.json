@@ -533,6 +533,7 @@
     "CDNDescription_Github": "启动器的官方（主）存储库。",
     "CDNDescription_Cloudflare": "在 Cloudflare R2 bucket 托管的官方（主）仓库镜像。",
     "CDNDescription_Bitbucket": "在 Bitbucket 托管的官方（主）仓库镜像。",
+    "CDNDescription_GitLab": "在 GitLab 托管的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
     "OpenDownloadPage": "打开下载界面",
