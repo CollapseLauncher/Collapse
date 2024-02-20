@@ -104,7 +104,7 @@
         <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
         <Setter Property="ScrollViewer.IsHorizontalScrollChainingEnabled" Value="True" />
         <Setter Property="ScrollViewer.IsVerticalScrollChainingEnabled" Value="True" />
-        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True" />
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
         <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True" />
         <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
         <Setter Property="ItemsPanel">
