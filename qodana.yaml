@@ -34,3 +34,11 @@ licenseRules:
       - "PROTOBUF"
     # System.CommandLine NuGet for some reason
       - "None"
+dependencyIgnores:
+  # Ignore dependencies with no license
+  # ColorCode is part of transitive dependency for H.NotifyIcon.WinUI
+  - name: "ColorCode.Core"
+  - name: "ColorCode.WinUI"
+  # Microsoft...
+  - name: "System.CommandLine"
+  - name: "System.CommandLine.NamingConventionBinder"
