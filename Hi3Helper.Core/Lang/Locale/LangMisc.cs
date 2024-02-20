@@ -113,6 +113,9 @@ namespace Hi3Helper
                 public string LauncherNameBHI3L    { get; set; } = LangFallback?._Misc.LauncherNameBHI3L;
                 public string LauncherNameSteam    { get; set; } = LangFallback?._Misc.LauncherNameSteam;
                 public string LauncherNameUnknown  { get; set; } = LangFallback?._Misc.LauncherNameUnknown;
+
+                public string IAcceptAgreement      { get; set; } = LangFallback?._Misc.IAcceptAgreement;
+                public string IDoNotAcceptAgreement { get; set; } = LangFallback?._Misc.IDoNotAcceptAgreement;
             }
         }
         #endregion
