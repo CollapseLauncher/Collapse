@@ -348,6 +348,13 @@
                 "Text": "爱丽丝工坊",
                 "URL": "https://starrail.kchlu.com/",
                 "Profiles": ["SRCN", "HSRCNBilibili"]
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Enka Network",
+                "URL": "https://enka.network/?hsr",
+                "Profiles": ["SRGlb"]
             }
         ]
     }
