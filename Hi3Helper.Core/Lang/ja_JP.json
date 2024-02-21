@@ -533,6 +533,7 @@
     "CDNDescription_Github": "ランチャーの公式(メイン)リポジトリ。",
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
+    "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",
     "OpenDownloadPage": "配布サイトを開く",
