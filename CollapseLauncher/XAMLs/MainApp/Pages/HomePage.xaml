@@ -429,7 +429,7 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </ScrollViewer>
-                                            <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
+                                            <StackPanel Visibility="{x:Bind IsPostNoticePanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -473,7 +473,7 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </ScrollViewer>
-                                            <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
+                                            <StackPanel Visibility="{x:Bind IsPostInfoPanelEmpty}" Margin="0,-48,-48,0" HorizontalAlignment="Right">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
