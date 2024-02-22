@@ -82,7 +82,7 @@
                         <TextBlock Margin="0,0,0,0" Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" TextWrapping="Wrap" FontWeight="Bold" FontSize="48"/>
                     </StackPanel>
                 </Grid>
-                <ScrollViewer x:Name="LauncherFolderContainer" Grid.Row="1" Margin="0,0,0,0" Grid.Column="1" VerticalAlignment="Top">
+                <ScrollViewer x:Name="LauncherFolderContainer" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0" Grid.Column="1" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left">
                         <StackPanel.Transitions>
                             <EntranceThemeTransition/>
@@ -99,8 +99,8 @@
                             <TextBlock Margin="0,0,0,16" x:Name="ErrMsg" Text="" TextWrapping="Wrap" TextTrimming="Clip" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorPrimary}"/>
                             <Button Style="{ThemeResource AccentButtonStyle}" Click="ChooseFolder" CornerRadius="16">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}" Margin="0,0,8,0" FontWeight="Medium" TextWrapping="Wrap"/>
-                                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf07b;" FontSize="14"/>
+                                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf07b;" Margin="0,0,8,0" FontSize="14"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}" FontWeight="Medium" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>

@@ -47,14 +47,13 @@ namespace CollapseLauncher.Pages.OOBE
 
             MainWindow.ToggleAcrylic(true);
             ChangeFontIconSettingsCard(SettingsCardContainer.Children);
-            StartAsyncRoutines();
 
             ThemeChangerInvoker.ThemeEvent += ThemeChangerInvoker_ThemeEvent;
 
             InitialTitleTextSize = (TitleTextContainer.Children[0] as TextBlock).FontSize;
             InitialFirstMainGridRowSize = ContainerGrid.ColumnDefinitions[0].MaxWidth;
 
-            RunIntroSequence();
+            StartAsyncRoutines();
         }
 
         ~OOBEStartUpMenu()
@@ -120,6 +119,8 @@ namespace CollapseLauncher.Pages.OOBE
 
             OOBEAgreementMenuExtensions.oobeStartParentUI = this;
             OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
+            WelcomeVLogo.Visibility = Visibility.Collapsed;
+            WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
         }
 
         public async void StartLauncherConfiguration()
@@ -174,8 +175,14 @@ namespace CollapseLauncher.Pages.OOBE
         #region Async Methods
         private void StartAsyncRoutines()
         {
+            // Run intro sequence
+            RunIntroSequence();
+
             // Check for the recommended CDN Latency
             GetRecommendedCDN();
+
+            // Set the initial text container size
+            InitializeTextContainerSize(null, false);
         }
 
         private long[] latencies = null;
@@ -355,12 +362,9 @@ namespace CollapseLauncher.Pages.OOBE
             set
             {
                 if (value < 0) return;
-                CurrentWindowSizeName = WindowSizeProfilesKey[value];
-                ContainerGrid.Margin = value == 0 ? InitialMainContainerMargin.Value : new Thickness(InitialMainContainerMargin.Value.Top * SmallWindowFactor);
-                ContainerGrid.ColumnDefinitions[0].MaxWidth = InitialFirstMainGridRowSize * (value == 0 ? 1d : (SmallWindowFactor + 0.04d));
-                SetTitleTextContainerSize((int)(InitialTitleTextSize * (value == 0 ? 1d : SmallWindowFactor)));
-                ToggleLogoMode(IsLastLogoShrinkMode, IsSmallSize = value != 0);
-                SetAppConfigValue("WindowSizeProfile", CurrentWindowSizeName);
+                if (value > WindowSizeProfilesKey.Count - 1)
+                    value = 0;
+                InitializeTextContainerSize(value);
             }
         }
 
@@ -478,6 +482,25 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 textBlock.FontSize = size;
             }
+        }
+
+        private void InitializeTextContainerSize(int? indexOfKey = null, bool isNeedShrink = true)
+        {
+            if (indexOfKey == null)
+            {
+                string currentWindowSizeKeyName = CurrentWindowSizeName;
+                indexOfKey = WindowSizeProfiles.Keys.ToList().IndexOf(currentWindowSizeKeyName);
+                if (indexOfKey < 0)
+                    indexOfKey = 0;
+            }
+
+            IsSmallSize = indexOfKey != 0;
+            CurrentWindowSizeName = WindowSizeProfilesKey[indexOfKey.Value];
+            ContainerGrid.Margin = indexOfKey == 0 ? InitialMainContainerMargin.Value : new Thickness(InitialMainContainerMargin.Value.Top * SmallWindowFactor);
+            ContainerGrid.ColumnDefinitions[0].MaxWidth = InitialFirstMainGridRowSize * (indexOfKey == 0 ? 1d : (SmallWindowFactor + 0.04d));
+            SetTitleTextContainerSize((int)(InitialTitleTextSize * (indexOfKey == 0 ? 1d : SmallWindowFactor)));
+            if (isNeedShrink)
+                ToggleLogoMode(IsLastLogoShrinkMode, IsSmallSize);
         }
 
         private async void ToggleLogoMode(bool shrink = false, bool isInSmallMode = false, bool isHideNextPageButton = true)
