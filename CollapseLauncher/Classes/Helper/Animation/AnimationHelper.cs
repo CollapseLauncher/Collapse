@@ -28,15 +28,7 @@ namespace CollapseLauncher.Helper.Animation
                         element.StartAnimation(anim);
                     });
             }
-            await Task.Delay(duration);
-            foreach (var item in animBase)
-            {
-                if (element!.DispatcherQueue!.HasThreadAccess)
-                    element.StopAnimation(item);
-                else
-                    element.DispatcherQueue.TryEnqueue(() =>
-                        element.StopAnimation(item));
-            }
+            await Task.Delay(duration)
         }
 
         internal static void EnableImplicitAnimation(this UIElement element, 
