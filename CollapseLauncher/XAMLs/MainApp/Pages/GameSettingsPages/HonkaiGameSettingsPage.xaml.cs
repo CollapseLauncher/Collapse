@@ -5,7 +5,6 @@ using Hi3Helper.DiscordPresence;
 #endif
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Win32;
@@ -21,13 +20,15 @@ using CollapseLauncher.Statics;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class HonkaiGameSettingsPage : Page
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    public partial class HonkaiGameSettingsPage
     {
-        private GamePresetProperty CurrentGameProperty { get; set; }
-        private HonkaiSettings Settings { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
-        private Brush InheritApplyTextColor { get; set; }
-        private RegistryMonitor RegistryWatcher { get; set; }
-        private bool IsNoReload { get; set; }
+        private GamePresetProperty CurrentGameProperty   { get; set; }
+        private HonkaiSettings     Settings              { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
+        private Brush              InheritApplyTextColor { get; set; }
+        private RegistryMonitor    RegistryWatcher       { get; set; }
+        private bool               IsNoReload = false;
+        
         public HonkaiGameSettingsPage()
         {
             try
@@ -35,7 +36,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty = GetCurrentGameProperty();
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 

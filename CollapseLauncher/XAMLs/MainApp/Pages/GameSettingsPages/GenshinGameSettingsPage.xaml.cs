@@ -36,19 +36,22 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class GenshinGameSettingsPage : Page
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    public partial class GenshinGameSettingsPage
     {
         #region Properties
-        private GamePresetProperty CurrentGameProperty { get; set; }
-        private GenshinSettings Settings { get => (GenshinSettings)CurrentGameProperty._GameSettings; }
-        private Brush InheritApplyTextColor { get; set; }
-        private RegistryMonitor RegistryWatcher { get; set; }
-        private bool IsNoReload { get; set; }
+        private GamePresetProperty CurrentGameProperty   { get; set; }
+        private GenshinSettings    Settings              { get => (GenshinSettings)CurrentGameProperty._GameSettings; }
+        private Brush              InheritApplyTextColor { get; set; }
+        private RegistryMonitor    RegistryWatcher       { get; set; }
+        
         private CanvasBitmap HDRCalibrationIcon;
         private CanvasBitmap HDRCalibrationScene;
         private CanvasBitmap HDRCalibrationUI;
         private bool IsHDREnabled { get; }
         private bool IsHDRSupported { get; }
+
+        private bool IsNoReload = false;
         #endregion
 
         #region Main GSP Methods
@@ -59,11 +62,12 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty = GetCurrentGameProperty();
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 
                 DisplayInformation displayInfo = DisplayInformation.CreateForWindowId(InnerLauncherConfig.m_windowID);
+                // ReSharper disable once UnusedVariable
                 DisplayAdvancedColorInfo colorInfo = displayInfo.GetAdvancedColorInfo();
 #if SIMULATEGIHDR
                 IsHDREnabled = true;

@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -8,10 +7,12 @@ using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class StarRailGameSettingsPage : Page, INotifyPropertyChanged
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    public partial class StarRailGameSettingsPage : INotifyPropertyChanged
     {
         #region Methods
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        // ReSharper disable once UnusedMember.Local
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.
@@ -222,7 +223,7 @@ namespace CollapseLauncher.Pages
         //RenderScale
         public double RenderScale
         {
-            get => (double)Math.Round(Settings.GraphicsSettings.RenderScale, 1);
+            get => Math.Round(Settings.GraphicsSettings.RenderScale, 1);
             set => Settings.GraphicsSettings.RenderScale = Math.Round(value, 1); // Round it to x.x (0.1) to fix floating-point rounding issue
         }
         //ResolutionQuality
