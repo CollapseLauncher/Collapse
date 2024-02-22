@@ -81,7 +81,7 @@ namespace CollapseLauncher
             KianaDispatch dispatch = null;
             Exception lastException = null;
 
-            foreach (string baseURL in _gameVersionManager.GamePreset.GameDispatchArrayURL)
+            foreach (string baseURL in _gameVersionManager!.GamePreset!.GameDispatchArrayURL!)
             {
                 try
                 {
@@ -90,7 +90,7 @@ namespace CollapseLauncher
                     if (_gameVersionManager.GamePreset.DispatcherKey != null)
                     {
                         mhyEncTool Decryptor = new mhyEncTool();
-                        Decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+                        Decryptor.InitMasterKey(ConfigV2!.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
                         key = _gameVersionManager.GamePreset.DispatcherKey;
                         Decryptor.DecryptStringWithMasterKey(ref key);
@@ -111,37 +111,36 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            _gameGateway = await KianaDispatch.GetGameserver(dispatch, _gameVersionManager.GamePreset.GameGatewayDefault, token);
+            _gameGateway = await KianaDispatch.GetGameserver(dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
-        private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway.AssetBundleUrls[0], "/{0}/editor_compressed/");
+        private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
 
         private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
-            _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
+            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
             _status.IsProgressTotalIndetermined = true;
             _status.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
             // Get the asset index properties
-            string baseURL = string.Format(_gameRepoURL, type.ToString().ToLowerInvariant());
-            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d"), type == CacheAssetType.Data ? "Data" : "Resource");
+            string baseURL = string.Format(_gameRepoURL!, type.ToString().ToLowerInvariant());
+            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d")!, type == CacheAssetType.Data ? "Data" : "Resource");
             MemoryStream stream = new MemoryStream();
             XORStream xorStream = new XORStream(stream);
 
             try
             {
                 // Start downloading the asset index
-                await _httpClient.Download(assetIndexURL, stream, null, null, token);
+                await _httpClient!.Download(assetIndexURL, stream, null, null, token);
 
                 // Build the asset index and return the count and size of each type
                 (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
 
                 return returnValue;
             }
-            catch { throw; }
             finally
             {
                 // Dispose the streams
@@ -180,9 +179,9 @@ namespace CollapseLauncher
             bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
-            stream.Position = 0;
+            stream!.Position = 0;
             BundleFile bundleFile = new BundleFile(stream);
-            SerializedFile serializeFile = new SerializedFile(bundleFile.fileList.FirstOrDefault().stream);
+            SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 
             // Try get the asset index file as byte[] and load it as TextAsset
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
@@ -241,7 +240,6 @@ namespace CollapseLauncher
                 {
                     // If failed while parsing the file, then skip it.
                     LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}", LogType.Warning, true);
-                    continue;
                 }
             }
 
@@ -252,16 +250,16 @@ namespace CollapseLauncher
         private byte[] GetAssetIndexSalt(string data)
         {
             // Get the salt from the string and return as byte[]
-            mhyEncTool saltTool = new mhyEncTool(data, ConfigV2.MasterKey);
+            mhyEncTool saltTool = new mhyEncTool(data, ConfigV2!.MasterKey);
             return saltTool.GetSalt();
         }
 
-        private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(_gamePath, type == CacheAssetType.Data ? "Data" : "Resources");
+        private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(_gamePath!, type == CacheAssetType.Data ? "Data" : "Resources");
 
         private bool IsValidRegionFile(string input, string lang)
         {
             // If the path contains regional string, then move to the next check
-            if (input.Contains(_cacheRegionalCheckName))
+            if (input!.Contains(_cacheRegionalCheckName!))
             {
                 // Check if the regional string has specified language string
                 return input.Contains($"{_cacheRegionalCheckName}_{lang}");
@@ -285,7 +283,7 @@ namespace CollapseLauncher
             _ = await FetchByType(type, _httpClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
-            return (returnAsset, _gameGateway.ExternalAssetUrls.FirstOrDefault(), BuildAssetBundleURL(_gameGateway), _luckyNumber);
+            return (returnAsset, _gameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(_gameGateway), _luckyNumber);
         }
     }
 }
