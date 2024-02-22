@@ -68,7 +68,9 @@ namespace Hi3Helper
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public virtual async void LogWriteLine() { }
+        // ReSharper disable MethodOverloadWithOptionalParameter
         public virtual async void LogWriteLine(string line = null) { }
+        // ReSharper restore MethodOverloadWithOptionalParameter
         public virtual async void LogWriteLine(string line, LogType type) { }
         public virtual async void LogWriteLine(string line, LogType type, bool writeToLog) { }
         public virtual async void LogWrite(string line, LogType type, bool writeToLog, bool fromStart) { }

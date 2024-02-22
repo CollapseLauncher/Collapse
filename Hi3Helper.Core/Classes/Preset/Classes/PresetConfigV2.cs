@@ -17,7 +17,7 @@ namespace Hi3Helper.Preset
 {
 #nullable enable
     [JsonConverter(typeof(JsonStringEnumConverter<ServerRegionID>))]
-    public enum ServerRegionID : int
+    public enum ServerRegionID
     {
         os_usa = 0,
         os_euro = 1,
@@ -52,54 +52,56 @@ namespace Hi3Helper.Preset
         Cognosphere
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class Stamp
     {
         public long LastUpdated { get; set; }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public sealed class Metadata
     {
         public Dictionary<string, Dictionary<string, PresetConfigV2>>? MetadataV2 { get; set; }
-        public string? MasterKey { get; set; }
-        public int MasterKeyBitLength { get; set; }
-
-#nullable disable
+        
+        public string? MasterKey          { get; set; }
+        public int     MasterKeyBitLength { get; set; }
+        #nullable disable
         public void DecryptStrings()
         {
             int gameCount = MetadataV2?.Count ?? 0;
             mhyEncTool Decryptor = new mhyEncTool();
             Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
-            string[] gameKeys = MetadataV2.Keys.ToArray();
+            string[] gameKeys = MetadataV2!.Keys.ToArray();
             for (int i = 0; i < gameCount; i++)
             {
-                string[] regionKeys = MetadataV2[gameKeys[i]].Keys.ToArray();
-                int segmentCount = MetadataV2[gameKeys[i]].Count;
+                string[] regionKeys = MetadataV2[gameKeys[i]!]!.Keys.ToArray();
+                int segmentCount = MetadataV2[gameKeys[i]!]!.Count;
 
                 for (int j = 0; j < segmentCount; j++)
                 {
                     // Dec GameDispatchArrayURL
-                    string[] GameDispatchArrayURL = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchArrayURL ?? null;
+                    string[] GameDispatchArrayURL = MetadataV2[gameKeys[i]]![regionKeys[j]!]!.GameDispatchArrayURL;
                     Decryptor.DecryptStringWithMasterKey(ref GameDispatchArrayURL);
-                    MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchArrayURL = GameDispatchArrayURL;
+                    MetadataV2[gameKeys[i]][regionKeys[j]]!.GameDispatchArrayURL = GameDispatchArrayURL;
 
                     // Dec GameDispatchChannelName
-                    string GameDispatchChannelName = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchChannelName ?? null;
+                    string GameDispatchChannelName = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchChannelName;
                     Decryptor.DecryptStringWithMasterKey(ref GameDispatchChannelName);
                     MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchChannelName = GameDispatchChannelName;
 
                     // Dec GameDispatchDefaultName
-                    string GameDispatchDefaultName = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchDefaultName ?? null;
+                    string GameDispatchDefaultName = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchDefaultName;
                     Decryptor.DecryptStringWithMasterKey(ref GameDispatchDefaultName);
                     MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchDefaultName = GameDispatchDefaultName;
 
                     // Dec GameDispatchURLTemplate
-                    string GameDispatchURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchURLTemplate ?? null;
+                    string GameDispatchURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchURLTemplate;
                     Decryptor.DecryptStringWithMasterKey(ref GameDispatchURLTemplate);
                     MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchURLTemplate = GameDispatchURLTemplate;
 
                     // Dec GameGatewayURLTemplate
-                    string GameGatewayURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameGatewayURLTemplate ?? null;
+                    string GameGatewayURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameGatewayURLTemplate;
                     Decryptor.DecryptStringWithMasterKey(ref GameGatewayURLTemplate);
                     MetadataV2[gameKeys[i]][regionKeys[j]].GameGatewayURLTemplate = GameGatewayURLTemplate;
                 }
@@ -108,11 +110,11 @@ namespace Hi3Helper.Preset
 
         public void GenerateHashID()
         {
-            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> game in MetadataV2)
+            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> game in MetadataV2!)
             {
-                foreach (KeyValuePair<string, PresetConfigV2> region in game.Value)
+                foreach (KeyValuePair<string, PresetConfigV2> region in game.Value!)
                 {
-                    string HashComposition = $"{ConverterTool.GetUnixTimestamp(true)} - {game.Key} - {region.Value.ZoneName}";
+                    string HashComposition = $"{ConverterTool.GetUnixTimestamp(true)} - {game.Key} - {region.Value!.ZoneName}";
                     int HashID = ConverterTool.BytesToCRC32Int(HashComposition);
                     region.Value.HashID = HashID;
                     region.Value.GameName = game.Key;
@@ -125,6 +127,7 @@ namespace Hi3Helper.Preset
     }
 
     [Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public sealed class PresetConfigV2
     {
         private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
@@ -134,7 +137,7 @@ namespace Hi3Helper.Preset
         public string? GetGameLanguage()
         {
             ReadOnlySpan<char> value;
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!);
 
             byte[]? result = (byte[]?)keys?.GetValue("MIHOYOSDK_CURRENT_LANGUAGE_h2559149783");
 
@@ -209,7 +212,7 @@ namespace Hi3Helper.Preset
             try
             {
                 string regValue;
-                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!);
                 byte[]? value = (byte[]?)keys?.GetValue("LanguageSettings_LocalAudioLanguage_h882585060");
 
                 if (keys is null || value is null || value.Length is 0)
@@ -238,7 +241,7 @@ namespace Hi3Helper.Preset
             try
             {
                 ReadOnlySpan<char> regValue;
-                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!);
                 byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596");
 
                 if (keys is null || value is null || value.Length is 0)
@@ -275,8 +278,6 @@ namespace Hi3Helper.Preset
                 case GameType.StarRail:
                     SetVoiceLanguageID_StarRail(LangID);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -303,12 +304,12 @@ namespace Hi3Helper.Preset
             try
             {
                 ReadOnlySpan<char> regValue;
-                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!, true);
                 GeneralDataProp initValue = new GeneralDataProp();
                 byte[]? result;
 
                 if (keys is null)
-                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation!);
                 else
                 {
                     result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
@@ -332,13 +333,10 @@ namespace Hi3Helper.Preset
         {
             try
             {
-                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
-                string initValue = "";
+                RegistryKey? keys      = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!, true);
+                if (keys is null) keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation!);
 
-                if (keys is null)
-                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
-
-                initValue = GetStarRailVoiceLanguageByID(LangID);
+                string initValue = GetStarRailVoiceLanguageByID(LangID);
                 keys.SetValue("LanguageSettings_LocalAudioLanguage_h882585060", Encoding.UTF8.GetBytes(initValue + '\0'));
             }
             catch (Exception ex)
@@ -352,7 +350,7 @@ namespace Hi3Helper.Preset
         public int GetRegServerNameID()
         {
             if (!IsGenshin ?? true) return 0;
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!);
             byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", new byte[] { }, RegistryValueOptions.None);
 
             if (keys is null || value is null || value.Length is 0)
@@ -472,7 +470,7 @@ namespace Hi3Helper.Preset
         {
             try
             {
-                string? Value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
+                string? Value = (string?)Registry.GetValue(InstallRegistryLocation!, "InstallPath", null);
                 return TryCheckGameLocation(Value);
             }
             catch (Exception e)
@@ -484,7 +482,7 @@ namespace Hi3Helper.Preset
 
         public bool TryCheckGameLocation(in string? Path)
         {
-            if (string.IsNullOrEmpty(Path)) return CheckInnerGameConfig(DefaultGameLocation);
+            if (string.IsNullOrEmpty(Path)) return CheckInnerGameConfig(DefaultGameLocation!);
             if (Directory.Exists(Path)) return CheckInnerGameConfig(Path);
 
             return false;
@@ -498,13 +496,13 @@ namespace Hi3Helper.Preset
             IniFile Ini = new IniFile();
             Ini.Load(ConfigPath);
 
-            string? path1 = Ini["launcher"]["game_install_path"].ToString();
+            string? path1 = Ini["launcher"]!["game_install_path"].ToString();
 
             if (path1 == null) return false;
 
             ActualGameDataLocation = ConverterTool.NormalizePath(path1);
 
-            return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) && File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
+            return File.Exists(Path.Combine(ActualGameDataLocation!, "config.ini")) && File.Exists(Path.Combine(ActualGameDataLocation!, GameExecutableName!));
         }
 
         public string? GameName { get; set; }
@@ -512,7 +510,7 @@ namespace Hi3Helper.Preset
         private string? SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
         public string? ProfileName { get; set; }
         public GameChannel GameChannel { get; set; } = GameChannel.Stable;
-        public bool IsExperimental { get; set; } = false;
+        public bool IsExperimental { get; set; }
         public string? ZoneName { get; set; }
         public string? ZoneFullname { get; set; }
         public string? ZoneDescription { get; set; }
@@ -575,17 +573,20 @@ namespace Hi3Helper.Preset
         public Dictionary<string, SteamGameProp>? ZoneSteamAssets { get; set; } = new Dictionary<string, SteamGameProp>();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class SteamGameProp
     {
         public string? URL { get; set; }
         public string? MD5 { get; set; }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class GameDataTemplate
     {
         public Dictionary<int, GameDataVersion>? DataVersion { get; set; }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class GameDataVersion
     {
         public byte[]? Data { get; set; }

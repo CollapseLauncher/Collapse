@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Hi3Helper
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "MethodOverloadWithOptionalParameter")]
     public class LoggerConsole : LoggerBase, ILog
     {
         public LoggerConsole(string folderPath, Encoding encoding) : base(folderPath, encoding)
@@ -27,7 +28,7 @@ namespace Hi3Helper
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async void LogWriteLine() => Console.WriteLine();
 
-        public override async void LogWriteLine(string line) => LogWriteLine(line, LogType.Default);
+        public override async void LogWriteLine(string line = null) => LogWriteLine(line, LogType.Default);
 
         public override async void LogWriteLine(string line, LogType type)
         {
