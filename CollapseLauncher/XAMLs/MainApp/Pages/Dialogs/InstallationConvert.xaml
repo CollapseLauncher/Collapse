@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource PageBackgroundAcrylicBrush}"
-    x:FieldModifier="public" Loaded="Page_Loaded">
+    x:Name="ConvertPage" x:FieldModifier="public" Loaded="Page_Loaded">
     <Grid Margin="32" VerticalAlignment="Stretch">
         <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.PageTitle}"
                    Style="{ThemeResource TitleLargeTextBlockStyle}"/>
