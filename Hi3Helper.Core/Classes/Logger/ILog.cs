@@ -19,7 +19,9 @@ namespace Hi3Helper
         /// <inheritdoc cref="LogWriteLine"/>
         /// <param name="type">Type of the log line</param>
         /// <param name="writeToLog">Write the log line into the log file</param>
+        // ReSharper disable MethodOverloadWithOptionalParameter
         void LogWriteLine(string line = null, LogType type = LogType.Default, bool writeToLog = false);
+        // ReSharper restore MethodOverloadWithOptionalParameter
 
         /// <summary>
         /// Print log to the console but without making a new line.

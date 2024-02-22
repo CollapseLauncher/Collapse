@@ -142,7 +142,6 @@ namespace CollapseLauncher
                 if (!IsArrayMatch(asset.CRCArray, hashArray))
                 {
                     AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.CRCArray);
-                    return;
                 }
             }
         }

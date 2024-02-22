@@ -724,8 +724,6 @@ namespace CollapseLauncher.InstallManager.Base
             });
         }
 
-        public virtual async Task StartPostInstallVerification() => await Task.CompletedTask;
-
         public virtual void ApplyGameConfig(bool forceUpdateToLatest = false)
         {
             _gameVersionManager.UpdateGamePath(_gamePath);

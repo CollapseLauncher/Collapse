@@ -1108,7 +1108,6 @@ namespace CollapseLauncher.Pages
                 }
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
-                await CurrentGameProperty._GameInstall.StartPostInstallVerification();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
             }
             catch (TaskCanceledException)
@@ -1946,7 +1945,6 @@ namespace CollapseLauncher.Pages
                 }
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
-                await CurrentGameProperty._GameInstall.StartPostInstallVerification();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
             }
             catch (TaskCanceledException)

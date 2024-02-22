@@ -9,7 +9,9 @@ using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class HonkaiGameSettingsPage : Page, INotifyPropertyChanged
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "ExplicitCallerInfoArgument")]
+    public partial class HonkaiGameSettingsPage : INotifyPropertyChanged
     {
         #region Fields
         private int prevGraphSelect;

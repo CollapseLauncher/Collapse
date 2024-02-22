@@ -29,7 +29,7 @@ namespace Hi3Helper.Data
             this._httpClient = new Http.Http(false, 1, 1);
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
-            this.DispatchBaseURL = string.Format(DispatchURLPrefix, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
+            this.DispatchBaseURL = string.Format(DispatchURLPrefix!, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
             this.cancelToken = cancelToken;
         }
 
@@ -48,7 +48,7 @@ namespace Hi3Helper.Data
                 Console.WriteLine(dFormat);
                 Logger.WriteLog(dFormat, LogType.Default);
 #endif
-                await this._httpClient.Download(DispatchBaseURL, s, null, null, cancelToken).ConfigureAwait(false);
+                await this._httpClient!.Download(DispatchBaseURL, s, null, null, cancelToken).ConfigureAwait(false);
                 s.Position = 0;
                 DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), CoreLibraryJSONContext.Default);
             }
@@ -58,13 +58,13 @@ namespace Hi3Helper.Data
 
         public async Task LoadDispatch(byte[] CustomDispatchData = null)
         {
-            Gateway = GenshinGateway.Parser.ParseFrom(CustomDispatchData);
+            Gateway = GenshinGateway.Parser!.ParseFrom(CustomDispatchData);
             returnValProp = new QueryProperty()
             {
-                GameServerName = Gateway.GatewayProperties.ServerName,
+                GameServerName = Gateway!.GatewayProperties!.ServerName,
                 ClientGameResURL = string.Format("{0}/output_{1}_{2}/client",
                                     Gateway.GatewayProperties.RepoResVersionURL,
-                                    Gateway.GatewayProperties.RepoResVersionProperties.ResVersionNumber,
+                                    Gateway.GatewayProperties.RepoResVersionProperties!.ResVersionNumber,
                                     Gateway.GatewayProperties.RepoResVersionProperties.ResVersionHash),
                 ClientDesignDataURL = string.Format("{0}/output_{1}_{2}/client/General",
                                     Gateway.GatewayProperties.RepoDesignDataURL,
@@ -88,11 +88,11 @@ namespace Hi3Helper.Data
 
         private void ParseDesignDataURL(ref QueryProperty ValProp)
         {
-            string[] DataList = Gateway.GatewayProperties.RepoResVersionProperties.ResVersionMapJSON.Split("\r\n");
-            ValProp.ClientGameRes = new List<PkgVersionProperties>();
+            string[] DataList = Gateway!.GatewayProperties!.RepoResVersionProperties!.ResVersionMapJSON!.Split("\r\n");
+            ValProp!.ClientGameRes = new List<PkgVersionProperties>();
             foreach (string Data in DataList)
             {
-                (ValProp.ClientGameRes as List<PkgVersionProperties>)
+                (ValProp.ClientGameRes as List<PkgVersionProperties>)!
                     .Add(
                         (PkgVersionProperties)JsonSerializer.Deserialize(Data, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default)
                     );
@@ -101,19 +101,19 @@ namespace Hi3Helper.Data
 
         private void ParseGameResPkgProp(ref QueryProperty ValProp)
         {
-            ValProp.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataJSON, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
-            ValProp.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataSilenceJSON, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
+            ValProp!.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway!.GatewayProperties!.RepoDesignDataJSON!, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
+            ValProp!.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway!.GatewayProperties!.RepoDesignDataSilenceJSON!, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
         }
 
         private async Task ParseAudioAssetsURL(QueryProperty ValProp)
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await this._httpClient.Download(ConverterTool.CombineURLFromString(ValProp.ClientGameResURL, "/StandaloneWindows64/base_revision"), response, null, null, cancelToken).ConfigureAwait(false);
+                await this._httpClient!.Download(ConverterTool.CombineURLFromString(ValProp!.ClientGameResURL, "/StandaloneWindows64/base_revision"), response, null, null, cancelToken).ConfigureAwait(false);
                 string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
 
                 ValProp.ClientAudioAssetsURL = string.Format("{0}/output_{1}_{2}/client",
-                                                Gateway.GatewayProperties.RepoResVersionURL,
+                                                Gateway!.GatewayProperties!.RepoResVersionURL,
                                                 responseData[0],
                                                 responseData[1]);
                 ValProp.AudioRevisionNum = uint.Parse(responseData[0]);

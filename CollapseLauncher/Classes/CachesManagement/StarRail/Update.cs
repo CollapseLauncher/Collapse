@@ -12,8 +12,10 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
     internal partial class StarRailCache
     {
+        // ReSharper disable once UnusedParameter.Local
         private async Task<bool> Update(List<SRAsset> updateAssetIndex, List<SRAsset> assetIndex, CancellationToken token)
         {
             // Assign Http client

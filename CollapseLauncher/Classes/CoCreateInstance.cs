@@ -1,4 +1,5 @@
-﻿using System;
+﻿// ReSharper disable All
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;

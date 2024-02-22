@@ -6,7 +6,6 @@ using Hi3Helper.DiscordPresence;
 #endif
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Win32;
@@ -22,13 +21,15 @@ using Hi3Helper;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class StarRailGameSettingsPage : Page
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    public partial class StarRailGameSettingsPage
     {
-        private GamePresetProperty CurrentGameProperty { get; set; }
-        private StarRailSettings Settings { get; set; }
-        private Brush InheritApplyTextColor { get; set; }
-        private RegistryMonitor RegistryWatcher { get; set; }
-        private bool IsNoReload { get; set; }
+        private GamePresetProperty CurrentGameProperty   { get; set; }
+        private StarRailSettings   Settings              { get; set; }
+        private Brush              InheritApplyTextColor { get; set; }
+        private RegistryMonitor    RegistryWatcher       { get; set; }
+        
+        private       bool   IsNoReload   = false;
         private const string _AbValueName = "App_Settings_h2319593470";
         public StarRailGameSettingsPage()
         {
@@ -39,7 +40,7 @@ namespace CollapseLauncher.Pages
 
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -79,13 +80,13 @@ namespace CollapseLauncher.Pages
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
 
-            InheritApplyTextColor = ApplyText.Foreground;
+            InheritApplyTextColor = ApplyText.Foreground!;
 #nullable enable
             // A/B Testing as of 2023-12-26 (HSR v1.6.0)
             object? abValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Cognosphere\Star Rail", _AbValueName, null);
             if (abValue != null)
             {
-                await SimpleDialogs.Dialog_GenericWarning(Content);
+                await SimpleDialogs.Dialog_GenericWarning(Content!);
                 LogWriteLine($"A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
             }
         }

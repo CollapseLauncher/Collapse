@@ -108,8 +108,10 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
+                        
+                        var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
+                        if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
-                        var collapsePath = Process.GetCurrentProcess().MainModule.FileName;
                         Process.Start(collapsePath);
                         App.Current.Exit();
                     }

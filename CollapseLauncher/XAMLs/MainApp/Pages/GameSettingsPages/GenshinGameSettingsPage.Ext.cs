@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Genshin.Enums;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -9,10 +8,12 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
-    public partial class GenshinGameSettingsPage : Page, INotifyPropertyChanged
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    public partial class GenshinGameSettingsPage : INotifyPropertyChanged
     {
         #region Methods
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedMember.Local")]
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.
@@ -25,7 +26,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-               bool value = Settings.SettingsScreen.isfullScreen;
+               bool value = Settings!.SettingsScreen!.isfullScreen;
                if (value)
                {
                    GameWindowResizable.IsEnabled      = false;
@@ -47,13 +48,13 @@ namespace CollapseLauncher.Pages
                 {
                     GameWindowResizable.IsEnabled               = false;
                     GameWindowResizable.IsChecked               = false;
-                    GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
+                    GameResolutionFullscreenExclusive!.IsEnabled = !IsCustomResolutionEnabled;
                     GameResolutionFullscreenExclusive.IsChecked = false;
                     GameResolutionBorderless.IsChecked          = false;
                     return;
                 }
                 GameWindowResizable.IsEnabled = true;
-                GameResolutionFullscreenExclusive.IsEnabled = false;
+                GameResolutionFullscreenExclusive!.IsEnabled = false;
                 GameResolutionBorderless.IsEnabled = true;
             }
         }
@@ -220,7 +221,7 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings
         public double Gamma
         {
-            get => (double)Math.Round(Settings.SettingsGeneralData.gammaValue * -1 + 4.4, 5);
+            get => Math.Round(Settings.SettingsGeneralData.gammaValue * -1 + 4.4, 5);
             set => Settings.SettingsGeneralData.gammaValue = Math.Round(value * -1 + 4.4, 5);
             // This should belong in programmer horror stories, *DO NOT EVER DO THIS*
             // Basically, calculate the stepper function which amounts to y = -x + 4.4, so we inverse the value and add 4.4
@@ -259,7 +260,7 @@ namespace CollapseLauncher.Pages
                 // Get the current value
                 FPSOption curValue = Settings.SettingsGeneralData.globalPerfData.FPS;
                 // Get the index of the current value in FPSOptionsList array
-                int indexOfValue = Array.IndexOf(GlobalPerfData.FPSOptionsList, curValue);
+                int indexOfValue = Array.IndexOf(GlobalPerfData.FPSOptionsList!, curValue);
                 // Return the index of the value
                 return indexOfValue;
             }
@@ -383,7 +384,7 @@ namespace CollapseLauncher.Pages
 
         public bool TeamPageBackground
         {
-            get => (bool)!Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch;
+            get => !Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch;
             set => Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch = !value;
         }
 
@@ -434,37 +435,37 @@ namespace CollapseLauncher.Pages
         #region Audio
         public int Audio_Global
         {
-            get => (int)Settings.SettingsGeneralData.volumeGlobal;
+            get => Settings.SettingsGeneralData.volumeGlobal;
             set => Settings.SettingsGeneralData.volumeGlobal = value;
         }
 
         public int Audio_SFX
         {
-            get => (int)Settings.SettingsGeneralData.volumeSFX;
+            get => Settings.SettingsGeneralData.volumeSFX;
             set => Settings.SettingsGeneralData.volumeSFX = value;
         }
 
         public int Audio_Music
         {
-            get => (int)Settings.SettingsGeneralData.volumeMusic;
+            get => Settings.SettingsGeneralData.volumeMusic;
             set => Settings.SettingsGeneralData.volumeMusic = value;
         }
 
         public int Audio_Voice
         {
-            get => (int)Settings.SettingsGeneralData.volumeVoice;
+            get => Settings.SettingsGeneralData.volumeVoice;
             set => Settings.SettingsGeneralData.volumeVoice = value;
         }
 
         public bool Audio_DynamicRange
         {
-            get => !Convert.ToBoolean((int)Settings.SettingsGeneralData.audioDynamicRange);
+            get => !Convert.ToBoolean(Settings.SettingsGeneralData.audioDynamicRange);
             set => Settings.SettingsGeneralData.audioDynamicRange = Convert.ToInt32(!value);
         }
 
         public bool Audio_Surround
         {
-            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.audioOutput);
+            get => Convert.ToBoolean(Settings.SettingsGeneralData.audioOutput);
             set => Settings.SettingsGeneralData.audioOutput = Convert.ToInt32(value);
         }
 
@@ -478,13 +479,13 @@ namespace CollapseLauncher.Pages
         #region Language
         public int AudioLang
         {
-            get => (int)Settings.SettingsGeneralData.deviceVoiceLanguageType;
+            get => Settings.SettingsGeneralData.deviceVoiceLanguageType;
             set => Settings.SettingsGeneralData.deviceVoiceLanguageType = value;
         }
 
         public int TextLang
         {
-            get => (int)Settings.SettingsGeneralData.deviceLanguageType - 1;
+            get => Settings.SettingsGeneralData.deviceLanguageType - 1;
             set => Settings.SettingsGeneralData.deviceLanguageType = value + 1;
         }
         #endregion

@@ -1,3 +1,7 @@
+<!-- ReSharper disable IdentifierTypo -->
+<!-- ReSharper restore IdentifierTypo -->
+<!-- ReSharper disable UnusedMember.Local -->
+<!-- ReSharper disable Xaml.ConstructorWarning -->
 <Page
     x:Class="CollapseLauncher.Pages.StarRailGameSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -5,9 +9,7 @@
     xmlns:conv="using:CollapseLauncher.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:Hi3Helper"
-    xmlns:local="using:CollapseLauncher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:settype="using:CollapseLauncher.GameSettings"
     xmlns:static="using:CollapseLauncher.GameSettings.StarRail"
     Loaded="InitializeSettings"
     Unloaded="OnUnload"
@@ -218,7 +220,7 @@
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SpecPanel}" />
                             <StackPanel>
-                                <StackPanel Grid.Column="0" Margin="0,0,56,8">
+                                <StackPanel Margin="0,0,56,8">
                                     <Grid x:Name="RenderScaleGrid">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}" />
                                         <TextBlock
@@ -597,7 +599,7 @@
                                 <LineBreak />
                                 <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help2}" />
                             </TextBlock>
-                            <Grid Grid.Row="1">
+                            <Grid Grid.Row="1" Grid.Column="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="200" />
                                     <ColumnDefinition Width="200" />

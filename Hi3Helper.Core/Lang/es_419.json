@@ -533,6 +533,7 @@
     "CDNDescription_Github": "El repositorio oficial (principal) del launcher.",
     "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado en Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado en Bitbucket.",
+    "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado en GitLab.",
 
     "LocateExecutable": "Localizar el Ejecutable",
     "OpenDownloadPage": "Abrir página de descarga",
