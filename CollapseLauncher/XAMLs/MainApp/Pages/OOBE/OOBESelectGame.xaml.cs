@@ -4,23 +4,23 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.Pages.StartupPage_SelectGameBGProp;
+using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace CollapseLauncher.Pages
+namespace CollapseLauncher.Pages.OOBE
 {
-    public sealed partial class StartupPage_SelectGame : Page
+    public sealed partial class OOBESelectGame : Page
     {
         private string _selectedCategory { get; set; }
         private string _selectedRegion { get; set; }
 
-        public StartupPage_SelectGame()
+        public OOBESelectGame()
         {
             this.InitializeComponent();
             LoadConfigV2();
             GameCategorySelect.ItemsSource = BuildGameTitleListUI();
-            BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG));
+            BackgroundFrame.Navigate(typeof(OOBESelectGameBG));
             this.RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
         }
 
@@ -32,13 +32,14 @@ namespace CollapseLauncher.Pages
             SetPreviousGameRegion(categorySelected, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
             SaveAppConfig();
 
-            (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom });
             MainWindow.ToggleAcrylic();
         }
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)
         {
-            (m_window as MainWindow).rootFrame.GoBack();
+            OOBEStartUpMenu.thisCurrent.OverlayFrameGoBack();
+            // (m_window as MainWindow).rootFrame.GoBack();
         }
 
         private string lastSelectedCategory = "";
@@ -50,6 +51,7 @@ namespace CollapseLauncher.Pages
                 _selectedRegion = GetComboBoxGameRegionValue(value);
 
                 NextPage.IsEnabled = true;
+                NextPage.Opacity = 1;
 
                 BarBGLoading.Visibility = Visibility.Visible;
                 BarBGLoading.IsIndeterminate = true;
@@ -61,7 +63,7 @@ namespace CollapseLauncher.Pages
 
                 NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();
 
-                this.BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG), null, transition);
+                this.BackgroundFrame.Navigate(typeof(OOBESelectGameBG), null, transition);
                 FadeBackground(0.25, 1);
                 BarBGLoading.IsIndeterminate = false;
                 BarBGLoading.Visibility = Visibility.Collapsed;
@@ -73,6 +75,7 @@ namespace CollapseLauncher.Pages
             else
             {
                 NextPage.IsEnabled = true;
+                NextPage.Opacity = 1;
                 return;
             }
         }
@@ -103,6 +106,7 @@ namespace CollapseLauncher.Pages
             GameRegionSelect.ItemsSource = BuildGameRegionListUI(_selectedCategory);
             GameRegionSelect.IsEnabled = true;
             NextPage.IsEnabled = false;
+            NextPage.Opacity = 0;
         }
     }
 }

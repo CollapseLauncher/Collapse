@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="CollapseLauncher.Pages.StartupPage_SelectGameBG"
+    x:Class="CollapseLauncher.Pages.OOBE.OOBESelectGameBG"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
@@ -39,7 +39,7 @@
                         ToolTipService.ToolTip="{x:Bind GameDetailsHomepageLink}"
                         Padding="16,4,16,8" Click="GameDetailsHomepage_Click"
                         CornerRadius="0,0,8,8"
-                        Style="{ThemeResource AccentButtonStyle}">
+                        Style="{ThemeResource NewAccentButtonStyle}">
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>

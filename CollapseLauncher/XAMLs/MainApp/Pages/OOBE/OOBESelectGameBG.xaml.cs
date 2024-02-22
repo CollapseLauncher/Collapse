@@ -2,6 +2,7 @@
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -12,14 +13,14 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.Pages.StartupPage_SelectGameBGProp;
+using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Logger;
 
-namespace CollapseLauncher.Pages
+namespace CollapseLauncher.Pages.OOBE
 {
-    public sealed partial class StartupPage_SelectGameBG : Page
+    public sealed partial class OOBESelectGameBG : Page
     {
-        public StartupPage_SelectGameBG()
+        public OOBESelectGameBG()
         {
             this.Loaded += LoadedRoutine;
         }
@@ -29,7 +30,7 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
 
             if (IsAppThemeLight)
-                (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.25;
+                (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.75;
 
             if (!IsLoadDescription || !IsSuccess)
             {
@@ -55,7 +56,7 @@ namespace CollapseLauncher.Pages
         private string GameDetailsHomepageLink { get => _gameHomepageLink; }
     }
 
-    public static class StartupPage_SelectGameBGProp
+    public static class OOBESelectGameBGProp
     {
         public static string _gameDescription;
         public static string _gamePosterPath;
@@ -90,6 +91,8 @@ namespace CollapseLauncher.Pages
 
                 _gameHomepageLink = config.ZoneURL;
                 _gameDescription = config.ZoneDescription;
+
+                CDNURLProperty currentCDN = FallbackCDNUtil.GetPreferredCDN();
 
                 // TODO: Use FallbackCDNUtil to get the sprites
                 _gamePosterPath = await MainPage.GetCachedSpritesAsync(config.ZonePosterURL, default);

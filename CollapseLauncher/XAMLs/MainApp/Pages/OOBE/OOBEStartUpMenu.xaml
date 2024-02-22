@@ -262,6 +262,6 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
-        <Frame x:Name="OverlayFrame"/>
+        <Frame x:Name="OverlayFrame" x:FieldModifier="internal"/>
     </Grid>
 </Page>

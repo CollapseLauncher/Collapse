@@ -1,8 +1,8 @@
-﻿using CollapseLauncher.FileDialogCOM;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
-using CollapseLauncher.Extension;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -25,19 +25,22 @@ using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Text;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Windows.UI.Text;
 
 namespace CollapseLauncher.Pages.OOBE
 {
     public sealed partial class OOBEStartUpMenu : Page
     {
+        internal static OOBEStartUpMenu thisCurrent;
+
         public OOBEStartUpMenu()
         {
+            thisCurrent = this;
             this.InitializeComponent();
             MainWindow.EnableNonClientArea();
             SaveInitialLogoAndTitleTextPos();
@@ -190,7 +193,8 @@ namespace CollapseLauncher.Pages.OOBE
             LoadingMessageHelper.SetMessage(Lang._OOBEStartUpMenu.LoadingInitializationTitle, Lang._OOBEStartUpMenu.LoadingCDNCheckingSubitle);
             LoadingMessageHelper.SetProgressBarState(0, true);
             LoadingMessageHelper.ShowLoadingFrame();
-            LoadingMessageHelper.ShowActionButton(Lang._OOBEStartUpMenu.LoadingCDNCheckingSkipButton, "", (sender, _) => {
+            LoadingMessageHelper.ShowActionButton(Lang._OOBEStartUpMenu.LoadingCDNCheckingSkipButton, "", (sender, _) =>
+            {
                 checkRecommendedCDNToken.Cancel();
                 LoadingMessageHelper.HideLoadingFrame();
             });
@@ -741,29 +745,72 @@ namespace CollapseLauncher.Pages.OOBE
                 catch { }
             }
 
-            await HideUIs(MainUI, IntroSequenceUI);
-            OverlayFrame.Navigate(typeof(StartupPage_SelectGame), null, new DrillInNavigationTransitionInfo());
+            HideUIs(MainUI, IntroSequenceUI);
+            OverlayFrame.Navigate(typeof(OOBESelectGame), null, null);
+            await OverlayFrame.StartAnimation(TimeSpan.FromSeconds(0.5),
+                currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0), new Vector3(0, (float)OverlayFrame.ActualHeight, 0)),
+                currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0)
+                );
         }
 
-        private async Task HideUIs(params FrameworkElement[] elements)
+        private List<FrameworkElement> PreviouslyHiddenUIsList = new List<FrameworkElement>();
+        private List<Tuple<float, Vector3, Vector3, Visibility>> PreviouslyFromHiddenUIsElement = new List<Tuple<float, Vector3, Vector3, Visibility>>();
+        private List<Tuple<float, Vector3, Vector3, Visibility>> PreviouslyToHiddenUIsElement = new List<Tuple<float, Vector3, Vector3, Visibility>>();
+
+        private async void HideUIs(params FrameworkElement[] elements)
         {
-            TimeSpan duration = TimeSpan.FromSeconds(0.25f);
-            await Task.WhenAll(elements.Select(x =>
+            PreviouslyHiddenUIsList.Clear();
+            PreviouslyFromHiddenUIsElement.Clear();
+            PreviouslyToHiddenUIsElement.Clear();
+            TimeSpan duration = TimeSpan.FromSeconds(0.5f);
+            await Task.WhenAll(elements.Select(async x =>
             {
                 float toScale = 1.2f;
                 float toTranslateX = -((float)x.ActualWidth * (toScale - 1f) / 2);
                 float toTranslateY = -((float)x.ActualHeight * (toScale - 1f) / 2);
 
-                Task task = x.StartAnimation(duration,
-                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, (float)x.Opacity),
-                        currentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale), new Vector3(1f)),
-                        currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(toTranslateX, toTranslateY, 0), new Vector3(0))
-                    );
-                return task;
-            }));
+                Tuple<float, Vector3, Vector3, Visibility> from = new Tuple<float, Vector3, Vector3, Visibility>((float)x.Opacity, new Vector3(1f), new Vector3(0), x.Visibility),
+                                                           to = new Tuple<float, Vector3, Vector3, Visibility>(0f, new Vector3(1f), new Vector3(0, -(float)x.ActualHeight, 0), Visibility.Collapsed);
+                PreviouslyHiddenUIsList.Add(x);
+                PreviouslyFromHiddenUIsElement.Add(from);
+                PreviouslyToHiddenUIsElement.Add(to);
 
-            foreach (var element in elements)
-                element.Visibility = Visibility.Collapsed;
+                // PreviouslyFromHiddenUIsElement.Add(new Tuple<float, Vector3, Vector3, Visibility>((float)x.Opacity, new Vector3(1f), new Vector3(0), x.Visibility));
+                // PreviouslyToHiddenUIsElement.Add(new Tuple<float, Vector3, Vector3, Visibility>(0f, new Vector3(toScale), new Vector3(toTranslateX, toTranslateY, 0), Visibility.Collapsed));
+
+                Task task = x.StartAnimation(duration,
+                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", to.Item1, from.Item1),
+                        currentCompositor.CreateVector3KeyFrameAnimation("Scale", to.Item2, from.Item2),
+                        currentCompositor.CreateVector3KeyFrameAnimation("Translation", to.Item3, from.Item3)
+                        );
+                await task;
+                DispatcherQueue.TryEnqueue(() => x.Visibility = to.Item4);
+                return Task.CompletedTask;
+            }));
+        }
+
+        private async void ShowResetUIs()
+        {
+            TimeSpan duration = TimeSpan.FromSeconds(0.5f);
+            int len = PreviouslyHiddenUIsList.Count;
+
+            List<Task> AnimTask = new List<Task>();
+            for (int i = 0; i < len; i++)
+            {
+                FrameworkElement element = PreviouslyHiddenUIsList[i];
+                Tuple<float, Vector3, Vector3, Visibility> FromValue = PreviouslyToHiddenUIsElement[i];
+                Tuple<float, Vector3, Vector3, Visibility> ToValue = PreviouslyFromHiddenUIsElement[i];
+                AnimTask.Add(Task.Run(async () =>
+                {
+                    DispatcherQueue.TryEnqueue(() => element.Visibility = ToValue.Item4);
+                    await element.StartAnimation(duration,
+                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", ToValue.Item1, FromValue.Item1),
+                        currentCompositor.CreateVector3KeyFrameAnimation("Scale", ToValue.Item2, FromValue.Item2),
+                        currentCompositor.CreateVector3KeyFrameAnimation("Translation", ToValue.Item3, FromValue.Item3));
+                }));
+            }
+
+            await Task.WhenAll(AnimTask);
         }
         #endregion
 
@@ -796,6 +843,20 @@ namespace CollapseLauncher.Pages.OOBE
                 PrepareMetadataAndApplySettings();
                 IsLauncherCustomizationDone = true;
                 return;
+            }
+        }
+
+        internal async void OverlayFrameGoBack()
+        {
+            if (IsLauncherCustomizationDone && OverlayFrame.CanGoBack)
+            {
+                IsLauncherCustomizationDone = false;
+                ShowResetUIs();
+                OverlayFrame.GoBack();
+                await OverlayFrame.StartAnimation(TimeSpan.FromSeconds(0.5),
+                    currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)OverlayFrame.ActualHeight, 0), new Vector3(0)),
+                    currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1)
+                    );
             }
         }
 
