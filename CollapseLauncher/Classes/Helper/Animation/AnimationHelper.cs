@@ -28,7 +28,7 @@ namespace CollapseLauncher.Helper.Animation
                         element.StartAnimation(anim);
                     });
             }
-            await Task.Delay(duration)
+            await Task.Delay(duration);
         }
 
         internal static void EnableImplicitAnimation(this UIElement element, 
