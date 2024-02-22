@@ -14,5 +14,5 @@ namespace CollapseLauncher
     [JsonSerializable(typeof(CacheAsset))]
     [JsonSerializable(typeof(AudioPCKType[]))]
     [JsonSerializable(typeof(int[]))]
-    internal sealed partial class InternalAppJSONContext : JsonSerializerContext { }
+    internal sealed partial class InternalAppJSONContext : JsonSerializerContext;
 }
