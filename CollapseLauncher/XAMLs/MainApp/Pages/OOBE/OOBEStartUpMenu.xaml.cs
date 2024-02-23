@@ -107,7 +107,13 @@ namespace CollapseLauncher.Pages.OOBE
                     new Vector3(0, 32, 0)));
 
             await SpawnWelcomeText();
-            await Task.Delay(3000);
+
+            // Adding delay and make sure the CDN recommendation has already been loaded
+            // before hiding the intro sequence
+            while (isLoadingCDNRecommendation)
+                await Task.Delay(250);
+
+            await Task.Delay(1000);
 
             await SpawnWelcomeText(true);
             await WelcomeVLogo.StartAnimation(logoAnimAppearanceDuration,
@@ -187,6 +193,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         private long[] latencies = null;
         private int indexOfLatency = -1;
+        private bool isLoadingCDNRecommendation = false;
         private async void GetRecommendedCDN()
         {
             // Initialize the token source
@@ -209,6 +216,7 @@ namespace CollapseLauncher.Pages.OOBE
             // Get the CDN latencies
             try
             {
+                isLoadingCDNRecommendation = true;
                 latencies = await FallbackCDNUtil.GetCDNLatencies(checkRecommendedCDNToken);
                 long minLatency = latencies.Min();
                 indexOfLatency = latencies.ToList().IndexOf(minLatency);
@@ -216,6 +224,7 @@ namespace CollapseLauncher.Pages.OOBE
             catch { }
             finally
             {
+                isLoadingCDNRecommendation = false;
                 LoadingMessageHelper.HideLoadingFrame();
             }
 
