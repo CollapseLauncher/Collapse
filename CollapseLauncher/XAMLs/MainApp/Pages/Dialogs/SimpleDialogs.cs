@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.CustomControls;
 using Hi3Helper;
 using Hi3Helper.Preset;
@@ -867,9 +868,8 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = primaryText,
                 SecondaryButtonText = secondaryText,
                 DefaultButton = defaultButton,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
-                XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
+                XamlRoot = (InnerLauncherConfig.m_window is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
             // Queue and spawn the dialog instance
@@ -881,8 +881,17 @@ namespace CollapseLauncher.Dialogs
             // If a dialog is currently spawned, then await until the task is completed
             while (CurrentSpawnedDialogTask != null && CurrentSpawnedDialogTask.Status == AsyncStatus.Started) await Task.Delay(200);
 
+            // Set the theme of the content
+            if (InnerLauncherConfig.m_window is MainWindow window)
+            {
+                if (dialog is ContentDialogCollapse contentDialogCollapse)
+                    window.ContentDialog = contentDialogCollapse;
+
+                dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            }
+
             // Assign the dialog to the global task
-            CurrentSpawnedDialogTask = dialog.ShowAsync();
+            CurrentSpawnedDialogTask = dialog is ContentDialogCollapse dialogCollapse ? dialogCollapse.ShowAsync() : dialog.ShowAsync();
             // Spawn and await for the result
             ContentDialogResult dialogResult = await CurrentSpawnedDialogTask;
             return dialogResult; // Return the result

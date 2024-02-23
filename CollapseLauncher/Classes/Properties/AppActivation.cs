@@ -57,7 +57,7 @@ namespace CollapseLauncher
             m_arguments = new Arguments();
 
             // Matches anything that is between two \" or " and anything that is not a space.
-            var splitArgs = Regex.Matches(args.Arguments, @"[\""].+?[\""]|[^ ]+")
+            var splitArgs = Regex.Matches(args.Arguments, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
                                     .Cast<Match>()
                                     .Select(x => x.Value.Trim('"'));
 

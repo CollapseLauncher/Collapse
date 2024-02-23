@@ -1,4 +1,5 @@
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
@@ -33,7 +34,7 @@ using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 
 namespace CollapseLauncher.InstallManager.Base
 {
-    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackageType, GameInstallPackage> where T : IGameVersionCheck
+    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage> where T : IGameVersionCheck
     {
         #region Internal Struct
         protected struct UninstallGameProperty
@@ -812,7 +813,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UninstallGameProperty UninstallProperty = AssignUninstallFolders();
 
                 //Preparing paths
-                var _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
+                string _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
 
                 string[]? foldersToKeepInDataFullPath = null;
                 if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0)
@@ -826,7 +827,7 @@ namespace CollapseLauncher.InstallManager.Base
                 else foldersToKeepInDataFullPath = Array.Empty<string>();
 
 #pragma warning disable CS8604 // Possible null reference argument.
-                LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n" +
+                LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
                     $"  GameFolder          : {GameFolder}\r\n" +
                     $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
                     $"  foldersToDelete     : {string.Join(", ", UninstallProperty.foldersToDelete)}\r\n" +
@@ -975,9 +976,7 @@ namespace CollapseLauncher.InstallManager.Base
             return true;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async ValueTask<bool> TryShowFailedGameConversionState() { return false; }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public virtual async ValueTask<bool> TryShowFailedGameConversionState() => await Task.FromResult(false);
 
         public virtual void ApplyDeleteFileAction()
         {
@@ -1068,15 +1067,8 @@ namespace CollapseLauncher.InstallManager.Base
 
                         await Task.Run(() =>
                         {
-#if DEBUG
-                            try
-                            {
-#endif
-                                patcher.Initialize(patchPath);
-                                patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
-#if DEBUG
-                            } catch { }
-#endif
+                            patcher.Initialize(patchPath);
+                            patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
                         }, _token.Token);
 
                         File.Move(destPath, sourceBasePath, true);

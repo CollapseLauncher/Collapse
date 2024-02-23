@@ -11,8 +11,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class StarRailRepair :
-        ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair, IRepairAssetIndex
+    internal partial class StarRailRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
         private GameTypeStarRailVersion _innerGameVersionManager { get; set; }

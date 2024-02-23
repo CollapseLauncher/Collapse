@@ -24,9 +24,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal class ProgressBase<T1, T2> :
-        GamePropertyBase<T1, T2> where T1 : Enum
-                                 where T2 : IAssetIndexSummary
+    internal class ProgressBase<T1> : GamePropertyBase<T1> where T1 : IAssetIndexSummary
     {
         public ProgressBase(UIElement parentUI, IGameVersionCheck GameVersionManager, IGameSettings GameSettings, string gamePath, string gameRepoURL, string versionOverride)
             : base(parentUI, GameVersionManager, GameSettings, gamePath, gameRepoURL, versionOverride) => Init();
@@ -40,7 +38,7 @@ namespace CollapseLauncher.Interfaces
             _progress = new TotalPerfileProgress();
             _stopwatch = Stopwatch.StartNew();
             _refreshStopwatch = Stopwatch.StartNew();
-            _assetIndex = new List<T2>();
+            _assetIndex = new List<T1>();
         }
 
         public event EventHandler<TotalPerfileProgress> ProgressChanged;
@@ -470,7 +468,7 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected IEnumerable<T2> EnforceHTTPSchemeToAssetIndex(IEnumerable<T2> assetIndex)
+        protected IEnumerable<T1> EnforceHTTPSchemeToAssetIndex(IEnumerable<T1> assetIndex)
         {
             const string HTTPSScheme = "https://";
             const string HTTPScheme = "http://";
@@ -478,7 +476,7 @@ namespace CollapseLauncher.Interfaces
             bool IsUseHTTPOverride = LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride").ToBool();
 
             // Iterate the IAssetIndexSummary asset
-            foreach (T2 asset in assetIndex)
+            foreach (T1 asset in assetIndex)
             {
                 // If the HTTP override is enabled, then start override the HTTPS scheme
                 if (IsUseHTTPOverride)
@@ -560,7 +558,7 @@ namespace CollapseLauncher.Interfaces
             _progressTotalSizeFound = 0;
         }
 
-        protected bool SummarizeStatusAndProgress(List<T2> assetIndex, string msgIfFound, string msgIfClear)
+        protected bool SummarizeStatusAndProgress(List<T1> assetIndex, string msgIfFound, string msgIfClear)
         {
             // Reset status and progress properties
             ResetStatusAndProgressProperty();
@@ -712,7 +710,7 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region DialogTools
-        protected async Task SpawnRepairDialog(List<T2> assetIndex, Action actionIfInteractiveCancel)
+        protected async Task SpawnRepairDialog(List<T1> assetIndex, Action actionIfInteractiveCancel)
         {
             long totalSize = assetIndex.Sum(x => x.GetAssetSize());
             StackPanel Content = new StackPanel();
@@ -735,7 +733,7 @@ namespace CollapseLauncher.Interfaces
                         sw.WriteLine($"Total size to download: {ConverterTool.SummarizeSizeSimple(totalSize)} ({totalSize} bytes)");
                         sw.WriteLine();
 
-                        foreach (T2 fileList in assetIndex)
+                        foreach (T1 fileList in assetIndex)
                         {
                             sw.WriteLine(fileList.PrintSummary());
                         }

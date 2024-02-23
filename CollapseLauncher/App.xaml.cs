@@ -1,12 +1,13 @@
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Runtime.InteropServices;
+using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
@@ -16,9 +17,6 @@ namespace CollapseLauncher
     {
         public static bool IsAppKilled = false;
         
-        //[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        //public static extern int SetCurrentProcessExplicitAppUserModelID(string AppID);
-        
         public App()
         {
             try
@@ -26,6 +24,18 @@ namespace CollapseLauncher
                 DebugSettings!.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
                 DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
                 UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true); };
+                
+                ThemeChangerInvoker.ThemeEvent += (sender, e) => {
+                    MainWindow.SetLegacyTitleBarColor();
+                    bool isThemeLight = IsAppThemeLight;
+                    Color color = isThemeLight ? Colors.Black : Colors.White;
+                    Current.Resources["WindowCaptionForeground"] = color;
+                    m_appWindow.TitleBar.ButtonForegroundColor = color;
+                    m_appWindow.TitleBar.ButtonInactiveBackgroundColor = color;
+
+                    if (m_window.Content is not null and FrameworkElement frameworkElement)
+                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+                };
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;

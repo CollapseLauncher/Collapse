@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Preset;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
@@ -11,12 +12,12 @@ namespace CollapseLauncher.Pages
     {
         string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
 
-        public Visibility IsPostEventPanelVisible => regionNewsProp.articlePanel?.Events.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostEventPanelEmpty => regionNewsProp.articlePanel?.Events.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostNoticePanelVisible => regionNewsProp.articlePanel?.Notices.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostNoticePanelEmpty => regionNewsProp.articlePanel?.Notices.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostInfoPanelVisible => regionNewsProp.articlePanel?.Info.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostInfoPanelEmpty => regionNewsProp.articlePanel?.Info.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostEventPanelVisible => (regionNewsProp.articlePanel?.Events.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostEventPanelEmpty => (regionNewsProp.articlePanel?.Events.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelVisible => (regionNewsProp.articlePanel?.Notices.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelEmpty => (regionNewsProp.articlePanel?.Notices.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelVisible => (regionNewsProp.articlePanel?.Info.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelEmpty => (regionNewsProp.articlePanel?.Info.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
 
         public bool IsEventsPanelShow
         {
@@ -43,6 +44,21 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("ShowSocialMediaPanel", value);
                 ToggleSocmedPanelPanel(value);
+            }
+        }
+
+        public string NoNewsSplashMascot
+        {
+            get
+            {
+                GameType gameType = CurrentGameProperty._GamePreset.GameType;
+                return gameType switch
+                {
+                    GameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
+                    GameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
+                    GameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
+                    _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+                };
             }
         }
 

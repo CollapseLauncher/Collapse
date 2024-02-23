@@ -155,15 +155,16 @@ namespace CollapseLauncher.Pages
                 PlaytimeBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
-                    && MenuPanels.articlePanel != null)
+                    || MenuPanels.articlePanel != null)
                 {
                     ImageCarousel.SelectedIndex = 0;
-                    ShowEventsPanelToggle.IsEnabled = true;
                     ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
-                    PostPanel.Visibility = Visibility.Visible;
                     ImageCarousel.Translation += Shadow48;
                     ImageCarouselPipsPager.Translation += Shadow16;
+
+                    ShowEventsPanelToggle.IsEnabled = true;
+                    PostPanel.Visibility = Visibility.Visible;
                     PostPanel.Translation += Shadow48;
                 }
 

@@ -238,7 +238,7 @@
                             <Rectangle x:Name="SmokeLayerBackground" Fill="{ThemeResource ContentDialogSmokeFill}" />
                             <Border
                                 x:Name="BackgroundElement"
-                                Background="{TemplateBinding Background}"
+                                Background="{ThemeResource DialogAcrylicBrush}"
                                 FlowDirection="{TemplateBinding FlowDirection}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
@@ -322,8 +322,7 @@
                                         VerticalAlignment="Bottom"
                                         XYFocusKeyboardNavigation="Enabled"
                                         Padding="24,20"
-                                        CornerRadius="{TemplateBinding CornerRadius}"
-                                        Background="{TemplateBinding Background}">
+                                        Background="{ThemeResource DialogAcrylicBrush}">
                                         <Grid HorizontalAlignment="Center">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition x:Name="PrimaryColumn" Width="Auto" />
@@ -333,6 +332,7 @@
                                                 <ColumnDefinition x:Name="CloseColumn" Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <Button
+                                            Grid.Column="0"
                                             x:Name="PrimaryButton"
                                             IsTabStop="False"
                                             IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"
@@ -347,6 +347,7 @@
                                                 TextWrapping="Wrap"/>
                                             </Button>
                                             <Button
+                                            Grid.Column="2"
                                             x:Name="SecondaryButton"
                                             IsTabStop="False"
                                             IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}"

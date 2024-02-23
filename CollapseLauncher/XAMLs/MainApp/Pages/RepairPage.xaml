@@ -3,15 +3,15 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
-    xmlns:statics="using:CollapseLauncher.Statics"
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:control="using:CommunityToolkit.WinUI.Controls"
-    xmlns:control_legacy="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded" Loaded="InitializeLoaded">
-
     <Grid>
         <Grid Margin="32,40,32,18" x:Name="PageContent">
             <Grid.RowDefinitions>
@@ -26,24 +26,42 @@
                         <PopupThemeTransition/>
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
-                <control_legacy:DataGrid
-                    x:Name="RepairDataGrid"
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-                    CanUserReorderColumns="False"    
-                    IsReadOnly="True"
-                    AutoGenerateColumns="False"
-                    CanUserSortColumns="True"
-                    ItemsSource="{x:Bind CurrentGameProperty._GameRepair.AssetEntry}">
-                    <control_legacy:DataGrid.Columns>
-                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding Name}" Tag="FileName" Width="296" FontSize="13"/>
-                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" Binding="{Binding AssetType}" Tag="DataType" FontSize="13"/>
-                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
-                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" Binding="{Binding SizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
-                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
-                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
-                    </control_legacy:DataGrid.Columns>
-                </control_legacy:DataGrid>
+                <ListView ItemsSource="{x:Bind CurrentGameProperty._GameRepair.AssetEntry}">
+                    <ListView.Header>
+                        <Border Padding="0,8,0,0"
+                            Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
+                            CornerRadius="8">
+                            <interactivity:Interaction.Behaviors>
+                                <behaviors:StickyHeaderBehavior />
+                            </interactivity:Interaction.Behaviors>
+                            <datatable:DataTable Margin="12,0,0,8">
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" CanResize="True" Tag="FileName" MinWidth="276" DesiredWidth="296" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" CanResize="True" Tag="DataType" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" CanResize="True" Tag="Source" MinWidth="276" DesiredWidth="436" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" CanResize="True" Tag="FileSize" DesiredWidth="128" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" CanResize="True" Tag="CurCRC" DesiredWidth="92" FontSize="13"/>
+                                <datatable:DataColumn FontWeight="SemiBold" Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" CanResize="True" Tag="ExptCRC" DesiredWidth="92" FontSize="13"/>
+                            </datatable:DataTable>
+                        </Border>
+                    </ListView.Header>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="local:IAssetProperty">
+                            <datatable:DataRow HorizontalAlignment="Left">
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind Name}" />
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind AssetTypeString}" />
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind Source}" />
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind SizeStr}" />
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind LocalCRC}" />
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,16,0" Text="{x:Bind RemoteCRC}" />
+                            </datatable:DataRow>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
             </Grid>
             <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
                 <TextBlock x:Name="RepairStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>

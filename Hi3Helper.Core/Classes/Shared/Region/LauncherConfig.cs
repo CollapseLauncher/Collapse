@@ -30,7 +30,7 @@ namespace Hi3Helper.Shared.Region
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
-                public static void InitAppPreset()
+        public static void InitAppPreset()
         {
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
@@ -194,6 +194,7 @@ namespace Hi3Helper.Shared.Region
         public static readonly string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         
+        public static string AppImagesFolder = Path.Combine(AppFolder, "Assets", "Images");
         public static string AppGameFolder
         {
             get => GetAppConfigValue("GameFolder").ToString();
@@ -265,8 +266,8 @@ public static DiscordPresenceManager AppDiscordPresence;
         #endregion
 
         #region App Settings Template
-        public static Dictionary<string, IniValue> AppSettingsTemplate = new()
-                                                                         {
+        public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
+        {
             { "CurrentBackground", "ms-appx:///Assets/Images/default.png" },
             { "DownloadThread", 4 },
             { "ExtractionThread", 0 },
@@ -279,7 +280,7 @@ public static DiscordPresenceManager AppDiscordPresence;
             #endif
             { "EnableMultipleInstance", false },
             { "DontAskUpdate", false },
-            { "ThemeMode", new IniValue(AppThemeMode.Dark) },
+            { "ThemeMode", new IniValue(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
             { "ShowEventsPanel", true },

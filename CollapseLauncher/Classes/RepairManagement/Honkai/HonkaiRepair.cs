@@ -12,8 +12,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class HonkaiRepair :
-        ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair, IRepairAssetIndex
+    internal partial class HonkaiRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
         private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"

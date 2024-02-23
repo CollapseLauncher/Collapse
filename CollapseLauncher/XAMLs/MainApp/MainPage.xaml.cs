@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -62,8 +63,6 @@ namespace CollapseLauncher
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 m_mainPage                             =  this;
-                LoadingPopupPill.Translation           += Shadow32;
-                LoadingCancelBtn.Translation           += Shadow16;
                 ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
@@ -77,9 +76,9 @@ namespace CollapseLauncher
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+            UnsubscribeEvents();
             if (IsChangeDragArea)
             {
-                UnsubscribeEvents();
                 MainWindow.SetDragArea(DragAreaMode_Full);
             }
         }
@@ -111,7 +110,8 @@ namespace CollapseLauncher
                 #endif
                 if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
-                m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
+                if (m_window is MainWindow window)
+                    m_actualMainFrameSize = new Size(window.Bounds.Width, window.Bounds.Height);
 
                 SubscribeEvents();
                 SetDefaultDragAreaAsync();
@@ -137,7 +137,7 @@ namespace CollapseLauncher
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
                 LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
-                HideLoadingPopup(false, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
+                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
                 await DownloadConfigV2Files(true, true);
             }
 
@@ -162,15 +162,15 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
             InitKeyboardShortcuts();
-            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+            InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
-                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             }
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
+            InvokeLoadingRegionPopup(false);
         }
         #endregion
 
@@ -199,7 +199,7 @@ namespace CollapseLauncher
         private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
             BackgroundImgChanger.ToggleBackground(e.Hide);
-            HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
+            InvokeLoadingRegionPopup(!e.Hide, e.Title, e.Subtitle);
         }
 
         private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e)
@@ -271,11 +271,49 @@ namespace CollapseLauncher
         private async void SetDefaultDragAreaAsync()
         {
             await Task.Delay(250);
-            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Full);
+
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
+            RectInt32[] inputArea = new RectInt32[]
+            {
+                GetElementPos(GridBG_RegionGrid),
+                GetElementPos(GridBG_IconGrid),
+                GetElementPos(GridBG_NotifBtn),
+                GetElementPos((m_window as MainWindow)?.MinimizeButton),
+                GetElementPos((m_window as MainWindow)?.CloseButton)
+            };
+            nonClientInputSrc.ClearAllRegionRects();
+            MainWindow.EnableNonClientArea();
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, inputArea);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
         }
+
+        private RectInt32 GetElementPos(FrameworkElement element)
+        {
+            GeneralTransform transformTransform = element.TransformToVisual(null);
+            Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+
+            return new RectInt32(
+                _X: (int)Math.Round(bounds.X * m_appDPIScale),
+                _Y: (int)Math.Round(bounds.Y * m_appDPIScale),
+                _Width: (int)Math.Round(bounds.Width * m_appDPIScale),
+                _Height: (int)Math.Round(bounds.Height * m_appDPIScale)
+            );
+        }
+
+        private void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
+
+        private void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
+            nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
+            MainWindow.EnableNonClientArea();
+
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:
@@ -285,9 +323,6 @@ namespace CollapseLauncher
                     MainWindow.SetDragArea(DragAreaMode_Normal);
                     break;
             }
-
-            // Recalculate non-client area size
-            MainWindow.EnableNonClientArea();
         }
         #endregion
 
@@ -447,6 +482,8 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
+            GridBG_RegionGrid.SizeChanged += GridBG_RegionGrid_SizeChanged;
+            MainPageGrid.SizeChanged += MainPageGrid_SizeChanged;
         }
 
         private void UnsubscribeEvents()
@@ -462,6 +499,8 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
+            GridBG_RegionGrid.SizeChanged -= GridBG_RegionGrid_SizeChanged;
+            MainPageGrid.SizeChanged -= MainPageGrid_SizeChanged;
         }
         #endregion
 
@@ -1821,7 +1860,7 @@ namespace CollapseLauncher
 
                 PresetConfigV2 Preset = LoadSavedGameSelection();
 
-                ShowAsyncLoadingTimedOutPill();
+                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 if (await LoadRegionFromCurrentConfigV2(Preset))
                 {
 #if !DISABLEDISCORD
@@ -1829,8 +1868,7 @@ namespace CollapseLauncher
                         AppDiscordPresence.SetupPresence();
 #endif
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                    LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
-                    HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                    InvokeLoadingRegionPopup(false);
                 }
 
                 LockRegionChangeBtn = false;

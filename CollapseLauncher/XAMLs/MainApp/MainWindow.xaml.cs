@@ -1,3 +1,5 @@
+using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Loading;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -35,24 +37,51 @@ namespace CollapseLauncher
             }
         }
 
+        public static void ToggleAcrylic(bool isOn = false)
+        {
+            if (m_window != null && m_window is MainWindow mainWindow)
+            {
+                if (!isOn)
+                {
+                    mainWindow.SystemBackdrop = null;
+                    return;
+                }
+
+                if (m_isWindows11)
+                    mainWindow.SystemBackdrop = new MicaBackdrop() { Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base };
+                else
+                    mainWindow.SystemBackdrop = new DesktopAcrylicBackdrop();
+            }
+        }
+
         public void InitializeWindowProperties(bool startOOBE = false)
         {
             try
             {
                 InitializeWindowSettings();
+                LoadingMessageHelper.Initialize();
+
                 if (m_appWindow.TitleBar.ExtendsContentIntoTitleBar) m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-                if (IsFirstInstall || startOOBE == true)
+                if (IsFirstInstall || startOOBE)
                 {
                     ExtendsContentIntoTitleBar = false;
                     SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
                     SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
+#if PROTOTYPEUI
+                    rootFrame.Navigate(typeof(Pages.OOBE.OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
+#else
                     rootFrame.Navigate(typeof(StartupLanguageSelect), null, new DrillInNavigationTransitionInfo());
+#endif
                 }
                 else
                     StartMainPage();
+
+                AnimationHelper.EnableImplicitAnimation(TitleBarFrameGrid, true);
+                AnimationHelper.EnableImplicitAnimation(BottomFrameGrid, true);
+                AnimationHelper.EnableImplicitAnimation(MainWindowGridContainer, true);
             }
             catch (Exception ex)
             {
@@ -79,6 +108,7 @@ namespace CollapseLauncher
             this.InitializeComponent();
             this.Activate();
             this.Closed += (_, _) => { App.IsAppKilled = true; };
+
             RunSetDragAreaQueue();
             // Initialize Window Handlers
             m_windowHandle = GetActiveWindow();
@@ -195,59 +225,59 @@ namespace CollapseLauncher
             switch (msg)
             {
                 case WM_SYSCOMMAND:
-                {
-                    const uint SC_MAXIMIZE = 0xF030;
-                    const uint SC_MINIMIZE = 0xF020;
-                    const uint SC_RESTORE = 0xF120;
-                    switch (wParam)
                     {
-                        case SC_MAXIMIZE:
+                        const uint SC_MAXIMIZE = 0xF030;
+                        const uint SC_MINIMIZE = 0xF020;
+                        const uint SC_RESTORE = 0xF120;
+                        switch (wParam)
                         {
-                            // TODO: Apply to force disable the "double-click to maximize" feature.
-                            //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
-                            //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
-                            //
-                            //       Issues have been described here:
-                            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
-                            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
+                            case SC_MAXIMIZE:
+                                {
+                                    // TODO: Apply to force disable the "double-click to maximize" feature.
+                                    //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
+                                    //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
+                                    //
+                                    //       Issues have been described here:
+                                    //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
+                                    //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
 
-                            // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
-                            // Thank you Microsoft :)
-                            return 0;
-                        }
-                        case SC_MINIMIZE:
-                        {
-                            if (GetAppConfigValue("MinimizeToTray").ToBool())
-                            {
-                                // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
-                                TrayIcon.ToggleAllVisibility();
-                                return 0;
-                            }
+                                    // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
+                                    // Thank you Microsoft :)
+                                    return 0;
+                                }
+                            case SC_MINIMIZE:
+                                {
+                                    if (GetAppConfigValue("MinimizeToTray").ToBool())
+                                    {
+                                        // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
+                                        TrayIcon.ToggleAllVisibility();
+                                        return 0;
+                                    }
 
-                            m_homePage?.CarouselStopScroll();
-                            break;
+                                    m_homePage?.CarouselStopScroll();
+                                    break;
+                                }
+                            case SC_RESTORE:
+                                {
+                                    m_homePage?.CarouselRestartScroll();
+                                    break;
+                                }
                         }
-                        case SC_RESTORE:
-                        {
-                            m_homePage?.CarouselRestartScroll();
-                            break;
-                        }
+                        break;
                     }
-                    break;
-                }
                 case WM_SHOWWINDOW:
-                {
-                    if (wParam == 0)
-                        m_homePage?.CarouselStopScroll();
-                    else
-                        m_homePage?.CarouselRestartScroll();
-                    break;
-                }
+                    {
+                        if (wParam == 0)
+                            m_homePage?.CarouselStopScroll();
+                        else
+                            m_homePage?.CarouselRestartScroll();
+                        break;
+                    }
             }
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
         }
 
-        private void SetLegacyTitleBarColor()
+        internal static void SetLegacyTitleBarColor()
         {
             Application.Current.Resources["WindowCaptionForeground"] = IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
             Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
@@ -371,6 +401,12 @@ namespace CollapseLauncher
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void MainWindow_OnSizeChanged(object sender, WindowSizeChangedEventArgs args)
+        {
+            // Recalculate non-client area size
+            EnableNonClientArea();
         }
     }
 }
