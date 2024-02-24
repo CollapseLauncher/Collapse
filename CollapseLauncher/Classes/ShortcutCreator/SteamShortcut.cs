@@ -169,10 +169,12 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (hash.ToLower() == asset.MD5) return;
 
+            string cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
+
             for (int i = 0; i < 3; i++)
             {
                 FileInfo info = new FileInfo(steamPath);
-                await DownloadImage(info, asset.URL, new CancellationToken());
+                await DownloadImage(info, cdnURL, new CancellationToken());
 
                 hash = MD5Hash(steamPath);
 
@@ -183,7 +185,7 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
             }
             
-            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + cdnURL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
             return;
         }
 

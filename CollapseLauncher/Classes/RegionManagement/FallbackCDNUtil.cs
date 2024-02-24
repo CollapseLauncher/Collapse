@@ -427,6 +427,20 @@ namespace CollapseLauncher
             return latencies;
         }
 
+        public static string TryGetAbsoluteToRelativeCDNURL(string URL, string searchIndexStr)
+        {
+            int indexOf = URL.IndexOf(searchIndexStr);
+            if (indexOf < 0)
+                return URL;
+
+            string relativeURL = URL.Substring(indexOf);
+
+            CDNURLProperty preferredCDN = GetPreferredCDN();
+            string cdnParentURL = preferredCDN.URLPrefix;
+            URL = ConverterTool.CombineURLFromString(cdnParentURL, relativeURL);
+            return URL;
+        }
+
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);
     }

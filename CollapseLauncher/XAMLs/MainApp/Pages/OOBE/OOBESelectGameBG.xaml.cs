@@ -2,7 +2,6 @@
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -92,11 +91,9 @@ namespace CollapseLauncher.Pages.OOBE
                 _gameHomepageLink = config.ZoneURL;
                 _gameDescription = config.ZoneDescription;
 
-                CDNURLProperty currentCDN = FallbackCDNUtil.GetPreferredCDN();
-
                 // TODO: Use FallbackCDNUtil to get the sprites
-                _gamePosterPath = await MainPage.GetCachedSpritesAsync(config.ZonePosterURL, default);
-                _gameLogoPath = await MainPage.GetCachedSpritesAsync(config.ZoneLogoURL, default);
+                _gamePosterPath = await MainPage.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
+                _gameLogoPath = await MainPage.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), default);
 
                 using (IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream())
                 {
