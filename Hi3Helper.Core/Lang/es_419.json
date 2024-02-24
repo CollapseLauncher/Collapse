@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "Seleccionar Región",
     "Pg2NextBtn": "Finalizar - Iniciar el Launcher",
     "Pg2PrevBtn": "Atrás - Seleccionar Carpeta",
+    "Pg2PrevBtnNew": "Atrás - Configuración del Launcher",
     "Pg2Subtitle1_1": "Solo un paso más antes de que comienzes a jugar desde",
     "Pg2Subtitle1_2": "a Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "Para empezar, haz clic en el botón de",
     "Subtitle4_2": "\"Buscar Carpeta\"",
     "Subtitle4_3": "abajo para elegir dónde deseas instalar el juego.",
-    "Title1": "Bienvenido",
-    "Title2": "a Collapse Launcher"
+    "Title1": "Bienvenido a",
+    "Title2": "Collapse Launcher"
   },
 
   "_DisconnectedPage": {
@@ -502,6 +503,9 @@
     "NotSelected": "No Seleccionado",
     "ExtractAnyway": "¡Extraer de todas formas!",
 
+    "IAcceptAgreement": "He leído y acepto el Acuerdo",
+    "IDoNotAcceptAgreement": "No acepto el Acuerdo",
+
     "LangNameENUS": "Inglés (EE.UU.)",
     "LangNameJP": "Japonés",
     "LangNameCN": "Chino (Simplificado)",
@@ -561,7 +565,9 @@
     "LauncherNameOfficial": "Launcher Oficial ",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Nombre desconocido de Launcher)"
+    "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
+    
+    "ImageCropperTitle": "Recortar Imagen"
   },
 
   "_BackgroundNotification": {
@@ -1163,5 +1169,44 @@
     "Korea": "Korea",
     "Japan": "Japan",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Acuerdo:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Bienvenido", "a" ],
+      "Lower": [ "Collapse", "Launcher" ]
+    },
+    "SetupNextButton": "Haz clic para Continuar",
+    "SetupBackButton": "Ir Atrás",
+
+    "CustomizationTitle": "Personaliza el Launcher",
+    "CustomizationSettingsLanguageHeader": "Idioma",
+    "CustomizationSettingsLanguageDescription": "Esto ajustará el idioma de la información entregada. ",
+    "CustomizationSettingsWindowSizeHeader": "Tamaño de la Ventana",
+    "CustomizationSettingsWindowSizeDescription": "Cambia el tamaño del Launcher",
+    "CustomizationSettingsCDNHeader": "Red de Distribución de Contenido",
+    "CustomizationSettingsCDNDescription": "Selecciona la Red de Distribución de Contenido (CDN, siglas en ingles) que será utilizada. ",
+    "CustomizationSettingsStyleHeader": "Personalización",
+    "CustomizationSettingsStyleDescription": "Cambia el aspecto del Launcher según tus preferencias. ",
+    "CustomizationSettingsStyleThemeHeader": "Temas",
+    "CustomizationSettingsStyleThemeDescription": "Cambia el color que aparecerá en el Launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Imagen Personalizada de Fondo",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Usar una Imagen personalizada en lugar de la predeterminada.",
+
+    "LoadingInitializationTitle": "Preparando primer inicio del Launcher",
+    "LoadingCDNCheckboxCheckLatency": "(Comprobando latencia...)",
+    "LoadingCDNCheckboxPlaceholder": "Comprobando Recomendación de CDN...",
+    "LoadingCDNCheckingSubitle": "Buscando la Red de Distribución de Contenido (CDN) mas cercana... ",
+    "LoadingCDNCheckingSkipButton": "Saltar Prueba de CDN",
+    "LoadingBackgroundImageTitle": "Cargando Imagen",
+    "LoadingBackgroundImageSubtitle": "La imagen puede tardar en procesarse. ",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": "(Desconocido)",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[Recomendado]"
   }
 }
