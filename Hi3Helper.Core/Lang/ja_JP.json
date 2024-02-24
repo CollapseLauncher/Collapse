@@ -23,7 +23,7 @@
     "ChooseFolderDialogCancel": "キャンセル",
     "ChooseFolderDialogPrimary": "はい！",
     "ChooseFolderDialogSecondary": "別のフォルダーを選択",
-    "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です。:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
+    "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
     "ChooseFolderDialogTitle": "フォルダーを選択",
     "FolderInsufficientPermission": "アクセスが拒否されました！別のフォルダーを選択してください。",
     "FolderNotSelected": "フォルダーが選択されていません。フォルダーを選択してください！",
@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "サーバーの選択",
     "Pg2NextBtn": "終了 - ランチャーを開始",
     "Pg2PrevBtn": "戻る - フォルダーを選択",
+    "Pg2PrevBtnNew": "戻る - ランチャー設定",
     "Pg2Subtitle1_1": "もう少しで",
     "Pg2Subtitle1_2": "Collapse Launcher",
     "Pg2Subtitle1_3": "を開始できます。",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "最初に、",
     "Subtitle4_2": "\"フォルダーを選択\"",
     "Subtitle4_3": "を押して、ランチャーに必要なデータを保存する場所を選択してください。",
-    "Title1": "Collapse Launcher",
-    "Title2": "へようこそ！"
+    "Title1": "Collapse Launcherへ",
+    "Title2": "ようこそ！"
   },
 
   "_DisconnectedPage": {
@@ -83,7 +84,7 @@
 
   "_MainPage": {
     "PageTitle": "メインページ",
-    "RegionChangeConfirm": "ゲームのサーバーが変更されます。続行しますか？",
+    "RegionChangeConfirm": "ゲームかサーバーを変更します。続行しますか？",
     "RegionChangeConfirmBtn": "はい、変更します！",
     "RegionChangeWarnTitle": "警告:",
     "RegionChangeWarnExper1": "ゲームは現在 {0} です。\r\n自己責任で使用してください！",
@@ -155,7 +156,7 @@
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
     "PostPanel_Info": "インフォメーション",
-    "PostPanel_NoNews": "え？\n今日はニュースなし？",
+    "PostPanel_NoNews": "えっ！\nニュースないの？",
 
     "CommunityToolsBtn": "便利リンク集",
     "CommunityToolsBtn_OfficialText": "公式ツール",
@@ -502,6 +503,9 @@
     "NotSelected": "未選択",
     "ExtractAnyway": "とりあえず展開！",
 
+    "IAcceptAgreement": "利用規約に同意する",
+    "IDoNotAcceptAgreement": "利用規約に同意しない",
+
     "LangNameENUS": "英語(アメリカ)",
     "LangNameJP": "日本語",
     "LangNameCN": "中国語(簡体字)",
@@ -561,7 +565,9 @@
     "LauncherNameOfficial": "公式ランチャー",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "（ランチャー不明）"
+    "LauncherNameUnknown": "（ランチャー不明）",
+    
+    "ImageCropperTitle": "画像の表示範囲を選択"
   },
 
   "_BackgroundNotification": {
@@ -578,7 +584,7 @@
 
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告: デルタパッチアップデートが検出されました！",
-    "DeltaPatchDetectedSubtitle": "ゲームを{0}から{1}に更新するために、デルタパッチが使用されます。\r\n一部のファイルはゲーム内でダウンロードする必要があります。\r\n\r\n続行しますか？",
+    "DeltaPatchDetectedSubtitle": "ゲームを{0}から{1}に更新するために、デルタパッチを使用します。\r\n一部のファイルはゲーム内でダウンロードする必要があります。\r\n\r\n続行しますか？",
     "DeltaPatchPrevFailedTitle": "前回のデルタパッチが正しく適用されていないか、適用を完了できませんでした！",
     "DeltaPatchPrevFailedSubtitle": "前回のデルタパッチの適用に失敗しました。再ダウンロードを防ぐためにゲームを復元しますか？",
     "DeltaPatchPreReqTitle": "デルタパッチのために追加のファイルダウンロードが必要です！",
@@ -614,11 +620,11 @@
     "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
     "MigrateExistingInstallChoiceSubtitle2": "ゲームデータを別のディレクトリに移動するか、現在のディレクトリを既定のディレクトリとして使用するかを選択できます。{0}を使用してゲームを確実に起動できるように、現在のディレクトリを既定のディレクトリとして使用することをお勧めします。",
     "ExistingInstallTitle": "既存のインストールが検出されました！",
-    "ExistingInstallSubtitle": "ゲームは次の場所に既にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしても公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
+    "ExistingInstallSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後でも公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcherの既存のインストールが検出されました！",
-    "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしてもBetterHi3Launcherを使用してゲームを開始できます。\r\n\r\n続行しますか？",
+    "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後でもBetterHi3Launcherを使用してゲームを開始できます。\r\n\r\n続行しますか？",
     "ExistingInstallSteamTitle": "Steam版の既存のインストールが検出されました！",
-    "ExistingInstallSteamSubtitle": "ゲームはすでにSteamの次の場所にインストールされています:\r\n\r\n{0}\r\n\r\nこのバージョンをSteam版ではないPC版に変換しますか？\n注:変換するとSteamアカウントでログインできなくなります。miHoYo/HoYoverse通行証ログインのみ選択できます。\r\n\r\n続行しますか？",
+    "ExistingInstallSteamSubtitle": "ゲームは既にSteamの次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nこのバージョンをSteam版ではないPC版に変換しますか？\n注:変換するとSteamアカウントでログインできなくなります。miHoYo/HoYoverse通行証ログインのみ選択できます。\r\n\r\n続行しますか？",
     "SteamConvertNeedMigrateTitle": "フォルダーを移行する必要があります",
     "SteamConvertNeedMigrateSubtitle": "Collapseがそのディレクトリに書き込む権限がないため、ゲームのインストール先を別のディレクトリに変更する必要があります。\nCollapseLauncherのゲームフォルダーに場所を移動することをお勧めしますが、直接場所を選択することもできます。\n\nCollapseLauncherのゲームフォルダーに移動しますか？",
     "SteamConvertIntegrityDoneTitle": "整合性チェックが完了しました！",
@@ -1163,5 +1169,44 @@
     "Korea": "韓国",
     "Japan": "日本",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "利用規約："
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Collapse", "Launcherへ" ],
+      "Lower": [ "ようこそ！", "​" ]
+    },
+    "SetupNextButton": "クリックして次へ進む",
+    "SetupBackButton": "戻る",
+
+    "CustomizationTitle": "ランチャーをカスタマイズしましょう",
+    "CustomizationSettingsLanguageHeader": "言語",
+    "CustomizationSettingsLanguageDescription": "表示する言語を変更します",
+    "CustomizationSettingsWindowSizeHeader": "ウィンドウサイズ",
+    "CustomizationSettingsWindowSizeDescription": "ウィンドウの大きさを変更します",
+    "CustomizationSettingsCDNHeader": "CDN",
+    "CustomizationSettingsCDNDescription": "優先的に接続するCDNを選択します",
+    "CustomizationSettingsStyleHeader": "外観設定",
+    "CustomizationSettingsStyleDescription": "ランチャーの見た目をあなた色に染めます",
+    "CustomizationSettingsStyleThemeHeader": "テーマ",
+    "CustomizationSettingsStyleThemeDescription": "ランチャーのカラーテーマを変更します",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "カスタム背景",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "デフォルトの画像の代わりに好きな画像を背景に表示します",
+
+    "LoadingInitializationTitle": "ランチャー初回起動時の初期化を行っています",
+    "LoadingCDNCheckboxCheckLatency": "（接続速度をテスト中…）",
+    "LoadingCDNCheckboxPlaceholder": "CDNおすすめ度を検証中…",
+    "LoadingCDNCheckingSubitle": "最寄りのCDNサーバーを検索中…",
+    "LoadingCDNCheckingSkipButton": "CDNチェックをスキップ",
+    "LoadingBackgroundImageTitle": "画像を読み込み中",
+    "LoadingBackgroundImageSubtitle": "画像の読み込みに時間がかかる場合があります。",
+
+    "CDNCheckboxItemLatencyFormat": "（{0}ms）",
+    "CDNCheckboxItemLatencyUnknownFormat": "（不明）",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[おすすめ]"
   }
 }
