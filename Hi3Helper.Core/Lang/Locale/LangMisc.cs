@@ -116,6 +116,8 @@ namespace Hi3Helper
 
                 public string IAcceptAgreement      { get; set; } = LangFallback?._Misc.IAcceptAgreement;
                 public string IDoNotAcceptAgreement { get; set; } = LangFallback?._Misc.IDoNotAcceptAgreement;
+
+                public string ImageCropperTitle { get; set; } = LangFallback?._Misc.ImageCropperTitle;
             }
         }
         #endregion

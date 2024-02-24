@@ -100,7 +100,7 @@ namespace CollapseLauncher.Helper.Image
 
             ContentDialogOverlay dialogOverlay = new ContentDialogOverlay(ContentDialogTheme.Informational)
             {
-                Title = "Crop the image",
+                Title = Locale.Lang!._Misc!.ImageCropperTitle,
                 Content = parentGrid,
                 SecondaryButtonText = Locale.Lang._Misc.Cancel,
                 PrimaryButtonText = Locale.Lang._Misc.OkayHappy,
@@ -114,7 +114,7 @@ namespace CollapseLauncher.Helper.Image
             ContentDialogResult dialogResult = await dialogOverlay.QueueAndSpawnDialog();
             if (dialogResult == ContentDialogResult.Secondary) return null;
 
-            await using (FileStream cachedFileStream = File.Create(cachedFilePath))
+            await using (FileStream cachedFileStream = File.Create(cachedFilePath!))
             {
                 dialogOverlay.IsPrimaryButtonEnabled = false;
                 dialogOverlay.IsSecondaryButtonEnabled = false;
@@ -211,7 +211,7 @@ namespace CollapseLauncher.Helper.Image
         internal static FileInfo GetCacheFileInfo(string filePath)
         {
             string cachedFileHash = ConverterTool.BytesToCRC32Simple(filePath);
-            string cachedFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder!, cachedFileHash);
+            string cachedFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder!, cachedFileHash!);
             return new FileInfo(cachedFilePath);
         }
 
