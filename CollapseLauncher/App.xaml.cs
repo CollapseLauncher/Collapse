@@ -25,17 +25,16 @@ namespace CollapseLauncher
                 DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
                 UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true); };
                 
-                ThemeChangerInvoker.ThemeEvent += (sender, e) => {
+                ThemeChangerInvoker.ThemeEvent += (_, _) => {
                     MainWindow.SetLegacyTitleBarColor();
                     bool isThemeLight = IsAppThemeLight;
                     Color color = isThemeLight ? Colors.Black : Colors.White;
-                    Current.Resources["WindowCaptionForeground"] = color;
-                    m_appWindow.TitleBar.ButtonForegroundColor = color;
-                    m_appWindow.TitleBar.ButtonInactiveBackgroundColor = color;
+                    Current!.Resources!["WindowCaptionForeground"] = color;
+                    m_appWindow!.TitleBar!.ButtonForegroundColor = color;
+                    m_appWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
 
-                    if (m_window.Content is not null and FrameworkElement frameworkElement)
-                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
-                };
+                    if (m_window!.Content is not null and FrameworkElement frameworkElement)
+                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark; };
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;

@@ -21,7 +21,9 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public sealed partial class MainPage : Page
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
+    public sealed partial class MainPage
     {
         private RegionResourceProp _gameAPIProp { get; set; }
 
@@ -107,7 +109,7 @@ namespace CollapseLauncher
 
         public static void SetColorPalette(Page page, Windows.UI.Color[] palette = null)
         {
-            if (palette == null || palette?.Length < 2)
+            if (palette == null || palette.Length < 2)
                 palette = EnsureLengthCopyLast(new Windows.UI.Color[] { (Windows.UI.Color)Application.Current.Resources["TemplateAccentColor"] }, 2);
 
             if (IsAppThemeLight)
@@ -156,16 +158,17 @@ namespace CollapseLauncher
                                 .Where(x => IsLight ? x.IsDark : !x.IsDark)
                                 .OrderBy(x => x.Population);
 
+                            IEnumerable<QuantizedColor> quantizedColors = averageColors.ToArray();
                             QuantizedColor dominatedColor = new QuantizedColor(
-                                Color.FromArgb(
-                                    255,
-                                    (byte)averageColors.Average(a => a.Color.R),
-                                    (byte)averageColors.Average(a => a.Color.G),
-                                    (byte)averageColors.Average(a => a.Color.B)
-                                ), (int)averageColors.Average(a => a.Population));
+                                  Color.FromArgb(
+                                      255,
+                                      (byte)quantizedColors.Average(a => a.Color.R),
+                                      (byte)quantizedColors.Average(a => a.Color.G),
+                                      (byte)quantizedColors.Average(a => a.Color.B)
+                                     ), (int)quantizedColors.Average(a => a.Population));
 
                             _generatedColors.Add(dominatedColor);
-                            _generatedColors.AddRange(averageColors);
+                            _generatedColors.AddRange(quantizedColors);
 
                             break;
                         }
@@ -210,18 +213,18 @@ namespace CollapseLauncher
 
         private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
-        private async Task ApplyBackground(bool IsFirstStartup)
+        private async Task ApplyBackground(bool _isFirstStartup)
         {
-            uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
-            uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
+            uint _width = (uint)(m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
+            uint _height = (uint)(m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
             BitmapImage ReplacementBitmap;
-            (PaletteBitmap, ReplacementBitmap) = await ImageLoaderHelper.GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, Width, Height);
+            (PaletteBitmap, ReplacementBitmap) = await ImageLoaderHelper.GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, _width, _height);
             if (PaletteBitmap == null || ReplacementBitmap == null) return;
 
             ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);
 
-            if (!IsFirstStartup)
+            if (!_isFirstStartup)
                 FadeSwitchAllBg(0.125f, ReplacementBitmap);
             else
                 FadeInAllBg(0.125f, ReplacementBitmap);
@@ -294,7 +297,7 @@ namespace CollapseLauncher
             storyboard.Children.Add(Animation);
         }
 
-        private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
+        private void HideBackgroundImage(bool hideImage = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
