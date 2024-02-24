@@ -1,7 +1,7 @@
-﻿<!-- ReSharper disable IdentifierTypo -->
-<!-- ReSharper restore IdentifierTypo -->
-<!-- ReSharper disable UnusedMember.Local -->
-<!-- ReSharper disable Xaml.ConstructorWarning -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper restore IdentifierTypo  -->
+<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page
     x:Class="CollapseLauncher.Pages.HonkaiGameSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -719,11 +719,11 @@
                             Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
                         <ToggleSwitch
                             Grid.Column="1"
-                            FontWeight="SemiBold"
-                            FontSize="26"
+                            Margin="8,12,0,8"
                             VerticalAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
-                            Margin="8,12,0,8"
+                            FontSize="26"
+                            FontWeight="SemiBold"
                             IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />

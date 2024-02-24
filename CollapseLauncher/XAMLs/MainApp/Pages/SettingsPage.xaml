@@ -7,7 +7,10 @@
     xmlns:innerConfig="using:Hi3Helper.Shared.Region"
     xmlns:local="using:CollapseLauncher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" NavigationCacheMode="Enabled" CacheMode="BitmapCache" Loaded="Page_Loaded">
+    CacheMode="BitmapCache"
+    Loaded="Page_Loaded"
+    NavigationCacheMode="Enabled"
+    mc:Ignorable="d">
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
             <Grid.ColumnDefinitions>
@@ -36,10 +39,10 @@
                                 x:Name="LanguageSelector"
                                 MinWidth="256"
                                 CornerRadius="14"
+                                DropDownClosed="UpdateEveryComboBoxLayout"
                                 ItemsSource="{x:Bind LanguageList}"
                                 MaxDropDownHeight="200"
-                                SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}"
-                                DropDownClosed="UpdateEveryComboBoxLayout"/>
+                                SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}" />
                             <TextBlock
                                 x:Name="AppLangSelectionWarning"
                                 Margin="0,12,0,0"
@@ -52,42 +55,40 @@
                             <TextBlock
                                 Margin="0,0,0,8"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
-                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}"/>
-                            <TextBlock
-                                Margin="0,0,0,10"
-                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}"/>
+                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}" />
+                            <TextBlock Margin="0,0,0,10" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}" />
                             <ComboBox
-                                Margin="0,0,0,14"
                                 x:Name="GameLaunchedBehaviorSelector"
                                 MinWidth="256"
+                                Margin="0,0,0,14"
                                 CornerRadius="14"
                                 MaxDropDownHeight="200"
                                 SelectedIndex="{x:Bind AppGameLaunchedBehaviorIndex, Mode=TwoWay}">
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Minimize}"/>
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}"/>
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Minimize}" />
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}" />
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}" />
                             </ComboBox>
                             <ToggleSwitch
                                 Margin="0,4"
                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_MinimizeToTray}"
-                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"
                                 OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"/>
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <ToggleSwitch
                                 x:Name="StartupToggle"
                                 Margin="0,4"
                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_LaunchOnStartup}"
-                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                IsOn="{x:Bind IsLaunchOnStartup, Mode=TwoWay}"
                                 OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                IsOn="{x:Bind IsLaunchOnStartup, Mode=TwoWay}"/>
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <ToggleSwitch
                                 x:Name="StartupToTrayToggle"
                                 Margin="0,4"
                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_StartupToTray}"
-                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                 IsOn="{x:Bind IsStartupToTray, Mode=TwoWay}"
-                                Visibility="Collapsed"/>
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                Visibility="Collapsed" />
                         </StackPanel>
                         <TextBlock
                             Margin="0,0,0,16"
@@ -208,8 +209,13 @@
                             IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                        <StackPanel x:Name="KbScBtns" Visibility="Collapsed" Orientation="Horizontal" Margin="0,8">
-                            <Button Grid.Column="0"
+                        <StackPanel
+                            x:Name="KbScBtns"
+                            Margin="0,8"
+                            Orientation="Horizontal"
+                            Visibility="Collapsed">
+                            <Button
+                                Grid.Column="0"
                                 Height="40"
                                 Margin="0,0,12,0"
                                 Click="ShowKbScList_Click"
@@ -227,7 +233,8 @@
                                         Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ShowBtn}" />
                                 </StackPanel>
                             </Button>
-                            <Button Grid.Column="1"
+                            <Button
+                                Grid.Column="1"
                                 Height="40"
                                 Click="ResetKeylist_Click"
                                 CornerRadius="20"
@@ -444,7 +451,7 @@
                             Header="{x:Bind helper:Locale.Lang._SettingsPage.UseExternalBrowser}"
                             IsOn="{x:Bind IsAlwaysUseExternalBrowser, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -517,7 +524,7 @@
                             HorizontalAlignment="Left"
                             Style="{ThemeResource BodyStrongTextBlockStyle}">
                             <Hyperlink NavigateUri="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" UnderlineStyle="None">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HelpLocalizeBtn}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HelpLocalizeBtn}" />
                             </Hyperlink>
                         </TextBlock>
                         <TextBlock

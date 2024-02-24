@@ -1,7 +1,7 @@
-<!-- ReSharper disable IdentifierTypo -->
-<!-- ReSharper restore IdentifierTypo -->
-<!-- ReSharper disable UnusedMember.Local -->
-<!-- ReSharper disable Xaml.ConstructorWarning -->
+<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper restore IdentifierTypo  -->
+<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page
     x:Class="CollapseLauncher.Pages.StarRailGameSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -46,8 +46,7 @@
                                             <Border
                                                 x:Name="VSyncTooltip"
                                                 Background="Transparent"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}"
-                                                />
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}" />
                                             <CheckBox
                                                 x:Name="VSyncToggle"
                                                 HorizontalAlignment="Left"
