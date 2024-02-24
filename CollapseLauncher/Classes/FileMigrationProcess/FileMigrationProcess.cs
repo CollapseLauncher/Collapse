@@ -22,18 +22,18 @@ namespace CollapseLauncher
         private long CurrentFileCountMoved;
         private long TotalFileSize;
         private long TotalFileCount;
-        private bool IsSameOutputDrive;
+        private bool IsSameOutputDrive = false;
         private Stopwatch ProcessStopwatch;
         private Stopwatch EventsStopwatch;
 
         private FileMigrationProcess(UIElement parentUI, string dialogTitle, string inputPath, string outputPath, bool isFileTransfer, CancellationTokenSource tokenSource)
         {
-            this.dialogTitle = dialogTitle;
-            this.inputPath = inputPath;
-            this.outputPath = outputPath;
-            this.isFileTransfer = isFileTransfer;
-            this.parentUI = parentUI;
-            this.tokenSource = tokenSource;
+            this.dialogTitle       = dialogTitle;
+            this.inputPath         = inputPath;
+            this.outputPath        = outputPath;
+            this.isFileTransfer    = isFileTransfer;
+            this.parentUI          = parentUI;
+            this.tokenSource       = tokenSource;
         }
 
         internal async Task<string> StartRoutine()

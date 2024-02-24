@@ -11,13 +11,13 @@ namespace CollapseLauncher
         {
             lock (this) { this.CurrentFileCountMoved++; }
 
-            string fileCountProcessedString = string.Format(Locale.Lang._Misc.PerFromTo,
+            string fileCountProcessedString = string.Format(Locale.Lang!._Misc!.PerFromTo!,
                 this.CurrentFileCountMoved,
                 this.TotalFileCount);
 
             lock (uiRef.fileCountIndicatorSubtitle)
             {
-                this.parentUI.DispatcherQueue.TryEnqueue(() =>
+                parentUI!.DispatcherQueue!.TryEnqueue(() =>
                 {
                     uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
                     uiRef.pathActivitySubtitle.Text = currentPathProcessed;
@@ -32,14 +32,14 @@ namespace CollapseLauncher
             if (await CheckIfNeedRefreshStopwatch())
             {
                 double percentage = Math.Round((double)this.CurrentSizeMoved / this.TotalFileSize * 100d, 2);
-                double speed = this.CurrentSizeMoved / this.ProcessStopwatch.Elapsed.TotalSeconds;
+                double speed = this.CurrentSizeMoved / this.ProcessStopwatch!.Elapsed.TotalSeconds;
 
                 lock (uiRef.progressBarIndicator)
                 {
-                    this.parentUI.DispatcherQueue.TryEnqueue(() =>
+                    this.parentUI!.DispatcherQueue!.TryEnqueue(() =>
                     {
-                        string speedString = string.Format(Locale.Lang._Misc.SpeedPerSec, ConverterTool.SummarizeSizeSimple(speed));
-                        string sizeProgressString = string.Format(Locale.Lang._Misc.PerFromTo,
+                        string speedString = string.Format(Locale.Lang!._Misc!.SpeedPerSec!, ConverterTool.SummarizeSizeSimple(speed));
+                        string sizeProgressString = string.Format(Locale.Lang._Misc.PerFromTo!,
                             ConverterTool.SummarizeSizeSimple(this.CurrentSizeMoved),
                             ConverterTool.SummarizeSizeSimple(this.TotalFileSize));
 
@@ -54,7 +54,7 @@ namespace CollapseLauncher
 
         private async ValueTask<bool> CheckIfNeedRefreshStopwatch()
         {
-            if (this.EventsStopwatch.ElapsedMilliseconds > _refreshInterval)
+            if (this.EventsStopwatch!.ElapsedMilliseconds > _refreshInterval)
             {
                 this.EventsStopwatch.Restart();
                 return true;
