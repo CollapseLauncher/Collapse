@@ -1,13 +1,21 @@
 ﻿using CollapseLauncher.Interfaces;
-using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
-using System.IO;
+using System;
 
 namespace CollapseLauncher.GameVersioning
 {
     internal class GameTypeHonkaiVersion : GameVersionBase, IGameVersionCheck
     {
+        #region Statics
+        private static Version senadinaVersion = new Version(7, 3, 0);
+        #endregion
+
+        #region Public properties
+        public bool IsCurrentSenadinaVersion { get => GameVersionAPI.ToVersion() >= senadinaVersion; }
+        public bool IsPreloadSenadinaVersion { get => GameVersionAPIPreload.HasValue ? GameVersionAPIPreload.Value.ToVersion() >= senadinaVersion : false; }
+        #endregion
+
         public GameTypeHonkaiVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
             : base(parentUIElement, gameRegionProp, gamePreset)
         {

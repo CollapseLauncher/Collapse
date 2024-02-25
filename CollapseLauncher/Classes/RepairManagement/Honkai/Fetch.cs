@@ -1,10 +1,12 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
+using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Win32;
@@ -66,6 +68,19 @@ namespace CollapseLauncher
                     throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
 
+                Dictionary<string, SenadinaFileIdentifier>? SenadinaFileIdentifier = null;
+                SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier = null;
+                SenadinaFileIdentifier? blocksManifestSenadinaFileIdentifier = null;
+                SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier = null;
+
+                // Get the status if the current game is Senadina version.
+                bool IsSenadinaVersion = _gameVersionManager.CastAs<GameTypeHonkaiVersion>().IsCurrentSenadinaVersion;
+                if (IsSenadinaVersion)
+                {
+                    using (Stream fileIdentifierStream = await HttpResponseInputStream.CreateStreamAsync(_httpClient.GetHttpClient(), , token))
+                    SenadinaFileIdentifier = 
+                }
+
                 // Get the list of ignored assets
                 HonkaiRepairAssetIgnore IgnoredAssetIDs = GetIgnoredAssetsProperty();
 
@@ -80,7 +95,7 @@ namespace CollapseLauncher
                 // Try check audio manifest.m file and fetch it if it doesn't exist
                 if (!_isOnlyRecoverMain)
                 {
-                    await FetchAudioIndex(_httpClient, assetIndex, IgnoredAssetIDs, token);
+                    await FetchAudioIndex(_httpClient, assetIndex, IgnoredAssetIDs, audioManifestSenadinaFileIdentifier, token);
                 }
 
                 // Assign the URL based on the version
@@ -266,7 +281,7 @@ namespace CollapseLauncher
         #endregion
 
         #region AudioIndex
-        private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, CancellationToken token)
+        private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, SenadinaFileIdentifier? senadinaFileIdentifier, CancellationToken token)
         {
             // If the gameServer is null, then just leave
             if (_gameServer == null)
