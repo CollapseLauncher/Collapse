@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser;
 using Hi3Helper.EncTool.Parser.AssetIndex;
@@ -11,9 +12,12 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Win32;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.CommandLine.Parsing;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -42,6 +46,9 @@ namespace CollapseLauncher
 
     internal partial class HonkaiRepair
     {
+        private string? _mainMetaRepoUrl;
+        private readonly byte[] _collapseHeader = new byte[8] { 0x43, 0x6F, 0x6C, 0x6C, 0x61, 0x70, 0x73, 0x65 };
+
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
@@ -72,13 +79,17 @@ namespace CollapseLauncher
                 SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier = null;
                 SenadinaFileIdentifier? blocksManifestSenadinaFileIdentifier = null;
                 SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier = null;
+                _mainMetaRepoUrl = null;
 
                 // Get the status if the current game is Senadina version.
-                bool IsSenadinaVersion = _gameVersionManager.CastAs<GameTypeHonkaiVersion>().IsCurrentSenadinaVersion;
+                GameTypeHonkaiVersion gameVersionKind = _gameVersionManager.CastAs<GameTypeHonkaiVersion>();
+                int[] versionArray = gameVersionKind.GetGameVersionAPI().VersionArray;
+                bool IsSenadinaVersion = gameVersionKind.IsCurrentSenadinaVersion;
+
                 if (IsSenadinaVersion)
                 {
-                    using (Stream fileIdentifierStream = await HttpResponseInputStream.CreateStreamAsync(_httpClient.GetHttpClient(), , token))
-                    SenadinaFileIdentifier = 
+                    _mainMetaRepoUrl = $"https://github.com/CollapseLauncher/CollapseLauncher-MetaRepo/raw/main/pustaka/{_gameVersionManager.GamePreset.ZoneName}/{string.Join('.', versionArray)}";
+                    SenadinaFileIdentifier = await GetSenadinaIdentifier(_httpClient, _mainMetaRepoUrl, token);
                 }
 
                 // Get the list of ignored assets
@@ -124,6 +135,19 @@ namespace CollapseLauncher
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 _httpClient.Dispose();
             }
+        }
+
+        private async Task<Dictionary<string, SenadinaFileIdentifier>?> GetSenadinaIdentifier(Http client, string mainUrl, CancellationToken token)
+        {
+            string identifierUrl = CombineURLFromString(mainUrl, $"daftar-pustaka");
+            using Stream fileIdentifierStream = await HttpResponseInputStream.CreateStreamAsync(client.GetHttpClient(), identifierUrl, null, null, token);
+            using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
+
+            Memory<byte> header = new byte[_collapseHeader.Length];
+            if (!header.Span.SequenceEqual(_collapseHeader))
+                throw new InvalidDataException($"Daftar pustaka file is corrupted! Expecting header: 0x{BinaryPrimitives.ReadInt64LittleEndian(_collapseHeader):x8} but got: 0x{BinaryPrimitives.ReadInt64LittleEndian(header.Span):x8} instead!");
+
+            return await fileIdentifierStreamDecoder.DeserializeAsync<Dictionary<string, SenadinaFileIdentifier>>(SenadinaJSONContext.Default, token);
         }
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
