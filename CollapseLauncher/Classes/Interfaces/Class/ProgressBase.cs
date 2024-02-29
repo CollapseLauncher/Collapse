@@ -9,6 +9,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -227,7 +228,76 @@ namespace CollapseLauncher.Interfaces
         }
         #endregion
 
+        #region ProgressEventHandlers - DoCopyStreamProgress
+        protected virtual async void UpdateProgressCopyStream(long currentPosition, int read, long totalReadSize)
+        {
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                lock (_progress)
+                {
+                    // Update current progress percentages
+                    _progress.ProgressPerFilePercentage = ConverterTool.GetPercentageNumber(currentPosition, totalReadSize);
+
+                    // Update the progress of total size
+                    _progress.ProgressPerFileDownload = currentPosition;
+                    _progress.ProgressPerFileSizeToDownload = totalReadSize;
+
+                    // Calculate current speed and update the status and progress speed
+                    _progress.ProgressTotalSpeed = currentPosition / _stopwatch.Elapsed.TotalSeconds;
+
+                    // Calculate the timelapse
+                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((totalReadSize - currentPosition) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                }
+
+                lock (_status)
+                {
+                    // Set time estimation string
+                    string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, _progress.ProgressTotalTimeLeft);
+
+                    // Update current activity status
+                    _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
+                    _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(currentPosition), ConverterTool.SummarizeSizeSimple(totalReadSize)) + $" | {timeLeftString}";
+                }
+
+                // Trigger update
+                UpdateAll();
+            }
+        }
+        #endregion
+
         #region BaseTools
+        protected async Task DoCopyStreamProgress(Stream source, Stream target, CancellationToken token = default, long? estimatedSize = null)
+        {
+            int read;
+            long inputSize = estimatedSize != null ? estimatedSize ?? 0 : source.Length;
+            long currentPos = 0;
+            RestartStopwatch();
+
+            bool isLastPerfileStateIndetermined = _status.IsProgressPerFileIndetermined;
+            bool isLastTotalStateIndetermined = _status.IsProgressTotalIndetermined;
+
+            _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressTotalIndetermined = true;
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(16 << 10);
+            try
+            {
+                while ((read = await source.ReadAsync(buffer, token)) > 0)
+                {
+                    await target.WriteAsync(buffer, 0, read, token);
+                    currentPos += read;
+                    UpdateProgressCopyStream(currentPos, read, inputSize);
+                }
+            }
+            catch { throw; }
+            finally
+            {
+                _status.IsProgressPerFileIndetermined = isLastPerfileStateIndetermined;
+                _status.IsProgressTotalIndetermined = isLastTotalStateIndetermined;
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
         protected string EnsureCreationOfDirectory(string str)
         {
             string dir = Path.GetDirectoryName(str);
