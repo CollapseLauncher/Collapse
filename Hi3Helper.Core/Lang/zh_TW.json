@@ -4,9 +4,9 @@
   "Author": "Seria Ati, xTaiwanPingLord",
 
   "_StartupPage": {
-    "SelectLang": "Select your language",
-    "SelectLangDesc": "Please select your language to start this launcher for the first time!",
-    "SelectWindowSize": "Select your preferred window size",
+    "SelectLang": "請選擇您的語言",
+    "SelectLangDesc": "這是您第一次使用啟動器，請選擇您的語言！",
+    "SelectWindowSize": "請選擇您喜好的視窗大小",
     "SelectCDN": "Select your preferred CDN",
     "CDNHelpTitle_1": "What is a CDN?",
     "CDNHelpTitle_2": "short for ",
@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "選擇區域",
     "Pg2NextBtn": "完成 - 進入啟動器",
     "Pg2PrevBtn": "返回 - 選擇資料夾",
+    "Pg2PrevBtnNew": "Back - Launcher Configuration",
     "Pg2Subtitle1_1": "只差一步即可在",
     "Pg2Subtitle1_2": "Collapse 啟動器上遊玩。",
     "Pg2Subtitle1_3": "",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "如需開始，請點擊下方的",
     "Subtitle4_2": "「選擇資料夾」",
     "Subtitle4_3": "按鈕來選擇遊戲欲安裝的位置。",
-    "Title1": "歡迎來到",
-    "Title2": "Collapse 啟動器。"
+    "Title1": "Welcome to",
+    "Title2": "Collapse 啟動器"
   },
 
   "_DisconnectedPage": {
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "暫停/取消",
     "PauseCancelBtn": "暫停/取消",
     "DownloadBtn": "下載遊戲",
+
     "GameSettingsBtn": "快速設定",
     "GameSettings_Panel1": "快速設定",
     "GameSettings_Panel1OpenGameFolder": "開啟遊戲資料夾",
@@ -132,14 +134,15 @@
     "GameSettings_Panel2RepairGame": "遊戲修復",
     "GameSettings_Panel2UninstallGame": "解除安裝遊戲",
     "GameSettings_Panel2ConvertVersion": "轉換遊戲版本",
-    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
+    "GameSettings_Panel2MoveGameLocationGame": "移動遊戲儲存位置",
     "GameSettings_Panel2StopGame": "強制關閉遊戲",
     "GameSettings_Panel3": "自定義啟動參數",
     "GameSettings_Panel4": "雜項",
     "GameSettings_Panel4ShowEventsPanel": "顯示活動面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "顯示社交媒體面板",
-    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
+    "GameSettings_Panel4CreateShortcutBtn": "建立捷徑",
     "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
+
     "GamePlaytime_Panel1": "編輯遊玩時數",
     "GamePlaytime_Idle_Panel1Hours": "小時",
     "GamePlaytime_Idle_Panel1Minutes": "分鐘",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "提供了無效的值。",
     "GamePlaytime_Running_Info1": "此遊戲的一個實例正在執行中，因此無法更改遊玩時數。",
     "GamePlaytime_Running_Info2": "請注意，完全關閉 Collapse 將停止遊玩時數追蹤（先前的時數將會儲存），且只有由 Collapse 啟動的遊戲實例會被追蹤。",
+    "GamePlaytime_Display": "{0}時 {1}分",
+
     "PostPanel_Events": "活動",
     "PostPanel_Notices": "公告",
     "PostPanel_Info": "資訊",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "Unity Standalone Player 命令提示字元文檔",
     "CustomArgs_Footer3": "來查看更多的參數。",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Boost Game Priority [Experimental]",
+
+    "Advanced_Title": "進階設定",
+    "Advanced_Subtitle1": "Collapse Launcher Team",
+    "Advanced_Subtitle2": "IS NOT RESPONSIBLE",
+    "Advanced_Subtitle3": "for anything happened to your game, account or system while this settings is in use! Use at your own risk.",
+    "Advanced_GLC_WarningAdmin": "WARNING: Commands provided will be run as Administrator!",
+    "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
+    "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
+    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
+    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
 
   "_SettingsPage": {
@@ -397,7 +413,7 @@
     "ReportIssueBtn": "回報問題",
     "ContributePRBtn": "透過發起 Pull Request 貢獻",
     "ContributorListBtn": "開源協作者",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "HelpLocalizeBtn": "協助我們翻譯 Collapse 啟動器吧！",
 
     "About": "關於",
     "About_Copyright1": "© 2022-2023",
@@ -418,21 +434,21 @@
 
     "EnableAcrylicEffect": "使用壓克力模糊效果",
     "EnableDownloadChunksMerging": "合併已下載的軟體包區塊",
-    "UseExternalBrowser": "Always Use External Browser",
+    "UseExternalBrowser": "總是使用外部瀏覽器",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
+    "KbShortcuts_Title": "快捷鍵",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default",
+    "KbShortcuts_ResetBtn": "重置為預設",
 
     "AppBehavior_Title": "App Behavior",
     "AppBehavior_PostGameLaunch": "After Launching Game",
-    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
-    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
-    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
-    "AppBehavior_MinimizeToTray": "Minimize to Tray",
+    "AppBehavior_PostGameLaunch_Minimize": "最小化",
+    "AppBehavior_PostGameLaunch_ToTray": "隱藏至系統工具列",
+    "AppBehavior_PostGameLaunch_Nothing": "什麼也不做",
+    "AppBehavior_MinimizeToTray": "最小化至系統工具列",
     "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
     "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
   },
@@ -455,7 +471,7 @@
     "Close": "關閉",
     "UseCurrentDir": "使用當前路徑",
     "UseDefaultDir": "使用預設路徑",
-    "MoveToDifferentDir": "Move to different directory",
+    "MoveToDifferentDir": "移動到不同根目錄",
     "LocateDir": "定位目錄",
     "Okay": "好",
     "OkaySad": "好 ;-;)",
@@ -486,6 +502,9 @@
     "NoOtherLocation": "繼續安裝",
     "NotSelected": "尚未選擇",
     "ExtractAnyway": "Extract Anyway!",
+
+    "IAcceptAgreement": "I accept the agreement",
+    "IDoNotAcceptAgreement": "I do not accept the agreement",
 
     "LangNameENUS": "英文（美國）",
     "LangNameJP": "日文",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "啟動器的官方（主要）儲存庫。",
     "CDNDescription_Cloudflare": "在 Cloudflare R2 Bucket 上托管的官方（主要）儲存庫的鏡像。",
     "CDNDescription_Bitbucket": "在 Bitbucket 上托管的官方（主要）儲存庫的鏡像。",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
 
     "LocateExecutable": "定位執行檔",
     "OpenDownloadPage": "開啟下載頁面",
@@ -545,7 +565,9 @@
     "LauncherNameOfficial": "Official Launcher",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Launcher Name is Unknown)"
+    "LauncherNameUnknown": "(Launcher Name is Unknown)",
+    
+    "ImageCropperTitle": "Crop the image"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +587,14 @@
     "DeltaPatchDetectedSubtitle": "Delta Patch 將用於將您的遊戲由 {0} 更新至 {1}。\n請記住，您可能在遊戲中仍需下載一些檔案。",
     "DeltaPatchPrevFailedTitle": "上一個 Delta Patch 應用失敗！",
     "DeltaPatchPrevFailedSubtitle": "上一個 Delta Patch 應用失敗。為了避免重新下載，是否要恢復遊戲資料？",
+    "DeltaPatchPreReqTitle": "Additional File Download is Required for Delta Patch!",
+    "DeltaPatchPreReqSubtitle1": "Additional file download is required for this game before applying delta patch. Around ",
+    "DeltaPatchPreReqSubtitle2": " is required to be downloaded and some of these files might contains audio package deltas.",
+    "DeltaPatchPreReqSubtitle3": "Do you want to continue?",
+    "DeltaPatchPreReqSubtitle4": "(Click \"",
+    "DeltaPatchPreReqSubtitle5": "\" to continue or \"",
+    "DeltaPatchPreReqSubtitle6": "\" to use normal update or \"",
+    "DeltaPatchPreReqSubtitle7": "\" to cancel the update)",
     "GameConversionPrevFailedTitle": "上一個遊戲轉換失敗了！",
     "GameConversionPrevFailedSubtitle": "上一個遊戲轉換失敗了。為了避免重新下載，是否要恢復遊戲資料？",
     "PreloadVerifiedTitle": "預載包驗證完成！",
@@ -637,24 +667,35 @@
     "CookbookLocateSubtitle5": "來定位已下載的 Cookbook 檔案並繼續。",
     "CookbookLocateSubtitle6": "注：",
     "CookbookLocateSubtitle7": "這是您需要下載的 Cookbook 檔案的名稱：",
+
     "PrivilegeMustRunTitle": "Collapse 需要管理員權限！",
     "PrivilegeMustRunSubtitle": "Collapse 需要管理員權限來正常運作。是否要重新啟動 Collapase 並以管理員身份啟動？",
+
     "ReleaseChannelChangeTitle": "變更發布渠道",
     "ReleaseChannelChangeSubtitle1": "您將要變更發布渠道至：",
     "ReleaseChannelChangeSubtitle2": "注：",
     "ReleaseChannelChangeSubtitle3": "此行為可能導致不可恢復的變動並/或導致您當前的設定出現問題。我們將不負責任何遊戲資料的損失或損壞。",
+
     "ChangePlaytimeTitle": "是否確定要變更您的遊玩時數？",
     "ChangePlaytimeSubtitle": "變更您的遊玩時數意味著使用您輸入的值覆蓋當前的時數。\n\n是否繼續？\n\n注：遊玩時數不會影響 Collapse 的運作方式，並且您可以在沒有遊玩時的任意時刻變更您的遊玩時數。",
     "ResetPlaytimeTitle": "您是否確認要重置遊玩時數？",
     "ResetPlaytimeSubtitle": "重置遊玩時數意味著將其值設置為 0。這是一個具有",
     "ResetPlaytimeSubtitle2": "破壞性",
     "ResetPlaytimeSubtitle3": " 的操作，這意味著在經過確認後，您無法撤銷此變更。\n\n是否繼續？\n\n注：遊玩時數不會影響 Collapse 的運作方式，並且您在不玩遊戲時可以隨時變更您的遊玩時數。",
+    "InvalidPlaytimeTitle": "There was a problem saving this session's playtime",
+    "InvalidPlaytimeSubtitle1": "The difference between the starting and ending times results in a negative number.",
+    "InvalidPlaytimeSubtitle2": "A fallback value is saved every minute and will be used instead:",
+    "InvalidPlaytimeSubtitle3": "Please refrain from adjusting the computer clock while in-game.",
+
     "LocateExePathTitle": "定位執行檔安裝路徑",
     "LocateExePathSubtitle": "請將 Collapse 指定至您的應用程式的執行檔位置。",
+
     "CannotUseAppLocationForGameDirTitle": "無效的資料夾！",
     "CannotUseAppLocationForGameDirSubtitle": "由於此資料夾已經被系統佔用，或被用於啟動器的主要資料夾，您不能使用它。請選擇另一個資料夾！",
+
     "StopGameTitle": "強制停止遊戲",
     "StopGameSubtitle": "您是否要強制停止當前正在執行的遊戲？\n您可能會失去一些遊戲進度。",
+
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
@@ -685,7 +726,7 @@
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
     "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
     "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
     "SteamShortcutCreationSuccessTitle": "Success!",
@@ -694,6 +735,7 @@
     "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+    "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
@@ -852,7 +894,7 @@
     "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
     "ApplyUpdateDownloadSpeed": "{0}/s",
     "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
-    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
+    "ApplyUpdateDownloadTimeEst": "還剩{0:%h}時{0:%m}分{0:%s}秒",
     "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s left",
 
     "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
@@ -864,12 +906,12 @@
     "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
     "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
 
-    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
-    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
-    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
-    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+    "ApplyUpdateTaskDownloadingPkgTitle": "正在下載封包中",
+    "ApplyUpdateTaskExtractingPkgTitle": "正在解壓縮封包中",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "正在移除舊封包中",
+    "ApplyUpdateTaskMovingExtractFileTitle": "正在移動已解壓的資料中",
 
-    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedTitle": "啟動器版本已更新至: {0}！",
     "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
 
     "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
@@ -912,6 +954,7 @@
     "Graphics_FPS_Help": "120 FPS 屬於實驗性功能！請謹慎使用，並自行承擔風險。",
     "Graphics_FPS_Help2": "此外，將 FPS 設定為 120 會導致遊戲內的畫面設定損壞。\n使用 Collapse 來更改遊戲的畫面設定。",
     "Graphics_VSync": "垂直同步",
+    "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "渲染精細度",
     "Graphics_ResolutionQuality": "解析度品質",
     "Graphics_ShadowQuality": "陰影品質",
@@ -1001,9 +1044,11 @@
     "Graphics_GlobalIllumination": "全局光照",
     "Graphics_GlobalIllumination_Help1": "僅適用於受支援的硬體！",
     "Graphics_GlobalIllumination_Help2": "更多資訊 (英文)",
+    "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
+    "Graphics_HDR_Enable": "啟用 HDR",
+    "Graphics_HDR_NotSupported1": "您的螢幕不支援 HDR。",
     "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
     "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
     "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
@@ -1083,9 +1128,9 @@
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
     "Switch_SwapBtn": "Swap {0} and {1}",
-    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame": "切換遊戲",
     "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
-    "Switch_ChangeRegion": "Change region",
+    "Switch_ChangeRegion": "切換區域",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
 
     "GameFolder_Title": "Game Folder Access",
@@ -1110,19 +1155,58 @@
   },
 
   "_GameClientTitles": {
-    "Honkai Impact 3rd": "Honkai Impact 3rd",
-    "Genshin Impact": "Genshin Impact",
-    "Honkai: Star Rail": "Honkai: Star Rail",
-    "Zenless Zone Zero": "Zenless Zone Zero"
+    "Honkai Impact 3rd": "崩壞3rd",
+    "Genshin Impact": "原神",
+    "Honkai: Star Rail": "崩壞：星宆鐵道",
+    "Zenless Zone Zero": "絕區零"
   },
 
   "_GameClientRegions": {
-    "Southeast Asia": "Southeast Asia",
-    "Global": "Global",
-    "Mainland China": "Mainland China",
-    "TW/HK/MO": "TW/HK/MO",
-    "Korea": "Korea",
-    "Japan": "Japan",
-    "Bilibili": "Bilibili"
+    "Southeast Asia": "東南亞",
+    "Global": "國際",
+    "Mainland China": "中國大陸",
+    "TW/HK/MO": "臺港澳",
+    "Korea": "韓國",
+    "Japan": "日本",
+    "Bilibili": "嗶哩嗶哩"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Agreement:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Welcome", " To" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Click Here to Continue",
+    "SetupBackButton": "Go Back",
+
+    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
+    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
+    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsStyleThemeHeader": "主題",
+    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "自訂背景圖片",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
+    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
+    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
+    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
+    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   }
 }
