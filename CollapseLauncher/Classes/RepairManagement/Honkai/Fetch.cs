@@ -66,20 +66,20 @@ namespace CollapseLauncher
                     throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
 
-                // Get the list of ignored assets
-                HonkaiRepairAssetIgnore IgnoredAssetIDs = GetIgnoredAssetsProperty();
-
-                // Region: VideoIndex via External -> _cacheUtil: Data Fetch
-                // Fetch video index and also fetch the gateway URL
-                (string, string) gatewayURL;
-                gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, IgnoredAssetIDs, token);
-                _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
-                _gameServer = _cacheUtil?.GetCurrentGateway();
-
-                // Region: AudioIndex
-                // Try check audio manifest.m file and fetch it if it doesn't exist
                 if (!_isOnlyRecoverMain)
                 {
+                    // Get the list of ignored assets
+                    HonkaiRepairAssetIgnore IgnoredAssetIDs = GetIgnoredAssetsProperty();
+
+                    // Region: VideoIndex via External -> _cacheUtil: Data Fetch
+                    // Fetch video index and also fetch the gateway URL
+                    (string, string) gatewayURL;
+                    gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, IgnoredAssetIDs, token);
+                    _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
+                    _gameServer = _cacheUtil?.GetCurrentGateway();
+
+                    // Region: AudioIndex
+                    // Try check audio manifest.m file and fetch it if it doesn't exist
                     await FetchAudioIndex(_httpClient, assetIndex, IgnoredAssetIDs, token);
                 }
 
@@ -90,14 +90,14 @@ namespace CollapseLauncher
                 // Fetch asset index
                 await FetchAssetIndex(assetIndex, token);
 
-                // Region: XMFAndAssetIndex
-                // Try check XMF file and fetch it if it doesn't exist
-                await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
-
-                // Remove plugin from assetIndex
-                // Skip the removal for Delta-Patch
                 if (!_isOnlyRecoverMain)
                 {
+                    // Region: XMFAndAssetIndex
+                    // Try check XMF file and fetch it if it doesn't exist
+                    await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
+
+                    // Remove plugin from assetIndex
+                    // Skip the removal for Delta-Patch
                     EliminatePluginAssetIndex(assetIndex);
                 }
             }
