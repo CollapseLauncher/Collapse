@@ -38,8 +38,9 @@
     "Pg2ComboBoxRegion": "选择区服",
     "Pg2NextBtn": "完成 - 进入启动器",
     "Pg2PrevBtn": "返回 - 选择文件夹",
+    "Pg2PrevBtnNew": "返回 - 启动器配置",
     "Pg2Subtitle1_1": "只需最后一步即可在",
-    "Pg2Subtitle1_2": "Collapse Launcher",
+    "Pg2Subtitle1_2": "Collapse 启动器",
     "Pg2Subtitle1_3": "启动游戏。",
     "Pg2Subtitle2_1": "我们目前支持一些",
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
@@ -54,7 +55,7 @@
     "Subtitle4_2": "“选择文件夹”",
     "Subtitle4_3": "按钮来选择您要安装游戏的地方。",
     "Title1": "欢迎来到",
-    "Title2": "Collapse Launcher"
+    "Title2": "Collapse 启动器"
   },
 
   "_DisconnectedPage": {
@@ -374,7 +375,7 @@
 
     "AppBG": "应用背景",
     "AppBG_Checkbox": "使用自定义背景",
-    "AppBG_Note": "注：图片必须是 .png、.jpg、.tiff 或 .bmp 格式，分辨率必须低于 4096x4096。",
+    "AppBG_Note": "注：图像必须是 .png、.jpg、.tiff 或 .bmp 格式，分辨率必须低于 4096x4096。",
 
     "AppThreads": "应用线程",
     "AppThreads_Download": "下载线程",
@@ -502,6 +503,9 @@
     "NotSelected": "未选择",
     "ExtractAnyway": "不管怎样都提取！",
 
+    "IAcceptAgreement": "我同意用户协议",
+    "IDoNotAcceptAgreement": "我不同意用户协议",
+
     "LangNameENUS": "英语（美国）",
     "LangNameJP": "日语",
     "LangNameCN": "中文（简体）",
@@ -561,7 +565,9 @@
     "LauncherNameOfficial": "官方启动器",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(启动器名称未知)"
+    "LauncherNameUnknown": "(启动器名称未知)",
+    
+    "ImageCropperTitle": "裁剪图像"
   },
 
   "_BackgroundNotification": {
@@ -897,7 +903,7 @@
     "ApplyUpdateTaskLegacyVerFoundSubtitle3": "请确保 Collapse 目录中没有任何重要文件，否则它将被 完！全！删！除！",
     "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\n点击“是”以处理或“否”以取消。",
     "ApplyUpdateTaskLegacyVerFoundSubtitle5": "再次单击“是”进行确认。",
-    "ApplyUpdateTaskLegacyCleanupCount": "清理将于 {0} 后开始...",
+    "ApplyUpdateTaskLegacyCleanupCount": "清理将于 {0} 后开始……",
     "ApplyUpdateTaskLegacyDeleting": "删除中：{0}……",
 
     "ApplyUpdateTaskDownloadingPkgTitle": "下载软件包中",
@@ -1163,5 +1169,44 @@
     "Korea": "韩国",
     "Japan": "日本",
     "Bilibili": "哔哩哔哩"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "用户协议："
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "欢迎", "来到" ],
+      "Lower": [ "Collapse", " 启动器" ]
+    },
+    "SetupNextButton": "点击这里继续",
+    "SetupBackButton": "返回",
+
+    "CustomizationTitle": "定制您的启动器",
+    "CustomizationSettingsLanguageHeader": "语言",
+    "CustomizationSettingsLanguageDescription": "这将调整所显示信息的语言。",
+    "CustomizationSettingsWindowSizeHeader": "窗口大小",
+    "CustomizationSettingsWindowSizeDescription": "更改启动器的大小。",
+    "CustomizationSettingsCDNHeader": "CDN",
+    "CustomizationSettingsCDNDescription": "选择您要使用的主 CDN。",
+    "CustomizationSettingsStyleHeader": "样式设定",
+    "CustomizationSettingsStyleDescription": "按您的偏好选择更改启动器的外观。",
+    "CustomizationSettingsStyleThemeHeader": "主题",
+    "CustomizationSettingsStyleThemeDescription": "更改启动器中显示的颜色。",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "自定义背景图像",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "使用自定义背景图像而不是默认图像。",
+
+    "LoadingInitializationTitle": "正在为启动器首次启动初始化",
+    "LoadingCDNCheckboxCheckLatency": "（正在检测延迟……）",
+    "LoadingCDNCheckboxPlaceholder": "正在检测 CDN 推荐……",
+    "LoadingCDNCheckingSubitle": "正在为您寻找最近的 CDN 服务器……",
+    "LoadingCDNCheckingSkipButton": "跳过 CDN 检测",
+    "LoadingBackgroundImageTitle": "正在加载图像",
+    "LoadingBackgroundImageSubtitle": "图像可能需要处理一段时间。",
+
+    "CDNCheckboxItemLatencyFormat": "（{0} ms）",
+    "CDNCheckboxItemLatencyUnknownFormat": "（未知）",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[推荐]"
   }
 }

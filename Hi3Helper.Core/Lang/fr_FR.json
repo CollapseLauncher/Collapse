@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "Choisir la région",
     "Pg2NextBtn": "Terminé - Entrée dans le Launcher",
     "Pg2PrevBtn": "Retour - Choisir un dossier",
+    "Pg2PrevBtnNew": "Retour - Configuration du launcher",
     "Pg2Subtitle1_1": "Plus qu'une étape pour jouer au jeu de",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "Pour commencer, appuyez sur le bouton",
     "Subtitle4_2": "\"Localiser le dossier\"",
     "Subtitle4_3": "ci-dessous pour choisir où installer votre premier jeu.",
-    "Title1": "Bienvenue",
-    "Title2": "sur Collapse Launcher"
+    "Title1": "Bienvenue sur",
+    "Title2": "Collapse Launcher"
   },
 
   "_DisconnectedPage": {
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "Mettre en pause/Annuler",
     "PauseCancelBtn": "Mettre en pause/Annuler",
     "DownloadBtn": "Télécharger le jeu",
+
     "GameSettingsBtn": "Réglages rapides",
     "GameSettings_Panel1": "Réglages rapides",
     "GameSettings_Panel1OpenGameFolder": "Ouvrir le répertoire du jeu",
@@ -140,6 +142,7 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "Afficher le panneau des médias sociaux",
     "GameSettings_Panel4CreateShortcutBtn": "Créer le raccourci",
     "GameSettings_Panel4AddToSteamBtn": "Ajouter à Steam",
+
     "GamePlaytime_Panel1": "Éditer le temps de jeu",
     "GamePlaytime_Idle_Panel1Hours": "Heures",
     "GamePlaytime_Idle_Panel1Minutes": "Minutes",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "Les valeurs fournies ne sont pas valides.",
     "GamePlaytime_Running_Info1": "Une instance de ce jeu est actuellement en cours, la durée de jeu ne peut donc pas être modifiée.",
     "GamePlaytime_Running_Info2": "Veuillez noter que la fermeture complète de Collapse arrêtera le suivi du temps de jeu (en sauvegardant ce qui a été joué jusqu'à maintenant) et que seules les sessions commencées à l'aide de Collapse seront suivies.",
+    "GamePlaytime_Display": "{0} h {1} m",
+
     "PostPanel_Events": "Événements",
     "PostPanel_Notices": "Notes",
     "PostPanel_Info": "Info",
@@ -498,6 +503,9 @@
     "NotSelected": "Non sélectionné",
     "ExtractAnyway": "Extraire quand même !",
 
+    "IAcceptAgreement": "J'accepte l'accord",
+    "IDoNotAcceptAgreement": "Je n'accepte pas l'accord",
+
     "LangNameENUS": "Anglais (États-Unis)",
     "LangNameJP": "Japonais",
     "LangNameCN": "Chinois (simplifié)",
@@ -529,6 +537,7 @@
     "CDNDescription_Github": "Le dépôt officiel (principal) du lanceur.",
     "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) hébergé dans le seau R2 de Cloudflare.",
     "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) hébergé sur Bitbucket.",
+    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) hébergé sur GitLab.",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -556,7 +565,9 @@
     "LauncherNameOfficial": "le Launcher officiel",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Nom du launcher inconnu)"
+    "LauncherNameUnknown": "(Nom du launcher inconnu)",
+    
+    "ImageCropperTitle": "Rogner l'image"
   },
 
   "_BackgroundNotification": {
@@ -656,24 +667,35 @@
     "CookbookLocateSubtitle5": "pour localiser le fichier Cookbook téléchargé avant de continuer.\r\n",
     "CookbookLocateSubtitle6": "Note :\r\n",
     "CookbookLocateSubtitle7": "Voici le nom du fichier Cookbook que vous devez télécharger :\r\n",
+
     "PrivilegeMustRunTitle": "Collapse nécessite une élévation de privilèges !",
     "PrivilegeMustRunSubtitle": "Collapse nécessite des privilèges administratifs pour fonctionner correctement. Voulez-vous redémarrer Collapse et l'exécuter en tant qu'administrateur ?",
+
     "ReleaseChannelChangeTitle": "Changer le canal de mises à jour",
     "ReleaseChannelChangeSubtitle1": "Vous êtes sur le point de basculer sur le canal de mise à jour :",
     "ReleaseChannelChangeSubtitle2": "Note :",
     "ReleaseChannelChangeSubtitle3": "Cette action peut entraîner des changements irréversibles et/ou des ruptures par rapport à votre configuration actuelle. Nous ne sommes pas responsables de la perte ou de la corruption des données associées à votre jeu.",
+
     "ChangePlaytimeTitle": "Êtes-vous sûr de vouloir modifier votre temps de jeu ?",
     "ChangePlaytimeSubtitle": "Modifier votre temps de jeu signifie remplacer la valeur actuelle par celle que vous venez de saisir.\n\nSouhaitez-vous poursuivre ?\n\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous ne jouez pas au jeu.",
     "ResetPlaytimeTitle": "Êtes-vous sûr de vouloir réinitialiser votre temps de jeu ?",
     "ResetPlaytimeSubtitle": "Réinitialiser votre temps de jeu signifie remettre le compteur de temps de jeu à 0. Il s'agit d'une action",
     "ResetPlaytimeSubtitle2": "destructrice",
     "ResetPlaytimeSubtitle3": ", ce qui signifie que vous ne pouvez pas revenir en arrière une fois confirmé.\n\nSouhaitez-vous poursuivre ?\n\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous ne jouez pas au jeu.",
+    "InvalidPlaytimeTitle": "Un problème est survenu lors de l'enregistrement du temps de jeu de cette session",
+    "InvalidPlaytimeSubtitle1": "La différence entre les heures de début et de fin donne un nombre négatif.",
+    "InvalidPlaytimeSubtitle2": "Une valeur de repli est sauvegardée toutes les minutes et sera utilisé à la place :",
+    "InvalidPlaytimeSubtitle3": "Veuillez vous abstenir de réajuster l'horloge de votre ordinateur lorsque vous êtes en jeu.",
+
     "LocateExePathTitle": "Localiser le chemin d'installation de l'exécutable",
     "LocateExePathSubtitle": "Veuillez indiquer à Collapse l'emplacement de l'exécutable de votre application :",
+
     "CannotUseAppLocationForGameDirTitle": "Le dossier n'est pas valide !",
     "CannotUseAppLocationForGameDirSubtitle": "Vous ne pouvez pas utiliser ce dossier car il est utilisé comme dossier système ou pour l'exécutable principal de l'application. Veuillez choisir un autre emplacement !",
+
     "StopGameTitle": "Forcer l'arrêt du jeu",
     "StopGameSubtitle": "Êtes-vous sûr de vouloir forcer l'arrêt du jeu en cours ?\r\nIl se peut que vous perdiez une partie de votre progression en jeu.",
+
     "MeteredConnectionWarningTitle": "Connexion limitée détectée !",
     "MeteredConnectionWarningSubtitle": "Votre connexion internet actuelle a été détectée comme étant « Limitée » ! La poursuite du processus de mise à jour peut entraîner des frais supplémentaires de la part de votre fournisseur d'accès Internet. Souhaitez-vous continuer?",
 
@@ -1147,5 +1169,44 @@
     "Korea": "Corée",
     "Japan": "Japon",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Accord :"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Bienvenue", "sur" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Cliquez ici pour continuer",
+    "SetupBackButton": "Retour",
+
+    "CustomizationTitle": "Personnaliser votre launcher",
+    "CustomizationSettingsLanguageHeader": "Langue",
+    "CustomizationSettingsLanguageDescription": "Ceci ajustera la langue pour les informations affichées",
+    "CustomizationSettingsWindowSizeHeader": "Taille de la fenêtre",
+    "CustomizationSettingsWindowSizeDescription": "Modifier la taille du launcher",
+    "CustomizationSettingsCDNHeader": "Réseau de Diffusion de Contenu",
+    "CustomizationSettingsCDNDescription": "Sélectionner le réseau de diffusion de contenu principal à utiliser.",
+    "CustomizationSettingsStyleHeader": "Préférence de style",
+    "CustomizationSettingsStyleDescription": "Modifier l'apparence du launcher en fonction de vos préférences.",
+    "CustomizationSettingsStyleThemeHeader": "Thème",
+    "CustomizationSettingsStyleThemeDescription": "Changez le jeu de couleurs qui apparaîtra sur votre launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Image d'arrière-plan personnalisée",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Utiliser une image d'arrière-plan personnalisée à la place de celle par défaut.",
+
+    "LoadingInitializationTitle": "Initialisation du premier démarrage du launcher",
+    "LoadingCDNCheckboxCheckLatency": "(Vérification des latences...)",
+    "LoadingCDNCheckboxPlaceholder": "Vérification de la recommandation du RDC...",
+    "LoadingCDNCheckingSubitle": "Recherche du réseau de diffusion de contenu (RDC) le plus proche pour vous...",
+    "LoadingCDNCheckingSkipButton": "Passer la vérification du RDC",
+    "LoadingBackgroundImageTitle": "Chargement de l'image",
+    "LoadingBackgroundImageSubtitle": "Cette image peut prendre du temps a être traitée.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (inconnu)",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[Recommandé]"
   }
 }
