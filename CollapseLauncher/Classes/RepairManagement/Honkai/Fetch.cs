@@ -8,6 +8,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Win32;
 using System;
@@ -18,14 +19,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -305,25 +304,25 @@ namespace CollapseLauncher
                         lock (sw)
                         {
                             // Append the versioning list
-                            sw.WriteLine("Video/" + metadata.CgPathHighBitrate + ".usm\t1");
+                            sw.WriteLine("Video/" + (_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN) + ".usm\t1");
                         }
                     }
 
 #if DEBUG
                     if (isCGIgnored)
-                        LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {metadata.CgPathHighBitrate}", LogType.Debug, true);
+                        LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {(_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN)}", LogType.Debug, true);
 #endif
 
                     if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                     {
-                        string name = metadata.CgPathHighBitrate + ".usm";
+                        string name = (_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN) + ".usm";
                         lock (assetIndex)
                         {
                             assetIndex.Add(new FilePropertiesRemote
                             {
                                 N = CombineURLFromString(_videoBaseLocalPath, name),
                                 RN = CombineURLFromString(baseURL, name),
-                                S = metadata.FileSizeHighBitrate,
+                                S = _audioLanguage == AudioLanguageType.Japanese ? metadata.FileSizeHighBitrateJP : metadata.FileSizeHighBitrateCN,
                                 FT = FileType.Video
                             });
                         }
@@ -344,10 +343,10 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Set the URL and try get the status
-            string cgURL = CombineURLFromString(baseURL, cgInfo.CgPathHighBitrate + ".usm");
+            string cgURL = CombineURLFromString(baseURL, (_audioLanguage == AudioLanguageType.Japanese ? cgInfo.CgPathHighBitrateJP : cgInfo.CgPathHighBitrateCN) + ".usm");
             using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(cgURL, token);
 
-            LogWriteLine($"The CG asset: {cgInfo.CgPathHighBitrate} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+            LogWriteLine($"The CG asset: {(_audioLanguage == AudioLanguageType.Japanese ? cgInfo.CgPathHighBitrateJP : cgInfo.CgPathHighBitrateCN)} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
             return urlStatus.IsSuccessStatusCode;
         }
