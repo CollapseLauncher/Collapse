@@ -327,6 +327,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
                     Click="NextPageButton_Click"
+                    IsEnabled="False"
                     Opacity="0"
                     Style="{ThemeResource TransparentDefaultButtonStyle}">
                     <Button.OpacityTransition>
