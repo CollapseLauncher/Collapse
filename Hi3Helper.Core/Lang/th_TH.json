@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "เลือกภูมิภาค",
     "Pg2NextBtn": "เสร็จสมบูรณ์ - เข้าสู่ Launcher",
     "Pg2PrevBtn": "กลับ - เลือกโฟลเดอร์",
+    "Pg2PrevBtnNew": "Back - Launcher Configuration",
     "Pg2Subtitle1_1": "เหลือขั้นตอนเดียวเท่านั้นในการเล่นเกมของคุณจาก",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "ต้องการเริ่ม, ให้กดที่",
     "Subtitle4_2": "\"จัดหาที่จัดเก็บไฟล์\"",
     "Subtitle4_3": "ปุ่มด้านล่างเพื่อเลือกตำแหน่งที่คุณต้องการติดตั้งเกมของคุณ",
-    "Title1": "ยินดีต้อนรับ",
-    "Title2": "สู่ Collapse Launcher"
+    "Title1": "Welcome to",
+    "Title2": "Collapse Launcher"
   },
 
   "_DisconnectedPage": {
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "หยุดชั่วคราว/ยกเลิก",
     "PauseCancelBtn": "หยุดชั่วคราว/ยกเลิก",
     "DownloadBtn": "ดาวน์โหลดเกม",
+
     "GameSettingsBtn": "การตั้งค่าด่วน",
     "GameSettings_Panel1": "การตั้งค่าด่วน",
     "GameSettings_Panel1OpenGameFolder": "เปิดโฟลเดอร์เกม",
@@ -140,6 +142,7 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "แสดงแผงโซเชียลมีเดีย",
     "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
     "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
+
     "GamePlaytime_Panel1": "แก้ไขเวลาที่เล่น",
     "GamePlaytime_Idle_Panel1Hours": "ชั่วโมง",
     "GamePlaytime_Idle_Panel1Minutes": "นาที",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "ระบุค่าไม่ถูกต้อง",
     "GamePlaytime_Running_Info1": "อินสแตนซ์ของเกมนี้กำลังทำงานอยู่ ดังนั้นเวลาที่เล่นจึงไม่สามารถแก้ไขได้",
     "GamePlaytime_Running_Info2": "โปรดทราบว่าการปิด Collapse จะหยุดการติดตามเวลาที่เล่น (จะบันทึกแค่ตอนที่กำลังทำงานอยู่) และจะติดตามเฉพาะเปิดด้วย Collapse เท่านั้น",
+    "GamePlaytime_Display": "{0}h {1}m",
+
     "PostPanel_Events": "กิจกรรม",
     "PostPanel_Notices": "การ​แจ้งเตือน",
     "PostPanel_Info": "ข้อมูล",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "เอกสารคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
 
-    "GameBoost": "เพิ่มลำดับความสำคัญของเกม [ทดลอง]"
+    "GameBoost": "เพิ่มลำดับความสำคัญของเกม [ทดลอง]",
+
+    "Advanced_Title": "Advanced Settings",
+    "Advanced_Subtitle1": "Collapse Launcher Team",
+    "Advanced_Subtitle2": "IS NOT RESPONSIBLE",
+    "Advanced_Subtitle3": "for anything happened to your game, account or system while this settings is in use! Use at your own risk.",
+    "Advanced_GLC_WarningAdmin": "WARNING: Commands provided will be run as Administrator!",
+    "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
+    "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
+    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
+    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
 
   "_SettingsPage": {
@@ -487,6 +503,9 @@
     "NotSelected": "ไม่ได้เลือก",
     "ExtractAnyway": "Extract Anyway!",
 
+    "IAcceptAgreement": "I accept the agreement",
+    "IDoNotAcceptAgreement": "I do not accept the agreement",
+
     "LangNameENUS": "ภาษาอังกฤษ (สหรัฐฯ)",
     "LangNameJP": "ภาษาญี่ปุ่น",
     "LangNameCN": "ภาษาจีน (ตัวย่อ)",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "พื้นที่เก็บข้อมูล Launcher อย่างเป็นทางการ (หลัก)",
     "CDNDescription_Cloudflare": "สำเนาของคลังเก็บทางการ (หลัก) ที่ถูกโฮสต์ใน Cloudflare R2 bucket",
     "CDNDescription_Bitbucket": "สำเนาของคลังเก็บทางการ (หลัก) ที่ถูกโฮสต์ใน Bitbucket.",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
 
     "LocateExecutable": "ค้นหาไฟล์โปรแกรม",
     "OpenDownloadPage": "เปิดหน้าดาวน์โหลด",
@@ -545,7 +565,9 @@
     "LauncherNameOfficial": "Official Launcher",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Launcher Name is Unknown)"
+    "LauncherNameUnknown": "(Launcher Name is Unknown)",
+    
+    "ImageCropperTitle": "Crop the image"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +587,14 @@
     "DeltaPatchDetectedSubtitle": "เดลต้าแพทช์ จะถูกใช้เพื่ออัปเดตเกมของคุณจาก {0} เป็น {1}\nโปรดจำไว้ว่าคุณยังอาจจำเป็นต้องดาวน์โหลดไฟล์บางไฟล์ในเกม\n\nคุณต้องการดำเนินการต่อหรือไม่?",
     "DeltaPatchPrevFailedTitle": "มีการใช้ เดลต้าแพทช์ ก่อนหน้าอย่างไม่ถูกต้องหรือไม่สามารถใช้งานให้เสร็จสิ้นได้!",
     "DeltaPatchPrevFailedSubtitle": "ไม่สามารถใช้งาน เดลต้าแพทช์ ก่อนหน้านี้ได้ คุณต้องการกู้คืนเกม ต้องการดาวน์โหลดซ้ำหรือไม่?",
+    "DeltaPatchPreReqTitle": "Additional File Download is Required for Delta Patch!",
+    "DeltaPatchPreReqSubtitle1": "Additional file download is required for this game before applying delta patch. Around ",
+    "DeltaPatchPreReqSubtitle2": " is required to be downloaded and some of these files might contains audio package deltas.",
+    "DeltaPatchPreReqSubtitle3": "Do you want to continue?",
+    "DeltaPatchPreReqSubtitle4": "(Click \"",
+    "DeltaPatchPreReqSubtitle5": "\" to continue or \"",
+    "DeltaPatchPreReqSubtitle6": "\" to use normal update or \"",
+    "DeltaPatchPreReqSubtitle7": "\" to cancel the update)",
     "GameConversionPrevFailedTitle": "การแปลงเกมครั้งก่อนล้มเหลวหรือยังไม่เสร็จสมบูรณ์!",
     "GameConversionPrevFailedSubtitle": "การแปลงเกมก่อนหน้านี้ล้มเหลว คุณต้องการกู้คืนเกมของคุณ ต้องการดาวน์โหลดซ้ำหรือไม่?",
     "PreloadVerifiedTitle": "ยืนยันโหลดแพ็คเกจล่วงหน้าแล้ว!",
@@ -637,24 +667,35 @@
     "CookbookLocateSubtitle5": "ดำเนินการต่อเพื่อค้นหาไฟล์ Cookbook ที่ดาวน์โหลดมาก่อน\n\n",
     "CookbookLocateSubtitle6": "บันทึก:\n",
     "CookbookLocateSubtitle7": "นี่คือชื่อของไฟล์ Cookbook ที่คุณต้องดาวน์โหลด:\n",
+
     "PrivilegeMustRunTitle": "Collapse ต้องใช้การระดับสิทธิ์!",
     "PrivilegeMustRunSubtitle": "Collapse ต้องใช้สิทธิ์ผู้ดูแลระบบจึงจะทำงานได้อย่างถูกต้อง คุณต้องการรีสตาร์ท Collapse และเรียกใช้ในฐานะผู้ดูแลระบบหรือไม่?",
+
     "ReleaseChannelChangeTitle": "เปลี่ยนช่องทางการเผยแพร่",
     "ReleaseChannelChangeSubtitle1": "คุณกำลังจะเปลี่ยนช่องทางการเผยแพร่ของคุณเป็น:",
     "ReleaseChannelChangeSubtitle2": "หมายเหตุ:",
     "ReleaseChannelChangeSubtitle3": "การดำเนินการนี้อาจทำให้เกิดการเปลี่ยนแปลงที่ไม่สามารถย้อนกลับได้ และ/หรือทำให้สิ่งต่างๆ เสียหายจากการตั้งค่าปัจจุบันของคุณ เราไม่รับผิดชอบต่อการสูญหายหรือเสียหายของข้อมูลที่เกี่ยวข้องกับเกมของคุณ",
+
     "ChangePlaytimeTitle": "คุณแน่ใจหรือไม่ว่าต้องการเปลี่ยนเวลาที่เล่นของคุณ?",
     "ChangePlaytimeSubtitle": "การเปลี่ยนเวลาที่เล่นหมายถึงการเขียนทับค่าปัจจุบันด้วยค่าที่คุณเพิ่งป้อนเข้าไป\n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของยุบ และคุณสามารถเปลี่ยนค่านี้อีกครั้งเมื่อใดก็ได้เมื่อไม่ได้เล่นเกม",
     "ResetPlaytimeTitle": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตเวลาที่เล่นของคุณ?",
     "ResetPlaytimeSubtitle": "การรีเซ็ตเวลาที่เล่นของคุณหมายถึงการตั้งค่าตัวนับเวลาเล่นกลับเป็น 0 ",
     "ResetPlaytimeSubtitle2": "รีเซ็ต",
     "ResetPlaytimeSubtitle3": " การดำเนินการ หมายความว่าคุณไม่สามารถยกเลิกการดำเนินการนี้ได้เมื่อคุณยืนยันแล้ว\n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของยุบ และคุณสามารถเปลี่ยนค่านี้อีกครั้งเมื่อใดก็ได้เมื่อไม่ได้เล่นเกม",
+    "InvalidPlaytimeTitle": "There was a problem saving this session's playtime",
+    "InvalidPlaytimeSubtitle1": "The difference between the starting and ending times results in a negative number.",
+    "InvalidPlaytimeSubtitle2": "A fallback value is saved every minute and will be used instead:",
+    "InvalidPlaytimeSubtitle3": "Please refrain from adjusting the computer clock while in-game.",
+
     "LocateExePathTitle": "ค้นหาตำแหน่งการติดตั้งที่ใช้งานได้",
     "LocateExePathSubtitle": "โปรดชี้ Collapse ไปยังตำแหน่งของไฟล์ปฏิบัติการของแอปพลิเคชันของคุณ:",
+
     "CannotUseAppLocationForGameDirTitle": "โฟลเดอร์ไม่ถูกต้อง!",
     "CannotUseAppLocationForGameDirSubtitle": "คุณไม่สามารถใช้โฟลเดอร์นี้ได้เนื่องจากถูกใช้เป็นโฟลเดอร์ระบบหรือใช้สำหรับปฏิบัติการหลักของแอป โปรดเลือกโฟลเดอร์อื่น!",
+
     "StopGameTitle": "บังคับปิดเกม",
     "StopGameSubtitle": "คุณแน่ใจหรือไม่ว่าต้องการบังคับให้ปิดเกมที่รันอยู่ในปัจจุบัน?\nคุณอาจสูญเสียความคืบหน้าในเกมบางส่วน",
+
     "MeteredConnectionWarningTitle": "การตรวจพบการเชื่อมต่อที่มีการถูกจำกัด!",
     "MeteredConnectionWarningSubtitle": "การเชื่อมต่ออินเทอร์เน็ตปัจจุบันของคุณถูกตรวจพบว่าเป็น 'ถูกจำกัด'! การดำเนินการอัปเดตต่ออาจมีค่าใช้จ่ายเพิ่มเติมจากผู้ให้บริการอินเทอร์เน็ตของคุณ คุณต้องการดำเนินการต่อหรือไม่?",
 
@@ -685,7 +726,7 @@
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
     "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
     "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
     "SteamShortcutCreationSuccessTitle": "Success!",
@@ -694,6 +735,7 @@
     "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+    "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
@@ -912,6 +954,7 @@
     "Graphics_FPS_Help": "120 เฟรมเรท เป็นการทดลอง! โปรดใช้ด้วยความระมัดระวังเนื่องจาก Honkai: Star Rail ไม่รองรับสิ่งนี้อย่างเป็นทางการ!",
     "Graphics_FPS_Help2": "การตั้งค่า เฟรมเรท เป็น 120 จะทำให้เมนูการตั้งค่ากราฟิกในเกมหยุดทำงาน\nหากเมนูของคุณเสียในเกม ให้ใช้ Collapse เพื่อเปลี่ยนการตั้งค่ากราฟิกเกม",
     "Graphics_VSync": "VSync",
+    "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "เรนเดอร์สเกล",
     "Graphics_ResolutionQuality": "คุณภาพความละเอียด",
     "Graphics_ShadowQuality": "คุณภาพของเงา",
@@ -1001,6 +1044,8 @@
     "Graphics_GlobalIllumination": "แสงสะท้อนทั่วไป",
     "Graphics_GlobalIllumination_Help1": "สำหรับฮาร์ดแวร์ที่รองรับเท่านั้น!",
     "Graphics_GlobalIllumination_Help2": "ข้อมูลเพิ่มเติม (en)",
+    "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "เปิดใช้งาน HDR",
     "Graphics_HDR_NotSupported1": "จอแสดงผลของคุณไม่รองรับ HDR",
@@ -1124,5 +1169,44 @@
     "Korea": "Korea",
     "Japan": "Japan",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Agreement:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Welcome", " To" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Click Here to Continue",
+    "SetupBackButton": "Go Back",
+
+    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
+    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
+    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsStyleThemeHeader": "Theme",
+    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
+    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
+    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
+    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
+    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   }
 }
