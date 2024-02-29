@@ -305,25 +305,25 @@ namespace CollapseLauncher
                         lock (sw)
                         {
                             // Append the versioning list
-                            sw.WriteLine("Video/" + metadata.CgPath + ".usm\t1");
+                            sw.WriteLine("Video/" + metadata.CgPathHighBitrate + ".usm\t1");
                         }
                     }
 
 #if DEBUG
                     if (isCGIgnored)
-                        LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {metadata.CgPath}", LogType.Debug, true);
+                        LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {metadata.CgPathHighBitrate}", LogType.Debug, true);
 #endif
 
                     if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                     {
-                        string name = metadata.CgPath + ".usm";
+                        string name = metadata.CgPathHighBitrate + ".usm";
                         lock (assetIndex)
                         {
                             assetIndex.Add(new FilePropertiesRemote
                             {
                                 N = CombineURLFromString(_videoBaseLocalPath, name),
                                 RN = CombineURLFromString(baseURL, name),
-                                S = metadata.FileSize,
+                                S = metadata.FileSizeHighBitrate,
                                 FT = FileType.Video
                             });
                         }
@@ -344,10 +344,10 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Set the URL and try get the status
-            string cgURL = CombineURLFromString(baseURL, cgInfo.CgPath + ".usm");
+            string cgURL = CombineURLFromString(baseURL, cgInfo.CgPathHighBitrate + ".usm");
             using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(cgURL, token);
 
-            LogWriteLine($"The CG asset: {cgInfo.CgPath} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+            LogWriteLine($"The CG asset: {cgInfo.CgPathHighBitrate} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
             return urlStatus.IsSuccessStatusCode;
         }
