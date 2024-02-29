@@ -4,21 +4,21 @@
   "Author": "kleqing",
 
   "_StartupPage": {
-    "SelectLang": "Select your language",
-    "SelectLangDesc": "Please select your language to start this launcher for the first time!",
-    "SelectWindowSize": "Select your preferred window size",
-    "SelectCDN": "Select your preferred CDN",
-    "CDNHelpTitle_1": "What is a CDN?",
-    "CDNHelpTitle_2": "short for ",
-    "CDNHelpTitle_3": "Content Delivery Network",
-    "CDNHelpTitle_4": "\u200b",
-    "CDNHelpDetail_1": "\u200b",
+    "SelectLang": "Chọn ngôn ngữ của bạn",
+    "SelectLangDesc": "Hãy chọn ngôn ngữ để vào Launcher lần đầu tiên!",
+    "SelectWindowSize": "Chọn kích thước cửa sổ ưa thích của bạn",
+    "SelectCDN": "Chọn CDN ưa thích của bạn",
+    "CDNHelpTitle_1": "CDN là cái gì?",
+    "CDNHelpTitle_2": "nhỏ cho",
+    "CDNHelpTitle_3": "Mạng phân phối nội dung",
+    "CDNHelpTitle_4": " ",
+    "CDNHelpDetail_1": " ",
     "CDNHelpDetail_2": "CDN",
-    "CDNHelpDetail_3": " is a system used to make launcher files available to a larger audience, quickly and efficiently.",
-    "CDNHelpDetail_4": "Collapse selects GitHub as the default provider.",
-    "CDNsAvailable": "CDNs available:",
-    "SplashArt_1": "The splash art is a property of",
-    "SplashArt_2": "miHoYo / HoYoverse",
+    "CDNHelpDetail_3": "là một hệ thống được sử dụng để làm cho các tệp Launcher có sẵn cho nhiều đối tượng hơn, nhanh chóng và hiệu quả.",
+    "CDNHelpDetail_4": "Collapse chọn GitHub làm nhà cung cấp mặc định.",
+    "CDNsAvailable": "Những CDN có sẵn:",
+    "SplashArt_1": "Nghệ thuật giật gân là một tài sản của",
+    "SplashArt_2": "miHoYo hoặc HoYoverse",
     "ChooseFolderBtn": "Vị trí thư mục",
     "ChooseFolderDialogCancel": "Huỷ",
     "ChooseFolderDialogPrimary": "Hãy chọn nó!",
@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "Chọn vùng",
     "Pg2NextBtn": "Đã xong! - Mở trình khởi chạy",
     "Pg2PrevBtn": "Trở lại - Chọn thư mục",
+    "Pg2PrevBtnNew": "Back - Launcher Configuration",
     "Pg2Subtitle1_1": "Chỉ còn một bước nữa để bạn chơi trò chơi từ",
     "Pg2Subtitle1_2": "trình khởi chạy Collapse.",
     "Pg2Subtitle1_3": "",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "Để bắt đầu, hãy nhấn vào",
     "Subtitle4_2": "\"Vị trí thư mục\"",
     "Subtitle4_3": "nút dưới đây để chọn nơi bạn muốn cài đặt trò chơi.",
-    "Title1": "Chào mừng",
-    "Title2": "đến với trình khởi chạy Collapse"
+    "Title1": "Welcome to",
+    "Title2": "Collapse Launcher"
   },
 
   "_DisconnectedPage": {
@@ -74,8 +75,8 @@
     "UnhandledSubtitle2": "Úi, có vẻ mạng đã bị mất kết nối với mạng hoặc sever!",
     "UnhandledTitle3": "Văng trò chơi",
     "UnhandledSubtitle3": "Trò chơi bị văng với các lỗi chi tiết dưới đây:",
-    "UnhandledTitle4": "Warning",
-    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
+    "UnhandledTitle4": "Cảnh báo",
+    "UnhandledSubtitle4": "Đây không phải là vấn đề lớn, nhưng chúng tôi nghĩ rằng chúng tôi nên cho bạn biết:\r\nDo thử nghiệm A/B của miHoYo, tính năng Thu gọn không hỗ trợ đọc khóa sau: App_Settings_h2319593470.\r\nChúng tôi xin lỗi vì sự bất tiện này và cảm ơn sự thông cảm của bạn.",
     "CopyClipboardBtn1": "Sao chép tất cả vào khe nhớ tạm",
     "CopyClipboardBtn2": "Đã sao chép thành công!",
     "GoBackPageBtn1": "Trở lại trang trước"
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "Tạm dừng/Huỷ",
     "PauseCancelBtn": "Tạm dừng/Huỷ",
     "DownloadBtn": "Tải trò chơi",
+
     "GameSettingsBtn": "Cài đặt nhanh trò chơi",
     "GameSettings_Panel1": "Cài đặt nhanh",
     "GameSettings_Panel1OpenGameFolder": "Mở thư mục trò chơi",
@@ -132,14 +134,15 @@
     "GameSettings_Panel2RepairGame": "Sửa trò chơi",
     "GameSettings_Panel2UninstallGame": "Gỡ cài đặt trò chơi",
     "GameSettings_Panel2ConvertVersion": "Chuyển đổi phiên bản",
-    "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
+    "GameSettings_Panel2MoveGameLocationGame": "Chuyển vị trí thư mục Game",
     "GameSettings_Panel2StopGame": "Buộc đóng trò chơi",
     "GameSettings_Panel3": "Tuỳ chọn khởi động cho trò chơi",
     "GameSettings_Panel4": "Cài đặt khác",
     "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
     "GameSettings_Panel4ShowSocialMediaPanel": "Hiển thị bảng mạng xã hội",
-    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
-    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
+    "GameSettings_Panel4CreateShortcutBtn": "Tạo lối tắt",
+    "GameSettings_Panel4AddToSteamBtn": "Thêm vào Steam",
+
     "GamePlaytime_Panel1": "Chỉnh sửa thời gian chơi",
     "GamePlaytime_Idle_Panel1Hours": "Giờ",
     "GamePlaytime_Idle_Panel1Minutes": "Phút",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "Giá trị được cung cấp không hợp lệ.",
     "GamePlaytime_Running_Info1": "Tiến trình của trò chơi này hiện đang chạy, do đó không thể chỉnh sửa thời gian chơi.",
     "GamePlaytime_Running_Info2": "Xin lưu ý rằng việc đóng hoàn toàn Collapse sẽ tạm dừng theo dõi thời gian chơi (thời gian chơi cho đến thời điểm đóng lại) & Collapse sẽ tiếp tục theo dõi khi được mở lại.",
+    "GamePlaytime_Display": "{0}h {1}m",
+
     "PostPanel_Events": "Sự kiện",
     "PostPanel_Notices": "Thông báo",
     "PostPanel_Info": "Thông tin",
@@ -158,7 +163,7 @@
     "CommunityToolsBtn_CommunityText": "Công cụ cộng đồng",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Chọn chương trình có thể thực thi: {0}",
 
-    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
+    "CreateShortcut_FolderPicker": "Chọn nơi để lối tắt"
   },
 
   "_GameRepairPage": {
@@ -244,8 +249,8 @@
     "Graphics_Borderless": "Sử dụng chế độ cửa sổ không viền",
     "Graphics_Fullscreen": "Toàn màn hình",
     "Graphics_ExclusiveFullscreen": "Toàn màn hình với độ phân giải đã chọn",
-    "Graphics_ResizableWindow": "Use Resizable Window",
-    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
+    "Graphics_ResizableWindow": "Sử dụng cửa sổ có thể thay đổi kích thước",
+    "Graphics_ResizableWindowTooltip": "Cài đặt này có thể sử dụng khi Chế độ Toàn màn hình tắt",
     "Graphics_ResSelectPlaceholder": "Chọn",
     "Graphics_ResCustom": "Chọn độ phân giải khác",
     "Graphics_ResCustomW": "W",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
-    "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]"
+    "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
+
+    "Advanced_Title": "Advanced Settings",
+    "Advanced_Subtitle1": "Collapse Launcher Team",
+    "Advanced_Subtitle2": "IS NOT RESPONSIBLE",
+    "Advanced_Subtitle3": "for anything happened to your game, account or system while this settings is in use! Use at your own risk.",
+    "Advanced_GLC_WarningAdmin": "WARNING: Commands provided will be run as Administrator!",
+    "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
+    "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
+    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
+    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
 
   "_SettingsPage": {
@@ -418,7 +434,7 @@
 
     "EnableAcrylicEffect": "Dùng hiệu ứng làm mờ",
     "EnableDownloadChunksMerging": "Gộp các gói đã tải xuống",
-    "UseExternalBrowser": "Always Use External Browser",
+    "UseExternalBrowser": "Luôn dùng trình duyệt bên ngoài",
 
     "LowerCollapsePrioOnGameLaunch": "Giảm mức sử dụng tài nguyên sử dụng của Collapse khi trò chơi được khởi động",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Vô hiệu hóa Carousel trong trang chính và giảm mức độ ưu tiên của Collapse xuống Dưới mức bình thường",
@@ -427,14 +443,14 @@
     "KbShortcuts_ShowBtn": "Hiện Thị Lối Tắt",
     "KbShortcuts_ResetBtn": "Đặt Lại Về Mặc Định",
 
-    "AppBehavior_Title": "App Behavior",
-    "AppBehavior_PostGameLaunch": "After Launching Game",
-    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
-    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
-    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
-    "AppBehavior_MinimizeToTray": "Minimize to Tray",
-    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
-    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
+    "AppBehavior_Title": "Hành vi của ứng dụng",
+    "AppBehavior_PostGameLaunch": "Sau khi ra mắt trò chơi",
+    "AppBehavior_PostGameLaunch_Minimize": "Thu nhỏ",
+    "AppBehavior_PostGameLaunch_ToTray": "Ẩn vào taskbar",
+    "AppBehavior_PostGameLaunch_Nothing": "Không làm gì",
+    "AppBehavior_MinimizeToTray": "Thu nhỏ vào thanh taskbar",
+    "AppBehavior_LaunchOnStartup": "Luôn mở Collapse lúc máy tính của bạn khởi động",
+    "AppBehavior_StartupToTray": "Ẩn cửa sổ Collapse lúc nó tự mở"
   },
 
   "_Misc": {
@@ -455,13 +471,13 @@
     "Close": "Đóng",
     "UseCurrentDir": "Dùng thư mục hiện tại",
     "UseDefaultDir": "Dùng thư mục mặc định",
-    "MoveToDifferentDir": "Move to different directory",
+    "MoveToDifferentDir": "Chuyển vào vị trí thư mục khác",
     "LocateDir": "Vị trí thư mục",
     "Okay": "Okay",
     "OkaySad": "Okay ;-;",
     "OkayHappy": "Okay (≧▽≦)ﾉ",
     "OkayBackToMenu": "Okay, trở lại trang chính",
-    "Skip": "Skip, never show again",
+    "Skip": "Bỏ qua, không bao giờ hiện nữa",
     "Next": "Tiếp theo",
     "Prev": "Trước đó",
     "Uninstall": "Gỡ cài đặt",
@@ -473,10 +489,10 @@
     "YesRelocate": "Có, hãy tiếp tục",
     "YesMigrateIt": "Có, hãy di chuyển nó",
     "YesConvertIt": "Có, hãy chuyển đổi nó",
-    "YesImReallySure": "Yes, I'm really sure!",
+    "YesImReallySure": "Có, tôi rất chắc chắn",
     "YesIHaveBeefyPC": "Tôi có máy tính đủ mạnh! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Có, hãy thay đổi vị trí",
-    "YesContinue": "Yes, Continue",
+    "YesContinue": "Có, tiếp theo",
 
     "No": "Không",
     "NoStartFromBeginning": "Không, hãy bắt đầu lại từ đầu",
@@ -485,7 +501,10 @@
     "NoIgnoreIt": "Không, hãy mặc kệ nó",
     "NoOtherLocation": "Không, hãy tiếp tục cài đặt",
     "NotSelected": "Chưa được chọn",
-    "ExtractAnyway": "Extract Anyway!",
+    "ExtractAnyway": "Giải nén mọi thứ!",
+
+    "IAcceptAgreement": "I accept the agreement",
+    "IDoNotAcceptAgreement": "I do not accept the agreement",
 
     "LangNameENUS": "Tiếng Anh (Mỹ)",
     "LangNameJP": "Tiếng Nhật",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
     "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Bitbucket.",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
 
     "LocateExecutable": "Vị trí thực thi",
     "OpenDownloadPage": "Mở trang Tải xuống",
@@ -534,18 +554,20 @@
     "DiscordRP_Ad": "- Với trình khởi chạy Collapse",
     "DiscordRP_Region": "Khu vực:",
 
-    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp1": "Nhấp để đưa Collapse lên nền trước",
     "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
     "Taskbar_ShowApp": "Hiển thị cửa sổ Collapse",
     "Taskbar_HideApp": "Ẩn cửa sổ Collapse xuống thanh tác vụ",
-    "Taskbar_ShowConsole": "Show Collapse console window",
-    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
+    "Taskbar_ShowConsole": "Hiện bảng điều khiển của Collapse",
+    "Taskbar_HideConsole": "Ẩn bảng điều khiển của Collapse vào thanh tác vụ",
     "Taskbar_ExitApp": "Thoát trình khởi chạy Collapse",
 
-    "LauncherNameOfficial": "Official Launcher",
-    "LauncherNameBHI3L": "BetterHi3Launcher",
+    "LauncherNameOfficial": "Launcher chính thức",
+    "LauncherNameBHI3L": "BetterHI3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Launcher Name is Unknown)"
+    "LauncherNameUnknown": "(Tên Launcher không rõ)",
+    
+    "ImageCropperTitle": "Crop the image"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +587,14 @@
     "DeltaPatchDetectedSubtitle": "Bản vá tạm thời sẽ được dùng để cập nhật trò chơi của bạn từ {0} tới {1}.\r\nNên nhớ, bạn vẫn nên cần tải về một vài tệp trong trò chơi như thường lệ.\r\n\r\nBạn có muốn tiếp tục?",
     "DeltaPatchPrevFailedTitle": "Bản vá tạm thời trước đó đã thất bại/không hoàn thành!",
     "DeltaPatchPrevFailedSubtitle": "Không thể áp dụng bản vá tạm thời trước đó. Bạn có muốn khôi phục lại trò chơi để tránh để tải lại không?",
+    "DeltaPatchPreReqTitle": "Tải tệp bổ sung phải cần Delta Patch!",
+    "DeltaPatchPreReqSubtitle1": "Yêu cầu tải xuống tệp tin bổ sung cho trò chơi này trước khi áp dụng bản vá delta. Khoảng cách",
+    "DeltaPatchPreReqSubtitle2": "được yêu cầu tải xuống và một số tệp này có thể chứa các gói âm thanh deltas.",
+    "DeltaPatchPreReqSubtitle3": "Bạn có muốn tiếp tục không?",
+    "DeltaPatchPreReqSubtitle4": "(Nhấp \"",
+    "DeltaPatchPreReqSubtitle5": "\"để tiếp tục hoặc \"",
+    "DeltaPatchPreReqSubtitle6": "\"để sử dụng cập nhật bình thường hoặc \"",
+    "DeltaPatchPreReqSubtitle7": "\"để hủy bỏ cập nhật)\"",
     "GameConversionPrevFailedTitle": "Chuyển đổi bản trò chơi trước đó đã thất bại/không hoàn thành!",
     "GameConversionPrevFailedSubtitle": "Chuyển đổi bản trò chơi trước đó đã thất bại. Bạn có muốn khôi phục lại trò chơi để tránh để tải lại không?",
     "PreloadVerifiedTitle": "Gói tải trước đã được xác minh!",
@@ -585,10 +615,10 @@
     "RepairCompletedSubtitleNoBroken": "Không có tệp nào lỗi.",
     "ExtremeGraphicsSettingsWarnTitle": "Đã chọn tuỳ chọn đồ hoạ cao nhất!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Bạn đã đặt độ hoạ ở mức rất cao!\r\nĐồ hoạ cao cũng đồng nghĩa số lần render cao gấp đôi với MSAA được bật và nó CHƯA ĐƯỢC TỐI ƯU! (trừ khi bạn sài siêu máy tính của NASA).\r\n\r\nBạn có muốn tiếp tục chứ?",
-    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
-    "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
-    "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
-    "MigrateExistingInstallChoiceSubtitle2": "You have an option to move your existing game data into another directory or use the current directory as the existing one. It's recommended that you use the current directory as the one already installed to ensure that you can still launch your game using {0}.",
+    "MigrateExistingMoveDirectoryTitle": "Di chuyển Cài đặt Hiện tại cho: {0}",
+    "MigrateExistingInstallChoiceTitle": "Một Cài đặt Hiện tại của {0} đã được Phát hiện!",
+    "MigrateExistingInstallChoiceSubtitle1": "Bạn có một phiên bản cài đặt hiện tại của trò chơi sử dụng {0} trong thư mục này:",
+    "MigrateExistingInstallChoiceSubtitle2": "Bạn có một lựa chọn để di chuyển dữ liệu trò chơi hiện có của bạn vào một thư mục khác hoặc sử dụng thư mục hiện tại như một thư mục hiện có. Đề nghị bạn sử dụng thư mục hiện tại như một thư mục đã được cài đặt để đảm bảo rằng bạn vẫn có thể khởi chạy trò chơi của mình bằng cách sử dụng {0}.",
     "ExistingInstallTitle": "Đã phát hiện vị trí trò chơi hiện tại!",
     "ExistingInstallSubtitle": "Trò chơi đã được cài ở thư mục:\r\n\r\n{0}\r\n\r\nChúng tôi khuyến khích nên tích hợp trò chơi vào trình khởi chạy.\r\nĐừng lo lắng vì bạn vẫn dùng được trình khởi chạy gốc để mở trò chơi.\r\n\r\nBạn có muốn tiếp tục không?",
     "ExistingInstallBHI3LTitle": "Đã phát hiện vị trí cài đặt của BetterHI3trình khởi chạy hiện tại!",
@@ -603,10 +633,10 @@
     "SteamConvertFailedSubtitle": "Quá trình chuyển đổi đã thất bại! :(\nVui lòng thử lại quá trình chuyển đổi.",
     "InstallDataCorruptTitle": "Cài đặt trò chơi đã bị hỏng",
     "InstallDataCorruptSubtitle": "Một trong những tệp đã tải đã bị hỏng.\r\n\r\nHash server: {0}\r\nHash đã tải: {1}\r\n\r\nBạn có muốn tải lại tệp này không?",
-    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
-    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
-    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
-    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
+    "InstallCorruptDataAnywayTitle": "Giải nén dữ liệu bị hỏng",
+    "InstallCorruptDataAnywaySubtitle1": "Bạn đang chuẩn bị giải nén dữ liệu bị hỏng này:",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} byte)",
+    "InstallCorruptDataAnywaySubtitle3": "Hãy nhớ rằng việc trích xuất dữ liệu này có thể thất bại hoặc làm cho trò chơi không chạy được.\r\n\r\nBạn có chắc chắn muốn trích xuất dữ liệu này không?",
     "InstallDataDownloadResumeTitle": "Tiếp tục tải?",
     "InstallDataDownloadResumeSubtitle": "Bạn đã tải {0}/{1} trước đó.\r\n\r\nBạn có muốn tiếp tục tải?",
     "InsufficientDiskTitle": "Dung lượng ổ cứng không đủ",
@@ -637,55 +667,66 @@
     "CookbookLocateSubtitle5": "để xác định vị trí đã tải tệp chuyển đổi và tiếp tục.\r\n\r\n",
     "CookbookLocateSubtitle6": "Lưu ý:\r\n",
     "CookbookLocateSubtitle7": "Đây là tên của tệp chuyển đổi mà bạn cần phải tải xuống:\r\n",
+
     "PrivilegeMustRunTitle": "Collapse yêu cầu quyền của quản trị viên!",
     "PrivilegeMustRunSubtitle": "Collapse yêu cầu quyền quản trị viên để hoạt động hoàn toàn. Bạn có muốn khởi động lại Collapse và chạy dưới quyền quản trị viên?",
+
     "ReleaseChannelChangeTitle": "Thay đổi kênh phát hành",
     "ReleaseChannelChangeSubtitle1": "Bạn đang thay đổi kênh phát hành của bạn tới:",
     "ReleaseChannelChangeSubtitle2": "Lưu ý:",
     "ReleaseChannelChangeSubtitle3": "Hành động này có thể làm thay đổi/khiến mọi thứ bị hỏng so với thiết lập hiện tại của bạn. Chúng tôi không chịu trách nhiệm về bất kỳ mất mát hoặc hư hỏng dữ liệu nào liên quan đến trò chơi của bạn.",
+
     "ChangePlaytimeTitle": "Bạn có chắc chắn muốn thay đổi thời gian chơi của mình không?",
     "ChangePlaytimeSubtitle": "Thay đổi thời gian chơi của bạn sẽ ghi đè giá trị hiện tại bằng giá trị bạn vừa nhập.\n\nBạn có muốn tiếp tục?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn có thể thay đổi lại giá trị này bất kỳ lúc nào khi không chơi trò chơi.",
     "ResetPlaytimeTitle": "Bạn có chắc muốn đặt lại thời gian chơi?",
     "ResetPlaytimeSubtitle": "Đặt lại thời gian chơi sẽ đặt bộ đếm thời gian về 0. Đây là ",
     "ResetPlaytimeSubtitle2": "phá hoại",
     "ResetPlaytimeSubtitle3": " hành động, nghĩa là bạn không thể hoàn tác thao tác này sau khi đã xác nhận. \n\nBạn có muốn tiếp tục?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn có thể thay đổi lại giá trị này bất kỳ lúc nào khi không chơi trò chơi.",
+    "InvalidPlaytimeTitle": "There was a problem saving this session's playtime",
+    "InvalidPlaytimeSubtitle1": "The difference between the starting and ending times results in a negative number.",
+    "InvalidPlaytimeSubtitle2": "A fallback value is saved every minute and will be used instead:",
+    "InvalidPlaytimeSubtitle3": "Please refrain from adjusting the computer clock while in-game.",
+
     "LocateExePathTitle": "Xác định vị trí đường dẫn cài đặt thực thi",
     "LocateExePathSubtitle": "Vui lòng chỉ Collapse tới vị trí thực thi của ứng dụng của bạn:",
+
     "CannotUseAppLocationForGameDirTitle": "Thư mục không hợp lệ!",
     "CannotUseAppLocationForGameDirSubtitle": "Bạn không thể sử dụng thư mục này vì nó đang được sử dụng làm thư mục hệ thống hoặc được sử dụng để thực thi chính của ứng dụng. Vui lòng chọn thư mục khác!",
+
     "StopGameTitle": "Buộc dừng trò chơi",
     "StopGameSubtitle": "Bạn có chắc chắn muốn buộc dừng trò chơi đang chạy hiện tại không?\nBạn có thể mất một số tiến trình trong trò chơi.",
+
     "MeteredConnectionWarningTitle": "Đã phát hiện kết nối bằng Internet có giới hạn dữ liệu!",
     "MeteredConnectionWarningSubtitle": "Kết nối internet hiện tại của bạn được phát hiện là 'Internet có giới hạn dữ liệu'! Tiếp tục quá trình cập nhật có thể phải trả thêm phí từ nhà cung cấp internet của bạn. Bạn có muốn tiếp tục không?",
 
     "ResetKbShortcutsTitle": "Bạn có chắc chắn muốn đặt lại tất cả các phím tắt không?",
     "ResetKbShortcutsSubtitle": "Điều này có nghĩa là mọi phím tắt sẽ được thay đổi thành tổ hợp phím mặc định của chúng. \n\nBạn có muốn tiếp tục không?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn vẫn có thể thay đổi tổ hợp phím tắt bằng cách truy cập menu Phím tắt.",
 
-    "OperationErrorDiskSpaceInsufficientTitle": "Disk Space for Drive: {0} is Insufficient!",
-    "OperationErrorDiskSpaceInsufficientMsg": "You do not have enough free space to do the operation on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding.",
+    "OperationErrorDiskSpaceInsufficientTitle": "Dung lượng trong ổ đĩa: {0} quá tải!",
+    "OperationErrorDiskSpaceInsufficientMsg": "Bạn không có đủ dung lượng để thực hiện thao tác trên ổ {2}r của bạn!\r\n\r\nDung lượng trống: {0}\r\nYêu cầu còn trống: {1}.\r\n\r\nHãy bảo đảm rằng bạn có đủ dung lượng đĩa trước khi tiếp tục.",
 
-    "OperationWarningNotCancellableTitle": "Attention: This Operation is NOT CANCELLABLE!",
-    "OperationWarningNotCancellableMsg1": "You might need to check that you don't have any heavy tasks running on your computer to avoid possible issues while the process is running. Keep in-mind that you ",
-    "OperationWarningNotCancellableMsg2": "CANNOT CANCEL THIS PROCESS",
-    "OperationWarningNotCancellableMsg3": " while it's running!\r\n\r\nClick \"",
-    "OperationWarningNotCancellableMsg4": "\" to start the process or \"",
-    "OperationWarningNotCancellableMsg5": "\" to cancel the operation.",
+    "OperationWarningNotCancellableTitle": "Cảnh báo: Tiến trình này KHÔNG THỂ DỪNG!",
+    "OperationWarningNotCancellableMsg1": "Bạn có thể cần kiểm tra xem có bất kỳ tác vụ nặng nào đang chạy trên máy tính của bạn để tránh các vấn đề có thể xảy ra trong quá trình chạy. Hãy nhớ rằng bạn.",
+    "OperationWarningNotCancellableMsg2": "KHÔNG THỂ HỦY TIẾN TRÌNH NÀY!",
+    "OperationWarningNotCancellableMsg3": "Trong khi nó đang chạy!\r\n\r\nNhấp vào \"",
+    "OperationWarningNotCancellableMsg4": "\" để bắt đầu quá trình hoặc \"",
+    "OperationWarningNotCancellableMsg5": "\" để hủy thao tác.\"",
 
-    "GenericWarningExceptionTitle": "Warning",
-    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+    "GenericWarningExceptionTitle": "Cảnh báo",
+    "GenericWarningExceptionSubtitle": "Đây không phải là một vấn đề lớn, nhưng chúng tôi nghĩ rằng chúng tôi nên thông báo cho bạn biết.",
 
-    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
-    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
-    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
-    "ShortcutCreationSuccessTitle": "Success!",
-    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
-    "ShortcutCreationSuccessSubtitle2": "Location: ",
+    "ShortcutCreationConfirmTitle": "Bạn có chắc chắn muốn tiếp tục không?",
+    "ShortcutCreationConfirmSubtitle1": "Một đường tắt sẽ được tạo ra trong đường dẫn sau đây:",
+    "ShortcutCreationConfirmSubtitle2": "Nếu đã có một phím tắt cùng tên trong thư mục này, nó sẽ được thay thế.",
+    "ShortcutCreationConfirmCheckBox": "Tự động bắt đầu trò chơi sau khi sử dụng lối tắt này",
+    "ShortcutCreationSuccessTitle": "Thành công!",
+    "ShortcutCreationSuccessSubtitle1": "Một lối tắt mới lấp lánh đã được tạo ra!",
+    "ShortcutCreationSuccessSubtitle2": "Vị trí:",
     "ShortcutCreationSuccessSubtitle3": "Notes:",
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
+    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
     "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
     "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
     "SteamShortcutCreationSuccessTitle": "Success!",
@@ -694,6 +735,7 @@
     "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+    "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
@@ -912,6 +954,7 @@
     "Graphics_FPS_Help": "120 FPS vẫn đang được THỬ NGHIỆM! Vui lòng sử dụng cẩn thận và hãy tự chịu trách nhiệm (DWYOR).",
     "Graphics_FPS_Help2": "Theo lý thuyết, cài đặt FPS lên 120 sẽ làm hỏng cài đặt trong trò chơi.\nSử dụng Collapse để thay đổi cài đặt đồ hoạ trò chơi.",
     "Graphics_VSync": "VSync",
+    "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "Kết xuất đồ hoạ",
     "Graphics_ResolutionQuality": "Chất lượng độ phân giải",
     "Graphics_ShadowQuality": "Chất lượng bóng đổ",
@@ -1001,6 +1044,8 @@
     "Graphics_GlobalIllumination": "Global Illumination",
     "Graphics_GlobalIllumination_Help1": "Chỉ cho phần cứng được hỗ trợ!",
     "Graphics_GlobalIllumination_Help2": "Thêm thông tin (vi)",
+    "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Bật HDR",
     "Graphics_HDR_NotSupported1": "Màn hình của bạn không hỗ trợ HDR",
@@ -1124,5 +1169,44 @@
     "Korea": "Korea",
     "Japan": "Japan",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Agreement:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Welcome", " To" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Click Here to Continue",
+    "SetupBackButton": "Go Back",
+
+    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
+    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
+    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsStyleThemeHeader": "Theme",
+    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
+    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
+    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
+    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
+    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   }
 }
