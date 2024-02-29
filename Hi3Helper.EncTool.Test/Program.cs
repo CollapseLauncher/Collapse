@@ -13,51 +13,10 @@ namespace Hi3Helper.EncTool.Test
 {
     internal class Program
     {
-        private static ICryptoTransform CreateAESDecryptor(string identifier, string relativePath, int timestamp)
-        {
-            Aes aesInstance = Aes.Create();
-            aesInstance.Mode = CipherMode.CFB;
-            aesInstance.Key = SenadinaFileIdentifier.GenerateMothKey(identifier + relativePath);
-            aesInstance.IV = SenadinaFileIdentifier.GenerateMothIV(timestamp);
-            aesInstance.Padding = PaddingMode.ISO10126;
 
-            return aesInstance.CreateDecryptor();
-        }
-
-        private static Stream CreateDecryptorStream(Stream sourceStream, string identifier, string relativePath, int timestamp)
-        {
-            ICryptoTransform transform = CreateAESDecryptor(identifier, relativePath, timestamp);
-            CryptoStream decrypter = new CryptoStream(sourceStream, transform, CryptoStreamMode.Read);
-            BrotliStream decoder = new BrotliStream(decrypter, CompressionMode.Decompress, true);
-            return decoder;
-        }
 
         static async Task Main(string[] args)
         {
-            string? regionName = "Hi3CN";
-            int[] regionVersion = new int[3] { 7, 3, 0 };
-            string? cdnUrl = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main";
-            string? referenceBaseUrl = ConverterTool.CombineURLFromString(cdnUrl, "metadata/game_reference_assets", regionName);
-            string? identifierUrl = ConverterTool.CombineURLFromString(referenceBaseUrl, "identifier.json");
-
-            using HttpClient httpClient = new HttpClient();
-            using Stream identifierStream = await HttpResponseInputStream.CreateStreamAsync(httpClient, identifierUrl, null, null, default);
-
-            Dictionary<string, SenadinaFileIdentifier>? identifier = await JsonSerializer.DeserializeAsync<Dictionary<string, SenadinaFileIdentifier>>(identifierStream, SenadinaJSONContext.Default.Options);
-
-            string xmfBaseFileName = $"xmf/Blocks_{regionVersion[0]}_{regionVersion[1]}_base.xmf";
-            string xmfBaseFileUrl = ConverterTool.CombineURLFromString(referenceBaseUrl, xmfBaseFileName);
-            SenadinaFileIdentifier? xmfBaseIdentifier = identifier?[xmfBaseFileName];
-            string? xmfBaseIdentifierString = string.Join('.', regionVersion);
-
-            using HttpResponseInputStream xmfBaseInputNetworkStream = await HttpResponseInputStream.CreateStreamAsync(httpClient, xmfBaseFileUrl, null, null, default);
-            using Stream xmfBaseInputDecoderStream = CreateDecryptorStream(xmfBaseInputNetworkStream, xmfBaseIdentifierString, xmfBaseFileName, (int?)xmfBaseIdentifier?.fileTime ?? 0);
-            using FileStream xmfBaseOutputStream = File.Create("C:\\Users\\neon-nyan\\AppData\\LocalLow\\CollapseLauncher\\GameFolder\\_metadata\\test.xmf");
-
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
-            int read = 0;
-            while ((read = await xmfBaseInputDecoderStream.ReadAsync(buffer)) > 0)
-                xmfBaseOutputStream.Write(buffer, 0, read);
             #region unused
 
             using (SRMetadata srm = new SRMetadata("https://globaldp-prod-os01.starrails.com/query_dispatch", "3a57430d8d",
