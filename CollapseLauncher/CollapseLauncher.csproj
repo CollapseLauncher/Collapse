@@ -136,6 +136,10 @@
 		<Content Include="..\THIRD_PARTY_NOTICES.md">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+
+		<Content Include="Lib\waifu2x-ncnn-vulkan.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">

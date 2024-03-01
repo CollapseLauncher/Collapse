@@ -5,7 +5,6 @@ using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,13 +19,38 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+using static CollapseLauncher.Helper.Image.Waifu2X;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
-        internal static Dictionary<string, string> SupportedImageFormats = 
+        internal static Dictionary<string, string> SupportedImageFormats =
             new() { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } };
+
+        private static Waifu2X _waifu2X;
+
+        public static Waifu2XStatus Waifu2XStatus => _waifu2X.Status;
+
+        public static bool IsWaifu2XEnabled
+        {
+            get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable;
+            set => SetAndSaveConfigValue("EnableWaifu2X", value);
+        }
+
+        public static bool IsWaifu2XUsable => Waifu2XStatus != Waifu2XStatus.NotAvailable;
+
+        public static void InitWaifu2X()
+        {
+            _waifu2X = new Waifu2X();
+            if (_waifu2X.Status == Waifu2XStatus.NotAvailable)
+                return;
+            _waifu2X.Set(Param.Noise, -1);
+            _waifu2X.Set(Param.Scale, 2);
+            _waifu2X.Load(Path.Combine(AppFolder, @"Assets\Models\scale2.0x_model.param.bin"),
+                Path.Combine(AppFolder, @"Assets\Models\scale2.0x_model.bin"));
+        }
 
         internal static async Task<FileStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)
         {
@@ -38,7 +62,7 @@ namespace CollapseLauncher.Helper.Image
             uint targetSourceImageHeight = (uint)(aspectRatioY * 1.5 * dpiScale);
             bool isError = false;
 
-            if (!Directory.Exists(LauncherConfig.AppGameImgCachedFolder)) Directory.CreateDirectory(LauncherConfig.AppGameImgCachedFolder!);
+            if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder!);
 
             FileStream resizedImageFileStream = null;
 
@@ -211,11 +235,13 @@ namespace CollapseLauncher.Helper.Image
         internal static FileInfo GetCacheFileInfo(string filePath)
         {
             string cachedFileHash = ConverterTool.BytesToCRC32Simple(filePath);
-            string cachedFilePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder!, cachedFileHash!);
+            string cachedFilePath = Path.Combine(AppGameImgCachedFolder!, cachedFileHash!);
+            if (IsWaifu2XEnabled)
+                cachedFilePath += "_waifu2x";
             return new FileInfo(cachedFilePath);
         }
 
-        private static async Task ResizeImageStream(Stream input, Stream output, uint ToWidth, uint ToHeight)
+        public static async Task ResizeImageStream(Stream input, Stream output, uint ToWidth, uint ToHeight)
         {
             ProcessImageSettings settings = new()
             {
@@ -225,7 +251,23 @@ namespace CollapseLauncher.Helper.Image
                 Interpolation = InterpolationSettings.CubicSmoother
             };
 
-            await Task.Run(() => MagicImageProcessor.ProcessImage(input!, output!, settings));
+            await Task.Run(() =>
+            {
+                var imageFileInfo = ImageFileInfo.Load(input);
+                var frame = imageFileInfo.Frames[0];
+                input.Position = 0;
+                if (IsWaifu2XEnabled && (frame.Width < ToWidth || frame.Height < ToHeight))
+                {
+                    var pipeline = MagicImageProcessor.BuildPipeline(input, ProcessImageSettings.Default)
+                        .AddTransform(new Waifu2XTransform(_waifu2X));
+                    MagicImageProcessor.ProcessImage(pipeline.PixelSource!, output!, settings);
+                    pipeline.Dispose();
+                }
+                else
+                {
+                    MagicImageProcessor.ProcessImage(input!, output!, settings);
+                }
+            });
         }
 
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath, uint ToWidth, uint ToHeight)

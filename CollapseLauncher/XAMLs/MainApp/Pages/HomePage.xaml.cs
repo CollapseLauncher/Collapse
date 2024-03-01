@@ -1,5 +1,6 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CollapseLauncher.ShortcutUtils;
@@ -211,6 +212,8 @@ namespace CollapseLauncher.Pages
             // Get the cached filename and path
             string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon);
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+            if (ImageLoaderHelper.IsWaifu2XEnabled)
+                cachedFilePath += "_waifu2x";
 
             // Create a cached image folder if not exist
             if (!Directory.Exists(AppGameImgCachedFolder))
@@ -246,7 +249,7 @@ namespace CollapseLauncher.Pages
                     };
 
                     copyIconFileStream.Position = 0; // Reset the original icon stream position
-                    await Task.Run(() => MagicImageProcessor.ProcessImage(copyIconFileStream, cachedIconFileStream, settings)); // Start resizing
+                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
                     cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
                     // Set the source from cached icon stream

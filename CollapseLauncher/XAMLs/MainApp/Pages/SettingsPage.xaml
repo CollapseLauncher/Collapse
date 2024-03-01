@@ -2,6 +2,7 @@
     x:Class="CollapseLauncher.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:CollapseLauncher.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:Hi3Helper"
     xmlns:innerConfig="using:Hi3Helper.Shared.Region"
@@ -11,6 +12,9 @@
     Loaded="Page_Loaded"
     NavigationCacheMode="Enabled"
     mc:Ignorable="d">
+    <Page.Resources>
+        <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
+    </Page.Resources>
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
             <Grid.ColumnDefinitions>
@@ -117,6 +121,24 @@
                             IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <Grid Margin="0,4,0,8">
+                            <Border Background="Transparent" ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
+                                    Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
+                            <ToggleSwitch
+                                IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
+                                IsEnabled="{x:Bind IsWaifu2XUsable}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}">
+                                <ToggleSwitch.Header>
+                                    <StackPanel Orientation="Horizontal" Loaded="EnableHeaderMouseEvent">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Waifu2X_Toggle}" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                   FontSize="18" Opacity="0.25" Text="{x:Bind Waifu2XToolTipIcon}" />
+                                    </StackPanel>
+                                </ToggleSwitch.Header>
+                            </ToggleSwitch>
+                        </Grid>
                         <StackPanel Margin="0,4,0,8" HorizontalAlignment="Left">
                             <CheckBox
                                 x:Name="AppBGMode"
@@ -294,9 +316,11 @@
                                     <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                         <RadioButton ToolTipService.ToolTip="{x:Bind Description}">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Name}" />
+                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                    Text="{x:Bind Name}" VerticalAlignment="Center" />
                                                 <TextBlock
                                                     Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
                                                     FontFamily="{ThemeResource FontAwesomeSolid}"
                                                     FontSize="18"
                                                     Opacity="0.25"

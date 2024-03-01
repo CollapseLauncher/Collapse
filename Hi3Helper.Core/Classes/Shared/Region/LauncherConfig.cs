@@ -304,7 +304,8 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "HI3IgnoreMediaPack", false },
             { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
             { "MinimizeToTray", false },
-            { "UseExternalBrowser", false}
+            { "UseExternalBrowser", false },
+            { "EnableWaifu2X", false },
         };
         #endregion
     }
