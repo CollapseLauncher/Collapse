@@ -70,11 +70,7 @@ namespace CollapseLauncher
                     SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
-#if PROTOTYPEUI
                     rootFrame.Navigate(typeof(Pages.OOBE.OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
-#else
-                    rootFrame.Navigate(typeof(StartupLanguageSelect), null, new DrillInNavigationTransitionInfo());
-#endif
                 }
                 else
                     StartMainPage();

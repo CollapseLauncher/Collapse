@@ -547,6 +547,7 @@ namespace CollapseLauncher
                 bool isIncluded = catalog.Any(x => x.Equals(asset, StringComparison.OrdinalIgnoreCase));
                 bool isScreenshot = asset.Contains("ScreenShot", StringComparison.OrdinalIgnoreCase);
                 bool isLog = asset.EndsWith(".log", StringComparison.OrdinalIgnoreCase);
+                bool isDriver = asset.EndsWith(".sys", StringComparison.OrdinalIgnoreCase);
 
                 // Configuration related
                 bool isWebcaches = asset.Contains("webCaches", StringComparison.OrdinalIgnoreCase);
@@ -580,7 +581,7 @@ namespace CollapseLauncher
                 bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                     || filename.StartsWith("dxgi.dll", StringComparison.OrdinalIgnoreCase);
 
-                if (!isIncluded && !isIni && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
+                if (!isIncluded && !isIni && !isDriver && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
                     && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
                     && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch
                     && !isDeltaPatch && !isFlags && !isZip && !isDirectX)
