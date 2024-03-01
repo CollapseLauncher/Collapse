@@ -1409,7 +1409,7 @@ namespace CollapseLauncher
             if (GetAppConfigValue("EnableShortcuts").ToBoolNullable() == null)
             {
                 SetAndSaveConfigValue("EnableShortcuts", true);
-                KeyList = null;
+                ShortcutList = null;
 
                 SpawnNotificationPush(
                     Lang._AppNotification.NotifKbShortcutTitle,
@@ -1433,12 +1433,12 @@ namespace CollapseLauncher
         {
             try
             {
-                List<List<string>> keys = KeyList;
+                Dictionary<string, KbShortcut> shortcuts = ShortcutList;
 
                 int keysIndex = 0;
 
                 int numIndex = 0;
-                VirtualKeyModifiers keyModifier = StrToVKeyModifier(keys[keysIndex][0]);
+                VirtualKeyModifiers keyModifier = shortcuts["GameSelection"].Modifier;
                 foreach (StackPanel gameTitlePanel in ComboBoxGameCategory.Items.OfType<StackPanel>())
                 {
                     string game = GetComboBoxGameRegionValue(gameTitlePanel);
@@ -1459,7 +1459,7 @@ namespace CollapseLauncher
                 }
 
                 numIndex = 0;
-                keyModifier = StrToVKeyModifier(keys[++keysIndex][0]);
+                keyModifier = shortcuts["RegionSelection"].Modifier;
                 while (numIndex < 6)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
@@ -1478,42 +1478,42 @@ namespace CollapseLauncher
                 keystrokeF5.Invoked += RefreshPage_Invoked;
                 KeyboardHandler.KeyboardAccelerators.Add(keystrokeF5);
 
-                List<KeybindAction> actions = new()
+                Dictionary<string, KeybindAction> actions = new()
                 {
                     // General
-                    ShowKeybinds_Invoked,
-                    GoHome_Invoked,
-                    GoSettings_Invoked,
-                    OpenNotify_Invoked,
+                    { "KbShortcutsMenu", ShowKeybinds_Invoked },
+                    { "HomePage", GoHome_Invoked },
+                    { "SettingsPage", GoSettings_Invoked },
+                    { "NotificationPanel", OpenNotify_Invoked },
 
                     // Game Related
-                    OpenScreenshot_Invoked,
-                    OpenGameFolder_Invoked,
-                    OpenGameCacheFolder_Invoked,
-                    ForceCloseGame_Invoked,
+                    { "ScreenshotFolder", OpenScreenshot_Invoked},
+                    { "GameFolder", OpenGameFolder_Invoked },
+                    { "CacheFolder", OpenGameCacheFolder_Invoked },
+                    { "ForceCloseGame", ForceCloseGame_Invoked },
 
-                    GoGameRepir_Invoked,
-                    GoGameSettings_Invoked,
-                    GoGameCaches_Invoked,
+                    { "RepairPage", GoGameRepir_Invoked },
+                    { "GameSettingsPage", GoGameSettings_Invoked },
+                    { "CachesPage", GoGameCaches_Invoked },
 
-                    RefreshPage_Invoked
+                    { "ReloadRegion", RefreshPage_Invoked }
                 };
 
-                foreach (KeybindAction func in actions)
+                foreach (var func in actions)
                 {
                     KeyboardAccelerator kbfunc = new KeyboardAccelerator()
                     {
-                        Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
-                        Key = StrToVKey(keys[keysIndex][1])
+                        Modifiers = shortcuts[func.Key].Modifier,
+                        Key = shortcuts[func.Key].Key
                     };
-                    kbfunc.Invoked += func;
+                    kbfunc.Invoked += func.Value;
                     KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
                 }
             }
             catch (Exception error)
             {
                 LogWriteLine(error.ToString());
-                KeyList = null;
+                ShortcutList = null;
                 CreateKeyboardShortcutHandlers();
             }
         }
