@@ -561,7 +561,7 @@ namespace CollapseLauncher.Dialogs
         {
             get
             {
-                string keyListStr = GetAppConfigValue("KbShortcutListV2").ToString();
+                string keyListStr = GetAppConfigValue("KbShortcutList").ToString();
                 Dictionary<string, KbShortcut> resultList = new Dictionary<string, KbShortcut>();
 
                 if (keyListStr == null)
@@ -571,6 +571,18 @@ namespace CollapseLauncher.Dialogs
                         resultList.Add(entry.Key, entry.Value);
                     }
                     return resultList;
+                }
+
+                if (!keyListStr.Contains(':'))
+                {
+                    LogWriteLine($"Detected old KbShortcutList! Converting...\nOld Value:\"{keyListStr}\"", writeToLog:true);
+                    var keyList = DefaultShortcutList.Keys;
+                    int index = 0;
+                    foreach (string combination in keyListStr.Split('|'))
+                    {
+                        resultList.Add(keyList.ElementAt(index), KbShortcut.FromOldKeyList(combination.Split(",")));
+                        index++;
+                    }
                 }
 
                 foreach (string combination in keyListStr.Split('|'))
@@ -598,7 +610,7 @@ namespace CollapseLauncher.Dialogs
                 }
                 res = res.Remove(res.Length - 1);
                 LogWriteLine("KeyList was updated to: " + res);
-                SetAndSaveConfigValue("KbShortcutListV2", res);
+                SetAndSaveConfigValue("KbShortcutList", res);
             }
         }
 
@@ -654,6 +666,26 @@ namespace CollapseLauncher.Dialogs
             public override string ToString()
             {
                 return GetFormattedModifier() + "," + GetKey();
+            }
+
+            public static KbShortcut FromOldKeyList(string[] strings)
+            {
+                if (strings.Length != 2)
+                    return null;
+
+                VirtualKeyModifiers mod = strings[0] switch
+                {
+                    "Ctrl" => VirtualKeyModifiers.Control,
+                    "Shift" => VirtualKeyModifiers.Shift,
+                    "Alt" => VirtualKeyModifiers.Menu,
+                    _ => (VirtualKeyModifiers)Enum.Parse(typeof(VirtualKeyModifiers), strings[0])
+                };
+
+                if (strings[0] is "1 - 3" or "1 - 6")
+                    return new KbShortcut { Modifier = mod, Key = VirtualKey.None };
+
+                VirtualKey key = (VirtualKey)Enum.Parse(typeof(VirtualKey), strings[1]);
+                return new KbShortcut { Modifier = mod, Key = key };
             }
         }
 
