@@ -6,16 +6,40 @@ exclude:
   - name: All
     paths:
       - Hi3Helper.EncTool.Test
-      - Hi3Helper.Core/Classes/DiscordPresence/src
       - CollapseLauncher/XAMLs/Prototype
-  - name: Xaml.InvalidResourceType
   - name: CheckNamespace
-  - name: Xaml.BindingWithContextNotResolved
-  - name: Xaml.ConstructorWarning
   - name: UnusedParameter.Local
   - name: UnusedMember.Local
   - name: RedundantArgumentDefaultValue
   - name: RedundantDefaultMemberInitializer
+  - name: Xaml.BindingWithContextNotResolved
+  - name: Xaml.ConstructorWarning
+  - name: Xaml.InvalidResourceType
   - name: Xaml.StaticResourceNotResolved
 include:
   - name: CheckDependencyLicenses
+licenseRules:
+  - keys:
+      - "MIT"
+    allowed:
+    # WinAppSDK
+      - "MS-DXSDK-D3DX-9.29.952.3"
+    # .NET
+      - "MS-ASP-NET-WEB-OPTIMIZATION"
+      - "MS-NET-LIBRARY-2019-06"
+    # Windows SDK
+      - "PROPRIETARY-LICENSE"
+    # Protobuf, duh
+      - "PROTOBUF"
+    # System.CommandLine NuGet for some reason
+      - "None"
+dependencyIgnores:
+  # Ignore dependencies with no license
+  # ColorCode is part of transitive dependency for H.NotifyIcon.WinUI
+  - name: "ColorCode.Core"
+  - name: "ColorCode.WinUI"
+  # Microsoft...
+  - name: "System.CommandLine"
+  - name: "System.CommandLine.NamingConventionBinder"
+  # huh?
+  - name: "ThisAssembly.Constants"

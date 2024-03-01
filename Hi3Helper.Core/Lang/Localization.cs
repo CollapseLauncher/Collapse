@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Reflection;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 #if !APPLYUPDATE
@@ -11,6 +9,8 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 #else
 using ApplyUpdate;
 using Avalonia.Platform;
+using System.Linq;
+using System.Reflection;
 using static ApplyUpdate.Statics;
 #endif
 
@@ -24,7 +24,7 @@ namespace Hi3Helper
             this.LangIndex = index;
             this.LangIsLoaded = false;
 
-            ReadOnlySpan<char> langRelativePath = filePath.AsSpan().Slice(AppLangFolder.Length + 1);
+            ReadOnlySpan<char> langRelativePath = filePath.AsSpan().Slice(AppLangFolder!.Length + 1);
 
             try
             {
@@ -61,7 +61,7 @@ namespace Hi3Helper
 #if APPLYUPDATE
             return LoadLang(new Uri(LangFilePath));
 #else
-            using (Stream s = new FileStream(this.LangFilePath, FileMode.Open, FileAccess.Read))
+            using (Stream s = new FileStream(this.LangFilePath!, FileMode.Open, FileAccess.Read))
             {
                 return LoadLang(s);
             }
@@ -70,7 +70,7 @@ namespace Hi3Helper
 
         public LocalizationParams LoadLang(string langPath)
         {
-            using (Stream s = new FileStream(langPath, FileMode.Open, FileAccess.Read))
+            using (Stream s = new FileStream(langPath!, FileMode.Open, FileAccess.Read))
             {
                 return LoadLang(s);
             }
@@ -88,8 +88,8 @@ namespace Hi3Helper
 
         public LocalizationParams LoadLang(Stream langStream)
         {
-            LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(langStream, typeof(LocalizationParams), CoreLibraryFieldsJSONContext.Default);
-            this.LangAuthor = _langData.Author;
+            LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(langStream!, typeof(LocalizationParams), CoreLibraryFieldsJSONContext.Default);
+            this.LangAuthor = _langData!.Author;
             this.LangID = _langData.LanguageID.ToLower();
             this.LangName = _langData.LanguageName;
             this.LangIsLoaded = true;
@@ -131,19 +131,19 @@ namespace Hi3Helper
                 LangMetadata Metadata = new LangMetadata(langPath, i);
 #else
             TrySafeRenameOldEnFallback();
-            foreach (string langPath in Directory.EnumerateFiles(AppLangFolder, "*.json", SearchOption.AllDirectories))
+            foreach (string langPath in Directory.EnumerateFiles(AppLangFolder!, "*.json", SearchOption.AllDirectories))
             {
                 LangMetadata Metadata = new LangMetadata(langPath, i);
 #endif
                 if (Metadata.LangIsLoaded)
                 {
-                    LanguageNames.Add(Metadata.LangID.ToLower(), Metadata);
-                    LanguageIDIndex.Add(Metadata.LangID);
+                    LanguageNames!.Add(Metadata.LangID.ToLower(), Metadata);
+                    LanguageIDIndex!.Add(Metadata.LangID);
                     i++;
                 }
             }
 
-            if (!LanguageNames.ContainsKey(FallbackLangID))
+            if (!LanguageNames!.ContainsKey(FallbackLangID))
             {
                 throw new LocalizationNotFoundException($"Fallback locale file with ID: \"{FallbackLangID}\" doesn't exist!");
             }
@@ -152,8 +152,8 @@ namespace Hi3Helper
 #if !APPLYUPDATE
         private static void TrySafeRenameOldEnFallback()
         {
-            string possibleOldPath = Path.Combine(AppLangFolder, "en.json");
-            string possibleNewPath = Path.Combine(AppLangFolder, "en-us.json");
+            string possibleOldPath = Path.Combine(AppLangFolder!, "en.json");
+            string possibleNewPath = Path.Combine(AppLangFolder!, "en-us.json");
 
             if (File.Exists(possibleOldPath) && File.Exists(possibleNewPath)) File.Delete(possibleOldPath);
             if (File.Exists(possibleOldPath) && !File.Exists(possibleNewPath)) File.Move(possibleOldPath, possibleNewPath);
@@ -164,8 +164,8 @@ namespace Hi3Helper
         {
             try
             {
-                LangFallback = LanguageNames[FallbackLangID].LoadLang();
-                langID = langID.ToLower();
+                LangFallback = LanguageNames![FallbackLangID].LoadLang();
+                langID = langID!.ToLower();
                 if (!LanguageNames.ContainsKey(langID))
                 {
                     Lang = LanguageNames[FallbackLangID].LoadLang();

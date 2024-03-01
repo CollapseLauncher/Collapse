@@ -17,8 +17,7 @@ namespace CollapseLauncher
         Korean = 3
     }
 
-    internal partial class GenshinRepair :
-        ProgressBase<RepairAssetType, PkgVersionProperties>, IRepair
+    internal partial class GenshinRepair : ProgressBase<PkgVersionProperties>, IRepair
     {
         #region ExtensionProperties
         private protected string _execPrefix { get => Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName); }

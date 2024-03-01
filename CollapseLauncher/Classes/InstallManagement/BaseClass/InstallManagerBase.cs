@@ -1,4 +1,5 @@
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
@@ -18,7 +19,6 @@ using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -33,7 +33,8 @@ using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 
 namespace CollapseLauncher.InstallManager.Base
 {
-    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackageType, GameInstallPackage> where T : IGameVersionCheck
+    // ReSharper disable once UnusedTypeParameter
+    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage> where T : IGameVersionCheck
     {
         #region Internal Struct
         protected struct UninstallGameProperty
@@ -49,26 +50,26 @@ namespace CollapseLauncher.InstallManager.Base
         #region Properties
         protected readonly string _gamePersistentFolderBasePath;
         protected readonly string _gameStreamingAssetsFolderBasePath;
-        protected RegionResourceGame _gameRegion { get => _gameVersionManager.GameAPIProp.data; }
-        protected GameVersion _gameLatestVersion { get => _gameVersionManager.GetGameVersionAPI(); }
-        protected GameVersion? _gameLatestPreloadVersion { get => _gameVersionManager.GetGameVersionAPIPreload(); }
-        protected GameVersion? _gameInstalledVersion { get => _gameVersionManager.GetGameExistingVersion(); }
-        protected GameInstallStateEnum _gameInstallationStatus { get => _gameVersionManager.GetGameState(); }
+        protected RegionResourceGame _gameRegion { get => _gameVersionManager!.GameAPIProp!.data; }
+        protected GameVersion _gameLatestVersion { get => _gameVersionManager!.GetGameVersionAPI(); }
+        protected GameVersion? _gameLatestPreloadVersion { get => _gameVersionManager!.GetGameVersionAPIPreload(); }
+        protected GameVersion? _gameInstalledVersion { get => _gameVersionManager!.GetGameExistingVersion(); }
+        protected GameInstallStateEnum _gameInstallationStatus { get => _gameVersionManager!.GetGameState(); }
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
         protected virtual int _gameVoiceLanguageID { get => int.MinValue; }
         protected IRepair _gameRepairTool { get; set; }
         protected Http _httpClient { get; private set; }
-        protected bool _canDeleteHdiffReference { get => !File.Exists(Path.Combine(_gamePath, "@NoDeleteHdiffReference")); }
-        protected bool _canDeleteZip { get => !File.Exists(Path.Combine(_gamePath, "@NoDeleteZip")); }
-        protected bool _canSkipVerif { get => File.Exists(Path.Combine(_gamePath, "@NoVerification")); }
-        protected bool _canSkipExtract { get => File.Exists(Path.Combine(_gamePath, "@NoExtraction")); }
+        protected bool _canDeleteHdiffReference { get => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteHdiffReference")); }
+        protected bool _canDeleteZip { get => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteZip")); }
+        protected bool _canSkipVerif { get => File.Exists(Path.Combine(_gamePath!, "@NoVerification")); }
+        protected bool _canSkipExtract { get => File.Exists(Path.Combine(_gamePath!, "@NoExtraction")); }
         protected bool _canMergeDownloadChunks { get => LauncherConfig.GetAppConfigValue("UseDownloadChunksMerging").ToBool(); }
         protected virtual bool _canDeltaPatch { get => false; }
         protected virtual DeltaPatchProperty _gameDeltaPatchProperty { get => null; }
 
-        protected List<GameInstallPackage> _gameDeltaPatchPreReqList = new List<GameInstallPackage>();
-        protected bool _forceIgnoreDeltaPatch = false;
-        private long _totalLastSizeCurrent = 0;
+        protected List<GameInstallPackage> _gameDeltaPatchPreReqList = new();
+        protected bool _forceIgnoreDeltaPatch;
+        private long _totalLastSizeCurrent;
         #endregion
 
         #region Public Properties
@@ -81,8 +82,10 @@ namespace CollapseLauncher.InstallManager.Base
         {
             _httpClient = new Http(true);
             _gameVersionManager = GameVersionManager;
-            _gamePersistentFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent";
-            _gameStreamingAssetsFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\StreamingAssets";
+            _gamePersistentFolderBasePath =
+                $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent";
+            _gameStreamingAssetsFolderBasePath =
+                $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\StreamingAssets";
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
@@ -111,7 +114,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             UpdateCompletenessStatus(CompletenessStatus.Idle);
             _gameRepairTool?.Dispose();
-            _assetIndex.Clear();
+            if (_assetIndex != null) _assetIndex.Clear();
             FlushingTrigger?.Invoke(this, EventArgs.Empty);
 
             // Reset _forceIgnoreDeltaPatch state to false
@@ -125,7 +128,7 @@ namespace CollapseLauncher.InstallManager.Base
             ResetToken();
 
             // Initialize the game state and game package list
-            _gameDeltaPatchPreReqList.Clear();
+            if (_gameDeltaPatchPreReqList != null) _gameDeltaPatchPreReqList.Clear();
             GameInstallStateEnum gameState = _gameInstallationStatus;
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
@@ -136,7 +139,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // and back to use the normal update (0)
                 if (!await GetAndDownloadDeltaPatchPreReq(_gameDeltaPatchPreReqList, gameState)) return 0;
 
-                switch (await Dialog_DeltaPatchFileDetected(_parentUI, patchProperty.SourceVer, patchProperty.TargetVer))
+                switch (await Dialog_DeltaPatchFileDetected(_parentUI, patchProperty!.SourceVer, patchProperty.TargetVer))
                 {
                     // If no, then proceed with normal update (0)
                     // Also set ignore delta patch process if this method is re-called
@@ -156,24 +159,24 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     // Set the activity
-                    _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status2);
-                    _status.IsIncludePerFileIndicator = false;
-                    _status.IsProgressTotalIndetermined = true;
+                    _status!.ActivityStatus = string.Format(Lang!._GameRepairPage!.Status2!);
+                    _status!.IsIncludePerFileIndicator = false;
+                    _status!.IsProgressTotalIndetermined = true;
                     UpdateStatus();
 
                     // Start the check routine and get the state if download needed
-                    _gameRepairTool.ProgressChanged += DeltaPatchCheckProgress;
-                    bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine();
+                    _gameRepairTool!.ProgressChanged += DeltaPatchCheckProgress;
+                    bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                     if (isDownloadNeeded)
                     {
-                        _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status8, "").Replace(": ", "");
+                        _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status8!, "").Replace(": ", "");
                         _progressTotalSizeCurrent = 0;
                         _progressTotalCountCurrent = 1;
                         _progressTotalReadCurrent = 0;
                         UpdateStatus();
 
                         // If download needed, then start the repair (download) routine
-                        await _gameRepairTool.StartRepairRoutine(true);
+                        await _gameRepairTool!.StartRepairRoutine(true)!;
                     }
                 }
                 catch
@@ -184,7 +187,7 @@ namespace CollapseLauncher.InstallManager.Base
                 finally
                 {
                     // Unsubscribe the progress event
-                    _gameRepairTool.ProgressChanged -= DeltaPatchCheckProgress;
+                    _gameRepairTool!.ProgressChanged -= DeltaPatchCheckProgress;
                 }
 
                 // Then return 1 as continue to other steps
@@ -198,28 +201,30 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Initialize the state and the package
             GameInstallStateEnum gameState = _gameInstallationStatus;
-            List<GameInstallPackage> gamePackage = new List<GameInstallPackage>();
+            
+            // ReSharper disable once UnusedVariable
+            List<GameInstallPackage> gamePackage = new();
 
             if (_canDeltaPatch && gameState == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
             {
                 DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
 
-                string previousPath = _gamePath;
+                string previousPath = _gamePath!;
                 string ingredientPath = previousPath.TrimEnd('\\') + "_Ingredients";
 
                 try
                 {
-                    List<FilePropertiesRemote> localAssetIndex = repairGame.GetAssetIndex();
+                    List<FilePropertiesRemote> localAssetIndex = repairGame!.GetAssetIndex();
                     MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath, isHonkai);
 
                     // Get the sum of uncompressed size and
                     // Set progress count to beginning
-                    _progressTotalSize = localAssetIndex.Sum(x => x.S);
+                    _progressTotalSize = localAssetIndex!.Sum(x => x!.S);
                     _progressTotalSizeCurrent = 0;
                     _progressTotalCountCurrent = 1;
-                    _status.IsIncludePerFileIndicator = false;
-                    _status.IsProgressTotalIndetermined = true;
-                    _status.ActivityStatus = Lang._Misc.ApplyingPatch;
+                    _status!.IsIncludePerFileIndicator = false;
+                    _status!.IsProgressTotalIndetermined = true;
+                    _status!.ActivityStatus = Lang!._Misc!.ApplyingPatch;
                     UpdateStatus();
                     RestartStopwatch();
 
@@ -230,8 +235,8 @@ namespace CollapseLauncher.InstallManager.Base
                     await Task.Run(() =>
                     {
                         HDiffPatch patch = new HDiffPatch();
-                        patch.Initialize(patchProperty.PatchPath);
-                        patch.Patch(ingredientPath, previousPath, true, _token.Token, false, true);
+                        patch.Initialize(patchProperty!.PatchPath);
+                        patch.Patch(ingredientPath, previousPath, true, _token!.Token, false, true);
                     });
 
                     // Remove ingredient folder
@@ -241,10 +246,11 @@ namespace CollapseLauncher.InstallManager.Base
                     if (_canDeleteZip)
                     {
                         // Delete the delta patch file
-                        File.Delete(patchProperty.PatchPath);
+                        if (patchProperty == null || String.IsNullOrEmpty(patchProperty.PatchPath)) return true;
+                        File.Delete(patchProperty!.PatchPath!);
 
                         // Delete the pre-req delta patch file if there's one
-                        foreach (GameInstallPackage package in _gameDeltaPatchPreReqList)
+                        foreach (GameInstallPackage package in _gameDeltaPatchPreReqList!)
                         {
                             DeleteSingleOrSegmentedDownloadStream(package);
                         }
@@ -275,41 +281,44 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual async ValueTask<bool> GetAndDownloadDeltaPatchPreReq(List<GameInstallPackage> gamePackage, GameInstallStateEnum gameState)
         {
             // Iterate the latest game package list
-            foreach (RegionResourceVersion asset in _gameVersionManager.GetGameLatestZip(gameState))
+            foreach (RegionResourceVersion asset in _gameVersionManager!.GetGameLatestZip(gameState)!)
                 await TryAddResourceVersionList(asset, gamePackage, true);
 
             // Start getting the size of the packages
-            await GetPackagesRemoteSize(gamePackage, _token.Token);
+            await GetPackagesRemoteSize(gamePackage, _token!.Token);
 
             // If the game package list is empty, then return true as skips the prerequisite download
-            if (gamePackage.Count == 0) return true;
+            if (gamePackage == null || gamePackage.Count == 0) return true;
 
             // Get the required disk size
-            long totalDownloadSize = gamePackage.Sum(x => x.Size);
-            long requiredDiskSpace = gamePackage.Sum(x => x.SizeRequired);
+            long totalDownloadSize = gamePackage.Sum(x => x!.Size);
+            //long requiredDiskSpace = gamePackage.Sum(x => x!.SizeRequired);
 
             // Build the dialog UI
+            var locDialogs = Lang!._Dialogs!;
+            var locMisc    = Lang!._Misc!;
+
             TextBlock message = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle1);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle1);
             message.AddTextBlockLine(ConverterTool.SummarizeSizeSimple(totalDownloadSize), FontWeights.SemiBold);
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle2);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle2);
             message.AddTextBlockNewLine(2);
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle3);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle3);
             message.AddTextBlockNewLine(2);
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle4, null, 10);
-            message.AddTextBlockLine(Lang._Misc.YesContinue, FontWeights.SemiBold, 10);
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle5, null, 10);
-            message.AddTextBlockLine(Lang._Misc.No, FontWeights.SemiBold, 10);
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle6, null, 10);
-            message.AddTextBlockLine(Lang._Misc.Cancel, FontWeights.SemiBold, 10);
-            message.AddTextBlockLine(Lang._Dialogs.DeltaPatchPreReqSubtitle7, null, 10);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle4, null,                 10);
+            message.AddTextBlockLine(locMisc.YesContinue,                  FontWeights.SemiBold, 10);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle5, null,                 10);
+            message.AddTextBlockLine(locMisc.No,                           FontWeights.SemiBold, 10);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle6, null,                 10);
+            message.AddTextBlockLine(locMisc.Cancel,                       FontWeights.SemiBold, 10);
+            message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle7, null,                 10);
             ContentDialogResult dialogResult = await SpawnDialog(
-                Lang._Dialogs.DeltaPatchPreReqTitle,
+                locDialogs.DeltaPatchPreReqTitle,
                 message,
                 _parentUI,
-                Lang._Misc.Cancel,
-                Lang._Misc.YesContinue,
-                Lang._Misc.No,
+                locMisc.Cancel,
+                locMisc.YesContinue,
+                locMisc.No,
                 ContentDialogButton.Primary,
                 ContentDialogTheme.Warning
                 );
@@ -328,7 +337,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await StartDeltaPatchPreReqDownload(gamePackage);
 
                 // Start the install routine
-                await StartPackageInstallationInner(gamePackage, true, true);
+                await StartPackageInstallationInner(gamePackage, true, true)!;
             }
             catch
             {
@@ -341,17 +350,19 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async ValueTask StartDeltaPatchPreReqDownload(List<GameInstallPackage> gamePackage)
         {
+            if (_status == null || gamePackage == null) 
+                throw new Exception("InstallManagement::StartDeltaPatchPreReqDownload() is unexceptedly not initialized!");
             // Set the progress bar to indetermined
-            _status.IsIncludePerFileIndicator = gamePackage.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
+            _status.IsIncludePerFileIndicator = gamePackage.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
             _status.IsProgressPerFileIndetermined = true;
             _status.IsProgressTotalIndetermined = true;
             UpdateStatus();
 
             // Start getting the size of the packages
-            await GetPackagesRemoteSize(gamePackage, _token.Token);
+            await GetPackagesRemoteSize(gamePackage, _token!.Token);
 
             // Get the remote total size and current total size
-            _progressTotalSize = gamePackage.Sum(x => x.Size);
+            _progressTotalSize = gamePackage.Sum(x => x!.Size);
             _progressTotalSizeCurrent = GetExistingDownloadPackageSize(gamePackage);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
@@ -362,11 +373,11 @@ namespace CollapseLauncher.InstallManager.Base
 
         StartDeltaPatchPreReqVerification:
             // Set progress bar to not indetermined
-            _status.IsProgressPerFileIndetermined = false;
-            _status.IsProgressTotalIndetermined = false;
+            _status!.IsProgressPerFileIndetermined = false;
+            _status!.IsProgressTotalIndetermined = false;
 
             // Start downloading process
-            await InvokePackageDownloadRoutine(gamePackage, _token.Token);
+            await InvokePackageDownloadRoutine(gamePackage, _token!.Token);
 
             // Reset the progress status
             _progressTotalSizeCurrent = 0;
@@ -376,7 +387,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Start the verification routine
             foreach (GameInstallPackage asset in gamePackage)
             {
-                switch (await RunPackageVerificationRoutine(asset, _token.Token))
+                switch (await RunPackageVerificationRoutine(asset, _token!.Token))
                 {
                     // 0 means redownload the corrupted file 
                     case 0:
@@ -417,7 +428,7 @@ namespace CollapseLauncher.InstallManager.Base
             ResetToken();
 
             // Get the game state and run the action for each of them
-            GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
+            GameInstallStateEnum gameState = _gameVersionManager!.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
 
             try
@@ -436,16 +447,16 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Set the progress bar to indetermined
-                _status.IsIncludePerFileIndicator = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
-                _status.IsProgressPerFileIndetermined = true;
-                _status.IsProgressTotalIndetermined = true;
+                _status!.IsIncludePerFileIndicator = _assetIndex!.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
+                _status!.IsProgressPerFileIndetermined = true;
+                _status!.IsProgressTotalIndetermined = true;
                 UpdateStatus();
 
                 // Start getting the size of the packages
-                await GetPackagesRemoteSize(_assetIndex, _token.Token);
+                await GetPackagesRemoteSize(_assetIndex, _token!.Token);
 
                 // Get the remote total size and current total size
-                _progressTotalSize = _assetIndex.Sum(x => x.Size);
+                _progressTotalSize = _assetIndex!.Sum(x => x!.Size);
                 _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
 
                 // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
@@ -458,7 +469,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Start downloading process
-                await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
+                await InvokePackageDownloadRoutine(_assetIndex, _token!.Token);
 
                 UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
@@ -478,10 +489,11 @@ namespace CollapseLauncher.InstallManager.Base
             try
             {
                 gamePackage ??= _assetIndex;
+                ArgumentNullException.ThrowIfNull(gamePackage);
+                
                 UpdateCompletenessStatus(CompletenessStatus.Running);
-
                 // Get the total asset count
-                int assetCount = gamePackage.Sum(x => x.Segments != null ? x.Segments.Count : 1);
+                int assetCount = gamePackage.Sum(x => x!.Segments != null ? x.Segments.Count : 1);
 
                 // If the assetIndex is empty, then skip and return 0
                 if (assetCount == 0)
@@ -493,29 +505,31 @@ namespace CollapseLauncher.InstallManager.Base
                 if (_canSkipVerif) return 1;
 
                 // Set progress count to beginning
-                _progressTotalSize = gamePackage.Sum(x => x.Size);
+                _progressTotalSize = gamePackage.Sum(x => x!.Size);
                 _progressTotalSizeCurrent = 0;
                 _progressTotalCountCurrent = 1;
                 _progressTotalCount = assetCount;
-                _status.IsIncludePerFileIndicator = assetCount > 1;
+                _status!.IsIncludePerFileIndicator = assetCount > 1;
                 RestartStopwatch();
 
                 // Set progress bar to not indetermined
-                _status.IsProgressPerFileIndetermined = false;
-                _status.IsProgressTotalIndetermined = false;
+                _status!.IsProgressPerFileIndetermined = false;
+                _status!.IsProgressTotalIndetermined = false;
 
                 // Iterate the asset
                 foreach (GameInstallPackage asset in gamePackage)
                 {
-                    int returnCode = 0;
+                    int returnCode;
 
+                    if (asset == null) return 0;
+                    
                     // Iterate if the package has segment
                     if (asset.Segments != null)
                     {
                         for (int i = 0; i < asset.Segments.Count; i++)
                         {
                             // Run the package verification routine
-                            if ((returnCode = await RunPackageVerificationRoutine(asset.Segments[i], _token.Token)) < 1)
+                            if ((returnCode = await RunPackageVerificationRoutine(asset.Segments[i], _token!.Token)) < 1)
                             {
                                 return returnCode;
                             }
@@ -524,7 +538,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Run the package verification routine as a single package
-                    if ((returnCode = await RunPackageVerificationRoutine(asset, _token.Token)) < 1)
+                    if ((returnCode = await RunPackageVerificationRoutine(asset, _token!.Token)) < 1)
                     {
                         return returnCode;
                     }
@@ -546,11 +560,11 @@ namespace CollapseLauncher.InstallManager.Base
             _progressPerFileSizeCurrent = 0;
 
             byte[] hashLocal;
-            using (Stream fs = asset.GetReadStream(_downloadThreadCount))
+            using (Stream fs = asset!.GetReadStream(_downloadThreadCount)!)
             {
                 // Reset the per file size
                 _progressPerFileSize = fs.Length;
-                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Verifying, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Verifying, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
@@ -587,14 +601,15 @@ namespace CollapseLauncher.InstallManager.Base
         private long GetAssetIndexTotalUncompressSize(List<GameInstallPackage> assetIndex)
         {
             long returnSize = 0;
+            ArgumentNullException.ThrowIfNull(assetIndex);
 
             foreach (GameInstallPackage asset in assetIndex)
             {
                 using (Stream stream = GetSingleOrSegmentedDownloadStream(asset))
-                using (ArchiveFile archiveFile = new ArchiveFile(stream, null))
-                {
-                    returnSize += archiveFile.Entries.Sum(x => (long)x.Size);
-                }
+                    using (ArchiveFile archiveFile = new ArchiveFile(stream!, null))
+                    {
+                        returnSize += archiveFile.Entries.Sum(x => (long)x!.Size);
+                    }
             }
 
             return returnSize;
@@ -602,16 +617,18 @@ namespace CollapseLauncher.InstallManager.Base
 
         private Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
         {
+            if (asset == null) return null;
             return asset.Segments != null && asset.Segments.Count != 0 ?
-                new CoreCombinedStream(asset.Segments.Select(x => x.GetReadStream(_downloadThreadCount)).ToArray()) :
+                new CoreCombinedStream(asset.Segments.Select(x => x!.GetReadStream(_downloadThreadCount)).ToArray()) :
                 asset.GetReadStream(_downloadThreadCount);
         }
 
         private void DeleteSingleOrSegmentedDownloadStream(GameInstallPackage asset)
         {
+            if (asset == null) return;
             if (asset.Segments != null && asset.Segments.Count != 0)
             {
-                asset.Segments.ForEach(x => x.DeleteFile(_downloadThreadCount));
+                asset.Segments.ForEach(x => x!.DeleteFile(_downloadThreadCount));
                 return;
             }
             asset.DeleteFile(_downloadThreadCount);
@@ -623,7 +640,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 UpdateCompletenessStatus(CompletenessStatus.Running);
 
-                await StartPackageInstallationInner();
+                await StartPackageInstallationInner()!;
 
                 UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
@@ -649,7 +666,7 @@ namespace CollapseLauncher.InstallManager.Base
             await Task.Run(() =>
             {
                 // Sanity Check: Check if the package list is empty or not
-                if (gamePackage.Count == 0) throw new InvalidOperationException("Package list is empty. Make sure you have ran StartPackageDownload() first.");
+                if (gamePackage == null || gamePackage.Count == 0) throw new InvalidOperationException("Package list is empty. Make sure you have ran StartPackageDownload() first.");
 
                 // If _canSkipExtract flag is true, then return (skip) the extraction
                 if (_canSkipExtract) return;
@@ -657,7 +674,7 @@ namespace CollapseLauncher.InstallManager.Base
                 _progressTotalSizeCurrent = 0;
                 _progressTotalCountCurrent = 1;
                 _progressTotalCount = gamePackage.Count;
-                _status.IsIncludePerFileIndicator = gamePackage.Count > 1;
+                _status!.IsIncludePerFileIndicator = gamePackage.Count > 1;
                 RestartStopwatch();
 
                 // Reset the last size counter
@@ -670,20 +687,21 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (GameInstallPackage asset in gamePackage)
                 {
                     // Update the status
-                    _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-                    _status.IsProgressPerFileIndetermined = false;
-                    _status.IsProgressTotalIndetermined = false;
+                    _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Extracting, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
+                    _status!.IsProgressPerFileIndetermined = false;
+                    _status!.IsProgressTotalIndetermined = false;
                     UpdateStatus();
 
                     // Load the zip
                     Stream stream = GetSingleOrSegmentedDownloadStream(asset);
-                    ArchiveFile archiveFile = new ArchiveFile(stream, null);
+                    ArchiveFile archiveFile = new ArchiveFile(stream!, null);
 
                     try
                     {
+                        ArgumentNullException.ThrowIfNull(_gamePath);
                         // Start extraction
                         archiveFile.ExtractProgress += ZipProgressAdapter;
-                        archiveFile.Extract(e => Path.Combine(_gamePath, e.FileName), _token.Token);
+                        archiveFile.Extract(e => Path.Combine(_gamePath, e!.FileName!), _token!.Token);
 
                         // Get the information about diff and delete list file
                         FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
@@ -692,17 +710,17 @@ namespace CollapseLauncher.InstallManager.Base
                         // If diff list file exist, then rename the file
                         if (hdiffList.Exists)
                         {
-                            hdiffList.MoveTo(Path.Combine(_gamePath, $"hdifffiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
+                            hdiffList.MoveTo(Path.Combine(_gamePath, $"hdifffiles_{Path.GetFileNameWithoutExtension(asset!.PathOutput)}.txt"), true);
                         }
 
                         // If the delete zip file exist, then rename the file
                         if (deleteList.Exists)
                         {
-                            deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
+                            deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset!.PathOutput)}.txt"), true);
                         }
 
                         // Make sure that the Stream is getting disposed first
-                        stream?.Dispose();
+                        stream.Dispose();
 
                         // If the _canDeleteZip flag is true and not in doNotDeleteZipExplicit mode, then delete the zip
                         if (_canDeleteZip && !doNotDeleteZipExplicit)
@@ -714,8 +732,8 @@ namespace CollapseLauncher.InstallManager.Base
                     finally
                     {
                         archiveFile.ExtractProgress -= ZipProgressAdapter;
-                        stream?.Dispose();
-                        archiveFile?.Dispose();
+                        stream.Dispose();
+                        archiveFile.Dispose();
                     }
 
                     _progressTotalCountCurrent++;
@@ -723,13 +741,9 @@ namespace CollapseLauncher.InstallManager.Base
             });
         }
 
-        public virtual async Task StartPostInstallVerification()
-        {
-        }
-
         public virtual void ApplyGameConfig(bool forceUpdateToLatest = false)
         {
-            _gameVersionManager.UpdateGamePath(_gamePath);
+            _gameVersionManager!.UpdateGamePath(_gamePath);
             if (forceUpdateToLatest)
             {
                 _gameVersionManager.UpdateGameVersionToLatest(true);
@@ -744,19 +758,19 @@ namespace CollapseLauncher.InstallManager.Base
             await GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true);
             // Get the total size of the packages
             await GetPackagesRemoteSize(_assetIndex, token);
-            long totalPackageSize = _assetIndex.Sum(x => x.Size);
+            long totalPackageSize = _assetIndex!.Sum(x => x!.Size);
 
             // Get the sum of the total size of the single or segmented packages
             return _assetIndex.Sum(asset =>
             {
                 // Check if the package is segmented
-                if (asset.Segments != null && asset.Segments.Count != 0)
+                if (asset!.Segments != null && asset.Segments.Count != 0)
                 {
                     // Get the sum of the total size/length for each of its streams
                     return asset.Segments.Sum(segment =>
                     {
                         // Check if the read stream exist
-                        if (segment.IsReadStreamExist(_downloadThreadCount))
+                        if (segment!.IsReadStreamExist(_downloadThreadCount))
                         {
                             // Return the size/length of the chunk stream
                             return segment.GetStreamLength(_downloadThreadCount);
@@ -798,15 +812,15 @@ namespace CollapseLauncher.InstallManager.Base
         public async ValueTask<bool> UninstallGame()
         {
             // Get the Game folder
-            string GameFolder = ConverterTool.NormalizePath(_gamePath);
+            string GameFolder = ConverterTool.NormalizePath(_gamePath)!;
 
             // Get translated fullname
-            string translatedGameTitle = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager.GamePreset.GameName, Lang._GameClientTitles);
-            string translatedGameRegion = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager.GamePreset.ZoneName, Lang._GameClientRegions);
+            string translatedGameTitle = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager!.GamePreset!.GameName!, Lang!._GameClientTitles!)!;
+            string translatedGameRegion = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager!.GamePreset!.ZoneName!, Lang!._GameClientRegions!)!;
             string translatedFullName = $"{translatedGameTitle} - {translatedGameRegion}";
 
             // Check if the dialog result is Okay (Primary). If not, then return false
-            ContentDialogResult DialogResult = await Dialog_UninstallGame(_parentUI, GameFolder, translatedFullName);
+            ContentDialogResult DialogResult = await Dialog_UninstallGame(_parentUI!, GameFolder, translatedFullName);
             if (DialogResult != ContentDialogResult.Primary) return false;
 
             try
@@ -816,7 +830,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UninstallGameProperty UninstallProperty = AssignUninstallFolders();
 
                 //Preparing paths
-                var _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
+                string _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
 
                 string[]? foldersToKeepInDataFullPath = null;
                 if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0)
@@ -824,13 +838,14 @@ namespace CollapseLauncher.InstallManager.Base
                     foldersToKeepInDataFullPath = new string[UninstallProperty.foldersToKeepInData.Length];
                     for (int i = 0; i < UninstallProperty.foldersToKeepInData.Length; i++)
                     {
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         foldersToKeepInDataFullPath[i] = Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
                     }
                 }
                 else foldersToKeepInDataFullPath = Array.Empty<string>();
 
 #pragma warning disable CS8604 // Possible null reference argument.
-                LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n" +
+                LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
                     $"  GameFolder          : {GameFolder}\r\n" +
                     $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
                     $"  foldersToDelete     : {string.Join(", ", UninstallProperty.foldersToDelete)}\r\n" +
@@ -845,6 +860,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     try
                     {
+                        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                         if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0 && !foldersToKeepInDataFullPath.Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
                         {
                             // Delete directories inside gameDataFolderName that is not included in foldersToKeepInData
@@ -860,6 +876,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 TryDeleteReadOnlyFile(folderGameData);
                                 LogWriteLine($"Deleted file: {folderGameData}", LogType.Default, true);
                             }
+                            // ReSharper disable once RedundantJumpStatement
                             continue;
                         }
                     }
@@ -979,9 +996,7 @@ namespace CollapseLauncher.InstallManager.Base
             return true;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async ValueTask<bool> TryShowFailedGameConversionState() { return false; }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public virtual async ValueTask<bool> TryShowFailedGameConversionState() => await Task.FromResult(false);
 
         public virtual void ApplyDeleteFileAction()
         {
@@ -1072,15 +1087,8 @@ namespace CollapseLauncher.InstallManager.Base
 
                         await Task.Run(() =>
                         {
-#if DEBUG
-                            try
-                            {
-#endif
-                                patcher.Initialize(patchPath);
-                                patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
-#if DEBUG
-                            } catch { }
-#endif
+                            patcher.Initialize(patchPath);
+                            patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
                         }, _token.Token);
 
                         File.Move(destPath, sourceBasePath, true);

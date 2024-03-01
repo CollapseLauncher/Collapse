@@ -22,6 +22,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Helper.Image;
 
 namespace CollapseLauncher.Pages
 {
@@ -61,9 +63,7 @@ namespace CollapseLauncher.Pages
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
-#if !DISABLEDISCORD
-            AppDiscordPresence.SetActivity(ActivityType.AppSettings);
-#else
+#if DISABLEDISCORD
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
@@ -73,6 +73,10 @@ namespace CollapseLauncher.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
+
+#if !DISABLEDISCORD
+            AppDiscordPresence.SetActivity(ActivityType.AppSettings);
+#endif
         }
         #endregion
 
@@ -90,7 +94,7 @@ namespace CollapseLauncher.Pages
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
                     catch { }
-                    MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+                    MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
                     break;
                 default:
                     break;
@@ -104,8 +108,10 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
+                        
+                        var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
+                        if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
-                        var collapsePath = Process.GetCurrentProcess().MainModule.FileName;
                         Process.Start(collapsePath);
                         App.Current.Exit();
                     }
@@ -298,13 +304,18 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
+            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
-                regionBackgroundProp.imgLocalPath = file;
-                SetAndSaveConfigValue("CustomBGPath", file);
-                BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(file);
+                FileStream dummyStream = await ImageLoaderHelper.LoadImage(file, true, true);
+                if (dummyStream != null)
+                {
+                    await dummyStream.DisposeAsync();
+                    regionBackgroundProp.imgLocalPath = file;
+                    SetAndSaveConfigValue("CustomBGPath", file);
+                    BGPathDisplay.Text = file;
+                    BackgroundImgChanger.ChangeBackground(file);
+                }
             }
         }
 
@@ -448,12 +459,12 @@ namespace CollapseLauncher.Pages
                 if (IsEnabled)
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 return IsEnabled;
             }
@@ -463,13 +474,13 @@ namespace CollapseLauncher.Pages
                 {
                     AppDiscordPresence.SetupPresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     AppDiscordPresence.DisablePresence();
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
-                    //ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
+                    ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
                 ToggleDiscordGameStatus.IsEnabled = value;
@@ -486,17 +497,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        // TODO: Fix this feature
-        // Temporarily force disable this
-        //private bool IsDiscordIdleStatusEnabled
-        //{
-        //    get => AppDiscordPresence.IdleEnabled;
-        //    set => AppDiscordPresence.IdleEnabled = value;
-        //}
         private bool IsDiscordIdleStatusEnabled
         {
-            get => true;
-            set => AppDiscordPresence.IdleEnabled = true;
+            get => AppDiscordPresence.IdleEnabled;
+            set => AppDiscordPresence.IdleEnabled = value;
         }
 #else
         private bool IsDiscordRPCEnabled

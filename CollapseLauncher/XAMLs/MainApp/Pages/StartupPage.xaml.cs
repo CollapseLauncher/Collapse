@@ -186,15 +186,22 @@ namespace CollapseLauncher.Pages
         {
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
-                await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                await DownloadConfigV2Files(true, true);
-                Ring.IsIndeterminate = false;
-                OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
-                OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;
-                await Task.Delay(2000);
+                try
+                {
+                    await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
+                    await DownloadConfigV2Files(true, true);
+                    Ring.IsIndeterminate = false;
+                    OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
+                    OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;
+                    await Task.Delay(2000);
+                }
+                catch (Exception ex)
+                {
+                    ErrorSender.SendException(ex, ErrorType.Connection);
+                }
             }
 
-            (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage_SelectGame), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            // (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage_SelectGame), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
     }
 }

@@ -20,7 +20,7 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = new List<CacheAsset>();
 
             // Set Indetermined status as false
-            _status.IsProgressTotalIndetermined = false;
+            _status!.IsProgressTotalIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
@@ -35,14 +35,14 @@ namespace CollapseLauncher
                     // Create the cache directory if it doesn't exist
                     if (!Directory.Exists(_gamePath))
                     {
-                        Directory.CreateDirectory(_gamePath);
+                        Directory.CreateDirectory(_gamePath!);
                     }
 
                     // Check for unused files
                     CheckUnusedAssets(assetIndex, returnAsset);
 
                     // Do check in parallelization.
-                    Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
+                    Parallel.ForEach(assetIndex!, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
                     {
                         CheckAsset(asset, returnAsset, token);
                     });
@@ -60,11 +60,12 @@ namespace CollapseLauncher
         private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
         {
             // Iterate the file contained in the _gamePath
-            foreach (string filePath in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
+            foreach (string filePath in Directory.EnumerateFiles(_gamePath!, "*", SearchOption.AllDirectories))
             {
                 if (!filePath.Contains("output_log") && !filePath.Contains("Crashes")
                  && !filePath.Contains("Verify.txt") && !filePath.Contains("APM")
-                 && !filePath.Contains("asb.dat") && !assetIndex.Exists(x => x.ConcatPath == filePath))
+                 && !filePath.Contains("FBData") && !filePath.Contains("asb.dat")
+                 && !assetIndex!.Exists(x => x!.ConcatPath == filePath))
                 {
                     // Increment the total found count
                     _progressTotalCountFound++;
@@ -81,10 +82,10 @@ namespace CollapseLauncher
                         Status = CacheAssetStatus.Unused,
                         IsUseLocalPath = true
                     };
-                    returnAsset.Add(asset);
+                    returnAsset!.Add(asset);
 
                     // Add to asset entry display
-                    Dispatch(() => AssetEntry.Add(new AssetProperty<CacheAssetType>(
+                    Dispatch(() => AssetEntry!.Add(new AssetProperty<CacheAssetType>(
                             asset.N,
                             asset.DataType,
                             asset.BasePath,
@@ -105,12 +106,12 @@ namespace CollapseLauncher
             lock (this)
             {
                 _progressTotalCountCurrent++;
-                _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusChecking, asset.DataType, asset.N);
-                _status.ActivityTotal = string.Format(Lang._CachesPage.CachesTotalStatusChecking, _progressTotalCountCurrent, _progressTotalCount);
+                _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
+                _status!.ActivityTotal = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressTotalCountCurrent, _progressTotalCount);
             }
 
             // Assign the file info.
-            FileInfo fileInfo = new FileInfo(asset.ConcatPath);
+            FileInfo fileInfo = new FileInfo(asset.ConcatPath!);
 
             // Check if the file exist. If not, then add it to asset index.
             if (!fileInfo.Exists)
@@ -136,13 +137,12 @@ namespace CollapseLauncher
             using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // Calculate the asset CRC (SHA1)
-                byte[] hashArray = CheckHash(fs, new HMACSHA1(_gameSalt), token);
+                byte[] hashArray = CheckHash(fs, new HMACSHA1(_gameSalt!), token);
 
                 // If the asset CRC doesn't match, then add the file to asset index.
                 if (!IsArrayMatch(asset.CRCArray, hashArray))
                 {
                     AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.CRCArray);
-                    return;
                 }
             }
         }
@@ -153,13 +153,13 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status.IsProgressTotalIndetermined = false;
+                _status!.IsProgressTotalIndetermined = false;
                 _progressTotalCountFound++;
-                _progressTotalSizeFound += asset.CS;
+                _progressTotalSizeFound += asset!.CS;
             }
 
             // Add file into asset index
-            lock (returnAsset)
+            lock (returnAsset!)
             {
                 asset.Status = assetStatus;
                 returnAsset.Add(asset);
@@ -168,7 +168,7 @@ namespace CollapseLauncher
             }
 
             // Add to asset entry display
-            Dispatch(() => AssetEntry.Add(new AssetProperty<CacheAssetType>(
+            Dispatch(() => AssetEntry!.Add(new AssetProperty<CacheAssetType>(
                     Path.GetFileName(asset.N),
                     asset.DataType,
                     Path.GetDirectoryName(asset.N),

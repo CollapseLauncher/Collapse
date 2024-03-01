@@ -48,6 +48,7 @@
                 public string Pg1LoadingSubitle2 { get; set; } = LangFallback?._StartupPage.Pg1LoadingSubitle2;
                 public string Pg2NextBtn { get; set; } = LangFallback?._StartupPage.Pg2NextBtn;
                 public string Pg2PrevBtn { get; set; } = LangFallback?._StartupPage.Pg2PrevBtn;
+                public string Pg2PrevBtnNew { get; set; } = LangFallback?._StartupPage.Pg2PrevBtnNew;
                 public string Pg2Title { get; set; } = LangFallback?._StartupPage.Pg2Title;
                 public string Pg2Subtitle1_1 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_1;
                 public string Pg2Subtitle1_2 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_2;

@@ -12,7 +12,6 @@ namespace CollapseLauncher.Interfaces
         Task StartPackageDownload(bool skipDialog = false);
         ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage = null);
         Task StartPackageInstallation();
-        Task StartPostInstallVerification();
         void ApplyGameConfig(bool forceUpdateToLatest = false);
 
         ValueTask<bool> MoveGameLocation();

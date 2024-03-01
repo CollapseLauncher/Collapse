@@ -1,31 +1,40 @@
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
+using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
-    public partial class App : Application
+    public partial class App
     {
         public static bool IsAppKilled = false;
-        
-        [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int SetCurrentProcessExplicitAppUserModelID(string AppID);
         
         public App()
         {
             try
             {
-                DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] {args.Message}", LogType.Error, true); };
-                DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] {args.Message}", LogType.Error, true); };
-                UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] {e.Exception} {e.Exception.InnerException}", LogType.Error, true); };
+                DebugSettings!.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
+                DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
+                UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true); };
+                
+                ThemeChangerInvoker.ThemeEvent += (_, _) => {
+                    MainWindow.SetLegacyTitleBarColor();
+                    bool isThemeLight = IsAppThemeLight;
+                    Color color = isThemeLight ? Colors.Black : Colors.White;
+                    Current!.Resources!["WindowCaptionForeground"] = color;
+                    m_appWindow!.TitleBar!.ButtonForegroundColor = color;
+                    m_appWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
+
+                    if (m_window!.Content is not null and FrameworkElement frameworkElement)
+                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark; };
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
@@ -51,15 +60,16 @@ namespace CollapseLauncher
                         break;
                 }
 
-                string appUserModelId = "Collapse.CollapseLauncher";
+                // Disable AppUserModelId for now as Windows doesn't respect it on non UWP apps
+                //string appUserModelId = "Collapse.CollapseLauncher";
+                //int setAUMIDResult = SetCurrentProcessExplicitAppUserModelID(appUserModelId);
+                //if (setAUMIDResult != 0) LogWriteLine($"Error when setting AppUserModelId to {appUserModelId}. Error code: {setAUMIDResult}", LogType.Error, true);
+                //else LogWriteLine($"Successfully set AppUserModelId to {appUserModelId}", LogType.Default, true);
                 
-                int setAUMIDResult = SetCurrentProcessExplicitAppUserModelID(appUserModelId);
-                if (setAUMIDResult != 0) LogWriteLine($"Error when setting AppUserModelId to {appUserModelId}. Error code: {setAUMIDResult}", LogType.Error, true);
-                else LogWriteLine($"Successfully set AppUserModelId to {appUserModelId}", LogType.Default, true);
+                m_window!.Activate();
                 
-                m_window.Activate();
-                bool IsAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
-                if (!IsAcrylicEnabled) ToggleBlurBackdrop(false);
+                bool isAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
+                if (!isAcrylicEnabled) ToggleBlurBackdrop(false);
                 if (m_appMode == AppMode.StartOnTray)
                 {
                     WindowExtensions.Hide(m_window);
@@ -81,14 +91,12 @@ namespace CollapseLauncher
         public static void ToggleBlurBackdrop(bool useBackdrop = true)
         {
             // Enumerate the dictionary (MergedDictionaries)
-            foreach (ResourceDictionary resource in Current
-                .Resources
-                .MergedDictionaries)
+            foreach (ResourceDictionary resource in Current!.Resources!.MergedDictionaries!)
             {
                 // Parse the dictionary (ThemeDictionaries) and read the type of KeyValuePair<object, object>,
                 // then select the value, get the type of ResourceDictionary, then enumerate it
-                foreach (ResourceDictionary list in resource
-                    .ThemeDictionaries
+                foreach (ResourceDictionary list in resource!
+                    .ThemeDictionaries!
                     .OfType<KeyValuePair<object, object>>()
                     .Select(x => x.Value)
                     .OfType<ResourceDictionary>())

@@ -23,7 +23,7 @@
     "ChooseFolderDialogCancel": "キャンセル",
     "ChooseFolderDialogPrimary": "はい！",
     "ChooseFolderDialogSecondary": "別のフォルダーを選択",
-    "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です。:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
+    "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
     "ChooseFolderDialogTitle": "フォルダーを選択",
     "FolderInsufficientPermission": "アクセスが拒否されました！別のフォルダーを選択してください。",
     "FolderNotSelected": "フォルダーが選択されていません。フォルダーを選択してください！",
@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "サーバーの選択",
     "Pg2NextBtn": "終了 - ランチャーを開始",
     "Pg2PrevBtn": "戻る - フォルダーを選択",
+    "Pg2PrevBtnNew": "戻る - ランチャー設定",
     "Pg2Subtitle1_1": "もう少しで",
     "Pg2Subtitle1_2": "Collapse Launcher",
     "Pg2Subtitle1_3": "を開始できます。",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "最初に、",
     "Subtitle4_2": "\"フォルダーを選択\"",
     "Subtitle4_3": "を押して、ランチャーに必要なデータを保存する場所を選択してください。",
-    "Title1": "Collapse Launcher",
-    "Title2": "へようこそ！"
+    "Title1": "Collapse Launcherへ",
+    "Title2": "ようこそ！"
   },
 
   "_DisconnectedPage": {
@@ -83,7 +84,7 @@
 
   "_MainPage": {
     "PageTitle": "メインページ",
-    "RegionChangeConfirm": "ゲームのサーバーが変更されます。続行しますか？",
+    "RegionChangeConfirm": "ゲームかサーバーを変更します。続行しますか？",
     "RegionChangeConfirmBtn": "はい、変更します！",
     "RegionChangeWarnTitle": "警告:",
     "RegionChangeWarnExper1": "ゲームは現在 {0} です。\r\n自己責任で使用してください！",
@@ -111,9 +112,9 @@
     "PreloadNotifIntegrityCheckBtn": "パッケージの整合性チェック",
     "StartBtn": "ゲーム開始",
     "StartBtnRunning": "ゲームが実行中です！",
-    "VerifyingPkgTitle": "パッケージのチェック中",
-    "PreloadDownloadNotifbarTitle": "プリロードパッケージのダウンロード中",
-    "PreloadDownloadNotifbarVerifyTitle": "プリロードパッケージのチェック中",
+    "VerifyingPkgTitle": "パッケージの検証中",
+    "PreloadDownloadNotifbarTitle": "事前ダウンロードパッケージのダウンロード中",
+    "PreloadDownloadNotifbarVerifyTitle": "事前ダウンロードパッケージの検証中",
     "PreloadDownloadNotifbarSubtitle": "必須パッケージ",
     "UpdatingVoicePack": "音声パックの更新中...",
     "InstallBtn": "ゲームをインストール/紐づけ",
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "一時停止/キャンセル",
     "PauseCancelBtn": "一時停止/キャンセル",
     "DownloadBtn": "ダウンロード",
+
     "GameSettingsBtn": "クイック設定",
     "GameSettings_Panel1": "クイック設定",
     "GameSettings_Panel1OpenGameFolder": "ゲームフォルダーを開く",
@@ -140,6 +142,7 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
+
     "GamePlaytime_Panel1": "プレイ時間を編集",
     "GamePlaytime_Idle_Panel1Hours": "時間",
     "GamePlaytime_Idle_Panel1Minutes": "分",
@@ -148,10 +151,12 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "無効な値です。",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
     "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断される（閉じた瞬間までのプレイ時間が記録されます）ことと、Collapseから起動したプレイ時間のみが加算されることに注意してください。",
+    "GamePlaytime_Display": "{0}時間 {1}分",
+
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
     "PostPanel_Info": "インフォメーション",
-    "PostPanel_NoNews": "え？\n今日はニュースなし？",
+    "PostPanel_NoNews": "えっ！\nニュースないの？",
 
     "CommunityToolsBtn": "便利リンク集",
     "CommunityToolsBtn_OfficialText": "公式ツール",
@@ -196,7 +201,7 @@
     "RepairBtn2FullDesc": "ファイルのチェックサム/整合性、サイズ、可用性をチェックします。",
     "RepairBtn2Quick": "クイックチェック",
     "RepairBtn2QuickDesc": "ファイルサイズと可用性のみをチェックします。ファイルの整合性をチェックしたい場合は、フルチェックを使用してください。",
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！"
@@ -226,7 +231,7 @@
     "CachesBtn2FullDesc": "キャッシュのチェックサム/整合性、サイズ、可用性をチェックします。",
     "CachesBtn2Quick": "クイックチェック",
     "CachesBtn2QuickDesc": "キャッシュのサイズと可用性のみをチェックします。キャッシュの整合性をチェックしたい場合はフルチェックを使用してください。",
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！"
@@ -314,7 +319,7 @@
     "RegImportTitle": "インポート",
     "RegImportTooltip": "Collapse レジストリファイルからレジストリキーをインポートします。",
 
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "Unity スタンドアロンプレイヤーのコマンドライン引数",
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
 
-    "GameBoost": "ゲームの優先度をブースト [実験的機能]"
+    "GameBoost": "ゲームの優先度をブースト [実験的機能]",
+
+    "Advanced_Title": "高度な設定",
+    "Advanced_Subtitle1": "Collapse Launcher開発チームはこの設定が原因であなたのゲーム・アカウント・システムに何らかの事態が発生しても",
+    "Advanced_Subtitle2": "一切の責任を負いません",
+    "Advanced_Subtitle3": "。ご利用は自己責任でお願いします。",
+    "Advanced_GLC_WarningAdmin": "警告：コマンドは管理者として実行されます！",
+    "Advanced_GLC_PreLaunch_Title": "起動前コマンド",
+    "Advanced_GLC_PreLaunch_Subtitle": "ゲームの起動前にコマンドを実行する",
+    "Advanced_GLC_PreLaunch_Exit": "ゲームが終了/停止した場合に実行中のプロセスを強制終了させる",
+    "Advanced_GLC_PostExit_Title": "終了後コマンド",
+    "Advanced_GLC_PostExit_Subtitle": "ゲームの終了後にコマンドを実行する"
   },
 
   "_SettingsPage": {
@@ -336,7 +352,7 @@
     "Debug": "その他の設定",
     "Debug_Console": "コンソールを表示",
     "Debug_IncludeGameLogs": "コンソールログにゲームのログも保存（アカウント情報も含まれる可能性有り）",
-    "Debug_MultipleInstance": "Collapse の多重起動を許可する",
+    "Debug_MultipleInstance": "Collapseの多重起動を許可する",
 
     "ChangeRegionWarning_Toggle": "サーバー変更時に確認する",
     "ChangeRegionWarning_Warning": "*設定の変更を適用するには、ランチャーを再起動してください。",
@@ -487,6 +503,9 @@
     "NotSelected": "未選択",
     "ExtractAnyway": "とりあえず展開！",
 
+    "IAcceptAgreement": "利用規約に同意する",
+    "IDoNotAcceptAgreement": "利用規約に同意しない",
+
     "LangNameENUS": "英語(アメリカ)",
     "LangNameJP": "日本語",
     "LangNameCN": "中国語(簡体字)",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "ランチャーの公式(メイン)リポジトリ。",
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
+    "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",
     "OpenDownloadPage": "配布サイトを開く",
@@ -545,7 +565,9 @@
     "LauncherNameOfficial": "公式ランチャー",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "（ランチャー不明）"
+    "LauncherNameUnknown": "（ランチャー不明）",
+    
+    "ImageCropperTitle": "画像の表示範囲を選択"
   },
 
   "_BackgroundNotification": {
@@ -561,14 +583,22 @@
   },
 
   "_Dialogs": {
-    "DeltaPatchDetectedTitle": "警告: デルタ パッチ アップデートが検出されました！",
-    "DeltaPatchDetectedSubtitle": "ゲームを {0} から {1} に更新するために、デルタ パッチが使用されます。\r\n一部のファイルはゲーム内でダウンロードする必要があります。\r\n\r\n続行しますか？",
+    "DeltaPatchDetectedTitle": "警告: デルタパッチアップデートが検出されました！",
+    "DeltaPatchDetectedSubtitle": "ゲームを{0}から{1}に更新するために、デルタパッチを使用します。\r\n一部のファイルはゲーム内でダウンロードする必要があります。\r\n\r\n続行しますか？",
     "DeltaPatchPrevFailedTitle": "前回のデルタパッチが正しく適用されていないか、適用を完了できませんでした！",
     "DeltaPatchPrevFailedSubtitle": "前回のデルタパッチの適用に失敗しました。再ダウンロードを防ぐためにゲームを復元しますか？",
+    "DeltaPatchPreReqTitle": "デルタパッチのために追加のファイルダウンロードが必要です！",
+    "DeltaPatchPreReqSubtitle1": "デルタパッチを適用する前に、追加のファイルダウンロードが必要です。およそ",
+    "DeltaPatchPreReqSubtitle2": "を新たにダウンロードします。オーディオファイルのデルタパッケージが含まれる場合があります。",
+    "DeltaPatchPreReqSubtitle3": "続行しますか？",
+    "DeltaPatchPreReqSubtitle4": "(\"",
+    "DeltaPatchPreReqSubtitle5": "を押すと続行、\"",
+    "DeltaPatchPreReqSubtitle6": "\"を押すと通常のアップデートを実行、\"",
+    "DeltaPatchPreReqSubtitle7": "\"を押すとアップデートをキャンセルします)",
     "GameConversionPrevFailedTitle": "前回のゲーム変換が失敗したか、完了していません！",
     "GameConversionPrevFailedSubtitle": "前回のゲーム変換に失敗しました。再ダウンロードを防ぐためにゲームを復元しますか？",
-    "PreloadVerifiedTitle": "パッケージのプリロードが確認されました！",
-    "PreloadVerifiedSubtitle": "プリロードパッケージが検証され、インストールの準備ができました！",
+    "PreloadVerifiedTitle": "事前ダウンロードパッケージの検証が完了しました！",
+    "PreloadVerifiedSubtitle": "事前ダウンロードパッケージが検証され、インストールの準備ができました！",
     "LocateInstallTitle": "インストールフォルダーの指定",
     "LocateInstallSubtitle": "ゲームを保存する場所を指定してからダウンロードしますか？",
     "UnauthorizedDirTitle": "権限のない場所が選択されました",
@@ -590,11 +620,11 @@
     "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
     "MigrateExistingInstallChoiceSubtitle2": "ゲームデータを別のディレクトリに移動するか、現在のディレクトリを既定のディレクトリとして使用するかを選択できます。{0}を使用してゲームを確実に起動できるように、現在のディレクトリを既定のディレクトリとして使用することをお勧めします。",
     "ExistingInstallTitle": "既存のインストールが検出されました！",
-    "ExistingInstallSubtitle": "ゲームは次の場所に既にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしても公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
+    "ExistingInstallSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後でも公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcherの既存のインストールが検出されました！",
-    "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしてもBetterHi3Launcherを使用してゲームを開始できます。\r\n\r\n続行しますか？",
+    "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後でもBetterHi3Launcherを使用してゲームを開始できます。\r\n\r\n続行しますか？",
     "ExistingInstallSteamTitle": "Steam版の既存のインストールが検出されました！",
-    "ExistingInstallSteamSubtitle": "ゲームはすでにSteamの次の場所にインストールされています:\r\n\r\n{0}\r\n\r\nこのバージョンをSteam版ではないPC版に変換しますか？\n注:変換するとSteamアカウントでログインできなくなります。miHoYo/HoYoverse通行証ログインのみ選択できます。\r\n\r\n続行しますか？",
+    "ExistingInstallSteamSubtitle": "ゲームは既にSteamの次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nこのバージョンをSteam版ではないPC版に変換しますか？\n注:変換するとSteamアカウントでログインできなくなります。miHoYo/HoYoverse通行証ログインのみ選択できます。\r\n\r\n続行しますか？",
     "SteamConvertNeedMigrateTitle": "フォルダーを移行する必要があります",
     "SteamConvertNeedMigrateSubtitle": "Collapseがそのディレクトリに書き込む権限がないため、ゲームのインストール先を別のディレクトリに変更する必要があります。\nCollapseLauncherのゲームフォルダーに場所を移動することをお勧めしますが、直接場所を選択することもできます。\n\nCollapseLauncherのゲームフォルダーに移動しますか？",
     "SteamConvertIntegrityDoneTitle": "整合性チェックが完了しました！",
@@ -637,24 +667,35 @@
     "CookbookLocateSubtitle5": "をクリックしてダウンロードしたCookbookファイルを指定してください。\r\n\r\n",
     "CookbookLocateSubtitle6": "詳細:\r\n",
     "CookbookLocateSubtitle7": "ダウンロードが必要なCookbookファイルの名前です:\r\n",
+
     "PrivilegeMustRunTitle": "Collapseは管理者権限が必要です！",
     "PrivilegeMustRunSubtitle": "Collapseは管理者権限が必要です。Collapseを管理者権限で再起動しますか？",
+
     "ReleaseChannelChangeTitle": "リリースチャンネルの変更",
     "ReleaseChannelChangeSubtitle1": "リリースチャンネルを次のものに変更しようとしています：",
     "ReleaseChannelChangeSubtitle2": "注意：",
     "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。ゲームデータの消失や破損が発生しても責任を負いかねます。",
+
     "ChangePlaytimeTitle": "本当にプレイ時間を編集しますか？",
     "ChangePlaytimeSubtitle": "プレイ時間を編集すると、現在の値が入力した値で上書きされます。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "ResetPlaytimeTitle": "本当にプレイ時間をリセットしますか？",
     "ResetPlaytimeSubtitle": "プレイ時間をリセットすると、記録されたプレイ時間が0になります。これは",
     "ResetPlaytimeSubtitle2": "元に戻せない",
     "ResetPlaytimeSubtitle3": "変更です。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
+    "InvalidPlaytimeTitle": "プレイ時間の保存中に問題が発生しました",
+    "InvalidPlaytimeSubtitle1": "起動時刻と終了時刻の差が負の数になっています。",
+    "InvalidPlaytimeSubtitle2": "1分おきに保存されていたフォールバック値を代わりに保存します：",
+    "InvalidPlaytimeSubtitle3": "ゲーム起動中にコンピュータの時刻を調整することは避けてください。",
+
     "LocateExePathTitle": ".exeファイルのパスを指定",
     "LocateExePathSubtitle": "ツールの.exeファイルを指定すると、リンクから直接開けるようになります。",
+
     "CannotUseAppLocationForGameDirTitle": "無効なフォルダーです！",
     "CannotUseAppLocationForGameDirSubtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+
     "StopGameTitle": "ゲームを強制終了します",
     "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
+
     "MeteredConnectionWarningTitle": "従量制課金接続を検出しました！",
     "MeteredConnectionWarningSubtitle": "現在のインターネット接続は「従量制」として検出されました。更新を続行すると、インターネットプロバイダーから追加料金が発生する場合があります。続行しますか?",
 
@@ -685,7 +726,7 @@
     "ShortcutCreationSuccessSubtitle4": " • ショートカットを使用した時、サーバーを読み込んでからゲームを起動します。",
 
     "SteamShortcutCreationConfirmTitle": "続行しますか？",
-    "SteamShortcutCreationConfirmSubtitle1": "コンピューター内にある全てのSteamアカウントのライブラリへショートカットを追加します。",
+    "SteamShortcutCreationConfirmSubtitle1": "このコンピューターでログインした全てのSteamアカウントのライブラリへショートカットを追加します。",
     "SteamShortcutCreationConfirmSubtitle2": "ライブラリにショートカットが既に存在する場合、ショートカットの関連アセットを検証します。",
     "SteamShortcutCreationConfirmCheckBox": "ランチャーとゲームを一括起動するショートカットを作成",
     "SteamShortcutCreationSuccessTitle": "成功！",
@@ -694,6 +735,7 @@
     "SteamShortcutCreationSuccessSubtitle3": " • ショートカットを使用した時、サーバーを読み込んでからゲームを起動します。",
     "SteamShortcutCreationSuccessSubtitle4": " • この操作を再度実行することで、ショートカットアイコンの破損や欠落が修正できます。",
     "SteamShortcutCreationSuccessSubtitle5": " • 作成したショートカットはSteamの再起動後に表示されます。",
+    "SteamShortcutCreationSuccessSubtitle6": " • Steamオーバーレイを使用するには、Steamを管理者として実行した上でCollapseを完全に閉じるか、ランチャー設定の「多重起動を許可する」を有効にする必要があります。",
 
     "SteamShortcutCreationFailureTitle": "Steamデータフォルダーが無効です",
     "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。"
@@ -909,9 +951,10 @@
     "Graphics_ResCustomH": "縦",
 
     "Graphics_FPS": "フレームレート",
-    "Graphics_FPS_Help": "120FPSは実験的な機能です！ご利用は自己責任でお願いします。",
-    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\n代わりにCollapseで画面設定を変更してください。",
+    "Graphics_FPS_Help": "120FPSは実験的な設定です！公式でサポートされていない設定のため、ご利用は自己責任でお願いします。",
+    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\nそうなった場合は、代わりにCollapseを使って画面設定を変更してください。",
     "Graphics_VSync": "垂直同期",
+    "Graphics_VSync_Help": "120FPS選択時は垂直同期が無効になります",
     "Graphics_RenderScale": "レンダリング精度",
     "Graphics_ResolutionQuality": "解像度",
     "Graphics_ShadowQuality": "シャドウ品質",
@@ -935,7 +978,7 @@
     "ApplyBtn": "設定を適用",
     "SettingsApplied": "変更が保存されました!",
 
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
@@ -1001,6 +1044,8 @@
     "Graphics_GlobalIllumination": "グローバル・イルミネーション",
     "Graphics_GlobalIllumination_Help1": "一部のデバイスでのみ有効です！",
     "Graphics_GlobalIllumination_Help2": "詳細な情報（英語）",
+    "Graphics_DynamicCharacterResolution": "キャラクター動的解像度",
+    "Graphics_DynamicCharacterResolution_Tooltip": "一部のデバイスでのみ有効です！",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "HDRを有効化",
     "Graphics_HDR_NotSupported1": "ディスプレイがHDRに対応していません。",
@@ -1030,7 +1075,7 @@
     "ApplyBtn": "設定を適用",
     "SettingsApplied": "変更が保存されました！",
 
-    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledTitle": "このサーバーのクライアントがインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
@@ -1124,5 +1169,44 @@
     "Korea": "韓国",
     "Japan": "日本",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "利用規約："
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Collapse", "Launcherへ" ],
+      "Lower": [ "ようこそ！", "​" ]
+    },
+    "SetupNextButton": "クリックして次へ進む",
+    "SetupBackButton": "戻る",
+
+    "CustomizationTitle": "ランチャーをカスタマイズしましょう",
+    "CustomizationSettingsLanguageHeader": "言語",
+    "CustomizationSettingsLanguageDescription": "表示する言語を変更します",
+    "CustomizationSettingsWindowSizeHeader": "ウィンドウサイズ",
+    "CustomizationSettingsWindowSizeDescription": "ウィンドウの大きさを変更します",
+    "CustomizationSettingsCDNHeader": "CDN",
+    "CustomizationSettingsCDNDescription": "優先的に接続するCDNを選択します",
+    "CustomizationSettingsStyleHeader": "外観設定",
+    "CustomizationSettingsStyleDescription": "ランチャーの見た目をあなた色に染めます",
+    "CustomizationSettingsStyleThemeHeader": "テーマ",
+    "CustomizationSettingsStyleThemeDescription": "ランチャーのカラーテーマを変更します",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "カスタム背景",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "デフォルトの画像の代わりに好きな画像を背景に表示します",
+
+    "LoadingInitializationTitle": "ランチャー初回起動時の初期化を行っています",
+    "LoadingCDNCheckboxCheckLatency": "（接続速度をテスト中…）",
+    "LoadingCDNCheckboxPlaceholder": "CDNおすすめ度を検証中…",
+    "LoadingCDNCheckingSubitle": "最寄りのCDNサーバーを検索中…",
+    "LoadingCDNCheckingSkipButton": "CDNチェックをスキップ",
+    "LoadingBackgroundImageTitle": "画像を読み込み中",
+    "LoadingBackgroundImageSubtitle": "画像の読み込みに時間がかかる場合があります。",
+
+    "CDNCheckboxItemLatencyFormat": "（{0}ms）",
+    "CDNCheckboxItemLatencyUnknownFormat": "（不明）",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[おすすめ]"
   }
 }

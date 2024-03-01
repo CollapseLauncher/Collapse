@@ -154,7 +154,7 @@ namespace CollapseLauncher.FileDialogCOM
     [Guid(IIDGuid.IFileDialogEvents)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [GeneratedComInterface]
-    internal partial interface IFileDialogEvents { } // This dialog is no longer being used
+    internal partial interface IFileDialogEvents; // This dialog is no longer being used
 
     [ComImport]
     [Guid(IIDGuid.IShellItem)]

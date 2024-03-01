@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.CustomControls;
 using Hi3Helper;
 using Hi3Helper.Preset;
@@ -523,18 +524,6 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Success
                 );
 
-        public static async Task<ContentDialogResult> Dialog_ChangePlaytime(UIElement Content) =>
-            await SpawnDialog(
-                        Lang._Dialogs.ChangePlaytimeTitle,
-                        Lang._Dialogs.ChangePlaytimeSubtitle,
-                        Content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning
-            );
-
         public static async Task<ContentDialogResult> Dialog_StopGame(UIElement Content) =>
             await SpawnDialog(
                         Lang._Dialogs.StopGameTitle,
@@ -546,6 +535,19 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Warning
                 );
+
+        #region Playtime Dialogs
+        public static async Task<ContentDialogResult> Dialog_ChangePlaytime(UIElement Content) =>
+            await SpawnDialog(
+                        Lang._Dialogs.ChangePlaytimeTitle,
+                        Lang._Dialogs.ChangePlaytimeSubtitle,
+                        Content,
+                        Lang._Misc.NoCancel,
+                        Lang._Misc.Yes,
+                        null,
+                        ContentDialogButton.Primary,
+                        ContentDialogTheme.Warning
+            );
 
         public static async Task<ContentDialogResult> Dialog_ResetPlaytime(UIElement Content)
         {
@@ -565,6 +567,25 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Warning
             );
         }
+
+        public static async void Dialog_InvalidPlaytime(UIElement Content, int elapsedSeconds = 0)
+        {
+            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
+
+            stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });            
+            stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle2, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
+            stack.Children.Add(new TextBlock() { Text = string.Format(Lang._HomePage.GamePlaytime_Display, elapsedSeconds / 3600, elapsedSeconds % 3600 / 60), FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 4) });
+            stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle3, TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 4, 0, -2) });
+
+            await SpawnDialog(
+                        Lang._Dialogs.InvalidPlaytimeTitle,
+                        stack,
+                        Content,
+                        Lang._Misc.Close,
+                        dialogTheme: ContentDialogTheme.Warning
+            );
+        }
+        #endregion
 
         public static async Task<ContentDialogResult> Dialog_MeteredConnectionWarning(UIElement Content)
         {
@@ -847,9 +868,8 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = primaryText,
                 SecondaryButtonText = secondaryText,
                 DefaultButton = defaultButton,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
-                XamlRoot = (InnerLauncherConfig.m_window as MainWindow).Content.XamlRoot
+                XamlRoot = (InnerLauncherConfig.m_window is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
             // Queue and spawn the dialog instance
@@ -861,8 +881,17 @@ namespace CollapseLauncher.Dialogs
             // If a dialog is currently spawned, then await until the task is completed
             while (CurrentSpawnedDialogTask != null && CurrentSpawnedDialogTask.Status == AsyncStatus.Started) await Task.Delay(200);
 
+            // Set the theme of the content
+            if (InnerLauncherConfig.m_window is MainWindow window)
+            {
+                if (dialog is ContentDialogCollapse contentDialogCollapse)
+                    window.ContentDialog = contentDialogCollapse;
+
+                dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            }
+
             // Assign the dialog to the global task
-            CurrentSpawnedDialogTask = dialog.ShowAsync();
+            CurrentSpawnedDialogTask = dialog is ContentDialogCollapse dialogCollapse ? dialogCollapse.ShowAsync() : dialog.ShowAsync();
             // Spawn and await for the result
             ContentDialogResult dialogResult = await CurrentSpawnedDialogTask;
             return dialogResult; // Return the result

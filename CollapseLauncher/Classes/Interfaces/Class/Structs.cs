@@ -156,10 +156,22 @@ namespace CollapseLauncher
         public readonly int Revision;
     }
 
-    internal readonly struct AssetProperty<T>
-        where T : Enum
+    public interface IAssetProperty
     {
-        internal AssetProperty(
+        public string Name { get; }
+        public string AssetTypeString { get; }
+        public string Source { get; }
+        public long Size { get; }
+        public string SizeStr { get; }
+        public string LocalCRC { get; }
+        public byte[] LocalCRCByte { get; }
+        public string RemoteCRC { get; }
+        public byte[] RemoteCRCByte { get; }
+    }
+
+    public class AssetProperty<T> : IAssetProperty
+    {
+        public AssetProperty(
             string name, T assetType, string source,
             long size, byte[] localCRCByte, byte[] remoteCRCByte)
         {
@@ -171,6 +183,7 @@ namespace CollapseLauncher
             RemoteCRCByte = remoteCRCByte;
         }
 
+        public string AssetTypeString { get => Enum.GetName(typeof(T), AssetType); }
         public string Name { get; private init; }
         public T AssetType { get; private init; }
         public string Source { get; private init; }
@@ -180,5 +193,7 @@ namespace CollapseLauncher
         public byte[] LocalCRCByte { get; private init; }
         public string RemoteCRC { get => RemoteCRCByte == null ? "-" : HexTool.BytesToHexUnsafe(RemoteCRCByte); }
         public byte[] RemoteCRCByte { get; private init; }
+
+        public IAssetProperty ToIAssetProperty() => this;
     }
 }

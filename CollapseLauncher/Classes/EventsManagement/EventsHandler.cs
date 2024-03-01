@@ -1,7 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -25,17 +24,18 @@ namespace CollapseLauncher
         public static string UpdateChannelName;
         public static AppUpdateVersionProp UpdateProperty;
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
-        public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
+        public static void GetStatus(LauncherUpdateProperty e) => invoker!.GetStatus(e);
         public static bool isUpdateCooldownActive;
         public static bool isMetered
         {
             get
             {
-                NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
-                return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);  
+                NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost()?.NetworkCostType ?? NetworkCostType.Fixed;
+                return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "FunctionNeverReturns")]
         public static async void StartCheckUpdate(bool forceUpdate)
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
@@ -57,10 +57,10 @@ namespace CollapseLauncher
                                 using (Updater updater = new Updater(UpdateChannelName))
                                 {
                                     UpdateInfo info = await updater.StartCheck();
-                                    GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
+                                    GameVersion RemoteVersion = new GameVersion(info!.FutureReleaseEntry!.Version!.Version);
 
                                     AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
-                                    UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
+                                    UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata!.time };
 
                                     if (CompareVersion(AppCurrentVersion, RemoteVersion))
                                         GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
@@ -93,7 +93,7 @@ namespace CollapseLauncher
         {
             string relativePath = ConverterTool.CombineURLFromString(UpdateChannelName, "fileindex.json");
             await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
-            return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
+            return await ms!.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
         }
 
         public static bool CompareVersion(GameVersion? CurrentVer, GameVersion? ComparedVer)
@@ -127,14 +127,25 @@ namespace CollapseLauncher
     {
         public bool IsUpdateAvailable { get; set; }
         public GameVersion NewVersionName { get; set; }
-        public bool QuitFromUpdateMenu { get; set; } = false;
+        public bool QuitFromUpdateMenu { get; set; }
     }
     #endregion
     #region ThemeChangeRegion
     internal static class ThemeChanger
     {
         static ThemeChangerInvoker invoker = new ThemeChangerInvoker();
-        public static void ChangeTheme(ElementTheme e) => invoker.ChangeTheme(e);
+        public static void ChangeTheme(ElementTheme e)
+        {
+            CurrentAppTheme = e switch
+            {
+                ElementTheme.Light => AppThemeMode.Light,
+                ElementTheme.Default => AppThemeMode.Default,
+                _ => AppThemeMode.Dark
+            };
+
+            SetAppConfigValue("ThemeMode", CurrentAppTheme.ToString());
+            invoker!.ChangeTheme(e);
+        }
     }
 
     internal class ThemeChangerInvoker
@@ -146,6 +157,7 @@ namespace CollapseLauncher
     internal class ThemeProperty
     {
         internal ThemeProperty(ElementTheme e) => Theme = e;
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public ElementTheme Theme { get; private set; }
     }
     #endregion
@@ -159,35 +171,36 @@ namespace CollapseLauncher
         public static ErrorType ExceptionType;
         public static string ExceptionTitle;
         public static string ExceptionSubtitle;
-        public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled) => invoker.SendException(e, eT);
+        public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled) => invoker!.SendException(e, eT);
         public static void SendWarning(Exception e, ErrorType eT = ErrorType.Warning) =>
-            invoker.SendException(e, eT);
+            invoker!.SendException(e, eT);
         public static void SendExceptionWithoutPage(Exception e, ErrorType eT = ErrorType.Unhandled)
         {
-            ExceptionContent = e.ToString();
+            ExceptionContent = e!.ToString();
             ExceptionType = eT;
             SetPageTitle(eT);
         }
 
         public static void SetPageTitle(ErrorType errorType)
         {
+            var _locUnhandledException = Lang!._UnhandledExceptionPage!;
             switch (errorType)
             {
                 case ErrorType.Unhandled:
-                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle1;
-                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledTitle1;
+                    ExceptionTitle    = _locUnhandledException.UnhandledTitle1;
+                    ExceptionSubtitle = _locUnhandledException.UnhandledTitle1;
                     break;
                 case ErrorType.Connection:
-                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle2;
-                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle2;
+                    ExceptionTitle    = _locUnhandledException.UnhandledTitle2;
+                    ExceptionSubtitle = _locUnhandledException.UnhandledSubtitle2;
                     break;
                 case ErrorType.GameError:
-                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle3;
-                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle3;
+                    ExceptionTitle    = _locUnhandledException.UnhandledTitle3;
+                    ExceptionSubtitle = _locUnhandledException.UnhandledSubtitle3;
                     break;
                 case ErrorType.Warning:
-                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle4;
-                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle4;
+                    ExceptionTitle    = _locUnhandledException.UnhandledTitle4;
+                    ExceptionSubtitle = _locUnhandledException.UnhandledSubtitle4;
                     break;
             }
         }
@@ -203,10 +216,10 @@ namespace CollapseLauncher
     {
         internal ErrorProperties(Exception e, ErrorType errorType)
         {
-            Exception = e;
-            ExceptionString = e.ToString();
+            Exception                    = e;
+            ExceptionString              = e?.ToString() ?? String.Empty;
             ErrorSender.ExceptionContent = ExceptionString;
-            ErrorSender.ExceptionType = errorType;
+            ErrorSender.ExceptionType    = errorType;
             ErrorSender.SetPageTitle(errorType);
         }
         public Exception Exception { get; private set; }
@@ -223,13 +236,13 @@ namespace CollapseLauncher
         public static void ChangeWindowFrame(Type e, NavigationTransitionInfo eT)
         {
             currentWindow = e;
-            invoker.ChangeWindowFrame(e, eT);
+            invoker!.ChangeWindowFrame(e, eT);
         }
         public static void ChangeMainFrame(Type e) => ChangeMainFrame(e, new DrillInNavigationTransitionInfo());
         public static void ChangeMainFrame(Type e, NavigationTransitionInfo eT)
         {
             currentPage = e;
-            invoker.ChangeMainFrame(e, eT);
+            invoker!.ChangeMainFrame(e, eT);
         }
 
         public static void ReloadCurrentWindowFrame() => ChangeWindowFrame(currentWindow);
@@ -259,8 +272,8 @@ namespace CollapseLauncher
     internal static class NotificationSender
     {
         static NotificationInvoker invoker = new NotificationInvoker();
-        public static void SendNotification(NotificationInvokerProp e) => invoker.SendNotification(e);
-        public static void SendCustomNotification(int tagID, InfoBar infoBarUI) => invoker.SendNotification(new NotificationInvokerProp
+        public static void SendNotification(NotificationInvokerProp e) => invoker!.SendNotification(e);
+        public static void SendCustomNotification(int tagID, InfoBar infoBarUI) => invoker!.SendNotification(new NotificationInvokerProp
         {
             IsCustomNotif = true,
             CustomNotifAction = NotificationCustomAction.Add,
@@ -270,7 +283,7 @@ namespace CollapseLauncher
             },
             OtherContent = infoBarUI
         });
-        public static void RemoveCustomNotification(int tagID) => invoker.SendNotification(new NotificationInvokerProp
+        public static void RemoveCustomNotification(int tagID) => invoker!.SendNotification(new NotificationInvokerProp
         {
             IsCustomNotif = true,
             CustomNotifAction = NotificationCustomAction.Remove,
@@ -290,11 +303,11 @@ namespace CollapseLauncher
     public enum NotificationCustomAction { Add, Remove }
     public class NotificationInvokerProp
     {
-        public TypedEventHandler<InfoBar, object> CloseAction { get; set; } = null;
-        public UIElement OtherContent { get; set; } = null;
+        public TypedEventHandler<InfoBar, object> CloseAction { get; set; }
+        public UIElement OtherContent { get; set; }
         public NotificationProp Notification { get; set; }
         public bool IsAppNotif { get; set; } = true;
-        public bool IsCustomNotif { get; set; } = false;
+        public bool IsCustomNotif { get; set; }
         public NotificationCustomAction CustomNotifAction { get; set; }
 
     }
@@ -303,9 +316,9 @@ namespace CollapseLauncher
     internal static class BackgroundImgChanger
     {
         static BackgroundImgChangerInvoker invoker = new BackgroundImgChangerInvoker();
-        public static async Task WaitForBackgroundToLoad() => await invoker.WaitForBackgroundToLoad();
-        public static void ChangeBackground(string ImgPath, bool IsCustom = true) => invoker.ChangeBackground(ImgPath, IsCustom);
-        public static void ToggleBackground(bool Hide) => invoker.ToggleBackground(Hide);
+        public static async Task WaitForBackgroundToLoad() => await invoker!.WaitForBackgroundToLoad();
+        public static void ChangeBackground(string ImgPath, bool IsCustom = true) => invoker!.ChangeBackground(ImgPath, IsCustom);
+        public static void ToggleBackground(bool Hide) => invoker!.ToggleBackground(Hide);
     }
 
     internal class BackgroundImgChangerInvoker
@@ -313,7 +326,7 @@ namespace CollapseLauncher
         public static event EventHandler<BackgroundImgProperty> ImgEvent;
         public static event EventHandler<bool> IsImageHide;
         BackgroundImgProperty property;
-        public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property.IsImageLoaded) { } });
+        public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property!.IsImageLoaded) { } });
         public void ChangeBackground(string ImgPath, bool IsCustom) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom));
         public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);
     }
@@ -326,7 +339,7 @@ namespace CollapseLauncher
             this.IsCustom = IsCustom;
         }
 
-        public bool IsImageLoaded { get; set; } = false;
+        public bool IsImageLoaded { get; set; }
         public string ImgPath { get; private set; }
         public bool IsCustom { get; private set; }
     }
@@ -340,17 +353,17 @@ namespace CollapseLauncher
             if (GetAppConfigValue("UseExternalBrowser").ToBool())
             {
                 if (string.IsNullOrEmpty(URL)) return;
-                parentUI.DispatcherQueue.TryEnqueue(() =>
+                parentUI!.DispatcherQueue!.TryEnqueue(() =>
                 {
                     Process.Start(new ProcessStartInfo
-                                  {
-                                      FileName = URL,
-                                      UseShellExecute = true,
-                                  });
+                    {
+                        FileName = URL,
+                        UseShellExecute = true,
+                    });
                 });
             }
-            else invoker.SpawnWebView2Window(URL);
-        } 
+            else invoker!.SpawnWebView2Window(URL);
+        }
     }
 
     internal class SpawnWebView2Invoker
@@ -370,7 +383,7 @@ namespace CollapseLauncher
     internal static class ShowLoadingPage
     {
         static ShowLoadingPageInvoker invoker = new ShowLoadingPageInvoker();
-        public static void ShowLoading(string Title, string Subtitle, bool Hide = false) => invoker.ShowLoading(Hide, Title, Subtitle);
+        public static void ShowLoading(string Title, string Subtitle, bool Hide = false) => invoker!.ShowLoading(Hide, Title, Subtitle);
     }
 
     internal class ShowLoadingPageInvoker
@@ -402,7 +415,7 @@ namespace CollapseLauncher
     internal static class ChangeTitleDragArea
     {
         static ChangeTitleDragAreaInvoker invoker = new ChangeTitleDragAreaInvoker();
-        public static void Change(DragAreaTemplate Template) => invoker.Change(Template);
+        public static void Change(DragAreaTemplate Template) => invoker!.Change(Template);
     }
 
     internal class ChangeTitleDragAreaInvoker
@@ -425,14 +438,14 @@ namespace CollapseLauncher
     internal static class UpdateBindings
     {
         static UpdateBindingsInvoker invoker = new UpdateBindingsInvoker();
-        public static void Update() => invoker.Update();
+        public static void Update() => invoker!.Update();
     }
 
     internal class UpdateBindingsInvoker
     {
-        private static EventArgs DummyArgs = new EventArgs();
+        private static EventArgs DummyArgs = new();
         public static event EventHandler UpdateEvents;
-        public void Update() => UpdateEvents?.Invoke(this, DummyArgs);
+        public void Update() => UpdateEvents?.Invoke(this, DummyArgs!);
     }
     #endregion
 }

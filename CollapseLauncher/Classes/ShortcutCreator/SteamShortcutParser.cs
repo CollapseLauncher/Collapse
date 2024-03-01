@@ -33,7 +33,7 @@ namespace CollapseLauncher.ShortcutUtils
             {
                 _shortcuts.RemoveAll(x => x.preliminaryAppID == shortcut.preliminaryAppID);
             }
-                
+            
             _shortcuts.Add(shortcut);
             shortcut.MoveImages(_path, preset);
         }
@@ -118,33 +118,30 @@ namespace CollapseLauncher.ShortcutUtils
                         }
                         buffer.Add(ln[i]);
                         break;
-                    case ParseType.ValueTime:
-                        if (ln[i] == 0)
-                        {
-                            newShortcut.LastPlayTime = buffer.Count != 0 ? ANSI.GetString(buffer.ToArray(), 0, buffer.Count) : "\x00\x00\x00";
-                            buffer = [];
-                            parse = ParseType.FindType;
-                            while (i < ln.Length - 1 && ln[i + 1] == 0)
-                                i++;
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
-                        break;
-                    case ParseType.ValueAppid:
-                        if (ln[i] == 1)
-                        {
-                            newShortcut.appid = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
-                            buffer = [];
-                            parse = ParseType.NameStr;
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
-                        break;
                     case ParseType.NameTags:
                         if (ln[i] == 0)
                         {
                             parse = ParseType.ValueTags;
                             buffer = [];
+                            continue;
+                        }
+                        buffer.Add(ln[i]);
+                        break;
+                    case ParseType.ValueTime:
+                        buffer.Add(ln[i]);
+                        if (buffer.Count == 4)
+                        {
+                            newShortcut.LastPlayTime = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
+                            buffer = [];
+                            parse = ParseType.FindType;
+                        }
+                        break;
+                    case ParseType.ValueAppid:
+                        if (buffer.Count == 4)
+                        {
+                            newShortcut.appid = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
+                            buffer = [];
+                            parse = ParseType.NameStr;
                             continue;
                         }
                         buffer.Add(ln[i]);

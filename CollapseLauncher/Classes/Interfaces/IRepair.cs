@@ -6,7 +6,7 @@ namespace CollapseLauncher.Interfaces
 {
     internal interface IRepair : IDisposable
     {
-        ObservableCollection<AssetProperty<RepairAssetType>> AssetEntry { get; set; }
+        ObservableCollection<IAssetProperty> AssetEntry { get; set; }
         event EventHandler<TotalPerfileProgress> ProgressChanged;
         event EventHandler<TotalPerfileStatus> StatusChanged;
         Task<bool> StartCheckRoutine(bool useFastCheck = false);

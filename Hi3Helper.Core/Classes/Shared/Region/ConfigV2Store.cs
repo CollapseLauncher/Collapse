@@ -24,7 +24,7 @@ namespace Hi3Helper.Preset
 
         public static PresetConfigV2 LoadCurrentConfigV2(string Key, string Value)
         {
-            CurrentConfigV2 = ConfigV2.MetadataV2[Key][Value];
+            CurrentConfigV2 = ConfigV2!.MetadataV2![Key!]![Value!];
             CurrentConfigV2GameCategory = Key;
             CurrentConfigV2GameRegion = Value;
 
@@ -35,15 +35,15 @@ namespace Hi3Helper.Preset
         {
             LoadConfigV2();
             Dictionary<string, Dictionary<string, PresetConfigV2>> res = new Dictionary<string, Dictionary<string, PresetConfigV2>>();
-            Dictionary<string, PresetConfigV2> phase1 = new Dictionary<string, PresetConfigV2>();
+            Dictionary<string, PresetConfigV2> phase1;
 
-            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> a in ConfigV2.MetadataV2)
+            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> a in ConfigV2!.MetadataV2!)
             {
-                phase1 = a.Value
-                    .Where(b => b.Value.IsCacheUpdateEnabled ?? false)
+                phase1 = a.Value!
+                    .Where(b => b.Value!.IsCacheUpdateEnabled ?? false)
                     .ToDictionary(b => b.Key, b => b.Value);
 
-                if (phase1.Count > 0) res.Add(a.Key, phase1);
+                if (phase1.Count > 0) res.Add(a.Key!, phase1);
             }
 
             ConfigV2.MetadataV2 = res;
@@ -52,8 +52,8 @@ namespace Hi3Helper.Preset
 
         public static void LoadConfigV2()
         {
-            string stamp = File.ReadAllText(AppGameConfigV2StampPath);
-            string content = File.ReadAllText(AppGameConfigV2MetadataPath);
+            string stamp = File.ReadAllText(AppGameConfigV2StampPath!);
+            string content = File.ReadAllText(AppGameConfigV2MetadataPath!);
             if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException($"{AppGameConfigV2StampPath} file seems to be empty. Please remove it and restart the launcher!");
             if (string.IsNullOrEmpty(content)) throw new NullReferenceException($"{AppGameConfigV2MetadataPath} file seems to be empty. Please remove it and restart the launcher!");
 
@@ -62,10 +62,10 @@ namespace Hi3Helper.Preset
 
             if (ConfigV2 is null) throw new NullReferenceException("Metadata config is broken");
 
-            ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
+            ConfigV2GameCategory = ConfigV2.MetadataV2!.Keys.ToList();
 
             ConfigV2LastUpdate = ((Stamp)JsonSerializer
-                .Deserialize(stamp, typeof(Stamp), CoreLibraryJSONContext.Default)).LastUpdated;
+                .Deserialize(stamp, typeof(Stamp), CoreLibraryJSONContext.Default)!).LastUpdated;
 
             ConfigV2.DecryptStrings();
             ConfigV2.GenerateHashID();
@@ -73,31 +73,31 @@ namespace Hi3Helper.Preset
 
         public static bool GetConfigV2Regions(string GameCategoryName)
         {
-            if (!ConfigV2.MetadataV2.ContainsKey(GameCategoryName))
+            if (!ConfigV2!.MetadataV2!.ContainsKey(GameCategoryName!))
             {
-                ConfigV2GameRegions = ConfigV2.MetadataV2.FirstOrDefault().Value.Keys.ToList();
+                ConfigV2GameRegions = ConfigV2.MetadataV2.FirstOrDefault().Value!.Keys.ToList();
                 LogWriteLine($"Game category \"{GameCategoryName}\" isn't found!", LogType.Error, true);
                 return false;
             }
 
-            ConfigV2GameRegions = ConfigV2.MetadataV2[GameCategoryName].Keys.ToList();
+            ConfigV2GameRegions = ConfigV2.MetadataV2[GameCategoryName]!.Keys.ToList();
             return true;
         }
 
         public static int GetPreviousGameRegion(string GameCategoryName)
         {
-            string iniKeyName = $"LastRegion_{GameCategoryName.Replace(" ", string.Empty)}";
+            string iniKeyName = $"LastRegion_{GameCategoryName!.Replace(" ", string.Empty)}";
             string regionName;
 
             if (!IsConfigKeyExist(iniKeyName))
             {
-                regionName = ConfigV2GameRegions.FirstOrDefault();
+                regionName = ConfigV2GameRegions!.FirstOrDefault();
                 SetAndSaveConfigValue(iniKeyName, regionName);
                 return ConfigV2GameRegions.IndexOf(regionName);
             }
 
             regionName = GetAppConfigValue(iniKeyName).ToString();
-            if (ConfigV2GameRegions.Contains(regionName))
+            if (ConfigV2GameRegions!.Contains(regionName))
             {
                 return ConfigV2GameRegions.IndexOf(regionName);
             }
@@ -108,7 +108,7 @@ namespace Hi3Helper.Preset
 
         public static void SetPreviousGameRegion(string GameCategoryName, string RegionName, bool isSave = true)
         {
-            string iniKeyName = $"LastRegion_{GameCategoryName.Replace(" ", string.Empty)}";
+            string iniKeyName = $"LastRegion_{GameCategoryName!.Replace(" ", string.Empty)}";
 
             if (isSave)
             {
@@ -125,7 +125,7 @@ namespace Hi3Helper.Preset
 
         private static bool CheckConfigV2StampContent(string name)
         {
-            FileInfo file = new FileInfo(name);
+            FileInfo file = new FileInfo(name!);
             if (!file.Exists) return false;
             if (file.Length < 2) return false;
             return true;

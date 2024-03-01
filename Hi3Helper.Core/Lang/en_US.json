@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "Select Region",
     "Pg2NextBtn": "Finish - Enter the Launcher",
     "Pg2PrevBtn": "Back - Select Folder",
+    "Pg2PrevBtnNew": "Back - Launcher Configuration",
     "Pg2Subtitle1_1": "Just one more step to play your game from",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "\u2006",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "To start, click on the",
     "Subtitle4_2": "\"Locate folder\"",
     "Subtitle4_3": "button below to choose where you want to install your game.",
-    "Title1": "Welcome",
-    "Title2": "to Collapse Launcher"
+    "Title1": "Welcome to",
+    "Title2": "Collapse Launcher"
   },
 
   "_DisconnectedPage": {
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "Pause/Cancel",
     "PauseCancelBtn": "Pause/Cancel",
     "DownloadBtn": "Download Game",
+
     "GameSettingsBtn": "Quick Settings",
     "GameSettings_Panel1": "Quick Settings",
     "GameSettings_Panel1OpenGameFolder": "Open Game Folder",
@@ -140,6 +142,7 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "Show Social Media Panel",
     "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
     "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
+
     "GamePlaytime_Panel1": "Edit Playtime",
     "GamePlaytime_Idle_Panel1Hours": "Hours",
     "GamePlaytime_Idle_Panel1Minutes": "Minutes",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "Invalid values provided.",
     "GamePlaytime_Running_Info1": "An instance of this game is currently running, therefore playtime can't be edited.",
     "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point) & only sessions started using Collapse will be tracked.",
+    "GamePlaytime_Display": "{0}h {1}m",
+
     "PostPanel_Events": "Events",
     "PostPanel_Notices": "Notices",
     "PostPanel_Info": "Info",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
     "CustomArgs_Footer3": "to see more parameters.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Boost Game Priority [Experimental]",
+
+    "Advanced_Title": "Advanced Settings",
+    "Advanced_Subtitle1": "Collapse Launcher Team",
+    "Advanced_Subtitle2": "IS NOT RESPONSIBLE",
+    "Advanced_Subtitle3": "for anything happened to your game, account or system while this settings is in use! Use at your own risk.",
+    "Advanced_GLC_WarningAdmin": "WARNING: Commands provided will be run as Administrator!",
+    "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
+    "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
+    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
+    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
 
   "_SettingsPage": {
@@ -487,6 +503,9 @@
     "NotSelected": "Not Selected",
     "ExtractAnyway": "Extract Anyway!",
 
+    "IAcceptAgreement": "I accept the agreement",
+    "IDoNotAcceptAgreement": "I do not accept the agreement",
+
     "LangNameENUS": "English (US)",
     "LangNameJP": "Japanese",
     "LangNameCN": "Chinese (Simplified)",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "The official (main) repository for the launcher.",
     "CDNDescription_Cloudflare": "A mirror of the official (main) repository hosted in Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",
@@ -545,7 +565,9 @@
     "LauncherNameOfficial": "Official Launcher",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Launcher Name is Unknown)"
+    "LauncherNameUnknown": "(Launcher Name is Unknown)",
+    
+    "ImageCropperTitle": "Crop the image"
   },
 
   "_BackgroundNotification": {
@@ -645,24 +667,35 @@
     "CookbookLocateSubtitle5": "to locate the downloaded Cookbook file before continuing.\r\n\r\n",
     "CookbookLocateSubtitle6": "Note:\r\n",
     "CookbookLocateSubtitle7": "Here is the name of the Cookbook file you need to download:\r\n",
+
     "PrivilegeMustRunTitle": "Collapse requires privilege elevation!",
     "PrivilegeMustRunSubtitle": "Collapse requires administrative privileges to function properly. Would you like to restart Collapse and run it as administrator?",
+
     "ReleaseChannelChangeTitle": "Change Release Channel",
     "ReleaseChannelChangeSubtitle1": "You are about to change your release channel to:",
     "ReleaseChannelChangeSubtitle2": "Note:",
     "ReleaseChannelChangeSubtitle3": "This action may cause irreversible changes and/or cause things to break from your current setup. We are not responsible for any loss or corruption of data associated with your game.",
+
     "ChangePlaytimeTitle": "Are you sure you want to change your playtime?",
     "ChangePlaytimeSubtitle": "Changing your playtime means overwriting the current value with the one you just inputted. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "ResetPlaytimeTitle": "Are you sure you want to reset your playtime?",
     "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter back to 0. This is a ",
     "ResetPlaytimeSubtitle2": "destructive",
     "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
+    "InvalidPlaytimeTitle": "There was a problem saving this session's playtime",
+    "InvalidPlaytimeSubtitle1": "The difference between the starting and ending times results in a negative number.",
+    "InvalidPlaytimeSubtitle2": "A fallback value is saved every minute and will be used instead:",
+    "InvalidPlaytimeSubtitle3": "Please refrain from adjusting the computer clock while in-game.",
+
     "LocateExePathTitle": "Locate Executable Install Path",
     "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
+
     "CannotUseAppLocationForGameDirTitle": "Folder is invalid!",
     "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
+
     "StopGameTitle": "Force Stop Game",
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
+
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
@@ -921,6 +954,7 @@
     "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use with caution as Honkai: Star Rail does not officially support this!",
     "Graphics_FPS_Help2": "Setting the FPS value to 120 will break the in-game Graphics Settings menu.\r\nIf your menu is broken in-game, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
+    "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "Render Scale",
     "Graphics_ResolutionQuality": "Resolution Quality",
     "Graphics_ShadowQuality": "Shadow Quality",
@@ -1135,5 +1169,44 @@
     "Korea": "Korea",
     "Japan": "Japan",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Agreement:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Welcome", " To" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Click Here to Continue",
+    "SetupBackButton": "Go Back",
+
+    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
+    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
+    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsStyleThemeHeader": "Theme",
+    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
+    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
+    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
+    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
+    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   }
 }

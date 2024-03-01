@@ -20,7 +20,7 @@ namespace CollapseLauncher
             List<SRAsset> returnAsset = new List<SRAsset>();
 
             // Set Indetermined status as false
-            _status.IsProgressTotalIndetermined = false;
+            _status!.IsProgressTotalIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
@@ -29,24 +29,24 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Get persistent and streaming paths
-            string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
-            string baseDesignDataPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\DesignData\Windows");
-            string baseDesignDataPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\DesignData\Windows");
+            string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager!.GamePreset!.GameExecutableName);
+            string baseDesignDataPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\DesignData\Windows");
+            string baseDesignDataPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\DesignData\Windows");
 
-            string baseLuaPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Lua\Windows");
-            string baseLuaPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Lua\Windows");
+            string baseLuaPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\Lua\Windows");
+            string baseLuaPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\Lua\Windows");
 
-            string baseIFixPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\IFix\Windows");
-            string baseIFixPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\IFix\Windows");
+            string baseIFixPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\IFix\Windows");
+            string baseIFixPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\IFix\Windows");
 
             await Task.Run(() =>
             {
                 try
                 {
                     // Do check in parallelization.
-                    Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
+                    Parallel.ForEach(assetIndex!, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
                     {
-                        switch (asset.AssetType)
+                        switch (asset!.AssetType)
                         {
                             case SRAssetType.DesignData:
                                 CheckAsset(asset, returnAsset, baseDesignDataPathPersistent, baseDesignDataPathStreaming, token);
@@ -76,13 +76,13 @@ namespace CollapseLauncher
             lock (this)
             {
                 _progressTotalCountCurrent++;
-                _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusChecking, asset.AssetType, asset.LocalName);
-                _status.ActivityTotal = string.Format(Lang._CachesPage.CachesTotalStatusChecking, _progressTotalCountCurrent, _progressTotalCount);
+                _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.AssetType, asset.LocalName);
+                _status.ActivityTotal = string.Format(Lang!._CachesPage!.CachesTotalStatusChecking!, _progressTotalCountCurrent, _progressTotalCount);
             }
 
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent, asset.LocalName));
-            FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreaming, asset.LocalName));
+            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!));
+            FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreaming!, asset.LocalName!));
 
             bool UsePersistent = !fileInfoStreaming.Exists;
             bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.Size;
@@ -112,7 +112,6 @@ namespace CollapseLauncher
                 if (!IsArrayMatch(asset.Hash, hashArray))
                 {
                     AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.Hash);
-                    return;
                 }
             }
         }
@@ -123,13 +122,13 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status.IsProgressTotalIndetermined = false;
+                _status!.IsProgressTotalIndetermined = false;
                 _progressTotalCountFound++;
-                _progressTotalSizeFound += asset.Size;
+                _progressTotalSizeFound += asset!.Size;
             }
 
             // Add file into asset index
-            lock (returnAsset)
+            lock (returnAsset!)
             {
                 returnAsset.Add(asset);
 
@@ -137,7 +136,7 @@ namespace CollapseLauncher
             }
 
             // Add to asset entry display
-            Dispatch(() => AssetEntry.Add(new AssetProperty<CacheAssetType>(
+            Dispatch(() => AssetEntry!.Add(new AssetProperty<CacheAssetType>(
                     Path.GetFileName(asset.LocalName),
                     ConvertCacheAssetTypeEnum(asset.AssetType),
                     $"{asset.AssetType}",

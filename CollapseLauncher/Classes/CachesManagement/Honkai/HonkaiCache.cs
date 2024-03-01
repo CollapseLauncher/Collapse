@@ -9,7 +9,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class HonkaiCache : ProgressBase<CacheAssetType, CacheAsset>, ICache, ICacheBase<HonkaiCache>
+    internal partial class HonkaiCache : ProgressBase<CacheAsset>, ICache, ICacheBase<HonkaiCache>
     {
         #region Properties
         private string _cacheRegionalCheckName = "sprite";
@@ -23,12 +23,12 @@ namespace CollapseLauncher
         public HonkaiCache(UIElement parentUI, IGameVersionCheck GameVersionManager)
             : base(
                   parentUI,
-                  GameVersionManager,
-                  GameVersionManager.GameDirAppDataPath,
+                  GameVersionManager!,
+                  GameVersionManager!.GameDirAppDataPath,
                   null,
                   GameVersionManager.GetGameVersionAPI().VersionString)
         {
-            _gameLang = _gameVersionManager.GamePreset.GetGameLanguage() ?? "en";
+            _gameLang = _gameVersionManager!.GamePreset!.GetGameLanguage() ?? "en";
         }
 
         ~HonkaiCache() => Dispose();
@@ -48,22 +48,22 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            _assetIndex = await Fetch(_token.Token);
+            _assetIndex = await Fetch(_token!.Token);
 
             // Step 2: Start assets checking
-            _updateAssetIndex = await Check(_assetIndex, _token.Token);
+            _updateAssetIndex = await Check(_assetIndex, _token!.Token);
 
             // Step 3: Summarize and returns true if the assetIndex count != 0 indicates caches needs to be update.
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 _updateAssetIndex,
-                string.Format(Lang._CachesPage.CachesStatusNeedUpdate, _progressTotalCountFound, ConverterTool.SummarizeSizeSimple(_progressTotalSizeFound)),
+                string.Format(Lang!._CachesPage!.CachesStatusNeedUpdate!, _progressTotalCountFound, ConverterTool.SummarizeSizeSimple(_progressTotalSizeFound)),
                 Lang._CachesPage.CachesStatusUpToDate);
         }
 
         public async Task StartUpdateRoutine(bool showInteractivePrompt = false)
         {
-            if (_updateAssetIndex.Count == 0) throw new InvalidOperationException("There's no cache file need to be update! You can't do the update process!");
+            if (_updateAssetIndex!.Count == 0) throw new InvalidOperationException("There's no cache file need to be update! You can't do the update process!");
 
             _ = await TryRunExamineThrow(UpdateRoutine());
         }
@@ -74,7 +74,7 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Assign update task
-            Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex, _token.Token);
+            Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex, _token!.Token);
 
             // Run update process
             bool updateTaskSuccess = await TryRunExamineThrow(updateTask);
@@ -83,15 +83,15 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            _status.IsCompleted = true;
-            _status.IsCanceled = false;
-            _status.ActivityStatus = Lang._CachesPage.CachesStatusUpToDate;
+            _status!.IsCompleted = true;
+            _status!.IsCanceled = false;
+            _status!.ActivityStatus = Lang!._CachesPage!.CachesStatusUpToDate;
 
             // Update status and progress
             UpdateAll();
 
             // Clean up _updateAssetIndex
-            _updateAssetIndex.Clear();
+            _updateAssetIndex!.Clear();
 
             return updateTaskSuccess;
         }
@@ -100,7 +100,7 @@ namespace CollapseLauncher
 
         public void CancelRoutine()
         {
-            _token.Cancel();
+            _token!.Cancel();
         }
 
         public void Dispose()

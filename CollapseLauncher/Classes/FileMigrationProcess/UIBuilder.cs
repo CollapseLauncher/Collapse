@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
@@ -9,7 +10,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -22,11 +22,11 @@ namespace CollapseLauncher
             ContentDialogCollapse mainDialogWindow = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
                 Title = dialogTitle,
-                CloseButtonText = Locale.Lang._Misc.Cancel,
+                CloseButtonText = Locale.Lang!._Misc!.Cancel,
                 PrimaryButtonText = null,
                 SecondaryButtonText = null,
                 DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = parentUI.XamlRoot
+                XamlRoot = parentUI!.XamlRoot
             };
 
             Grid mainGrid = new Grid();
@@ -34,12 +34,13 @@ namespace CollapseLauncher
             mainGrid.AddGridColumns(1, new GridLength(1.0, GridUnitType.Star));
             mainGrid.AddGridColumns(1);
 
+            // ReSharper disable once UnusedVariable
             TextBlock locateFolderSubtitle = mainGrid.AddElementToGridColumn(new TextBlock
             {
                 FontSize = 16d,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 TextWrapping = TextWrapping.Wrap,
-                Text = Locale.Lang._FileMigrationProcess.LocateFolderSubtitle
+                Text = Locale.Lang._FileMigrationProcess!.LocateFolderSubtitle
             }, 0, 2);
 
             TextBox choosePathTextBox = mainGrid.AddElementToGridRow(new TextBox
@@ -56,7 +57,7 @@ namespace CollapseLauncher
                 .AddElementToGridRowColumn(UIElementExtensions
                     .CreateButtonWithIcon<Button>(Locale.Lang._FileMigrationProcess.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
                     1, 1);
-            choosePathButton.Margin = new Thickness(8d, 12d, 0d, 0d);
+            choosePathButton!.Margin = new Thickness(8d, 12d, 0d, 0d);
 
             TextBlock warningText = mainGrid.AddElementToGridRowColumn(new TextBlock
             {
@@ -74,14 +75,14 @@ namespace CollapseLauncher
             if (!string.IsNullOrEmpty(outputPath))
                 ToggleOrCheckPathWarning(outputPath);
 
-            choosePathButton.Click += async (sender, args) =>
+            choosePathButton.Click += async (_, _) =>
             {
                 string pathResult = isFileTransfer ? await FileDialogNative.GetFileSavePicker(null, dialogTitle) :
                                                        await FileDialogNative.GetFolderPicker(dialogTitle);
 
-                choosePathTextBox.Text = string.IsNullOrEmpty(pathResult) ? null : pathResult;
+                choosePathTextBox!.Text = string.IsNullOrEmpty(pathResult) ? null : pathResult;
             };
-            choosePathTextBox.TextChanged += (sender, args) => ToggleOrCheckPathWarning(((TextBox)sender).Text);
+            choosePathTextBox!.TextChanged += (sender, _) => ToggleOrCheckPathWarning(((TextBox)sender!).Text);
 
             void ToggleOrCheckPathWarning(string path)
             {
@@ -90,17 +91,17 @@ namespace CollapseLauncher
 
                 if (string.IsNullOrEmpty(parentPath))
                 {
-                    ToggleWarningText(Locale.Lang._FileMigrationProcess.ChoosePathErrorPathUnselected);
+                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathUnselected);
                     return;
                 }
                 if (!(File.Exists(parentPath) || Directory.Exists(parentPath)))
                 {
-                    ToggleWarningText(Locale.Lang._FileMigrationProcess.ChoosePathErrorPathNotExist);
+                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNotExist);
                     return;
                 }
                 if (!ConverterTool.IsUserHasPermission(parentPath) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
                 {
-                    ToggleWarningText(Locale.Lang._FileMigrationProcess.ChoosePathErrorPathNoPermission);
+                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNoPermission);
                     return;
                 }
                 ToggleWarningText();
@@ -109,9 +110,9 @@ namespace CollapseLauncher
             void ToggleWarningText(string text = null)
             {
                 bool canContinue = string.IsNullOrEmpty(text);
-                warningText.Visibility = canContinue ? Visibility.Collapsed : Visibility.Visible;
-                warningText.Text = text;
-                mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang._Misc.Next : null;
+                warningText!.Visibility = canContinue ? Visibility.Collapsed : Visibility.Visible;
+                warningText!.Text = text;
+                mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang!._Misc!.Next : null;
             }
 
             ContentDialogResult mainDialogWindowResult = await mainDialogWindow.QueueAndSpawnDialog();
@@ -127,7 +128,7 @@ namespace CollapseLauncher
                 PrimaryButtonText = null,
                 SecondaryButtonText = null,
                 DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = this.parentUI.XamlRoot
+                XamlRoot = parentUI!.XamlRoot
             };
 
             Grid mainGrid = new Grid { Width = 500d };
@@ -144,11 +145,11 @@ namespace CollapseLauncher
                 new TextBlock
                 {
                     FontWeight = FontWeights.Bold,
-                    Text = Locale.Lang._FileMigrationProcess.PathActivityPanelTitle
+                    Text = Locale.Lang!._FileMigrationProcess!.PathActivityPanelTitle
                 });
             TextBlock pathActivitySubtitle = pathActivityPanel.AddElementToStackPanel(
                 new TextBlock {
-                    Text = Locale.Lang._Misc.Idle,
+                    Text = Locale.Lang._Misc!.Idle,
                     FontSize = 18d,
                     TextTrimming = TextTrimming.CharacterEllipsis
                 });
@@ -159,8 +160,8 @@ namespace CollapseLauncher
                 1);
             Run speedIndicatorTitle = new Run { Text = Locale.Lang._FileMigrationProcess.SpeedIndicatorTitle, FontWeight = FontWeights.Medium };
             Run speedIndicatorSubtitle = new Run { Text = "-" };
-            speedIndicator.Inlines.Add(speedIndicatorTitle);
-            speedIndicator.Inlines.Add(speedIndicatorSubtitle);
+            speedIndicator!.Inlines!.Add(speedIndicatorTitle);
+            speedIndicator!.Inlines!.Add(speedIndicatorSubtitle);
 
             // Build file count indicator
             TextBlock fileCountIndicator = mainGrid.AddElementToGridRow(
@@ -168,8 +169,8 @@ namespace CollapseLauncher
                 2);
             Run fileCountIndicatorTitle = new Run { Text = Locale.Lang._FileMigrationProcess.FileCountIndicatorTitle, FontWeight = FontWeights.Medium };
             Run fileCountIndicatorSubtitle = new Run { Text = Locale.Lang._Misc.PerFromToPlaceholder };
-            fileCountIndicator.Inlines.Add(fileCountIndicatorTitle);
-            fileCountIndicator.Inlines.Add(fileCountIndicatorSubtitle);
+            fileCountIndicator!.Inlines!.Add(fileCountIndicatorTitle);
+            fileCountIndicator!.Inlines!.Add(fileCountIndicatorSubtitle);
 
             // Build file size indicator
             TextBlock fileSizeIndicator = mainGrid.AddElementToGridRowColumn(
@@ -181,7 +182,7 @@ namespace CollapseLauncher
                 },
                 1, 1);
             Run fileSizeIndicatorSubtitle = new Run { Text = Locale.Lang._Misc.PerFromToPlaceholder };
-            fileSizeIndicator.Inlines.Add(fileSizeIndicatorSubtitle);
+            fileSizeIndicator!.Inlines!.Add(fileSizeIndicatorSubtitle);
 
             // Build progress percentage indicator
             StackPanel progressTextIndicator = mainGrid.AddElementToGridRowColumn(

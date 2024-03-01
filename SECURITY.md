@@ -6,8 +6,8 @@ Additionally, due to major rework in Collapse update infrastructure, any version
 
 | Version   | Supported          |
 | -------   | ------------------ |
-| >=1.71.0  | :white_check_mark: |
-| < 1.0.70  | :x:                |
+| >=1.72.0  | :white_check_mark: |
+| < 1.0.71  | :x:                |
 
 
 ## Reporting a Vulnerability
@@ -17,6 +17,5 @@ Please report any vulnerability regarding Collapse Launcher here on Issues with 
  - @neon-nyan(`neonnyann`) 
  - @Cryotechnic(`cry0`)
  - @bagusnl(`bagusnl`)
- - @muscularcandy67(`muscularcandy67`)
 
 Please allow some time for us to process your report and get back to you at timely manner. We are volunteers and maintain this project in our free time and as such, real life situations take priority over this project.

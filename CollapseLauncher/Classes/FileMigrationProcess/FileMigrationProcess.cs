@@ -22,18 +22,18 @@ namespace CollapseLauncher
         private long CurrentFileCountMoved;
         private long TotalFileSize;
         private long TotalFileCount;
-        private bool IsSameOutputDrive;
+        private bool IsSameOutputDrive = false;
         private Stopwatch ProcessStopwatch;
         private Stopwatch EventsStopwatch;
 
         private FileMigrationProcess(UIElement parentUI, string dialogTitle, string inputPath, string outputPath, bool isFileTransfer, CancellationTokenSource tokenSource)
         {
-            this.dialogTitle = dialogTitle;
-            this.inputPath = inputPath;
-            this.outputPath = outputPath;
-            this.isFileTransfer = isFileTransfer;
-            this.parentUI = parentUI;
-            this.tokenSource = tokenSource;
+            this.dialogTitle       = dialogTitle;
+            this.inputPath         = inputPath;
+            this.outputPath        = outputPath;
+            this.isFileTransfer    = isFileTransfer;
+            this.parentUI          = parentUI;
+            this.tokenSource       = tokenSource;
         }
 
         internal async Task<string> StartRoutine()
@@ -51,11 +51,11 @@ namespace CollapseLauncher
                     throw new OperationCanceledException($"Disk space is not sufficient. Cancelling!");
 
                 uiRef = BuildMainMigrationUI();
-                string outputPath = await StartRoutineInner(uiRef.Value);
-                uiRef.Value.mainDialogWindow.Hide();
+                string _outputPath = await StartRoutineInner(uiRef.Value);
+                uiRef.Value.mainDialogWindow!.Hide();
                 isSuccess = true;
 
-                return outputPath;
+                return _outputPath;
             }
             catch when (!isSuccess) // Throw if the isSuccess is not set to true
             {
@@ -82,17 +82,17 @@ namespace CollapseLauncher
 
         private async Task<string> MoveFile(FileMigrationProcessUIRef uiRef)
         {
-            FileInfo inputPathInfo = new FileInfo(this.inputPath);
-            FileInfo outputPathInfo = new FileInfo(this.outputPath);
+            FileInfo inputPathInfo = new FileInfo(this.inputPath!);
+            FileInfo outputPathInfo = new FileInfo(this.outputPath!);
 
             string inputPathDir = Path.GetDirectoryName(inputPathInfo.FullName);
             string outputPathDir = Path.GetDirectoryName(outputPathInfo.FullName);
 
             if (!Directory.Exists(outputPathDir))
-                Directory.CreateDirectory(outputPathDir);
+                Directory.CreateDirectory(outputPathDir!);
 
             // Update path display
-            string inputFileBasePath = inputPathInfo.FullName.Substring(inputPathDir.Length + 1);
+            string inputFileBasePath = inputPathInfo.FullName.Substring(inputPathDir!.Length + 1);
             UpdateCountProcessed(uiRef, inputFileBasePath);
 
             if (this.IsSameOutputDrive)
@@ -112,13 +112,13 @@ namespace CollapseLauncher
 
         private async Task<string> MoveDirectory(FileMigrationProcessUIRef uiRef)
         {
-            DirectoryInfo inputPathInfo = new DirectoryInfo(this.inputPath);
+            DirectoryInfo inputPathInfo = new DirectoryInfo(this.inputPath!);
             if (!Directory.Exists(this.outputPath))
-                Directory.CreateDirectory(this.outputPath);
+                Directory.CreateDirectory(this.outputPath!);
 
             DirectoryInfo outputPathInfo = new DirectoryInfo(this.outputPath);
 
-            int parentInputPathLength = inputPathInfo.Parent.FullName.Length + 1;
+            int parentInputPathLength = inputPathInfo.Parent!.FullName.Length + 1;
             string outputDirBaseNamePath = inputPathInfo.FullName.Substring(parentInputPathLength);
             string outputDirPath = Path.Combine(this.outputPath, outputDirBaseNamePath);
 
@@ -127,8 +127,8 @@ namespace CollapseLauncher
                 this.tokenSource?.Token ?? default,
                 async (inputFileInfo, cancellationToken) =>
                 {
-                    int parentInputPathLength = inputPathInfo.Parent.FullName.Length + 1;
-                    string inputFileBasePath = inputFileInfo.FullName.Substring(parentInputPathLength);
+                    int _parentInputPathLength = inputPathInfo.Parent!.FullName.Length + 1;
+                    string inputFileBasePath = inputFileInfo!.FullName.Substring(_parentInputPathLength);
 
                     // Update path display
                     UpdateCountProcessed(uiRef, inputFileBasePath);
@@ -137,7 +137,7 @@ namespace CollapseLauncher
                     string outputTargetDirPath = Path.GetDirectoryName(outputTargetPath);
 
                     if (!Directory.Exists(outputTargetDirPath))
-                        Directory.CreateDirectory(outputTargetDirPath);
+                        Directory.CreateDirectory(outputTargetDirPath!);
 
                     if (this.IsSameOutputDrive)
                     {

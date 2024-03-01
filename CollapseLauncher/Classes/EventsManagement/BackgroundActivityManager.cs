@@ -22,20 +22,19 @@ namespace CollapseLauncher
 
         public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-            if (!BackgroundActivities.ContainsKey(hashID))
+            if (!BackgroundActivities!.ContainsKey(hashID))
             {
                 AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle);
                 BackgroundActivities.Add(hashID, activity);
 #if DEBUG
                 Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);
 #endif
-                return;
             }
         }
 
         public static void Detach(int hashID)
         {
-            if (BackgroundActivities.ContainsKey(hashID))
+            if (BackgroundActivities!.ContainsKey(hashID))
             {
                 BackgroundActivities.Remove(hashID);
                 DetachEventFromNotification(hashID);
@@ -59,7 +58,7 @@ namespace CollapseLauncher
             {
                 Tag = hashID,
                 Severity = InfoBarSeverity.Informational,
-                Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"],
+                Background = (Brush)Application.Current!.Resources!["InfoBarAnnouncementBrush"],
                 IsOpen = true,
                 IsClosable = false,
                 Margin = new Thickness(4, 4, 4, 0),
@@ -79,7 +78,7 @@ namespace CollapseLauncher
                     new ColumnDefinition()
                 }
             };
-            _parentContainer.Children.Add(_parentGrid);
+            _parentContainer.Children!.Add(_parentGrid);
 
             StackPanel progressLogoContainer = new StackPanel()
             {
@@ -88,24 +87,24 @@ namespace CollapseLauncher
                 Height = 64,
                 Margin = new Thickness(0, 4, 8, 4)
             };
-            _parentGrid.Children.Add(progressLogoContainer);
+            _parentGrid.Children!.Add(progressLogoContainer);
             Grid.SetColumn(progressLogoContainer, 0);
 
             GamePresetProperty CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             Image processLogo = new Image()
             {
-                Source = new BitmapImage(new Uri(CurrentGameProperty._GameVersion.GameType switch
+                Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch
                 {
                     GameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
                     GameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
                     GameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
                     GameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
-                    _ => "ms-appx:///Assets/Images/PaimonWhat.png"
+                    _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
                 })),
                 Width = 64,
                 Height = 64
             };
-            progressLogoContainer.Children.Add(processLogo);
+            progressLogoContainer.Children!.Add(processLogo);
 
             StackPanel progressStatusContainer = new StackPanel()
             {
@@ -129,12 +128,12 @@ namespace CollapseLauncher
                     new RowDefinition()
                 }
             };
-            progressStatusContainer.Children.Add(progressStatusGrid);
+            progressStatusContainer.Children!.Add(progressStatusGrid);
 
             TextBlock progressLeftTitle = new TextBlock()
             {
                 Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
-                Text = Lang._BackgroundNotification.LoadingTitle,
+                Text = Lang!._BackgroundNotification!.LoadingTitle,
             };
             TextBlock progressLeftSubtitle = new TextBlock()
             {
@@ -154,10 +153,10 @@ namespace CollapseLauncher
                 Text = Lang._BackgroundNotification.Placeholder,
                 HorizontalAlignment = HorizontalAlignment.Right
             };
-            progressStatusGrid.Children.Add(progressLeftTitle);
-            progressStatusGrid.Children.Add(progressLeftSubtitle);
-            progressStatusGrid.Children.Add(progressRightTitle);
-            progressStatusGrid.Children.Add(progressRightSubtitle);
+            progressStatusGrid.Children!.Add(progressLeftTitle);
+            progressStatusGrid.Children!.Add(progressLeftSubtitle);
+            progressStatusGrid.Children!.Add(progressRightTitle);
+            progressStatusGrid.Children!.Add(progressRightSubtitle);
             Grid.SetColumn(progressLeftTitle, 0); Grid.SetRow(progressLeftTitle, 0);
             Grid.SetColumn(progressLeftSubtitle, 0); Grid.SetRow(progressLeftSubtitle, 1);
             Grid.SetColumn(progressRightTitle, 1); Grid.SetRow(progressRightTitle, 0);
@@ -186,7 +185,7 @@ namespace CollapseLauncher
                         },
                         new TextBlock()
                         {
-                            Text = Lang._HomePage.PauseCancelDownloadBtn,
+                            Text = Lang._HomePage!.PauseCancelDownloadBtn,
                             FontWeight = FontWeights.Medium,
                             Margin = new Thickness(8, -2, 0, 0),
                             VerticalAlignment = VerticalAlignment.Center
@@ -195,31 +194,31 @@ namespace CollapseLauncher
                 }
             };
 
-            cancelButton.Click += (_, args) =>
+            cancelButton.Click += (_, _) =>
             {
                 cancelButton.IsEnabled = false;
-                activity.CancelRoutine();
+                activity!.CancelRoutine();
                 _parentNotifUI.IsOpen = false;
             };
 
             EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
-                progressBar.Value = args.ProgressTotalPercentage;
-                progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
-                progressRightTitle.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, args.ProgressTotalTimeLeft);
-                progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
+                progressBar.Value = args!.ProgressTotalPercentage;
+                progressLeftSubtitle.Text = string.Format(Lang._Misc!.Speed!, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
+                progressRightTitle.Text = string.Format(Lang._Misc!.TimeRemainHMSFormat!, args.ProgressTotalTimeLeft);
+                progressRightSubtitle.Text = string.Format(Lang._UpdatePage!.UpdateHeader1! + " {0}%", args.ProgressTotalPercentage);
             });
 
             EventHandler<TotalPerfileStatus> StatusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
-                progressBar.IsIndeterminate = args.IsProgressTotalIndetermined;
+                progressBar.IsIndeterminate = args!.IsProgressTotalIndetermined;
                 progressLeftTitle.Text = args.ActivityStatus;
                 if (args.IsCanceled)
                 {
                     cancelButton.IsEnabled = false;
                     cancelButton.Visibility = Visibility.Collapsed;
                     _parentNotifUI.Severity = InfoBarSeverity.Error;
-                    _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Error, activityTitle);
+                    _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Error!, activityTitle);
                     _parentNotifUI.IsClosable = true;
                     _parentContainer.Margin = containerClosableMargin;
                 }
@@ -228,7 +227,7 @@ namespace CollapseLauncher
                     cancelButton.IsEnabled = false;
                     cancelButton.Visibility = Visibility.Collapsed;
                     _parentNotifUI.Severity = InfoBarSeverity.Success;
-                    _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Completed, activityTitle);
+                    _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Completed!, activityTitle);
                     _parentNotifUI.IsClosable = true;
                     _parentContainer.Margin = containerClosableMargin;
                 }
@@ -243,10 +242,10 @@ namespace CollapseLauncher
                 }
             });
 
-            activity.ProgressChanged += ProgressChangedEventHandler;
-            activity.StatusChanged += StatusChangedEventHandler;
+            activity!.ProgressChanged += ProgressChangedEventHandler;
+            activity!.StatusChanged += StatusChangedEventHandler;
 
-            activity.FlushingTrigger += (obj, sender) =>
+            activity.FlushingTrigger += (_, _) =>
             {
                 activity.ProgressChanged -= ProgressChangedEventHandler;
                 activity.StatusChanged -= StatusChangedEventHandler;

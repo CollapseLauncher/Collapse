@@ -36,7 +36,7 @@ namespace CollapseLauncher.ShortcutUtils
         public bool Devkit = false;
         public string DevkitGameID = "";
         public bool DevkitOverrideAppID = false;
-        public string LastPlayTime = "\x00\x00\x00";
+        public string LastPlayTime = "\x00\x00\x00\x00";
         public string FlatpakAppID = "";
         public string tags = "";
         #endregion
@@ -80,7 +80,7 @@ namespace CollapseLauncher.ShortcutUtils
                     + '\x02' + "Devkit" + '\x00' + BoolToByte(Devkit) + "\x00\x00\x00"
                     + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
                     + '\x02' + "DevkitOverrideAppID" + '\x00' + BoolToByte(DevkitOverrideAppID) + "\x00\x00\x00"
-                    + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime + '\x00'
+                    + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime
                     + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
                     + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
         }
@@ -169,10 +169,12 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (hash.ToLower() == asset.MD5) return;
 
+            string cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
+
             for (int i = 0; i < 3; i++)
             {
                 FileInfo info = new FileInfo(steamPath);
-                await DownloadImage(info, asset.URL, new CancellationToken());
+                await DownloadImage(info, cdnURL, new CancellationToken());
 
                 hash = MD5Hash(steamPath);
 
@@ -183,7 +185,7 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
             }
             
-            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + asset.URL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + cdnURL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
             return;
         }
 

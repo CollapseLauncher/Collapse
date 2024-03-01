@@ -38,6 +38,7 @@
     "Pg2ComboBoxRegion": "Выбрать регион",
     "Pg2NextBtn": "Завершение - Войдите в лаунчер",
     "Pg2PrevBtn": "Назад - Выбрать папку",
+    "Pg2PrevBtnNew": "Back - Launcher Configuration",
     "Pg2Subtitle1_1": "Еще один маленький шаг, чтобы начать играть",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -53,8 +54,8 @@
     "Subtitle4_1": "Чтобы начать, нажмите на",
     "Subtitle4_2": "\"Выбрать папку\"",
     "Subtitle4_3": "ниже, чтобы выбрать, где бы Вы хотели установить Вашу игру.",
-    "Title1": "Добро пожаловать",
-    "Title2": "в Collapse Launcher"
+    "Title1": "Welcome to",
+    "Title2": "Collapse Launcher"
   },
 
   "_DisconnectedPage": {
@@ -74,8 +75,8 @@
     "UnhandledSubtitle2": "Упс, кажется, Вы были отключены от интернета~ Или это что-то другое?",
     "UnhandledTitle3": "Игра вылетела",
     "UnhandledSubtitle3": "Игра завершилась. Детали ошибки приведены ниже:",
-    "UnhandledTitle4": "Warning",
-    "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
+    "UnhandledTitle4": "Предупреждение",
+    "UnhandledSubtitle4": "Это не является серьезной проблемой, но мы решили, что должны сообщить вам об этом: \nВ связи с A/B тестированием miHoYo, Collapse не поддерживает чтение следующих файлов:\nkey: App_Settings_h2319593470.\nМы приносим извинения за причиненные неудобства и благодарим вас за понимание.",
     "CopyClipboardBtn1": "Скопировать всё в буфер обмена",
     "CopyClipboardBtn2": "Скопировано в буфер обмена!",
     "GoBackPageBtn1": "Вернуться к предыдущей странице"
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "Пауза/Отмена",
     "PauseCancelBtn": "Пауза/Отмена",
     "DownloadBtn": "Скачать игру",
+
     "GameSettingsBtn": "Быстрые Настройки",
     "GameSettings_Panel1": "Быстрые Настройки",
     "GameSettings_Panel1OpenGameFolder": "Открыть папку с игрой",
@@ -138,8 +140,9 @@
     "GameSettings_Panel4": "Разное",
     "GameSettings_Panel4ShowEventsPanel": "Показать панель событий",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
-    "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
-    "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
+    "GameSettings_Panel4CreateShortcutBtn": "Создать ярлык",
+    "GameSettings_Panel4AddToSteamBtn": "Добавить в Steam",
+
     "GamePlaytime_Panel1": "Изменить время в игре",
     "GamePlaytime_Idle_Panel1Hours": "Часов",
     "GamePlaytime_Idle_Panel1Minutes": "Минут",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "Введены недопустимые значения.",
     "GamePlaytime_Running_Info1": "Эта игра сейчас запущена, поэтому нельзя изменить время игры.",
     "GamePlaytime_Running_Info2": "Учтите что полное закрытие Collapse перестанет отслеживать время в игре (сохранится то, что было до запуска), будут отслеживаться только те сеансы, которые запущены с помощью Collapse.",
+    "GamePlaytime_Display": "{0}ч {1}м",
+
     "PostPanel_Events": "События",
     "PostPanel_Notices": "Примечания",
     "PostPanel_Info": "Информация",
@@ -158,7 +163,7 @@
     "CommunityToolsBtn_CommunityText": "Инструменты сообщества",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}",
 
-    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
+    "CreateShortcut_FolderPicker": "Выберите, где разместить ярлык"
   },
 
   "_GameRepairPage": {
@@ -244,8 +249,8 @@
     "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Полноэкранный режим (в окне)",
     "Graphics_ExclusiveFullscreen": "Использовать полноэкранный режим",
-    "Graphics_ResizableWindow": "Use Resizable Window",
-    "Graphics_ResizableWindowTooltip": "This setting can only be used with Fullscreen mode disabled.",
+    "Graphics_ResizableWindow": "Используйте окно с возможностью изменения размера",
+    "Graphics_ResizableWindowTooltip": "Эта настройка может использоваться только при отключенном полноэкранном режиме.",
     "Graphics_ResSelectPlaceholder": "Выбрать",
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
     "Graphics_ResCustomW": "Ш",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "документацию по командной строке Unity Standalone Player",
     "CustomArgs_Footer3": ", чтобы увидеть больше параметров.",
 
-    "GameBoost": "Повысить приоритет игры [Экспериментально]"
+    "GameBoost": "Повысить приоритет игры [Экспериментально]",
+
+    "Advanced_Title": "Дополнительные настройки",
+    "Advanced_Subtitle1": "Команда Collapse Launcher",
+    "Advanced_Subtitle2": "НЕ НЕСЁТ ОТВЕТСТВЕННОСТИ",
+    "Advanced_Subtitle3": "за всё, что случилось с вашей игрой, аккаунтом или системой во время использования этих настроек! Используйте на свой страх и риск.",
+    "Advanced_GLC_WarningAdmin": "ВНИМАНИЕ: Команды будут выполнены от имени администратора!",
+    "Advanced_GLC_PreLaunch_Title": "Команды перед запуском",
+    "Advanced_GLC_PreLaunch_Subtitle": "Команды, которые нужно выполнить перед запуском игры",
+    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PostExit_Title": "Команды после выхода",
+    "Advanced_GLC_PostExit_Subtitle": "Команды, которые будут выполняться после закрытия игры"
   },
 
   "_SettingsPage": {
@@ -374,7 +390,7 @@
     "DiscordRPC": "Расширенная активность в Discord",
     "DiscordRPC_Toggle": "Показывать статус в Discord",
     "DiscordRPC_GameStatusToggle": "Показывать текущую игру в статусе в Discord",
-    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
+    "DiscordRPC_IdleStatusToggle": "Показывать RPC во время простоя",
 
     "Update": "Проверить наличие обновлений",
     "Update_CurVer": "Текущая версия:",
@@ -417,11 +433,11 @@
     "AppChangeReleaseChannel": "Изменить на {0} канал релиза",
 
     "EnableAcrylicEffect": "Использовать эффект акрилового размытия",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "EnableDownloadChunksMerging": "Объединение загруженных фрагментов пакетов",
     "UseExternalBrowser": "Использовать внешний браузер",
 
     "LowerCollapsePrioOnGameLaunch": "Уменьшение использования ресурсов процесса Collapse при запуске игры",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Отключите \"Карусель\" на главной странице и снизьте приоритет до \"Ниже обычного\".",
 
     "KbShortcuts_Title": "Сочетания клавиш",
     "KbShortcuts_ShowBtn": "Показать сочетания",
@@ -476,7 +492,7 @@
     "YesImReallySure": "Да, я действительно уверен!",
     "YesIHaveBeefyPC": "Да, у меня мощный ПК! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Да, изменить местоположение",
-    "YesContinue": "Yes, Continue",
+    "YesContinue": "Да, продолжить",
 
     "No": "Нет",
     "NoStartFromBeginning": "Нет, начать сначала",
@@ -486,6 +502,9 @@
     "NoOtherLocation": "Продолжить установку",
     "NotSelected": "Не выбрано",
     "ExtractAnyway": "Распаковать в любом случае! ",
+
+    "IAcceptAgreement": "I accept the agreement",
+    "IDoNotAcceptAgreement": "I do not accept the agreement",
 
     "LangNameENUS": "Английский (США)",
     "LangNameJP": "Японский",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "Официальный (основной) репозиторий лаунчера.",
     "CDNDescription_Cloudflare": "Зеркало официального (основного) репозитория, развернутое на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Зеркало официального (основного) репозитория, развернутое на Bitbucket.",
+    "CDNDescription_GitLab": "Зеркало официального (основного) репозитория, размещенного на GitLab",
 
     "LocateExecutable": "Найти исполняемый файл",
     "OpenDownloadPage": "Открыть страницу загрузки",
@@ -529,7 +549,7 @@
     "DiscordRP_Cache": "Обновляет кэш",
     "DiscordRP_GameSettings": "Настраивает игру",
     "DiscordRP_AppSettings": "Настраивает приложение",
-    "DiscordRP_Idle": "Idle",
+    "DiscordRP_Idle": "В простое",
     "DiscordRP_Default": "Нет активности",
     "DiscordRP_Ad": "С Collapse Лаунчера",
     "DiscordRP_Region": "Регион:",
@@ -545,7 +565,9 @@
     "LauncherNameOfficial": "Официальный лаунчер",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Название лаунчера неизвестно)"
+    "LauncherNameUnknown": "(Название лаунчера неизвестно)",
+    
+    "ImageCropperTitle": "Crop the image"
   },
 
   "_BackgroundNotification": {
@@ -565,6 +587,14 @@
     "DeltaPatchDetectedSubtitle": "Дельта патч будет использоваться для обновления игры с {0} до {1}.\nПомните, что Вам все еще будет необходимо скачать некоторые файлы непосредственно в игре.\n\nВы хотите продолжить?",
     "DeltaPatchPrevFailedTitle": "Предыдущий дельта-патч был некорректно применен или не удалось закончить применение!",
     "DeltaPatchPrevFailedSubtitle": "Не удалось применить предыдущий дельта-патч. Хотите восстановить игру, для предотвращения повторной загрузки?",
+    "DeltaPatchPreReqTitle": "Для установки Delta Patch требуется загрузить дополнительный файл!",
+    "DeltaPatchPreReqSubtitle1": "Additional file download is required for this game before applying delta patch. Around ",
+    "DeltaPatchPreReqSubtitle2": " is required to be downloaded and some of these files might contains audio package deltas.",
+    "DeltaPatchPreReqSubtitle3": "Вы хотите продолжить?",
+    "DeltaPatchPreReqSubtitle4": "(Нажмите \"",
+    "DeltaPatchPreReqSubtitle5": "\", чтобы продолжить, или \"",
+    "DeltaPatchPreReqSubtitle6": "\", чтобы использовать обычное обновление, или \"",
+    "DeltaPatchPreReqSubtitle7": "\", чтобы отменить обновление)",
     "GameConversionPrevFailedTitle": "Предыдущее преобразование игры не удалась или не было завершено!",
     "GameConversionPrevFailedSubtitle": "Не удалось завершить предыдущее преобразование. Восстановить игру, чтобы предотвратить повторную загрузку?",
     "PreloadVerifiedTitle": "Пакет предзагрузки подтвержден!",
@@ -585,7 +615,7 @@
     "RepairCompletedSubtitleNoBroken": "Поврежденных файлов не найдено.",
     "ExtremeGraphicsSettingsWarnTitle": "Пресет \"Очень высокие\" выбран!",
     "ExtremeGraphicsSettingsWarnSubtitle": "Вы собираетесь установить пресет \"Очень высокие\"!\nОчень высокими настройками, по сути, является 2x масштаб визуализации с включенным MSAA, что ОЧЕНЬ ПЛОХО ОПТИМИЗИРОВАНО!\n\nВы уверены, что хотите использовать эту настройку?",
-    "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
+    "MigrateExistingMoveDirectoryTitle": "Перемещение установки для: {0}",
     "MigrateExistingInstallChoiceTitle": "Обнаружена существующая установка {0}!",
     "MigrateExistingInstallChoiceSubtitle1": "В этой папке уже установлена игра, использующая {0}:",
     "MigrateExistingInstallChoiceSubtitle2": "У вас есть возможность переместить существующие данные игры в другую папку или использовать текущую папку в качестве существующей. Рекомендуется использовать текущий каталог в качестве уже установленного, чтобы гарантировать, что вы все еще сможете запустить игру, используя {0}.",
@@ -637,24 +667,35 @@
     "CookbookLocateSubtitle5": ", чтобы указать загруженный файл Cookbook перед тем как продолжить.\n\n",
     "CookbookLocateSubtitle6": "Примечание:\n",
     "CookbookLocateSubtitle7": "Здесь название Cookbook файла, который необходимо загрузить:\n",
+
     "PrivilegeMustRunTitle": "Collapse требует повышения привилегий!",
     "PrivilegeMustRunSubtitle": "Collapse запрашивает права администратора для правильного функционирования. Желаете перезапустить Collapse от имени администратора?",
+
     "ReleaseChannelChangeTitle": "Изменить канал релиза",
     "ReleaseChannelChangeSubtitle1": "Вы собираетесь изменить канал релиза на:",
     "ReleaseChannelChangeSubtitle2": "Примечание:",
     "ReleaseChannelChangeSubtitle3": "Это действие может привести к необратимым изменениям и/или нарушить работу вашей текущей установки. Мы не несем ответственность за потерю или повреждение данных, связанных с игрой.",
+
     "ChangePlaytimeTitle": "Вы точно хотите изменить ваше время в игре?",
     "ChangePlaytimeSubtitle": "Изменение времени в игре означает замену текущего значения только что введенным.\n\nВы хотите продолжить?\n\nПримечание: Это не влияет на работу Collapse, и вы можете изменить это значение в любое время, когда не играете в игру.",
     "ResetPlaytimeTitle": "Вы уверены, что хотите сбросить время в игре?",
     "ResetPlaytimeSubtitle": "Сброс вашего времени в игре означает установку счетчика игрового времени в 0. Это ",
     "ResetPlaytimeSubtitle2": "удаляющее",
     "ResetPlaytimeSubtitle3": " действие, вы не сможете вернуться обратно после подтверждения.\n\nВы хотите продолжить?\n\nЗаметка: Это не влияет на работу Collapse и вы в любой момент можете поменять это значение, пока вы не в игре.",
+    "InvalidPlaytimeTitle": "Возникла проблема с сохранением времени игры в этой сессии",
+    "InvalidPlaytimeSubtitle1": "Разница между начальным и конечным временем дает отрицательное число.",
+    "InvalidPlaytimeSubtitle2": "Каждую минуту сохраняется резервное значение, которое будет использоваться вместо него:",
+    "InvalidPlaytimeSubtitle3": "Пожалуйста, воздержитесь от настройки часов в параметрах системы во время игры.",
+
     "LocateExePathTitle": "Указать путь к исполняемому файлу установщика",
     "LocateExePathSubtitle": "Пожалуйста, укажите Collapse директорию исполняемого файла Вашего приложения:",
+
     "CannotUseAppLocationForGameDirTitle": "Папка недопустима!",
     "CannotUseAppLocationForGameDirSubtitle": "Вы не можете использовать эту папку, так как она используется в качестве системной папки или для основного исполняемого файла приложения. Пожалуйста, выберите другую папку!",
+
     "StopGameTitle": "Принудительно закрыть игру",
     "StopGameSubtitle": "Вы действительно хотите принудительно закрыть игру?\nВы можете потерять внутриигровой прогресс.",
+
     "MeteredConnectionWarningTitle": "Обнаружено лимитное подключение!",
     "MeteredConnectionWarningSubtitle": "Ваше текущее подключение к Интернету было определено как \"Лимитное\"! Продолжение процесса обновления может повлечь за собой дополнительную плату со стороны вашего интернет-провайдера. Хотите ли вы продолжить?",
 
@@ -671,43 +712,44 @@
     "OperationWarningNotCancellableMsg4": "\" для начала процесса или \"",
     "OperationWarningNotCancellableMsg5": "\" для отмены операции.",
 
-    "GenericWarningExceptionTitle": "Warning",
-    "GenericWarningExceptionSubtitle": "This isn't a major issue, but we thought we should let you know:",
+    "GenericWarningExceptionTitle": "Внимание",
+    "GenericWarningExceptionSubtitle": "Это не является серьезной проблемой, но мы решили, что должны сообщить вам об этом:",
 
-    "ShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "ShortcutCreationConfirmSubtitle1": "A shortcut will be created in the following path:",
-    "ShortcutCreationConfirmSubtitle2": "If there is already a shortcut with the same name in this folder, it will be replaced.",
-    "ShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
-    "ShortcutCreationSuccessTitle": "Success!",
-    "ShortcutCreationSuccessSubtitle1": "A shiny new shortcut was created!",
-    "ShortcutCreationSuccessSubtitle2": "Location: ",
-    "ShortcutCreationSuccessSubtitle3": "Notes:",
-    "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+    "ShortcutCreationConfirmTitle": "Вы уверены, что хотите продолжить?",
+    "ShortcutCreationConfirmSubtitle1": "Ярлык будет создан по следующему пути:",
+    "ShortcutCreationConfirmSubtitle2": "Если ярлык с таким же названием уже есть в этой папке, то он будет заменён.",
+    "ShortcutCreationConfirmCheckBox": "Автоматически запускать игру после использования этого ярлыка",
+    "ShortcutCreationSuccessTitle": "Успех!",
+    "ShortcutCreationSuccessSubtitle1": "Новый ярлык создан!",
+    "ShortcutCreationSuccessSubtitle2": "Расположение:",
+    "ShortcutCreationSuccessSubtitle3": "Примечания:",
+    "ShortcutCreationSuccessSubtitle4": " • Использование этого ярлыка запустит игру после загрузки региона.",
 
-    "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
-    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam users in this computer.",
-    "SteamShortcutCreationConfirmSubtitle2": "If already added, the assets related to the shortcut will be verified.",
-    "SteamShortcutCreationConfirmCheckBox": "Automatically start game after using this shortcut",
-    "SteamShortcutCreationSuccessTitle": "Success!",
-    "SteamShortcutCreationSuccessSubtitle1": "A new shiny shortcut was added to every Steam users in this computer!",
-    "SteamShortcutCreationSuccessSubtitle2": "Notes:",
-    "SteamShortcutCreationSuccessSubtitle3": " • Using this shortcut will start the game after loading the region.",
-    "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
-    "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
+    "SteamShortcutCreationConfirmTitle": "Точно хотите продолжить?",
+    "SteamShortcutCreationConfirmSubtitle1": "Ярлык будет добавлен для каждого пользователя Steam на этом компьютере.",
+    "SteamShortcutCreationConfirmSubtitle2": "Если он уже добавлен, будет выполнена проверка параметров ярлыка.",
+    "SteamShortcutCreationConfirmCheckBox": "Запуск игры после использования этого ярлыка",
+    "SteamShortcutCreationSuccessTitle": "Успех!",
+    "SteamShortcutCreationSuccessSubtitle1": "Новый блестящий ярлык добавлен для каждого пользователя Steam на этом компьютере!",
+    "SteamShortcutCreationSuccessSubtitle2": "Примечания:",
+    "SteamShortcutCreationSuccessSubtitle3": " • Использование этого ярлыка запустит игру после загрузки региона.",
+    "SteamShortcutCreationSuccessSubtitle4": "• Повторный запуск этого процесса исправит все поврежденные/пропавшие изображения в ярлыке.",
+    "SteamShortcutCreationSuccessSubtitle5": " • Новые ярлыки будут отображаться только после перезапуска Steam.",
+    "SteamShortcutCreationSuccessSubtitle6": " • Чтобы использовать оверлей Steam, необходимо запустить Steam от имени администратора, а Collapse должен быть полностью закрыт или в настройках должна быть включена опция \"Разрешить запуск несколько лаунчеров Collapse\".",
 
-    "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
-    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+    "SteamShortcutCreationFailureTitle": "Неверная папка данных Steam",
+    "SteamShortcutCreationFailureSubtitle": "Не удалось найти корректную папку userdata.\n\nПожалуйста, убедитесь, что вы хотя бы раз вошли в клиент Steam, прежде чем пытаться использовать эту функцию."
   },
 
   "_FileMigrationProcess": {
     "PathActivityPanelTitle": "Перемещение: ",
     "SpeedIndicatorTitle": "Скорость: ",
-    "FileCountIndicatorTitle": "File processed: ",
+    "FileCountIndicatorTitle": "Обработан файл:",
     "LocateFolderSubtitle": "Выберите расположение для перемещения файла/папки по целевому пути.",
-    "ChoosePathTextBoxPlaceholder": "Choose the target path...",
-    "ChoosePathButton": "Choose Target",
-    "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
-    "ChoosePathErrorPathNotExist": "Path does not exist!",
+    "ChoosePathTextBoxPlaceholder": "Выберите путь...",
+    "ChoosePathButton": "Выбрать",
+    "ChoosePathErrorPathUnselected": "Пожалуйста, выберите путь, прежде чем продолжить!",
+    "ChoosePathErrorPathNotExist": "Путь не существует!",
     "ChoosePathErrorPathNoPermission": "У Вас нет разрешения на доступ к этому месту! Пожалуйста, выберите другую папку!"
   },
 
@@ -833,16 +875,16 @@
     "ApplyUpdateTitle2": "Collapse Launcher",
     "ApplyUpdateCDNSelectorTitle": "Выберите CDN для обновления",
     "ApplyUpdateCDNSelectorSubtitle": "Выберите CDN и нажмите \"{0}\" для начала обновления!",
-    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
+    "ApplyUpdateCDNSelectorSubtitleCount": "Автоматически выбрана CDN: {0}",
     "ApplyUpdateUpdateNowBtn": "Обновить сейчас!",
 
     "ApplyUpdateUpdateVersionTitle": "Обновление:",
     "ApplyUpdateUpdateChannelTitle": "Канал:",
     "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Неизвестный",
     "ApplyUpdateUpdateStatusTitle": "Статус:",
-    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscIdle": "В простое",
     "ApplyUpdateMiscNone": "None",
-    "ApplyUpdateVersionSeparator": "to",
+    "ApplyUpdateVersionSeparator": "к",
 
     "ApplyUpdateErrCollapseRunTitle": "Пожалуйста, закройте Collapse перед применением обновления!",
     "ApplyUpdateErrCollapseRunSubtitle": "Ждем закрытия Collapse...",
@@ -912,6 +954,7 @@
     "Graphics_FPS_Help": "120 FPS - ЭКСПЕРИМЕНТ! Используйте на свой страх и риск.",
     "Graphics_FPS_Help2": "Кроме того, установка FPS на 120 выведет из строя предусмотренные игрой настройки графики.\nИспользуйте Collapse, чтобы изменить настройки игровой графики.",
     "Graphics_VSync": "Вертикальная синхронизация",
+    "Graphics_VSync_Help": "Вертикальная синхронизация недоступена при 120 FPS",
     "Graphics_RenderScale": "Масштаб отрисовки",
     "Graphics_ResolutionQuality": "Качество разрешения",
     "Graphics_ShadowQuality": "Качество теней",
@@ -1001,6 +1044,8 @@
     "Graphics_GlobalIllumination": "Общее освещение",
     "Graphics_GlobalIllumination_Help1": "Только на поддерживаемом оборудовании!",
     "Graphics_GlobalIllumination_Help2": "Больше информации (en)",
+    "Graphics_DynamicCharacterResolution": "Динамическое разрешение персонажей",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Только на поддерживаемом оборудовании!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Включить HDR",
     "Graphics_HDR_NotSupported1": "Ваш дисплей не поддерживает HDR",
@@ -1124,5 +1169,44 @@
     "Korea": "Кореи",
     "Japan": "Японии",
     "Bilibili": "Bilibili"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "Agreement:"
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "Welcome", " To" ],
+      "Lower": [ "Collapse", " Launcher" ]
+    },
+    "SetupNextButton": "Click Here to Continue",
+    "SetupBackButton": "Go Back",
+
+    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
+    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsCDNHeader": "Content Delivery Network",
+    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
+    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsStyleThemeHeader": "Theme",
+    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
+    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
+    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
+    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
+    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   }
 }

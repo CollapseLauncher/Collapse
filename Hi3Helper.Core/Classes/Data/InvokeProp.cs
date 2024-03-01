@@ -10,7 +10,7 @@ namespace Hi3Helper
     {
         // Reference:
         // https://pinvoke.net/default.aspx/Enums.SystemMetric
-        public enum SystemMetric : int
+        public enum SystemMetric
         {
             SM_CXSCREEN = 0,
             SM_CYSCREEN = 1
@@ -53,7 +53,7 @@ namespace Hi3Helper
             SW_SHOW = 5,
         }
 
-        public enum Monitor_DPI_Type : int
+        public enum Monitor_DPI_Type
         {
             MDT_Effective_DPI = 0,
             MDT_Angular_DPI = 1,
@@ -168,7 +168,9 @@ namespace Hi3Helper
         public unsafe static void CopyStringToClipboard(string inputString)
         {
             // Initialize the memory pointer
+            // ReSharper disable RedundantAssignment
             IntPtr stringBufferPtr = IntPtr.Zero;
+            // ReSharper restore RedundantAssignment
             IntPtr hMem = IntPtr.Zero;
 
             // Set the Clipboard bool status
@@ -199,7 +201,7 @@ namespace Hi3Helper
                     Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
 
                 // Always set the null byte at the end of the buffer
-                ((byte*)stringBufferPtr)[bufferWritten] = 0x00; // Write the null (terminator) byte
+                ((byte*)stringBufferPtr!)![bufferWritten] = 0x00; // Write the null (terminator) byte
 
                 // Unlock the buffer
                 GlobalUnlock(hMem);
@@ -226,10 +228,12 @@ namespace Hi3Helper
 
         public struct WindowRect
         {
+            // ReSharper disable UnusedAutoPropertyAccessor.Global
             public int Left { get; set; }
             public int Top { get; set; }
             public int Right { get; set; }
             public int Bottom { get; set; }
+            // ReSharper restore UnusedAutoPropertyAccessor.Global
         }
 
         [DllImport("user32.dll")]

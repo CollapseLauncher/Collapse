@@ -1,4 +1,5 @@
-﻿using ColorThiefDotNet;
+﻿using CollapseLauncher.Helper.Image;
+using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -7,14 +8,12 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
-using PhotoSauce.MagicScaler;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Logger;
@@ -22,7 +21,9 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public sealed partial class MainPage : Page
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
+    public sealed partial class MainPage
     {
         private RegionResourceProp _gameAPIProp { get; set; }
 
@@ -108,7 +109,7 @@ namespace CollapseLauncher
 
         public static void SetColorPalette(Page page, Windows.UI.Color[] palette = null)
         {
-            if (palette == null || palette?.Length < 2)
+            if (palette == null || palette.Length < 2)
                 palette = EnsureLengthCopyLast(new Windows.UI.Color[] { (Windows.UI.Color)Application.Current.Resources["TemplateAccentColor"] }, 2);
 
             if (IsAppThemeLight)
@@ -157,16 +158,17 @@ namespace CollapseLauncher
                                 .Where(x => IsLight ? x.IsDark : !x.IsDark)
                                 .OrderBy(x => x.Population);
 
+                            IEnumerable<QuantizedColor> quantizedColors = averageColors.ToArray();
                             QuantizedColor dominatedColor = new QuantizedColor(
-                                Color.FromArgb(
-                                    255,
-                                    (byte)averageColors.Average(a => a.Color.R),
-                                    (byte)averageColors.Average(a => a.Color.G),
-                                    (byte)averageColors.Average(a => a.Color.B)
-                                ), (int)averageColors.Average(a => a.Population));
+                                  Color.FromArgb(
+                                      255,
+                                      (byte)quantizedColors.Average(a => a.Color.R),
+                                      (byte)quantizedColors.Average(a => a.Color.G),
+                                      (byte)quantizedColors.Average(a => a.Color.B)
+                                     ), (int)quantizedColors.Average(a => a.Population));
 
                             _generatedColors.Add(dominatedColor);
-                            _generatedColors.AddRange(averageColors);
+                            _generatedColors.AddRange(quantizedColors);
 
                             break;
                         }
@@ -211,78 +213,18 @@ namespace CollapseLauncher
 
         private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(FileStream stream, uint ToWidth, uint ToHeight)
+        private async Task ApplyBackground(bool _isFirstStartup)
         {
-            Bitmap bitmapRet;
-            BitmapImage bitmapImageRet;
-
-            if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder);
-
-            string cachedFileHash = ConverterTool.BytesToCRC32Simple(stream.Name + stream.Length);
-            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
-
-            FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
-
-            bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 1 << 15;
-            using (stream)
-            using (FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create())
-            {
-                try
-                {
-                    if (!isCachedFileExist)
-                    {
-                        await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
-                    }
-
-                    bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                    bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
-                }
-                catch { throw; }
-            }
-
-            return (bitmapRet, bitmapImageRet);
-        }
-
-        private static async Task GetResizedImageStream(FileStream input, FileStream output, uint ToWidth, uint ToHeight)
-        {
-            ProcessImageSettings settings = new ProcessImageSettings
-            {
-                Width = (int)ToWidth,
-                Height = (int)ToHeight,
-                HybridMode = HybridScaleMode.Off,
-                Interpolation = InterpolationSettings.CubicSmoother
-            };
-
-            await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
-        }
-
-        public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
-        {
-            BitmapImage ret = new BitmapImage();
-            image.Seek(0);
-            await ret.SetSourceAsync(image);
-            return ret;
-        }
-
-        public static Bitmap Stream2Bitmap(IRandomAccessStream image)
-        {
-            image.Seek(0);
-            return new Bitmap(image.AsStream());
-        }
-
-        private async Task ApplyBackground(bool IsFirstStartup)
-        {
-            uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
-            uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
-
-            FileStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read);
+            uint _width = (uint)(m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
+            uint _height = (uint)(m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
             BitmapImage ReplacementBitmap;
-            (PaletteBitmap, ReplacementBitmap) = await GetResizedBitmap(stream, Width, Height);
+            (PaletteBitmap, ReplacementBitmap) = await ImageLoaderHelper.GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, _width, _height);
+            if (PaletteBitmap == null || ReplacementBitmap == null) return;
 
             ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);
 
-            if (!IsFirstStartup)
+            if (!_isFirstStartup)
                 FadeSwitchAllBg(0.125f, ReplacementBitmap);
             else
                 FadeInAllBg(0.125f, ReplacementBitmap);
@@ -355,63 +297,7 @@ namespace CollapseLauncher
             storyboard.Children.Add(Animation);
         }
 
-        private async void HideLoadingPopup(bool hide, string title, string subtitle)
-        {
-            Storyboard storyboard = new Storyboard();
-
-            LoadingTitle.Text = title;
-            LoadingSubtitle.Text = subtitle;
-
-            if (hide)
-            {
-                LoadingRing.IsIndeterminate = false;
-
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = 1;
-                OpacityAnimation.To = 0;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.125));
-
-                Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboard.Children.Add(OpacityAnimation);
-
-                await Task.Delay(125);
-
-                Thickness lastMargin = LoadingPopupPill.Margin;
-                lastMargin.Bottom = -72;
-                LoadingPopupPill.Margin = lastMargin;
-
-                storyboard.Begin();
-
-                await Task.Delay(500);
-                LoadingPopup.Visibility = Visibility.Collapsed;
-                LoadingCancelBtn.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                LoadingRing.IsIndeterminate = true;
-
-                LoadingPopup.Visibility = Visibility.Visible;
-
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = 0;
-                OpacityAnimation.To = 1;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.125));
-
-                Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboard.Children.Add(OpacityAnimation);
-                storyboard.Begin();
-
-                await Task.Delay(125);
-
-                Thickness lastMargin = LoadingPopupPill.Margin;
-                lastMargin.Bottom = 28;
-                LoadingPopupPill.Margin = lastMargin;
-            }
-        }
-
-        private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
+        private void HideBackgroundImage(bool hideImage = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardBack = new Storyboard();

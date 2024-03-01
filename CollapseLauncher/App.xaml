@@ -2,129 +2,322 @@
     x:Class="CollapseLauncher.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:localUI="using:Microsoft.UI.Xaml.Controls"
-    xmlns:ui="using:Windows.UI"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:interactions="using:Microsoft.Xaml.Interactions.Core">
+    xmlns:localUI="using:Microsoft.UI.Xaml.Controls"
+    xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives"
+    xmlns:ui="using:Windows.UI">
+    <!--  ReSharper disable Xaml.InvalidResourceType  -->
+    <!--  ReSharper disable Xaml.ConstructorWarning  -->
+    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+    <!--  ReSharper disable Xaml.BindingWithContextNotResolved  -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Default"> <!-- For dark theme -->
-                            <!-- Base accent color -->
+                        <ResourceDictionary x:Key="Default"> 
+                            <!--  For dark theme  -->
+                            <!--  Base accent color  -->
                             <ui:Color x:Key="TemplateAccentColor">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColor">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight1">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight2">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight3">#ffd52a</ui:Color>
-                            <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
-                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColorLight2}"/>
-                            <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#FFFFFF"/>
-                            <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#000000"/>
+                            <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}" />
+                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColorLight2}" />
+                            <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#FFFFFF" />
+                            <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#000000" />
 
-                            <!-- Dialog brushes -->
+                            <!--  Dialog brushes  -->
                             <ui:Color x:Key="DialogTitleColor">#ffd52a</ui:Color>
-                            <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}"/>
+                            <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}" />
 
-                            <!-- Notification brushes -->
-                            <AcrylicBrush x:Key="NotificationPanelBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="#DD222222"/>
+                            <!--  Notification brushes  -->
+                            <AcrylicBrush
+                                x:Key="NotificationPanelBrush"
+                                FallbackColor="#DD222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.5"
+                                TintOpacity="0.0" />
                             <LinearGradientBrush x:Key="NotificationLostFocusBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="#00000000" Offset="0"/>
-                                <GradientStop Color="#FF000000" Offset="0.6"/>
+                                <GradientStop Offset="0" Color="#00000000" />
+                                <GradientStop Offset="0.6" Color="#FF000000" />
                             </LinearGradientBrush>
-                            
-                            <!-- Page brushes -->
-                            <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#000000" TintOpacity="0"/>
-                            <AcrylicBrush x:Key="GameSettingsApplyGridBrush" TintColor="#666666" TintOpacity="0"  TintLuminosityOpacity="0.1" FallbackColor="#EE222222" />
-                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.7"  FallbackColor="#EE303030"/>
-                            <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush" TintColor="#000000" TintOpacity="0.0" />
-                            <AcrylicBrush x:Key="PageBackgroundAcrylicBrush" TintColor="#222222" TintOpacity="1" TintLuminosityOpacity="0.60" FallbackColor="#E1222222"/>
-                            <AcrylicBrush x:Key="UpdatePageAcrylicBrush" TintColor="#111111" TintOpacity="0.6" TintLuminosityOpacity="0.8" FallbackColor="#FF1F1F1F"/>
-                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#222222" TintOpacity="0.0"  TintLuminosityOpacity="0.4" FallbackColor="#E1222222"/>
-                            <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
 
-                            <!-- Controls element brush -->
-                            <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush" TintColor="#000000" TintOpacity="0.33" FallbackColor="#AA222222"/>
-                            <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.50" FallbackColor="#FF222222"/>
-                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#333333"/>
-                            <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.4" FallbackColor="#EE333333"/>
-                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0" TintLuminosityOpacity="0.9" FallbackColor="#DD222222"/>
-                            <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
-                            <AcrylicBrush x:Key="ButtonDisabledBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
-                            <AcrylicBrush x:Key="LoadingPopupGridBrush" TintColor="{ThemeResource SystemAccentColorLight1}" TintOpacity="1" FallbackColor="{ThemeResource SystemAccentColorLight1}"/>
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.85" FallbackColor="#FF222222"/>
-                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#EE1D1D1D"/>
-                            <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.80"/>
+                            <!--  Page brushes  -->
+                            <AcrylicBrush
+                                x:Key="UnhandledErrorPageBrush"
+                                TintColor="#000000"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="GameSettingsApplyGridBrush"
+                                FallbackColor="#EE222222"
+                                TintColor="#666666"
+                                TintLuminosityOpacity="0.1"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="PostAcrylicBrush"
+                                FallbackColor="#EE303030"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="BackgroundImageMaskAcrylicBrush"
+                                TintColor="#000000"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="PageBackgroundAcrylicBrush"
+                                FallbackColor="#E1222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.00"
+                                TintOpacity="1" />
+                            <AcrylicBrush
+                                x:Key="UpdatePageAcrylicBrush"
+                                FallbackColor="#FF1F1F1F"
+                                TintColor="#111111"
+                                TintLuminosityOpacity="0.8"
+                                TintOpacity="0.6" />
+                            <AcrylicBrush
+                                x:Key="SocMedPanelAcrylicBrush"
+                                FallbackColor="#E1222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.25"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="WebView2GridBackground"
+                                FallbackColor="#EE1D1D1D"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.75" />
+
+                            <!--  Controls element brush  -->
+                            <AcrylicBrush
+                                x:Key="ProgressBackgroundAcrylicBrush"
+                                FallbackColor="#AA222222"
+                                TintColor="#000000"
+                                TintOpacity="0.33" />
+                            <AcrylicBrush
+                                x:Key="DialogAcrylicBrush"
+                                FallbackColor="#FF222222"
+                                TintColor="#FF222222"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="InfoBarAnnouncementBrush"
+                                FallbackColor="#333333"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="CarouselPipsAcrylicBrush"
+                                FallbackColor="#EE333333"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="WindowTrayBrush"
+                                FallbackColor="#DD222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.9"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="GameSettingsBtnBrush"
+                                FallbackColor="#EE222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.65"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="ButtonDisabledBrush"
+                                FallbackColor="#EE222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.65"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="LoadingPopupGridBrush"
+                                FallbackColor="{ThemeResource SystemAccentColorLight1}"
+                                TintColor="{ThemeResource SystemAccentColorLight1}"
+                                TintOpacity="1" />
+                            <AcrylicBrush
+                                x:Key="NavigationBarBrush"
+                                FallbackColor="#FF222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewDefaultPaneBackground"
+                                FallbackColor="#EE1D1D1D"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.80"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewExpandedPaneBackground"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.80"
+                                TintOpacity="0.0" />
                             <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
-                                <GradientStop Color="#22000000" Offset="0.0"/>
-                                <GradientStop Color="#60000000" Offset="1"/>
+                                <GradientStop Offset="0.0" Color="#22000000" />
+                                <GradientStop Offset="1" Color="#60000000" />
                             </LinearGradientBrush>
                         </ResourceDictionary>
 
-                        <ResourceDictionary x:Key="Light"> <!-- For light theme -->
-                            <!-- Base accent color -->
+                        <ResourceDictionary x:Key="Light"> 
+                            <!--  For light theme  -->
+                            <!--  Base accent color  -->
                             <ui:Color x:Key="TemplateAccentColor">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColor">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark1">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark2">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark3">#693758</ui:Color>
-                            <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
-                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                            <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#000000"/>
-                            <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#FFFFFF"/>
+                            <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}" />
+                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}" />
+                            <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#000000" />
+                            <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#FFFFFF" />
 
-                            <!-- Dialog brushes -->
+                            <!--  Dialog brushes  -->
                             <ui:Color x:Key="DialogTitleColor">#693758</ui:Color>
-                            <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}"/>
+                            <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}" />
 
-                            <!-- Notification brushes -->
-                            <AcrylicBrush x:Key="NotificationPanelBrush" TintColor="#EEEEEE" TintOpacity="0.0" TintLuminosityOpacity="0.8" FallbackColor="#FFFFFFFF"/>
+                            <!--  Notification brushes  -->
+                            <AcrylicBrush
+                                x:Key="NotificationPanelBrush"
+                                FallbackColor="#FFFFFFFF"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="0.8"
+                                TintOpacity="0.0" />
                             <LinearGradientBrush x:Key="NotificationLostFocusBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="#00FFFFFF" Offset="0"/>
-                                <GradientStop Color="#FFFFFFFF" Offset="0.6"/>
+                                <GradientStop Offset="0" Color="#00FFFFFF" />
+                                <GradientStop Offset="0.6" Color="#FFFFFFFF" />
                             </LinearGradientBrush>
 
-                            <!-- Page brushes -->
-                            <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#FFFFFF" TintOpacity="1" />
-                            <AcrylicBrush x:Key="GameSettingsApplyGridBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.0" FallbackColor="#EEFFFFFF"/>
-                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.8" FallbackColor="#CCFFFFFF"/>
-                            <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" />
-                            <AcrylicBrush x:Key="PageBackgroundAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.25" TintLuminosityOpacity="0.0" FallbackColor="#FFEEEEEE"/>
-                            <AcrylicBrush x:Key="UpdatePageAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.25" TintLuminosityOpacity="0.75" FallbackColor="#FFEAEAEA"/>
-                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="#CCFFFFFF"/>
-                            <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5" FallbackColor="#EEEAEAEA"/>
+                            <!--  Page brushes  -->
+                            <AcrylicBrush
+                                x:Key="UnhandledErrorPageBrush"
+                                TintColor="#FFFFFF"
+                                TintOpacity="1" />
+                            <AcrylicBrush
+                                x:Key="GameSettingsApplyGridBrush"
+                                FallbackColor="#EEFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.0"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="PostAcrylicBrush"
+                                FallbackColor="#CCFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.8"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="BackgroundImageMaskAcrylicBrush"
+                                TintColor="#FFFFFF"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="PageBackgroundAcrylicBrush"
+                                FallbackColor="#FFEEEEEE"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.0"
+                                TintOpacity="0.25" />
+                            <AcrylicBrush
+                                x:Key="UpdatePageAcrylicBrush"
+                                FallbackColor="#FFEAEAEA"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.25" />
+                            <AcrylicBrush
+                                x:Key="SocMedPanelAcrylicBrush"
+                                FallbackColor="#CCFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="WebView2GridBackground"
+                                FallbackColor="#EEEAEAEA"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.5"
+                                TintOpacity="0" />
 
-                            <!-- Controls element brush -->
-                            <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.75" FallbackColor="#CCFFFFFF"/>
-                            <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.7" FallbackColor="#FFEAEAEA"/>
-                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="0.8" FallbackColor="#FFFFFF"/>
-                            <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="#DDFFFFFF"/>
-                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="0.2" FallbackColor="#FFFFFFFF"/>
-                            <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#AAFFFFFF"/>
-                            <AcrylicBrush x:Key="ButtonDisabledBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#AAFFFFFF"/>
-                            <AcrylicBrush x:Key="LoadingPopupGridBrush" TintColor="{ThemeResource SystemAccentColorDark1}" TintOpacity="1" FallbackColor="{ThemeResource SystemAccentColorDark1}"/>
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="1" FallbackColor="#FFFFFFFF"/>
-                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.7" FallbackColor="#FFEEEEEE"/>
-                            <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5"/>
+                            <!--  Controls element brush  -->
+                            <AcrylicBrush
+                                x:Key="ProgressBackgroundAcrylicBrush"
+                                FallbackColor="#CCFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintOpacity="0.75" />
+                            <AcrylicBrush
+                                x:Key="DialogAcrylicBrush"
+                                FallbackColor="#FFEAEAEA"
+                                TintColor="#FFFFFF"
+                                TintOpacity="0.7" />
+                            <AcrylicBrush
+                                x:Key="InfoBarAnnouncementBrush"
+                                FallbackColor="#FFFFFF"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="0.8"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="CarouselPipsAcrylicBrush"
+                                FallbackColor="#DDFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="WindowTrayBrush"
+                                FallbackColor="#FFFFFFFF"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="0.2"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="GameSettingsBtnBrush"
+                                FallbackColor="#AAFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="ButtonDisabledBrush"
+                                FallbackColor="#AAFFFFFF"
+                                TintColor="#FFFFFF"
+                                TintLuminosityOpacity="0.75"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="LoadingPopupGridBrush"
+                                FallbackColor="{ThemeResource SystemAccentColorDark1}"
+                                TintColor="{ThemeResource SystemAccentColorDark1}"
+                                TintOpacity="1" />
+                            <AcrylicBrush
+                                x:Key="NavigationBarBrush"
+                                FallbackColor="#FFFFFFFF"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewDefaultPaneBackground"
+                                FallbackColor="#FFEEEEEE"
+                                TintColor="#EFEFEF"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewExpandedPaneBackground"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0" />
                             <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
-                                <GradientStop Color="#00FFFFFF" Offset="0.50"/>
-                                <GradientStop Color="#A0FFFFFF" Offset="1"/>
+                                <GradientStop Offset="0.50" Color="#00FFFFFF" />
+                                <GradientStop Offset="1" Color="#A0FFFFFF" />
                             </LinearGradientBrush>
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
 
-                    <!-- Font families -->
+                    <!--  Font families  -->
+
                     <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
                     <FontFamily x:Key="FontAwesome">ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
                     <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid</FontFamily>
-                    
-                    <!-- Navigation title-bar border thickness -->
+
+                    <!--  Navigation title-bar border thickness  -->
                     <Thickness x:Key="NavigationViewContentMargin">0,47,0,0</Thickness>
 
-                    <!-- START: Button styles -->
+                    <!--  START: Button styles  -->
                     <Style x:Key="DefaultButtonStyle" TargetType="Button">
                         <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
                         <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
@@ -145,6 +338,11 @@
                                 <ControlTemplate TargetType="Button">
                                     <ContentPresenter
                                         x:Name="ContentPresenter"
+                                        Padding="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        localUI:AnimatedIcon.State="Normal"
+                                        AutomationProperties.AccessibilityView="Raw"
                                         Background="{TemplateBinding Background}"
                                         BackgroundSizing="{TemplateBinding BackgroundSizing}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
@@ -152,21 +350,14 @@
                                         Content="{TemplateBinding Content}"
                                         ContentTemplate="{TemplateBinding ContentTemplate}"
                                         ContentTransitions="{TemplateBinding ContentTransitions}"
-                                        CornerRadius="{TemplateBinding CornerRadius}"
-                                        Padding="{TemplateBinding Padding}"
-                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        AutomationProperties.AccessibilityView="Raw"
-                                        localUI:AnimatedIcon.State="Normal">
-
+                                        CornerRadius="{TemplateBinding CornerRadius}">
                                         <ContentPresenter.BackgroundTransition>
                                             <BrushTransition Duration="0:0:0.083" />
                                         </ContentPresenter.BackgroundTransition>
 
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
-                                                <VisualState x:Name="Normal"/>
-
+                                                <VisualState x:Name="Normal" />
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
@@ -180,7 +371,7 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="PointerOver"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="PointerOver" />
                                                     </VisualState.Setters>
                                                 </VisualState>
 
@@ -197,7 +388,7 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Pressed"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Pressed" />
                                                     </VisualState.Setters>
                                                 </VisualState>
 
@@ -215,8 +406,8 @@
                                                     </Storyboard>
 
                                                     <VisualState.Setters>
-                                                        <!-- DisabledVisual Should be handled by the control, not the animated icon. -->
-                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Normal"/>
+                                                        <!--  DisabledVisual Should be handled by the control, not the animated icon.  -->
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Normal" />
                                                     </VisualState.Setters>
                                                 </VisualState>
                                             </VisualStateGroup>
@@ -247,30 +438,24 @@
                                 <ControlTemplate TargetType="Button">
                                     <ContentPresenter
                                         x:Name="ContentPresenter"
+                                        Padding="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        localUI:AnimatedIcon.State="Normal"
+                                        AutomationProperties.AccessibilityView="Raw"
                                         BackgroundSizing="{TemplateBinding BackgroundSizing}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         Content="{TemplateBinding Content}"
                                         ContentTemplate="{TemplateBinding ContentTemplate}"
                                         ContentTransitions="{TemplateBinding ContentTransitions}"
-                                        CornerRadius="{TemplateBinding CornerRadius}"
-                                        Padding="{TemplateBinding Padding}"
-                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        AutomationProperties.AccessibilityView="Raw"
-                                        localUI:AnimatedIcon.State="Normal">
-
+                                        CornerRadius="{TemplateBinding CornerRadius}">
                                         <ContentPresenter.BackgroundTransition>
                                             <BrushTransition Duration="0:0:0.083" />
                                         </ContentPresenter.BackgroundTransition>
 
-                                        <ContentPresenter.ScaleTransition>
-                                            <Vector3Transition Duration="0:0:0.11"/>
-                                        </ContentPresenter.ScaleTransition>
-
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
-                                                <VisualState x:Name="Normal"/>
-
+                                                <VisualState x:Name="Normal" />
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
@@ -284,7 +469,7 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="PointerOver"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="PointerOver" />
                                                     </VisualState.Setters>
                                                 </VisualState>
 
@@ -301,7 +486,7 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Pressed"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Pressed" />
                                                     </VisualState.Setters>
                                                 </VisualState>
 
@@ -318,8 +503,8 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <!-- DisabledVisual Should be handled by the control, not the animated icon. -->
-                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Normal"/>
+                                                        <!--  DisabledVisual Should be handled by the control, not the animated icon.  -->
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Normal" />
                                                     </VisualState.Setters>
                                                 </VisualState>
                                             </VisualStateGroup>
@@ -341,32 +526,41 @@
                                 <ControlTemplate TargetType="Button">
                                     <ContentPresenter
                                         x:Name="ContentPresenter"
+                                        Padding="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        AutomationProperties.AccessibilityView="Raw"
                                         Background="{TemplateBinding Background}"
                                         BackgroundSizing="{TemplateBinding BackgroundSizing}"
-                                        Foreground="{TemplateBinding Foreground}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         Content="{TemplateBinding Content}"
                                         ContentTemplate="{TemplateBinding ContentTemplate}"
                                         ContentTransitions="{TemplateBinding ContentTransitions}"
                                         CornerRadius="{TemplateBinding CornerRadius}"
-                                        Padding="{TemplateBinding Padding}"
-                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        AutomationProperties.AccessibilityView="Raw">
-
+                                        Foreground="{TemplateBinding Foreground}">
                                         <ContentPresenter.BackgroundTransition>
                                             <BrushTransition Duration="0:0:0.083" />
                                         </ContentPresenter.BackgroundTransition>
 
+                                        <ContentPresenter.OpacityTransition>
+                                            <ScalarTransition Duration="0:0:0.083" />
+                                        </ContentPresenter.OpacityTransition>
+
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
-                                                <VisualState x:Name="Normal"/>
+                                                <VisualState x:Name="Normal">
+                                                    <Storyboard>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background.Opacity">
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBackgroundPointerOver}" />
-                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background.Opacity">
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0.8" />
+                                                        </DoubleAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushPointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -378,9 +572,9 @@
 
                                                 <VisualState x:Name="Pressed">
                                                     <Storyboard>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBackgroundPressed}" />
-                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background.Opacity">
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0.75" />
+                                                        </DoubleAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -410,10 +604,40 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <!-- END: Button styles -->
+                    <!--  END: Button styles  -->
 
-                    <!-- ComboBox style -->
-                    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                    <!--  ComboBox style  -->
+                    <Style x:Key="DefaultComboBoxStyle" TargetType="ComboBox">
+                        <Setter Property="Padding" Value="{ThemeResource ComboBoxPadding}" />
+                        <Setter Property="MaxDropDownHeight" Value="504" />
+                        <Setter Property="Foreground" Value="{ThemeResource ComboBoxForeground}" />
+                        <Setter Property="Background" Value="{ThemeResource ComboBoxBackground}" />
+                        <Setter Property="BorderBrush" Value="{ThemeResource ComboBoxBorderBrush}" />
+                        <Setter Property="BorderThickness" Value="{ThemeResource ComboBoxBorderThemeThickness}" />
+                        <Setter Property="TabNavigation" Value="Once" />
+                        <Setter Property="TextBoxStyle" Value="{StaticResource ComboBoxTextBoxStyle}" />
+                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+                        <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
+                        <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="True" />
+                        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+                        <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                        <Setter Property="VerticalAlignment" Value="Top" />
+                        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                        <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                        <Setter Property="UseSystemFocusVisuals" Value="{ThemeResource IsApplicationFocusVisualKindReveal}" />
+                        <Setter Property="primitives:ComboBoxHelper.KeepInteriorCornersSquare" Value="true" />
+                        <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+                        <Setter Property="ItemsPanel">
+                            <Setter.Value>
+                                <ItemsPanelTemplate>
+                                    <CarouselPanel />
+                                </ItemsPanelTemplate>
+                            </Setter.Value>
+                        </Setter>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ComboBox">
@@ -422,16 +646,205 @@
                                             <Storyboard x:Key="OverlayOpeningAnimation">
                                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
                                                     <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0" />
-                                                    <SplineDoubleKeyFrame KeyTime="{StaticResource ControlNormalAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="1.0" />
+                                                    <SplineDoubleKeyFrame
+                                                        KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                        KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                        Value="1.0" />
                                                 </DoubleAnimationUsingKeyFrames>
                                             </Storyboard>
                                             <Storyboard x:Key="OverlayClosingAnimation">
                                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
                                                     <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="1.0" />
-                                                    <SplineDoubleKeyFrame KeyTime="{StaticResource ControlFastAnimationDuration}" KeySpline="{StaticResource ControlFastOutSlowInKeySpline}" Value="0.0" />
+                                                    <SplineDoubleKeyFrame
+                                                        KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                        KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                        Value="0.0" />
                                                 </DoubleAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </Grid.Resources>
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="38" />
+                                        </Grid.ColumnDefinitions>
+                                        <ContentPresenter
+                                            x:Name="HeaderContentPresenter"
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            Margin="{ThemeResource ComboBoxTopHeaderMargin}"
+                                            VerticalAlignment="Top"
+                                            x:DeferLoadStrategy="Lazy"
+                                            Content="{TemplateBinding Header}"
+                                            ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                            FlowDirection="{TemplateBinding FlowDirection}"
+                                            FontWeight="{ThemeResource ComboBoxHeaderThemeFontWeight}"
+                                            Foreground="{ThemeResource ComboBoxHeaderForeground}"
+                                            LineHeight="20"
+                                            TextWrapping="Wrap"
+                                            Visibility="Collapsed" />
+                                        <Border
+                                            x:Name="HighlightBackground"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            Margin="-4"
+                                            Background="{ThemeResource ComboBoxBackgroundFocused}"
+                                            BorderBrush="{ThemeResource ComboBoxBackgroundBorderBrushFocused}"
+                                            BorderThickness="{StaticResource ComboBoxBackgroundBorderThicknessFocused}"
+                                            CornerRadius="{StaticResource ComboBoxHiglightBorderCornerRadius}"
+                                            Opacity="0" />
+                                        <Border
+                                            x:Name="Background"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            MinWidth="{ThemeResource ComboBoxThemeMinWidth}"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            Control.IsTemplateFocusTarget="True"
+                                            CornerRadius="{TemplateBinding CornerRadius}"
+                                            Translation="0,0,1" />
+                                        <Rectangle
+                                            x:Name="Pill"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Margin="1,0,0,0"
+                                            Opacity="0"
+                                            Style="{StaticResource ComboBoxItemPill}">
+                                            <Rectangle.RenderTransform>
+                                                <!--  PillTransform  -->
+                                                <CompositeTransform ScaleY="1" />
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <ContentPresenter
+                                            x:Name="ContentPresenter"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Margin="{TemplateBinding Padding}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                            <TextBlock
+                                                x:Name="PlaceholderTextBlock"
+                                                Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={ThemeResource ComboBoxPlaceHolderForeground}}"
+                                                Text="{TemplateBinding PlaceholderText}" />
+                                        </ContentPresenter>
+                                        <TextBox
+                                            x:Name="EditableText"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0,0,0,0"
+                                            Padding="{ThemeResource ComboBoxEditableTextPadding}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            x:Load="False"
+                                            AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}"
+                                            BorderBrush="Transparent"
+                                            CornerRadius="{TemplateBinding CornerRadius}"
+                                            Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={ThemeResource ComboBoxPlaceHolderForeground}}"
+                                            Header="{TemplateBinding Header}"
+                                            PlaceholderText="{TemplateBinding PlaceholderText}"
+                                            Style="{TemplateBinding TextBoxStyle}"
+                                            Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Visibility="Collapsed" />
+                                        <Border
+                                            x:Name="DropDownOverlay"
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Width="30"
+                                            Margin="4,4,4,4"
+                                            HorizontalAlignment="Right"
+                                            x:Load="False"
+                                            Background="Transparent"
+                                            CornerRadius="{StaticResource ComboBoxDropDownButtonBackgroundCornerRadius}"
+                                            Visibility="Collapsed" />
+                                        <AnimatedIcon
+                                            x:Name="DropDownGlyph"
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Width="12"
+                                            Height="12"
+                                            MinHeight="{ThemeResource ComboBoxMinHeight}"
+                                            Margin="0,0,14,0"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            AnimatedIcon.State="Normal"
+                                            AutomationProperties.AccessibilityView="Raw"
+                                            Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                            IsHitTestVisible="False">
+                                            <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                            <AnimatedIcon.FallbackIconSource>
+                                                <FontIconSource
+                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    FontSize="12"
+                                                    Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                    Glyph="&#xE70D;" />
+                                            </AnimatedIcon.FallbackIconSource>
+                                        </AnimatedIcon>
+                                        <ContentPresenter
+                                            x:Name="DescriptionPresenter"
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            x:Load="False"
+                                            Content="{TemplateBinding Description}"
+                                            Foreground="{ThemeResource SystemControlDescriptionTextForegroundBrush}" />
+                                        <Popup
+                                            x:Name="Popup"
+                                            Grid.Row="0"
+                                            Grid.Column="0">
+                                            <!--  Force ShouldConstrainToRootBounds to True  -->
+                                            <!--  Fix https://github.com/microsoft/microsoft-ui-xaml/issues/8657  -->
+                                            <interactivity:Interaction.Behaviors>
+                                                <interactions:DataTriggerBehavior
+                                                    Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}"
+                                                    ComparisonCondition="Equal"
+                                                    Value="False">
+                                                    <interactions:ChangePropertyAction
+                                                        PropertyName="ShouldConstrainToRootBounds"
+                                                        TargetObject="{Binding ElementName=Popup}"
+                                                        Value="True" />
+                                                </interactions:DataTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+
+                                            <Border
+                                                x:Name="PopupBorder"
+                                                Margin="0,-0.5,0,-1"
+                                                Padding="{ThemeResource ComboBoxDropdownBorderPadding}"
+                                                HorizontalAlignment="Stretch"
+                                                Background="{ThemeResource ComboBoxDropDownBackground}"
+                                                BackgroundSizing="InnerBorderEdge"
+                                                BorderBrush="{ThemeResource ComboBoxDropDownBorderBrush}"
+                                                BorderThickness="{ThemeResource ComboBoxDropdownBorderThickness}"
+                                                CornerRadius="{ThemeResource OverlayCornerRadius}">
+                                                <ScrollViewer
+                                                    x:Name="ScrollViewer"
+                                                    MinWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownContentMinWidth}"
+                                                    AutomationProperties.AccessibilityView="Raw"
+                                                    BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
+                                                    Foreground="{ThemeResource ComboBoxDropDownForeground}"
+                                                    HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                                    HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+                                                    IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+                                                    IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+                                                    IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+                                                    VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                                    VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+                                                    VerticalSnapPointsAlignment="Near"
+                                                    VerticalSnapPointsType="OptionalSingle"
+                                                    ZoomMode="Disabled">
+                                                    <ItemsPresenter Margin="{ThemeResource ComboBoxDropdownContentMargin}" />
+                                                </ScrollViewer>
+                                            </Border>
+                                        </Popup>
 
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
@@ -503,11 +916,16 @@
                                             <VisualStateGroup x:Name="FocusStates">
                                                 <VisualState x:Name="Focused">
                                                     <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetName="HighlightBackground"
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="HighlightBackground"
                                                             Storyboard.TargetProperty="Opacity"
                                                             To="1"
                                                             Duration="0" />
-                                                        <DoubleAnimation Storyboard.TargetName="Pill" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="Pill"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0" />
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ComboBoxForegroundFocused}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -521,11 +939,16 @@
                                                 </VisualState>
                                                 <VisualState x:Name="FocusedPressed">
                                                     <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetName="HighlightBackground"
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="HighlightBackground"
                                                             Storyboard.TargetProperty="Opacity"
                                                             To="1"
                                                             Duration="0" />
-                                                        <DoubleAnimation Storyboard.TargetName="Pill" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="Pill"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0" />
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ComboBoxForegroundFocusedPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -541,7 +964,10 @@
                                                 <VisualState x:Name="PointerFocused" />
                                                 <VisualState x:Name="FocusedDropDown">
                                                     <Storyboard>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PopupBorder" Storyboard.TargetProperty="Visibility" Duration="0">
+                                                        <ObjectAnimationUsingKeyFrames
+                                                            Storyboard.TargetName="PopupBorder"
+                                                            Storyboard.TargetProperty="Visibility"
+                                                            Duration="0">
                                                             <DiscreteObjectKeyFrame KeyTime="0">
                                                                 <DiscreteObjectKeyFrame.Value>
                                                                     <Visibility>Visible</Visibility>
@@ -555,18 +981,20 @@
                                             <VisualStateGroup x:Name="DropDownStates">
                                                 <VisualState x:Name="Opened">
                                                     <Storyboard>
-                                                        <SplitOpenThemeAnimation OpenedTargetName="PopupBorder"
+                                                        <SplitOpenThemeAnimation
                                                             ClosedTargetName="ContentPresenter"
                                                             OffsetFromCenter="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownOffset}"
-                                                            OpenedLength="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownOpenedHeight}" />
+                                                            OpenedLength="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownOpenedHeight}"
+                                                            OpenedTargetName="PopupBorder" />
                                                     </Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Closed">
                                                     <Storyboard>
-                                                        <SplitCloseThemeAnimation OpenedTargetName="PopupBorder"
+                                                        <SplitCloseThemeAnimation
                                                             ClosedTargetName="ContentPresenter"
                                                             OffsetFromCenter="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownOffset}"
-                                                            OpenedLength="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownOpenedHeight}" />
+                                                            OpenedLength="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownOpenedHeight}"
+                                                            OpenedTargetName="PopupBorder" />
                                                     </Storyboard>
                                                 </VisualState>
                                             </VisualStateGroup>
@@ -602,80 +1030,24 @@
                                                 <VisualState x:Name="TextBoxUnfocused" />
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="38" />
-                                        </Grid.ColumnDefinitions>
-                                        <ContentPresenter x:Name="HeaderContentPresenter" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" FlowDirection="{TemplateBinding FlowDirection}" Foreground="{ThemeResource ComboBoxHeaderForeground}" FontWeight="{ThemeResource ComboBoxHeaderThemeFontWeight}" LineHeight="20" Margin="{ThemeResource ComboBoxTopHeaderMargin}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed" x:DeferLoadStrategy="Lazy" />
-                                        <Border x:Name="HighlightBackground" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="-4" Background="{ThemeResource ComboBoxBackgroundFocused}" BorderBrush="{ThemeResource ComboBoxBackgroundBorderBrushFocused}" BorderThickness="{StaticResource ComboBoxBackgroundBorderThicknessFocused}" CornerRadius="{StaticResource ComboBoxHiglightBorderCornerRadius}" Opacity="0" />
-                                        <Border x:Name="Background" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Translation="0,0,1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Control.IsTemplateFocusTarget="True" MinWidth="{ThemeResource ComboBoxThemeMinWidth}" />
-                                        <Rectangle x:Name="Pill" Style="{StaticResource ComboBoxItemPill}" Margin="1,0,0,0" Grid.Row="1" Grid.Column="0" Opacity="0">
-                                            <Rectangle.RenderTransform>
-                                                <CompositeTransform x:Name="PillTransform" ScaleY="1" />
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <ContentPresenter x:Name="ContentPresenter" Grid.Row="1" Grid.Column="0" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
-                                            <TextBlock x:Name="PlaceholderTextBlock" Text="{TemplateBinding PlaceholderText}" Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={ThemeResource ComboBoxPlaceHolderForeground}}" />
-                                        </ContentPresenter>
-                                        <TextBox x:Name="EditableText" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{TemplateBinding TextBoxStyle}" Margin="0,0,0,0" Padding="{ThemeResource ComboBoxEditableTextPadding}" BorderBrush="Transparent" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" PlaceholderText="{TemplateBinding PlaceholderText}" Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={ThemeResource ComboBoxPlaceHolderForeground}}" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Collapsed" Header="{TemplateBinding Header}" AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}" x:Load="False" CornerRadius="{TemplateBinding CornerRadius}" />
-                                        <Border x:Name="DropDownOverlay" Grid.Row="1" Grid.Column="1" Background="Transparent" Margin="4,4,4,4" Visibility="Collapsed" CornerRadius="{StaticResource ComboBoxDropDownButtonBackgroundCornerRadius}" Width="30" HorizontalAlignment="Right" x:Load="False" />
-                                        <AnimatedIcon x:Name="DropDownGlyph" AnimatedIcon.State="Normal" MinHeight="{ThemeResource ComboBoxMinHeight}" Grid.Row="1" Grid.Column="1" IsHitTestVisible="False" Margin="0,0,14,0" Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}" HorizontalAlignment="Right" VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw" Width="12" Height="12">
-                                            <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals" />
-                                            <AnimatedIcon.FallbackIconSource>
-                                                <FontIconSource Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="12" Glyph="&#xE70D;" />
-                                            </AnimatedIcon.FallbackIconSource>
-                                        </AnimatedIcon>
-                                        <ContentPresenter x:Name="DescriptionPresenter" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{ThemeResource SystemControlDescriptionTextForegroundBrush}" Content="{TemplateBinding Description}" x:Load="False" />
-                                        <Popup x:Name="Popup">
-                                            <!-- Force ShouldConstrainToRootBounds to True -->
-                                            <interactivity:Interaction.Behaviors>
-                                                <interactions:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}" ComparisonCondition="Equal" Value="False">
-                                                    <interactions:ChangePropertyAction TargetObject="{Binding ElementName=Popup}" PropertyName="ShouldConstrainToRootBounds" Value="True"/>
-                                                </interactions:DataTriggerBehavior>
-                                            </interactivity:Interaction.Behaviors>
-
-                                            <Border x:Name="PopupBorder" Background="{ThemeResource ComboBoxDropDownBackground}" BackgroundSizing="InnerBorderEdge" BorderBrush="{ThemeResource ComboBoxDropDownBorderBrush}" BorderThickness="{ThemeResource ComboBoxDropdownBorderThickness}" Margin="0,-0.5,0,-1" Padding="{ThemeResource ComboBoxDropdownBorderPadding}" HorizontalAlignment="Stretch" CornerRadius="{ThemeResource OverlayCornerRadius}">
-                                                <ScrollViewer x:Name="ScrollViewer"
-                                                    Foreground="{ThemeResource ComboBoxDropDownForeground}"
-                                                    MinWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.DropDownContentMinWidth}"
-                                                    VerticalSnapPointsType="OptionalSingle"
-                                                    VerticalSnapPointsAlignment="Near"
-                                                    HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                                    HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                                    VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                                    VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                                    IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-                                                    IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-                                                    IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-                                                    BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
-                                                    ZoomMode="Disabled"
-                                                    AutomationProperties.AccessibilityView="Raw">
-                                                    <ItemsPresenter Margin="{ThemeResource ComboBoxDropdownContentMargin}" />
-                                                </ScrollViewer>
-                                            </Border>
-                                        </Popup>
                                     </Grid>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
                     </Style>
+                    <Style BasedOn="{StaticResource DefaultComboBoxStyle}" TargetType="ComboBox" />
 
-                    <!-- WindowChrome min max close styles -->
+                    <!--  WindowChrome min max close styles  -->
                     <x:Double x:Key="WindowCaptionButtonStrokeWidth">1</x:Double>
-                    <SolidColorBrush x:Key="WindowCaptionBackground" Color="#00000000"/>
-                    <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="#00000000"/>
+                    <SolidColorBrush x:Key="WindowCaptionBackground" Color="#00000000" />
+                    <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="#00000000" />
                 </ResourceDictionary>
-                <!-- Custom controls styles -->
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml"/>
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml"/>
+                <!--  Custom controls styles  -->
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

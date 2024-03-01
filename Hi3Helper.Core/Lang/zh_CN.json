@@ -38,8 +38,9 @@
     "Pg2ComboBoxRegion": "选择区服",
     "Pg2NextBtn": "完成 - 进入启动器",
     "Pg2PrevBtn": "返回 - 选择文件夹",
+    "Pg2PrevBtnNew": "返回 - 启动器配置",
     "Pg2Subtitle1_1": "只需最后一步即可在",
-    "Pg2Subtitle1_2": "Collapse Launcher",
+    "Pg2Subtitle1_2": "Collapse 启动器",
     "Pg2Subtitle1_3": "启动游戏。",
     "Pg2Subtitle2_1": "我们目前支持一些",
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
@@ -54,7 +55,7 @@
     "Subtitle4_2": "“选择文件夹”",
     "Subtitle4_3": "按钮来选择您要安装游戏的地方。",
     "Title1": "欢迎来到",
-    "Title2": "Collapse Launcher"
+    "Title2": "Collapse 启动器"
   },
 
   "_DisconnectedPage": {
@@ -123,6 +124,7 @@
     "PauseCancelDownloadBtn": "暂停/取消",
     "PauseCancelBtn": "暂停/取消",
     "DownloadBtn": "下载游戏",
+
     "GameSettingsBtn": "快速设置",
     "GameSettings_Panel1": "快速设置",
     "GameSettings_Panel1OpenGameFolder": "打开游戏文件夹",
@@ -140,7 +142,8 @@
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
     "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
-    "GamePlaytime_Panel1": "编辑游玩时间",
+
+    "GamePlaytime_Panel1": "编辑游戏时间",
     "GamePlaytime_Idle_Panel1Hours": "小时",
     "GamePlaytime_Idle_Panel1Minutes": "分钟",
     "GamePlaytime_Idle_ResetBtn": "重置",
@@ -148,6 +151,8 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "提供的值无效。",
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
     "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 会导致游戏时间记录停止（之前的记录会被保存），并且时间会在下次 Collapse 启动时再次开始记录。",
+    "GamePlaytime_Display": "{0}小时 {1}分钟",
+
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
     "PostPanel_Info": "资讯",
@@ -327,7 +332,18 @@
     "CustomArgs_Footer2": "Unity Standalone Player 命令行文档",
     "CustomArgs_Footer3": "以了解更多命令行参数。",
 
-    "GameBoost": "提升游戏优先级［实验性］"
+    "GameBoost": "提升游戏优先级［实验性］",
+
+    "Advanced_Title": "高级设置",
+    "Advanced_Subtitle1": "Collapse 启动器团队对使用此设置时您的游戏、帐户或系统发生的任何情况",
+    "Advanced_Subtitle2": "概不负责！",
+    "Advanced_Subtitle3": "使用风险自负。",
+    "Advanced_GLC_WarningAdmin": "警告：提供的命令将以管理员身份运行！",
+    "Advanced_GLC_PreLaunch_Title": "启动前命令",
+    "Advanced_GLC_PreLaunch_Subtitle": "在游戏启动前执行的命令",
+    "Advanced_GLC_PreLaunch_Exit": "游戏关闭或停止时强制退出启动的进程",
+    "Advanced_GLC_PostExit_Title": "退出后命令",
+    "Advanced_GLC_PostExit_Subtitle": "在游戏关闭后执行的命令"
   },
 
   "_SettingsPage": {
@@ -359,7 +375,7 @@
 
     "AppBG": "应用背景",
     "AppBG_Checkbox": "使用自定义背景",
-    "AppBG_Note": "注：图片必须是 .png、.jpg、.tiff 或 .bmp 格式，分辨率必须低于 4096x4096。",
+    "AppBG_Note": "注：图像必须是 .png、.jpg、.tiff 或 .bmp 格式，分辨率必须低于 4096x4096。",
 
     "AppThreads": "应用线程",
     "AppThreads_Download": "下载线程",
@@ -487,6 +503,9 @@
     "NotSelected": "未选择",
     "ExtractAnyway": "不管怎样都提取！",
 
+    "IAcceptAgreement": "我同意用户协议",
+    "IDoNotAcceptAgreement": "我不同意用户协议",
+
     "LangNameENUS": "英语（美国）",
     "LangNameJP": "日语",
     "LangNameCN": "中文（简体）",
@@ -518,6 +537,7 @@
     "CDNDescription_Github": "启动器的官方（主）存储库。",
     "CDNDescription_Cloudflare": "在 Cloudflare R2 bucket 托管的官方（主）仓库镜像。",
     "CDNDescription_Bitbucket": "在 Bitbucket 托管的官方（主）仓库镜像。",
+    "CDNDescription_GitLab": "在 GitLab 托管的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
     "OpenDownloadPage": "打开下载界面",
@@ -545,7 +565,9 @@
     "LauncherNameOfficial": "官方启动器",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(启动器名称未知)"
+    "LauncherNameUnknown": "(启动器名称未知)",
+    
+    "ImageCropperTitle": "裁剪图像"
   },
 
   "_BackgroundNotification": {
@@ -645,24 +667,35 @@
     "CookbookLocateSubtitle5": "查找下载的 Cookbook 文件并继续。\n\n",
     "CookbookLocateSubtitle6": "注：\n",
     "CookbookLocateSubtitle7": "这里是您需要下载的 Cookbook 文件的名称：\n",
+
     "PrivilegeMustRunTitle": "Collapse 需要管理员权限！",
     "PrivilegeMustRunSubtitle": "Collapse 需要管理员权限才能正常工作。是否要重新启动 Collapse 并以管理员身份运行它？",
+
     "ReleaseChannelChangeTitle": "更改发布频道",
     "ReleaseChannelChangeSubtitle1": "您将要更改您的发布频道为：",
     "ReleaseChannelChangeSubtitle2": "注：",
     "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。我们不应对与您的游戏相关的任何数据丢失或损坏负责。",
+
     "ChangePlaytimeTitle": "是否确认更改游戏时间？",
-    "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游玩时间。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
+    "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
     "ResetPlaytimeTitle": "是否确认更改游戏时间？",
     "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间设置为 0。这是一个 ",
     "ResetPlaytimeSubtitle2": "破坏性的",
     "ResetPlaytimeSubtitle3": " 操作，一旦确认，此操作将无法撤销。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
+    "InvalidPlaytimeTitle": "保存此会话的游戏时间时出现问题",
+    "InvalidPlaytimeSubtitle1": "开始时间和结束时间之差为负数。",
+    "InvalidPlaytimeSubtitle2": "将使用每分钟保存的替代值：",
+    "InvalidPlaytimeSubtitle3": "请不要在游戏时调整计算机时钟。",
+
     "LocateExePathTitle": "定位程序文件的安装路径",
     "LocateExePathSubtitle": "请为 Collapse 定位应用程序文件的位置：",
+
     "CannotUseAppLocationForGameDirTitle": "文件夹无效！",
     "CannotUseAppLocationForGameDirSubtitle": "您无法使用此文件夹，因为它已被用作系统文件夹或被用于存放应用程序的主执行文件。请选择其他文件夹！",
+
     "StopGameTitle": "强制停止游戏",
     "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。",
+
     "MeteredConnectionWarningTitle": "检测到按流量计费的连接！",
     "MeteredConnectionWarningSubtitle": "检测到您当前的互联网连接'按流量计费'！继续更新可能会让互联网提供商收取额外费用。您希望继续吗？",
 
@@ -870,7 +903,7 @@
     "ApplyUpdateTaskLegacyVerFoundSubtitle3": "请确保 Collapse 目录中没有任何重要文件，否则它将被 完！全！删！除！",
     "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\n点击“是”以处理或“否”以取消。",
     "ApplyUpdateTaskLegacyVerFoundSubtitle5": "再次单击“是”进行确认。",
-    "ApplyUpdateTaskLegacyCleanupCount": "清理将于 {0} 后开始...",
+    "ApplyUpdateTaskLegacyCleanupCount": "清理将于 {0} 后开始……",
     "ApplyUpdateTaskLegacyDeleting": "删除中：{0}……",
 
     "ApplyUpdateTaskDownloadingPkgTitle": "下载软件包中",
@@ -921,6 +954,7 @@
     "Graphics_FPS_Help": "120 帧解锁属于 **实验性功能**！请谨慎使用，并自行承担风险。",
     "Graphics_FPS_Help2": "此外，将帧率设置为 120 帧将导致游戏内的图像设置损坏。\n这种情况下，请使用 Collapse 启动器来修改游戏的图像设置。",
     "Graphics_VSync": "垂直同步（VSync）",
+    "Graphics_VSync_Help": "垂直同步（VSync）在 120 帧下不可用",
     "Graphics_RenderScale": "渲染精度",
     "Graphics_ResolutionQuality": "分辨率质量",
     "Graphics_ShadowQuality": "阴影质量",
@@ -1135,5 +1169,44 @@
     "Korea": "韩国",
     "Japan": "日本",
     "Bilibili": "哔哩哔哩"
+  },
+
+  "_OOBEAgreementMenu": {
+    "AgreementTitle": "用户协议："
+  },
+
+  "_OOBEStartUpMenu": {
+    "WelcomeTitleString": {
+      "Upper": [ "欢迎", "来到" ],
+      "Lower": [ "Collapse", " 启动器" ]
+    },
+    "SetupNextButton": "点击这里继续",
+    "SetupBackButton": "返回",
+
+    "CustomizationTitle": "定制您的启动器",
+    "CustomizationSettingsLanguageHeader": "语言",
+    "CustomizationSettingsLanguageDescription": "这将调整所显示信息的语言。",
+    "CustomizationSettingsWindowSizeHeader": "窗口大小",
+    "CustomizationSettingsWindowSizeDescription": "更改启动器的大小。",
+    "CustomizationSettingsCDNHeader": "CDN",
+    "CustomizationSettingsCDNDescription": "选择您要使用的主 CDN。",
+    "CustomizationSettingsStyleHeader": "样式设定",
+    "CustomizationSettingsStyleDescription": "按您的偏好选择更改启动器的外观。",
+    "CustomizationSettingsStyleThemeHeader": "主题",
+    "CustomizationSettingsStyleThemeDescription": "更改启动器中显示的颜色。",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "自定义背景图像",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "使用自定义背景图像而不是默认图像。",
+
+    "LoadingInitializationTitle": "正在为启动器首次启动初始化",
+    "LoadingCDNCheckboxCheckLatency": "（正在检测延迟……）",
+    "LoadingCDNCheckboxPlaceholder": "正在检测 CDN 推荐……",
+    "LoadingCDNCheckingSubitle": "正在为您寻找最近的 CDN 服务器……",
+    "LoadingCDNCheckingSkipButton": "跳过 CDN 检测",
+    "LoadingBackgroundImageTitle": "正在加载图像",
+    "LoadingBackgroundImageSubtitle": "图像可能需要处理一段时间。",
+
+    "CDNCheckboxItemLatencyFormat": "（{0} ms）",
+    "CDNCheckboxItemLatencyUnknownFormat": "（未知）",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[推荐]"
   }
 }
