@@ -1434,8 +1434,6 @@ namespace CollapseLauncher
             {
                 Dictionary<string, KbShortcut> shortcuts = ShortcutList;
 
-                int keysIndex = 0;
-
                 int numIndex = 0;
                 VirtualKeyModifiers keyModifier = shortcuts["GameSelection"].Modifier;
                 foreach (StackPanel gameTitlePanel in ComboBoxGameCategory.Items.OfType<StackPanel>())

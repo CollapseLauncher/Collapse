@@ -433,7 +433,6 @@ namespace CollapseLauncher.Dialogs
                     case VirtualKey.Control:
                         newShortcut.Modifier = VirtualKeyModifiers.Control;
                         break;
-
                     case VirtualKey.Shift:
                         newShortcut.Modifier = VirtualKeyModifiers.Shift;
                         break;
