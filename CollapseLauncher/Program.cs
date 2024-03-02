@@ -69,8 +69,8 @@ namespace CollapseLauncher
 
                 Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
-                InitializeAppSettings();
                 ParseArguments(args);
+                InitializeAppSettings();
 
                 HttpLogInvoker.DownloadLog += HttpClientLogWatcher;
 
@@ -218,10 +218,6 @@ namespace CollapseLauncher
                 CurrentAppTheme = AppThemeMode.Dark;
                 LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})", LogType.Warning, true);
             }
-#if !DISABLEDISCORD
-            bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
-            AppDiscordPresence = new DiscordPresenceManager(isInitialStart);
-#endif
         }
 
         public static void RunElevateUpdate()
