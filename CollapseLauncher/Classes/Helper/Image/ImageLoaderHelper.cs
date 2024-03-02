@@ -58,8 +58,8 @@ namespace CollapseLauncher.Helper.Image
             double aspectRatioX = InnerLauncherConfig.m_actualMainFrameSize.Width;
             double aspectRatioY = InnerLauncherConfig.m_actualMainFrameSize.Height;
             double dpiScale = InnerLauncherConfig.m_appDPIScale;
-            uint targetSourceImageWidth = (uint)(aspectRatioX * 1.5 * dpiScale);
-            uint targetSourceImageHeight = (uint)(aspectRatioY * 1.5 * dpiScale);
+            uint targetSourceImageWidth = (uint)(aspectRatioX * dpiScale);
+            uint targetSourceImageHeight = (uint)(aspectRatioY * dpiScale);
             bool isError = false;
 
             if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder!);
