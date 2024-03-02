@@ -567,6 +567,7 @@ namespace CollapseLauncher.Dialogs
         {
             get
             {
+                bool saveAfterLoad = false;
                 string keyListStr = GetAppConfigValue("KbShortcutList").ToString();
                 Dictionary<string, KbShortcut> resultList = new Dictionary<string, KbShortcut>();
 
@@ -581,6 +582,7 @@ namespace CollapseLauncher.Dialogs
 
                 if (!keyListStr.Contains(':'))
                 {
+                    saveAfterLoad = true;
                     LogWriteLine($"Detected old KbShortcutList! Converting...\n\r\tOld Value:\"{keyListStr}\"", writeToLog:true);
                     var keyList = DefaultShortcutList.Keys;
                     int index = 0;
@@ -589,8 +591,6 @@ namespace CollapseLauncher.Dialogs
                         resultList.Add(keyList.ElementAt(index), KbShortcut.FromOldKeyList(combination.Split(",")));
                         index++;
                     }
-
-                    ShortcutList = resultList;
                 }
                 else
                 {
@@ -602,10 +602,22 @@ namespace CollapseLauncher.Dialogs
                 }
 
                 var missingKeys = DefaultShortcutList.Keys.Except(resultList.Keys);
+                var deprecatedKeys = resultList.Keys.Except(DefaultShortcutList.Keys);
+
+                saveAfterLoad = saveAfterLoad || missingKeys.Any() || deprecatedKeys.Any();
+
                 foreach (string key in missingKeys)
                 {
                     resultList.Add(key, DefaultShortcutList[key]);
                 }
+
+                foreach (string key in deprecatedKeys)
+                {
+                    resultList.Remove(key);
+                }
+
+                if (saveAfterLoad)
+                    ShortcutList = resultList;
 
                 return resultList;
             }
