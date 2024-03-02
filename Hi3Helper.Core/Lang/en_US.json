@@ -1151,7 +1151,11 @@
     "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {

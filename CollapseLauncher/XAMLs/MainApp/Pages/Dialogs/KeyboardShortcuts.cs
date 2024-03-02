@@ -635,9 +635,9 @@ namespace CollapseLauncher.Dialogs
             {
                 return Modifier switch
                 {
-                    VirtualKeyModifiers.Control => "Ctrl",
-                    VirtualKeyModifiers.Menu => "Alt",
-                    VirtualKeyModifiers.Shift => "Shift",
+                    VirtualKeyModifiers.Control => Lang._KbShortcuts.Keyboard_Control,
+                    VirtualKeyModifiers.Menu => Lang._KbShortcuts.Keyboard_Menu,
+                    VirtualKeyModifiers.Shift => Lang._KbShortcuts.Keyboard_Shift,
                     _ => Modifier.ToString(),
                 };
             }
