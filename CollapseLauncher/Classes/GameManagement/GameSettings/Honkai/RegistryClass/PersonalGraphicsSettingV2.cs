@@ -64,43 +64,38 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// </summary>
         public SelectReflectionQuality ReflectionQuality { get; set; } = SelectReflectionQuality.LOW;
 
-        /// <summary>
-        /// This defines "<c>Physics</c>" switch In-game settings -> Video.<br/>
-        /// Default: true
-        /// </summary>
-        public bool UseDynamicBone { get; set; } = true;
+        public SelectLightningQuality LightingQuality { get; set; } = SelectLightningQuality.Low;
 
+        public SelectPostFXQuality PostFXQuality { get; set; } = SelectPostFXQuality.Low;
+
+        public SelectAAType AAType { get; set; } = SelectAAType.FXAA;
+
+        public SelectCharacterQuality CharacterQuality { get; set; } = SelectCharacterQuality.Low;
+
+        public SelectWeatherQuality WeatherQuality { get; set; } = SelectWeatherQuality.Low;
+        
         /// <summary>
-        /// This defines "<c>Anti-Aliasing</c>" checkbox In-game settings -> Video.<br/><br/>
-        /// Default: true
+        /// Unused ?
         /// </summary>
         public bool UseFXAA { get; set; } = true;
 
         /// <summary>
-        /// This defines "<c>Global Illumination</c>" combobox In-game settings -> Video.<br/><br/>
-        /// <inheritdoc cref="SelectGlobalIllumination"/><br/>
-        /// Default: Low
+        /// Unused ?
         /// </summary>
         public SelectGlobalIllumination GlobalIllumination { get; set; } = SelectGlobalIllumination.Low;
 
         /// <summary>
-        /// This defines "<c>Ambient Occlusion</c>" combobox In-game settings -> Video.<br/><br/>
-        /// <inheritdoc cref="SelectAmbientOcclusion"/><br/>
-        /// Default: LOW
+        /// Unused ?
         /// </summary>
         public SelectAmbientOcclusion AmbientOcclusion { get; set; } = SelectAmbientOcclusion.LOW;
 
         /// <summary>
-        /// This defines "<c>Volumetric Light</c>" combobox In-game settings -> Video.<br/><br/>
-        /// <inheritdoc cref="SelectVolumetricLight"/><br/>
-        /// Default: Medium
+        /// Unused ?
         /// </summary>
         public SelectVolumetricLight VolumetricLight { get; set; } = SelectVolumetricLight.Medium;
 
         /// <summary>
-        /// This defines "<c>Post Processing</c>" checkbox In-game settings -> Video.<br/><br/>
-        /// Default: true
-        /// </summary>
+        /// Unused ?
         public bool UsePostFX { get; set; } = true;
 
         /// <summary>
@@ -122,18 +117,17 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// This defines "<c>High Quality</c>" checkbox In-game settings -> Video -> Post Processing.<br/><br/>
         /// <inheritdoc cref="SelectPostFXGrade"/><br/>
         /// Default: Low
+        /// Unused ?
         /// </summary>
         public SelectPostFXGrade PostFXGrade { get; set; } = SelectPostFXGrade.Low;
 
         /// <summary>
-        /// This defines "<c>HDR</c>" checkbox In-game settings -> Video -> Post Processing.<br/><br/>
-        /// Default: true
+        /// Unused ?
         /// </summary>
         public bool UseHDR { get; set; } = true;
 
         /// <summary>
-        /// This defines "<c>Distortion</c>" checkbox In-game settings -> Video -> Post Processing.<br/><br/>
-        /// Default: true
+        /// Unused ?
         /// </summary>
         public bool UseDistortion { get; set; } = true;
 
@@ -143,6 +137,8 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// Default: Medium
         /// </summary>
         public SelectLodGrade LodGrade { get; set; } = SelectLodGrade.Medium;
+
+        public SelectParticleEmitLevel ParticleEmitLevel { get; set; } = SelectParticleEmitLevel.Low;
         #endregion
 
         #region Methods

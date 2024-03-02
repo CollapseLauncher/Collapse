@@ -18,8 +18,23 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     /// This selection has 3 name types: DISABLED (0), LOW (1), HIGH (2)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectReflectionQuality>))]
-    internal enum SelectReflectionQuality : int { DISABLED, LOW, HIGH }
+    internal enum SelectReflectionQuality : int { DISABLED, LOW, MIDDLE, HIGH }
 
+    [JsonConverter(typeof(JsonStringEnumConverter<SelectLightningQuality>))]
+    internal enum SelectLightningQuality : int { Off, Low, Middle, High, Ultra }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter<SelectPostFXQuality>))]
+    internal enum SelectPostFXQuality : int { Off, Low, Middle, High }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter<SelectAAType>))]
+    internal enum SelectAAType : int { Off, FXAA, TAA }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter<SelectCharacterQuality>))]
+    internal enum SelectCharacterQuality { Low, Middle, High }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter<SelectWeatherQuality>))]
+    internal enum SelectWeatherQuality { Low, Middle, High }
+    
     /// <summary>
     /// This selection has 2 name types: Low (0), High (1)<br/>
     /// </summary>
@@ -48,4 +63,7 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     /// This selection has 3 name types: Low (2), Medium (1), High (0)<br/>
     /// </summary>
     internal enum SelectLodGrade : int { Low = 2, Medium = 1, High = 0 }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter<SelectParticleEmitLevel>))]
+    internal enum SelectParticleEmitLevel { Low, Middle, High }
 }
