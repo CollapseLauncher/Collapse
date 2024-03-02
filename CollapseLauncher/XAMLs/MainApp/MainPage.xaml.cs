@@ -1408,7 +1408,7 @@ namespace CollapseLauncher
             if (GetAppConfigValue("EnableShortcuts").ToBoolNullable() == null)
             {
                 SetAndSaveConfigValue("EnableShortcuts", true);
-                ShortcutList = null;
+                KbShortcutList = null;
 
                 SpawnNotificationPush(
                     Lang._AppNotification.NotifKbShortcutTitle,
@@ -1432,10 +1432,11 @@ namespace CollapseLauncher
         {
             try
             {
-                Dictionary<string, KbShortcut> shortcuts = ShortcutList;
+                if (KbShortcutList == null || KbShortcutList.Count == 0)
+                    LoadKbShortcuts();
 
                 int numIndex = 0;
-                VirtualKeyModifiers keyModifier = shortcuts["GameSelection"].Modifier;
+                VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
                 foreach (StackPanel gameTitlePanel in ComboBoxGameCategory.Items.OfType<StackPanel>())
                 {
                     string game = GetComboBoxGameRegionValue(gameTitlePanel);
@@ -1456,7 +1457,7 @@ namespace CollapseLauncher
                 }
 
                 numIndex = 0;
-                keyModifier = shortcuts["RegionSelection"].Modifier;
+                keyModifier = KbShortcutList["RegionSelection"].Modifier;
                 while (numIndex < 6)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
@@ -1500,8 +1501,8 @@ namespace CollapseLauncher
                 {
                     KeyboardAccelerator kbfunc = new KeyboardAccelerator()
                     {
-                        Modifiers = shortcuts[func.Key].Modifier,
-                        Key = shortcuts[func.Key].Key
+                        Modifiers = KbShortcutList[func.Key].Modifier,
+                        Key = KbShortcutList[func.Key].Key
                     };
                     kbfunc.Invoked += func.Value;
                     KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
@@ -1510,7 +1511,7 @@ namespace CollapseLauncher
             catch (Exception error)
             {
                 LogWriteLine(error.ToString());
-                ShortcutList = null;
+                KbShortcutList = null;
                 CreateKeyboardShortcutHandlers();
             }
         }
