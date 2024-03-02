@@ -64,14 +64,39 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// </summary>
         public SelectReflectionQuality ReflectionQuality { get; set; } = SelectReflectionQuality.LOW;
 
+        /// <summary>
+        /// This defines "<c>Lighting Quality</c>" combobox In-game settings -> Video.<br/>
+        /// <inheritdoc cref="SelectLightningQuality"/>
+        /// Default: LOW
+        /// </summary>
         public SelectLightningQuality LightingQuality { get; set; } = SelectLightningQuality.Low;
 
+        /// <summary>
+        /// This defines "<c>Post FX Quality</c>" combobox In-game settings -> Video.<br/>
+        /// <inheritdoc cref="SelectPostFXQuality"/>
+        /// Default: LOW
+        /// </summary>
         public SelectPostFXQuality PostFXQuality { get; set; } = SelectPostFXQuality.Low;
 
+        /// <summary>
+        /// This defines "<c>Anti Aliasing</c>" combobox In-game settings -> Video.<br/>
+        /// <inheritdoc cref="SelectAAType"/>
+        /// Default: FXAA
+        /// </summary>
         public SelectAAType AAType { get; set; } = SelectAAType.FXAA;
 
+        /// <summary>
+        /// This defines "<c>Character Quality</c>" combobox In-game settings -> Video.<br/>
+        /// <inheritdoc cref="SelectCharacterQuality"/>
+        /// Default: Low
+        /// </summary>
         public SelectCharacterQuality CharacterQuality { get; set; } = SelectCharacterQuality.Low;
 
+        /// <summary>
+        /// This defines "<c>Weather Quality</c>" combobox In-game settings -> Video.<br/>
+        /// <inheritdoc cref="SelectWeatherQuality"/>
+        /// Default: Low
+        /// </summary>
         public SelectWeatherQuality WeatherQuality { get; set; } = SelectWeatherQuality.Low;
         
         /// <summary>
@@ -96,9 +121,11 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         /// <summary>
         /// Unused ?
+        /// </summary>
         public bool UsePostFX { get; set; } = true;
 
         /// <summary>
+        /// This seems to be unused on 7.3.0+<br/><br/>
         /// This defines "<c>High Quality</c>" checkbox In-game settings -> Video -> Post Processing.<br/><br/>
         /// This value is referenced to PostFXGrade.<br/>
         /// - If true, then it will set PostFXGrade to High.<br/>
@@ -114,6 +141,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         }
 
         /// <summary>
+        /// This seems to be unused on 7.3.0+<br/><br/>
         /// This defines "<c>High Quality</c>" checkbox In-game settings -> Video -> Post Processing.<br/><br/>
         /// <inheritdoc cref="SelectPostFXGrade"/><br/>
         /// Default: Low
@@ -138,6 +166,11 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// </summary>
         public SelectLodGrade LodGrade { get; set; } = SelectLodGrade.Medium;
 
+        /// <summary>
+        /// This defines "<c>Particle Quality</c>" combobox In-game settings -> Video.<br/><br/>
+        /// <inheritdoc cref="SelectParticleEmitLevel"/><br/>
+        /// Default: Low
+        /// </summary>
         public SelectParticleEmitLevel ParticleEmitLevel { get; set; } = SelectParticleEmitLevel.Low;
         #endregion
 

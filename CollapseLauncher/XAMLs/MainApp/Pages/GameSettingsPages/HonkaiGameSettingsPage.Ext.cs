@@ -303,6 +303,36 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGraphics.ReflectionQuality = (SelectReflectionQuality)value;
         }
 
+        public int GraphicsLightningQuality
+        {
+            get => (int)Settings.SettingsGraphics.LightingQuality;
+            set => Settings.SettingsGraphics.LightingQuality = (SelectLightningQuality)value;
+        }
+
+        public int GraphicsPostFXQuality
+        {
+            get => (int)Settings.SettingsGraphics.PostFXQuality;
+            set => Settings.SettingsGraphics.PostFXQuality = (SelectPostFXQuality)value;
+        }
+
+        public int GraphicsAAType
+        {
+            get => (int)Settings.SettingsGraphics.AAType;
+            set => Settings.SettingsGraphics.AAType = (SelectAAType)value;
+        }
+
+        public int GraphicsCharacterQuality
+        {
+            get => (int)Settings.SettingsGraphics.CharacterQuality;
+            set => Settings.SettingsGraphics.CharacterQuality = (SelectCharacterQuality)value;
+        }
+
+        public int GraphicsWeatherQuality
+        {
+            get => (int)Settings.SettingsGraphics.WeatherQuality;
+            set => Settings.SettingsGraphics.WeatherQuality = (SelectWeatherQuality)value;
+        }
+        
         public bool IsGraphicsPostFXEnabled
         {
             get => Settings.SettingsGraphics.UsePostFX;
@@ -326,8 +356,8 @@ namespace CollapseLauncher.Pages
 
         public bool IsGraphicsPhysicsEnabled
         {
-            get => Settings.SettingsGraphics.UseDynamicBone;
-            set => Settings.SettingsGraphics.UseDynamicBone = value;
+            get => Settings.SettingsPhysics.PhysicsSimulationBool;
+            set => Settings.SettingsPhysics.PhysicsSimulationBool = value;
         }
 
         public bool IsGraphicsFXHDREnabled
@@ -389,6 +419,12 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.SettingsGraphics.VolumetricLight;
             set => Settings.SettingsGraphics.VolumetricLight = (SelectVolumetricLight)value;
+        }
+
+        public int GraphicsParticleQuality
+        {
+            get => (int)Settings.SettingsGraphics.ParticleEmitLevel;
+            set => Settings.SettingsGraphics.ParticleEmitLevel = (SelectParticleEmitLevel)value;
         }
         #endregion
         #region Audio
