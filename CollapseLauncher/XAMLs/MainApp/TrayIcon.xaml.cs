@@ -3,6 +3,7 @@ using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
@@ -61,6 +62,8 @@ namespace CollapseLauncher
             // Switch toggle text to see if its started with Start
             MainTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showApp : _hideApp;
             ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
+
+            CollapseTaskbar.Icon = Icon.FromHandle(LauncherConfig.AppIconSmall);
         }
         #endregion
 

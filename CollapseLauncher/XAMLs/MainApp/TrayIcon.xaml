@@ -10,7 +10,6 @@
         x:Name="CollapseTaskbar"
         ContextMenuMode="PopupMenu"
         DoubleClickCommand="{x:Bind ToggleAllVisibilityInvokeCommand}"
-        IconSource="ms-appx:///icon.ico"
         LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
         MenuActivation="RightClick"
         RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"

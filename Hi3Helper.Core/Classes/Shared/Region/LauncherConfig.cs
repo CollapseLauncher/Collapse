@@ -183,6 +183,9 @@ namespace Hi3Helper.Shared.Region
         public const string AppGameConfigV2URLPrefix    = "/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
         public const string AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";
+
+        public static IntPtr AppIconLarge;
+        public static IntPtr AppIconSmall;
         #endregion
 
         #region App Config Definitions
