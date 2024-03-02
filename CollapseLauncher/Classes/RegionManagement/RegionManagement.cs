@@ -114,7 +114,7 @@ namespace CollapseLauncher
 
             // Set IsLoadRegionComplete to false
             IsLoadRegionComplete = true;
-            ChangeTimer();
+            DisableKbShortcuts();
 
             return true;
         }
@@ -587,7 +587,7 @@ namespace CollapseLauncher
             InvokeLoadingRegionPopup(false);
             LoadingMessageHelper.HideActionButton();
 
-            ChangeTimer();
+            DisableKbShortcuts();
         }
 
         private async void WatchAndCancelIfTimeout(CancellationTokenSourceWrapper TokenSource, uint Timeout)
@@ -602,7 +602,7 @@ namespace CollapseLauncher
             if (!IsLoadRegionComplete && !TokenSource.IsDisposed)
             {
                 TokenSource.Cancel();
-                ChangeTimer();
+                DisableKbShortcuts();
             }
         }
 

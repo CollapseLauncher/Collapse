@@ -46,7 +46,6 @@ namespace CollapseLauncher
         private bool IsLoadFrameCompleted = true;
         private bool IsTitleIconForceShow;
         private bool IsNotificationPanelShow;
-        private bool IsKbShortcutCannotChange = true;
         private int  CurrentGameCategory      = -1;
         private int  CurrentGameRegion        = -1;
 
@@ -1520,7 +1519,7 @@ namespace CollapseLauncher
 
         private void RefreshPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel))
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel))
                 return;
 
             switch (PreviousTag)
@@ -1545,13 +1544,13 @@ namespace CollapseLauncher
 
         private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
 
-        private async void ChangeTimer(int time = 500)
+        private async void DisableKbShortcuts(int time = 500)
         {
             try
             {
-                IsKbShortcutCannotChange = true;
+                CannotUseKbShortcuts = true;
                 await Task.Delay(time);
-                IsKbShortcutCannotChange = false;
+                CannotUseKbShortcuts = false;
             }
             catch { }
         }
@@ -1577,7 +1576,7 @@ namespace CollapseLauncher
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
             RestoreCurrentRegion();
-            if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
                 return;
 
             if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
@@ -1587,7 +1586,7 @@ namespace CollapseLauncher
                 ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
-                IsKbShortcutCannotChange = true;
+                CannotUseKbShortcuts = true;
             }
         }
 
@@ -1596,7 +1595,7 @@ namespace CollapseLauncher
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
             RestoreCurrentRegion();
-            if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
                 return;
 
             if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index])
@@ -1605,24 +1604,26 @@ namespace CollapseLauncher
                 ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
-                IsKbShortcutCannotChange = true;
+                CannotUseKbShortcuts = true;
             }
         }
 
         private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
+            if (CannotUseKbShortcuts)
+                return;
             await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
         }
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0])
                 return;
 
-            ChangeTimer();
+            DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
             NavigateInnerSwitch("launcher");
 
@@ -1630,13 +1631,13 @@ namespace CollapseLauncher
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem)
                 return;
 
-            ChangeTimer();
+            DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
             Navigate(typeof(SettingsPage), "settings");
         }
@@ -1729,38 +1730,38 @@ namespace CollapseLauncher
         }
         private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2])
                 return;
 
-            ChangeTimer();
+            DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
             NavigateInnerSwitch("repair");
         }
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
                 return;
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
                 return;
 
-            ChangeTimer();
+            DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
             NavigateInnerSwitch("caches");
         }
 
         private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last())
                 return;
 
-            ChangeTimer();
+            DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
             switch (CurrentGameProperty._GamePreset.GameType)
             {
@@ -1851,7 +1852,7 @@ namespace CollapseLauncher
 
             DispatcherQueue.TryEnqueue(async () => {
 
-                if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
+                if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
                     return;
 
                 bool sameRegion = SetActivatedRegion();
