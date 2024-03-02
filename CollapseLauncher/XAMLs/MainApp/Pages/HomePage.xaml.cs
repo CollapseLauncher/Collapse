@@ -240,13 +240,6 @@ namespace CollapseLauncher.Pages
                     ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
                     int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
                     int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
-                    ProcessImageSettings settings = new ProcessImageSettings
-                    {
-                        Width = width,
-                        Height = height,
-                        HybridMode = HybridScaleMode.Off,
-                        Interpolation = InterpolationSettings.Cubic
-                    };
 
                     copyIconFileStream.Position = 0; // Reset the original icon stream position
                     await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
