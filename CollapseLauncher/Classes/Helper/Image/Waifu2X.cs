@@ -45,19 +45,25 @@ namespace CollapseLauncher.Helper.Image
             Ok,
             CpuMode,
             NotAvailable,
+            TestNotPassed,
         }
 
         private IntPtr _context;
         private byte[] _paramBuffer;
         private byte[] _modelBuffer;
+        private bool _testPassed;
 
         public Waifu2XStatus Status
         {
             get
             {
+                // Usability testing
                 if (_context == 0)
                     return Waifu2XStatus.NotAvailable;
-                else if (waifu2x_support_gpu(_context))
+                else if (!_testPassed)
+                    return Waifu2XStatus.TestNotPassed;
+
+                if (waifu2x_support_gpu(_context))
                     return Waifu2XStatus.Ok;
                 else
                     return Waifu2XStatus.CpuMode;
@@ -66,7 +72,18 @@ namespace CollapseLauncher.Helper.Image
 
         public Waifu2X(int gpuId = 0, bool ttaMode = false, int numThreads = 1)
         {
-            _context = waifu2x_create(gpuId, ttaMode, numThreads);
+            try
+            {
+                _context = waifu2x_create(gpuId, ttaMode, numThreads);
+                if (_context == 0)
+                {
+                    // Fallback to CPU mode
+                    _context = waifu2x_create(-1, ttaMode, numThreads);
+                }
+            }
+            catch (DllNotFoundException)
+            {
+            }
         }
 
         public void Dispose()
@@ -78,16 +95,16 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
-        public unsafe int Load(ReadOnlySpan<byte> param, ReadOnlySpan<byte> model)
+        public unsafe bool Load(ReadOnlySpan<byte> param, ReadOnlySpan<byte> model)
         {
             if (_context == 0) throw new NotSupportedException();
             fixed (byte* pParam = param, pModel = model)
             {
-                return waifu2x_load(_context, pParam, pModel);
+                return waifu2x_load(_context, pParam, pModel) == 0 && Test();
             }
         }
 
-        public int Load(string paramPath, string modelPath)
+        public bool Load(string paramPath, string modelPath)
         {
             if (_context == 0) throw new NotSupportedException();
             try
@@ -108,7 +125,7 @@ namespace CollapseLauncher.Helper.Image
             }
             catch (FileNotFoundException)
             {
-                return -1;
+                return false;
             }
 
             return Load(_paramBuffer, _modelBuffer);
@@ -142,6 +159,23 @@ namespace CollapseLauncher.Helper.Image
         {
             if (_context == 0) throw new NotSupportedException();
             return waifu2x_get(_context, param);
+        }
+
+        private bool Test()
+        {
+            if (Status == Waifu2XStatus.NotAvailable)
+            {
+                _testPassed = false;
+            }
+            else
+            {
+                // Test scaling a 1x1 white image to 2x2 size
+                var inData = new byte[] { 0xFF, 0xFF, 0xFF };
+                var outData = new byte[2 * 2 * 3];
+                Process(1, 1, 3, inData, outData);
+                _testPassed = outData[0] != 0;
+            }
+            return _testPassed;
         }
     }
 }

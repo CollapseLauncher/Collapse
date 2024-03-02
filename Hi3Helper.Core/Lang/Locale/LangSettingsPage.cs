@@ -93,8 +93,9 @@
                 public string AppBehavior_StartupToTray             { get; set; } = LangFallback?._SettingsPage.AppBehavior_StartupToTray;
                 public string Waifu2X_Toggle                        { get; set; } = LangFallback?._SettingsPage.Waifu2X_Toggle;
                 public string Waifu2X_Help                          { get; set; } = LangFallback?._SettingsPage.Waifu2X_Help;
-                public string Waifu2X_Warning                       { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning;
-                public string Waifu2X_Error                         { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error;
+                public string Waifu2X_Warning_CpuMode               { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_CpuMode;
+                public string Waifu2X_Error_Loader                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Loader;
+                public string Waifu2X_Error_Output                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Output;
             }
         }
         #endregion

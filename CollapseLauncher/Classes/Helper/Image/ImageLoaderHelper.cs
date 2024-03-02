@@ -39,7 +39,7 @@ namespace CollapseLauncher.Helper.Image
             set => SetAndSaveConfigValue("EnableWaifu2X", value);
         }
 
-        public static bool IsWaifu2XUsable => Waifu2XStatus != Waifu2XStatus.NotAvailable;
+        public static bool IsWaifu2XUsable => Waifu2XStatus != Waifu2XStatus.NotAvailable && Waifu2XStatus != Waifu2XStatus.TestNotPassed;
 
         public static void InitWaifu2X()
         {

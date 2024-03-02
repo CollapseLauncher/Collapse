@@ -553,10 +553,12 @@ namespace CollapseLauncher.Pages
             get
             {
                 var tooltip = Lang._SettingsPage.Waifu2X_Help;
+                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.CpuMode)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
                 if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.NotAvailable)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error;
-                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.CpuMode)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning;
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
+                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.TestNotPassed)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
                 return tooltip;
             }
         }
@@ -572,6 +574,7 @@ namespace CollapseLauncher.Pages
                     case Waifu2XStatus.CpuMode:
                         return "\uf071";
                     case Waifu2XStatus.NotAvailable:
+                    case Waifu2XStatus.TestNotPassed:
                         return "\uf06a";
                     default:
                         return "\uf05a";
