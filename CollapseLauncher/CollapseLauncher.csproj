@@ -32,6 +32,7 @@
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<InvariantGlobalization>false</InvariantGlobalization>
+		<ShouldComputeInputPris>true</ShouldComputeInputPris>
 	</PropertyGroup>
 
 <!--
