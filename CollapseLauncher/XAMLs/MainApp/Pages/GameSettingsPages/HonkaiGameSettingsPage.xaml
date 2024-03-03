@@ -436,13 +436,11 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid>
-                                    <!-- Currently unused
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    -->
                                     <StackPanel>
                                         <TextBlock
                                             Margin="0,0,0,8"
@@ -459,16 +457,20 @@
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                         </ComboBox>
                                     </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock
+                                            Margin="0,0,0,4"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXPhysics}" />
+                                        <ToggleSwitch
+                                            x:Name="GameFXPhysicsSwitch"
+                                            IsOn="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}"
+                                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}">
+                                        </ToggleSwitch>
+                                    </StackPanel>
                                 </Grid>
                                 <Grid>
-                                    <CheckBox
-                                        x:Name="GameFXPhysicsCheckBox"
-                                        Margin="12,0,0,0"
-                                        IsChecked="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}">
-                                        <CheckBox.Content>
-                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXPhysics}" />
-                                        </CheckBox.Content>
-                                    </CheckBox>
                                 </Grid>
                                 <MenuFlyoutSeparator Margin="0,8,0,0" />
                                 <TextBlock
