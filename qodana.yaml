@@ -41,3 +41,5 @@ dependencyIgnores:
   # Microsoft...
   - name: "System.CommandLine"
   - name: "System.CommandLine.NamingConventionBinder"
+  # huh?
+  - name: "ThisAssembly.Constants"

@@ -45,6 +45,18 @@ namespace CollapseLauncher
 
                 AppCurrentArgument = args;
 
+                // Extract icons from the executable file
+                var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
+                var iconCount = InvokeProp.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                if (iconCount > 0)
+                {
+                    var largeIcons = new IntPtr[1];
+                    var smallIcons = new IntPtr[1];
+                    InvokeProp.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    AppIconLarge = largeIcons[0];
+                    AppIconSmall = smallIcons[0];
+                }
+
                 InitAppPreset();
                 string logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);

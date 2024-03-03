@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -70,11 +69,7 @@ namespace CollapseLauncher
                     SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
-#if PROTOTYPEUI
                     rootFrame.Navigate(typeof(Pages.OOBE.OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
-#else
-                    rootFrame.Navigate(typeof(StartupLanguageSelect), null, new DrillInNavigationTransitionInfo());
-#endif
                 }
                 else
                     StartMainPage();
@@ -140,9 +135,7 @@ namespace CollapseLauncher
 
         private void LoadWindowIcon()
         {
-            string path = Path.Combine(AppFolder, "icon.ico");
-            if (!File.Exists(path)) return;
-            m_appWindow.SetIcon(path);
+            SetWindowIcon(m_windowHandle, AppIconLarge, AppIconSmall);
             m_appWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
         }
 

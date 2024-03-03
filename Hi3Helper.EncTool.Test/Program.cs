@@ -1,12 +1,24 @@
-﻿using Hi3Helper.EncTool.Parser.AssetMetadata;
+﻿using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.EncTool.Parser.Senadina;
+using Hi3Helper.Http;
+using System.Buffers;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace Hi3Helper.EncTool.Test
 {
     internal class Program
     {
+
+
         static async Task Main(string[] args)
         {
+            #region unused
+
             using (SRMetadata srm = new SRMetadata("https://globaldp-prod-os01.starrails.com/query_dispatch", "3a57430d8d",
                 "?version={0}{1}&t={2}&language_type=3&platform_type=3&channel_id=1&sub_channel_id=1&is_new_format=1",
                 "?version={0}{1}&t={2}&uid=0&language_type=3&platform_type=3&dispatch_seed={3}&channel_id=1&sub_channel_id=1&is_need_url=1",
@@ -83,6 +95,7 @@ namespace Hi3Helper.EncTool.Test
                 }
             }
             */
+            #endregion
         }
     }
 }

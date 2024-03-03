@@ -5,6 +5,17 @@ using System.Collections.Generic;
 
 namespace CollapseLauncher.Interfaces
 {
+    internal static class IGameVersionCheckExtension
+    {
+        /// <summary>
+        /// Casting the IGameVersionCheck as its origin or another version class.
+        /// </summary>
+        /// <typeparam name="TCast">The type of version class to cast</typeparam>
+        /// <returns>The version class to get casted</returns>
+        internal static TCast CastAs<TCast>(this IGameVersionCheck versionCheck)
+            where TCast : GameVersionBase, IGameVersionCheck => (TCast)versionCheck;
+    }
+
     internal interface IGameVersionCheck
     {
         /// <summary>
