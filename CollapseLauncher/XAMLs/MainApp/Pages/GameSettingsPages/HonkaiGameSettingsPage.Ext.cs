@@ -86,6 +86,7 @@ namespace CollapseLauncher.Pages
             UpdatePresetRendering();
         }
         #endregion
+
         #region GameResolution
         public bool IsFullscreenEnabled
         {
@@ -231,6 +232,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
         #endregion
+
         #region FPS
         private void UpdatePresetFPS()
         {
@@ -249,6 +251,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGraphics.TargetFrameRateForOthers = value;
         }
         #endregion
+
         #region Rendering
         private void UpdatePresetRendering()
         {

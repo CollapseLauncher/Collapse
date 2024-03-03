@@ -251,6 +251,7 @@
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}" />
                             <StackPanel>
+                                <!-- Disable presets for now (send help)
                                 <TextBlock
                                     Margin="0,0,0,8"
                                     Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -261,6 +262,7 @@
                                     CornerRadius="14"
                                     ItemsSource="{x:Bind PresetRenderingNames}"
                                     SelectedIndex="{x:Bind PresetRenderingIndex, Mode=TwoWay}" />
+                                -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
