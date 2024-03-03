@@ -27,7 +27,7 @@ namespace CollapseLauncher.Dialogs
         public static bool CannotUseKbShortcuts { get; set; } = false;
         #endregion
 
-        #region Shortcuts Main UI Methods
+        #region Show Shortcuts ContentDialog
         public static async Task<ContentDialogResult> Dialog_ShowKbShortcuts(UIElement Content, int page = 0)
         {
             _buttonWidth = int.Max(Lang._KbShortcuts.GeneralTab.Length * 5
@@ -320,7 +320,7 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        #region Switch key combination methods
+        #region Change Key Combinations
         private static async Task Dialog_SwitchKey(UIElement content, KbShortcutChangeData data)
         {
             StackPanel mainSwitchKeyContent = new StackPanel()
@@ -528,8 +528,8 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        #region Keyboard Shortcut lists
-        public static Dictionary<string, KbShortcut> DefaultShortcutList = new Dictionary<string, KbShortcut>()
+        #region Default/Forbidden Keyboard Shortcuts
+        public static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new Dictionary<string, KbShortcut>()
         {
             { "GameSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.None } },
             { "RegionSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Shift, Key = VirtualKey.None } },
@@ -558,7 +558,9 @@ namespace CollapseLauncher.Dialogs
             new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.C },
             new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.V }
         ];
+        #endregion
 
+        #region Custom Keyboard Shortcuts
         public static Dictionary<string, KbShortcut> KbShortcutList = new Dictionary<string, KbShortcut>();
 
         public static void LoadKbShortcuts()
@@ -635,7 +637,6 @@ namespace CollapseLauncher.Dialogs
             LogWriteLine("[KeyboardShortcuts::SaveKbShortcuts] The following configuration was saved:\n\r\t" + res);
             SetAndSaveConfigValue("KbShortcutList", res);
         }
-
         #endregion
 
         #region KbShortcut class
@@ -715,7 +716,7 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        #region Data struct for changing key combinations
+        #region Change Keyboard Shortcut struct
         private struct KbShortcutChangeData
         {
             public string KeyName { get; init; }
@@ -724,6 +725,5 @@ namespace CollapseLauncher.Dialogs
             public int PageNumber { get; init; }
         }
         #endregion
-
     }
 }
