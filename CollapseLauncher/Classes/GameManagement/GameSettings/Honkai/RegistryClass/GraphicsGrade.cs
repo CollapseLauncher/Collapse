@@ -68,7 +68,7 @@ namespace CollapseLauncher.GameSettings.Honkai
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 LogWriteLine("(HI3 GSP) Forcing GraphicsGrade to Custom!", LogType.Warning, true);
                 GraphicsGradeInt = SelectGraphicsGrade.Custom;
-                RegistryRoot?.SetValue(_ValueName, GraphicsGradeInt, Microsoft.Win32.RegistryValueKind.DWord);
+                RegistryRoot.SetValue(_ValueName, GraphicsGradeInt, Microsoft.Win32.RegistryValueKind.DWord);
                 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {_ValueName} : {GraphicsGradeInt}", LogType.Debug, true);
                 #endif
