@@ -158,10 +158,6 @@ namespace CollapseLauncher
         private static void OnProcessExit(object sender, EventArgs e)
         {
             App.IsAppKilled = true;
-
-#if !DISABLEDISCORD
-            AppDiscordPresence.Dispose();
-#endif
         }
 
         private static void StartSquirrelHook()

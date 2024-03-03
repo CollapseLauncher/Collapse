@@ -82,6 +82,9 @@ namespace CollapseLauncher
             {
                 MainWindow.SetDragArea(DragAreaMode_Full);
             }
+#if !DISABLEDISCORD
+            AppDiscordPresence.Dispose();
+#endif
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
