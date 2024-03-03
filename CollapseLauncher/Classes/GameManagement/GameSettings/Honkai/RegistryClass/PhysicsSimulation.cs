@@ -14,6 +14,9 @@ namespace CollapseLauncher.GameSettings.Honkai
         #endregion
 
         #region Properties
+        /// <summary>
+        /// This defines if "<c>Physics</c>" toggle in "More" settings is enabled or not.<br/>
+        /// </summary>
         public int UsePhysicsSimulation { get; set; }
 
         public bool PhysicsSimulationBool
