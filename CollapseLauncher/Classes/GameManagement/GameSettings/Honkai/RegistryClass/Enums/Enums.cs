@@ -26,19 +26,19 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     /// This selection has 5 name types: Off (0), Low (1), Middle (2), High (3), Ultra (4)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectLightningQuality>))]
-    internal enum SelectLightningQuality : int { Off, Low, Middle, High, Ultra }
+    internal enum SelectLightningQuality { Off, Low, Middle, High, Ultra }
     
     /// <summary>
     /// This selection has 4 name types: Off, Low, Middle, High
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectPostFXQuality>))]
-    internal enum SelectPostFXQuality : int { Off, Low, Middle, High }
+    internal enum SelectPostFXQuality { Off, Low, Middle, High }
     
     /// <summary>
     /// This selection has 3 name types: Off, FXAA, TAA
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectAAType>))]
-    internal enum SelectAAType : int { Off, FXAA, TAA }
+    internal enum SelectAAType { Off, FXAA, TAA }
     
     /// <summary>
     /// This selection has 3 name tupes: Low, Middle, High

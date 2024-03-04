@@ -15,7 +15,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         
         #region Enum
         // ReSharper disable once UnusedMember.Global
-        public enum SelectGraphicsGrade {Performance = 1, Normal = 2, HD = 3, Quality = 4, Max = 5, Custom = 6}
+        public enum SelectGraphicsGrade {Performance = 1, Normal, HD, Quality, Max, Custom}
         #endregion
 
         #region Properties
@@ -79,7 +79,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(GraphicsGrade? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public bool Equals(GraphicsGrade? comparedTo) => this.GraphicsGradeInt == comparedTo?.GraphicsGradeInt;
         #endregion
     }
 }
