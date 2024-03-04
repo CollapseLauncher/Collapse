@@ -2,6 +2,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.DiscordPresence;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -81,6 +82,9 @@ namespace CollapseLauncher
             {
                 MainWindow.SetDragArea(DragAreaMode_Full);
             }
+#if !DISABLEDISCORD
+            AppDiscordPresence.Dispose();
+#endif
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -153,8 +157,15 @@ namespace CollapseLauncher
             {
                 LoadConfigV2();
                 SetActivatedRegion();
+
                 Page = typeof(HomePage);
             }
+
+#if !DISABLEDISCORD
+            bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
+            AppDiscordPresence = new DiscordPresenceManager(isInitialStart);
+            AppDiscordPresence.SetActivity(ActivityType.Idle);
+#endif
 
             // Lock ChangeBtn for first start
             LockRegionChangeBtn = true;
@@ -1808,7 +1819,6 @@ namespace CollapseLauncher
                 return true;
 
             string oldGameCategory = GetAppConfigValue("GameCategory").ToString();
-            string oldGameRegion = GetAppConfigValue("GameRegion").ToString();
 
             string GameName = args.Game;
 
@@ -1833,6 +1843,10 @@ namespace CollapseLauncher
                         return true;
                     GameRegion = ConfigV2GameRegions[Region];
                 }
+
+                string oldGameRegion = ConfigV2GameRegions.ElementAt(GetPreviousGameRegion(GameName));
+                if (oldGameRegion == null)
+                    return true;
 
                 SetPreviousGameRegion(GameName, GameRegion);
                 SetAndSaveConfigValue("GameRegion", GameRegion);
