@@ -137,7 +137,7 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 
-		<Content Include="Lib\waifu2x-ncnn-vulkan.dll">
+		<Content Include="Lib\**">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

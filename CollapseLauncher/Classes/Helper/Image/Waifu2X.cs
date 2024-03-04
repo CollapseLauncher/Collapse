@@ -28,7 +28,7 @@ namespace CollapseLauncher.Helper.Image
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
 
         [DllImport(DllName)]
-        private static extern IntPtr waifu2x_create(int gpuId = 0, bool ttaMode = false, int numThreads = 1);
+        private static extern IntPtr waifu2x_create(int gpuId = 0, bool ttaMode = false, int numThreads = 0);
 
         [DllImport(DllName)]
         private static extern void waifu2x_destroy(IntPtr context);
@@ -157,11 +157,7 @@ namespace CollapseLauncher.Helper.Image
             if (_context == 0) throw new NotSupportedException();
             fixed (byte* pInData = inData, pOutData = outData)
             {
-                Logger.LogWriteLine($"Waifu2X processing begins. Source image resolution: {w}x{h}.");
-                var timeBegin = DateTime.Now;
-                var ret = waifu2x_process(_context, w, h, c, pInData, pOutData);
-                Logger.LogWriteLine($"Waifu2X processing ends. Source image resolution: {w}x{h}. Elapsed time: {(DateTime.Now - timeBegin).TotalMilliseconds} ms.");
-                return ret;
+                return waifu2x_process(_context, w, h, c, pInData, pOutData);
             }
         }
 
