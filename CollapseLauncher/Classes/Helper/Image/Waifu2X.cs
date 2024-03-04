@@ -5,6 +5,24 @@ using System.Runtime.InteropServices;
 
 namespace CollapseLauncher.Helper.Image
 {
+    public static class Ncnn
+    {
+        public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
+
+        [DllImport(DllName)]
+        private static extern int ncnn_get_default_gpu_index();
+
+        [DllImport(DllName)]
+        private static extern IntPtr ncnn_get_gpu_name(int gpuId);
+
+        public static int DefaultGpuIndex => ncnn_get_default_gpu_index();
+
+        public static string GetGpuName(int gpuId)
+        {
+            return Marshal.PtrToStringUTF8(ncnn_get_gpu_name(gpuId));
+        }
+    }
+
     public class Waifu2X : IDisposable
     {
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
@@ -25,14 +43,10 @@ namespace CollapseLauncher.Helper.Image
         private static extern unsafe int waifu2x_process_cpu(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
 
         [DllImport(DllName)]
-        private static extern void waifu2x_set(IntPtr context, Param param, int value);
+        private static extern void waifu2x_set_param(IntPtr context, Param param, int value);
 
         [DllImport(DllName)]
-        private static extern int waifu2x_get(IntPtr context, Param param);
-
-        [DllImport(DllName)]
-        [return:MarshalAs(UnmanagedType.I1)]
-        private static extern bool waifu2x_support_gpu(IntPtr context);
+        private static extern int waifu2x_get_param(IntPtr context, Param param);
 
         public enum Param
         {
@@ -53,6 +67,7 @@ namespace CollapseLauncher.Helper.Image
         private byte[] _paramBuffer;
         private byte[] _modelBuffer;
         private bool _testPassed;
+        private int _gpuId;
 
         public Waifu2XStatus Status
         {
@@ -64,24 +79,25 @@ namespace CollapseLauncher.Helper.Image
                 else if (!_testPassed)
                     return Waifu2XStatus.TestNotPassed;
 
-                if (waifu2x_support_gpu(_context))
+                if (_gpuId >= 0)
                     return Waifu2XStatus.Ok;
                 else
                     return Waifu2XStatus.CpuMode;
             }
         }
 
-        public Waifu2X(int gpuId = 0, bool ttaMode = false, int numThreads = 1)
+        public Waifu2X()
         {
             try
             {
-                _context = waifu2x_create(gpuId, ttaMode, numThreads);
-                if (_context == 0)
+                _gpuId = Ncnn.DefaultGpuIndex;
+                if (_gpuId == -1)
                 {
                     // Fallback to CPU mode
                     Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
-                    _context = waifu2x_create(-1, ttaMode, numThreads);
                 }
+                _context = waifu2x_create(_gpuId);
+                Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(_gpuId)}", LogType.Default, true);
             }
             catch (DllNotFoundException)
             {
@@ -158,16 +174,16 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
-        public void Set(Param param, int value)
+        public void SetParam(Param param, int value)
         {
             if (_context == 0) throw new NotSupportedException();
-            waifu2x_set(_context, param, value);
+            waifu2x_set_param(_context, param, value);
         }
 
-        public int Get(Param param)
+        public int GetParam(Param param)
         {
             if (_context == 0) throw new NotSupportedException();
-            return waifu2x_get(_context, param);
+            return waifu2x_get_param(_context, param);
         }
 
         private bool Test()

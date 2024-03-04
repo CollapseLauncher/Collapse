@@ -46,8 +46,8 @@ namespace CollapseLauncher.Helper.Image
             _waifu2X = new Waifu2X();
             if (_waifu2X.Status == Waifu2XStatus.NotAvailable)
                 return;
-            _waifu2X.Set(Param.Noise, -1);
-            _waifu2X.Set(Param.Scale, 2);
+            _waifu2X.SetParam(Param.Noise, -1);
+            _waifu2X.SetParam(Param.Scale, 2);
             _waifu2X.Load(Path.Combine(AppFolder, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
                 Path.Combine(AppFolder, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
         }
