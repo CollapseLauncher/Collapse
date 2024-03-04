@@ -1,3 +1,4 @@
+using Hi3Helper;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -78,11 +79,13 @@ namespace CollapseLauncher.Helper.Image
                 if (_context == 0)
                 {
                     // Fallback to CPU mode
+                    Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
                     _context = waifu2x_create(-1, ttaMode, numThreads);
                 }
             }
             catch (DllNotFoundException)
             {
+                Logger.LogWriteLine("Dll file \"waifu2x-ncnn-vulkan.dll\" can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
             }
         }
 
@@ -123,8 +126,10 @@ namespace CollapseLauncher.Helper.Image
                     _modelBuffer = ms.ToArray();
                 }
             }
-            catch (FileNotFoundException)
+            catch (IOException)
             {
+                _testPassed = false;
+                Logger.LogWriteLine("Waifu2X model file can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
                 return false;
             }
 
@@ -136,7 +141,11 @@ namespace CollapseLauncher.Helper.Image
             if (_context == 0) throw new NotSupportedException();
             fixed (byte* pInData = inData, pOutData = outData)
             {
-                return waifu2x_process(_context, w, h, c, pInData, pOutData);
+                Logger.LogWriteLine($"Waifu2X processing begins. Source image resolution: {w}x{h}.");
+                var timeBegin = DateTime.Now;
+                var ret = waifu2x_process(_context, w, h, c, pInData, pOutData);
+                Logger.LogWriteLine($"Waifu2X processing ends. Source image resolution: {w}x{h}. Elapsed time: {(DateTime.Now - timeBegin).TotalMilliseconds} ms.");
+                return ret;
             }
         }
 
@@ -174,6 +183,7 @@ namespace CollapseLauncher.Helper.Image
                 var outData = new byte[2 * 2 * 3];
                 Process(1, 1, 3, inData, outData);
                 _testPassed = outData[0] != 0;
+                Logger.LogWriteLine("Waifu2X self test failed, got an empty output image.", LogType.Error, true);
             }
             return _testPassed;
         }
