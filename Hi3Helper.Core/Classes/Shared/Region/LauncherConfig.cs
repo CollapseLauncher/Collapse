@@ -192,7 +192,7 @@ namespace Hi3Helper.Shared.Region
         public static AppIniStruct appIni;
         
         public static readonly string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule!.FileName);
-        public static readonly string AppDefaultBG = Path.Combine(AppFolder!, "Assets", "Images", "default.png");
+        public static readonly string AppDefaultBG = Path.Combine(AppFolder!, "Assets", "Images", "PageBackground", "default.png");
         
         public static readonly string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");

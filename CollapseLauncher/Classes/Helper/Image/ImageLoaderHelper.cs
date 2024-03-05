@@ -270,7 +270,7 @@ namespace CollapseLauncher.Helper.Image
             });
         }
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath, uint ToWidth, uint ToHeight)
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath)
         {
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
