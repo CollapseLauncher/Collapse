@@ -2070,7 +2070,7 @@ namespace CollapseLauncher.Pages
             catch ( Exception ex )
             {
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
-                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]", LogType.Error, true);
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion
