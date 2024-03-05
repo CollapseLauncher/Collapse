@@ -215,11 +215,8 @@ namespace CollapseLauncher
 
         private async Task ApplyBackground(bool _isFirstStartup)
         {
-            uint _width = (uint)(m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
-            uint _height = (uint)(m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
-
             BitmapImage ReplacementBitmap;
-            (PaletteBitmap, ReplacementBitmap) = await ImageLoaderHelper.GetResizedBitmapNew(regionBackgroundProp.imgLocalPath, _width, _height);
+            (PaletteBitmap, ReplacementBitmap) = await ImageLoaderHelper.GetResizedBitmapNew(regionBackgroundProp.imgLocalPath);
             if (PaletteBitmap == null || ReplacementBitmap == null) return;
 
             ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);

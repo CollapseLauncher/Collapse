@@ -133,6 +133,10 @@
 		<Content Include="..\THIRD_PARTY_NOTICES.md">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+
+		<Content Include="Lib\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">

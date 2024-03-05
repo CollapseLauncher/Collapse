@@ -17,6 +17,13 @@ This project uses third-party libraries, each governed by their respective licen
 ## [Mendsley](https://github.com/mendsley) License(s)
 - [BSDIFF](https://github.com/CollapseLauncher/Collapse/blob/main/Docs/LICENSE/Mendsley/BSDIFF.LICENSE): BSDiff
 
+## LLVM License(s)
+- [Apache-2.0](https://github.com/CollapseLauncher/Collapse/blob/main/Docs/LICENSE/LLVM/OPENMP.LICENSE): OpenMP
+
+## [Nihui](https://github.com/nihui) License(s)
+- [MIT](https://github.com/CollapseLauncher/Collapse/blob/main/Docs/LICENSE/Nihui/WAIFU2X.LICENSE): Waifu2X, modified by [Shatyuka](https://github.com/shatyuka/waifu2x-ncnn-vulkan/tree/master)
+
+
 ***
 
 ## Third-party software list

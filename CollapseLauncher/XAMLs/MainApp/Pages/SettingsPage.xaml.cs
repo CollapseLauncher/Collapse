@@ -1,3 +1,5 @@
+using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
 using Hi3Helper.Data;
 #if !DISABLEDISCORD
@@ -7,6 +9,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static CollapseLauncher.Helper.Image.Waifu2X;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.WindowSize.WindowSize;
@@ -21,9 +26,6 @@ using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-using CollapseLauncher.Pages.OOBE;
-using CollapseLauncher.Helper.Image;
 
 namespace CollapseLauncher.Pages
 {
@@ -345,6 +347,11 @@ namespace CollapseLauncher.Pages
             taskDefinition.Dispose();
             return task;
         }
+
+        private void EnableHeaderMouseEvent(object sender, RoutedEventArgs e)
+        {
+            ((UIElement)VisualTreeHelper.GetParent((DependencyObject)sender)).IsHitTestVisible = true;
+        }
         #endregion
 
         #region Settings UI Backend
@@ -530,6 +537,52 @@ namespace CollapseLauncher.Pages
                 App.ToggleBlurBackdrop(value);
             }
         }
+
+        private bool IsWaifu2XEnabled
+        {
+            get => ImageLoaderHelper.IsWaifu2XEnabled;
+            set
+            {
+                ImageLoaderHelper.IsWaifu2XEnabled = value;
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+            }
+        }
+
+        private string Waifu2XToolTip
+        {
+            get
+            {
+                var tooltip = Lang._SettingsPage.Waifu2X_Help;
+                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.CpuMode)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
+                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.NotAvailable)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
+                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.TestNotPassed)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                return tooltip;
+            }
+        }
+
+        private string Waifu2XToolTipIcon
+        {
+            get
+            {
+                switch (ImageLoaderHelper.Waifu2XStatus)
+                {
+                    case Waifu2XStatus.Ok:
+                        return "\uf05a";
+                    case Waifu2XStatus.CpuMode:
+                        return "\uf071";
+                    case Waifu2XStatus.NotAvailable:
+                    case Waifu2XStatus.TestNotPassed:
+                        return "\uf06a";
+                    default:
+                        return "\uf05a";
+                }
+            }
+        }
+
+        private bool IsWaifu2XUsable => ImageLoaderHelper.IsWaifu2XUsable;
 
         private int CurrentThemeSelection
         {
