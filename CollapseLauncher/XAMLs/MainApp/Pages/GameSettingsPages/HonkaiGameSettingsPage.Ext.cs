@@ -86,6 +86,7 @@ namespace CollapseLauncher.Pages
             UpdatePresetRendering();
         }
         #endregion
+
         #region GameResolution
         public bool IsFullscreenEnabled
         {
@@ -231,6 +232,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
         #endregion
+
         #region FPS
         private void UpdatePresetFPS()
         {
@@ -249,6 +251,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGraphics.TargetFrameRateForOthers = value;
         }
         #endregion
+
         #region Rendering
         private void UpdatePresetRendering()
         {
@@ -267,6 +270,9 @@ namespace CollapseLauncher.Pages
             OnPropertyChanged("GraphicsVolumetricLight");
         }
 
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.ResolutionQuality"/><br/>
+        /// </summary>
         public int GraphicsRenderingAccuracy
         {
             get => prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
@@ -291,18 +297,72 @@ namespace CollapseLauncher.Pages
             Settings.SettingsGraphics.ResolutionQuality = (SelectResolutionQuality)value;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.ShadowLevel"/><br/>
+        /// </summary>
         public int GraphicsShadowQuality
         {
             get => (int)Settings.SettingsGraphics.ShadowLevel;
             set => Settings.SettingsGraphics.ShadowLevel = (SelectShadowLevel)value;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.ReflectionQuality"/><br/>
+        /// </summary>
         public int GraphicsReflectionQuality
         {
             get => (int)Settings.SettingsGraphics.ReflectionQuality;
             set => Settings.SettingsGraphics.ReflectionQuality = (SelectReflectionQuality)value;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.LightingQuality"/><br/>
+        /// </summary>
+        public int GraphicsLightingQuality
+        {
+            get => (int)Settings.SettingsGraphics.LightingQuality;
+            set => Settings.SettingsGraphics.LightingQuality = (SelectLightningQuality)value;
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.PostFXQuality"/><br/>
+        /// </summary>
+        public int GraphicsPostFXQuality
+        {
+            get => (int)Settings.SettingsGraphics.PostFXQuality;
+            set => Settings.SettingsGraphics.PostFXQuality = (SelectPostFXQuality)value;
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.AAType"/><br/>
+        /// </summary>
+        public int GraphicsAAType
+        {
+            get => (int)Settings.SettingsGraphics.AAType;
+            set => Settings.SettingsGraphics.AAType = (SelectAAType)value;
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.CharacterQuality"/><br/>
+        /// </summary>
+        public int GraphicsCharacterQuality
+        {
+            get => (int)Settings.SettingsGraphics.CharacterQuality;
+            set => Settings.SettingsGraphics.CharacterQuality = (SelectCharacterQuality)value;
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.WeatherQuality"/><br/>
+        /// </summary>
+        public int GraphicsWeatherQuality
+        {
+            get => (int)Settings.SettingsGraphics.WeatherQuality;
+            set => Settings.SettingsGraphics.WeatherQuality = (SelectWeatherQuality)value;
+        }
+        
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public bool IsGraphicsPostFXEnabled
         {
             get => Settings.SettingsGraphics.UsePostFX;
@@ -324,30 +384,45 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        /// <summary>
+        /// <inheritdoc cref="PhysicsSimulation.UsePhysicsSimulation"/><br/>
+        /// </summary>
         public bool IsGraphicsPhysicsEnabled
         {
-            get => Settings.SettingsGraphics.UseDynamicBone;
-            set => Settings.SettingsGraphics.UseDynamicBone = value;
+            get => Settings.SettingsPhysics.PhysicsSimulationBool;
+            set => Settings.SettingsPhysics.PhysicsSimulationBool = value;
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public bool IsGraphicsFXHDREnabled
         {
             get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.UseHDR;
             set => Settings.SettingsGraphics.UseHDR = value;
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public bool IsGraphicsFXHighQualityEnabled
         {
             get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.PostFXGradeBool;
             set => Settings.SettingsGraphics.PostFXGradeBool = value;
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public bool IsGraphicsFXFXAAEnabled
         {
             get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.UseFXAA;
             set => Settings.SettingsGraphics.UseFXAA = value;
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public bool IsGraphicsFXDistortionEnabled
         {
             get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.UseDistortion;
@@ -360,18 +435,27 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsCollapseScreen.GameGraphicsAPI = value;
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public int GraphicsGlobalIllumination
         {
             get => (int)Settings.SettingsGraphics.GlobalIllumination;
             set => Settings.SettingsGraphics.GlobalIllumination = (SelectGlobalIllumination)value;
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public int GraphicsAmbientOcclusion
         {
             get => (int)Settings.SettingsGraphics.AmbientOcclusion;
             set => Settings.SettingsGraphics.AmbientOcclusion = (SelectAmbientOcclusion)value;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.LodGrade"/><br/>
+        /// </summary>
         public int GraphicsLevelOfDetail
         {
             get
@@ -385,12 +469,25 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        /// <summary>
+        /// Legacy
+        /// </summary>
         public int GraphicsVolumetricLight
         {
             get => (int)Settings.SettingsGraphics.VolumetricLight;
             set => Settings.SettingsGraphics.VolumetricLight = (SelectVolumetricLight)value;
         }
+
+        /// <summary>
+        /// <inheritdoc cref="PersonalGraphicsSettingV2.ParticleEmitLevel"/><br/>
+        /// </summary>
+        public int GraphicsParticleQuality
+        {
+            get => (int)Settings.SettingsGraphics.ParticleEmitLevel;
+            set => Settings.SettingsGraphics.ParticleEmitLevel = (SelectParticleEmitLevel)value;
+        }
         #endregion
+
         #region Audio
         public int AudioMasterVolume
         {

@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Image;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
@@ -78,6 +79,11 @@ namespace CollapseLauncher
                     {
                         LoggerConsole.DisposeConsole();
                     }
+                }
+
+                if (m_appMode != AppMode.Updater)
+                {
+                    ImageLoaderHelper.InitWaifu2X();
                 }
             }
             catch (Exception ex)

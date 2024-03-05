@@ -45,31 +45,32 @@
                             </interactivity:Interaction.Behaviors>
                             <datatable:DataTable Margin="12,0,0,8">
                                 <datatable:DataColumn
-                                    MinWidth="276"
+                                    MinWidth="128"
                                     CanResize="True"
                                     Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}"
-                                    DesiredWidth="296"
+                                    DesiredWidth="5*"
                                     FontSize="13"
                                     FontWeight="SemiBold"
                                     Tag="FileName" />
                                 <datatable:DataColumn
                                     CanResize="True"
                                     Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}"
+                                    DesiredWidth="92"
                                     FontSize="13"
                                     FontWeight="SemiBold"
                                     Tag="DataType" />
                                 <datatable:DataColumn
-                                    MinWidth="276"
+                                    MinWidth="128"
                                     CanResize="True"
                                     Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}"
-                                    DesiredWidth="436"
+                                    DesiredWidth="7*"
                                     FontSize="13"
                                     FontWeight="SemiBold"
                                     Tag="Source" />
                                 <datatable:DataColumn
                                     CanResize="True"
                                     Content="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}"
-                                    DesiredWidth="128"
+                                    DesiredWidth="92"
                                     FontSize="13"
                                     FontWeight="SemiBold"
                                     Tag="FileSize" />

@@ -1,5 +1,4 @@
 ﻿<!--  ReSharper disable IdentifierTypo  -->
-<!--  ReSharper restore IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page
@@ -252,6 +251,7 @@
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}" />
                             <StackPanel>
+                                <!-- Disable presets for now (send help)
                                 <TextBlock
                                     Margin="0,0,0,8"
                                     Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -262,6 +262,7 @@
                                     CornerRadius="14"
                                     ItemsSource="{x:Bind PresetRenderingNames}"
                                     SelectedIndex="{x:Bind PresetRenderingIndex, Mode=TwoWay}" />
+                                -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
@@ -316,13 +317,174 @@
                                             SelectedIndex="{x:Bind GraphicsReflectionQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2LOD}" />
+                                        <ComboBox
+                                            x:Name="LevelOfDetailSelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsLevelOfDetail, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ParticleQuality}" />
+                                        <ComboBox
+                                            x:Name="ParticleQualitySelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsParticleQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_LightingQuality}" />
+                                        <ComboBox
+                                            x:Name="LightingQualitySelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsLightingQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecUltra}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_PostFXQuality}" />
+                                        <ComboBox
+                                            x:Name="PostFXQualitySelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsPostFXQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_AAMode}" />
+                                        <ComboBox
+                                            x:Name="AATypeSelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsAAType, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="FXAA" />
+                                            <ComboBoxItem Content="TAA" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_CharacterQuality}" />
+                                        <ComboBox
+                                            x:Name="CharacterQualitySelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsCharacterQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock
+                                            Margin="0,0,0,8"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_WeatherQuality}" />
+                                        <ComboBox
+                                            x:Name="WeatherQualitySelector"
+                                            Width="128"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="14"
+                                            SelectedIndex="{x:Bind GraphicsWeatherQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock
+                                            Margin="0,0,0,4"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXPhysics}" />
+                                        <ToggleSwitch
+                                            x:Name="GameFXPhysicsSwitch"
+                                            IsOn="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}"
+                                            OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                            OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}">
+                                        </ToggleSwitch>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid>
+                                </Grid>
+                                <MenuFlyoutSeparator Margin="0,8,0,0" />
                                 <TextBlock
-                                    Margin="0,8,0,8"
-                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                    Margin="0,8,0,4"
+                                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Legacy_Title}" />
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Legacy_Subtitle}"
+                                    TextWrapping="WrapWholeWords" />
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                                    FontSize="16"
                                     Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FX}" />
                                 <Expander
                                     x:Name="GameFXPostProcExpander"
@@ -336,14 +498,6 @@
                                             <CheckBox x:Name="GameFXPostProcCheckBox" IsChecked="{x:Bind IsGraphicsPostFXEnabled, Mode=TwoWay}">
                                                 <CheckBox.Content>
                                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXPost}" />
-                                                </CheckBox.Content>
-                                            </CheckBox>
-                                            <CheckBox
-                                                x:Name="GameFXPhysicsCheckBox"
-                                                Margin="12,0,0,0"
-                                                IsChecked="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}">
-                                                <CheckBox.Content>
-                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXPhysics}" />
                                                 </CheckBox.Content>
                                             </CheckBox>
                                         </StackPanel>
@@ -397,6 +551,7 @@
                             <TextBlock
                                 Margin="0,8,0,16"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
+                                FontSize="16"
                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2Panel}" />
                             <StackPanel>
                                 <Grid>
@@ -435,28 +590,6 @@
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock
-                                            Margin="0,0,0,8"
-                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2LOD}" />
-                                        <ComboBox
-                                            x:Name="LevelOfDetailSelector"
-                                            Width="128"
-                                            CornerRadius="14"
-                                            SelectedIndex="{x:Bind GraphicsLevelOfDetail, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
-                                        </ComboBox>
-                                    </StackPanel>
-                                </Grid>
-                                <Grid Margin="0,16,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
                                         <TextBlock
                                             Margin="0,0,0,8"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"

@@ -5,6 +5,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
+// ReSharper disable PossibleNullReferenceException
 
 namespace CollapseLauncher.GameSettings.Honkai
 {
@@ -15,12 +16,14 @@ namespace CollapseLauncher.GameSettings.Honkai
         #endregion
 
         #region SettingProperties
-        public CustomArgs SettingsCustomArgument { get; set; }
-        public PersonalGraphicsSettingV2 SettingsGraphics { get; set; }
-        public PersonalAudioSetting SettingsAudio { get; set; }
-        public BaseScreenSettingData SettingsScreen { get; set; }
-        public CollapseScreenSetting SettingsCollapseScreen { get; set; }
-        public CollapseMiscSetting SettingsCollapseMisc { get; set; }
+        public CustomArgs                SettingsCustomArgument { get; set; }
+        public PersonalGraphicsSettingV2 SettingsGraphics       { get; set; }
+        public PersonalAudioSetting      SettingsAudio          { get; set; }
+        public PhysicsSimulation         SettingsPhysics        { get; set; }
+        public GraphicsGrade             SettingsGraphicsGrade  { get; set; }
+        public BaseScreenSettingData     SettingsScreen         { get; set; }
+        public CollapseScreenSetting     SettingsCollapseScreen { get; set; }
+        public CollapseMiscSetting       SettingsCollapseMisc   { get; set; }
         #endregion
 
         public HonkaiSettings(IGameVersionCheck GameVersionManager)
@@ -43,12 +46,14 @@ namespace CollapseLauncher.GameSettings.Honkai
         private void InitializeSettings()
         {
             // Load Settings
-            SettingsGraphics = PersonalGraphicsSettingV2.Load();
-            SettingsAudio = PersonalAudioSetting.Load();
+            SettingsGraphics       = PersonalGraphicsSettingV2.Load();
+            SettingsGraphicsGrade  = GraphicsGrade.Load();
+            SettingsPhysics        = PhysicsSimulation.Load();
+            SettingsAudio          = PersonalAudioSetting.Load();
             SettingsCustomArgument = CustomArgs.Load();
-            SettingsScreen = ScreenSettingData.Load();
+            SettingsScreen         = ScreenSettingData.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
-            SettingsCollapseMisc = CollapseMiscSetting.Load();
+            SettingsCollapseMisc   = CollapseMiscSetting.Load();
 
             // Load Preset
             Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameType.Honkai, HonkaiSettingsJSONContext.Default);
@@ -60,6 +65,8 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             // Save Settings
             SettingsGraphics.Save();
+            SettingsPhysics.Save();
+            SettingsGraphicsGrade.Save();
             SettingsAudio.Save();
             SettingsCustomArgument.Save();
             SettingsScreen.Save();
