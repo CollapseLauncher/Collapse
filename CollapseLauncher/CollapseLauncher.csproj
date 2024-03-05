@@ -87,7 +87,7 @@
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
 		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.240211001" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
 		<PackageReference Include="Roman-Numerals" Version="2.0.0" />
