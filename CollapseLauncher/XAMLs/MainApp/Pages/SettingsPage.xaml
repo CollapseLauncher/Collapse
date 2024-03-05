@@ -1,3 +1,6 @@
+<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page
     x:Class="CollapseLauncher.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,7 +9,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:Hi3Helper"
     xmlns:innerConfig="using:Hi3Helper.Shared.Region"
-    xmlns:local="using:CollapseLauncher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     CacheMode="BitmapCache"
     Loaded="Page_Loaded"
@@ -237,7 +239,6 @@
                             Orientation="Horizontal"
                             Visibility="Collapsed">
                             <Button
-                                Grid.Column="0"
                                 Height="40"
                                 Margin="0,0,12,0"
                                 Click="ShowKbScList_Click"
@@ -256,7 +257,6 @@
                                 </StackPanel>
                             </Button>
                             <Button
-                                Grid.Column="1"
                                 Height="40"
                                 Click="ResetKeylist_Click"
                                 CornerRadius="20"
@@ -493,7 +493,7 @@
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind helper:Locale.Lang._SettingsPage.About}" />
                     <Grid>
-                        <StackPanel Grid.Column="1">
+                        <StackPanel Grid.Column="0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock
                                     Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -513,7 +513,7 @@
                                 <TextBlock
                                     Style="{ThemeResource BodyStrongTextBlockStyle}"
                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright2}"
-                                    TextWrapping="Wrap" />
+                                    TextWrapping="WrapWholeWords" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap">

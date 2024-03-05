@@ -26,9 +26,12 @@ using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable PossibleNullReferenceException
+// ReSharper disable AssignNullToNotNullAttribute
 
 namespace CollapseLauncher.Pages
 {
+    // ReSharper disable once RedundantExtendsListEntry
     public sealed partial class SettingsPage : Page
     {
         #region Properties
@@ -95,9 +98,13 @@ namespace CollapseLauncher.Pages
                         File.Delete(AppNotifIgnoreFile);
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
-                    catch { }
+                    catch
+                    {
+                        // Pipe error
+                    }
                     MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
                     break;
+                // ReSharper disable once RedundantEmptySwitchSection
                 default:
                     break;
             }
@@ -115,7 +122,7 @@ namespace CollapseLauncher.Pages
                         if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                         Process.Start(collapsePath);
-                        App.Current.Exit();
+                        Application.Current.Exit();
                     }
                     catch (Exception ex)
                     {
@@ -124,6 +131,7 @@ namespace CollapseLauncher.Pages
                         LogWriteLine(msg, LogType.Error, true);
                     }
                     break;
+                // ReSharper disable once RedundantEmptySwitchSection
                 default:
                     break;
             }
@@ -216,11 +224,11 @@ namespace CollapseLauncher.Pages
                         Verb = "runas"
                     }
                 }.Start();
-                App.Current.Exit();
+                Application.Current.Exit();
             }
             catch
             {
-                return;
+                // Pipe error
             }
         }
 
@@ -269,7 +277,6 @@ namespace CollapseLauncher.Pages
                 UpToDateStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableLabel.Text = e.NewVersionName.VersionString + (ChannelName);
                 LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
-                return;
             }
             else
             {
@@ -359,14 +366,14 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool IsEnabled = GetAppConfigValue("UseCustomBG").ToBool();
+                bool isEnabled = GetAppConfigValue("UseCustomBG").ToBool();
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                 if (!string.IsNullOrEmpty(BGPath))
                     BGPathDisplay.Text = BGPath;
                 else
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
 
-                if (IsEnabled)
+                if (isEnabled)
                 {
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
@@ -377,7 +384,7 @@ namespace CollapseLauncher.Pages
                     AppBGCustomizerNote.Visibility = Visibility.Collapsed;
                 }
 
-                BGSelector.IsEnabled = IsEnabled;
+                BGSelector.IsEnabled = isEnabled;
                 return IsEnabled;
             }
             set
@@ -461,9 +468,9 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool IsEnabled = GetAppConfigValue("EnableDiscordRPC").ToBool();
+                bool isEnabled = GetAppConfigValue("EnableDiscordRPC").ToBool();
                 ToggleDiscordGameStatus.IsEnabled = IsEnabled;
-                if (IsEnabled)
+                if (isEnabled)
                 {
                     ToggleDiscordGameStatus.Visibility = Visibility.Visible;
                     ToggleDiscordIdleStatus.Visibility = Visibility.Visible;
@@ -473,7 +480,7 @@ namespace CollapseLauncher.Pages
                     ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
                     ToggleDiscordIdleStatus.Visibility = Visibility.Collapsed;
                 }
-                return IsEnabled;
+                return isEnabled;
             }
             set
             {
