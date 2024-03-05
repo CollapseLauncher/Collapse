@@ -284,12 +284,23 @@
     "Graphics_APHO2AO": "Ambient Occlusion",
     "Graphics_APHO2LOD": "Level of Detail",
 
+    "Graphics_ParticleQuality": "Particle Quality",
+    "Graphics_LightingQuality": "Lighting Quality",
+    "Graphics_PostFXQuality": "Post-FX Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_WeatherQuality": "Weather Quality",
+
+    "Graphics_Legacy_Title": "Legacy Settings",
+    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+
     "SpecDisabled": "Disabled",
     "SpecLow": "Low",
     "SpecMedium": "Medium",
     "SpecHigh": "High",
     "SpecVeryHigh": "Very High",
     "SpecMaximum": "Maximum",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "Audio Settings",
     "Audio_Master": "Master Volume",
