@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
-using Hi3Helper.EncTool;
 using System;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -79,7 +78,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(GraphicsGrade? comparedTo) => this.GraphicsGradeInt == comparedTo?.GraphicsGradeInt;
+        public bool Equals(GraphicsGrade? comparedTo) => GraphicsGradeInt == comparedTo?.GraphicsGradeInt;
         #endregion
     }
 }

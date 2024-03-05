@@ -56,30 +56,30 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     /// This selection has 2 name types: Low (0), High (1)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectGlobalIllumination>))]
-    internal enum SelectGlobalIllumination : int { Low, High }
+    internal enum SelectGlobalIllumination { Low, High }
 
     /// <summary>
     /// This selection has 3 name types: OFF (0), LOW (1), HIGH (2)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectAmbientOcclusion>))]
-    internal enum SelectAmbientOcclusion : int { OFF, LOW, HIGH }
+    internal enum SelectAmbientOcclusion { OFF, LOW, HIGH }
 
     /// <summary>
     /// This selection has 3 name types: Low (0), Medium (1), High (2)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectVolumetricLight>))]
-    internal enum SelectVolumetricLight : int { Low, Medium, High }
+    internal enum SelectVolumetricLight { Low, Medium, High }
 
     /// <summary>
     /// This selection has 2 name types: Low (0), High (1)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectPostFXGrade>))]
-    internal enum SelectPostFXGrade : int { Low, High }
+    internal enum SelectPostFXGrade { Low, High }
 
     /// <summary>
     /// This selection has 3 name types: Low (2), Medium (1), High (0)<br/>
     /// </summary>
-    internal enum SelectLodGrade : int { Low = 2, Medium = 1, High = 0 }
+    internal enum SelectLodGrade { Low = 2, Medium = 1, High = 0 }
     
     /// <summary>
     /// This selection has 3 name tupes: Low, Middle, High
