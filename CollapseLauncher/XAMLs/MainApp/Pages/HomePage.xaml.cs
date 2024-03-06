@@ -175,10 +175,13 @@ namespace CollapseLauncher.Pages
                 CheckRunningGameInstance(PageToken.Token);
                 UpdatePlaytime();
 
-                if (m_arguments.StartGame != null && m_arguments.StartGame.Play)
+                if (m_arguments.StartGame?.Play == true)
                 {
-                    if (CurrentGameProperty._GameVersion.IsGameInstalled())
+                    if (CurrentGameProperty._GameVersion.GetGameState() is
+                        GameInstallStateEnum.Installed or GameInstallStateEnum.InstalledHavePreload)
+                    {
                         StartGame(null, null);
+                    }
                     m_arguments.StartGame.Play = false;
                 }
 

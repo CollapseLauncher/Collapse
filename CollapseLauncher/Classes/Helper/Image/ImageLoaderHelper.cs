@@ -31,7 +31,7 @@ namespace CollapseLauncher.Helper.Image
 
         private static Waifu2X _waifu2X;
 
-        public static Waifu2XStatus Waifu2XStatus => _waifu2X.Status;
+        public static Waifu2XStatus Waifu2XStatus => _waifu2X?.Status ?? Waifu2XStatus.NotAvailable;
 
         public static bool IsWaifu2XEnabled
         {
@@ -50,6 +50,12 @@ namespace CollapseLauncher.Helper.Image
             _waifu2X.SetParam(Param.Scale, 2);
             _waifu2X.Load(Path.Combine(AppFolder, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
                 Path.Combine(AppFolder, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
+        }
+
+        public static void DestroyWaifu2X()
+        {
+            _waifu2X?.Dispose();
+            _waifu2X = null;
         }
 
         internal static async Task<FileStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)

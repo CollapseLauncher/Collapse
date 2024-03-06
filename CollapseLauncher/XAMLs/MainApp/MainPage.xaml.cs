@@ -1,4 +1,5 @@
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -84,6 +85,7 @@ namespace CollapseLauncher
 #if !DISABLEDISCORD
             AppDiscordPresence.Dispose();
 #endif
+            ImageLoaderHelper.DestroyWaifu2X();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)

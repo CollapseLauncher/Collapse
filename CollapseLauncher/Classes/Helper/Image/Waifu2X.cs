@@ -195,7 +195,10 @@ namespace CollapseLauncher.Helper.Image
                 var outData = new byte[2 * 2 * 3];
                 Process(1, 1, 3, inData, outData);
                 _testPassed = outData[0] != 0;
-                Logger.LogWriteLine("Waifu2X self test failed, got an empty output image.", LogType.Error, true);
+                if (!_testPassed)
+                {
+                    Logger.LogWriteLine("Waifu2X self test failed, got an empty output image.", LogType.Error, true);
+                }
             }
             return _testPassed;
         }
