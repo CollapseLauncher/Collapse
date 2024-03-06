@@ -458,15 +458,18 @@ namespace CollapseLauncher.Pages
         /// </summary>
         public int GraphicsLevelOfDetail
         {
-            get
+            get => Settings.SettingsGraphics.LodGrade switch
             {
-                int val = (int)Settings.SettingsGraphics.LodGrade;
-                return val > 2 ? 2 : val;
-            }
-            set
+                SelectLodGrade.High => 2,
+                SelectLodGrade.Medium => 1,
+                _ => 0
+            };
+            set => Settings.SettingsGraphics.LodGrade = value switch
             {
-                Settings.SettingsGraphics.LodGrade = (SelectLodGrade)value;
-            }
+                2 => SelectLodGrade.High,
+                1 => SelectLodGrade.Medium,
+                _ => SelectLodGrade.Low
+            };
         }
 
         /// <summary>
