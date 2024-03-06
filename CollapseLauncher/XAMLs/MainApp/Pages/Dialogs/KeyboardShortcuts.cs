@@ -337,14 +337,16 @@ namespace CollapseLauncher.Dialogs
                 _oldSender = sender;
 
                 Storyboard storyboard = new Storyboard();
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = 1;
-                OpacityAnimation.To = 0;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.2));
+                DoubleAnimation opacityAnimation = new DoubleAnimation()
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2))
+                };
 
-                Storyboard.SetTarget(OpacityAnimation, oldStack);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboard.Children.Add(OpacityAnimation);
+                Storyboard.SetTarget(opacityAnimation, oldStack);
+                Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
+                storyboard.Children.Add(opacityAnimation);
 
                 storyboard.Begin();
 
@@ -353,14 +355,16 @@ namespace CollapseLauncher.Dialogs
                 oldStack.Visibility = Visibility.Collapsed;
 
                 Storyboard storyboard2 = new Storyboard();
-                DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
-                OpacityAnimation2.From = 0;
-                OpacityAnimation2.To = 1;
-                OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.2));
+                DoubleAnimation opacityAnimation2 = new DoubleAnimation()
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2))
+                };
 
-                Storyboard.SetTarget(OpacityAnimation2, newStack);
-                Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
-                storyboard2.Children.Add(OpacityAnimation2);
+                Storyboard.SetTarget(opacityAnimation2, newStack);
+                Storyboard.SetTargetProperty(opacityAnimation2, "Opacity");
+                storyboard2.Children.Add(opacityAnimation2);
 
                 storyboard2.Begin();
             }
