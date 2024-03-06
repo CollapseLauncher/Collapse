@@ -524,8 +524,8 @@ namespace CollapseLauncher.Dialogs
 
         private static bool ValidKeyCombination(KbShortcut shortcut)
         {
-            return !KbShortcutList.ContainsValue(shortcut)
-                   && !ForbiddenShortcutList.Contains(shortcut);
+            return KbShortcutList.Any(x => x.Value.Key == shortcut.Key && x.Value.Modifier == shortcut.Modifier)
+                   && !ForbiddenShortcutList.Any(x => x.Key == shortcut.Key && x.Modifier == shortcut.Modifier);
         }
         #endregion
 
@@ -676,23 +676,6 @@ namespace CollapseLauncher.Dialogs
             {
                 string[] split = code.Split(',');
                 return new KbShortcut { Modifier = (VirtualKeyModifiers)int.Parse(split[0]), Key = (VirtualKey)int.Parse(split[1]) };
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (obj is not KbShortcut other)
-                    return false;
-                return Modifier == other.Modifier && Key == other.Key;
-            }
-
-            public override int GetHashCode()
-            {
-                return (int)Modifier << 4 & (int)Key;
-            }
-
-            public override string ToString()
-            {
-                return GetFormattedModifier() + "," + GetKey();
             }
 
             public static KbShortcut FromOldKeyList(string[] strings)
