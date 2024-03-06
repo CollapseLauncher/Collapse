@@ -1168,7 +1168,11 @@
     "ChangeShortcut_Help1": "Un atajo está compuesto por 2 partes:",
     "ChangeShortcut_Help2": "・ Modificador - Shift, Control o Alt/Menu",
     "ChangeShortcut_Help3": "・ Clave - Alfabético (A a Z) o Tab",
-    "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado."
+    "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
