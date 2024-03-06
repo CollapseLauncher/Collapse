@@ -45,7 +45,7 @@ namespace CollapseLauncher
             _updateAssetIndex = new List<CacheAsset>();
 
             // Reset status and progress
-            ResetStatusAndProgress();
+            // ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
             _assetIndex = await Fetch(_token!.Token);
