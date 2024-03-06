@@ -608,6 +608,7 @@ namespace CollapseLauncher.Dialogs
             var missingKeys = DefaultShortcutList.Keys.Except(resultList.Keys);
             var deprecatedKeys = resultList.Keys.Except(DefaultShortcutList.Keys);
 
+            // ReSharper disable PossibleMultipleEnumeration
             saveAfterLoad = saveAfterLoad || missingKeys.Any() || deprecatedKeys.Any();
 
             foreach (string key in missingKeys)
