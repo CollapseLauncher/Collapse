@@ -385,7 +385,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 BGSelector.IsEnabled = isEnabled;
-                return IsEnabled;
+                return isEnabled;
             }
             set
             {
