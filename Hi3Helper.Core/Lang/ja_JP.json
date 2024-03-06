@@ -91,8 +91,8 @@
     "RegionLoadingTitle": "サーバー読込中",
     "RegionLoadingAPITitle1": "読込中",
     "RegionLoadingAPITitle2": "ランチャーAPI",
-    "RegionLoadingSubtitleTimeOut": "{0} サーバーの読込がタイムアウトしました。 (> {1}秒)。 再試行中...",
-    "RegionLoadingSubtitleTooLong": "再試行に時間がかかっています...インターネット接続の安定を確認してください！",
+    "RegionLoadingSubtitleTimeOut": "接続タイムアウト（{1}秒以上）。{0}サーバーを再読み込みします…",
+    "RegionLoadingSubtitleTooLong": "再読み込みに時間がかかっています…接続回線の安定度を確認してください！",
     "NavCtrlTitleSettings": "ランチャー設定",
     "NotifNeverAsk": "次回から表示しない",
     "NotifNoNewNotifs": "通知はありません",
@@ -268,11 +268,11 @@
     "Graphics_SpecPanel": "画質設定",
     "Graphics_Preset": "画質プリセット",
     "Graphics_Render": "レンダリング精度",
-    "Graphics_Shadow": "シャドウ",
-    "Graphics_Reflection": "反射効果",
+    "Graphics_Shadow": "シャドウクオリティ",
+    "Graphics_Reflection": "反射クオリティ",
     "Graphics_FX": "視覚効果",
-    "Graphics_FXPost": "後処理",
-    "Graphics_FXPhysics": "模擬",
+    "Graphics_FXPost": "後処理クオリティ",
+    "Graphics_FXPhysics": "物理シミュレーション",
     "Graphics_FXHDR": "HDR",
     "Graphics_FXHQ": "高品質",
     "Graphics_FXAA": "AntiAliasing",
@@ -284,12 +284,23 @@
     "Graphics_APHO2AO": "アンビエントオクルージョン",
     "Graphics_APHO2LOD": "シーン詳細",
 
+    "Graphics_ParticleQuality": "エフェクトクオリティ",
+    "Graphics_LightingQuality": "ライティングクオリティ",
+    "Graphics_PostFXQuality": "後処理クオリティ",
+    "Graphics_AAMode": "アンチエイリアス",
+    "Graphics_CharacterQuality": "キャラクオリティ",
+    "Graphics_WeatherQuality": "天気クオリティ",
+
+    "Graphics_Legacy_Title": "従来の設定",
+    "Graphics_Legacy_Subtitle": "これらの設定項目はゲーム内に存在しないため、変更しても効果がない可能性があります。",
+
     "SpecDisabled": "OFF",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
     "SpecVeryHigh": "最高",
     "SpecMaximum": "極めて高い",
+    "SpecUltra": "最高",
 
     "Audio_Title": "音量設定",
     "Audio_Master": "メイン音量",
@@ -309,7 +320,7 @@
     "SettingsRegExported": "レジストリをエクスポートしました！",
     "SettingsRegExportTitle": "Collapse レジストリファイルを保存します...",
     "SettingsRegImported": "レジストリをインポートしました！ (ランチャーを再起動して変更を適用します。)",
-    "SettingsRegImportTitle": "Collapse レジストリ ファイルを選択します...",
+    "SettingsRegImportTitle": "Collapse レジストリファイルを選択します...",
     "SettingsRegErr1": "パスが選択されていません！",
     "SettingsRegErr2": "Collapse レジストリのヘッダーが正しくありません！",
 
@@ -416,8 +427,8 @@
     "HelpLocalizeBtn": "翻訳にご協力ください！",
 
     "About": "Collapse Launcherについて",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "© 2022-2024",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
 
@@ -450,7 +461,13 @@
     "AppBehavior_PostGameLaunch_Nothing": "そのまま",
     "AppBehavior_MinimizeToTray": "最小化でタスクトレイに移動",
     "AppBehavior_LaunchOnStartup": "Windows起動時にCollapseを自動で起動",
-    "AppBehavior_StartupToTray": "自動で起動した場合はウィンドウを最小化する"
+    "AppBehavior_StartupToTray": "自動で起動した場合はウィンドウを最小化する",
+
+    "Waifu2X_Toggle": "Waifu2Xを使う [実験的機能]",
+    "Waifu2X_Help": "背景画像の拡大処理にWaifu2Xを使用します。\n有効にすると画質が大幅に向上しますが、画像の初回読み込みにかかる時間が少し長くなります。",
+    "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",
+    "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
+    "Waifu2X_Error_Output": "エラー：Waifu2Xのチェック通過に失敗したため、出力が空になりました。"
   },
 
   "_Misc": {
@@ -620,9 +637,9 @@
     "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
     "MigrateExistingInstallChoiceSubtitle2": "ゲームデータを別のディレクトリに移動するか、現在のディレクトリを既定のディレクトリとして使用するかを選択できます。{0}を使用してゲームを確実に起動できるように、現在のディレクトリを既定のディレクトリとして使用することをお勧めします。",
     "ExistingInstallTitle": "既存のインストールが検出されました！",
-    "ExistingInstallSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後でも公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
+    "ExistingInstallSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後も公式ランチャーを使ってゲームを起動できます。\r\n\r\n続行しますか？",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcherの既存のインストールが検出されました！",
-    "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後でもBetterHi3Launcherを使用してゲームを開始できます。\r\n\r\n続行しますか？",
+    "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\n紐づけした後もBetterHi3Launcherを使用してゲームを起動できます。\r\n\r\n続行しますか？",
     "ExistingInstallSteamTitle": "Steam版の既存のインストールが検出されました！",
     "ExistingInstallSteamSubtitle": "ゲームは既にSteamの次の場所へインストールされています:\r\n\r\n{0}\r\n\r\nこのバージョンをSteam版ではないPC版に変換しますか？\n注:変換するとSteamアカウントでログインできなくなります。miHoYo/HoYoverse通行証ログインのみ選択できます。\r\n\r\n続行しますか？",
     "SteamConvertNeedMigrateTitle": "フォルダーを移行する必要があります",
@@ -643,8 +660,8 @@
     "InsufficientDiskSubtitle": "空き容量不足のため、{2} ドライブにこのゲームをインストールできません！\r\n\r\n利用可能なスペース: {0}\r\n必要なスペース: {1}.\r\n\r\nインストールする前に十分なディスク容量があることを確認してください。",
     "RelocateFolderTitle": "データフォルダーの場所を変更する",
     "RelocateFolderSubtitle": "現在、このフォルダーをランチャーのアプリデータフォルダーに使用しています:\n\n {0}\n\n場所を変更しますか？",
-    "UninstallGameTitle": "ゲームを削除中: {0}",
-    "UninstallGameSubtitle": "次のゲームを削除しようとしています。:\r\n\r\n{0}\r\n\r\n続行しますか？",
+    "UninstallGameTitle": "ゲームのアンインストール: {0}",
+    "UninstallGameSubtitle": "このゲームをアンインストールします:\r\n\r\n{0}\r\n\r\n続行しますか？",
     "MigrationTitle": "ターゲットフォルダーの指定",
     "MigrationSubtitle": "移動する前にゲームの場所を指定しますか？",
     "NeedInstallMediaPackTitle": "Media Feature Packが見つかりません！",
@@ -1177,7 +1194,7 @@
 
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Collapse", "Launcherへ" ],
+      "Upper": [ "Collapse Launcher", "へ" ],
       "Lower": [ "ようこそ！", "​" ]
     },
     "SetupNextButton": "クリックして次へ進む",
