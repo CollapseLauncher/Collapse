@@ -385,29 +385,29 @@ namespace CollapseLauncher.Dialogs
                 MaxWidth = 600
             };
 
-            StackPanel HelpStack = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 360 };
-            Flyout HelpFlyout = new Flyout
+            StackPanel helpStack = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 360 };
+            Flyout helpFlyout = new Flyout
                                 {
-                                    Content = HelpStack,
+                                    Content = helpStack,
                                     Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop
                                 };
-            HelpStack.Children.Add(new TextBlock()
+            helpStack.Children.Add(new TextBlock()
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help1,
                 Margin = new Thickness(0, 2, 0, 4),
                 TextWrapping = TextWrapping.Wrap
             });
-            HelpStack.Children.Add(new TextBlock
+            helpStack.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help2,
                 Margin = new Thickness(5, 4, 0, 4)
             });
-            HelpStack.Children.Add(new TextBlock
+            helpStack.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help3,
                 Margin = new Thickness(5, 4, 0, 8)
             });
-            HelpStack.Children.Add(new TextBlock
+            helpStack.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help4,
                 Margin = new Thickness(0, 4, 0, 0),
@@ -428,7 +428,7 @@ namespace CollapseLauncher.Dialogs
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
-            Button HelpButton = new Button
+            Button helpButton = new Button
             {
                 Content = new TextBlock
                           {
@@ -436,11 +436,11 @@ namespace CollapseLauncher.Dialogs
                               FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
                               FontSize   = 10
                           },
-                Flyout = HelpFlyout,
+                Flyout = helpFlyout,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(8, -2, 0, 2)
             };
-            introPanel.Children.Add(HelpButton);
+            introPanel.Children.Add(helpButton);
             mainSwitchKeyContent.Children.Add(introPanel);
 
             mainSwitchKeyContent.Children.Add(new TextBlock
