@@ -524,7 +524,7 @@ namespace CollapseLauncher.Dialogs
 
         private static bool ValidKeyCombination(KbShortcut shortcut)
         {
-            return KbShortcutList.Any(x => x.Value.Key == shortcut.Key && x.Value.Modifier == shortcut.Modifier)
+            return !KbShortcutList.Any(x => x.Value.Key == shortcut.Key && x.Value.Modifier == shortcut.Modifier)
                    && !ForbiddenShortcutList.Any(x => x.Key == shortcut.Key && x.Modifier == shortcut.Modifier);
         }
         #endregion
