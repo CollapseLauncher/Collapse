@@ -1448,9 +1448,8 @@ namespace CollapseLauncher
 
                 int numIndex = 0;
                 VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
-                foreach (StackPanel gameTitlePanel in ComboBoxGameCategory.Items.OfType<StackPanel>())
+                for (; numIndex <= ConfigV2.GameCount; numIndex++)
                 {
-                    string game = GetComboBoxGameRegionValue(gameTitlePanel);
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
                         Modifiers = keyModifier,
@@ -1461,7 +1460,7 @@ namespace CollapseLauncher
 
                     KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
                     {
-                        Key = VirtualKey.NumberPad1 + numIndex++,
+                        Key = VirtualKey.NumberPad1 + numIndex,
                     };
                     keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
@@ -1469,7 +1468,7 @@ namespace CollapseLauncher
 
                 numIndex = 0;
                 keyModifier = KbShortcutList["RegionSelection"].Modifier;
-                while (numIndex < 6)
+                while (numIndex < ConfigV2.MaxRegionCount)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {

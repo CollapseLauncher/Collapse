@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.CustomControls;
 using CommunityToolkit.WinUI;
+using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -660,8 +661,8 @@ namespace CollapseLauncher.Dialogs
             {
                 return dictionaryKey switch
                 {
-                    "GameSelection" => "1-3",
-                    "RegionSelection" => "1-6",
+                    "GameSelection" => $"1 - {ConfigV2Store.ConfigV2.GameCount}",
+                    "RegionSelection" => $"1 - {ConfigV2Store.ConfigV2.MaxRegionCount}",
                     _ => Key.ToString()
                 };
             }
