@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.CustomControls;
 using CommunityToolkit.WinUI;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
@@ -15,6 +15,8 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable PossibleNullReferenceException
+// ReSharper disable AssignNullToNotNullAttribute
 
 namespace CollapseLauncher.Dialogs
 {
@@ -25,7 +27,7 @@ namespace CollapseLauncher.Dialogs
         private static int _pageNum;
         private static int _oldSender;
         private static int _buttonWidth;
-        public static bool CannotUseKbShortcuts { get; set; } = false;
+        public static bool CannotUseKbShortcuts { get; set; }
         #endregion
 
         #region Show Shortcuts ContentDialog
@@ -39,54 +41,78 @@ namespace CollapseLauncher.Dialogs
 
             int swapButtonWidth = Lang._KbShortcuts.Switch_SwapBtn.Length * 5 + 2 * 50;
 
-            StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(0, 0, 0, 0) };
+            StackPanel mainStack = new StackPanel
+                                   { 
+                                       Orientation = Orientation.Vertical,
+                                       Margin = new Thickness(0, 0, 0, 0)
+                                   };
 
-            StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel mainStackContent = new StackPanel { Orientation = Orientation.Vertical };
 
             _oldSender = page;
 
             // General shortcuts
-            StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            genStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.General_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
-            genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            genStack.Children.Add(GenerateShortcutBlock("KbShortcutsMenu", KbShortcutList["KbShortcutsMenu"], Lang._KbShortcuts.General_OpenMenu, Lang._KbShortcuts.General_OpenMenu_Desc));
-            genStack.Children.Add(GenerateShortcutBlock("HomePage", KbShortcutList["HomePage"], Lang._KbShortcuts.General_GoHome));
-            genStack.Children.Add(GenerateShortcutBlock("SettingsPage", KbShortcutList["SettingsPage"], Lang._KbShortcuts.General_GoSettings));
+            StackPanel genStack = new StackPanel { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            
+            genStack.Children.Add(new TextBlock
+                                  {
+                                      Text     = Lang._KbShortcuts.General_Title,
+                                      FontSize = 16,
+                                      
+                                      FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2)
+                                  });
+            genStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 8, 0, 8) });
+            genStack.Children.Add(GenerateShortcutBlock("KbShortcutsMenu",   KbShortcutList["KbShortcutsMenu"],   Lang._KbShortcuts.General_OpenMenu, Lang._KbShortcuts.General_OpenMenu_Desc));
+            genStack.Children.Add(GenerateShortcutBlock("HomePage",          KbShortcutList["HomePage"],          Lang._KbShortcuts.General_GoHome));
+            genStack.Children.Add(GenerateShortcutBlock("SettingsPage",      KbShortcutList["SettingsPage"],      Lang._KbShortcuts.General_GoSettings));
             genStack.Children.Add(GenerateShortcutBlock("NotificationPanel", KbShortcutList["NotificationPanel"], Lang._KbShortcuts.General_OpenNotifTray));
-            genStack.Children.Add(GenerateShortcutBlock("ReloadRegion", KbShortcutList["ReloadRegion"], Lang._KbShortcuts.General_ReloadRegion, Lang._KbShortcuts.General_ReloadRegion_Desc));
-            genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            genStack.Children.Add(GenerateShortcutBlock("ReloadRegion",      KbShortcutList["ReloadRegion"],      Lang._KbShortcuts.General_ReloadRegion, Lang._KbShortcuts.General_ReloadRegion_Desc));
+            genStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 10, 0, 8) });
             _pageNum++;
 
             // Region/Game Shortcuts
-            StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            Grid changeTitleGrid = new Grid()
+            StackPanel changeStack = new StackPanel { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            Grid changeTitleGrid = new Grid
             {
                 Margin = new Thickness(0, 0, 0, 0),
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 ColumnSpacing = 5,
-                ColumnDefinitions = { new ColumnDefinition() { Width = GridLength.Auto }, new ColumnDefinition() }
+                ColumnDefinitions = { new ColumnDefinition { Width = GridLength.Auto }, new ColumnDefinition() }
             };
-            StackPanel changeTitleStack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel changeTitleStack = new StackPanel { Orientation = Orientation.Vertical };
             changeTitleGrid.Children.Add(changeTitleStack);
             Grid.SetColumn(changeTitleStack, 0);
-            changeTitleStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
-            changeTitleStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Subtitle, FontSize = 11.5, TextWrapping = TextWrapping.Wrap, MaxWidth = _buttonWidth - swapButtonWidth });
+            changeTitleStack.Children.Add(new TextBlock
+                                          {
+                                              Text       = Lang._KbShortcuts.Switch_Title, FontSize = 16,
+                                              FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2)
+                                          });
+            changeTitleStack.Children.Add(new TextBlock
+                                          {
+                                              Text         = Lang._KbShortcuts.Switch_Subtitle, FontSize = 11.5,
+                                              TextWrapping = TextWrapping.Wrap,
+                                              MaxWidth     = _buttonWidth - swapButtonWidth
+                                          });
 
             string gameMod = KbShortcutList["GameSelection"].GetFormattedModifier();
             string regionMod = KbShortcutList["RegionSelection"].GetFormattedModifier();
 
-            StackPanel textBlock = new StackPanel() { Orientation = Orientation.Horizontal };
-            textBlock.Children.Add(new TextBlock()
+            StackPanel textBlock = new StackPanel { Orientation = Orientation.Horizontal };
+            textBlock.Children.Add(new TextBlock
             {
                 Text = "",
                 FontSize = 12,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
             });
-            textBlock.Children.Add(new TextBlock() { Text = string.Format(Lang._KbShortcuts.Switch_SwapBtn, gameMod, regionMod), Margin = new Thickness(8, 0, 0, 0) });
+            textBlock.Children.Add(new TextBlock
+                                   {
+                                       Text   = string.Format(Lang._KbShortcuts.Switch_SwapBtn, gameMod, regionMod),
+                                       Margin = new Thickness(8, 0, 0, 0)
+                                   });
 
-            Button modifierSwap = new Button()
+            Button modifierSwap = new Button
             {
                 Content = textBlock,
                 CornerRadius = new CornerRadius(5),
@@ -99,47 +125,51 @@ namespace CollapseLauncher.Dialogs
             Grid.SetColumn(modifierSwap, 1);
             changeStack.Children.Add(changeTitleGrid);
 
-            changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            changeStack.Children.Add(GenerateShortcutBlock("GameSelection", KbShortcutList["GameSelection"], Lang._KbShortcuts.Switch_ChangeGame, string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc, gameMod), false));
+            changeStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 8, 0, 8) });
+            changeStack.Children.Add(GenerateShortcutBlock("GameSelection",   KbShortcutList["GameSelection"],   Lang._KbShortcuts.Switch_ChangeGame,   string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc,   gameMod),   false));
             changeStack.Children.Add(GenerateShortcutBlock("RegionSelection", KbShortcutList["RegionSelection"], Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false));
-            changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            changeStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 10, 0, 8) });
             _pageNum++;
 
             // Game folder
-            StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            StackPanel gameFolderStack = new StackPanel { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             gameFolderStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameFolder_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
-            gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            gameFolderStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 8, 0, 8) });
             gameFolderStack.Children.Add(GenerateShortcutBlock("ScreenshotFolder", KbShortcutList["ScreenshotFolder"], Lang._KbShortcuts.GameFolder_ScreenshotFolder));
-            gameFolderStack.Children.Add(GenerateShortcutBlock("GameFolder", KbShortcutList["GameFolder"], Lang._KbShortcuts.GameFolder_MainFolder));
-            gameFolderStack.Children.Add(GenerateShortcutBlock("CacheFolder", KbShortcutList["CacheFolder"], Lang._KbShortcuts.GameFolder_CacheFolder));
-            gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            gameFolderStack.Children.Add(GenerateShortcutBlock("GameFolder",       KbShortcutList["GameFolder"],       Lang._KbShortcuts.GameFolder_MainFolder));
+            gameFolderStack.Children.Add(GenerateShortcutBlock("CacheFolder",      KbShortcutList["CacheFolder"],      Lang._KbShortcuts.GameFolder_CacheFolder));
+            gameFolderStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 10, 0, 8) });
             _pageNum++;
 
             // Game management
-            StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            StackPanel gameManageStack = new StackPanel { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Subtitle, FontSize = 11.5, TextWrapping = TextWrapping.Wrap });
-            gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            gameManageStack.Children.Add(GenerateShortcutBlock("ForceCloseGame", KbShortcutList["ForceCloseGame"], Lang._KbShortcuts.GameManagement_ForceCloseGame, Lang._KbShortcuts.GameManagement_ForceCloseGame_Desc));
-            gameManageStack.Children.Add(GenerateShortcutBlock("RepairPage", KbShortcutList["RepairPage"], Lang._KbShortcuts.GameManagement_GoRepair));
+            gameManageStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 8, 0, 8) });
+            gameManageStack.Children.Add(GenerateShortcutBlock("ForceCloseGame",   KbShortcutList["ForceCloseGame"],   Lang._KbShortcuts.GameManagement_ForceCloseGame, Lang._KbShortcuts.GameManagement_ForceCloseGame_Desc));
+            gameManageStack.Children.Add(GenerateShortcutBlock("RepairPage",       KbShortcutList["RepairPage"],       Lang._KbShortcuts.GameManagement_GoRepair));
             gameManageStack.Children.Add(GenerateShortcutBlock("GameSettingsPage", KbShortcutList["GameSettingsPage"], Lang._KbShortcuts.GameManagement_GoSettings));
-            gameManageStack.Children.Add(GenerateShortcutBlock("CachesPage", KbShortcutList["CachesPage"], Lang._KbShortcuts.GameManagement_GoCaches));
-            gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            gameManageStack.Children.Add(GenerateShortcutBlock("CachesPage",       KbShortcutList["CachesPage"],       Lang._KbShortcuts.GameManagement_GoCaches));
+            gameManageStack.Children.Add(new MenuFlyoutSeparator { Margin = new Thickness(0, 10, 0, 8) });
             _pageNum = 0;
 
-            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 0) };
+            StackPanel buttonStack = new StackPanel
+                                     {
+                                         HorizontalAlignment = HorizontalAlignment.Center,
+                                         Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 0)
+                                     };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = Lang._KbShortcuts.GeneralTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
-            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = Lang._KbShortcuts.SwitchTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
-            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = Lang._KbShortcuts.GameFolderTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = Lang._KbShortcuts.GameManagementTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button genButton         = new Button() { DataContext = 0, Content = new TextBlock { Text = Lang._KbShortcuts.GeneralTab, Margin        = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button changeButton      = new Button() { DataContext = 1, Content = new TextBlock { Text = Lang._KbShortcuts.SwitchTab, Margin         = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button gameFolderButton  = new Button() { DataContext = 2, Content = new TextBlock { Text = Lang._KbShortcuts.GameFolderTab, Margin     = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock { Text = Lang._KbShortcuts.GameManagementTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
 
-            List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
-            List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
+            List<object> stacks = new() { genStack, changeStack, gameFolderStack, gameManageStack };
+            List<object> buttons = new() { genButton, changeButton, gameFolderButton, gameManagerButton };
 
             foreach (Button button in buttons)
             {
-                button.Click += (o, e) => { ChangeMenuVisibility((int)((Button)o).DataContext, stacks, buttons); };
+                button.Click += (o, _) => { ChangeMenuVisibility((int)((Button)o).DataContext, stacks, buttons); };
                 button.Margin = new Thickness(3, 0, 3, 0);
                 button.CornerRadius = new CornerRadius(15);
                 buttonStack.Children.Add(button);
@@ -171,7 +201,7 @@ namespace CollapseLauncher.Dialogs
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 ColumnSpacing = 5,
-                ColumnDefinitions = { new ColumnDefinition() { Width = GridLength.Auto }, new ColumnDefinition() }
+                ColumnDefinitions = { new ColumnDefinition { Width = GridLength.Auto }, new ColumnDefinition() }
             };
 
             StackPanel shortcutDesc = new StackPanel()
@@ -186,12 +216,24 @@ namespace CollapseLauncher.Dialogs
 
             if (example != null)
             {
-                shortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(5, 2, 0, 1), TextWrapping = TextWrapping.Wrap, MaxWidth = maxLen });
-                shortcutDesc.Children.Add(new TextBlock() { Text = example, FontSize = 11, Margin = new Thickness(5, 1, 0, 2), TextWrapping = TextWrapping.Wrap, MaxWidth = maxLen });
+                shortcutDesc.Children.Add(new TextBlock
+                                          {
+                                              Text = description, FontSize = 14, Margin = new Thickness(5, 2, 0, 1),
+                                              TextWrapping = TextWrapping.Wrap, MaxWidth = maxLen
+                                          });
+                shortcutDesc.Children.Add(new TextBlock
+                                          {
+                                              Text         = example, FontSize = 11, Margin = new Thickness(5, 1, 0, 2),
+                                              TextWrapping = TextWrapping.Wrap, MaxWidth = maxLen
+                                          });
             }
             else
             {
-                shortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(5, 1, 5, 1), TextWrapping = TextWrapping.Wrap, MaxWidth = maxLen });
+                shortcutDesc.Children.Add(new TextBlock
+                                          {
+                                              Text = description, FontSize = 14, Margin = new Thickness(5, 1, 5, 1),
+                                              TextWrapping = TextWrapping.Wrap, MaxWidth = maxLen
+                                          });
             }
 
             shortcutGrid.Children.Add(shortcutDesc);
@@ -206,11 +248,19 @@ namespace CollapseLauncher.Dialogs
 
             if (enableSwapButton)
             {
-                Button shortcutSwap = new Button()
+                Button shortcutSwap = new Button
                 {
-                    Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
+                    Content = new TextBlock
+                              {
+                                  Text       = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0),
+                                  FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily
+                              },
                     CornerRadius = new CornerRadius(5),
-                    DataContext = new KbShortcutChangeData { Description = description, PageNumber = _pageNum, KeyName = keyName, Shortcut = shortcut },
+                    DataContext = new KbShortcutChangeData
+                                  {
+                                      Description = description, PageNumber = _pageNum, KeyName = keyName,
+                                      Shortcut    = shortcut
+                                  },
                     Margin = new Thickness(0, 0, 5, 0)
                 };
                 shortcutButtons.Children.Add(shortcutSwap);
@@ -272,7 +322,7 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                (buttons[_oldSender] as Button).Style = Application.Current.Resources["DefaultButtonStyle"] as Style; ;
+                (buttons[_oldSender] as Button).Style = Application.Current.Resources["DefaultButtonStyle"] as Style;
                 StackPanel oldStack = stacks[_oldSender] as StackPanel;
                 (buttons[sender] as Button).Style = Application.Current.Resources["AccentButtonStyle"] as Style;
                 StackPanel newStack = stacks[sender] as StackPanel;
@@ -331,33 +381,42 @@ namespace CollapseLauncher.Dialogs
                 MaxWidth = 600
             };
 
-            StackPanel HelpStack = new StackPanel() { Orientation = Orientation.Vertical, MaxWidth = 360 };
-            Flyout HelpFlyout = new Flyout() { Content = HelpStack, Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop };
+            StackPanel HelpStack = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 360 };
+            Flyout HelpFlyout = new Flyout
+                                {
+                                    Content = HelpStack,
+                                    Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop
+                                };
             HelpStack.Children.Add(new TextBlock()
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help1,
                 Margin = new Thickness(0, 2, 0, 4),
                 TextWrapping = TextWrapping.Wrap
             });
-            HelpStack.Children.Add(new TextBlock()
+            HelpStack.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help2,
                 Margin = new Thickness(5, 4, 0, 4)
             });
-            HelpStack.Children.Add(new TextBlock()
+            HelpStack.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help3,
                 Margin = new Thickness(5, 4, 0, 8)
             });
-            HelpStack.Children.Add(new TextBlock()
+            HelpStack.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Help4,
                 Margin = new Thickness(0, 4, 0, 0),
                 TextWrapping = TextWrapping.Wrap
             });
 
-            StackPanel introPanel = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, -7, 0, 0) };
-            introPanel.Children.Add(new TextBlock()
+            StackPanel introPanel = new StackPanel
+                                    {
+                                        Orientation         = Orientation.Horizontal,
+                                        HorizontalAlignment = HorizontalAlignment.Center,
+                                        Margin              = new Thickness(0, -7, 0, 0)
+                                    };
+            introPanel.Children.Add(new TextBlock
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Text,
                 Margin = new Thickness(0, 0, 0, 2),
@@ -365,9 +424,14 @@ namespace CollapseLauncher.Dialogs
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
-            Button HelpButton = new Button()
+            Button HelpButton = new Button
             {
-                Content = new TextBlock() { Text = "info", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, FontSize = 10 },
+                Content = new TextBlock
+                          {
+                              Text       = "info",
+                              FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
+                              FontSize   = 10
+                          },
                 Flyout = HelpFlyout,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(8, -2, 0, 2)
@@ -375,7 +439,7 @@ namespace CollapseLauncher.Dialogs
             introPanel.Children.Add(HelpButton);
             mainSwitchKeyContent.Children.Add(introPanel);
 
-            mainSwitchKeyContent.Children.Add(new TextBlock()
+            mainSwitchKeyContent.Children.Add(new TextBlock
             {
                 Text = data.Description,
                 Margin = new Thickness(5, 6, 0, 10),
@@ -384,7 +448,7 @@ namespace CollapseLauncher.Dialogs
                 FontWeight = FontWeights.Bold
             });
 
-            StackPanel keysPanel = new StackPanel()
+            StackPanel keysPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -393,12 +457,30 @@ namespace CollapseLauncher.Dialogs
             };
 
             keysPanel.Children.Add(CreateKeyBoardButton(data.Shortcut.GetFormattedModifier()));
-            keysPanel.Children.Add(new TextBlock() { Text = "+", FontSize = 20, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center });
+            keysPanel.Children.Add(new TextBlock
+                                   {
+                                       Text                = "+", FontSize = 20, FontWeight = FontWeights.Bold,
+                                       HorizontalAlignment = HorizontalAlignment.Center,
+                                       VerticalAlignment   = VerticalAlignment.Center
+                                   });
+            
             keysPanel.Children.Add(CreateKeyBoardButton(data.Shortcut.GetKey(data.KeyName)));
-            keysPanel.Children.Add(new FontIcon() { Glyph = "arrow-right", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(10, 0, 10, 0) });
+            keysPanel.Children.Add(new FontIcon()
+                                   {
+                                       Glyph      = "arrow-right", FontSize = 15,
+                                       FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
+                                       Margin     = new Thickness(10, 0, 10, 0)
+                                   });
+            
             Border newKey1 = CreateKeyBoardButton("?");
             keysPanel.Children.Add(newKey1);
-            keysPanel.Children.Add(new TextBlock() { Text = "+", FontSize = 20, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center });
+            keysPanel.Children.Add(new TextBlock()
+                                   {
+                                       Text                = "+", FontSize = 20, FontWeight = FontWeights.Bold,
+                                       HorizontalAlignment = HorizontalAlignment.Center,
+                                       VerticalAlignment   = VerticalAlignment.Center
+                                   });
+            
             Border newKey2 = CreateKeyBoardButton("?");
             keysPanel.Children.Add(newKey2);
             mainSwitchKeyContent.Children.Add(keysPanel);
@@ -421,7 +503,7 @@ namespace CollapseLauncher.Dialogs
             TextBlock text2 = newKey2.Child as TextBlock;
             KbShortcut newShortcut = new KbShortcut();
 
-            result.KeyDown += (e, s) =>
+            result.KeyDown += (_, s) =>
             {
                 VirtualKey inputKey = s.Key;
 
@@ -442,11 +524,11 @@ namespace CollapseLauncher.Dialogs
                     default:
                         keyCount = 0;
                         break;
-                };
+                }
                 text1.Text = keyCount != 0 ? newShortcut.GetFormattedModifier() : "?";
             };
 
-            result.KeyUp += (e, s) =>
+            result.KeyUp += (_, s) =>
             {
                 int keyValue = (int)s.Key;
 
@@ -509,7 +591,8 @@ namespace CollapseLauncher.Dialogs
         // Swaps the modifiers for the shortcuts related to changing game/region.
         private static void SwapModifiers()
         {
-            (KbShortcutList["GameSelection"], KbShortcutList["RegionSelection"]) = (KbShortcutList["RegionSelection"], KbShortcutList["GameSelection"]);
+            (KbShortcutList["GameSelection"], KbShortcutList["RegionSelection"]) = 
+                (KbShortcutList["RegionSelection"], KbShortcutList["GameSelection"]);
 
             SaveKbShortcuts();
             KeyboardShortcutsEvent(null, 1);
@@ -530,7 +613,7 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Default/Forbidden Keyboard Shortcuts
-        public static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new Dictionary<string, KbShortcut>()
+        public static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new()
         {
             { "GameSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.None } },
             { "RegionSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Shift, Key = VirtualKey.None } },
@@ -562,7 +645,7 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Custom Keyboard Shortcuts
-        public static Dictionary<string, KbShortcut> KbShortcutList = new Dictionary<string, KbShortcut>();
+        public static Dictionary<string, KbShortcut> KbShortcutList = new();
 
         public static void LoadKbShortcuts()
         {
@@ -570,7 +653,7 @@ namespace CollapseLauncher.Dialogs
             string keyListStr = GetAppConfigValue("KbShortcutList").ToString();
             LogWriteLine("[KeyboardShortcuts] The following configuration is gonna be loaded from the .ini file:\n\r\t" + keyListStr);
 
-            Dictionary<string, KbShortcut> resultList = new Dictionary<string, KbShortcut>();
+            Dictionary<string, KbShortcut> resultList = new();
 
             if (keyListStr == null)
             {
