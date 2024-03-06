@@ -697,6 +697,11 @@ namespace CollapseLauncher.Dialogs
                 VirtualKey key = (VirtualKey)Enum.Parse(typeof(VirtualKey), strings[1]);
                 return new KbShortcut { Modifier = mod, Key = key };
             }
+
+            public override string ToString()
+            {
+                return GetFormattedModifier() + "," + GetKey();
+            }
         }
         #endregion
 
