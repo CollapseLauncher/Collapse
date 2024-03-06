@@ -339,8 +339,8 @@ namespace CollapseLauncher.Dialogs
                 Storyboard storyboard = new Storyboard();
                 DoubleAnimation opacityAnimation = new DoubleAnimation()
                 {
-                    From = 0,
-                    To = 1,
+                    From = 1,
+                    To = 0,
                     Duration = new Duration(TimeSpan.FromSeconds(0.2))
                 };
 
