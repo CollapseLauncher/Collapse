@@ -1166,9 +1166,13 @@
     "ChangeShortcut_Title": "修改快捷键",
     "ChangeShortcut_Text": "输入新的快捷键！",
     "ChangeShortcut_Help1": "快捷键由两部分组成：",
-    "ChangeShortcut_Help2": "・ 修饰键 - Ctrl 或 Alt/Menu",
+    "ChangeShortcut_Help2": "・ 修饰键 - Shift、Ctrl 或 Alt/Menu",
     "ChangeShortcut_Help3": "・ 按键 - 字母（A - Z）或 Tab",
-    "ChangeShortcut_Help4": "您可以任意选择由每个类别中的一个值组成的组合，除非其被系统保留或已被使用。"
+    "ChangeShortcut_Help4": "您可以任意选择由每个类别中的一个值组成的组合，除非其被系统保留或已被使用。",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
