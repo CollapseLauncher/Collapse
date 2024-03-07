@@ -127,6 +127,7 @@ namespace Hi3Helper
                 public string ShortcutCreationSuccessSubtitle2 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle2;
                 public string ShortcutCreationSuccessSubtitle3 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle3;
                 public string ShortcutCreationSuccessSubtitle4 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle4;
+                public string ShortcutCreationSuccessSubtitle5 { get; set; } = LangFallback?._Dialogs.ShortcutCreationSuccessSubtitle5;
                 public string SteamShortcutCreationConfirmTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmTitle;
                 public string SteamShortcutCreationConfirmSubtitle1 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmSubtitle1;
                 public string SteamShortcutCreationConfirmSubtitle2 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationConfirmSubtitle2;
@@ -138,6 +139,7 @@ namespace Hi3Helper
                 public string SteamShortcutCreationSuccessSubtitle4 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle4;
                 public string SteamShortcutCreationSuccessSubtitle5 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle5;
                 public string SteamShortcutCreationSuccessSubtitle6 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle6;
+                public string SteamShortcutCreationSuccessSubtitle7 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle7;
                 public string SteamShortcutCreationFailureTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureTitle;
                 public string SteamShortcutCreationFailureSubtitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureSubtitle;
                 public string OperationErrorDiskSpaceInsufficientTitle { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientTitle;

@@ -741,6 +741,7 @@
     "ShortcutCreationSuccessSubtitle2": "Location: ",
     "ShortcutCreationSuccessSubtitle3": "Notes:",
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
     "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
@@ -753,6 +754,7 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."

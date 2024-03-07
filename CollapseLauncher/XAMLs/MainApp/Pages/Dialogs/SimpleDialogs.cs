@@ -776,7 +776,8 @@ namespace CollapseLauncher.Dialogs
             if (play)
             {
                 panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextAlignment = TextAlignment.Justify, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
 
             return await SpawnDialog(
@@ -823,10 +824,11 @@ namespace CollapseLauncher.Dialogs
             if (play)
             {
                 panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
             }
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Justify, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Justify, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Justify, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
 
             return await SpawnDialog(
                 Lang._Dialogs.SteamShortcutCreationSuccessTitle,

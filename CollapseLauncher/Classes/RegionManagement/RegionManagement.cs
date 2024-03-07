@@ -91,6 +91,8 @@ namespace CollapseLauncher
                 regionNewsProp = LastRegionNewsProp.Copy();
                 LastRegionNewsProp = null;
                 LastNavigationItem.Clear();
+                if (m_arguments.StartGame != null)
+                    m_arguments.StartGame.Play = false;
                 return false;
             }
 
@@ -98,6 +100,8 @@ namespace CollapseLauncher
             {
                 IsLoadRegionComplete = true;
                 InvokeLoadingRegionPopup(false);
+                if (m_arguments.StartGame != null)
+                    m_arguments.StartGame.Play = false;
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
                 return false;
             }

@@ -22,7 +22,8 @@ namespace CollapseLauncher.InstallManager.Honkai
         protected override DeltaPatchProperty _gameDeltaPatchProperty { get => _gameVersionManager.GetDeltaPatchInfo(); }
         #endregion
 
-        #region Private Properties
+        #region Properties
+        public bool StartAfterInstall { get; set; } = false;
         private HonkaiCache _gameCacheManager { get; set; }
         private HonkaiRepair _gameRepairManager { get; set; }
         #endregion
