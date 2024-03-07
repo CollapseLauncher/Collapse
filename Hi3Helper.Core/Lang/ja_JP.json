@@ -1168,7 +1168,11 @@
     "ChangeShortcut_Help1": "ショートカットは以下の2要素で構成されます。",
     "ChangeShortcut_Help2": "・ 修飾キー - Shift、Control、Alt/Menu",
     "ChangeShortcut_Help3": "・ キー - アルファベット（AからZ）またはTab",
-    "ChangeShortcut_Help4": "システムに割り当てられているか、すでに使用されている場合を除いて、各カテゴリから キーを1つずつ選んで任意の組み合わせを選択できます。"
+    "ChangeShortcut_Help4": "システムに割り当てられているか、すでに使用されている場合を除いて、各カテゴリからキーを1つずつ選んで任意の組み合わせを選択できます。",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
