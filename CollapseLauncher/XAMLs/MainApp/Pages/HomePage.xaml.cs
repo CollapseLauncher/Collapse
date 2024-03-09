@@ -1263,10 +1263,10 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    proc.StartInfo.UseShellExecute  = false;
                     proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
-                    proc.StartInfo.Verb             = "runas";
                 }
+                proc.StartInfo.UseShellExecute  = false;
+                proc.StartInfo.Verb             = "runas";
                 proc.Start();
 
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
