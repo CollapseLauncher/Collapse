@@ -1224,8 +1224,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Start/Stop Method
-
-        CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
+        CancellationTokenSource WatchOutputLog = new();
         CancellationTokenSource ResizableWindowHookToken;
         private async void StartGame(object sender, RoutedEventArgs e)
         {
@@ -1233,13 +1232,18 @@ namespace CollapseLauncher.Pages
             IGameSettingsUniversal _Settings   = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
             PresetConfigV2         _gamePreset = CurrentGameProperty!._GameVersion!.GamePreset!;
 
+            var isGenshin  = CurrentGameProperty!._GameVersion.GameType == GameType.Genshin;
+            var giForceHDR = false;
+            
             try
             {
-                bool IsContinue = await CheckMediaPackInstalled();
-                if (!IsContinue) return;
+                if (!await CheckMediaPackInstalled()) return;
 
-                if (CurrentGameProperty!._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
-                    GenshinHDREnforcer();
+                if (isGenshin)
+                {
+                    giForceHDR = GetAppConfigValue("ForceGIHDREnable").ToBool();
+                    if (giForceHDR) GenshinHDREnforcer();
+                }
 
                 if (_Settings!.SettingsCollapseMisc != null &&
                     _Settings.SettingsCollapseMisc.UseAdvancedGameSettings &&
@@ -1254,8 +1258,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
                     proc.StartInfo.WorkingDirectory = (CurrentGameProperty!._GameVersion.GamePreset!.ZoneName == "Bilibili" ||
-                       (CurrentGameProperty._GameVersion.GameType == GameType.Genshin 
-                        && GetAppConfigValue("ForceGIHDREnable").ToBool()) ? NormalizePath(GameDirPath) : 
+                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) : 
                             Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
                 }
                 else
@@ -1296,9 +1299,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 StartPlaytimeCounter(proc, _gamePreset);
-
-                if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
-                    CollapsePrioControl(proc);
+                if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
@@ -1313,6 +1314,8 @@ namespace CollapseLauncher.Pages
         // Use this method to do something when game is closed
         private async void GameRunningWatcher(IGameSettingsUniversal _settings)
         {
+            ArgumentNullException.ThrowIfNull(_settings);
+            
             await Task.Delay(5000);
             while (_cachedIsGameRunning)
             {
@@ -1323,31 +1326,34 @@ namespace CollapseLauncher.Pages
 
             if (ResizableWindowHookToken != null)
             {
-                ResizableWindowHookToken.Cancel();
+                await ResizableWindowHookToken.CancelAsync();
                 ResizableWindowHookToken.Dispose();
             }
 
             // Stopping GameLogWatcher
             if (GetAppConfigValue("EnableConsole").ToBool())
-                WatchOutputLog.Cancel();
+            {
+                if (WatchOutputLog == null) return;
+                await WatchOutputLog.CancelAsync();
+            }
 
             // Stop PreLaunchCommand process
-            if (_settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
+            if (_settings.SettingsCollapseMisc!.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
 
             // Window manager on game closed
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
             {
                 case "Minimize":
-                    (m_window as MainWindow).Restore();
+                    (m_window as MainWindow)?.Restore();
                     break;
                 case "ToTray":
-                    H.NotifyIcon.WindowExtensions.Show(m_window);
-                    (m_window as MainWindow).Restore();
+                    H.NotifyIcon.WindowExtensions.Show(m_window!);
+                    (m_window as MainWindow)?.Restore();
                     break;
                 case "Nothing":
                     break;
                 default:
-                    (m_window as MainWindow).Restore();
+                    (m_window as MainWindow)?.Restore();
                     break;
             }
 
