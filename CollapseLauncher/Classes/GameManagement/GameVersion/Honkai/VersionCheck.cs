@@ -1,10 +1,11 @@
-﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces;
 using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using System;
 
 namespace CollapseLauncher.GameVersioning
 {
+    // ReSharper disable once RedundantExtendsListEntry
     internal class GameTypeHonkaiVersion : GameVersionBase, IGameVersionCheck
     {
         #region Statics

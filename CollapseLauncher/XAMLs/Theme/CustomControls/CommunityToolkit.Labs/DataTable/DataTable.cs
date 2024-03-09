@@ -98,7 +98,8 @@ public class DataTable : Panel
                 // then invalidate the child arranges [don't re-measure and cause loop]...)
 
                 // For now, we'll just use the header content as a guideline to see if things work.
-                column.Measure(new Size(availableSize.Width - fixedWidth - autoSized, availableSize.Height));
+                double width = availableSize.Width - fixedWidth - autoSized;
+                column.Measure(new Size(width < 8 ? column.CurrentWidth.Value : width, availableSize.Height));
 
                 // Keep track of already 'allotted' space, use either the maximum child size (if we know it) or the header content
                 autoSized += Math.Max(column.DesiredSize.Width, column.MaxChildDesiredWidth);

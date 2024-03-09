@@ -88,8 +88,8 @@
     "RegionChangeConfirmBtn": "是的，请更改！",
     "RegionChangeWarnTitle": "警告：",
     "RegionChangeWarnExper1": "游戏目前在 {0}。\n请自行承担风险！",
-    "RegionLoadingTitle": "加载区服",
-    "RegionLoadingAPITitle1": "加载中",
+    "RegionLoadingTitle": "正在加载区服",
+    "RegionLoadingAPITitle1": "正在加载",
     "RegionLoadingAPITitle2": "启动器API",
     "RegionLoadingSubtitleTimeOut": "操作已超时（>{1}秒）。正在重新尝试加载区服{0}……",
     "RegionLoadingSubtitleTooLong": "重试的时间比预期的长一些……请确保您的网络连接稳定！",
@@ -256,14 +256,14 @@
     "Graphics_ResCustomW": "宽",
     "Graphics_ResCustomH": "高",
 
-    "Graphics_FPSPanel": "最大FPS",
+    "Graphics_FPSPanel": "最大 FPS",
     "Graphics_FPSInCombat": "战斗中",
     "Graphics_FPSInMenu": "主菜单",
 
-    "Graphics_APIPanel": "图形API",
-    "Graphics_APIHelp1": "这个游戏有几个API模式，包括：",
+    "Graphics_APIPanel": "图形 API",
+    "Graphics_APIHelp1": "这个游戏有几个 API 模式，包括：",
     "Graphics_APIHelp2": "注：",
-    "Graphics_APIHelp3": "使用DirectX 12可能会在某些阶段导致崩溃，因为游戏不是用DirectX 12 API原生编译的。",
+    "Graphics_APIHelp3": "使用 DirectX 12 可能会在某些阶段导致崩溃，因为游戏不是用 DirectX 12 API 原生编译的。",
 
     "Graphics_SpecPanel": "全局图形设置",
     "Graphics_Preset": "预设画面",
@@ -271,36 +271,47 @@
     "Graphics_Shadow": "阴影质量",
     "Graphics_Reflection": "反射质量",
     "Graphics_FX": "视觉效果",
-    "Graphics_FXPost": "后期处理",
-    "Graphics_FXPhysics": "物理",
-    "Graphics_FXHDR": "高动态光照渲染",
-    "Graphics_FXHQ": "高质量",
-    "Graphics_FXAA": "FXAA",
-    "Graphics_FXDistort": "失真",
+    "Graphics_FXPost": "后处理",
+    "Graphics_FXPhysics": "物理模拟",
+    "Graphics_FXHDR": "HDR",
+    "Graphics_FXHQ": "高品质",
+    "Graphics_FXAA": "抗锯齿",
+    "Graphics_FXDistort": "扭曲效果",
 
-    "Graphics_APHO2Panel": "APHO2与图形设置",
-    "Graphics_APHO2GI": "全局照明",
-    "Graphics_APHO2VL": "体积照明",
-    "Graphics_APHO2AO": "环境遮蔽",
+    "Graphics_APHO2Panel": "新章节图形设置",
+    "Graphics_APHO2GI": "全局光照",
+    "Graphics_APHO2VL": "体积光",
+    "Graphics_APHO2AO": "环境光遮蔽",
     "Graphics_APHO2LOD": "细节等级",
 
-    "SpecDisabled": "禁用",
+    "Graphics_ParticleQuality": "粒子质量",
+    "Graphics_LightingQuality": "光照质量",
+    "Graphics_PostFXQuality": "特效质量",
+    "Graphics_AAMode": "抗锯齿模式",
+    "Graphics_CharacterQuality": "角色质量",
+    "Graphics_WeatherQuality": "天气质量",
+
+    "Graphics_Legacy_Title": "传统设置",
+    "Graphics_Legacy_Subtitle": "这些设置不存在于游戏中，并且可能不会产生任何效果。",
+
+    "SpecDisabled": "关闭",
     "SpecLow": "低",
-    "SpecMedium": "中等",
+    "SpecMedium": "中",
     "SpecHigh": "高",
     "SpecVeryHigh": "非常高",
     "SpecMaximum": "最高",
+    "SpecUltra": "极高",
 
     "Audio_Title": "音频设置",
     "Audio_Master": "主音量",
     "Audio_BGM": "背景音乐音量",
     "Audio_SFX": "音效音量",
     "Audio_VOLang": "配音语言",
-    "Audio_VOLang1": "中文（大陆）",
+    "Audio_VOLang1": "汉语（大陆）",
     "Audio_VOLang2": "日语",
     "Audio_VODefault": "［默认］",
     "Audio_VO": "配音音量",
-    "Audio_Elf": "人偶CV音量",
+    "Audio_Elf": "人偶 CV 音量",
     "Audio_Cutscenes": "场景音量",
     "Audio_Mute": "静音",
 
@@ -416,8 +427,8 @@
     "HelpLocalizeBtn": "帮助我们翻译 Collapse！",
 
     "About": "关于",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "© 2022-2024",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
     "About_Copyright3": "采用",
     "About_Copyright4": "。版权所有。",
 
@@ -450,7 +461,13 @@
     "AppBehavior_PostGameLaunch_Nothing": "什么也不做",
     "AppBehavior_MinimizeToTray": "最小化到系统托盘",
     "AppBehavior_LaunchOnStartup": "开机时自动启动 Collapse",
-    "AppBehavior_StartupToTray": "自动启动时隐藏 Collapse 窗口"
+    "AppBehavior_StartupToTray": "自动启动时隐藏 Collapse 窗口",
+
+    "Waifu2X_Toggle": "使用 Waifu2X [实验性]",
+    "Waifu2X_Help": "使用 Waifu2X 放大背景图像。\n开启后，图像质量会有显著提升，但首次加载图像时会多花一些时间。",
+    "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
+    "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
+    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 检查，输出为空。"
   },
 
   "_Misc": {
@@ -1149,9 +1166,13 @@
     "ChangeShortcut_Title": "修改快捷键",
     "ChangeShortcut_Text": "输入新的快捷键！",
     "ChangeShortcut_Help1": "快捷键由两部分组成：",
-    "ChangeShortcut_Help2": "・ 修饰键 - Ctrl 或 Alt/Menu",
+    "ChangeShortcut_Help2": "・ 修饰键 - Shift、Ctrl 或 Alt/Menu",
     "ChangeShortcut_Help3": "・ 按键 - 字母（A - Z）或 Tab",
-    "ChangeShortcut_Help4": "您可以任意选择由每个类别中的一个值组成的组合，除非其被系统保留或已被使用。"
+    "ChangeShortcut_Help4": "您可以任意选择由每个类别中的一个值组成的组合，除非其被系统保留或已被使用。",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {

@@ -68,12 +68,11 @@ namespace Hi3Helper.Preset
         #nullable disable
         public void DecryptStrings()
         {
-            int gameCount = MetadataV2?.Count ?? 0;
             mhyEncTool Decryptor = new mhyEncTool();
             Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
             string[] gameKeys = MetadataV2!.Keys.ToArray();
-            for (int i = 0; i < gameCount; i++)
+            for (int i = 0; i < GameCount; i++)
             {
                 string[] regionKeys = MetadataV2[gameKeys[i]!]!.Keys.ToArray();
                 int segmentCount = MetadataV2[gameKeys[i]!]!.Count;
@@ -123,6 +122,9 @@ namespace Hi3Helper.Preset
                 }
             }
         }
+
+        public int GameCount => MetadataV2?.Count ?? 0; 
+        public int MaxRegionCount => MetadataV2?.Max(x => x.Value.Count) ?? 0;
 #nullable enable
     }
 

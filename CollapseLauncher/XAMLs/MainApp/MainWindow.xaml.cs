@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -136,9 +135,7 @@ namespace CollapseLauncher
 
         private void LoadWindowIcon()
         {
-            string path = Path.Combine(AppFolder, "icon.ico");
-            if (!File.Exists(path)) return;
-            m_appWindow.SetIcon(path);
+            SetWindowIcon(m_windowHandle, AppIconLarge, AppIconSmall);
             m_appWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
         }
 

@@ -128,25 +128,15 @@ namespace CollapseLauncher
             // Get the asset index properties
             string baseURL = string.Format(_gameRepoURL!, type.ToString().ToLowerInvariant());
             string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d")!, type == CacheAssetType.Data ? "Data" : "Resource");
-            MemoryStream stream = new MemoryStream();
-            XORStream xorStream = new XORStream(stream);
 
-            try
-            {
-                // Start downloading the asset index
-                await _httpClient!.Download(assetIndexURL, stream, null, null, token);
+            // Get a direct HTTP Stream
+            using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(_httpClient.GetHttpClient(), assetIndexURL, null, null, token);
+            using XORStream xorStream = new XORStream(remoteStream);
 
-                // Build the asset index and return the count and size of each type
-                (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
+            // Build the asset index and return the count and size of each type
+            (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
 
-                return returnValue;
-            }
-            finally
-            {
-                // Dispose the streams
-                stream.Dispose();
-                xorStream.Dispose();
-            }
+            return returnValue;
         }
 
         /*
@@ -179,7 +169,6 @@ namespace CollapseLauncher
             bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
-            stream!.Position = 0;
             BundleFile bundleFile = new BundleFile(stream);
             SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 

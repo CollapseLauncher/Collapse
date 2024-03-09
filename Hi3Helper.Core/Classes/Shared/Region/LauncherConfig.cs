@@ -183,13 +183,16 @@ namespace Hi3Helper.Shared.Region
         public const string AppGameConfigV2URLPrefix    = "/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
         public const string AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";
+
+        public static IntPtr AppIconLarge;
+        public static IntPtr AppIconSmall;
         #endregion
 
         #region App Config Definitions
         public static AppIniStruct appIni;
         
         public static readonly string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule!.FileName);
-        public static readonly string AppDefaultBG = Path.Combine(AppFolder!, "Assets", "Images", "default.png");
+        public static readonly string AppDefaultBG = Path.Combine(AppFolder!, "Assets", "Images", "PageBackground", "default.png");
         
         public static readonly string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
@@ -304,7 +307,8 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "HI3IgnoreMediaPack", false },
             { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
             { "MinimizeToTray", false },
-            { "UseExternalBrowser", false}
+            { "UseExternalBrowser", false },
+            { "EnableWaifu2X", false },
         };
         #endregion
     }

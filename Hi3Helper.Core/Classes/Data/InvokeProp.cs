@@ -271,5 +271,17 @@ namespace Hi3Helper
             public void ShowWindowMaximized() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMAXIMIZED);
             public void HideWindow() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMINIMIZED);
         }
+
+        [DllImport("shell32.dll", SetLastError = true)]
+        public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
+
+        public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
+        {
+            const uint WM_SETICON = 0x0080;
+            const UIntPtr ICON_BIG = 1;
+            const UIntPtr ICON_SMALL = 0;
+            SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
+            SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
+        }
     }
 }

@@ -51,6 +51,10 @@
                 public string ChangeShortcut_Help2 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help2;
                 public string ChangeShortcut_Help3 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help3;
                 public string ChangeShortcut_Help4 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help4;
+
+                public string Keyboard_Control { get; set; } = LangFallback?._KbShortcuts.Keyboard_Control;
+                public string Keyboard_Menu { get; set; } = LangFallback?._KbShortcuts.Keyboard_Menu;
+                public string Keyboard_Shift { get; set; } = LangFallback?._KbShortcuts.Keyboard_Shift;
             }
         }
         #endregion
