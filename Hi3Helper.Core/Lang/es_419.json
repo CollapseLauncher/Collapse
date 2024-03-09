@@ -284,12 +284,23 @@
     "Graphics_APHO2AO": "Oclusión Ambiental",
     "Graphics_APHO2LOD": "Nivel de Detalle",
 
+    "Graphics_ParticleQuality": "Calidad de Partículas",
+    "Graphics_LightingQuality": "Calidad de Iluminación",
+    "Graphics_PostFXQuality": "Calidad de Post-FX",
+    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_CharacterQuality": "Calidad de Personajes",
+    "Graphics_WeatherQuality": "Calidad del Clima",
+
+    "Graphics_Legacy_Title": "Ajustes de Legado",
+    "Graphics_Legacy_Subtitle": "Estos ajustes no están presentes en el juego y puede que no tengan ningún efecto.",
+
     "SpecDisabled": "Deshabilitado",
     "SpecLow": "Bajo",
     "SpecMedium": "Medio",
     "SpecHigh": "Alto",
     "SpecVeryHigh": "Muy Alto",
     "SpecMaximum": "Máximo",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Global",
@@ -338,7 +349,7 @@
     "Advanced_Subtitle1": "¡El equipo de Collapse Launcher",
     "Advanced_Subtitle2": "NO ES RESPONSABLE",
     "Advanced_Subtitle3": "de lo que pueda ocurrir con tu juego, cuenta o sistema mientras estos ajustes están en uso! Úselo bajo su propio riesgo",
-    "Advanced_GLC_WarningAdmin": "Advertencia: Los Comandos proporcionados se ejecutaran como Administrador! ",
+    "Advanced_GLC_WarningAdmin": "ADVERTENCIA: Los Comandos proporcionados se ejecutaran como Administrador! ",
     "Advanced_GLC_PreLaunch_Title": "Comandos de Pre-lanzamiento",
     "Advanced_GLC_PreLaunch_Subtitle": "Comandos que serán ejecutados antes de que se inicie el juego",
     "Advanced_GLC_PreLaunch_Exit": "Forzar salida del proceso cuando el juego es cerrado/detenido",
@@ -416,8 +427,8 @@
     "HelpLocalizeBtn": "¡Ayúdanos a traducir Collapse!",
 
     "About": "Acerca de",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "© 2022-2024",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
 
@@ -450,7 +461,13 @@
     "AppBehavior_PostGameLaunch_Nothing": "No hacer nada",
     "AppBehavior_MinimizeToTray": "Minimizar a la bandeja",
     "AppBehavior_LaunchOnStartup": "Iniciar automáticamente Collapse cuando se inicie tu computadora.",
-    "AppBehavior_StartupToTray": "Ocultar ventana de Collapse cuando se inicie automáticamente."
+    "AppBehavior_StartupToTray": "Ocultar ventana de Collapse cuando se inicie automáticamente.",
+
+    "Waifu2X_Toggle": "Usar Waifu2X [Experimental]",
+    "Waifu2X_Help": "Usa Waifu2X para escalar imágenes de fondo.\nCuando está activado, la calidad de la imagen mejora significativamente, pero tardará en cargar la imagen la primera vez.",
+    "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
+    "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
+    "Waifu2X_Error_Output": "ERROR: Fallo al realizar la comprobación de Waifu2X, se obtuvo un output vacío."
   },
 
   "_Misc": {
@@ -648,7 +665,7 @@
     "MigrationTitle": "Ubicando Carpeta de Destino",
     "MigrationSubtitle": "Antes de migrar, ¿deseas especificar la ubicación del juego?",
     "NeedInstallMediaPackTitle": "¡El Paquete de Características Multimedia no se puede encontrar!",
-    "NeedInstallMediaPackSubtitle1": "AVISO: A partir de la actualización v5.8, Honkai Impact 3rd necesita el \"Paquete de Caracteristicas Multimedia\" para poder funcionar correctamente. Esto solucionará el error \"Error al cargar DLL 'cri_ware_unity'\" dentro del juego.\n\n",
+    "NeedInstallMediaPackSubtitle1": "ADVERTENCIA: A partir de la actualización v5.8, Honkai Impact 3rd necesita el \"Paquete de Caracteristicas Multimedia\" para poder funcionar correctamente. Esto solucionará el error \"Error al cargar DLL 'cri_ware_unity'\" dentro del juego.\n\n",
     "NeedInstallMediaPackSubtitle2": "Puede que necesite reiniciar su PC después de haber instalado el \"Paquete de Características Multimedia\". Puedes ignorar esta advertencia si ya la tienes instalada o deseas intentar jugar Honkai Impact 3rd, pero existe la posibilidad de que recibas el error mientras ejecutas el juego.",
     "InstallMediaPackCompleteTitle": "¡El Paquete de Características Multimedia ha sido instalado!",
     "InstallMediaPackCompleteSubtitle": "El Paquete de Características Multimedia se ha instalado a tu computadora.\n¡Por favor reiniciala para aplicar el parche!",
@@ -1151,7 +1168,11 @@
     "ChangeShortcut_Help1": "Un atajo está compuesto por 2 partes:",
     "ChangeShortcut_Help2": "・ Modificador - Shift, Control o Alt/Menu",
     "ChangeShortcut_Help3": "・ Clave - Alfabético (A a Z) o Tab",
-    "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado."
+    "ChangeShortcut_Help4": "Puede elegir cualquier combinación que consista en un valor de cada categoría, a menos que esté reservado por el sistema o ya esté siendo utilizado.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {

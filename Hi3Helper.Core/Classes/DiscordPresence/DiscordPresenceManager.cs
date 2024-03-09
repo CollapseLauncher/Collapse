@@ -83,6 +83,8 @@ namespace Hi3Helper.DiscordPresence
                 _lastApplicationId = applicationId;
             }
 
+            _firstTimeConnect = true;
+
             // Initialize Discord RPC client
             _client = new DiscordRpcClient(applicationId.ToString());
             _client.OnReady += (_, msg) =>

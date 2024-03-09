@@ -1,5 +1,6 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CollapseLauncher.ShortcutUtils;
@@ -174,10 +175,13 @@ namespace CollapseLauncher.Pages
                 CheckRunningGameInstance(PageToken.Token);
                 UpdatePlaytime();
 
-                if (m_arguments.StartGame != null && m_arguments.StartGame.Play)
+                if (m_arguments.StartGame?.Play == true)
                 {
-                    if (CurrentGameProperty._GameVersion.IsGameInstalled())
+                    if (CurrentGameProperty._GameVersion.GetGameState() is
+                        GameInstallStateEnum.Installed or GameInstallStateEnum.InstalledHavePreload)
+                    {
                         StartGame(null, null);
+                    }
                     m_arguments.StartGame.Play = false;
                 }
 
@@ -211,6 +215,8 @@ namespace CollapseLauncher.Pages
             // Get the cached filename and path
             string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon);
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+            if (ImageLoaderHelper.IsWaifu2XEnabled)
+                cachedFilePath += "_waifu2x";
 
             // Create a cached image folder if not exist
             if (!Directory.Exists(AppGameImgCachedFolder))
@@ -237,16 +243,9 @@ namespace CollapseLauncher.Pages
                     ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
                     int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
                     int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
-                    ProcessImageSettings settings = new ProcessImageSettings
-                    {
-                        Width = width,
-                        Height = height,
-                        HybridMode = HybridScaleMode.Off,
-                        Interpolation = InterpolationSettings.Cubic
-                    };
 
                     copyIconFileStream.Position = 0; // Reset the original icon stream position
-                    await Task.Run(() => MagicImageProcessor.ProcessImage(copyIconFileStream, cachedIconFileStream, settings)); // Start resizing
+                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
                     cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
                     // Set the source from cached icon stream
@@ -1225,43 +1224,56 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Start/Stop Method
-
-        CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
+        CancellationTokenSource WatchOutputLog = new();
         CancellationTokenSource ResizableWindowHookToken;
         private async void StartGame(object sender, RoutedEventArgs e)
         {
+            // Initialize values
+            IGameSettingsUniversal _Settings   = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
+            PresetConfigV2         _gamePreset = CurrentGameProperty!._GameVersion!.GamePreset!;
+
+            var isGenshin  = CurrentGameProperty!._GameVersion.GameType == GameType.Genshin;
+            var giForceHDR = false;
+            
             try
             {
-                IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
+                if (!await CheckMediaPackInstalled()) return;
 
-                bool IsContinue = await CheckMediaPackInstalled();
-                if (!IsContinue) return;
+                if (isGenshin)
+                {
+                    giForceHDR = GetAppConfigValue("ForceGIHDREnable").ToBool();
+                    if (giForceHDR) GenshinHDREnforcer();
+                }
 
-                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
-                    GenshinHDREnforcer();
-
-                if (_Settings.SettingsCollapseMisc.UseAdvancedGameSettings && _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand) PreLaunchCommand(_Settings);
+                if (_Settings!.SettingsCollapseMisc != null &&
+                    _Settings.SettingsCollapseMisc.UseAdvancedGameSettings &&
+                    _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand) PreLaunchCommand(_Settings);
 
                 Process proc                    = new Process();
-                proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+                proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
                 proc.StartInfo.UseShellExecute  = true;
-                proc.StartInfo.Arguments        = GetLaunchArguments(_Settings);
-                LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-                // proc.StartInfo.WorkingDirectory = CurrentGameProperty._GameVersion.GamePreset.ZoneName == "Bilibili" ||
-                //     (CurrentGameProperty._GameVersion.GameType == GameType.Genshin
-                //     && GetAppConfigValue("ForceGIHDREnable").ToBool()) ?
-                //         NormalizePath(GameDirPath) :
-                //         Path.GetDirectoryName(NormalizePath(GameDirPath));
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
-                proc.StartInfo.Verb = "runas";
+                proc.StartInfo.Arguments        = GetLaunchArguments(_Settings)!;
+                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
+                if (File.Exists(Path.Combine(GameDirPath!, "@AltLaunchMode")))
+                {
+                    LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
+                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!._GameVersion.GamePreset!.ZoneName == "Bilibili" ||
+                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) : 
+                            Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
+                }
+                else
+                {
+                    proc.StartInfo.UseShellExecute  = false;
+                    proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
+                    proc.StartInfo.Verb             = "runas";
+                }
                 proc.Start();
 
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
                 StartResizableWindowPayload(
-                    CurrentGameProperty._GameVersion.GamePreset.GameExecutableName,
+                    _gamePreset.GameExecutableName,
                     _Settings,
-                    CurrentGameProperty._GameVersion.GamePreset.GameType);
+                    _gamePreset.GameType);
                 GameRunningWatcher(_Settings);
 
                 if (GetAppConfigValue("EnableConsole").ToBool())
@@ -1273,47 +1285,28 @@ namespace CollapseLauncher.Pages
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
                     case "Minimize":
-                        (m_window as MainWindow).Minimize();
+                        (m_window as MainWindow)?.Minimize();
                         break;
                     case "ToTray":
-                        H.NotifyIcon.WindowExtensions.Hide(m_window);
+                        H.NotifyIcon.WindowExtensions.Hide(m_window!);
                         RefreshRate = RefreshRateSlow;
                         break;
                     case "Nothing":
                         break;
                     default:
-                        (m_window as MainWindow).Minimize();
+                        (m_window as MainWindow)?.Minimize();
                         break;
                 }
 
-                StartPlaytimeCounter(proc, CurrentGameProperty._GameVersion.GamePreset);
-
-                if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
-                    CollapsePrioControl(proc);
+                StartPlaytimeCounter(proc, _gamePreset);
+                if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
-                if (_Settings.SettingsCollapseMisc.UseGameBoost)
-                {
-                    // Init new target process
-                    Process toTargetProc;
-
-                    // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
-                    while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
-                    {
-                        await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
-                        // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
-                        // it will instead returns a non-null value and assign it to "toTargetProc" variable,
-                        // which it will break the loop and execute the next code below it.
-                    }
-
-                    // Assign the priority to the process and write a log (just for displaying any info)
-                    toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
-                    LogWriteLine($"Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
-                }
+                if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
             }
         }
@@ -1321,6 +1314,8 @@ namespace CollapseLauncher.Pages
         // Use this method to do something when game is closed
         private async void GameRunningWatcher(IGameSettingsUniversal _settings)
         {
+            ArgumentNullException.ThrowIfNull(_settings);
+            
             await Task.Delay(5000);
             while (_cachedIsGameRunning)
             {
@@ -1331,31 +1326,34 @@ namespace CollapseLauncher.Pages
 
             if (ResizableWindowHookToken != null)
             {
-                ResizableWindowHookToken.Cancel();
+                await ResizableWindowHookToken.CancelAsync();
                 ResizableWindowHookToken.Dispose();
             }
 
             // Stopping GameLogWatcher
             if (GetAppConfigValue("EnableConsole").ToBool())
-                WatchOutputLog.Cancel();
+            {
+                if (WatchOutputLog == null) return;
+                await WatchOutputLog.CancelAsync();
+            }
 
             // Stop PreLaunchCommand process
-            if (_settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
+            if (_settings.SettingsCollapseMisc!.GamePreLaunchExitOnGameStop) PreLaunchCommand_ForceClose();
 
             // Window manager on game closed
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
             {
                 case "Minimize":
-                    (m_window as MainWindow).Restore();
+                    (m_window as MainWindow)?.Restore();
                     break;
                 case "ToTray":
-                    H.NotifyIcon.WindowExtensions.Show(m_window);
-                    (m_window as MainWindow).Restore();
+                    H.NotifyIcon.WindowExtensions.Show(m_window!);
+                    (m_window as MainWindow)?.Restore();
                     break;
                 case "Nothing":
                     break;
                 default:
-                    (m_window as MainWindow).Restore();
+                    (m_window as MainWindow)?.Restore();
                     break;
             }
 
@@ -1365,9 +1363,10 @@ namespace CollapseLauncher.Pages
 
         private void StopGame(PresetConfigV2 gamePreset)
         {
+            ArgumentNullException.ThrowIfNull(gamePreset);
             try
             {
-                var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
+                var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
                 foreach (var p in gameProcess)
                 {
                     LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
@@ -1376,7 +1375,7 @@ namespace CollapseLauncher.Pages
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to stop Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
         #endregion
@@ -2056,6 +2055,37 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private async void GameBoost_Invoke(GamePresetProperty gameProp)
+        {
+            // Init new target process
+            Process toTargetProc = null;
+            try
+            {
+                // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
+                while ((toTargetProc = gameProp.GetGameProcessWithActiveWindow()) == null)
+                {
+                    await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
+                    // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
+                    // it will instead returns a non-null value and assign it to "toTargetProc" variable,
+                    // which it will break the loop and execute the next code below it.
+                }
+                LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
+                             $"Target Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]", LogType.Default, true);
+                
+                // Wait 5 seconds before applying
+                await Task.Delay(10000);
+                
+                // Assign the priority to the process and write a log (just for displaying any info)
+                toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+            }
+            catch ( Exception ex )
+            {
+                LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion

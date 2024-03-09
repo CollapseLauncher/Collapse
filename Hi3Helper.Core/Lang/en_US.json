@@ -284,12 +284,23 @@
     "Graphics_APHO2AO": "Ambient Occlusion",
     "Graphics_APHO2LOD": "Level of Detail",
 
+    "Graphics_ParticleQuality": "Particle Quality",
+    "Graphics_LightingQuality": "Lighting Quality",
+    "Graphics_PostFXQuality": "Post-FX Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_WeatherQuality": "Weather Quality",
+
+    "Graphics_Legacy_Title": "Legacy Settings",
+    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+
     "SpecDisabled": "Disabled",
     "SpecLow": "Low",
     "SpecMedium": "Medium",
     "SpecHigh": "High",
     "SpecVeryHigh": "Very High",
     "SpecMaximum": "Maximum",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "Audio Settings",
     "Audio_Master": "Master Volume",
@@ -416,8 +427,8 @@
     "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "About",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "© 2022-2024",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
 
@@ -450,7 +461,13 @@
     "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
     "AppBehavior_MinimizeToTray": "Minimize to Tray",
     "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
-    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically",
+
+    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
+    "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
+    "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X check, got an empty output."
   },
 
   "_Misc": {
@@ -1151,7 +1168,11 @@
     "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {

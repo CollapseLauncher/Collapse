@@ -4,10 +4,10 @@
 Due to frequent breaking changes from the HoYoverse/Cognosphere regarding update functionality (game repair indexes, cache files, compressed update packages, etc.), we can only guarantee support the latest Stable & Preview versions of Collapse.
 Additionally, due to major rework in Collapse update infrastructure, any versions of Collapse prior to 1.69.0 **is not supported** and should be updated ASAP to the latest version. This could be done by either using the new built-in updater or by doing a clean install of Collapse.
 
-| Version   | Supported          |
-| -------   | ------------------ |
-| >=1.72.0  | :white_check_mark: |
-| < 1.0.71  | :x:                |
+| Version  | Supported          |
+|----------| ------------------ |
+| >=1.73.0 | :white_check_mark: |
+| < 1.0.71 | :x:                |
 
 
 ## Reporting a Vulnerability
@@ -17,5 +17,7 @@ Please report any vulnerability regarding Collapse Launcher here on Issues with 
  - @neon-nyan(`neonnyann`) 
  - @Cryotechnic(`cry0`)
  - @bagusnl(`bagusnl`)
+ - @shatyuka(`Shatyuka`)
+ - @gablm(`gblm`)
 
 Please allow some time for us to process your report and get back to you at timely manner. We are volunteers and maintain this project in our free time and as such, real life situations take priority over this project.

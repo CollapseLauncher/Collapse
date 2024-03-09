@@ -175,17 +175,17 @@
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
-        "requested": "[10.0.22621.2428, )",
-        "resolved": "10.0.22621.2428",
-        "contentHash": "qCNAxtpkIvn/mTXLoj5uW80qPyPvNcnTPTLgm2U+d53LS75DT6iQSpLnkVYCvxuRLx4FYPAcKackwpc0cDZGUg=="
+        "requested": "[10.0.22621.3233, )",
+        "resolved": "10.0.22621.3233",
+        "contentHash": "v67zwCb9JOpfPxdSroZukIKHruU6FUB+KwcmSPcVvUFyYtcyvcUign5y8jPQNi54CVzWvaTg646e62LbanUkxg=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.4.240211001, )",
-        "resolved": "1.4.240211001",
-        "contentHash": "43PdPLNSbBfugbQ7fd5imnZPpg7TGNirCe1/f3KLLYCg1NgDJeTh7t2ihLPuIdmD7rf6mTaUtRXUJYw0HBOzFQ==",
+        "requested": "[1.5.240227000, )",
+        "resolved": "1.5.240227000",
+        "contentHash": "6rESOsREi8534J7IDpNfFYPvxQaSleXKt4A7ZYPeQyckNMQ0o1W0jZ420bJbEMz9Cw/S/8IbpPftLLZ9w/GTCQ==",
         "dependencies": {
-          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
+          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
       },
       "Microsoft.Xaml.Behaviors.WinUI.Managed": {
@@ -199,9 +199,9 @@
       },
       "PhotoSauce.MagicScaler": {
         "type": "Direct",
-        "requested": "[0.14.0, )",
-        "resolved": "0.14.0",
-        "contentHash": "JsPAREpPJCHBcL753YnGX132BemFM42NgnIQkwuwmb1n9qADrrBXhgkJNaCI+4TFbnMblRdF5K7OD0fe173cBA=="
+        "requested": "[0.14.2, )",
+        "resolved": "0.14.2",
+        "contentHash": "rVz7Fb3/hyTLIP6NikCnnAiIz3vl5yfOooyehVz0FFsZCSd+UFgNTOjTvI+4xhpoQs08/RjU6DQz181qxzzRVA=="
       },
       "Roman-Numerals": {
         "type": "Direct",
@@ -989,11 +989,11 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.4.240211001, )",
-        "resolved": "1.4.240211001",
-        "contentHash": "43PdPLNSbBfugbQ7fd5imnZPpg7TGNirCe1/f3KLLYCg1NgDJeTh7t2ihLPuIdmD7rf6mTaUtRXUJYw0HBOzFQ==",
+        "requested": "[1.5.240227000, )",
+        "resolved": "1.5.240227000",
+        "contentHash": "6rESOsREi8534J7IDpNfFYPvxQaSleXKt4A7ZYPeQyckNMQ0o1W0jZ420bJbEMz9Cw/S/8IbpPftLLZ9w/GTCQ==",
         "dependencies": {
-          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
+          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
       },
       "System.Diagnostics.EventLog": {
