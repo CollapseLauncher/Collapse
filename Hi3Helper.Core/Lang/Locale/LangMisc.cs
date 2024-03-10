@@ -8,6 +8,7 @@ namespace Hi3Helper
             public LangMisc _Misc { get; set; } = LangFallback?._Misc;
             public sealed class LangMisc
             {
+                public string SizePrefixes1000U              { get; set; } = LangFallback?._Misc.SizePrefixes1000U;
                 public string UpdateCompleteTitle            { get; set; } = LangFallback?._Misc.UpdateCompleteTitle;
                 public string UpdateCompleteSubtitle         { get; set; } = LangFallback?._Misc.UpdateCompleteSubtitle;
                 public string FeatureUnavailableTitle        { get; set; } = LangFallback?._Misc.FeatureUnavailableTitle;

@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Text;
+﻿using CollapseLauncher.Helper.Animation;
+using CommunityToolkit.WinUI.Controls;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -140,6 +142,47 @@ namespace CollapseLauncher.Extension
             };
 
             return initialRadius;
+        }
+
+        internal static void FindAndSetTextBlockWrapping(this UIElement element, TextWrapping wrap = TextWrapping.Wrap, HorizontalAlignment posAlign = HorizontalAlignment.Center, TextAlignment textAlign = TextAlignment.Center, bool recursiveAssignment = false, bool isParentAButton = false)
+        {
+            if (element is not null && element is TextBlock textBlock)
+            {
+                textBlock.TextWrapping = wrap;
+                if (isParentAButton)
+                {
+                    textBlock.HorizontalAlignment = posAlign;
+                    textBlock.HorizontalTextAlignment = textAlign;
+                }
+            }
+
+            if (!recursiveAssignment) return;
+
+            if (element is ButtonBase button)
+            {
+                if (button.Content is UIElement buttonContent)
+                    buttonContent.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, true);
+                else if (button.Content is string buttonString)
+                    button.Content = new TextBlock { Text = buttonString, TextWrapping = wrap, HorizontalAlignment = HorizontalAlignment.Center };
+            }
+
+            if (element is Panel panel)
+                foreach (UIElement childrenElement in panel.Children!)
+                    childrenElement.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+
+            if (element is ScrollViewer scrollViewer && scrollViewer.Content is UIElement elementInner)
+                elementInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+
+            if (element is ContentControl contentControl && (element is SettingsCard || element is Expander) && contentControl.Content is UIElement contentControlInner)
+            {
+                contentControlInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+
+                if (contentControl is Expander expander && expander.Header is UIElement expanderHeader)
+                    expanderHeader.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+            }
+
+            if (element is InfoBar infoBar && infoBar.Content is UIElement infoBarInner)
+                infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
         }
     }
 }

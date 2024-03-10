@@ -30,6 +30,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 using Task = System.Threading.Tasks.Task;
+using CollapseLauncher.Extension;
 
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
@@ -48,6 +49,8 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
             this.EnableImplicitAnimation(true);
+            AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
+
             LoadAppConfig();
             this.DataContext = this;
 
@@ -665,6 +668,9 @@ namespace CollapseLauncher.Pages
             int lastAppBehavSelected = GameLaunchedBehaviorSelector.SelectedIndex;
             GameLaunchedBehaviorSelector.SelectedIndex = -1;
             GameLaunchedBehaviorSelector.SelectedIndex = lastAppBehavSelected;
+
+            string SwitchToVer = IsPreview ? "Stable" : "Preview";
+            ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
         }
 
         private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();

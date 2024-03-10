@@ -126,7 +126,7 @@
                         Orientation="Horizontal">
                         <ComboBox
                             x:Name="ComboBoxGameCategory"
-                            Width="167"
+                            MinWidth="167"
                             Margin="0,0,0,0"
                             Canvas.ZIndex="2"
                             CornerRadius="15,0,0,15"
@@ -135,7 +135,7 @@
                             SelectionChanged="SetGameCategoryChange" />
                         <ComboBox
                             x:Name="ComboBoxGameRegion"
-                            Width="148"
+                            MinWidth="148"
                             Margin="0,0,8,0"
                             Canvas.ZIndex="2"
                             CornerRadius="0,15,15,0"

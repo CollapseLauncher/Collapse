@@ -5,6 +5,7 @@
     x:Class="CollapseLauncher.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ext="using:CollapseLauncher.Extension"
     xmlns:conv="using:CollapseLauncher.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:Hi3Helper"
@@ -388,6 +389,32 @@
                                                     Foreground="{ThemeResource AccentColor}"
                                                     Text="0 - 128" />
                                             </TextBlock>
+                                            <StackPanel Orientation="Horizontal"
+                                                        Margin="0,16,0,0">
+                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                          Glyph="&#xf071;"
+                                                          Margin="0,0,8,0"
+                                                          Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention}"/>
+                                            </StackPanel>
+                                            <TextBlock
+                                                Margin="0,8,0,0"
+                                                TextWrapping="Wrap">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention1}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
+                                                     FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention2}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention3}"
+                                                     FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention4}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention5}"
+                                                     FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention6}"/>
+                                            </TextBlock>
                                         </StackPanel>
                                     </Flyout>
                                 </Button.Flyout>
@@ -403,6 +430,7 @@
                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                 Maximum="8"
                                 Minimum="2"
+                                VerticalAlignment="Bottom"
                                 SpinButtonPlacementMode="Compact"
                                 Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
                             <NumberBox
@@ -412,6 +440,7 @@
                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}"
                                 Maximum="128"
                                 Minimum="0"
+                                VerticalAlignment="Bottom"
                                 SpinButtonPlacementMode="Compact"
                                 Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" />
                         </StackPanel>
@@ -654,88 +683,107 @@
                     </TextBlock>
                 </StackPanel>
                 <Button
+                    x:Name="ButtonLinkDiscordCollapse"
                     Width="300"
                     Height="50"
                     Margin="0,8,0,8"
                     Click="ClickButtonLinkFromTag"
-                    CornerRadius="25"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonLinkDiscordCollapse)}"
                     Style="{ThemeResource AccentButtonStyle}"
                     Tag="https://discord.gg/vJd2exaS7j">
-                    <StackPanel
+                    <Grid
                         Margin="4,0,12,0"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
-                        Orientation="Horizontal">
-                        <TextBlock
+                        VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <FontIcon
                             Margin="0,-1,12,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             FontFamily="{ThemeResource FontAwesomeBrand}"
-                            FontSize="24"
+                            FontSize="20"
                             PointerPressed="ClickTextLinkFromTag"
-                            Text="&#xF392;" />
+                            Glyph="&#xF392;" />
                         <TextBlock
+                            Margin="0,-2,0,2"
+                            Grid.Column="1"
                             VerticalAlignment="Center"
                             FontSize="14"
                             FontWeight="Medium"
                             Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn3}" />
-                    </StackPanel>
+                    </Grid>
                 </Button>
                 <Button
+                    x:Name="ButtonLinkDiscordArmada"
                     Width="300"
                     Height="50"
                     Margin="0,8,0,8"
                     Click="ClickButtonLinkFromTag"
-                    CornerRadius="25"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonLinkDiscordArmada)}"
+                    HorizontalContentAlignment="Center"
                     Style="{ThemeResource AccentButtonStyle}"
                     Tag="https://discord.gg/NAYQ8TT2Ge">
-                    <StackPanel
+                    <Grid
                         Margin="4,0,12,0"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
-                        Orientation="Horizontal">
-                        <TextBlock
+                        VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <FontIcon
                             Margin="-4,-1,12,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             FontFamily="{ThemeResource FontAwesomeBrand}"
-                            FontSize="24"
+                            FontSize="20"
                             PointerPressed="ClickTextLinkFromTag"
-                            Text="&#xF392;" />
+                            Glyph="&#xF392;" />
                         <TextBlock
+                            Margin="0,-2,0,2"
+                            Grid.Column="1"
                             VerticalAlignment="Center"
                             FontSize="14"
                             FontWeight="Medium"
                             Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" />
-                    </StackPanel>
+                    </Grid>
                 </Button>
                 <Button
+                    x:Name="ButtonLinkDiscordHi3"
                     Width="300"
                     Height="50"
                     Margin="0,8,0,8"
                     Click="ClickButtonLinkFromTag"
-                    CornerRadius="25"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonLinkDiscordHi3)}"
                     Style="{ThemeResource AccentButtonStyle}"
                     Tag="https://discord.gg/hi3">
-                    <StackPanel
+                    <Grid
                         Margin="4,0,12,0"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
-                        Orientation="Horizontal">
-                        <TextBlock
+                        VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <FontIcon
                             Margin="1,-1,12,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             FontFamily="{ThemeResource FontAwesomeBrand}"
-                            FontSize="24"
+                            FontSize="20"
                             PointerPressed="ClickTextLinkFromTag"
-                            Text="&#xF392;" />
+                            Glyph="&#xF392;" />
                         <TextBlock
+                            Margin="0,-2,0,2"
+                            Grid.Column="1"
                             VerticalAlignment="Center"
                             FontSize="14"
                             FontWeight="Medium"
                             Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" />
-                    </StackPanel>
+                    </Grid>
                 </Button>
                 <StackPanel
                     Margin="0,16,0,0"
@@ -810,7 +858,7 @@
                         Height="40"
                         Margin="0,0,0,0"
                         Click="CheckUpdate"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(CheckUpdateBtn)}"
                         Style="{ThemeResource AccentButtonStyle}">
                         <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
                             <FontIcon
@@ -878,7 +926,7 @@
                         Height="40"
                         Margin="0,16,0,0"
                         Click="ForceUpdate"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ForceUpdateBtn)}"
                         Style="{ThemeResource AccentButtonStyle}">
                         <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
                             <FontIcon
@@ -898,7 +946,7 @@
                         Height="40"
                         Margin="0,16,0,0"
                         Click="ChangeRelease"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeReleaseBtn)}"
                         Style="{ThemeResource AccentButtonStyle}">
                         <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
                             <FontIcon
@@ -918,10 +966,11 @@
                     Style="{ThemeResource SubtitleTextBlockStyle}"
                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" />
                 <Button
+                    x:Name="ButtonAppActionRelocateFolder"
                     Width="292"
                     Margin="0,0,0,8"
                     Click="RelocateFolder"
-                    CornerRadius="15"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionRelocateFolder)}"
                     Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock
                         Margin="8,0"
@@ -929,23 +978,23 @@
                         Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" />
                 </Button>
                 <Button
+                    x:Name="ButtonAppActionOpenAppDataFolder"
                     Width="292"
                     Margin="0,0,0,8"
                     Click="OpenAppDataFolder"
-                    CornerRadius="15"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionOpenAppDataFolder)}"
                     Style="{ThemeResource AccentButtonStyle}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            Margin="8,0"
-                            FontWeight="Medium"
-                            Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" />
-                    </StackPanel>
+                    <TextBlock
+                        Margin="8,0"
+                        FontWeight="Medium"
+                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" />
                 </Button>
                 <Button
+                    x:Name="ButtonAppActionClearImgFolder"
                     Width="292"
                     Margin="0,0,0,8"
                     Click="ClearImgFolder"
-                    CornerRadius="15"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionClearImgFolder)}"
                     Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock
                         Margin="8,0"
@@ -953,10 +1002,11 @@
                         Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" />
                 </Button>
                 <Button
+                    x:Name="ButtonAppActionClearMetadataFolder"
                     Width="292"
                     Margin="0,0,0,8"
                     Click="ClearMetadataFolder"
-                    CornerRadius="15"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionClearMetadataFolder)}"
                     Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock
                         Margin="8,0"
@@ -964,10 +1014,11 @@
                         Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearMetadataBtn}" />
                 </Button>
                 <Button
+                    x:Name="ButtonAppActionClearLogsFolder"
                     Width="292"
                     Margin="0,0,0,8"
                     Click="ClearLogsFolder"
-                    CornerRadius="15"
+                    CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionClearLogsFolder)}"
                     Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock
                         Margin="8,0"

@@ -660,10 +660,10 @@
                                                 Visibility="{x:Bind IsPostEventPanelEmpty}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock
-                                                        Width="100"
-                                                        Margin="0,26,8,0"
+                                                        Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
+                                                        Margin="0,0,8,32"
+                                                        VerticalAlignment="Bottom"
                                                         HorizontalAlignment="Right"
-                                                        VerticalAlignment="Center"
                                                         FontSize="14"
                                                         FontWeight="Black"
                                                         Opacity="0.8"
@@ -738,10 +738,10 @@
                                                 Visibility="{x:Bind IsPostNoticePanelEmpty}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock
-                                                        Width="100"
-                                                        Margin="0,26,8,0"
+                                                        Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
+                                                        Margin="0,0,8,32"
+                                                        VerticalAlignment="Bottom"
                                                         HorizontalAlignment="Right"
-                                                        VerticalAlignment="Center"
                                                         FontSize="14"
                                                         FontWeight="Black"
                                                         Opacity="0.8"
@@ -816,10 +816,10 @@
                                                 Visibility="{x:Bind IsPostInfoPanelEmpty}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock
-                                                        Width="100"
-                                                        Margin="0,26,8,0"
+                                                        Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
+                                                        Margin="0,0,8,32"
+                                                        VerticalAlignment="Bottom"
                                                         HorizontalAlignment="Right"
-                                                        VerticalAlignment="Center"
                                                         FontSize="14"
                                                         FontWeight="Black"
                                                         Opacity="0.8"
@@ -1153,7 +1153,7 @@
                                         Margin="-16,-16"
                                         VerticalScrollBarVisibility="Auto"
                                         VerticalScrollMode="Auto">
-                                        <StackPanel MaxWidth="224" Margin="16,16">
+                                        <StackPanel MaxWidth="224" Margin="16,16" x:Name="GameStartupSettingFlyoutContainer">
                                             <TextBlock
                                                 Margin="0,0,0,8"
                                                 Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -1167,16 +1167,22 @@
                                                 CornerRadius="14"
                                                 Style="{ThemeResource AccentButtonStyle}">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf07b;" />
+                                                            Glyph="&#xf07b;" />
                                                         <TextBlock
+                                                            Grid.Column="1"
                                                             Margin="8,0,0,0"
                                                             FontWeight="Medium"
+                                                            TextWrapping="Wrap"
                                                             Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" />
-                                                    </StackPanel>
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <Button
@@ -1187,16 +1193,22 @@
                                                 Click="OpenCacheFolderButton_Click"
                                                 CornerRadius="14">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf65e;" />
+                                                            Glyph="&#xf65e;" />
                                                         <TextBlock
+                                                            Grid.Column="1"
                                                             Margin="8,0,0,0"
                                                             FontWeight="Medium"
+                                                            TextWrapping="Wrap"
                                                             Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" />
-                                                    </StackPanel>
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <Button
@@ -1207,16 +1219,22 @@
                                                 Click="OpenScreenshotFolderButton_Click"
                                                 CornerRadius="14">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf03e;" />
+                                                            Glyph="&#xf03e;" />
                                                         <TextBlock
+                                                            Grid.Column="1"
                                                             Margin="8,0,0,0"
                                                             FontWeight="Medium"
+                                                            TextWrapping="Wrap"
                                                             Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" />
-                                                    </StackPanel>
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <TextBlock
@@ -1232,13 +1250,17 @@
                                                 CornerRadius="14"
                                                 Style="{ThemeResource AccentButtonStyle}">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf0ad;" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" />
-                                                    </StackPanel>
+                                                            Glyph="&#xf0ad;" />
+                                                        <TextBlock Margin="8,0,0,0" Grid.Column="1" TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" />
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <Button
@@ -1249,13 +1271,17 @@
                                                 Click="UninstallGameButton_Click"
                                                 CornerRadius="14">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf1f8;" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" />
-                                                    </StackPanel>
+                                                            Glyph="&#xf1f8;" />
+                                                        <TextBlock Margin="8,0,0,0" Grid.Column="1" TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" />
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <Button
@@ -1266,13 +1292,17 @@
                                                 Click="ConvertVersionButton_Click"
                                                 CornerRadius="14">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf363;" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" />
-                                                    </StackPanel>
+                                                            Glyph="&#xf363;" />
+                                                        <TextBlock Margin="8,0,0,0" Grid.Column="1" TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" />
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <Button
@@ -1283,13 +1313,17 @@
                                                 Click="MoveGameLocationButton_Click"
                                                 CornerRadius="14">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf56e;" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}" />
-                                                    </StackPanel>
+                                                            Glyph="&#xf56e;" />
+                                                        <TextBlock Margin="8,0,0,0" Grid.Column="1" TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}" />
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <Button
@@ -1300,13 +1334,17 @@
                                                 Click="StopGameButton_Click"
                                                 CornerRadius="14">
                                                 <Button.Content>
-                                                    <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                        <TextBlock
+                                                    <Grid Margin="4,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon
                                                             FontFamily="{ThemeResource FontAwesomeSolid}"
                                                             FontSize="18"
-                                                            Text="&#xf28d;" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}" />
-                                                    </StackPanel>
+                                                            Glyph="&#xf28d;" />
+                                                        <TextBlock Margin="8,0,0,0" Grid.Column="1" TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}" />
+                                                    </Grid>
                                                 </Button.Content>
                                             </Button>
                                             <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
@@ -1319,25 +1357,30 @@
                                                     IsOn="{x:Bind UseCustomArgs, Mode=TwoWay}"
                                                     OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                     OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                                                <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
+                                                <TextBox x:Name="CustomArgsTextBox" TextWrapping="Wrap" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
                                             </StackPanel>
                                             <StackPanel x:Name="MiscPanel">
                                                 <TextBlock
                                                     Margin="0,8,0,8"
                                                     Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                     Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" />
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}"
+                                                           TextWrapping="Wrap"/>
                                                 <ToggleSwitch
                                                     x:Name="ShowEventsPanelToggle"
                                                     IsEnabled="False"
                                                     IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}"
-                                                    OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}"
-                                                    OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" />
+                                                    OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                    OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                <TextBlock Margin="0,8,0,0"
+                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
+                                                           TextWrapping="Wrap"/>
                                                 <ToggleSwitch
                                                     x:Name="ShowSocialMediaPanelToggle"
                                                     IsEnabled="True"
                                                     IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}"
-                                                    OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
-                                                    OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" />
+                                                    OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                    OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                                 <Button
                                                     x:Name="ShortcutButton"
                                                     Margin="0,8"
@@ -1346,16 +1389,22 @@
                                                     Click="ShortcutButton_Click"
                                                     CornerRadius="14">
                                                     <Button.Content>
-                                                        <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                            <TextBlock
+                                                        <Grid Margin="4,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <FontIcon
                                                                 FontFamily="{ThemeResource FontAwesomeSolid}"
                                                                 FontSize="18"
-                                                                Text="&#xf08e;" />
+                                                                Glyph="&#xf08e;" />
                                                             <TextBlock
+                                                                Grid.Column="1"
                                                                 Margin="8,0,0,0"
                                                                 FontWeight="Medium"
+                                                                TextWrapping="Wrap"
                                                                 Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}" />
-                                                        </StackPanel>
+                                                        </Grid>
                                                     </Button.Content>
                                                 </Button>
                                                 <Button
@@ -1366,16 +1415,22 @@
                                                     Click="AddToSteamButton_Click"
                                                     CornerRadius="14">
                                                     <Button.Content>
-                                                        <StackPanel Margin="4,0" Orientation="Horizontal">
-                                                            <TextBlock
+                                                        <Grid Margin="4,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <FontIcon
                                                                 FontFamily="{ThemeResource FontAwesomeBrand}"
                                                                 FontSize="20"
-                                                                Text="&#xf1b6;" />
+                                                                Glyph="&#xf1b6;" />
                                                             <TextBlock
+                                                                Grid.Column="1"
                                                                 Margin="8,0,0,0"
                                                                 FontWeight="Medium"
+                                                                TextWrapping="Wrap"
                                                                 Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}" />
-                                                        </StackPanel>
+                                                        </Grid>
                                                     </Button.Content>
                                                 </Button>
                                             </StackPanel>

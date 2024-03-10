@@ -45,6 +45,8 @@ using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using Hi3Helper.EncTool.WindowTool;
+using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Extension;
 
 namespace CollapseLauncher.Pages
 {

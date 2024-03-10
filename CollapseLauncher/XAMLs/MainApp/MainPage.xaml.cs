@@ -187,7 +187,8 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
             InitKeyboardShortcuts();
-            InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+
+            InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
@@ -1914,7 +1915,7 @@ namespace CollapseLauncher
 
                 PresetConfigV2 Preset = LoadSavedGameSelection();
 
-                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
                 if (await LoadRegionFromCurrentConfigV2(Preset))
                 {
 #if !DISABLEDISCORD

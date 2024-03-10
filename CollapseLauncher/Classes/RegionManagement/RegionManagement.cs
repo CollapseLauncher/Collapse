@@ -56,7 +56,7 @@ namespace CollapseLauncher
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
         private CancellationTokenSourceWrapper CurrentRegionLoadTokenSource;
 
-        private string RegionToChangeName;
+        private string RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(CurrentConfigV2GameCategory, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(CurrentConfigV2GameRegion, Lang._GameClientRegions)}"; }
         private List<object> LastNavigationItem;
         private HomeMenuPanel LastRegionNewsProp;
         public static string PreviousTag = string.Empty;
@@ -64,7 +64,6 @@ namespace CollapseLauncher
         public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
             IsExplicitCancel = false;
-            RegionToChangeName = $"{GetGameTitleRegionTranslationString(CurrentConfigV2GameCategory, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(CurrentConfigV2GameRegion, Lang._GameClientRegions)}";
             LogWriteLine($"Initializing {RegionToChangeName}...", LogType.Scheme, true);
 
             // Set IsLoadRegionComplete and IsLoadRegionCancellationRequestEnabled to false

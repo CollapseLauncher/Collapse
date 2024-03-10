@@ -110,7 +110,6 @@ namespace CollapseLauncher.Helper.Animation
 
         private static void EnableElementVisibilityAnimation(Compositor compositor, Visual elementVisual, UIElement element)
         {
-            ElementCompositionPreview.SetIsTranslationEnabled(element, true);
             TimeSpan animDur = TimeSpan.FromSeconds(0.25d);
 
             ScalarKeyFrameAnimation HideOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
@@ -119,8 +118,6 @@ namespace CollapseLauncher.Helper.Animation
             HideOpacityAnimation.InsertKeyFrame(1.0f, 0.0f);
             HideOpacityAnimation.Duration = animDur;
             HideOpacityAnimation.Target = "Opacity";
-
-            elementVisual.Opacity = 0.0f;
 
             ShowOpacityAnimation.InsertKeyFrame(1.0f, 1.0f);
             ShowOpacityAnimation.Duration = animDur;
