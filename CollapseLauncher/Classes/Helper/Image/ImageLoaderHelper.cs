@@ -144,7 +144,7 @@ namespace CollapseLauncher.Helper.Image
             ContentDialogResult dialogResult = await dialogOverlay.QueueAndSpawnDialog();
             if (dialogResult == ContentDialogResult.Secondary) return null;
 
-            await using (FileStream cachedFileStream = File.Create(cachedFilePath!))
+            await using (FileStream cachedFileStream = new FileStream(cachedFilePath!, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
                 dialogOverlay.IsPrimaryButtonEnabled = false;
                 dialogOverlay.IsSecondaryButtonEnabled = false;
@@ -208,34 +208,29 @@ namespace CollapseLauncher.Helper.Image
                                                                    uint ToWidth, uint ToHeight,
                                                                    bool isFromCropProcess = false)
         {
-            FileStream cachedFileStream;
             if (isFromCropProcess)
             {
                 string InputFileName = InputFileInfo!.FullName;
                 InputFileInfo.MoveTo(InputFileInfo.FullName + "_old", true);
                 FileInfo newCachedFileInfo = new FileInfo(InputFileName);
 
-                cachedFileStream = newCachedFileInfo.Create();
-                using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
-                {
-                    await ResizeImageStream(oldInputFileStream, cachedFileStream, ToWidth, ToHeight);
-                    cachedFileStream.Position = 0;
-                }
+                await using (FileStream newCachedFileStream = newCachedFileInfo.Create())
+                    await using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
+                        await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
+
                 InputFileInfo.Delete();
-                return cachedFileStream;
+                return newCachedFileInfo.OpenRead();
             }
 
             FileInfo cachedFileInfo = GetCacheFileInfo(InputFileInfo!.FullName + InputFileInfo.Length);
             bool isCachedFileExist = cachedFileInfo!.Exists && cachedFileInfo.Length > 1 << 15;
             if (isCachedFileExist) return cachedFileInfo.OpenRead();
 
-            cachedFileStream = cachedFileInfo.Create();
-            await using (FileStream inputFileStream = InputFileInfo.OpenRead())
-            {
-                await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
-                cachedFileStream.Position = 0;
-            }
-            return cachedFileStream;
+            await using (FileStream cachedFileStream = cachedFileInfo.Create())
+                await using (FileStream inputFileStream = InputFileInfo.OpenRead())
+                    await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
+
+            return cachedFileInfo.OpenRead();
         }
 
         internal static FileInfo GetCacheFileInfo(string filePath)
