@@ -184,7 +184,7 @@ namespace CollapseLauncher.Helper.Image
         internal static WColor GetDarkColor(this WColor baseColor)
         {
             HLSColor color = HLSColor.CreateFromWindowsColor(baseColor);
-            return color.Darker(0.0f).ToWColor();
+            return color.Darker(0.3f).ToWColor();
         }
 
         internal static WColor GetLightColor(this WColor baseColor)
