@@ -103,6 +103,9 @@ namespace CollapseLauncher.Helper.Animation
                 if (contentControl is Expander expander && expander.Header is UIElement expanderHeader)
                     expanderHeader.EnableImplicitAnimation(true, easingFunction);
             }
+
+            if (element is InfoBar infoBar && infoBar.Content is UIElement infoBarInner)
+                infoBarInner.EnableImplicitAnimation(true, easingFunction);
         }
 
         private static void EnableElementVisibilityAnimation(Compositor compositor, Visual elementVisual, UIElement element)
