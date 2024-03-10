@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
@@ -42,6 +43,7 @@ namespace CollapseLauncher.Pages
         public SettingsPage()
         {
             this.InitializeComponent();
+            this.EnableImplicitAnimation(true);
             LoadAppConfig();
             this.DataContext = this;
 
@@ -350,7 +352,6 @@ namespace CollapseLauncher.Pages
             taskDefinition.Triggers.Add(new LogonTrigger());
             taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
 
-            Task task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
             return task;
         }

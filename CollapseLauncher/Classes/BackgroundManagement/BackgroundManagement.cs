@@ -1,8 +1,11 @@
 ﻿using CollapseLauncher.Helper.Image;
+﻿using CollapseLauncher.Helper.Animation;
 using ColorThiefDotNet;
+using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -12,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
@@ -294,40 +297,52 @@ namespace CollapseLauncher
             storyboard.Children.Add(Animation);
         }
 
-        private void HideBackgroundImage(bool hideImage = true)
+        private async void HideBackgroundImage(bool hideImage = true)
         {
-            Storyboard storyboardFront = new Storyboard();
-            Storyboard storyboardBack = new Storyboard();
+            while (IsCurrentHideBGAnimRun) { await Task.Delay(100); }
 
-            if (!(hideImage && BackgroundFront.Opacity == 0))
+            Compositor currentCompositor = this.GetElementCompositor();
+
+            if (hideImage != BGLastState)
             {
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = hideImage ? 1 : 0;
-                OpacityAnimation.To = hideImage ? 0 : 1;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+                TimeSpan duration = TimeSpan.FromSeconds(hideImage ? 0.25d : 0.5d);
+                TimeSpan durationSlow = TimeSpan.FromSeconds(0.25d);
 
-                DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
-                OpacityAnimationBack.From = hideImage ? 1 : 0.4;
-                OpacityAnimationBack.To = hideImage ? 0.4 : 1;
-                OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+                float fromScale = !hideImage ? 0.95f : 1f;
+                Vector3 fromTranslate = new Vector3(-((float)BackgroundFront.ActualWidth * (fromScale - 1f) / 2), -((float)BackgroundFront.ActualHeight * (fromScale - 1f) / 2), 0);
+                float toScale = hideImage ? 1.1f : 1f;
+                Vector3 toTranslate = new Vector3(-((float)BackgroundFront.ActualWidth * (toScale - 1f) / 2), -((float)BackgroundFront.ActualHeight * (toScale - 1f) / 2), 0);
 
-                if (!IsFirstStartup)
-                {
-                    Storyboard.SetTarget(OpacityAnimation, BackgroundFront);
-                    Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                    storyboardFront.Children.Add(OpacityAnimation);
-                }
+                IsCurrentHideBGAnimRun = true;
+                CurrentHideBGAnimQueue.Add(Task.WhenAll(
+                    BackgroundBack.StartAnimation(
+                        durationSlow,
+                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0.4f : 1f, hideImage ? 1f : 0.4f)
+                    ),
+                    IsFirstStartup ? Task.CompletedTask :
+                    BackgroundFront.StartAnimation(
+                        duration,
+                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : 1f, hideImage ? 1f : 0f),
+                        currentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale), new Vector3(fromScale)),
+                        currentCompositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate)
+                    )
+                ));
 
-                Storyboard.SetTarget(OpacityAnimationBack, Background);
-                Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
-                storyboardBack.Children.Add(OpacityAnimationBack);
-            }
-
-            if (BGLastState != hideImage)
-            {
-                storyboardFront.Begin();
-                storyboardBack.Begin();
                 BGLastState = hideImage;
+                IsCurrentHideBGAnimRun = false;
+            }
+        }
+
+        private static async void RunHideBackgroundAnimQueue()
+        {
+            while (!App.IsAppKilled)
+            {
+                while (CurrentHideBGAnimQueue.Count > 0)
+                {
+                    await CurrentHideBGAnimQueue[0];
+                    CurrentHideBGAnimQueue.RemoveAt(0);
+                }
+                await Task.Delay(250);
             }
         }
     }

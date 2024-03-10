@@ -104,7 +104,8 @@
                 Grid.ColumnSpan="2" />
             <Grid
                 Name="GridBG_RegionGrid"
-                Grid.Column="3"
+                Grid.Column="2"
+                Grid.ColumnSpan="3"
                 Height="47"
                 Margin="0,1,0,0"
                 HorizontalAlignment="Center"

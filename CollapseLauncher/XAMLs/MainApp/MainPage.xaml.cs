@@ -1,4 +1,5 @@
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
@@ -51,8 +52,10 @@ namespace CollapseLauncher
         private int  CurrentGameCategory      = -1;
         private int  CurrentGameRegion        = -1;
 
-        public static bool         IsChangeDragArea        = true;
-        public static List<string> PreviousTagString       = new List<string>();
+        private  static bool         IsCurrentHideBGAnimRun  = false;
+        private  static bool         IsChangeDragArea        = true;
+        private  static List<Task>   CurrentHideBGAnimQueue  = new List<Task>();
+        internal static List<string> PreviousTagString       = new List<string>();
         #endregion
 
         #region Main Routine
@@ -67,12 +70,22 @@ namespace CollapseLauncher
                 ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
+
+                // Enable implicit animation on certain elements
+                AnimationHelper.EnableImplicitAnimation(true, null, GridBG_RegionGrid, GridBG_NotifBtn);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        static MainPage()
+        {
+            IsCurrentHideBGAnimRun = false;
+            CurrentHideBGAnimQueue = new List<Task>();
+            RunHideBackgroundAnimQueue();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
