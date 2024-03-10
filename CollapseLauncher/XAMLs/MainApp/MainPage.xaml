@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="using:Hi3Helper"
     xmlns:local="using:CollapseLauncher"
+    xmlns:extension="using:CollapseLauncher.Extension"
     xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="using:Hi3Helper.Preset"
@@ -360,63 +361,95 @@
             <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" Opacity="0.00000001" />
             <Grid Margin="0,47,0,0" Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" />
         </Grid>
-        <ScrollViewer
+        <Grid
             x:Name="NotificationPanel"
             Margin="0,48,-700,0"
             HorizontalAlignment="Right"
             Background="{ThemeResource NotificationPanelBrush}"
             CornerRadius="0,0,0,16"
-            HorizontalScrollBarVisibility="Disabled"
             Shadow="{ThemeResource SharedShadow}">
-            <ScrollViewer.Transitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.Transitions>
                 <RepositionThemeTransition />
-            </ScrollViewer.Transitions>
-            <Grid MinWidth="608" MinHeight="200">
-                <StackPanel
-                    x:Name="NoNotificationIndicator"
-                    Margin="0,-47,0,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Orientation="Vertical">
-                    <StackPanel.OpacityTransition>
-                        <ScalarTransition />
-                    </StackPanel.OpacityTransition>
-                    <Image
-                        Width="200"
-                        Margin="0,0,0,16"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Opacity="1"
-                        Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
-                    <Grid
-                        Padding="24,8"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        CornerRadius="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock
-                            Grid.Column="2"
+            </Grid.Transitions>
+            <Grid>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" x:Name="NotificationPanelScrollViewer" CanContentRenderOutsideBounds="True">
+                    <Grid MinWidth="608" MinHeight="200">
+                        <StackPanel
+                            x:Name="NoNotificationIndicator"
+                            HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            FontSize="20"
-                            FontWeight="SemiBold"
-                            Opacity="0.50"
-                            Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}"
-                            TextAlignment="Center" />
+                            Orientation="Vertical">
+                            <StackPanel.OpacityTransition>
+                                <ScalarTransition />
+                            </StackPanel.OpacityTransition>
+                            <Image
+                                Width="200"
+                                Margin="0,0,0,16"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Opacity="1"
+                                Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
+                            <Grid
+                                Padding="24,8"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                CornerRadius="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    FontSize="20"
+                                    FontWeight="SemiBold"
+                                    Opacity="0.50"
+                                    Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}"
+                                    TextAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <PopupThemeTransition />
+                                    <RepositionThemeTransition />
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+                        </StackPanel>
                     </Grid>
-                </StackPanel>
-                <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
-                    <StackPanel.ChildrenTransitions>
-                        <TransitionCollection>
-                            <PopupThemeTransition />
-                            <RepositionThemeTransition />
-                        </TransitionCollection>
-                    </StackPanel.ChildrenTransitions>
-                </StackPanel>
+                </ScrollViewer>
             </Grid>
-        </ScrollViewer>
+            <Grid x:Name="NotificationPanelClearAllGrid"
+                  VerticalAlignment="Bottom"
+                  Padding="8"
+                  Grid.Row="1"
+                  Visibility="Collapsed"
+                  Background="{ThemeResource NotificationPanelBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="NotificationPanelClearAllBtn"
+                        HorizontalAlignment="Right"
+                        Click="ClearAllNotification"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(NotificationPanelClearAllBtn)}"
+                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                        Grid.Column="1">
+                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                        <TextBlock Margin="0,-1,8,1"
+                                   FontWeight="Medium"
+                                   Text="{x:Bind helper: Locale.Lang._MainPage.NotifClearAll}" />
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                  FontSize="16"
+                                  Glyph="&#xf2ed;" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
         <Frame x:Name="WebView2Frame" />
     </Grid>
 </Page>

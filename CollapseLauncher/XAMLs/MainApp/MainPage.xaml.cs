@@ -72,7 +72,7 @@ namespace CollapseLauncher
                 Loaded += StartRoutine;
 
                 // Enable implicit animation on certain elements
-                AnimationHelper.EnableImplicitAnimation(true, null, GridBG_RegionGrid, GridBG_NotifBtn);
+                AnimationHelper.EnableImplicitAnimation(true, null, GridBG_RegionGrid, GridBG_NotifBtn, NotificationPanelClearAllGrid);
             }
             catch (Exception ex)
             {
@@ -872,6 +872,8 @@ namespace CollapseLauncher
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
                 NewNotificationCountBadge.Visibility = Visibility.Visible;
                 NewNotificationCountBadge.Value++;
+
+                NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
             Notification.Closed += (s, a) =>
@@ -894,6 +896,7 @@ namespace CollapseLauncher
                 }
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
                 NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
+                NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
             Container.Children.Add(Notification);
@@ -907,11 +910,34 @@ namespace CollapseLauncher
             {
                 NotificationContainer.Children.Remove(notif);
                 InfoBar notifBar = notif.Children.OfType<InfoBar>()?.FirstOrDefault();
-                if (notifBar != null)
-                {
+                if (notifBar != null && notifBar.IsClosable)
                     notifBar.IsOpen = false;
-                }
             }
+        }
+
+        private async void ClearAllNotification(object sender, RoutedEventArgs args)
+        {
+            Button button = sender is Button ? sender as Button : null;
+            if (button != null) button.IsEnabled = false;
+
+            int stackIndex = 0;
+            for (; stackIndex < NotificationContainer.Children.Count;)
+            {
+                if (NotificationContainer.Children[stackIndex] is not Grid container
+                 || container.Children == null || container.Children.Count == 0
+                 || container.Children[0] is not InfoBar notifBar || notifBar == null
+                 || !notifBar.IsClosable)
+                {
+                    ++stackIndex;
+                    continue;
+                }
+
+                NotificationContainer.Children.RemoveAt(stackIndex);
+                notifBar.IsOpen = false;
+                await Task.Delay(100);
+            }
+
+            if (button != null) button.IsEnabled = true;
         }
 
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
@@ -936,7 +962,7 @@ namespace CollapseLauncher
             await Task.Delay(250);
             double currentVOffset = NotificationContainer.ActualHeight;
 
-            NotificationPanel.ScrollToVerticalOffset(currentVOffset);
+            NotificationPanelScrollViewer.ScrollToVerticalOffset(currentVOffset);
         }
         #endregion
 
