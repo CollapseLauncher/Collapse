@@ -15,6 +15,7 @@ using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,9 @@ using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using TaskSched = Microsoft.Win32.TaskScheduler.Task;
+using Task = System.Threading.Tasks.Task;
+
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -152,15 +156,15 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
-        private void ClearImgFolder(object sender, RoutedEventArgs e)
+        private async void ClearImgFolder(object sender, RoutedEventArgs e)
         {
             try
             {
+                (sender as Button).IsEnabled = false;
                 if (Directory.Exists(AppGameImgFolder))
                     Directory.Delete(AppGameImgFolder, true);
 
                 Directory.CreateDirectory(AppGameImgFolder);
-                (sender as Button).IsEnabled = false;
             }
             catch (Exception ex)
             {
@@ -168,9 +172,12 @@ namespace CollapseLauncher.Pages
                 ErrorSender.SendException(ex);
                 LogWriteLine(msg, LogType.Error, true);
             }
+
+            await Task.Delay(1000);
+            (sender as Button).IsEnabled = true;
         }
 
-        private void ClearLogsFolder(object sender, RoutedEventArgs e)
+        private async void ClearLogsFolder(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -188,6 +195,9 @@ namespace CollapseLauncher.Pages
             {
                 ErrorSender.SendException(ex);
             }
+
+            await Task.Delay(1000);
+            (sender as Button).IsEnabled = true;
         }
 
         private void ForceUpdate(object sender, RoutedEventArgs e)
@@ -337,7 +347,7 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
-        private Task CreateScheduledTask(string taskName)
+        private TaskSched CreateScheduledTask(string taskName)
         {
             string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
 
@@ -352,6 +362,7 @@ namespace CollapseLauncher.Pages
             taskDefinition.Triggers.Add(new LogonTrigger());
             taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
 
+            TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
             return task;
         }
@@ -768,7 +779,7 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
 
                 bool value = task.Definition.Settings.Enabled;
@@ -783,7 +794,7 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Settings.Enabled = value;
                 task.RegisterChanges();
                 task.Dispose();
@@ -799,7 +810,7 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
 
                 bool? value = false;
@@ -814,7 +825,7 @@ namespace CollapseLauncher.Pages
                 string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Actions.Clear();
                 task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null, null));
                 task.RegisterChanges();
