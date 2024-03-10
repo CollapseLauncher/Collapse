@@ -1,5 +1,5 @@
-﻿using CollapseLauncher.Helper.Image;
 ﻿using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -97,7 +97,8 @@ namespace CollapseLauncher
             string cachedPaletteDirPath = Path.GetDirectoryName(cachedPalettePath);
             if (!Directory.Exists(cachedPaletteDirPath)) Directory.CreateDirectory(cachedPaletteDirPath);
 
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapInput, 10, IsLight, 1);
+            Windows.UI.Color[] _colors = new Windows.UI.Color[] { await GetPaletteList(bitmapInput, 1, IsLight, 1) };
+            _colors = EnsureLengthCopyLast(_colors, 4);
 
             if (!ConverterTool.TrySerializeStruct(_colors, buffer, out int read))
             {
@@ -119,15 +120,15 @@ namespace CollapseLauncher
             {
                 Application.Current.Resources["SystemAccentColor"] = palette[0];
                 Application.Current.Resources["SystemAccentColorDark1"] = palette[0];
-                Application.Current.Resources["SystemAccentColorDark2"] = palette[1];
-                Application.Current.Resources["SystemAccentColorDark3"] = palette[1];
-                Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[1]);
+                Application.Current.Resources["SystemAccentColorDark2"] = palette[0];
+                Application.Current.Resources["SystemAccentColorDark3"] = palette[0];
+                Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
             }
             else
             {
                 Application.Current.Resources["SystemAccentColor"] = palette[0];
                 Application.Current.Resources["SystemAccentColorLight1"] = palette[0];
-                Application.Current.Resources["SystemAccentColorLight2"] = palette[1];
+                Application.Current.Resources["SystemAccentColorLight2"] = palette[0];
                 Application.Current.Resources["SystemAccentColorLight3"] = palette[0];
                 Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
             }
@@ -136,7 +137,7 @@ namespace CollapseLauncher
         }
 
         private static List<QuantizedColor> _generatedColors = new List<QuantizedColor>();
-        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
+        private static async Task<Windows.UI.Color> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
 
@@ -144,36 +145,20 @@ namespace CollapseLauncher
             {
                 LumaUtils.DarkThreshold = IsLight ? 200f : 400f;
                 LumaUtils.IgnoreWhiteThreshold = IsLight ? 900f : 800f;
-                if (!IsLight)
-                    LumaUtils.ChangeCoeToBT709();
-                else
-                    LumaUtils.ChangeCoeToBT601();
+                LumaUtils.ChangeCoeToBT601();
 
                 return await Task.Run(() =>
                 {
-                    _generatedColors.Clear();
-
                     while (true)
                     {
                         try
                         {
-                            IEnumerable<QuantizedColor> averageColors = ColorThief.GetPalette(bitmapinput, ColorCount, quality, !IsLight)
-                                .Where(x => IsLight ? x.IsDark : !x.IsDark)
-                                .OrderBy(x => x.Population);
+                            QuantizedColor averageColor = ColorThief.GetColor(bitmapinput, 1, true);
+                            Windows.UI.Color wColor = DrawingColorToColor(averageColor);
+                            Windows.UI.Color adjustedColor = wColor.SetSaturation(1.5);
+                            adjustedColor = IsLight ? adjustedColor.GetDarkColor() : adjustedColor.GetLightColor();
 
-                            IEnumerable<QuantizedColor> quantizedColors = averageColors.ToArray();
-                            QuantizedColor dominatedColor = new QuantizedColor(
-                                  Color.FromArgb(
-                                      255,
-                                      (byte)quantizedColors.Average(a => a.Color.R),
-                                      (byte)quantizedColors.Average(a => a.Color.G),
-                                      (byte)quantizedColors.Average(a => a.Color.B)
-                                     ), (int)quantizedColors.Average(a => a.Population));
-
-                            _generatedColors.Add(dominatedColor);
-                            _generatedColors.AddRange(quantizedColors);
-
-                            break;
+                            return adjustedColor;
                         }
                         catch (InvalidOperationException)
                         {
@@ -182,10 +167,6 @@ namespace CollapseLauncher
                             ColorCount += 20;
                         }
                     }
-
-                    return EnsureLengthCopyLast(_generatedColors
-                        .Select(DrawingColorToColor)
-                        .ToArray(), 4);
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -194,7 +175,7 @@ namespace CollapseLauncher
             }
 
             Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
-            return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
+            return defColor;
         }
 
         private static T[] EnsureLengthCopyLast<T>(T[] array, int toLength)
