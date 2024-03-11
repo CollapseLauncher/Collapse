@@ -29,34 +29,60 @@ namespace CollapseLauncher.Helper.Image
         internal static Dictionary<string, string> SupportedImageFormats =
             new() { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } };
 
+        #region Waifu2X
         private static Waifu2X _waifu2X;
+        private static bool    isInitialLoad = true;
 
-        public static Waifu2XStatus Waifu2XStatus => _waifu2X?.Status ?? Waifu2XStatus.NotAvailable;
-
+        public static Waifu2XStatus Waifu2XStatus
+        {
+            get
+            {
+                // Initialize Waifu2X if its not initialized before
+                if (_waifu2X == null) InitWaifu2X();
+                var status = _waifu2X?.Status ?? Waifu2XStatus.NotAvailable;
+                if (_waifu2X != null && !GetAppConfigValue("EnableWaifu2X").ToBool()) DestroyWaifu2X();
+                return status;
+            }
+        }
+        
         public static bool IsWaifu2XEnabled
         {
             get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable;
-            set => SetAndSaveConfigValue("EnableWaifu2X", value);
+            set
+            {
+                SetAndSaveConfigValue("EnableWaifu2X", value);
+                if (!isInitialLoad)
+                {
+                    if (value && _waifu2X == null) InitWaifu2X();
+                    if (!value && _waifu2X != null) DestroyWaifu2X();
+                }
+
+                isInitialLoad = false;
+            } 
         }
 
         public static bool IsWaifu2XUsable => Waifu2XStatus != Waifu2XStatus.NotAvailable && Waifu2XStatus != Waifu2XStatus.TestNotPassed;
-
+        
         public static void InitWaifu2X()
         {
+            if (_waifu2X != null) return;
+            
             _waifu2X = new Waifu2X();
             if (_waifu2X.Status == Waifu2XStatus.NotAvailable)
                 return;
             _waifu2X.SetParam(Param.Noise, -1);
             _waifu2X.SetParam(Param.Scale, 2);
-            _waifu2X.Load(Path.Combine(AppFolder, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
-                Path.Combine(AppFolder, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
+            _waifu2X.Load(Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
+                Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
         }
 
         public static void DestroyWaifu2X()
         {
             _waifu2X?.Dispose();
             _waifu2X = null;
+            Hi3Helper.Logger.LogWriteLine("Waifu2X is desutroyed!");
         }
+        #endregion
 
         internal static async Task<FileStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)
         {
@@ -254,7 +280,7 @@ namespace CollapseLauncher.Helper.Image
 
             await Task.Run(() =>
             {
-                var imageFileInfo = ImageFileInfo.Load(input);
+                var imageFileInfo = ImageFileInfo.Load(input!);
                 var frame = imageFileInfo.Frames[0];
                 input.Position = 0;
                 if (IsWaifu2XEnabled && (frame.Width < ToWidth || frame.Height < ToHeight))

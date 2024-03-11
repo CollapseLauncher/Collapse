@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace CollapseLauncher.Helper.Image
 {
+    #region ncnn Defines
     public static class Ncnn
     {
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
@@ -22,11 +23,13 @@ namespace CollapseLauncher.Helper.Image
             return Marshal.PtrToStringUTF8(ncnn_get_gpu_name(gpuId));
         }
     }
+    #endregion
 
     public class Waifu2X : IDisposable
     {
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
 
+        #region DllImports
         [DllImport(DllName)]
         private static extern IntPtr waifu2x_create(int gpuId = 0, bool ttaMode = false, int numThreads = 0);
 
@@ -47,7 +50,9 @@ namespace CollapseLauncher.Helper.Image
 
         [DllImport(DllName)]
         private static extern int waifu2x_get_param(IntPtr context, Param param);
+        #endregion
 
+        #region Enums
         public enum Param
         {
             Noise,
@@ -62,12 +67,15 @@ namespace CollapseLauncher.Helper.Image
             NotAvailable,
             TestNotPassed,
         }
+        #endregion
 
+        #region Properties
         private IntPtr _context;
         private byte[] _paramBuffer;
         private byte[] _modelBuffer;
         private bool _testPassed;
         private int _gpuId;
+        #endregion
 
         public Waifu2XStatus Status
         {
@@ -86,6 +94,7 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
+        #region Main Methods
         public Waifu2X()
         {
             try
@@ -129,18 +138,18 @@ namespace CollapseLauncher.Helper.Image
             try
             {
                 using (var ms = new MemoryStream())
-                using (var fs = new FileStream(paramPath, FileMode.Open))
-                {
-                    fs.CopyTo(ms);
-                    _paramBuffer = ms.ToArray();
-                }
+                    using (var fs = new FileStream(paramPath, FileMode.Open))
+                    {
+                        fs.CopyTo(ms);
+                        _paramBuffer = ms.ToArray();
+                    }
 
                 using (var ms = new MemoryStream())
-                using (var fs = new FileStream(modelPath, FileMode.Open))
-                {
-                    fs.CopyTo(ms);
-                    _modelBuffer = ms.ToArray();
-                }
+                    using (var fs = new FileStream(modelPath, FileMode.Open))
+                    {
+                        fs.CopyTo(ms);
+                        _modelBuffer = ms.ToArray();
+                    }
             }
             catch (IOException)
             {
@@ -151,7 +160,9 @@ namespace CollapseLauncher.Helper.Image
 
             return Load(_paramBuffer, _modelBuffer);
         }
+        #endregion
 
+        #region Process Methodss
         public unsafe int Process(int w, int h, int c, ReadOnlySpan<byte> inData, Span<byte> outData)
         {
             if (_context == 0) throw new NotSupportedException();
@@ -169,7 +180,9 @@ namespace CollapseLauncher.Helper.Image
                 return waifu2x_process_cpu(_context, w, h, c, pInData, pOutData);
             }
         }
+        #endregion
 
+        #region Parameters
         public void SetParam(Param param, int value)
         {
             if (_context == 0) throw new NotSupportedException();
@@ -181,7 +194,8 @@ namespace CollapseLauncher.Helper.Image
             if (_context == 0) throw new NotSupportedException();
             return waifu2x_get_param(_context, param);
         }
-
+        #endregion
+        
         private bool Test()
         {
             if (Status == Waifu2XStatus.NotAvailable)
