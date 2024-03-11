@@ -51,6 +51,7 @@
                                 x:Name="AppLangSelectionWarning"
                                 Margin="0,12,0,0"
                                 FontWeight="Bold"
+                                TextWrapping="Wrap"
                                 Foreground="{ThemeResource AccentColor}"
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}"
                                 Visibility="Collapsed" />
@@ -111,6 +112,7 @@
                                 x:Name="AppThemeSelectionWarning"
                                 Margin="0,4"
                                 FontWeight="Bold"
+                                TextWrapping="Wrap"
                                 Foreground="{ThemeResource AccentColor}"
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}"
                                 Visibility="Collapsed" />
@@ -493,6 +495,7 @@
                             x:Name="ChangeRegionToggleWarning"
                             Margin="8,0,0,8"
                             FontWeight="Bold"
+                            TextWrapping="Wrap"
                             Foreground="{ThemeResource AccentColor}"
                             Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}"
                             Visibility="Collapsed" />
