@@ -38,7 +38,7 @@
     "Pg2ComboBoxRegion": "Pilih Region",
     "Pg2NextBtn": "Selesai - Masuk ke Launcher",
     "Pg2PrevBtn": "Sebelumnya - Memilih Folder",
-    "Pg2PrevBtnNew": "Back - Launcher Configuration",
+    "Pg2PrevBtnNew": "Kembali - Konfigurasi Launcher",
     "Pg2Subtitle1_1": "Hanya satu langkah lagi untuk memainkan game-mu dari",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -54,7 +54,7 @@
     "Subtitle4_1": "Untuk memulai, klik tombol",
     "Subtitle4_2": "Pilih Folder",
     "Subtitle4_3": "untuk memilih lokasi penyimpanan data launcher.",
-    "Title1": "Welcome to",
+    "Title1": "Selamat Datang di",
     "Title2": "Collapse Launcher"
   },
 
@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "Pengaturan App",
     "NotifNeverAsk": "Jangan munculkan ini lagi",
     "NotifNoNewNotifs": "Tidak ada notifikasi baru",
+    "NotifClearAll": "Hapus semua notifikasi",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Perkakas"
   },
@@ -151,7 +152,7 @@
     "GamePlaytime_Idle_InvalidTimeBlock": "Nilai yang dimasukkan tidak benar.",
     "GamePlaytime_Running_Info1": "Game ini sedang berjalan, maka dari itu waktu main tidak dapat diubah.",
     "GamePlaytime_Running_Info2": "Perlu diketahui bahwa dengan menutup Collapse akan memberhentikan tracking dari waktu main (untuk disimpan pada saat dimainkan) dan hanya sesi yang dijalankan dari Collapse saja yang dapat ditrack.",
-    "GamePlaytime_Display": "{0}h {1}m",
+    "GamePlaytime_Display": "{0}j {1}m",
 
     "PostPanel_Events": "Event",
     "PostPanel_Notices": "Pemberitahuan",
@@ -187,6 +188,8 @@
     "Status11": "Menunggu proses perbaikan dimulai...",
     "Status12": "Memperbarui Audio: {0}",
     "Status13": "Memperbarui Blok: {0}",
+    "Status14": "Memeriksa ketersediaan asset CG: {0}",
+    "Status15": "Memeriksa ketersediaan asset Audio: {0}",
     "StatusNone": "Tidak diketahui",
     "PerProgressTitle1": "Progres Per File",
     "PerProgressSubtitle1": "Menunggu...",
@@ -284,12 +287,23 @@
     "Graphics_APHO2AO": "Ambient Occlusion",
     "Graphics_APHO2LOD": "Level Of Detail",
 
+    "Graphics_ParticleQuality": "Kualitas Partikel",
+    "Graphics_LightingQuality": "Kualitas Pencahayaan",
+    "Graphics_PostFXQuality": "Kualitas Efek Visual",
+    "Graphics_AAMode": "Mode Anti-Aliasing",
+    "Graphics_CharacterQuality": "Kualitas Karakter",
+    "Graphics_WeatherQuality": "Kualitas Efek Cuaca",
+
+    "Graphics_Legacy_Title": "Pengaturan Lama",
+    "Graphics_Legacy_Subtitle": "Pengaturan ini sudah tidak tersedia di dalam game dan kemungkinan ttidak akan mempengaruhi apapun.",
+
     "SpecDisabled": "Mati",
     "SpecLow": "Rendah",
     "SpecMedium": "Sedang",
     "SpecHigh": "Tinggi",
     "SpecVeryHigh": "S. Tinggi",
     "SpecMaximum": "Maksimum",
+    "SpecUltra": "Terbaik",
 
     "Audio_Title": "Pengaturan Suara",
     "Audio_Master": "Volume Utama",
@@ -334,16 +348,16 @@
 
     "GameBoost": "Boost Game Priority [Experimental]",
 
-    "Advanced_Title": "Advanced Settings",
-    "Advanced_Subtitle1": "Collapse Launcher Team",
-    "Advanced_Subtitle2": "IS NOT RESPONSIBLE",
-    "Advanced_Subtitle3": "for anything happened to your game, account or system while this settings is in use! Use at your own risk.",
-    "Advanced_GLC_WarningAdmin": "WARNING: Commands provided will be run as Administrator!",
-    "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
-    "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
-    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
-    "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
-    "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
+    "Advanced_Title": "Pengaturan Lanjutan",
+    "Advanced_Subtitle1": "Team Collapse Launcher",
+    "Advanced_Subtitle2": "TIDAK BERTANGGUNG JAWAB",
+    "Advanced_Subtitle3": "atas apapun yang terjadi dalam game, akun, mamupun sistem saat setting ini digunakan! Gunakan dengan teliti!",
+    "Advanced_GLC_WarningAdmin": "PERINGATAN: Command yang dijalankan akan menggunakan akses sebagai Administrator!",
+    "Advanced_GLC_PreLaunch_Title": "Command Pre-Launch",
+    "Advanced_GLC_PreLaunch_Subtitle": "Command yang akan dijalankan sebelum game dijalankan.",
+    "Advanced_GLC_PreLaunch_Exit": "Paksa matikan process yang dijalankan saat game sudah berhenti/ditutup.",
+    "Advanced_GLC_PostExit_Title": "Command Post-Exit",
+    "Advanced_GLC_PostExit_Subtitle": "Command yang akan dijalankan setelah game ditutup/berhenti."
   },
 
   "_SettingsPage": {
@@ -387,6 +401,14 @@
     "AppThreads_Help5": "Utas ini akan bertanggungjawab untuk menangani utas-utas untuk proses extract/verifikasi pada saat memasang/memulihkan game.",
     "AppThreads_Help6": "Catatan: Pengaturan ini tidak lagi berpengaruh pada saat memasang Honkai Impact 3.",
 
+    "AppThreads_Attention": "Perhatian",
+    "AppThreads_Attention1": "Sebelum kamu mengubah pengaturan",
+    "AppThreads_Attention2": "dan apabila kamu masih memiliki download yang belum selesai, mohon untuk",
+    "AppThreads_Attention3": "TIDAK MENGUBAH",
+    "AppThreads_Attention4": "nilai dari pengaturan dikarenakan hal ini akan membuat proses download kamu",
+    "AppThreads_Attention5": "TERULANG DARI AWAL",
+    "AppThreads_Attention6": "dikarenakan jumlah sesi yang dibutuhkan untuk download tidak sama.",
+
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Perlihatkan Discord Presence",
     "DiscordRPC_GameStatusToggle": "Munculkan game yang dimainkan pada status Discord",
@@ -416,8 +438,8 @@
     "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
 
     "About": "Tentang",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "© 2022-2024",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
     "About_Copyright3": "Di bawah lisensi",
     "About_Copyright4": ". Hak cipta dilindungi.",
 
@@ -450,10 +472,18 @@
     "AppBehavior_PostGameLaunch_Nothing": "Tidak melakukan apapun",
     "AppBehavior_MinimizeToTray": "Kecilkan ke Tray",
     "AppBehavior_LaunchOnStartup": "Jalankan Collapse secara otomatis saat komputer menyala",
-    "AppBehavior_StartupToTray": "Sembunyikan jendela Collapse setelah dijalankan secara otomatis"
+    "AppBehavior_StartupToTray": "Sembunyikan jendela Collapse setelah dijalankan secara otomatis",
+
+    "Waifu2X_Toggle": "Gunakan Waifu2X [Eksperimental]",
+    "Waifu2X_Help": "Gunakan Waifu2X untuk memperbesar gambar latar belakang.\nKetika dihidupkan, kualitas gambar akan ditingkatkan secara signifikan, namun gambar akan dimuat sedikit lebih lama saat gambar dimuat untuk pertama kalinya.",
+    "Waifu2X_Warning_CpuMode": "PERINGATAN: Kamu tidak memiliki GPU yang mendukung API Vulkan dan CPU kamu akan digunakan untuk memproses gambar. Proses pemrosesan akan menjadi lebih lama dari yang seharusnya.",
+    "Waifu2X_Error_Loader": "ERROR: Gagal dalam mempersiapkan Vulkan API. Pastikan bahwa kamu memiliki GPU yang mendukung Vulkan API dan memiliki driver yang sesuai.",
+    "Waifu2X_Error_Output": "ERROR: Gagal dalam proses pengecheckan Waifu2X, output mengeluarkan gambar kosong."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Pembaruan Selesai!",
     "UpdateCompleteSubtitle": "Launchermu telah diperbarui ke {0}! (Kanal Rilis: {1})",
     "FeatureUnavailableTitle": "Fitur ini tidak tersedia untuk saat ini",
@@ -503,8 +533,8 @@
     "NotSelected": "Belum dipilih",
     "ExtractAnyway": "Ekstrak Saja!",
 
-    "IAcceptAgreement": "I accept the agreement",
-    "IDoNotAcceptAgreement": "I do not accept the agreement",
+    "IAcceptAgreement": "Saya menyetujui perjanjian tersebut",
+    "IDoNotAcceptAgreement": "Saya tidak menyetujui perjanjian tersebut",
 
     "LangNameENUS": "Inggris (AS)",
     "LangNameJP": "Jepang",
@@ -537,7 +567,7 @@
     "CDNDescription_Github": "Repositori resmi (utama) untuk launcher",
     "CDNDescription_Cloudflare": "Mirror dari repositori resmi (main) yang dihost dalam bucket Cloudflare R2.",
     "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
+    "CDNDescription_GitLab": "Mirror dari repositori resmi (main) yang dihost dalam GitLab",
 
     "LocateExecutable": "Pilih Executable",
     "OpenDownloadPage": "Buka Halaman Download",
@@ -567,7 +597,7 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nama launcher tidak diketahui)",
     
-    "ImageCropperTitle": "Crop the image"
+    "ImageCropperTitle": "Memotong Gambar"
   },
 
   "_BackgroundNotification": {
@@ -682,10 +712,10 @@
     "ResetPlaytimeSubtitle": "Menyetel ulang waktu main anda akan mengatur ulang hitungan menjadi 0. Hal ini bersifat ",
     "ResetPlaytimeSubtitle2": "\"destructive\"",
     "ResetPlaytimeSubtitle3": "yang berarti anda tidak akan bisa mengembalikannya setelah anda mengkonfirmasi.\n\nLanjut untuk mengubah?\n\nCatatan: Hal ini tidak akan mempengaruhi cara Collapse berjalan dan anda dapat mengubah nilai kembali kapan saja saat anda tidak sedang memainkan gamenya.",
-    "InvalidPlaytimeTitle": "There was a problem saving this session's playtime",
-    "InvalidPlaytimeSubtitle1": "The difference between the starting and ending times results in a negative number.",
-    "InvalidPlaytimeSubtitle2": "A fallback value is saved every minute and will be used instead:",
-    "InvalidPlaytimeSubtitle3": "Please refrain from adjusting the computer clock while in-game.",
+    "InvalidPlaytimeTitle": "Terjadi masalah saat menyimpan sesi bermain",
+    "InvalidPlaytimeSubtitle1": "Perbedaan dalam waktu permulaan dan akhiran menghasilkan nomor negatif",
+    "InvalidPlaytimeSubtitle2": "Nilai asali akan digunakan setiap menit: ",
+    "InvalidPlaytimeSubtitle3": "Mohon untuk tidak mengubah jam pada komputer saat bermain.",
 
     "LocateExePathTitle": "Pilih Lokasi Pemasangan Executable",
     "LocateExePathSubtitle": "Silahkan arahkan Collapse ke lokasi dari executable aplikasimu:",
@@ -726,7 +756,7 @@
     "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
 
     "SteamShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
-    "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
+    "SteamShortcutCreationConfirmSubtitle1": "Jalan pintas (Shortcut) akan ditambahkan pada setiap user Steam di dalam komputer ini.",
     "SteamShortcutCreationConfirmSubtitle2": "Jika sudah dibuat sebelumnya, asset yang berhubungan dengan pintasan ini akan diverifikasi.",
     "SteamShortcutCreationConfirmCheckBox": "Langsung memulai game setelah menggunakan pintasan ini",
     "SteamShortcutCreationSuccessTitle": "Sukses!",
@@ -735,7 +765,7 @@
     "SteamShortcutCreationSuccessSubtitle3": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
     "SteamShortcutCreationSuccessSubtitle4": "• Mengulangi proses ini dapat memperbaiki gambar yang hilang/rusak pada pintasan.",
     "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
-    "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle6": " • Dalam menggunakan overlay pada Steam, Steam harus berjalan sebagai administrator dan Collapse harus ditutup atau memiliki opsi \"Multiple Instances\" yang sudah dinyalakan pada menu \"Pengaturan Aplikasi\".",
 
     "SteamShortcutCreationFailureTitle": "Folder data Steam tidak valid",
     "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini."
@@ -788,6 +818,8 @@
     "ConvertSuccessSubtitle": "Pengubahan Game dari {0} ke {1} telah berhasil dilakukan!",
     "CookbookDownloadTitle": "Mengunduh Resep",
     "CookbookDownloadSubtitle": "Mengunduh resep untuk pengubahan dari {0} ke {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "Cookbook untuk {0} ke {1}",
 
     "CancelBtn": "Batalkan Pengubahan",
     "CancelMsgTitle": "Membatalkan Pengubahan...",
@@ -954,7 +986,7 @@
     "Graphics_FPS_Help": "120 FPS merupakan opsi EKSPERIMENTAL. Gunakan dengan resiko sendiri.",
     "Graphics_FPS_Help2": "Selain itu, Setelan 120 FPS juga merusak Pengaturan Grafis dalam Game.\r\nGunakan Collapse untuk mengubah Pengaturan Grafis Game.",
     "Graphics_VSync": "VSync",
-    "Graphics_VSync_Help": "VSync is not available on 120 FPS",
+    "Graphics_VSync_Help": "VSync tidak tersedia pada mode 120 FPS",
     "Graphics_RenderScale": "Akurasi Rendering",
     "Graphics_ResolutionQuality": "Kualitas Resolusi",
     "Graphics_ShadowQuality": "Kualitas Bayangan",
@@ -1044,8 +1076,8 @@
     "Graphics_GlobalIllumination": "Iluminasi Global",
     "Graphics_GlobalIllumination_Help1": "Hanya untuk perangkat keras yang didukung!",
     "Graphics_GlobalIllumination_Help2": "Informasi lebih lanjut (en)",
-    "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
-    "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
+    "Graphics_DynamicCharacterResolution": "Resolusi Dinamik Karakter",
+    "Graphics_DynamicCharacterResolution_Tooltip": "Hanya untuk perangkat yang didukung saja!",
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Nyalakan HDR",
     "Graphics_HDR_NotSupported1": "Monitor kamu tidak mendukung HDR.",
@@ -1151,7 +1183,11 @@
     "ChangeShortcut_Help1": "Sebuah pintasan terdiri dari 2 bagian:",
     "ChangeShortcut_Help2": "・Pengubah - Shift, Ctrl atau Alt/Menu",
     "ChangeShortcut_Help3": "・Tombol - Alfabet (A ke Z) atau Tab",
-    "ChangeShortcut_Help4": "Kamu dapat memilih kombinasi apa pun dari masing-masing bagian, kecuali juga sudah digunakan oleh Collapse atau sistem."
+    "ChangeShortcut_Help4": "Kamu dapat memilih kombinasi apa pun dari masing-masing bagian, kecuali juga sudah digunakan oleh Collapse atau sistem.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1172,41 +1208,41 @@
   },
 
   "_OOBEAgreementMenu": {
-    "AgreementTitle": "Agreement:"
+    "AgreementTitle": "Perjanjian:"
   },
 
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Welcome", " To" ],
-      "Lower": [ "Collapse", " Launcher" ]
+      "Upper": [ "Selamat", "Datang di" ],
+      "Lower": [ "Collapse", "Launcherr" ]
     },
-    "SetupNextButton": "Click Here to Continue",
-    "SetupBackButton": "Go Back",
+    "SetupNextButton": "Klik di sini untuk melanjutkan",
+    "SetupBackButton": "Kembali",
 
-    "CustomizationTitle": "Customize Your Launcher",
-    "CustomizationSettingsLanguageHeader": "Language",
-    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
-    "CustomizationSettingsWindowSizeHeader": "Window Size",
-    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationTitle": "Menyesuaikan Launchermu",
+    "CustomizationSettingsLanguageHeader": "Bahasa",
+    "CustomizationSettingsLanguageDescription": "Informasi akan ditampilkan sesuai dengan bahasa yang digunakan.",
+    "CustomizationSettingsWindowSizeHeader": "Ukuran Window",
+    "CustomizationSettingsWindowSizeDescription": "Menyesuaikan ukuran window pada launcher.",
     "CustomizationSettingsCDNHeader": "Content Delivery Network",
-    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
-    "CustomizationSettingsStyleHeader": "Style Preference",
-    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
-    "CustomizationSettingsStyleThemeHeader": "Theme",
-    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
-    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
-    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+    "CustomizationSettingsCDNDescription": "Pilih Content Delivery Network utama yang akan digunakan.",
+    "CustomizationSettingsStyleHeader": "Pilihan Style",
+    "CustomizationSettingsStyleDescription": "Ubah tampilan pada launcher sesuai keinginanmu.",
+    "CustomizationSettingsStyleThemeHeader": "Tema",
+    "CustomizationSettingsStyleThemeDescription": "Ubah warna yang akan ditampilkan pada launcher.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Gambar Latar Belakang Kustom",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Gunakan gambar latar belakang kustom ketimbang dengan bawaan.",
 
-    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
-    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
-    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
-    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
-    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
-    "LoadingBackgroundImageTitle": "Loading Image",
-    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+    "LoadingInitializationTitle": "Mempersiapkan Launcher untuk Pertama Kalinya",
+    "LoadingCDNCheckboxCheckLatency": "(Memeriksa Latensi...)",
+    "LoadingCDNCheckboxPlaceholder": "Memeriksa Rekomendasi CDN...",
+    "LoadingCDNCheckingSubitle": "Mencari Content Delivery Network (CDN) yang terdekat denganmu...",
+    "LoadingCDNCheckingSkipButton": "Lewati Pencarian CDN",
+    "LoadingBackgroundImageTitle": "Memuat Gambar",
+    "LoadingBackgroundImageSubtitle": "Gambar akan dimuat dan memerlukan waktu untuk diproses.",
 
-    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
-    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
-    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
+    "CDNCheckboxItemLatencyFormat": "({0} md)",
+    "CDNCheckboxItemLatencyUnknownFormat": "(Tidak diketahui)",
+    "CDNCheckboxItemLatencyRecommendedFormat": "[Direkomendasikan]"
   }
 }
