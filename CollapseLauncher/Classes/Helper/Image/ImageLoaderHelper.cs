@@ -31,56 +31,59 @@ namespace CollapseLauncher.Helper.Image
 
         #region Waifu2X
         private static Waifu2X _waifu2X;
-        private static bool    isInitialLoad = true;
+        private static Waifu2XStatus _cachedStatus = Waifu2XStatus.NotInitialized;
 
         public static Waifu2XStatus Waifu2XStatus
         {
             get
             {
-                // Initialize Waifu2X if its not initialized before
-                if (_waifu2X == null) InitWaifu2X();
-                var status = _waifu2X?.Status ?? Waifu2XStatus.NotAvailable;
-                if (_waifu2X != null && !GetAppConfigValue("EnableWaifu2X").ToBool()) DestroyWaifu2X();
-                return status;
+                // Cache the status of waifu2x
+                if (_cachedStatus == Waifu2XStatus.NotInitialized)
+                {
+                    using var test = CreateWaifu2X();
+                    {
+                        _cachedStatus = test.Status;
+                    }
+                }
+                return _cachedStatus;
             }
         }
-        
+
         public static bool IsWaifu2XEnabled
         {
             get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable;
             set
             {
                 SetAndSaveConfigValue("EnableWaifu2X", value);
-                if (!isInitialLoad)
-                {
-                    if (value && _waifu2X == null) InitWaifu2X();
-                    if (!value && _waifu2X != null) DestroyWaifu2X();
-                }
-
-                isInitialLoad = false;
-            } 
+                if (value) InitWaifu2X();
+                else DestroyWaifu2X();
+            }
         }
 
         public static bool IsWaifu2XUsable => Waifu2XStatus != Waifu2XStatus.NotAvailable && Waifu2XStatus != Waifu2XStatus.TestNotPassed;
-        
+
+        private static Waifu2X CreateWaifu2X()
+        {
+            var waifu2X = new Waifu2X();
+            if (waifu2X.Status != Waifu2XStatus.NotAvailable)
+            {
+                waifu2X.SetParam(Param.Noise, -1);
+                waifu2X.SetParam(Param.Scale, 2);
+                waifu2X.Load(Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
+                    Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
+            }
+            return waifu2X;
+        }
+
         public static void InitWaifu2X()
         {
-            if (_waifu2X != null) return;
-            
-            _waifu2X = new Waifu2X();
-            if (_waifu2X.Status == Waifu2XStatus.NotAvailable)
-                return;
-            _waifu2X.SetParam(Param.Noise, -1);
-            _waifu2X.SetParam(Param.Scale, 2);
-            _waifu2X.Load(Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
-                Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
+            _waifu2X ??= CreateWaifu2X();
         }
 
         public static void DestroyWaifu2X()
         {
             _waifu2X?.Dispose();
             _waifu2X = null;
-            Hi3Helper.Logger.LogWriteLine("Waifu2X is desutroyed!");
         }
         #endregion
 

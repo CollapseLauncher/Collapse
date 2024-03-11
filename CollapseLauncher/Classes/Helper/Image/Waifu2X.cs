@@ -66,6 +66,7 @@ namespace CollapseLauncher.Helper.Image
             CpuMode,
             NotAvailable,
             TestNotPassed,
+            NotInitialized,
         }
         #endregion
 
@@ -120,6 +121,7 @@ namespace CollapseLauncher.Helper.Image
             {
                 waifu2x_destroy(_context);
                 _context = 0;
+                Logger.LogWriteLine("Waifu2X is destroyed!");
             }
         }
 
@@ -162,7 +164,7 @@ namespace CollapseLauncher.Helper.Image
         }
         #endregion
 
-        #region Process Methodss
+        #region Process Methods
         public unsafe int Process(int w, int h, int c, ReadOnlySpan<byte> inData, Span<byte> outData)
         {
             if (_context == 0) throw new NotSupportedException();
@@ -195,7 +197,7 @@ namespace CollapseLauncher.Helper.Image
             return waifu2x_get_param(_context, param);
         }
         #endregion
-        
+
         private bool Test()
         {
             if (Status == Waifu2XStatus.NotAvailable)
