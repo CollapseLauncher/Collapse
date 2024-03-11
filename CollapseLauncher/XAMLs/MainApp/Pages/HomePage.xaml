@@ -16,21 +16,21 @@
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Key="SharedShadow" />
+        <ThemeShadow x:Key="SharedShadow"/>
         <s:AttachedDropShadow x:Key="SharedDropShadow"
                               BlurRadius="16"
                               CastTo="{x:Bind ImageEventImgShadow}"
                               Opacity="0.3"
-                              Offset="0,4,0" />
+                              Offset="0,4,0"/>
         <Style TargetType="imageex:ImageEx">
             <Setter Property="Background"
-                    Value="Transparent" />
+                    Value="Transparent"/>
             <Setter Property="Foreground"
-                    Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+                    Value="{ThemeResource ApplicationForegroundThemeBrush}"/>
             <Setter Property="IsTabStop"
-                    Value="False" />
+                    Value="False"/>
             <Setter Property="LazyLoadingThreshold"
-                    Value="300" />
+                    Value="300"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="imageex:ImageEx">
@@ -43,13 +43,13 @@
                                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                    Opacity="1.0"
                                    Source="{TemplateBinding PlaceholderSource}"
-                                   Stretch="{TemplateBinding PlaceholderStretch}" />
+                                   Stretch="{TemplateBinding PlaceholderStretch}"/>
                             <Image Name="Image"
                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                    NineGrid="{TemplateBinding NineGrid}"
                                    Opacity="0.0"
-                                   Stretch="{TemplateBinding Stretch}" />
+                                   Stretch="{TemplateBinding Stretch}"/>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Failed">
@@ -57,12 +57,12 @@
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Image"
                                                                            Storyboard.TargetProperty="Opacity">
                                                 <DiscreteObjectKeyFrame KeyTime="0"
-                                                                        Value="0" />
+                                                                        Value="0"/>
                                             </ObjectAnimationUsingKeyFrames>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderImage"
                                                                            Storyboard.TargetProperty="Opacity">
                                                 <DiscreteObjectKeyFrame KeyTime="0"
-                                                                        Value="1" />
+                                                                        Value="1"/>
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
@@ -71,12 +71,12 @@
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Image"
                                                                            Storyboard.TargetProperty="Opacity">
                                                 <DiscreteObjectKeyFrame KeyTime="0"
-                                                                        Value="0" />
+                                                                        Value="0"/>
                                             </ObjectAnimationUsingKeyFrames>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderImage"
                                                                            Storyboard.TargetProperty="Opacity">
                                                 <DiscreteObjectKeyFrame KeyTime="0"
-                                                                        Value="1" />
+                                                                        Value="1"/>
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
@@ -88,17 +88,17 @@
                                                              Storyboard.TargetProperty="Opacity"
                                                              From="0"
                                                              To="1"
-                                                             Duration="0:0:0.25" />
+                                                             Duration="0:0:0.25"/>
                                             <DoubleAnimation AutoReverse="False"
                                                              BeginTime="0"
                                                              Storyboard.TargetName="PlaceholderImage"
                                                              Storyboard.TargetProperty="Opacity"
                                                              From="1"
                                                              To="0"
-                                                             Duration="0:0:0.25" />
+                                                             Duration="0:0:0.25"/>
                                         </Storyboard>
                                     </VisualState>
-                                    <VisualState x:Name="Unloaded" />
+                                    <VisualState x:Name="Unloaded"/>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
                         </Grid>
@@ -111,18 +111,18 @@
           Margin="32,8,32,32">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <NavigationThemeTransition />
+                <NavigationThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="41" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="41"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1224*" />
-            <ColumnDefinition Width="248" />
+            <ColumnDefinition Width="1224*"/>
+            <ColumnDefinition Width="248"/>
         </Grid.ColumnDefinitions>
         <InfoBar x:Name="PreloadDialogBox"
                  Title=""
@@ -146,12 +146,12 @@
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
-                            <PopupThemeTransition />
+                            <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="32" />
-                            <ColumnDefinition />
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0"
                               HorizontalAlignment="Stretch">
@@ -160,9 +160,9 @@
                                         Orientation="Vertical">
                                 <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <StackPanel HorizontalAlignment="Left"
@@ -170,13 +170,13 @@
                                             <TextBlock x:Name="ProgressPrePerFileStatusFooter"
                                                        FontSize="12"
                                                        FontWeight="Bold"
-                                                       Text="Downloading" />
+                                                       Text="Downloading"/>
                                         </StackPanel>
                                         <TextBlock x:Name="ProgressPreStatusFooter"
                                                    Margin="0,4,0,0"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" />
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 HorizontalAlignment="Center"
@@ -184,17 +184,17 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{Binding Value, ElementName=progressPrePerFileBar}" />
+                                                   Text="{Binding Value, ElementName=progressPrePerFileBar}"/>
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="%" />
+                                                   Text="%"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
                                                 VerticalAlignment="Bottom">
                                         <TextBlock x:Name="ProgressPrePerFileStatusSubtitle"
                                                    HorizontalAlignment="Right"
                                                    FontSize="12"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"/>
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar x:Name="progressPrePerFileBar"
@@ -203,7 +203,7 @@
                                              VerticalAlignment="Top"
                                              IsIndeterminate="True"
                                              Maximum="100"
-                                             Value="0" />
+                                             Value="0"/>
                             </StackPanel>
                         </Grid>
                         <Grid Grid.Column="2"
@@ -214,16 +214,16 @@
                                         Orientation="Vertical">
                                 <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0"
                                                 VerticalAlignment="Bottom">
                                         <TextBlock x:Name="ProgressPreStatusSubtitle"
                                                    HorizontalAlignment="Left"
                                                    FontSize="12"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 HorizontalAlignment="Center"
@@ -231,22 +231,22 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{Binding Value, ElementName=progressPreBar}" />
+                                                   Text="{Binding Value, ElementName=progressPreBar}"/>
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="%" />
+                                                   Text="%"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
                                         <TextBlock HorizontalAlignment="Right"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" />
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}"/>
                                         <TextBlock x:Name="ProgressPreTimeLeft"
                                                    Margin="0,4,0,0"
                                                    HorizontalAlignment="Right"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="-" />
+                                                   Text="-"/>
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar x:Name="progressPreBar"
@@ -255,7 +255,7 @@
                                              VerticalAlignment="Top"
                                              IsIndeterminate="True"
                                              Maximum="100"
-                                             Value="0" />
+                                             Value="0"/>
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -265,7 +265,7 @@
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
-                            <PopupThemeTransition />
+                            <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
                         <Button x:Name="PauseDownloadPreBtn"
                                 HorizontalAlignment="Right"
@@ -279,10 +279,10 @@
                                             Orientation="Horizontal">
                                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                               FontSize="16"
-                                              Glyph="" />
+                                              Glyph=""/>
                                     <TextBlock Margin="8,0,0,0"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}" />
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}"/>
                                 </StackPanel>
                             </Button.Content>
                         </Button>
@@ -298,10 +298,10 @@
                                             Orientation="Horizontal">
                                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                               FontSize="16"
-                                              Glyph="" />
+                                              Glyph=""/>
                                     <TextBlock Margin="8,0,0,0"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" />
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"/>
                                 </StackPanel>
                             </Button.Content>
                         </Button>
@@ -319,10 +319,10 @@
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="16"
-                                      Glyph="" />
+                                      Glyph=""/>
                             <TextBlock Margin="8,0,0,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.DownloadBtn}" />
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.DownloadBtn}"/>
                         </StackPanel>
                     </Button.Content>
                 </Button>
@@ -341,17 +341,17 @@
                     Orientation="Vertical"
                     Shadow="{ThemeResource SharedShadow}">
             <StackPanel.Resources>
-                <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+                <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             </StackPanel.Resources>
             <StackPanel.Transitions>
-                <PopupThemeTransition />
+                <PopupThemeTransition/>
             </StackPanel.Transitions>
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
                     <ItemsControl.Transitions>
-                        <PopupThemeTransition />
+                        <PopupThemeTransition/>
                     </ItemsControl.Transitions>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -371,7 +371,7 @@
                                 <ToolTipService.ToolTip>
                                     <ToolTip Opened="ShowSocMedFlyout"
                                              Tag="{Binding ElementName=SocMedButton}"
-                                             Visibility="Collapsed" />
+                                             Visibility="Collapsed"/>
                                 </ToolTipService.ToolTip>
                                 <Button.Resources>
                                     <Flyout x:Name="SocMedFlyout"
@@ -389,14 +389,14 @@
                                                       CornerRadius="5">
                                                     <Image Width="160"
                                                            HorizontalAlignment="Center"
-                                                           Source="{Binding QR}" />
+                                                           Source="{Binding QR}"/>
                                                 </Grid>
                                                 <TextBlock Margin="0,0,0,4"
                                                            HorizontalAlignment="Center"
                                                            FontWeight="Bold"
                                                            Text="{Binding QR_Description}"
                                                            TextWrapping="Wrap"
-                                                           Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                           Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
                                             </StackPanel>
                                             <StackPanel Visibility="{Binding ShowLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
                                                 <ItemsControl ItemsSource="{Binding Links}">
@@ -414,7 +414,7 @@
                                                                                    PointerExited="HyperLink_OnPointerExited"
                                                                                    Text="{Binding title}"
                                                                                    TextDecorations="Underline"
-                                                                                   TextWrapping="Wrap" />
+                                                                                   TextWrapping="Wrap"/>
                                                                     </ControlTemplate>
                                                                 </Button.Template>
                                                             </Button>
@@ -425,20 +425,20 @@
                                             <TextBlock HorizontalAlignment="Center"
                                                        Text="{Binding Description}"
                                                        TextWrapping="Wrap"
-                                                       Visibility="{Binding ShowDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                       Visibility="{Binding ShowDescription, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
                                         </StackPanel>
                                         <Flyout.FlyoutPresenterStyle>
                                             <Style TargetType="FlyoutPresenter">
                                                 <Setter Property="Margin"
-                                                        Value="3,0,0,0" />
+                                                        Value="3,0,0,0"/>
                                                 <Setter Property="CornerRadius"
-                                                        Value="5" />
+                                                        Value="5"/>
                                                 <Setter Property="Padding"
-                                                        Value="0" />
+                                                        Value="0"/>
                                                 <Setter Property="MinHeight"
-                                                        Value="0" />
+                                                        Value="0"/>
                                                 <Setter Property="MinWidth"
-                                                        Value="0" />
+                                                        Value="0"/>
                                             </Style>
                                         </Flyout.FlyoutPresenterStyle>
                                     </Flyout>
@@ -447,32 +447,32 @@
                                                          Storyboard.TargetProperty="Opacity"
                                                          From="1"
                                                          To="0"
-                                                         Duration="0:0:0.1" />
+                                                         Duration="0:0:0.1"/>
                                         <DoubleAnimation Storyboard.TargetName="IconHover"
                                                          Storyboard.TargetProperty="Opacity"
                                                          From="0"
                                                          To="1"
-                                                         Duration="0:0:0.1" />
+                                                         Duration="0:0:0.1"/>
                                     </Storyboard>
                                     <Storyboard x:Name="ExitStoryboard">
                                         <DoubleAnimation Storyboard.TargetName="Icon"
                                                          Storyboard.TargetProperty="Opacity"
                                                          From="0"
                                                          To="1"
-                                                         Duration="0:0:0.1" />
+                                                         Duration="0:0:0.1"/>
                                         <DoubleAnimation Storyboard.TargetName="IconHover"
                                                          Storyboard.TargetProperty="Opacity"
                                                          From="1"
                                                          To="0"
-                                                         Duration="0:0:0.1" />
+                                                         Duration="0:0:0.1"/>
                                     </Storyboard>
                                 </Button.Resources>
                                 <Grid>
                                     <imageex:ImageEx x:Name="Icon"
-                                                     Source="{Binding Icon}" />
+                                                     Source="{Binding Icon}"/>
                                     <imageex:ImageEx x:Name="IconHover"
                                                      Opacity="0"
-                                                     Source="{Binding IconHover}" />
+                                                     Source="{Binding IconHover}"/>
                                 </Grid>
                             </Button>
                         </DataTemplate>
@@ -493,11 +493,11 @@
                   HorizontalAlignment="Right"
                   VerticalAlignment="Bottom"
                   Visibility="Collapsed">
-                <Grid x:Name="ImageEventImgShadow" />
+                <Grid x:Name="ImageEventImgShadow"/>
                 <Image x:Name="ImageEventImg"
                        s:Effects.Shadow="{ThemeResource SharedDropShadow}"
                        Loaded="SetHandCursor"
-                       PointerPressed="ClickImageEventSpriteLink" />
+                       PointerPressed="ClickImageEventSpriteLink"/>
             </Grid>
             <StackPanel x:Name="ImageCarouselAndPostPanel"
                         Grid.Row="0"
@@ -529,7 +529,7 @@
                                                  PointerPressed="OpenImageLinkFromTag"
                                                  Source="{Binding Icon}"
                                                  Tag="{Binding URL}"
-                                                 ToolTipService.ToolTip="{Binding Description}" />
+                                                 ToolTipService.ToolTip="{Binding Description}"/>
                             </DataTemplate>
                         </FlipView.ItemTemplate>
                     </FlipView>
@@ -547,7 +547,7 @@
                                    NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
                                    Orientation="Horizontal"
                                    PreviousButtonVisibility="VisibleOnPointerOver"
-                                   SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
+                                   SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
                 <Grid x:Name="PostPanel"
@@ -566,7 +566,7 @@
                                 <TextBlock Margin="0,0,0,-8"
                                            FontSize="16"
                                            FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}"/>
                             </PivotItem.Header>
                             <Grid>
                                 <ScrollViewer Margin="0,8,0,0"
@@ -593,12 +593,12 @@
                                                                                VerticalAlignment="Center"
                                                                                Foreground="{ThemeResource TextFillColorPrimary}"
                                                                                Text="{Binding title}"
-                                                                               TextTrimming="CharacterEllipsis" />
+                                                                               TextTrimming="CharacterEllipsis"/>
                                                                     <TextBlock HorizontalAlignment="Right"
                                                                                VerticalAlignment="Center"
                                                                                FontWeight="Bold"
                                                                                Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding show_time}" />
+                                                                               Text="{Binding show_time}"/>
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Button.Template>
@@ -621,11 +621,11 @@
                                                    Opacity="0.8"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                    TextAlignment="Right"
-                                                   TextWrapping="Wrap" />
+                                                   TextWrapping="Wrap"/>
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
-                                               Source="{x:Bind NoNewsSplashMascot}" />
+                                               Source="{x:Bind NoNewsSplashMascot}"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -635,7 +635,7 @@
                                 <TextBlock Margin="0,0,0,-8"
                                            FontSize="16"
                                            FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}"/>
                             </PivotItem.Header>
                             <Grid>
                                 <ScrollViewer Margin="0,8,0,0"
@@ -662,12 +662,12 @@
                                                                                VerticalAlignment="Center"
                                                                                Foreground="{ThemeResource TextFillColorPrimary}"
                                                                                Text="{Binding title}"
-                                                                               TextTrimming="CharacterEllipsis" />
+                                                                               TextTrimming="CharacterEllipsis"/>
                                                                     <TextBlock HorizontalAlignment="Right"
                                                                                VerticalAlignment="Center"
                                                                                FontWeight="Bold"
                                                                                Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding show_time}" />
+                                                                               Text="{Binding show_time}"/>
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Button.Template>
@@ -690,11 +690,11 @@
                                                    Opacity="0.8"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                    TextAlignment="Right"
-                                                   TextWrapping="Wrap" />
+                                                   TextWrapping="Wrap"/>
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
-                                               Source="{x:Bind NoNewsSplashMascot}" />
+                                               Source="{x:Bind NoNewsSplashMascot}"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -704,7 +704,7 @@
                                 <TextBlock Margin="0,0,0,-8"
                                            FontSize="16"
                                            FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}"/>
                             </PivotItem.Header>
                             <Grid>
                                 <ScrollViewer Margin="0,8,0,0"
@@ -731,12 +731,12 @@
                                                                                VerticalAlignment="Center"
                                                                                Foreground="{ThemeResource TextFillColorPrimary}"
                                                                                Text="{Binding title}"
-                                                                               TextTrimming="CharacterEllipsis" />
+                                                                               TextTrimming="CharacterEllipsis"/>
                                                                     <TextBlock HorizontalAlignment="Right"
                                                                                VerticalAlignment="Center"
                                                                                FontWeight="Bold"
                                                                                Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding show_time}" />
+                                                                               Text="{Binding show_time}"/>
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Button.Template>
@@ -759,11 +759,11 @@
                                                    Opacity="0.8"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                    TextAlignment="Right"
-                                                   TextWrapping="Wrap" />
+                                                   TextWrapping="Wrap"/>
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
-                                               Source="{x:Bind NoNewsSplashMascot}" />
+                                               Source="{x:Bind NoNewsSplashMascot}"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -781,12 +781,12 @@
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
             <Grid.ChildrenTransitions>
-                <PopupThemeTransition />
+                <PopupThemeTransition/>
             </Grid.ChildrenTransitions>
             <Grid Width="250"
                   Height="250">
                 <Grid.ChildrenTransitions>
-                    <PopupThemeTransition />
+                    <PopupThemeTransition/>
                 </Grid.ChildrenTransitions>
                 <ProgressRing x:Name="progressRingAcrBG"
                               Width="250"
@@ -795,12 +795,12 @@
                               VerticalAlignment="Center"
                               IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}"
                               Maximum="{Binding Maximum, ElementName=progressRing}"
-                              Value="{Binding Value, ElementName=progressRing}" />
+                              Value="{Binding Value, ElementName=progressRing}"/>
                 <Ellipse x:Name="progressRingBG"
                          Margin="4"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
-                         Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
+                         Fill="{ThemeResource ProgressBackgroundAcrylicBrush}"/>
                 <ProgressRing x:Name="progressRing"
                               Width="250"
                               Height="250"
@@ -808,7 +808,7 @@
                               VerticalAlignment="Center"
                               IsIndeterminate="True"
                               Maximum="100"
-                              Value="0" />
+                              Value="0"/>
                 <Grid x:Name="progressPerFile"
                       Visibility="Collapsed">
                     <ProgressRing x:Name="progressRingAcrBG2"
@@ -818,14 +818,14 @@
                                   VerticalAlignment="Center"
                                   IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
                                   Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
-                                  Value="{Binding Value, ElementName=progressRingPerFile}" />
+                                  Value="{Binding Value, ElementName=progressRingPerFile}"/>
                     <Ellipse x:Name="progressRingBG2"
                              Width="220"
                              Height="220"
                              Margin="4"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch"
-                             Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
+                             Fill="{ThemeResource ProgressBackgroundAcrylicBrush}"/>
                     <ProgressRing x:Name="progressRingPerFile"
                                   Width="214"
                                   Height="214"
@@ -833,7 +833,7 @@
                                   VerticalAlignment="Center"
                                   IsIndeterminate="True"
                                   Maximum="100"
-                                  Value="0" />
+                                  Value="0"/>
                 </Grid>
             </Grid>
             <StackPanel HorizontalAlignment="Center"
@@ -841,29 +841,29 @@
                 <TextBlock x:Name="ProgressStatusTitle"
                            Margin="0,0,0,10"
                            HorizontalAlignment="Center"
-                           Text="-" />
+                           Text="-"/>
                 <TextBlock x:Name="ProgressStatusSubtitle"
                            HorizontalAlignment="Center"
-                           Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
+                           Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"/>
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock FontWeight="Bold"
-                               Text="{Binding Value, ElementName=progressRing}" />
+                               Text="{Binding Value, ElementName=progressRing}"/>
                     <TextBlock Margin="-1,0,0,0"
                                FontWeight="Bold"
-                               Text="%" />
+                               Text="%"/>
                 </StackPanel>
                 <TextBlock x:Name="ProgressStatusFooter"
                            Margin="0,10,0,0"
                            HorizontalAlignment="Center"
                            FontSize="10"
                            FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" />
+                           Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}"/>
                 <TextBlock x:Name="ProgressTimeLeft"
                            HorizontalAlignment="Center"
                            FontSize="10"
                            FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}"/>
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="2"
@@ -888,19 +888,19 @@
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28" />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="28"/>
+                                    <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <FontIcon Grid.Column="0"
                                           HorizontalAlignment="Center"
                                           FontFamily="{x:Bind IconFontFamily}"
                                           FontSize="12"
-                                          Glyph="{x:Bind IconGlyph}" />
+                                          Glyph="{x:Bind IconGlyph}"/>
                                 <TextBlock Grid.Column="1"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="Medium"
-                                           Text="{x:Bind Text}" />
+                                           Text="{x:Bind Text}"/>
                             </Grid>
                         </Button>
                     </DataTemplate>
@@ -914,19 +914,19 @@
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28" />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="28"/>
+                                    <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <FontIcon Grid.Column="0"
                                           HorizontalAlignment="Center"
                                           FontFamily="{x:Bind IconFontFamily}"
                                           FontSize="12"
-                                          Glyph="{x:Bind IconGlyph}" />
+                                          Glyph="{x:Bind IconGlyph}"/>
                                 <TextBlock Grid.Column="1"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="Medium"
-                                           Text="{x:Bind Text}" />
+                                           Text="{x:Bind Text}"/>
                             </Grid>
                         </Button>
                     </DataTemplate>
@@ -936,24 +936,24 @@
                         <Grid Margin="-16"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
-                              Background="{ThemeResource GameSettingsBtnBrush}" />
+                              Background="{ThemeResource GameSettingsBtnBrush}"/>
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <AnimatedIcon x:Name="GameRegionSettingIcon1"
                                           Width="20">
                                 <AnimatedIcon.Source>
-                                    <animatedvisuals:AnimatedSettingsVisualSource />
+                                    <animatedvisuals:AnimatedSettingsVisualSource/>
                                 </AnimatedIcon.Source>
                                 <AnimatedIcon.FallbackIconSource>
                                     <FontIconSource FontFamily="Segoe MDL2 Assets"
-                                                    Glyph="" />
+                                                    Glyph=""/>
                                 </AnimatedIcon.FallbackIconSource>
                             </AnimatedIcon>
                             <TextBlock Margin="8,-2,0,0"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn}" />
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn}"/>
                         </StackPanel>
                     </Grid>
                 </Button.Content>
@@ -968,36 +968,36 @@
                                       VerticalScrollMode="Disabled">
                             <Grid Margin="16,0,8,0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}" />
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}"/>
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
                                               ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin"
-                                                        Value="0,4,8,4" />
+                                                        Value="0,4,8,4"/>
                                                 <Setter Property="Width"
-                                                        Value="200" />
+                                                        Value="200"/>
                                                 <Setter Property="HorizontalContentAlignment"
-                                                        Value="Stretch" />
+                                                        Value="Stretch"/>
                                                 <Setter Property="MinHeight"
-                                                        Value="0" />
+                                                        Value="0"/>
                                                 <Setter Property="Padding"
-                                                        Value="0,0,0,0" />
+                                                        Value="0,0,0,0"/>
                                             </Style>
                                         </GridView.ItemContainerStyle>
                                         <GridView.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <ItemsWrapGrid x:Name="CommunityToolsMaxItemsWrapGrid1"
                                                                MaximumRowsOrColumns="1"
-                                                               Orientation="Horizontal" />
+                                                               Orientation="Horizontal"/>
                                             </ItemsPanelTemplate>
                                         </GridView.ItemsPanel>
                                     </GridView>
@@ -1007,29 +1007,29 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}" />
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}"/>
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
                                               ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin"
-                                                        Value="0,4,8,4" />
+                                                        Value="0,4,8,4"/>
                                                 <Setter Property="Width"
-                                                        Value="180" />
+                                                        Value="180"/>
                                                 <Setter Property="HorizontalContentAlignment"
-                                                        Value="Stretch" />
+                                                        Value="Stretch"/>
                                                 <Setter Property="MinHeight"
-                                                        Value="0" />
+                                                        Value="0"/>
                                                 <Setter Property="Padding"
-                                                        Value="0,0,0,0" />
+                                                        Value="0,0,0,0"/>
                                             </Style>
                                         </GridView.ItemContainerStyle>
                                         <GridView.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <ItemsWrapGrid x:Name="CommunityToolsMaxItemsWrapGrid2"
                                                                MaximumRowsOrColumns="2"
-                                                               Orientation="Horizontal" />
+                                                               Orientation="Horizontal"/>
                                             </ItemsPanelTemplate>
                                         </GridView.ItemsPanel>
                                     </GridView>
@@ -1052,24 +1052,24 @@
                         <Grid Margin="-16"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
-                              Background="{ThemeResource GameSettingsBtnBrush}" />
+                              Background="{ThemeResource GameSettingsBtnBrush}"/>
                         <StackPanel Margin="8,0"
                                     Orientation="Horizontal">
                             <AnimatedIcon x:Name="GameRegionSettingIcon"
                                           Width="20">
                                 <AnimatedIcon.Source>
-                                    <animatedvisuals:AnimatedSettingsVisualSource />
+                                    <animatedvisuals:AnimatedSettingsVisualSource/>
                                 </AnimatedIcon.Source>
                                 <AnimatedIcon.FallbackIconSource>
                                     <FontIconSource FontFamily="Segoe MDL2 Assets"
-                                                    Glyph="" />
+                                                    Glyph=""/>
                                 </AnimatedIcon.FallbackIconSource>
                             </AnimatedIcon>
                             <TextBlock Margin="8,-2,0,0"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" />
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}"/>
                         </StackPanel>
                     </Grid>
                 </Button.Content>
@@ -1084,7 +1084,7 @@
                                         x:Name="GameStartupSettingFlyoutContainer">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}"/>
                                 <Button x:Name="OpenGameFolderButton"
                                         Margin="0,8"
                                         HorizontalAlignment="Stretch"
@@ -1095,17 +1095,17 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1118,17 +1118,17 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1141,23 +1141,23 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
                                 <TextBlock Margin="0,8,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}"/>
                                 <Button x:Name="RepairGameButton"
                                         Margin="0,8"
                                         HorizontalAlignment="Stretch"
@@ -1168,16 +1168,16 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Margin="8,0,0,0"
                                                        Grid.Column="1"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1190,16 +1190,16 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Margin="8,0,0,0"
                                                        Grid.Column="1"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1212,16 +1212,16 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Margin="8,0,0,0"
                                                        Grid.Column="1"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1234,16 +1234,16 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Margin="8,0,0,0"
                                                        Grid.Column="1"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1256,16 +1256,16 @@
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                       FontSize="18"
-                                                      Glyph="" />
+                                                      Glyph=""/>
                                             <TextBlock Margin="8,0,0,0"
                                                        Grid.Column="1"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}" />
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}"/>
                                         </Grid>
                                     </Button.Content>
                                 </Button>
@@ -1273,34 +1273,34 @@
                                             Visibility="Collapsed">
                                     <TextBlock Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" />
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}"/>
                                     <ToggleSwitch Margin="0,0,0,8"
                                                   IsOn="{x:Bind UseCustomArgs, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
                                     <TextBox x:Name="CustomArgsTextBox"
                                              TextWrapping="Wrap"
-                                             Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
+                                             Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
                                 </StackPanel>
                                 <StackPanel x:Name="MiscPanel">
                                     <TextBlock Margin="0,8,0,8"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" />
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}"/>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}"
-                                               TextWrapping="Wrap" />
+                                               TextWrapping="Wrap"/>
                                     <ToggleSwitch x:Name="ShowEventsPanelToggle"
                                                   IsEnabled="False"
                                                   IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
                                     <TextBlock Margin="0,8,0,0"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
-                                               TextWrapping="Wrap" />
+                                               TextWrapping="Wrap"/>
                                     <ToggleSwitch x:Name="ShowSocialMediaPanelToggle"
                                                   IsEnabled="True"
                                                   IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
                                     <Button x:Name="ShortcutButton"
                                             Margin="0,8"
                                             HorizontalAlignment="Stretch"
@@ -1310,17 +1310,17 @@
                                         <Button.Content>
                                             <Grid Margin="4,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
                                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="18"
-                                                          Glyph="" />
+                                                          Glyph=""/>
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
                                                            FontWeight="Medium"
                                                            TextWrapping="Wrap"
-                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}" />
+                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}"/>
                                             </Grid>
                                         </Button.Content>
                                     </Button>
@@ -1333,17 +1333,17 @@
                                         <Button.Content>
                                             <Grid Margin="4,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
                                                 <FontIcon FontFamily="{ThemeResource FontAwesomeBrand}"
                                                           FontSize="20"
-                                                          Glyph="" />
+                                                          Glyph=""/>
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
                                                            FontWeight="Medium"
                                                            TextWrapping="Wrap"
-                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}" />
+                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}"/>
                                             </Grid>
                                         </Button.Content>
                                     </Button>
@@ -1368,18 +1368,18 @@
                     <Grid Margin="-16"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
-                          Background="{ThemeResource GameSettingsBtnBrush}" />
+                          Background="{ThemeResource GameSettingsBtnBrush}"/>
                     <StackPanel Margin="8,0"
                                 Orientation="Horizontal">
                         <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                    FontSize="18"
-                                   Text="" />
+                                   Text=""/>
                         <TextBlock x:Name="PlaytimeMainBtn"
                                    Margin="8,0,0,0"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    FontWeight="Medium"
-                                   Text="-" />
+                                   Text="-"/>
                     </StackPanel>
                 </Grid>
             </Button.Content>
@@ -1392,19 +1392,19 @@
                                     Margin="0,0">
                             <TextBlock Margin="0,0,0,8"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}"/>
                             <StackPanel Margin="0,0"
                                         Orientation="Horizontal">
                                 <TextBox x:Name="HourPlaytimeTextBox"
                                          Margin="0,0,8,0"
                                          HorizontalContentAlignment="Center"
                                          BeforeTextChanging="NumberValidationTextBox"
-                                         Text="" />
+                                         Text=""/>
                                 <TextBox x:Name="MinutePlaytimeTextBox"
                                          Margin="2,0,8,0"
                                          HorizontalContentAlignment="Center"
                                          BeforeTextChanging="NumberValidationTextBox"
-                                         Text="" />
+                                         Text=""/>
                             </StackPanel>
                             <StackPanel Margin="0,0"
                                         Orientation="Horizontal">
@@ -1413,20 +1413,20 @@
                                            Margin="5,1,0,8"
                                            HorizontalAlignment="Center"
                                            FontSize="11"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}"/>
                                 <TextBlock x:Name="PlaytimeMinutes"
                                            Width="55"
                                            Margin="19,1,0,8"
                                            HorizontalAlignment="Center"
                                            FontSize="11"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" />
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}"/>
                             </StackPanel>
                             <TextBlock x:Name="InvalidTimeBlock"
                                        Margin="0,2,0,2"
                                        HorizontalAlignment="Center"
                                        FontSize="13"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_InvalidTimeBlock}"
-                                       Visibility="Collapsed" />
+                                       Visibility="Collapsed"/>
                             <Button x:Name="ChangePlaytimeButton"
                                     Margin="0,8"
                                     HorizontalAlignment="Stretch"
@@ -1439,9 +1439,9 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                                    FontSize="18"
-                                                   Text="" />
+                                                   Text=""/>
                                         <TextBlock Margin="7,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"/>
                                     </StackPanel>
                                 </Button.Content>
                             </Button>
@@ -1456,9 +1456,9 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                                    FontSize="18"
-                                                   Text="" />
+                                                   Text=""/>
                                         <TextBlock Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"/>
                                     </StackPanel>
                                 </Button.Content>
                             </Button>
@@ -1469,13 +1469,13 @@
                                     Visibility="Collapsed">
                             <TextBlock Margin="0,0,0,8"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}"/>
                             <TextBlock Margin="0,0,0,8"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap"/>
                             <TextBlock Margin="0,0,0,0"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap"/>
                         </StackPanel>
                     </StackPanel>
                 </Flyout>
@@ -1497,11 +1497,11 @@
                                 Orientation="Horizontal">
                         <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                    FontSize="18"
-                                   Text="" />
+                                   Text=""/>
                         <TextBlock Margin="8,-2,0,0"
                                    VerticalAlignment="Center"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}" />
+                                   Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
@@ -1516,10 +1516,10 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                    FontSize="18"
-                                   Text="" />
+                                   Text=""/>
                         <TextBlock Margin="8,0,0,0"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}" />
+                                   Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
@@ -1534,11 +1534,11 @@
                             Orientation="Horizontal">
                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                FontSize="22"
-                               Text="" />
+                               Text=""/>
                     <TextBlock Margin="8,-2,0,0"
                                VerticalAlignment="Center"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" />
+                               Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"/>
                 </StackPanel>
             </Button>
             <Button x:Name="CancelDownloadBtn"
@@ -1549,7 +1549,7 @@
                     Style="{ThemeResource NewAccentButtonStyle}"
                     Visibility="Collapsed">
                 <TextBlock FontWeight="Medium"
-                           Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}" />
+                           Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"/>
             </Button>
             <Button x:Name="ResumeDownloadBtn"
                     HorizontalAlignment="Stretch"
@@ -1558,7 +1558,7 @@
                     Style="{ThemeResource NewAccentButtonStyle}"
                     Visibility="Collapsed">
                 <TextBlock FontWeight="Medium"
-                           Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" />
+                           Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"/>
             </Button>
         </Grid>
     </Grid>
