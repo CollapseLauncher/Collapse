@@ -493,7 +493,7 @@
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBlock
                             x:Name="ChangeRegionToggleWarning"
-                            Margin="8,0,0,8"
+                            Margin="0,0,0,8"
                             FontWeight="Bold"
                             TextWrapping="Wrap"
                             Foreground="{ThemeResource AccentColor}"
