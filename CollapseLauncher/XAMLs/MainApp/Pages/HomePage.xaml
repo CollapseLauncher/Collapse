@@ -938,6 +938,26 @@
                                 FontSize="10"
                                 FontWeight="Bold"
                                 Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                            <Button
+                                x:Name="ProgressSettingsButton"
+                                Margin="0,10,0,0"
+                                CornerRadius="14"
+                                HorizontalAlignment="Center"
+                                PointerEntered="AnimateGameRegSettingIcon_Start"
+                                PointerExited="AnimateGameRegSettingIcon_End"
+                                Shadow="{ThemeResource SharedShadow}"
+                                Click="ProgressSettingsButton_OnClick">
+                                <Button.Content>
+                                    <AnimatedIcon x:Name="GameRegionSettingIcon2" Width="20">
+                                        <AnimatedIcon.Source>
+                                            <animatedvisuals:AnimatedSettingsVisualSource />
+                                        </AnimatedIcon.Source>
+                                        <AnimatedIcon.FallbackIconSource>
+                                            <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;" />
+                                        </AnimatedIcon.FallbackIconSource>
+                                    </AnimatedIcon>
+                                </Button.Content>
+                            </Button>
                         </StackPanel>
                     </Grid>
                     <StackPanel

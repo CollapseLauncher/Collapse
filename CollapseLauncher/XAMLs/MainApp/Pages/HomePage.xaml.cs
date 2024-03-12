@@ -2260,5 +2260,10 @@ namespace CollapseLauncher.Pages
             await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
         }
         #endregion
+
+        private async void ProgressSettingsButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            await Dialog_DownloadSettings(this, CurrentGameProperty);
+        }
     }
 }

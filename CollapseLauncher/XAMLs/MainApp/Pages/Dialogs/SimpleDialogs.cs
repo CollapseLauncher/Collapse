@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -852,6 +854,31 @@ namespace CollapseLauncher.Dialogs
                 );
         }
         #endregion
+
+        internal static async Task<ContentDialogResult> Dialog_DownloadSettings(UIElement Content, GamePresetProperty currentGameProperty)
+        {
+            CheckBox checkBox = new CheckBox { Content = new TextBlock { Text = "Start game after install" }, IsChecked = currentGameProperty._GameInstall.StartAfterInstall };
+            checkBox.Click += (_, _) =>
+            {
+                currentGameProperty._GameInstall.StartAfterInstall = checkBox.IsChecked ?? false;
+            };
+
+            StackPanel panel = new StackPanel()
+            {
+                Orientation = Orientation.Vertical,
+                MaxWidth = 350,
+                Children =
+                {
+                    checkBox,
+                }
+            };
+            return await SpawnDialog(
+                "Download Settings",
+                panel,
+                Content,
+                "Close"
+            );
+        }
 
         private static IAsyncOperation<ContentDialogResult> CurrentSpawnedDialogTask = null;
 

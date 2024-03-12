@@ -201,6 +201,40 @@ namespace CollapseLauncher
                 _parentNotifUI.IsOpen = false;
             };
 
+            Button settingsButton = new Button()
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 4, 8, 0),
+                CornerRadius = new CornerRadius(14),
+                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
+                Content = new StackPanel()
+                {
+                    Orientation = Orientation.Horizontal,
+                    Margin = new Thickness(4, 0, 4, 0),
+                    Children =
+                    {
+                        new FontIcon()
+                        {
+                            FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
+                            Glyph = "\uf013",
+                            FontSize = 18
+                        },
+                        new TextBlock()
+                        {
+                            Text = "Download Settings",
+                            FontWeight = FontWeights.Medium,
+                            Margin = new Thickness(8, -2, 0, 0),
+                            VerticalAlignment = VerticalAlignment.Center
+                        }
+                    }
+                }
+            };
+
+            settingsButton.Click += async (_, _) =>
+            {
+                await Dialogs.SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
+            };
+
             EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.Value = args!.ProgressTotalPercentage;
@@ -257,7 +291,17 @@ namespace CollapseLauncher
                 activity.StatusChanged -= StatusChangedEventHandler;
                 Detach(hashID);
             };
-            _parentContainer.Children.Add(cancelButton);
+
+            _parentContainer.Children.Add(new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Children =
+                {
+                    settingsButton,
+                    cancelButton
+                }
+            });
 
             NotificationSender.SendCustomNotification(hashID, _parentNotifUI);
         }
