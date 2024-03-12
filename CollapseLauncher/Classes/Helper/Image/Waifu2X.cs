@@ -69,12 +69,12 @@ namespace CollapseLauncher.Helper.Image
 
             Warning,
             CpuMode = Warning,
+            D3DMappingLayers,
 
             Error,
             NotAvailable = Error,
             TestNotPassed,
             NotInitialized,
-            D3DMappingLayers,
         }
         #endregion
 
@@ -93,22 +93,27 @@ namespace CollapseLauncher.Helper.Image
         {
             try
             {
-                if (CheckD3DMappingLayersPackage())
+                var gpuId = -1;  // Do not touch Vulkan before checking D3DMappingLayers.
+                if (CheckD3DMappingLayersPackageInstalled())
                 {
                     _status = Waifu2XStatus.D3DMappingLayers;
-                    Logger.LogWriteLine("D3DMappingLayers package detected. Waifu2X feature will be disabled.", LogType.Warning, true);
-                    return;
+                    Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
                 }
-
-                var gpuId = Ncnn.DefaultGpuIndex;
-                if (gpuId == -1)
+                else
                 {
-                    // Fallback to CPU mode
-                    _status = Waifu2XStatus.CpuMode;
-                    Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
+                    gpuId = Ncnn.DefaultGpuIndex;
+                    if (gpuId == -1)
+                    {
+                        // Fallback to CPU mode
+                        _status = Waifu2XStatus.CpuMode;
+                        Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
+                    }
+                    else
+                    {
+                        _status = Waifu2XStatus.Ok;
+                    }
                 }
                 _context = waifu2x_create(gpuId);
-                _status = Waifu2XStatus.Ok;
                 Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
             }
             catch (DllNotFoundException)
@@ -225,7 +230,7 @@ namespace CollapseLauncher.Helper.Image
             return _testPassed;
         }
 
-        private bool CheckD3DMappingLayersPackage()
+        private bool CheckD3DMappingLayersPackageInstalled()
         {
             const string FAMILY_NAME = "Microsoft.D3DMappingLayers_8wekyb3d8bbwe";
             uint count = 0, bufferLength = 0;

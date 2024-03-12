@@ -101,9 +101,9 @@
                 public string Waifu2X_Toggle                        { get; set; } = LangFallback?._SettingsPage.Waifu2X_Toggle;
                 public string Waifu2X_Help                          { get; set; } = LangFallback?._SettingsPage.Waifu2X_Help;
                 public string Waifu2X_Warning_CpuMode               { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_CpuMode;
+                public string Waifu2X_Warning_D3DMappingLayers      { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
                 public string Waifu2X_Error_Loader                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Loader;
                 public string Waifu2X_Error_Output                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Output;
-                public string Waifu2X_Error_D3DMappingLayers        { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_D3DMappingLayers;
             }
         }
         #endregion
