@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "App Settings",
     "NotifNeverAsk": "Never show again",
     "NotifNoNewNotifs": "No new notifications",
+    "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Utilities"
   },
@@ -187,6 +188,8 @@
     "Status11": "Waiting for the repair process to start...",
     "Status12": "Updating Audio: {0}",
     "Status13": "Updating Block: {0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "None",
     "PerProgressTitle1": "Per File Progress",
     "PerProgressSubtitle1": "Waiting...",
@@ -398,6 +401,14 @@
     "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
     "AppThreads_Help6": "Note: This setting is no longer effective while installing Honkai Impact 3rd.",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Show Discord Presence",
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
@@ -471,6 +482,8 @@
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Update Completed!",
     "UpdateCompleteSubtitle": "Your launcher version has been updated to {0}! (Release Channel: {1})",
     "FeatureUnavailableTitle": "This feature is unavailable at the moment",
@@ -807,6 +820,8 @@
     "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!",
     "CookbookDownloadTitle": "Downloading Recipe",
     "CookbookDownloadSubtitle": "Downloading recipe for conversion from {0} to {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "Cancel Conversion",
     "CancelMsgTitle": "Cancelling Conversion...",

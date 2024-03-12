@@ -31,10 +31,6 @@
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">
         <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Discord Shield for Collapse Launcher Discord server" Width=280/>
     </a>
-    &nbsp;
-    <a href="https://trello.com/b/rsqrnn15/collapse-launcher-tracker" target="_blank">
-        <img src="https://cdn.discordapp.com/attachments/593053443761897482/1137795596191797318/logo-gradient-white-trello.svg" alt="Collapse Launcher Trello board" Height=66/>
-    </a>
 </p>
 
 # Why "Collapse"?
@@ -206,11 +202,11 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.4/CL-1.73.4-stable_Installer.exe)
-> **Note**: The version for this build is `1.73.4` (Released on: March 1st, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/v1.73.5/CL-1.73.5-stable_Installer.exe)
+> **Note**: The version for this build is `1.73.5` (Released on: March 9th, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.4-pre/CL-1.73.4-preview_Installer.exe)
-> **Note**: The version for this build is `1.73.4` (Released on: March 1st, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/v1.73.5-pre/CL-1.73.5-preview_Installer.exe)
+> **Note**: The version for this build is `1.73.5` (Released on: March 9th, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 

@@ -1,226 +1,210 @@
-﻿<Page
-    x:Class="CollapseLauncher.Pages.UpdatePage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helper="using:Hi3Helper"
-    xmlns:local="using:CollapseLauncher"
-    xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Background="{ThemeResource UpdatePageAcrylicBrush}"
-    mc:Ignorable="d">
+﻿<Page x:Class="CollapseLauncher.Pages.UpdatePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:local="using:CollapseLauncher"
+      xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Background="{ThemeResource UpdatePageAcrylicBrush}"
+      mc:Ignorable="d">
     <Grid Margin="32,24,32,24">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image
-            Grid.ColumnSpan="2"
-            Width="480"
-            Margin="-32"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
-            Opacity="0.30"
-            Source="ms-appx:///Assets/Images/GameMascot/AiHappy-MonoTransparent.png" />
+        <Image Grid.ColumnSpan="2"
+               Width="480"
+               Margin="-32"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Bottom"
+               Opacity="0.30"
+               Source="ms-appx:///Assets/Images/GameMascot/AiHappy-MonoTransparent.png"/>
         <StackPanel Grid.Column="0">
-            <TextBlock
-                FontSize="78"
-                FontWeight="Light"
-                Style="{ThemeResource DisplayTextBlockStyle}"
-                Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" />
-            <TextBlock
-                Margin="0,-22,0,0"
-                FontSize="32"
-                FontWeight="ExtraBold"
-                Style="{ThemeResource DisplayTextBlockStyle}"
-                Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" />
-            <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+            <TextBlock FontSize="78"
+                       FontWeight="Light"
+                       Style="{ThemeResource DisplayTextBlockStyle}"
+                       Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}"/>
+            <TextBlock Margin="0,-22,0,0"
+                       FontSize="32"
+                       FontWeight="ExtraBold"
+                       Style="{ThemeResource DisplayTextBlockStyle}"
+                       Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}"/>
+            <StackPanel Margin="0,16,0,0"
+                        Orientation="Horizontal">
                 <TextBlock FontSize="16">
-                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerCurLabel}" />
-                    <Run
-                        x:Name="CurrentVersionLabel"
-                        FontWeight="Bold"
-                        Text="1.0.10.0" />
+                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerCurLabel}"/>
+                    <Run x:Name="CurrentVersionLabel"
+                         FontWeight="Bold"
+                         Text="1.0.10.0"/>
                 </TextBlock>
             </StackPanel>
-            <StackPanel Margin="0,-4,0,0" Orientation="Horizontal">
+            <StackPanel Margin="0,-4,0,0"
+                        Orientation="Horizontal">
                 <TextBlock FontSize="28">
-                    <Run FontWeight="Medium" Text="{x:Bind helper:Locale.Lang._UpdatePage.VerNewLabel}" />
-                    <Run
-                        x:Name="NewVersionLabel"
-                        FontWeight="Bold"
-                        Foreground="{ThemeResource AccentColor}"
-                        Text="1.0.12.0" />
+                    <Run FontWeight="Medium"
+                         Text="{x:Bind helper:Locale.Lang._UpdatePage.VerNewLabel}"/>
+                    <Run x:Name="NewVersionLabel"
+                         FontWeight="Bold"
+                         Foreground="{ThemeResource AccentColor}"
+                         Text="1.0.12.0"/>
                 </TextBlock>
             </StackPanel>
-            <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+            <StackPanel Margin="0,16,0,0"
+                        Orientation="Horizontal">
                 <TextBlock>
-                    <Run FontWeight="Medium" Text="{x:Bind helper:Locale.Lang._UpdatePage.VerChannelLabel}" />
-                    <Run
-                        x:Name="UpdateChannelLabel"
-                        FontWeight="Bold"
-                        Foreground="{ThemeResource AccentColor}"
-                        Text="Preview" />
+                    <Run FontWeight="Medium"
+                         Text="{x:Bind helper:Locale.Lang._UpdatePage.VerChannelLabel}"/>
+                    <Run x:Name="UpdateChannelLabel"
+                         FontWeight="Bold"
+                         Foreground="{ThemeResource AccentColor}"
+                         Text="Preview"/>
                 </TextBlock>
             </StackPanel>
-            <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+            <StackPanel Margin="0,0,0,0"
+                        Orientation="Horizontal">
                 <TextBlock FontSize="12">
-                    <Run FontWeight="Medium" Text="{x:Bind helper:Locale.Lang._UpdatePage.VerDateLabel}" />
-                    <Run
-                        x:Name="BuildTimestampLabel"
-                        FontWeight="Bold"
-                        Foreground="{ThemeResource AccentColor}"
-                        Text="Preview" />
+                    <Run FontWeight="Medium"
+                         Text="{x:Bind helper:Locale.Lang._UpdatePage.VerDateLabel}"/>
+                    <Run x:Name="BuildTimestampLabel"
+                         FontWeight="Bold"
+                         Foreground="{ThemeResource AccentColor}"
+                         Text="Preview"/>
                 </TextBlock>
             </StackPanel>
         </StackPanel>
-        <Grid
-            x:Name="UpdateProgressBox"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Bottom"
-            Visibility="Collapsed">
+        <Grid x:Name="UpdateProgressBox"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              VerticalAlignment="Bottom"
+              Visibility="Collapsed">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="20" />
+                <RowDefinition/>
+                <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
             <Grid.ChildrenTransitions>
-                <PopupThemeTransition />
+                <PopupThemeTransition/>
             </Grid.ChildrenTransitions>
-            <StackPanel
-                Grid.Column="0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Orientation="Vertical">
-                <TextBlock FontWeight="Bold" Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" />
+            <StackPanel Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Orientation="Vertical">
+                <TextBlock FontWeight="Bold"
+                           Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Value, ElementName=progressBar}" TextAlignment="Left" />
-                    <TextBlock Text="%" TextAlignment="Left" />
+                    <TextBlock Text="{Binding Value, ElementName=progressBar}"
+                               TextAlignment="Left"/>
+                    <TextBlock Text="%"
+                               TextAlignment="Left"/>
                 </StackPanel>
             </StackPanel>
-            <TextBlock
-                x:Name="Status"
-                HorizontalAlignment="Center"
-                FontWeight="Bold"
-                Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader5PlaceHolder}"
-                TextAlignment="Center" />
-            <StackPanel
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Orientation="Vertical">
-                <TextBlock
-                    FontWeight="Bold"
-                    Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader2}"
-                    TextAlignment="Right" />
-                <TextBlock
-                    x:Name="TimeEstimation"
-                    Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}"
-                    TextAlignment="Right" />
+            <TextBlock x:Name="Status"
+                       HorizontalAlignment="Center"
+                       FontWeight="Bold"
+                       Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader5PlaceHolder}"
+                       TextAlignment="Center"/>
+            <StackPanel HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Orientation="Vertical">
+                <TextBlock FontWeight="Bold"
+                           Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader2}"
+                           TextAlignment="Right"/>
+                <TextBlock x:Name="TimeEstimation"
+                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}"
+                           TextAlignment="Right"/>
             </StackPanel>
-            <ProgressBar
-                x:Name="progressBar"
-                Grid.Row="1"
-                VerticalAlignment="Bottom"
-                IsIndeterminate="True"
-                Maximum="100"
-                Value="0" />
+            <ProgressBar x:Name="progressBar"
+                         Grid.Row="1"
+                         VerticalAlignment="Bottom"
+                         IsIndeterminate="True"
+                         Maximum="100"
+                         Value="0"/>
         </Grid>
-        <Grid Grid.Column="1" Margin="32,24,0,0">
+        <Grid Grid.Column="1"
+              Margin="32,24,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="32" />
+                <RowDefinition/>
+                <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}" />
-                <Grid
-                    Margin="0,48,0,48"
-                    Background="{ThemeResource WindowTrayBrush}"
-                    CornerRadius="8">
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                           Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}"/>
+                <Grid Margin="0,48,0,48"
+                      Background="{ThemeResource WindowTrayBrush}"
+                      CornerRadius="8">
                     <ScrollViewer>
-                        <markdown:MarkdownTextBlock
-                            x:Name="ReleaseNotesBox"
-                            Padding="16"
-                            VerticalAlignment="Stretch"
-                            Background="Transparent"
-                            Config="{x:Bind _markdownConfig}"
-                            Text="# Loading content..." />
+                        <markdown:MarkdownTextBlock x:Name="ReleaseNotesBox"
+                                                    Padding="16"
+                                                    VerticalAlignment="Stretch"
+                                                    Background="Transparent"
+                                                    Config="{x:Bind _markdownConfig}"
+                                                    Text="# Loading content..."/>
                     </ScrollViewer>
                 </Grid>
             </Grid>
-            <StackPanel
-                x:Name="CancelUpdateCountdownBox"
-                Grid.Row="1"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal">
-                <Button
-                    x:Name="CancelUpdateCountdownBtn"
-                    HorizontalAlignment="Right"
-                    Click="CancelCountdownClick"
-                    CornerRadius="14"
-                    Style="{ThemeResource AccentButtonStyle}">
-                    <TextBlock
-                        Margin="16,0"
-                        FontWeight="Medium"
-                        Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
+            <StackPanel x:Name="CancelUpdateCountdownBox"
+                        Grid.Row="1"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                <Button x:Name="CancelUpdateCountdownBtn"
+                        HorizontalAlignment="Right"
+                        Click="CancelCountdownClick"
+                        CornerRadius="14"
+                        Style="{ThemeResource AccentButtonStyle}">
+                    <TextBlock Margin="16,0"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._Misc.Cancel}"/>
                 </Button>
             </StackPanel>
-            <StackPanel
-                x:Name="UpdateBox"
-                Grid.Row="1"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal"
-                Visibility="Collapsed">
+            <StackPanel x:Name="UpdateBox"
+                        Grid.Row="1"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Visibility="Collapsed">
                 <StackPanel.ChildrenTransitions>
-                    <PopupThemeTransition />
+                    <PopupThemeTransition/>
                 </StackPanel.ChildrenTransitions>
-                <HyperlinkButton
-                    Margin="0,0,8,0"
-                    HorizontalAlignment="Right"
-                    Click="RemindMeClick"
-                    Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" />
-                <Button
-                    HorizontalAlignment="Right"
-                    Click="DoUpdateClick"
-                    CornerRadius="14"
-                    Style="{ThemeResource AccentButtonStyle}">
-                    <TextBlock
-                        Margin="16,0"
-                        FontWeight="Medium"
-                        Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" />
+                <HyperlinkButton Margin="0,0,8,0"
+                                 HorizontalAlignment="Right"
+                                 Click="RemindMeClick"
+                                 Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}"/>
+                <Button HorizontalAlignment="Right"
+                        Click="DoUpdateClick"
+                        CornerRadius="14"
+                        Style="{ThemeResource AccentButtonStyle}">
+                    <TextBlock Margin="16,0"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}"/>
                 </Button>
             </StackPanel>
         </Grid>
-        <StackPanel
-            x:Name="UpdateCountdownPanel"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
-            Orientation="Vertical"
-            Visibility="Collapsed">
-            <TextBlock
-                x:Name="UpdateCountdownText"
-                HorizontalAlignment="Center"
-                FontSize="20"
-                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                Text="" />
+        <StackPanel x:Name="UpdateCountdownPanel"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Orientation="Vertical"
+                    Visibility="Collapsed">
+            <TextBlock x:Name="UpdateCountdownText"
+                       HorizontalAlignment="Center"
+                       FontSize="20"
+                       Style="{ThemeResource TitleLargeTextBlockStyle}"
+                       Text=""/>
             <TextBlock HorizontalAlignment="Center">
-                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage2}" />
-                <Run
-                    FontWeight="Bold"
-                    Foreground="{ThemeResource AccentColor}"
-                    Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
-                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage3}" />
+                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage2}"/>
+                <Run FontWeight="Bold"
+                     Foreground="{ThemeResource AccentColor}"
+                     Text="{x:Bind helper:Locale.Lang._Misc.Cancel}"/>
+                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage3}"/>
             </TextBlock>
         </StackPanel>
-        <CheckBox
-            x:Name="AskUpdateCheckbox"
-            Grid.ColumnSpan="2"
-            Margin="0,0,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
-            Checked="AskUpdateToggle"
-            Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}"
-            Unchecked="AskUpdateToggle" />
+        <CheckBox x:Name="AskUpdateCheckbox"
+                  Grid.ColumnSpan="2"
+                  Margin="0,0,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Bottom"
+                  Checked="AskUpdateToggle"
+                  Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}"
+                  Unchecked="AskUpdateToggle"/>
     </Grid>
 </Page>

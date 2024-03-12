@@ -1,62 +1,60 @@
-﻿<Page
-    x:Class="CollapseLauncher.Pages.OOBE.OOBEAgreementMenu"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helper="using:Hi3Helper"
-    xmlns:local="using:CollapseLauncher.Pages.OOBE"
-    xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:uiEx="using:CollapseLauncher.Extension"
-    Background="Transparent"
-    mc:Ignorable="d">
+﻿<Page x:Class="CollapseLauncher.Pages.OOBE.OOBEAgreementMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:local="using:CollapseLauncher.Pages.OOBE"
+      xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:uiEx="using:CollapseLauncher.Extension"
+      Background="Transparent"
+      mc:Ignorable="d">
     <Grid Margin="48">
         <Grid.ChildrenTransitions>
-            <PopupThemeTransition />
+            <PopupThemeTransition/>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <FlipView
-            x:Name="AgreementCarousel"
-            Grid.RowSpan="2"
-            Background="Transparent"
-            ItemsSource="{x:Bind markdownFileList}"
-            Style="{ThemeResource CollapseFlipViewStyle}">
+        <FlipView x:Name="AgreementCarousel"
+                  Grid.RowSpan="2"
+                  Background="Transparent"
+                  ItemsSource="{x:Bind markdownFileList}"
+                  Style="{ThemeResource CollapseFlipViewStyle}">
             <FlipView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Vertical" />
+                    <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </FlipView.ItemsPanel>
             <FlipView.ItemTemplate>
                 <DataTemplate x:DataType="local:AgreementProperty">
                     <Grid>
                         <Grid.ChildrenTransitions>
-                            <PopupThemeTransition />
+                            <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock FontSize="32">
-                            <Run Text="{x:Bind helper:Locale.Lang._OOBEAgreementMenu.AgreementTitle}" />
-                            <Run
-                                x:Name="AgreementTitle"
-                                FontWeight="Bold"
-                                Text="{x:Bind title}" />
+                            <Run Text="{x:Bind helper:Locale.Lang._OOBEAgreementMenu.AgreementTitle}"/>
+                            <Run x:Name="AgreementTitle"
+                                 FontWeight="Bold"
+                                 Text="{x:Bind title}"/>
                         </TextBlock>
-                        <Grid Grid.Row="1" Margin="0,16">
-                            <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" />
+                        <Grid Grid.Row="1"
+                              Margin="0,16">
+                            <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                  CornerRadius="8"/>
                             <ScrollViewer>
                                 <Grid>
-                                    <markdown:MarkdownTextBlock
-                                        Margin="24"
-                                        Config="{x:Bind markdownConfig, Mode=OneWay}"
-                                        TabNavigation="Once"
-                                        Text="{x:Bind text, Mode=OneWay}" />
+                                    <markdown:MarkdownTextBlock Margin="24"
+                                                                Config="{x:Bind markdownConfig, Mode=OneWay}"
+                                                                TabNavigation="Once"
+                                                                Text="{x:Bind text, Mode=OneWay}"/>
                                 </Grid>
                             </ScrollViewer>
                         </Grid>
@@ -64,26 +62,23 @@
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>
-        <Button
-            x:Name="ApplyAgreementButton"
-            Grid.Row="2"
-            HorizontalAlignment="Left"
-            Background="{ThemeResource SystemFillColorSuccessBrush}"
-            Click="Button_Click"
-            CornerRadius="{x:Bind uiEx:UIElementExtensions.AttachRoundedKindCornerRadius(ApplyAgreementButton)}"
-            Style="{ThemeResource NewAccentButtonStyle}">
+        <Button x:Name="ApplyAgreementButton"
+                Grid.Row="2"
+                HorizontalAlignment="Left"
+                Background="{ThemeResource SystemFillColorSuccessBrush}"
+                Click="Button_Click"
+                CornerRadius="{x:Bind uiEx:UIElementExtensions.AttachRoundedKindCornerRadius(ApplyAgreementButton)}"
+                Style="{ThemeResource NewAccentButtonStyle}">
             <StackPanel Orientation="Horizontal">
-                <FontIcon
-                    VerticalAlignment="Center"
-                    FontFamily="{ThemeResource FontAwesomeSolid}"
-                    FontSize="16"
-                    Glyph="&#xf00c;" />
-                <TextBlock
-                    Margin="8,-1,0,0"
-                    VerticalAlignment="Center"
-                    FontSize="16"
-                    FontWeight="Medium"
-                    Text="{x:Bind helper:Locale.Lang._Misc.IAcceptAgreement}" />
+                <FontIcon VerticalAlignment="Center"
+                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                          FontSize="16"
+                          Glyph="&#xf00c;"/>
+                <TextBlock Margin="8,-1,0,0"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Medium"
+                           Text="{x:Bind helper:Locale.Lang._Misc.IAcceptAgreement}"/>
             </StackPanel>
         </Button>
     </Grid>

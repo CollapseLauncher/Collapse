@@ -39,6 +39,13 @@
                 public string AppThreads_Help4                      { get; set; } = LangFallback?._SettingsPage.AppThreads_Help4;
                 public string AppThreads_Help5                      { get; set; } = LangFallback?._SettingsPage.AppThreads_Help5;
                 public string AppThreads_Help6                      { get; set; } = LangFallback?._SettingsPage.AppThreads_Help6;
+                public string AppThreads_Attention                  { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention;
+                public string AppThreads_Attention1                 { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention1;
+                public string AppThreads_Attention2                 { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention2;
+                public string AppThreads_Attention3                 { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention3;
+                public string AppThreads_Attention4                 { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention4;
+                public string AppThreads_Attention5                 { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention5;
+                public string AppThreads_Attention6                 { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention6;
                 public string DiscordRPC                            { get; set; } = LangFallback?._SettingsPage.DiscordRPC;
                 public string DiscordRPC_Toggle                     { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
                 public string DiscordRPC_GameStatusToggle           { get; set; } = LangFallback?._SettingsPage.DiscordRPC_GameStatusToggle;

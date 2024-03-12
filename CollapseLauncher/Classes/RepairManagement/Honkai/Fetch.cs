@@ -352,7 +352,7 @@ namespace CollapseLauncher
             if (cgInfo!.AppointmentDownloadScheduleID == 0) return true;
 
             // Update the status
-            _status!.ActivityStatus = string.Format("Trying to determine CG asset availability: {0}", cgInfo.CgExtraKey);
+            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
             _status!.IsProgressTotalIndetermined = true;
             _status!.IsProgressPerFileIndetermined = true;
             UpdateStatus();
@@ -471,7 +471,7 @@ namespace CollapseLauncher
 
             // Update the status
             // TODO: Localize
-            _status!.ActivityStatus = string.Format("Trying to determine audio asset availability: {0}", audioInfo.Path);
+            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
             _status!.IsProgressTotalIndetermined = true;
             _status!.IsProgressPerFileIndetermined = true;
             UpdateStatus();

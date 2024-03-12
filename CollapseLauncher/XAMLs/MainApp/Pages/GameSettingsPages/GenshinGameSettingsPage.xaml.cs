@@ -33,6 +33,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
+using CollapseLauncher.Helper.Animation;
 
 namespace CollapseLauncher.Pages
 {
@@ -112,6 +113,7 @@ namespace CollapseLauncher.Pages
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
+            SettingsScrollViewer.EnableImplicitAnimation(true);
 
             InheritApplyTextColor = ApplyText.Foreground;
         }

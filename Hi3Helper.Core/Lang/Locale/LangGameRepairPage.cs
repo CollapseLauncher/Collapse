@@ -28,6 +28,8 @@
                 public string Status11 { get; set; } = LangFallback?._GameRepairPage.Status11;
                 public string Status12 { get; set; } = LangFallback?._GameRepairPage.Status12;
                 public string Status13 { get; set; } = LangFallback?._GameRepairPage.Status13;
+                public string Status14 { get; set; } = LangFallback?._GameRepairPage.Status14;
+                public string Status15 { get; set; } = LangFallback?._GameRepairPage.Status15;
                 public string StatusNone { get; set; } = LangFallback?._GameRepairPage.StatusNone;
                 public string TotalProgressTitle1 { get; set; } = LangFallback?._GameRepairPage.TotalProgressTitle1;
                 public string PerProgressTitle1 { get; set; } = LangFallback?._GameRepairPage.PerProgressTitle1;
