@@ -864,17 +864,22 @@
                            FontSize="10"
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}"/>
-                <Button
-                    x:Name="ProgressSettingsButton"
-                    Margin="-5,15,-5,0"
-                    CornerRadius="15"
-                    HorizontalAlignment="Center"
-                    PointerEntered="AnimateGameRegSettingIcon_Start"
-                    PointerExited="AnimateGameRegSettingIcon_End"
-                    Shadow="{ThemeResource SharedShadow}"
-                    Click="ProgressSettingsButton_OnClick">
-                    <Button.Content>
-                        <AnimatedIcon x:Name="GameRegionSettingIcon2" Width="20">
+            </StackPanel>
+            <Button
+                x:Name="ProgressSettingsButton"
+                CornerRadius="15"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                PointerEntered="AnimateGameRegSettingIcon_Start"
+                PointerExited="AnimateGameRegSettingIcon_End"
+                Shadow="{ThemeResource SharedShadow}"
+                Click="ProgressSettingsButton_OnClick">
+                <Button.Content>
+                    <Grid Margin="-16"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" 
+                        Background="{ThemeResource GameSettingsBtnBrush}">
+                        <AnimatedIcon x:Name="GameRegionSettingIcon2" Width="20" Margin="11, 16, 11, 16">
                             <AnimatedIcon.Source>
                                 <animatedvisuals:AnimatedSettingsVisualSource />
                             </AnimatedIcon.Source>
@@ -882,9 +887,9 @@
                                 <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;" />
                             </AnimatedIcon.FallbackIconSource>
                         </AnimatedIcon>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
+                    </Grid>
+                </Button.Content>
+            </Button>
         </Grid>
         <StackPanel Grid.Row="2"
                     Grid.Column="1"

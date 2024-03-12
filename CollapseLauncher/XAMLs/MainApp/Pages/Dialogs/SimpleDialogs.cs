@@ -862,7 +862,7 @@ namespace CollapseLauncher.Dialogs
                 OffContent = Lang._Misc.Disabled,
                 OnContent = Lang._Misc.Enabled
             };
-            startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = (bool)startAfterInstall.IsOn;
+            startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = startAfterInstall.IsOn;
 
             StackPanel panel = new StackPanel()
             {
