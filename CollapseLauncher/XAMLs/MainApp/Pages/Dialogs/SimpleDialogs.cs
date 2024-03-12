@@ -856,16 +856,16 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<ContentDialogResult> Dialog_DownloadSettings(UIElement Content, GamePresetProperty currentGameProperty)
         {
-            CheckBox checkBox = new CheckBox { Content = new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1 }, IsChecked = currentGameProperty._GameInstall.StartAfterInstall };
-            checkBox.Click += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = (bool)checkBox.IsChecked;
+            ToggleSwitch startAfterInstall = new ToggleSwitch { IsOn = currentGameProperty._GameInstall.StartAfterInstall };
+            startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = (bool)startAfterInstall.IsOn;
 
             StackPanel panel = new StackPanel()
             {
                 Orientation = Orientation.Vertical,
-                MaxWidth = 350,
                 Children =
                 {
-                    checkBox,
+                    new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1, Margin = new Thickness(0, 0, 0, 4) },
+                    startAfterInstall,
                 }
             };
             return await SpawnDialog(

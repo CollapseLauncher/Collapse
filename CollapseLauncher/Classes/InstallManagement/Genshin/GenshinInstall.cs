@@ -23,7 +23,6 @@ namespace CollapseLauncher.InstallManager.Genshin
         #endregion
 
         #region Properties
-        public bool StartAfterInstall { get; set; } = false;
         private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
         private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
         private string _gameAudioLangListPath

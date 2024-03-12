@@ -23,7 +23,6 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Properties
-        public bool StartAfterInstall { get; set; } = false;
         private string _execName { get; set; }
         private string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
         private string _gameAudioLangListPath

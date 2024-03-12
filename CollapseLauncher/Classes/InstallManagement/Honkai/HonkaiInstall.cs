@@ -23,7 +23,6 @@ namespace CollapseLauncher.InstallManager.Honkai
         #endregion
 
         #region Properties
-        public bool StartAfterInstall { get; set; } = false;
         private HonkaiCache _gameCacheManager { get; set; }
         private HonkaiRepair _gameRepairManager { get; set; }
         #endregion
