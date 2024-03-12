@@ -856,7 +856,12 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<ContentDialogResult> Dialog_DownloadSettings(UIElement Content, GamePresetProperty currentGameProperty)
         {
-            ToggleSwitch startAfterInstall = new ToggleSwitch { IsOn = currentGameProperty._GameInstall.StartAfterInstall };
+            ToggleSwitch startAfterInstall = new ToggleSwitch
+            {
+                IsOn = currentGameProperty._GameInstall.StartAfterInstall,
+                OffContent = Lang._Misc.Disabled,
+                OnContent = Lang._Misc.Enabled
+            };
             startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = (bool)startAfterInstall.IsOn;
 
             StackPanel panel = new StackPanel()
