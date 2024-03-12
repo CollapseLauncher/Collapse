@@ -33,6 +33,7 @@
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<InvariantGlobalization>false</InvariantGlobalization>
 		<ShouldComputeInputPris>true</ShouldComputeInputPris>
+		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
 	</PropertyGroup>
 
 <!--

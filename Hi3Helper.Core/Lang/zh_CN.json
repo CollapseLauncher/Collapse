@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "程序设置",
     "NotifNeverAsk": "不再显示",
     "NotifNoNewNotifs": "没有新的通知",
+    "NotifClearAll": "清空所有通知",
     "NavigationMenu": "菜单",
     "NavigationUtilities": "工具"
   },
@@ -187,6 +188,8 @@
     "Status11": "等待修复流程开始……",
     "Status12": "正在更新音频：{0}",
     "Status13": "正在更新块：{0}",
+    "Status14": "正在尝试确认 CG 资源可用性：{0}",
+    "Status15": "正在尝试确认语音资源可用性：{0}",
     "StatusNone": "无",
     "PerProgressTitle1": "文件进度",
     "PerProgressSubtitle1": "正在等待……",
@@ -398,6 +401,14 @@
     "AppThreads_Help5": "这个线程将在 安装/修复 游戏时处理 解压/验证 过程。",
     "AppThreads_Help6": "注：在安装崩坏3时，该设置无效。",
 
+    "AppThreads_Attention": "注意",
+    "AppThreads_Attention1": "在您更改",
+    "AppThreads_Attention2": "之前，如果您有未完成的下载，请考虑",
+    "AppThreads_Attention3": "不！要！修！改！",
+    "AppThreads_Attention4": "该值，因为它可能会因下载所需的会话数不匹配而",
+    "AppThreads_Attention5": "重新下载所有内容",
+    "AppThreads_Attention6": "。",
+
     "DiscordRPC": "Discord 活动状态",
     "DiscordRPC_Toggle": "显示 Discord 状态",
     "DiscordRPC_GameStatusToggle": "在 Discord 状态中显示当前游戏",
@@ -471,6 +482,8 @@
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "更新完成！",
     "UpdateCompleteSubtitle": "您的启动器版本已更新为{0}！（发布频道：{1}）",
     "FeatureUnavailableTitle": "此功能暂时不可用",
@@ -640,7 +653,7 @@
     "ExistingInstallSubtitle": "游戏已经安装在此位置：\n\n{0}\n\n建议将游戏迁移到 Collapse。\n然而，您仍然可以使用官方启动器来开始游戏。\n\n您想要继续吗？",
     "ExistingInstallBHI3LTitle": "检测到 BetterHI3 启动器上已有安装！",
     "ExistingInstallBHI3LSubtitle": "游戏已经安装在此位置：\n\n{0}\n\n建议将游戏迁移到 Collapse。\n然而，您仍然可以使用 BetterHi3Launcher 来开始游戏。\n\n您想要继续吗？",
-    "ExistingInstallSteamTitle": "检测到 Steam上的现有安装！",
+    "ExistingInstallSteamTitle": "检测到 Steam 上的现有安装！",
     "ExistingInstallSteamSubtitle": "游戏已经在 Steam 上安装，位置为：\n\n{0}\n\n您想要将这个版本转换为非 Steam 的国际版本吗？\n注意：一旦您开始转换，您将无法继续使用您的 Steam 帐户登录。只有 miHoYo/HoYoverse 账户登录方式可用。\n\n您想要继续吗？",
     "SteamConvertNeedMigrateTitle": "需要迁移文件夹",
     "SteamConvertNeedMigrateSubtitle": "您需要将游戏安装文件夹迁移到另一个位置，因为 Collapse 没有写入该目录的权限。\n建议将位置移动到 Collapse 游戏文件夹，但您也可以选择自己的位置。\n\n您想要将其移动到 Collapse 游戏文件夹吗？",
@@ -754,7 +767,7 @@
     "SteamShortcutCreationSuccessSubtitle5": " • 新的快捷方式仅在 Steam 重新加载后才会显示。",
     "SteamShortcutCreationSuccessSubtitle6": " • 要使用 Steam 叠加层，Steam 需要以管理员身份运行，而且 Collapse 必须完全关闭或在设置中启用“允许开启多个 Collapse”选项。",
 
-    "SteamShortcutCreationFailureTitle": "无效的Steam数据文件夹",
+    "SteamShortcutCreationFailureTitle": "无效的 Steam 数据文件夹",
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。"
   },
 
@@ -805,6 +818,8 @@
     "ConvertSuccessSubtitle": "游戏从{0}到{1}的转换已经成功完成！",
     "CookbookDownloadTitle": "正在下载配方",
     "CookbookDownloadSubtitle": "正在下载从{0}转换到{1}的配方",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} 到 {1} 的 Cookbook",
 
     "CancelBtn": "取消转换",
     "CancelMsgTitle": "正在取消转换……",
@@ -890,7 +905,7 @@
 
     "ApplyUpdateTitle1": "我们正在更新",
     "ApplyUpdateTitle2": "Collapse 启动器",
-    "ApplyUpdateCDNSelectorTitle": "选择您用于更新的CDN",
+    "ApplyUpdateCDNSelectorTitle": "选择您用于更新的 CDN",
     "ApplyUpdateCDNSelectorSubtitle": "选择 CDN 选项并点击“{0}”以开始更新！",
     "ApplyUpdateCDNSelectorSubtitleCount": "CDN 将会在 {0} 后自动选择",
     "ApplyUpdateUpdateNowBtn": "现在更新！",
@@ -920,7 +935,7 @@
     "ApplyUpdateTaskLegacyVerFoundSubtitle3": "请确保 Collapse 目录中没有任何重要文件，否则它将被 完！全！删！除！",
     "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\n点击“是”以处理或“否”以取消。",
     "ApplyUpdateTaskLegacyVerFoundSubtitle5": "再次单击“是”进行确认。",
-    "ApplyUpdateTaskLegacyCleanupCount": "清理将于 {0} 后开始……",
+    "ApplyUpdateTaskLegacyCleanupCount": "清理程序将于 {0} 秒后开始……",
     "ApplyUpdateTaskLegacyDeleting": "删除中：{0}……",
 
     "ApplyUpdateTaskDownloadingPkgTitle": "下载软件包中",
@@ -929,7 +944,7 @@
     "ApplyUpdateTaskMovingExtractFileTitle": "移动解压后的文件中",
 
     "ApplyUpdateTaskLauncherUpdatedTitle": "启动器版本已更新为 {0}！",
-    "ApplyUpdateTaskLauncherUpdatedSubtitle": "正在启动 Collapse {0} ……",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "将在 {0} 秒后启动 Collapse……",
 
     "ApplyUpdateTaskError": "错误：\r\n应用更新时出错！\r\n{0}"
   },
@@ -1148,7 +1163,7 @@
     "Switch_ChangeGame": "选择游戏",
     "Switch_ChangeGame_Desc": "您也可以使用小键盘来执行此快捷操作！\n例如：{0}+1 或 小键盘1 （不带 {0} 修饰键）会切换到崩坏3页面（上一次使用的区服）。",
     "Switch_ChangeRegion": "选择区服",
-    "Switch_ChangeRegion_Desc": "例如：对于原神，{0}+1 会切换到国际服。",
+    "Switch_ChangeRegion_Desc": "例如：对于原神，{0}+1 会切换到全球服务器。",
 
     "GameFolder_Title": "访问游戏目录",
     "GameFolder_ScreenshotFolder": "打开截图目录",
