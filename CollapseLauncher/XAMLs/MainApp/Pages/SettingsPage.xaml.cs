@@ -581,6 +581,8 @@ namespace CollapseLauncher.Pages
                     tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
                 else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.TestNotPassed)
                     tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.D3DMappingLayers)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_D3DMappingLayers;
                 return tooltip;
             }
         }
@@ -591,15 +593,12 @@ namespace CollapseLauncher.Pages
             {
                 switch (ImageLoaderHelper.Waifu2XStatus)
                 {
-                    case Waifu2XStatus.Ok:
+                    case <= Waifu2XStatus.Ok:
                         return "\uf05a";
-                    case Waifu2XStatus.CpuMode:
+                    case < Waifu2XStatus.Error:
                         return "\uf071";
-                    case Waifu2XStatus.NotAvailable:
-                    case Waifu2XStatus.TestNotPassed:
+                    case >= Waifu2XStatus.Error:
                         return "\uf06a";
-                    default:
-                        return "\uf05a";
                 }
             }
         }
