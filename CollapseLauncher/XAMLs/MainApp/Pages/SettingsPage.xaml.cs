@@ -126,7 +126,6 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
-                        
                         var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
                         if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
@@ -577,7 +576,10 @@ namespace CollapseLauncher.Pages
                 var tooltip = Lang._SettingsPage.Waifu2X_Help;
                 if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.CpuMode)
                     tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
-                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.NotAvailable)
+                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.D3DMappingLayers)
+                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode +
+                               "\n\n" + Lang._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
+                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.NotAvailable)
                     tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
                 else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.TestNotPassed)
                     tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
@@ -591,15 +593,12 @@ namespace CollapseLauncher.Pages
             {
                 switch (ImageLoaderHelper.Waifu2XStatus)
                 {
-                    case Waifu2XStatus.Ok:
+                    case <= Waifu2XStatus.Ok:
                         return "\uf05a";
-                    case Waifu2XStatus.CpuMode:
+                    case < Waifu2XStatus.Error:
                         return "\uf071";
-                    case Waifu2XStatus.NotAvailable:
-                    case Waifu2XStatus.TestNotPassed:
+                    case >= Waifu2XStatus.Error:
                         return "\uf06a";
-                    default:
-                        return "\uf05a";
                 }
             }
         }

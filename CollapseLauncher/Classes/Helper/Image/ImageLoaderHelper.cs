@@ -60,12 +60,12 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
-        public static bool IsWaifu2XUsable => Waifu2XStatus != Waifu2XStatus.NotAvailable && Waifu2XStatus != Waifu2XStatus.TestNotPassed;
+        public static bool IsWaifu2XUsable => Waifu2XStatus < Waifu2XStatus.Error;
 
         private static Waifu2X CreateWaifu2X()
         {
             var waifu2X = new Waifu2X();
-            if (waifu2X.Status != Waifu2XStatus.NotAvailable)
+            if (waifu2X.Status < Waifu2XStatus.Error)
             {
                 waifu2X.SetParam(Param.Noise, -1);
                 waifu2X.SetParam(Param.Scale, 2);
