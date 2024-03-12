@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "程序设置",
     "NotifNeverAsk": "不再显示",
     "NotifNoNewNotifs": "没有新的通知",
+    "NotifClearAll": "清空所有通知",
     "NavigationMenu": "菜单",
     "NavigationUtilities": "工具"
   },
@@ -187,6 +188,8 @@
     "Status11": "等待修复流程开始……",
     "Status12": "正在更新音频：{0}",
     "Status13": "正在更新块：{0}",
+    "Status14": "尝试测试CG资源可用性：{0}",
+    "Status15": "尝试测试语音资源可用性：{0}",
     "StatusNone": "无",
     "PerProgressTitle1": "文件进度",
     "PerProgressSubtitle1": "正在等待……",
@@ -398,6 +401,14 @@
     "AppThreads_Help5": "这个线程将在 安装/修复 游戏时处理 解压/验证 过程。",
     "AppThreads_Help6": "注：在安装崩坏3时，该设置无效。",
 
+    "AppThreads_Attention": "注意",
+    "AppThreads_Attention1": "在您更改",
+    "AppThreads_Attention2": "值，请考虑",
+    "AppThreads_Attention3": "不！要！修！改！",
+    "AppThreads_Attention4": "这个值如果您已经存在一个下载因为它可能",
+    "AppThreads_Attention5": "重！新！下！载！所！有！内！容！",
+    "AppThreads_Attention6": "因为与下载所需的会话数不匹配。",
+
     "DiscordRPC": "Discord 活动状态",
     "DiscordRPC_Toggle": "显示 Discord 状态",
     "DiscordRPC_GameStatusToggle": "在 Discord 状态中显示当前游戏",
@@ -471,6 +482,8 @@
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "更新完成！",
     "UpdateCompleteSubtitle": "您的启动器版本已更新为{0}！（发布频道：{1}）",
     "FeatureUnavailableTitle": "此功能暂时不可用",
@@ -805,6 +818,8 @@
     "ConvertSuccessSubtitle": "游戏从{0}到{1}的转换已经成功完成！",
     "CookbookDownloadTitle": "正在下载配方",
     "CookbookDownloadSubtitle": "正在下载从{0}转换到{1}的配方",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} 到 {1} Cookbook",
 
     "CancelBtn": "取消转换",
     "CancelMsgTitle": "正在取消转换……",
