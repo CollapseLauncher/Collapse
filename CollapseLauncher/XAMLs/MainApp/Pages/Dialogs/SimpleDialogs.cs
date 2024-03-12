@@ -1,5 +1,6 @@
-using CollapseLauncher.Extension;
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Extension;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
@@ -12,8 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
+
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -858,10 +858,7 @@ namespace CollapseLauncher.Dialogs
         internal static async Task<ContentDialogResult> Dialog_DownloadSettings(UIElement Content, GamePresetProperty currentGameProperty)
         {
             CheckBox checkBox = new CheckBox { Content = new TextBlock { Text = "Start game after install" }, IsChecked = currentGameProperty._GameInstall.StartAfterInstall };
-            checkBox.Click += (_, _) =>
-            {
-                currentGameProperty._GameInstall.StartAfterInstall = checkBox.IsChecked ?? false;
-            };
+            checkBox.Click += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = (bool)checkBox.IsChecked;
 
             StackPanel panel = new StackPanel()
             {
