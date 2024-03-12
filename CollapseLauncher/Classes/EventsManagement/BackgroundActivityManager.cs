@@ -221,7 +221,7 @@ namespace CollapseLauncher
                         },
                         new TextBlock()
                         {
-                            Text = "Download Settings",
+                            Text = Lang._Dialogs.DownloadSettingsTitle,
                             FontWeight = FontWeights.Medium,
                             Margin = new Thickness(8, -2, 0, 0),
                             VerticalAlignment = VerticalAlignment.Center
@@ -230,10 +230,7 @@ namespace CollapseLauncher
                 }
             };
 
-            settingsButton.Click += async (_, _) =>
-            {
-                await Dialogs.SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
-            };
+            settingsButton.Click += async (_, _) => await Dialogs.SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
 
             EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {

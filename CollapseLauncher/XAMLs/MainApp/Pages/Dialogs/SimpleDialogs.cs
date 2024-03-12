@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
-
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -857,7 +856,7 @@ namespace CollapseLauncher.Dialogs
 
         internal static async Task<ContentDialogResult> Dialog_DownloadSettings(UIElement Content, GamePresetProperty currentGameProperty)
         {
-            CheckBox checkBox = new CheckBox { Content = new TextBlock { Text = "Start game after install" }, IsChecked = currentGameProperty._GameInstall.StartAfterInstall };
+            CheckBox checkBox = new CheckBox { Content = new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1 }, IsChecked = currentGameProperty._GameInstall.StartAfterInstall };
             checkBox.Click += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = (bool)checkBox.IsChecked;
 
             StackPanel panel = new StackPanel()
@@ -870,10 +869,10 @@ namespace CollapseLauncher.Dialogs
                 }
             };
             return await SpawnDialog(
-                "Download Settings",
+                Lang._Dialogs.DownloadSettingsTitle,
                 panel,
                 Content,
-                "Close"
+                Lang._Misc.Close
             );
         }
 
