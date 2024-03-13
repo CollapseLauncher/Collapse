@@ -1129,7 +1129,7 @@ namespace CollapseLauncher.Pages
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
-                if (CurrentGameProperty._GameInstall.StartAfterInstall)
+                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
             }
             catch (TaskCanceledException)
@@ -1159,6 +1159,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StartAfterInstall = false;
                 CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+                await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
             }
@@ -1969,7 +1970,7 @@ namespace CollapseLauncher.Pages
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
-                if (CurrentGameProperty._GameInstall.StartAfterInstall) 
+                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled()) 
                     StartGame(null, null);
             }
             catch (TaskCanceledException)
@@ -1998,6 +1999,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StartAfterInstall = false;
                 CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+                await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
             }

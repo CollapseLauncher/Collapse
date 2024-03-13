@@ -232,6 +232,18 @@ namespace CollapseLauncher
 
             settingsButton.Click += async (_, _) => await Dialogs.SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
 
+            StackPanel controlButtons = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Children =
+                {
+                    settingsButton,
+                    cancelButton
+                }
+            };
+            _parentContainer.Children.Add(controlButtons);
+
             EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.Value = args!.ProgressTotalPercentage;
@@ -247,7 +259,8 @@ namespace CollapseLauncher
                 if (args.IsCanceled)
                 {
                     cancelButton.IsEnabled = false;
-                    cancelButton.Visibility = Visibility.Collapsed;
+                    settingsButton.IsEnabled = false;
+                    controlButtons.Visibility = Visibility.Collapsed;
                     _parentNotifUI.Severity = InfoBarSeverity.Error;
                     _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Error!, activityTitle);
                     _parentNotifUI.IsClosable = true;
@@ -256,7 +269,8 @@ namespace CollapseLauncher
                 if (args.IsCompleted)
                 {
                     cancelButton.IsEnabled = false;
-                    cancelButton.Visibility = Visibility.Collapsed;
+                    settingsButton.IsEnabled = false;
+                    controlButtons.Visibility = Visibility.Collapsed;
                     _parentNotifUI.Severity = InfoBarSeverity.Success;
                     _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Completed!, activityTitle);
                     _parentNotifUI.IsClosable = true;
@@ -265,7 +279,8 @@ namespace CollapseLauncher
                 if (args.IsRunning)
                 {
                     cancelButton.IsEnabled = true;
-                    cancelButton.Visibility = Visibility.Visible;
+                    settingsButton.IsEnabled = true;
+                    controlButtons.Visibility = Visibility.Visible;
                     _parentNotifUI.Severity = InfoBarSeverity.Informational;
                     _parentNotifUI.Title = activityTitle;
                     _parentNotifUI.IsClosable = false;
@@ -288,17 +303,6 @@ namespace CollapseLauncher
                 activity.StatusChanged -= StatusChangedEventHandler;
                 Detach(hashID);
             };
-
-            _parentContainer.Children.Add(new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Children =
-                {
-                    settingsButton,
-                    cancelButton
-                }
-            });
 
             NotificationSender.SendCustomNotification(hashID, _parentNotifUI);
         }

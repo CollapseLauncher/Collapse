@@ -75,7 +75,7 @@ namespace CollapseLauncher.InstallManager.Base
         #region Public Properties
         public bool IsRunning { get; protected set; }
         public event EventHandler FlushingTrigger;
-        public bool StartAfterInstall { get; set; } = false;
+        public bool StartAfterInstall { get; set; }
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)

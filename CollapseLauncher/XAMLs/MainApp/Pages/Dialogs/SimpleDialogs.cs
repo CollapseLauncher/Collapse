@@ -741,13 +741,13 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
             panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1, Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
-            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4) };
             pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
             panel.Children.Add(pathText);
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
 
             CheckBox playOnLoad = new CheckBox() { 
-                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
+                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords },
                 Margin = new Thickness(0, 4, 0, -8),
                 HorizontalAlignment = HorizontalAlignment.Center
             };    
@@ -769,7 +769,7 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
             panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
-            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) };
+            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4) };
             pathText.Inlines.Add(new Run() { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle2 });
             pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
             panel.Children.Add(pathText);
@@ -777,8 +777,8 @@ namespace CollapseLauncher.Dialogs
             if (play)
             {
                 panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
             }
 
             return await SpawnDialog(
@@ -794,8 +794,8 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
 
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 4) });
 
             CheckBox playOnLoad = new CheckBox()
             {
@@ -820,16 +820,16 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
         {
             StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 8, 0, 4) });
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
+                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
             }
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
+            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 4) });
 
             return await SpawnDialog(
                 Lang._Dialogs.SteamShortcutCreationSuccessTitle,
