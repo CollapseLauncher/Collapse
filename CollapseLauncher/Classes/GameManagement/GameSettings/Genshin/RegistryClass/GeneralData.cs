@@ -323,6 +323,9 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// is a boolean, Default: false <br/>
         /// </summary>
         public bool muteAudioOnAppMinimized { get; set; } = false;
+
+        // iunno
+        public bool disableFallbackControllerType { get; set; } = false;
         #endregion
 
         #region Methods
@@ -352,8 +355,8 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
                 GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
 
-                data.graphicsData   = GraphicsData.Load(data._graphicsData);
-                data.globalPerfData = GlobalPerfData.Load(data._globalPerfData, data.graphicsData);
+                if (data._graphicsData != null) data.graphicsData = GraphicsData.Load(data._graphicsData);
+                if (data._globalPerfData != null) data.globalPerfData   = GlobalPerfData.Load(data._globalPerfData, data.graphicsData)!;
                 return data;
             }
             catch (Exception ex)
@@ -367,9 +370,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                     $"Unless you have never opened the game (fresh installation), please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n\r\n" +
                     $"{ex}", ex));
 
-                GeneralData data = _graphicsDataDefault.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
-                data.graphicsData   = GraphicsData.Load(data._graphicsData);
-                data.globalPerfData = GlobalPerfData.Load(data._globalPerfData, data.graphicsData);
+                GeneralData data = _graphicsDataDefault!.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
+                data.graphicsData   = GraphicsData.Load(data._graphicsData!);
+                data.globalPerfData = GlobalPerfData.Load(data._globalPerfData!, data.graphicsData)!;
                 return data;
             }
         }
@@ -380,8 +383,8 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                _graphicsData = graphicsData.Create(globalPerfData);
-                _globalPerfData = globalPerfData.Save();
+                _graphicsData = graphicsData!.Create(globalPerfData!);
+                _globalPerfData = globalPerfData!.Save()!;
 
                 string data = this.Serialize(GenshinSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);

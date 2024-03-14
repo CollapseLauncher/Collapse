@@ -39,6 +39,16 @@ for:
 
         echo.
 
+        echo Install dotnet sdk
+
+        choco install dotnet-sdk
+
+        dotnet --version
+
+        echo.
+
+
+
     build_script:
     - cmd: >-
         @echo on
@@ -169,6 +179,14 @@ for:
 
 
         cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+
+        echo.
+
+        echo Install dotnet sdk
+
+        choco install dotnet-sdk
+
+        dotnet --version
 
         echo.
 
