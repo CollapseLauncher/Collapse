@@ -13,6 +13,7 @@ namespace CollapseLauncher.Interfaces
         ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage = null);
         Task StartPackageInstallation();
         void ApplyGameConfig(bool forceUpdateToLatest = false);
+        bool StartAfterInstall { get; set; }
 
         ValueTask<bool> MoveGameLocation();
         ValueTask<bool> UninstallGame();
