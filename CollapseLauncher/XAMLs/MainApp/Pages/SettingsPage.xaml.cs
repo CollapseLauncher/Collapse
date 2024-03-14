@@ -588,9 +588,6 @@ namespace CollapseLauncher.Pages
                     case Waifu2XStatus.TestNotPassed:
                         tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
                         break;
-                    default:
-                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
-                        break;
                 }
                 
                 return tooltip;

@@ -93,7 +93,7 @@ namespace CollapseLauncher.Helper.Image
         {
             try
             {
-                var gpuId = -1;  // Do not touch Vulkan before checking D3DMappingLayers.
+                var gpuId = -1; // Do not touch Vulkan before checking D3DMappingLayers.
                 if (CheckD3DMappingLayersPackageInstalled())
                 {
                     _status = Waifu2XStatus.D3DMappingLayers;
@@ -113,13 +113,19 @@ namespace CollapseLauncher.Helper.Image
                         _status = Waifu2XStatus.Ok;
                     }
                 }
+
                 _context = waifu2x_create(gpuId);
                 Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
             }
-            catch (DllNotFoundException)
+            catch ( DllNotFoundException )
             {
                 _status = Waifu2XStatus.NotAvailable;
                 Logger.LogWriteLine("Dll file \"waifu2x-ncnn-vulkan.dll\" can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
+            }
+            catch ( Exception ex )
+            {
+                _status = Waifu2XStatus.Error;
+                Logger.LogWriteLine($"There was an error when loading Waifu2X!\r\n{ex}", LogType.Error, true);
             }
         }
 

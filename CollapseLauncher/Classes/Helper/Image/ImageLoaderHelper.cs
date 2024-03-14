@@ -71,6 +71,7 @@ namespace CollapseLauncher.Helper.Image
                 waifu2X.SetParam(Param.Scale, 2);
                 waifu2X.Load(Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
                     Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
+                _cachedStatus = waifu2X.Status;
             }
             return waifu2X;
         }
