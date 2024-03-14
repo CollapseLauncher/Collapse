@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "App Settings",
     "NotifNeverAsk": "Never show again",
     "NotifNoNewNotifs": "No new notifications",
+    "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Utilities"
   },
@@ -187,6 +188,8 @@
     "Status11": "Waiting for the repair process to start...",
     "Status12": "Updating Audio: {0}",
     "Status13": "Updating Block: {0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "None",
     "PerProgressTitle1": "Per File Progress",
     "PerProgressSubtitle1": "Waiting...",
@@ -398,6 +401,14 @@
     "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
     "AppThreads_Help6": "Note: This setting is no longer effective while installing Honkai Impact 3rd.",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Show Discord Presence",
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
@@ -428,7 +439,7 @@
 
     "About": "About",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
 
@@ -466,11 +477,14 @@
     "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
     "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
     "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
+    "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
     "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
-    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X check, got an empty output."
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Update Completed!",
     "UpdateCompleteSubtitle": "Your launcher version has been updated to {0}! (Release Channel: {1})",
     "FeatureUnavailableTitle": "This feature is unavailable at the moment",
@@ -741,6 +755,7 @@
     "ShortcutCreationSuccessSubtitle2": "Location: ",
     "ShortcutCreationSuccessSubtitle3": "Notes:",
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
     "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
@@ -753,9 +768,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
-    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
+
+    "DownloadSettingsTitle": "Download Settings",
+    "DownloadSettingsOption1": "Start game after install"
   },
 
   "_FileMigrationProcess": {
@@ -805,6 +824,8 @@
     "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!",
     "CookbookDownloadTitle": "Downloading Recipe",
     "CookbookDownloadSubtitle": "Downloading recipe for conversion from {0} to {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "Cancel Conversion",
     "CancelMsgTitle": "Cancelling Conversion...",

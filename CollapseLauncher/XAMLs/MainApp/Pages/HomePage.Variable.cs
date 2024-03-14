@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper;
+using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -18,6 +19,7 @@ namespace CollapseLauncher.Pages
         public Visibility IsPostNoticePanelEmpty => (regionNewsProp.articlePanel?.Notices.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostInfoPanelVisible => (regionNewsProp.articlePanel?.Info.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostInfoPanelEmpty => (regionNewsProp.articlePanel?.Info.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
 
         public bool IsEventsPanelShow
         {

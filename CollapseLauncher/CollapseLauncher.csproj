@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<!-- Versioning -->
-		<Version>1.73.5</Version>
+		<Version>1.73.6</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
 		<Platforms>x64</Platforms>
@@ -33,6 +33,7 @@
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<InvariantGlobalization>false</InvariantGlobalization>
 		<ShouldComputeInputPris>true</ShouldComputeInputPris>
+		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
 	</PropertyGroup>
 
 <!--
@@ -78,12 +79,12 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
     
-		<PackageReference Include="GitInfo" Version="3.3.4" PrivateAssets="all"/>
+		<PackageReference Include="GitInfo" Version="3.3.4" PrivateAssets="all" />
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
 		<PackageReference Include="ImageEx" Version="2.1.1" />
-		<PackageReference Include="Markdig.Signed" Version="0.35.0" />
-		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
+		<PackageReference Include="Markdig.Signed" Version="0.36.0" />
+		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
 		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
@@ -98,7 +99,7 @@
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Security.AccessControl" Version="6.0.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
-		<PackageReference Include="System.Text.Json" Version="8.0.2" />
+		<PackageReference Include="System.Text.Json" Version="8.0.3" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 		<PackageReference Include="TaskScheduler" Version="2.10.1" />
 	</ItemGroup>

@@ -29,7 +29,8 @@ jobs:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '8.0'
+      DOTNET_VERSION: '8.x'
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout
@@ -37,26 +38,12 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
-      id: cache-dotnet
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.DOTNET_INSTALL_DIR }}
-        key: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ matrix.platform }}
-        restore-keys: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ matrix.platform }}
-        
-    - name: Cache nuget # cache nuget https://github.com/actions/cache/blob/main/examples.md#c---nuget
-      uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-
     - name: Install .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+        cache: true
+        cache-dependency-path: CollapseLauncher/packages.lock.json
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
@@ -65,18 +52,11 @@ jobs:
         msbuild-architecture: ${{ matrix.platform }}
 
     - name: Restore
-      run: dotnet restore CollapseLauncher
+      run: dotnet restore CollapseLauncher --locked-mode
 
     - name: Build
       run: |
         dotnet publish CollapseLauncher -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\" 
-    
-#    - name: Upload Artifact (Debug)
-#      uses: actions/upload-artifact@v3.1.2
-#      if: ${{ matrix.configuration == 'Debug' }}
-#      with:
-#          name: collapse_debug_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
-#          path: ./CollapseLauncher/bin/x64/Debug/${{ matrix.framework }}/
           
     - name: Upload Artifact (Release)
       uses: actions/upload-artifact@v3.1.2

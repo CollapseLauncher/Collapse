@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "Ajustes de la Aplicación",
     "NotifNeverAsk": "No mostrar de nuevo",
     "NotifNoNewNotifs": "No hay nuevas notificaciones",
+    "NotifClearAll": "Limpiar todas las notificaciones ",
     "NavigationMenu": "Menú",
     "NavigationUtilities": "Utilidades"
   },
@@ -187,6 +188,8 @@
     "Status11": "Esperando a que se inicie el proceso de reparación...",
     "Status12": "Actualizando Audio: {0}",
     "Status13": "Actualizando Bloque: {0}",
+    "Status14": "Determinando disponibilidad de archivos CG: {0} ",
+    "Status15": "Determinando disponibilidad de archivos de Audio: {0}",
     "StatusNone": "Nada",
     "PerProgressTitle1": "Progreso Del Archivo",
     "PerProgressSubtitle1": "Esperando...",
@@ -398,6 +401,14 @@
     "AppThreads_Help5": "Este thread manejará el proceso de extracción/verificación mientras se instala/repara el juego.",
     "AppThreads_Help6": "Aviso: Esta configuración ya no funciona al instalar Honkai Impact 3rd.",
 
+    "AppThreads_Attention": "Precaución",
+    "AppThreads_Attention1": "Antes de cambiar el valor de los",
+    "AppThreads_Attention2": ", por favor considera ",
+    "AppThreads_Attention3": "NO MODIFICAR",
+    "AppThreads_Attention4": "el valor si tienes una descarga existente, ya que podría ",
+    "AppThreads_Attention5": "REINICIAR LA DESCARGA COMPLETA",
+    "AppThreads_Attention6": "debido a que generaran diferencias durante el conteo de la sesión.",
+
     "DiscordRPC": "Estado de actividad en Discord (Rich Presence)",
     "DiscordRPC_Toggle": "Mostrar Presencia de Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
@@ -428,7 +439,7 @@
 
     "About": "Acerca de",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
 
@@ -471,6 +482,8 @@
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "¡Actualización Completada!",
     "UpdateCompleteSubtitle": "¡Su versión del launcher ha sido actualizada a {0}! (Canal de Lanzamiento: {1})",
     "FeatureUnavailableTitle": "Esta característica no está disponible en este momento",
@@ -805,6 +818,8 @@
     "ConvertSuccessSubtitle": "¡La conversión de {0} a {1} se completo con éxito!",
     "CookbookDownloadTitle": "Descargando Receta",
     "CookbookDownloadSubtitle": "Descargando receta para conversión de {0} a {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} a {1} Cookbook",
 
     "CancelBtn": "Cancelar Conversión",
     "CancelMsgTitle": "Cancelando Conversión...",

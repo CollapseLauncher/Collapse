@@ -20,6 +20,7 @@
                 public string RegionLoadingSubtitleTooLong { get; set; } = LangFallback?._MainPage.RegionLoadingSubtitleTooLong;
                 public string NotifNeverAsk { get; set; } = LangFallback?._MainPage.NotifNeverAsk;
                 public string NotifNoNewNotifs { get; set; } = LangFallback?._MainPage.NotifNoNewNotifs;
+                public string NotifClearAll { get; set; } = LangFallback?._MainPage.NotifClearAll;
                 public string NavigationMenu { get; set; } = LangFallback?._MainPage.NavigationMenu;
                 public string NavigationUtilities { get; set; } = LangFallback?._MainPage.NavigationUtilities;
             }
