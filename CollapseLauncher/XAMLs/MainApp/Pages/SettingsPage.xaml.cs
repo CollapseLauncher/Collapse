@@ -15,7 +15,6 @@ using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -574,15 +573,26 @@ namespace CollapseLauncher.Pages
             get
             {
                 var tooltip = Lang._SettingsPage.Waifu2X_Help;
-                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.CpuMode)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
-                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.D3DMappingLayers)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode +
-                               "\n\n" + Lang._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
-                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.NotAvailable)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
-                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.TestNotPassed)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                switch (ImageLoaderHelper.Waifu2XStatus)
+                {
+                    case Waifu2XStatus.CpuMode:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
+                        break;
+                    case Waifu2XStatus.D3DMappingLayers:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode +
+                                   "\n\n" + Lang._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
+                        break;
+                    case Waifu2XStatus.NotAvailable:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
+                        break;
+                    case Waifu2XStatus.TestNotPassed:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                        break;
+                    default:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
+                        break;
+                }
+                
                 return tooltip;
             }
         }
