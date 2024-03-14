@@ -17,6 +17,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using Hi3Helper;
 using CollapseLauncher.Statics;
+using CollapseLauncher.Helper.Animation;
 
 namespace CollapseLauncher.Pages
 {
@@ -75,6 +76,7 @@ namespace CollapseLauncher.Pages
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
+            SettingsScrollViewer.EnableImplicitAnimation(true);
 
             InheritApplyTextColor = ApplyText.Foreground;
         }

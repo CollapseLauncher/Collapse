@@ -148,17 +148,17 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.35.0, )",
-        "resolved": "0.35.0",
-        "contentHash": "fsEkLn84B3qNWbh0NyaL8xm5L01JE5TQBqwnj6SxRyhcrOr/tulZEfB6CmESKP+qE9hQCVJ9dSTL2DIx0TU6rg=="
+        "requested": "[0.36.0, )",
+        "resolved": "0.36.0",
+        "contentHash": "MBLFHhhGrU3024JXlg2m3B2Xf0nJ0XrpPyUep6ztdSmykJzzq1M296qLcJWB6WNpKWaDOUcVVEe0DR/jiK4eng=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.1.1, )",
-        "resolved": "1.1.1",
-        "contentHash": "pY+vydSMYOSTa0BkArumLiyr3VihbW1aJBzD1nk9UAGyR5iA/hZxX319g9tnMGV5xc/88CAwi5uAq/AqTdfVRw==",
+        "requested": "[1.2.0, )",
+        "resolved": "1.2.0",
+        "contentHash": "7bAo8ObjCy/br0eW0nONRfVKehJu5aDe/KQekWeNXslwTOO2rhrIfWaVGepsXyVqmqwHoLJ31g1HsT7FLdBCoQ==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.4.231115000"
+          "Microsoft.WindowsAppSDK": "1.5.240227000"
         }
       },
       "Microsoft.NETCore.Platforms": {
@@ -287,9 +287,9 @@
       },
       "System.Text.Json": {
         "type": "Direct",
-        "requested": "[8.0.2, )",
-        "resolved": "8.0.2",
-        "contentHash": "29KA2StjWDYp32FvREifawRtNpTziLE1xyuDV9pVQ+MsaE9bIcIieP0io/eZZeLMxR+Nx9zI55RtUtpVpEIdeg==",
+        "requested": "[8.0.3, )",
+        "resolved": "8.0.3",
+        "contentHash": "hpagS9joOwv6efWfrMmV9MjQXpiXZH72PgN067Ysfr6AWMSD1/1hEcvh/U5mUpPLezEWsOJSuVrmqDIVD958iA==",
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
         }
@@ -346,8 +346,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.25.3",
-        "contentHash": "fDY/kt0gy2nVcoeMmiyDMtwgvDJG5qaU7+Ic77szKTvVkIvoo7tyf+d+QDlKSosB+FjoKocX/ObObxqKCq60uA=="
+        "resolved": "3.26.0",
+        "contentHash": "AkWr2Hz/rycJapYHXS3gT5UVq8K8D2gkNA70ePe22oejNVGMkw5Mtasri2VbNtBCgbqtE8MsIPYp73xud2wAVQ=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
@@ -543,8 +543,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.2",
-        "contentHash": "oDedGrYVyzvtGZhgtURpeneHq9D3HQtrvU7q6iCRa+BbIXvTZayGFo0iK3b7qHrwQ/OOAn9B0ghzQH6AbW5LHg==",
+        "resolved": "8.0.3",
+        "contentHash": "oDE9duAtHhxYJM2bsOlZCLBKdorU9DTV1tw7Mlc+VIT7HgwO5ddfOHk/An8C+fAS9oKdmn2PaIA5t1b484uz8g==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -938,13 +938,13 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.2, )"
+          "System.Drawing.Common": "[8.0.3, )"
         }
       },
       "discordrpc": {
         "type": "Project",
         "dependencies": {
-          "System.Text.Json": "[8.0.2, )"
+          "System.Text.Json": "[8.0.3, )"
         }
       },
       "hi3helper.core": {
@@ -958,7 +958,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.25.3, )",
+          "Google.Protobuf": "[3.26.0, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
@@ -980,11 +980,11 @@
     "net8.0-windows10.0.22621/win-x64": {
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.1.1, )",
-        "resolved": "1.1.1",
-        "contentHash": "pY+vydSMYOSTa0BkArumLiyr3VihbW1aJBzD1nk9UAGyR5iA/hZxX319g9tnMGV5xc/88CAwi5uAq/AqTdfVRw==",
+        "requested": "[1.2.0, )",
+        "resolved": "1.2.0",
+        "contentHash": "7bAo8ObjCy/br0eW0nONRfVKehJu5aDe/KQekWeNXslwTOO2rhrIfWaVGepsXyVqmqwHoLJ31g1HsT7FLdBCoQ==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.4.231115000"
+          "Microsoft.WindowsAppSDK": "1.5.240227000"
         }
       },
       "Microsoft.WindowsAppSDK": {

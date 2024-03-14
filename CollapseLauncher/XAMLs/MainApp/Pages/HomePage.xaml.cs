@@ -172,20 +172,41 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
-                CheckRunningGameInstance(PageToken.Token);
                 UpdatePlaytime();
+                CheckRunningGameInstance(PageToken.Token);
+                StartCarouselAutoScroll(CarouselToken.Token);
 
-                if (m_arguments.StartGame?.Play == true)
+                if (m_arguments.StartGame?.Play != true)
+                    return;
+
+                m_arguments.StartGame.Play = false;
+
+                if (CurrentGameProperty.IsGameRunning)
+                    return;
+
+                if (CurrentGameProperty._GameInstall.IsRunning)
                 {
-                    if (CurrentGameProperty._GameVersion.GetGameState() is
-                        GameInstallStateEnum.Installed or GameInstallStateEnum.InstalledHavePreload)
-                    {
-                        StartGame(null, null);
-                    }
-                    m_arguments.StartGame.Play = false;
+                    CurrentGameProperty._GameInstall.StartAfterInstall = CurrentGameProperty._GameInstall.IsRunning;
+                    return;
                 }
 
-                StartCarouselAutoScroll(CarouselToken.Token);
+                switch (CurrentGameProperty._GameVersion.GetGameState())
+                {
+                    case GameInstallStateEnum.InstalledHavePreload:
+                    case GameInstallStateEnum.Installed:
+                        StartGame(null, null);
+                        break;
+                    case GameInstallStateEnum.InstalledHavePlugin:
+                    case GameInstallStateEnum.NeedsUpdate:
+                        CurrentGameProperty._GameInstall.StartAfterInstall = true;
+                        UpdateGameDialog(null, null);
+                        break;
+                    case GameInstallStateEnum.NotInstalled:
+                    case GameInstallStateEnum.GameBroken:
+                        CurrentGameProperty._GameInstall.StartAfterInstall = true;
+                        InstallGameDialog(null, null);
+                        break;
+                }
             }
             catch (ArgumentNullException ex)
             {
@@ -1108,6 +1129,8 @@ namespace CollapseLauncher.Pages
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
+                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
+                    StartGame(null, null);
             }
             catch (TaskCanceledException)
             {
@@ -1133,8 +1156,10 @@ namespace CollapseLauncher.Pages
             finally
             {
                 IsSkippingUpdateCheck = false;
+                CurrentGameProperty._GameInstall.StartAfterInstall = false;
                 CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+                await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
             }
@@ -1263,10 +1288,10 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    proc.StartInfo.UseShellExecute  = false;
                     proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
-                    proc.StartInfo.Verb             = "runas";
                 }
+                proc.StartInfo.UseShellExecute  = false;
+                proc.StartInfo.Verb             = "runas";
                 proc.Start();
 
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
@@ -1945,6 +1970,8 @@ namespace CollapseLauncher.Pages
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
+                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled()) 
+                    StartGame(null, null);
             }
             catch (TaskCanceledException)
             {
@@ -1969,8 +1996,10 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                CurrentGameProperty._GameInstall.StartAfterInstall = false;
                 CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+                await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
             }
@@ -2245,5 +2274,7 @@ namespace CollapseLauncher.Pages
             await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
         }
         #endregion
+
+        private async void ProgressSettingsButton_OnClick(object sender, RoutedEventArgs e) => await Dialog_DownloadSettings(this, CurrentGameProperty);
     }
 }

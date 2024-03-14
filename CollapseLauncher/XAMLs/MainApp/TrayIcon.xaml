@@ -1,28 +1,27 @@
-<UserControl
-    x:Class="CollapseLauncher.TrayIcon"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:tb="using:H.NotifyIcon"
-    mc:Ignorable="d">
-    <tb:TaskbarIcon
-        x:Name="CollapseTaskbar"
-        ContextMenuMode="PopupMenu"
-        DoubleClickCommand="{x:Bind ToggleAllVisibilityInvokeCommand}"
-        LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
-        MenuActivation="RightClick"
-        RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"
-        ToolTipText="Collapse Launcher">
+<UserControl x:Class="CollapseLauncher.TrayIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tb="using:H.NotifyIcon"
+             mc:Ignorable="d">
+    <tb:TaskbarIcon x:Name="CollapseTaskbar"
+                    ContextMenuMode="PopupMenu"
+                    DoubleClickCommand="{x:Bind ToggleAllVisibilityInvokeCommand}"
+                    LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
+                    MenuActivation="RightClick"
+                    RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"
+                    ToolTipText="Collapse Launcher">
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem x:Name="MainTaskbarToggle" Command="{x:Bind ToggleMainVisibilityButtonCommand}" />
-                <MenuFlyoutItem
-                    x:Name="ConsoleTaskbarToggle"
-                    Command="{x:Bind ToggleConsoleVisibilityButtonCommand}"
-                    IsEnabled="False" />
-                <MenuFlyoutSeparator />
-                <MenuFlyoutItem x:Name="CloseButton" Command="{x:Bind CloseAppCommand}" />
+                <MenuFlyoutItem x:Name="MainTaskbarToggle"
+                                Command="{x:Bind ToggleMainVisibilityButtonCommand}"/>
+                <MenuFlyoutItem x:Name="ConsoleTaskbarToggle"
+                                Command="{x:Bind ToggleConsoleVisibilityButtonCommand}"
+                                IsEnabled="False"/>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem x:Name="CloseButton"
+                                Command="{x:Bind CloseAppCommand}"/>
             </MenuFlyout>
         </tb:TaskbarIcon.ContextFlyout>
     </tb:TaskbarIcon>

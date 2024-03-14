@@ -4,21 +4,22 @@
                     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
                     xmlns:datatable="using:CommunityToolkit.WinUI.Controls.Labs.DataTable"
                     xmlns:converters="using:CommunityToolkit.WinUI.Converters">
-
-    <converters:BoolToVisibilityConverter x:Key="DataColumnBoolToVisibilityConverter" />
-
+    <converters:BoolToVisibilityConverter x:Key="DataColumnBoolToVisibilityConverter"/>
     <!--  Implicitly applied default style  -->
     <Style BasedOn="{StaticResource DefaultDataColumnStyle}"
-           TargetType="datatable:DataColumn" />
-
+           TargetType="datatable:DataColumn"/>
     <Style x:Key="DefaultDataColumnStyle"
            TargetType="datatable:DataColumn">
         <Style.Setters>
             <!--  TODO: This is going to be different between ListView and HeaderedItemsControl, how do we want to handle?  -->
-            <Setter Property="Padding" Value="4,0" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Padding"
+                    Value="4,0"/>
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+            <Setter Property="Foreground"
+                    Value="{ThemeResource TextFillColorSecondaryBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="datatable:DataColumn">
@@ -27,13 +28,13 @@
                               BorderThickness="{TemplateBinding BorderThickness}"
                               CornerRadius="{TemplateBinding CornerRadius}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <ContentPresenter Margin="{TemplateBinding Padding}"
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                              Foreground="{TemplateBinding Foreground}" />
+                                              Foreground="{TemplateBinding Foreground}"/>
                             <controls:ContentSizer x:Name="PART_ColumnSizer"
                                                    Grid.Column="1"
                                                    Width="8"

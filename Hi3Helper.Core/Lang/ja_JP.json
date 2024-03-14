@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "ランチャー設定",
     "NotifNeverAsk": "次回から表示しない",
     "NotifNoNewNotifs": "通知はありません",
+    "NotifClearAll": "通知をすべてクリア",
     "NavigationMenu": "メニュー",
     "NavigationUtilities": "機能"
   },
@@ -185,8 +186,10 @@
     "Status9": "ブロック修復中: {0}",
     "Status10": "ブロック修復中: {0} | オフセット: 0x{1} - サイズ: 0x{2}",
     "Status11": "修復の開始を待っています...",
-    "Status12": "オーディオ更新中: {0}",
+    "Status12": "音声ファイル更新中: {0}",
     "Status13": "更新したブロック: {0}",
+    "Status14": "CGアセットの可用性を確認中: {0}",
+    "Status15": "音声アセットの可用性を確認中: {0}",
     "StatusNone": "なし",
     "PerProgressTitle1": "ファイルごとの進行状況",
     "PerProgressSubtitle1": "待機中...",
@@ -271,7 +274,7 @@
     "Graphics_Shadow": "シャドウクオリティ",
     "Graphics_Reflection": "反射クオリティ",
     "Graphics_FX": "視覚効果",
-    "Graphics_FXPost": "後処理クオリティ",
+    "Graphics_FXPost": "後処理",
     "Graphics_FXPhysics": "物理シミュレーション",
     "Graphics_FXHDR": "HDR",
     "Graphics_FXHQ": "高品質",
@@ -391,12 +394,20 @@
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
     "AppThreads_Extract": "展開スレッド",
-    "AppThreads_Help1": "このスレッドは、ファイルのダウンロード中に分割されるチャンクの数を処理します。このメカニズムは、IDM および aria2c と同じように動作します。",
+    "AppThreads_Help1": "このスレッドはダウンロード中のファイルがいくつのチャンクに分割されるかを操作します。このメカニズムはIDMやaria2cと同様の動作を行います。",
     "AppThreads_Help2": "デフォルト:",
     "AppThreads_Help3": "値の範囲:",
     "AppThreads_Help4": "0 (自動検出)",
-    "AppThreads_Help5": "このスレッドはゲームのインストール/修復中に解凍/整合性チェック操作を処理します。",
-    "AppThreads_Help6": "注: この設定は、崩壊3rd のインストール中は無効になります。",
+    "AppThreads_Help5": "このスレッドはゲームのインストール・修復中の解凍・整合性チェックプロセスを操作します。",
+    "AppThreads_Help6": "注: 崩壊3rdのインストール中は、この設定が無効になります。",
+
+    "AppThreads_Attention": "注意",
+    "AppThreads_Attention1": "既にダウンロード済みのパッケージがある場合は、",
+    "AppThreads_Attention2": "の値を",
+    "AppThreads_Attention3": "絶対に変更しないでください",
+    "AppThreads_Attention4": "。ダウンロードセッションの数が一致しなくなるため、",
+    "AppThreads_Attention5": "全部最初からダウンロードし直すはめになる",
+    "AppThreads_Attention6": "可能性があります。",
 
     "DiscordRPC": "Discordアクティビティステータス",
     "DiscordRPC_Toggle": "ランチャーをDiscordのステータスに表示",
@@ -428,7 +439,7 @@
 
     "About": "Collapse Launcherについて",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka, gablm",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
 
@@ -471,6 +482,8 @@
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "更新が完了しました！",
     "UpdateCompleteSubtitle": "ランチャーのバージョンが{0}に更新されました！（リリースチャンネル：{1}）",
     "FeatureUnavailableTitle": "現在この機能は利用できません",
@@ -606,7 +619,7 @@
     "DeltaPatchPrevFailedSubtitle": "前回のデルタパッチの適用に失敗しました。再ダウンロードを防ぐためにゲームを復元しますか？",
     "DeltaPatchPreReqTitle": "デルタパッチのために追加のファイルダウンロードが必要です！",
     "DeltaPatchPreReqSubtitle1": "デルタパッチを適用する前に、追加のファイルダウンロードが必要です。およそ",
-    "DeltaPatchPreReqSubtitle2": "を新たにダウンロードします。オーディオファイルのデルタパッケージが含まれる場合があります。",
+    "DeltaPatchPreReqSubtitle2": "を新たにダウンロードします。音声ファイルのデルタパッケージが含まれる場合があります。",
     "DeltaPatchPreReqSubtitle3": "続行しますか？",
     "DeltaPatchPreReqSubtitle4": "(\"",
     "DeltaPatchPreReqSubtitle5": "を押すと続行、\"",
@@ -806,6 +819,8 @@
     "CookbookDownloadTitle": "レシピをダウンロード中",
     "CookbookDownloadSubtitle": "{0}から{1}への変換レシピをダウンロードしています",
 
+    "CookbookFileBrowserFileTypeCategory": "{0}を{1}に変換するCookbook",
+
     "CancelBtn": "変換をキャンセル",
     "CancelMsgTitle": "変換をキャンセルしています...",
     "CancelMsgSubtitle1": "変換プロセスをキャンセルしようとしています。変換の進行状況はすべて中止されます。\r\n\r\nよろしいですか？",
@@ -857,10 +872,10 @@
 
   "_UpdatePage": {
     "PageTitle1": "更新",
-    "PageTitle2": "が可能です！",
+    "PageTitle2": "できますよ！",
     "VerCurLabel": "現在のバージョン:",
     "VerNewLabel": "新しいバージョン:",
-    "VerChannelLabel": "更新チャンネル：",
+    "VerChannelLabel": "更新チャンネル:",
     "VerDateLabel": "コンパイル日:",
     "ReleaseNote": "リリースノート",
     "NeverShowNotification": "次回から表示しない",
@@ -936,7 +951,7 @@
 
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "ランチャーメタデータが更新可能です！",
-    "NotifMetadataUpdateSubtitle": "新しいランチャーメタデータが利用可能です！このプロセスは、ランチャーが miHoYo/HoYoverse サーバーと適切に通信できるようにするために自動的に行われます。更新はまもなく開始されます！",
+    "NotifMetadataUpdateSubtitle": "新しいランチャーメタデータが利用可能です！このプロセスは、ランチャーがmiHoYo/HoYoverseのサーバーと適切に通信できるようにするために自動的に行われます。まもなく更新が始まります！",
     "NotifMetadataUpdateBtn": "メタデータ更新",
     "NotifMetadataUpdateBtnCountdown": "メタデータを {0}秒後に更新します。",
     "NotifMetadataUpdateBtnUpdating": "メタデータを更新しています。お待ちください...",

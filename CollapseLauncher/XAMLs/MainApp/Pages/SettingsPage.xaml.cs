@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
@@ -26,6 +27,10 @@ using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using TaskSched = Microsoft.Win32.TaskScheduler.Task;
+using Task = System.Threading.Tasks.Task;
+using CollapseLauncher.Extension;
+
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -42,6 +47,9 @@ namespace CollapseLauncher.Pages
         public SettingsPage()
         {
             this.InitializeComponent();
+            this.EnableImplicitAnimation(true);
+            AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
+
             LoadAppConfig();
             this.DataContext = this;
 
@@ -117,7 +125,6 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
-                        
                         var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
                         if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
@@ -150,15 +157,15 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
-        private void ClearImgFolder(object sender, RoutedEventArgs e)
+        private async void ClearImgFolder(object sender, RoutedEventArgs e)
         {
             try
             {
+                (sender as Button).IsEnabled = false;
                 if (Directory.Exists(AppGameImgFolder))
                     Directory.Delete(AppGameImgFolder, true);
 
                 Directory.CreateDirectory(AppGameImgFolder);
-                (sender as Button).IsEnabled = false;
             }
             catch (Exception ex)
             {
@@ -166,9 +173,12 @@ namespace CollapseLauncher.Pages
                 ErrorSender.SendException(ex);
                 LogWriteLine(msg, LogType.Error, true);
             }
+
+            await Task.Delay(1000);
+            (sender as Button).IsEnabled = true;
         }
 
-        private void ClearLogsFolder(object sender, RoutedEventArgs e)
+        private async void ClearLogsFolder(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -186,6 +196,9 @@ namespace CollapseLauncher.Pages
             {
                 ErrorSender.SendException(ex);
             }
+
+            await Task.Delay(1000);
+            (sender as Button).IsEnabled = true;
         }
 
         private void ForceUpdate(object sender, RoutedEventArgs e)
@@ -335,7 +348,7 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
-        private Task CreateScheduledTask(string taskName)
+        private TaskSched CreateScheduledTask(string taskName)
         {
             string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
 
@@ -350,7 +363,7 @@ namespace CollapseLauncher.Pages
             taskDefinition.Triggers.Add(new LogonTrigger());
             taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
 
-            Task task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+            TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
             return task;
         }
@@ -560,12 +573,23 @@ namespace CollapseLauncher.Pages
             get
             {
                 var tooltip = Lang._SettingsPage.Waifu2X_Help;
-                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.CpuMode)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
-                if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.NotAvailable)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
-                else if (ImageLoaderHelper.Waifu2XStatus == Waifu2XStatus.TestNotPassed)
-                    tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                switch (ImageLoaderHelper.Waifu2XStatus)
+                {
+                    case Waifu2XStatus.CpuMode:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode;
+                        break;
+                    case Waifu2XStatus.D3DMappingLayers:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Warning_CpuMode +
+                                   "\n\n" + Lang._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
+                        break;
+                    case Waifu2XStatus.NotAvailable:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Loader;
+                        break;
+                    case Waifu2XStatus.TestNotPassed:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
+                        break;
+                }
+                
                 return tooltip;
             }
         }
@@ -576,15 +600,12 @@ namespace CollapseLauncher.Pages
             {
                 switch (ImageLoaderHelper.Waifu2XStatus)
                 {
-                    case Waifu2XStatus.Ok:
+                    case <= Waifu2XStatus.Ok:
                         return "\uf05a";
-                    case Waifu2XStatus.CpuMode:
+                    case < Waifu2XStatus.Error:
                         return "\uf071";
-                    case Waifu2XStatus.NotAvailable:
-                    case Waifu2XStatus.TestNotPassed:
+                    case >= Waifu2XStatus.Error:
                         return "\uf06a";
-                    default:
-                        return "\uf05a";
                 }
             }
         }
@@ -653,6 +674,9 @@ namespace CollapseLauncher.Pages
             int lastAppBehavSelected = GameLaunchedBehaviorSelector.SelectedIndex;
             GameLaunchedBehaviorSelector.SelectedIndex = -1;
             GameLaunchedBehaviorSelector.SelectedIndex = lastAppBehavSelected;
+
+            string SwitchToVer = IsPreview ? "Stable" : "Preview";
+            ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
         }
 
         private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -767,7 +791,7 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
 
                 bool value = task.Definition.Settings.Enabled;
@@ -782,7 +806,7 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Settings.Enabled = value;
                 task.RegisterChanges();
                 task.Dispose();
@@ -798,7 +822,7 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
 
                 bool? value = false;
@@ -813,7 +837,7 @@ namespace CollapseLauncher.Pages
                 string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
                 using TaskService ts = new TaskService();
 
-                Task task = ts.GetTask(_collapseStartupTaskName);
+                TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Actions.Clear();
                 task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null, null));
                 task.RegisterChanges();

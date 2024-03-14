@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hi3Helper.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -174,6 +175,7 @@ namespace Hi3Helper
                 }
 
                 Lang = LanguageNames[langID].LoadLang();
+                TryLoadSizePrefix(Lang);
             }
             catch (Exception e)
             {
@@ -183,6 +185,40 @@ namespace Hi3Helper
             {
                 LangFallback = null;
             }
+        }
+
+        private static void TryLoadSizePrefix(LocalizationParams langData)
+        {
+            if (string.IsNullOrEmpty(langData._Misc.SizePrefixes1000U))
+            {
+                LogWriteLine($"Locale file with ID: {langData.LanguageID} doesn't have size prefix value! The size prefix will not be changed!.", LogType.Warning, true);
+                return;
+            }
+
+            ReadOnlySpan<char> speedPrefixSpan = langData._Misc.SizePrefixes1000U.AsSpan();
+            Span<Range> spanRange = stackalloc Range[32];
+            int rangesCount = speedPrefixSpan.Split(spanRange, '|', StringSplitOptions.RemoveEmptyEntries);
+
+            if (rangesCount != 9)
+            {
+                LogWriteLine($"Locale file with ID: {langData.LanguageID} doesn't have a correct size prefix values! Make sure that the prefix value consists 9 values with '|' as its delimiter!", LogType.Warning, true);
+                return;
+            }
+
+            string[] sizeSurfixes = new string[rangesCount];
+
+            try
+            {
+                for (int i = 0; i < rangesCount; i++)
+                    sizeSurfixes[i] = speedPrefixSpan[spanRange[i]].ToString();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error has occurred while parsing size prefix value for locale file with ID: {langData.LanguageID}!\r\n{ex}", LogType.Warning, true);
+                return;
+            }
+
+            ConverterTool.SizeSuffixes = sizeSurfixes;
         }
 
         public static Dictionary<string, LangMetadata> LanguageNames = new Dictionary<string, LangMetadata>();

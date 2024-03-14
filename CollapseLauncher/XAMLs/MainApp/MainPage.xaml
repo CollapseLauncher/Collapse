@@ -1,220 +1,196 @@
-<Page
-    x:Class="CollapseLauncher.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helper="using:Hi3Helper"
-    xmlns:local="using:CollapseLauncher"
-    xmlns:localPage="using:CollapseLauncher.Pages"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:p="using:Hi3Helper.Preset"
-    Unloaded="Page_Unloaded"
-    mc:Ignorable="d">
+<Page x:Class="CollapseLauncher.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:local="using:CollapseLauncher"
+      xmlns:extension="using:CollapseLauncher.Extension"
+      xmlns:localPage="using:CollapseLauncher.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:p="using:Hi3Helper.Preset"
+      Unloaded="Page_Unloaded"
+      mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow" />
+        <ThemeShadow x:Name="SharedShadow"/>
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
-        <ListView x:Name="KeyboardHandler" />
+        <ListView x:Name="KeyboardHandler"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
         <Grid x:Name="Background">
-            <Image
-                x:Name="BackgroundBack"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Opacity="0"
-                Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                Stretch="UniformToFill" />
-            <Image
-                x:Name="BackgroundBackBuffer"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Opacity="0"
-                Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                Stretch="UniformToFill" />
+            <Image x:Name="BackgroundBack"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Opacity="0"
+                   Source="ms-appx:///Assets/Images/PageBackground/default.png"
+                   Stretch="UniformToFill"/>
+            <Image x:Name="BackgroundBackBuffer"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Opacity="0"
+                   Source="ms-appx:///Assets/Images/PageBackground/default.png"
+                   Stretch="UniformToFill"/>
         </Grid>
-        <Grid
-            x:Name="BackgroundAcrylicMask"
-            Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
-            Visibility="Collapsed" />
-        <NavigationView
-            x:Name="NavigationViewControl"
-            BackRequested="NavigationViewControl_BackRequested"
-            Background="{ThemeResource NavigationBarBrush}"
-            IsBackButtonVisible="Visible"
-            IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
-            IsPaneOpen="False"
-            IsSettingsVisible="true"
-            ItemInvoked="NavView_ItemInvoked"
-            Loaded="NavView_Loaded"
-            PaneClosing="NavigationPanelClosing_Event"
-            PaneDisplayMode="LeftCompact"
-            PaneOpening="NavigationPanelOpening_Event"
-            PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
-            Visibility="Visible">
+        <Grid x:Name="BackgroundAcrylicMask"
+              Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
+              Visibility="Collapsed"/>
+        <NavigationView x:Name="NavigationViewControl"
+                        BackRequested="NavigationViewControl_BackRequested"
+                        Background="{ThemeResource NavigationBarBrush}"
+                        IsBackButtonVisible="Visible"
+                        IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
+                        IsPaneOpen="False"
+                        IsSettingsVisible="true"
+                        ItemInvoked="NavView_ItemInvoked"
+                        Loaded="NavView_Loaded"
+                        PaneClosing="NavigationPanelClosing_Event"
+                        PaneDisplayMode="LeftCompact"
+                        PaneOpening="NavigationPanelOpening_Event"
+                        PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
+                        Visibility="Visible">
             <Grid>
-                <Image
-                    x:Name="BackgroundFront"
-                    Margin="0,0,0,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Opacity="1"
-                    Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                    Stretch="UniformToFill" />
-                <Image
-                    x:Name="BackgroundFrontBuffer"
-                    Margin="0,0,0,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Opacity="0"
-                    Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                    Stretch="UniformToFill" />
+                <Image x:Name="BackgroundFront"
+                       Margin="0,0,0,0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Opacity="1"
+                       Source="ms-appx:///Assets/Images/PageBackground/default.png"
+                       Stretch="UniformToFill"/>
+                <Image x:Name="BackgroundFrontBuffer"
+                       Margin="0,0,0,0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Opacity="0"
+                       Source="ms-appx:///Assets/Images/PageBackground/default.png"
+                       Stretch="UniformToFill"/>
                 <Frame x:Name="LauncherFrame">
                     <Frame.ContentTransitions>
-                        <NavigationThemeTransition />
+                        <NavigationThemeTransition/>
                     </Frame.ContentTransitions>
                 </Frame>
             </Grid>
         </NavigationView>
-
-        <Grid
-            Height="47"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Top">
+        <Grid Height="47"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="152" />
-                <ColumnDefinition Width="0" />
-                <ColumnDefinition x:Name="GridBG_RegionMargin" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="18" />
-                <ColumnDefinition Width="32" />
-                <ColumnDefinition Width="104" />
+                <ColumnDefinition Width="152"/>
+                <ColumnDefinition Width="0"/>
+                <ColumnDefinition x:Name="GridBG_RegionMargin"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="18"/>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="104"/>
             </Grid.ColumnDefinitions>
-            <Grid
-                x:Name="GridBG_IconGrid"
-                Grid.Column="0"
-                Grid.ColumnSpan="2" />
-            <Grid
-                x:Name="TitleBarDrag1"
-                Grid.Column="1"
-                Grid.ColumnSpan="2" />
-            <Grid
-                x:Name="TitleBarDrag2"
-                Grid.Column="4"
-                Grid.ColumnSpan="2" />
-            <Grid
-                Name="GridBG_RegionGrid"
-                Grid.Column="3"
-                Height="47"
-                Margin="0,1,0,0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-                <StackPanel
-                    Name="GridBG_RegionInner"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="7"
-                    Margin="0,0"
-                    VerticalAlignment="Center"
-                    CanDrag="True"
-                    Orientation="Horizontal">
-                    <StackPanel
-                        VerticalAlignment="Top"
-                        Canvas.ZIndex="2"
-                        Orientation="Horizontal">
-                        <ComboBox
-                            x:Name="ComboBoxGameCategory"
-                            Width="167"
-                            Margin="0,0,0,0"
-                            Canvas.ZIndex="2"
-                            CornerRadius="15,0,0,15"
-                            ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
-                            PlaceholderText="Honkai Impact 3rd"
-                            SelectionChanged="SetGameCategoryChange" />
-                        <ComboBox
-                            x:Name="ComboBoxGameRegion"
-                            Width="148"
-                            Margin="0,0,8,0"
-                            Canvas.ZIndex="2"
-                            CornerRadius="0,15,15,0"
-                            PlaceholderText="Southeast Asia"
-                            SelectionChanged="EnableRegionChangeButton" />
-                        <Button
-                            x:Name="ChangeRegionConfirmBtnNoWarning"
-                            Click="ChangeRegionNoWarning"
-                            CornerRadius="15"
-                            IsEnabled="False"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Visibility="Collapsed">
+            <Grid x:Name="GridBG_IconGrid"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2"/>
+            <Grid x:Name="TitleBarDrag1"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"/>
+            <Grid x:Name="TitleBarDrag2"
+                  Grid.Column="4"
+                  Grid.ColumnSpan="2"/>
+            <Grid Name="GridBG_RegionGrid"
+                  Grid.Column="2"
+                  Grid.ColumnSpan="3"
+                  Height="47"
+                  Margin="0,1,0,0"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+                <StackPanel Name="GridBG_RegionInner"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="7"
+                            Margin="0,0"
+                            VerticalAlignment="Center"
+                            CanDrag="True"
+                            Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Top"
+                                Canvas.ZIndex="2"
+                                Orientation="Horizontal">
+                        <ComboBox x:Name="ComboBoxGameCategory"
+                                  MinWidth="167"
+                                  Margin="0,0,0,0"
+                                  Canvas.ZIndex="2"
+                                  CornerRadius="15,0,0,15"
+                                  ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
+                                  PlaceholderText="Honkai Impact 3rd"
+                                  SelectionChanged="SetGameCategoryChange"/>
+                        <ComboBox x:Name="ComboBoxGameRegion"
+                                  MinWidth="148"
+                                  Margin="0,0,8,0"
+                                  Canvas.ZIndex="2"
+                                  CornerRadius="0,15,15,0"
+                                  PlaceholderText="Southeast Asia"
+                                  SelectionChanged="EnableRegionChangeButton"/>
+                        <Button x:Name="ChangeRegionConfirmBtnNoWarning"
+                                Click="ChangeRegionNoWarning"
+                                CornerRadius="15"
+                                IsEnabled="False"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Visibility="Collapsed">
                             <Button.Content>
-                                <TextBlock
-                                    Margin="4,0"
-                                    FontWeight="Medium"
-                                    Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
+                                <TextBlock Margin="4,0"
+                                           FontWeight="Medium"
+                                           Text="{x:Bind helper:Locale.Lang._Misc.Change}"/>
                             </Button.Content>
                         </Button>
-                        <Button
-                            x:Name="ChangeRegionConfirmBtn"
-                            CornerRadius="15"
-                            IsEnabled="False"
-                            Style="{ThemeResource AccentButtonStyle}">
+                        <Button x:Name="ChangeRegionConfirmBtn"
+                                CornerRadius="15"
+                                IsEnabled="False"
+                                Style="{ThemeResource AccentButtonStyle}">
                             <Button.Content>
-                                <TextBlock
-                                    Margin="4,0"
-                                    FontWeight="Medium"
-                                    Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
+                                <TextBlock Margin="4,0"
+                                           FontWeight="Medium"
+                                           Text="{x:Bind helper:Locale.Lang._Misc.Change}"/>
                             </Button.Content>
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel>
-                                        <TextBlock
-                                            Width="200"
-                                            Margin="0,0,0,12"
-                                            FontWeight="Medium"
-                                            Style="{ThemeResource BaseTextBlockStyle}"
-                                            Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" />
-                                        <StackPanel x:Name="ChangeRegionWarning" Visibility="Collapsed">
-                                            <TextBlock
-                                                Width="200"
-                                                FontSize="14"
-                                                FontWeight="Medium"
-                                                Style="{ThemeResource BaseTextBlockStyle}"
-                                                Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeWarnTitle}" />
-                                            <TextBlock
-                                                x:Name="ChangeRegionWarningText"
-                                                Width="200"
-                                                Margin="0,0,0,12"
-                                                FontSize="12"
-                                                FontWeight="Normal"
-                                                Style="{ThemeResource BaseTextBlockStyle}"
-                                                Text="" />
+                                        <TextBlock Width="200"
+                                                   Margin="0,0,0,12"
+                                                   FontWeight="Medium"
+                                                   Style="{ThemeResource BaseTextBlockStyle}"
+                                                   Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}"/>
+                                        <StackPanel x:Name="ChangeRegionWarning"
+                                                    Visibility="Collapsed">
+                                            <TextBlock Width="200"
+                                                       FontSize="14"
+                                                       FontWeight="Medium"
+                                                       Style="{ThemeResource BaseTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeWarnTitle}"/>
+                                            <TextBlock x:Name="ChangeRegionWarningText"
+                                                       Width="200"
+                                                       Margin="0,0,0,12"
+                                                       FontSize="12"
+                                                       FontWeight="Normal"
+                                                       Style="{ThemeResource BaseTextBlockStyle}"
+                                                       Text=""/>
                                         </StackPanel>
-                                        <Button
-                                            x:Name="ChangeRegionBtn"
-                                            HorizontalAlignment="Stretch"
-                                            Click="ChangeRegion"
-                                            CornerRadius="14"
-                                            Style="{ThemeResource AccentButtonStyle}">
+                                        <Button x:Name="ChangeRegionBtn"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ChangeRegion"
+                                                CornerRadius="14"
+                                                Style="{ThemeResource AccentButtonStyle}">
                                             <Button.Content>
-                                                <Grid Margin="-36,-8" Padding="36,8">
-                                                    <ProgressBar
-                                                        x:Name="ChangeRegionConfirmProgressBar"
-                                                        Margin="-36,0,-36,-28"
-                                                        IsIndeterminate="True"
-                                                        ShowError="False"
-                                                        ShowPaused="False"
-                                                        Visibility="Collapsed" />
+                                                <Grid Margin="-36,-8"
+                                                      Padding="36,8">
+                                                    <ProgressBar x:Name="ChangeRegionConfirmProgressBar"
+                                                                 Margin="-36,0,-36,-28"
+                                                                 IsIndeterminate="True"
+                                                                 ShowError="False"
+                                                                 ShowPaused="False"
+                                                                 Visibility="Collapsed"/>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <FontIcon
-                                                            VerticalAlignment="Center"
-                                                            FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                            FontSize="16"
-                                                            Glyph="&#xf362;" />
-                                                        <TextBlock
-                                                            Margin="8,-1,0,0"
-                                                            VerticalAlignment="Center"
-                                                            FontWeight="Medium"
-                                                            Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
+                                                        <FontIcon VerticalAlignment="Center"
+                                                                  FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                                  FontSize="16"
+                                                                  Glyph="&#xf362;"/>
+                                                        <TextBlock Margin="8,-1,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="Medium"
+                                                                   Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}"/>
                                                     </StackPanel>
                                                 </Grid>
                                             </Button.Content>
@@ -226,196 +202,216 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            <Grid
-                Name="GridBG_NotifBtn"
-                Grid.Column="6"
-                Width="32"
-                Height="32"
-                Margin="0,1,0,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Stretch"
-                CornerRadius="0,0,0,0">
-                <ToggleButton
-                    x:Name="ToggleNotificationPanelBtn"
-                    Padding="0"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Click="ToggleNotificationPanelBtnClick"
-                    Shadow="{ThemeResource SharedShadow}"
-                    Style="{ThemeResource DefaultToggleButtonStyle}">
-                    <FontIcon
-                        FontFamily="{ThemeResource FontAwesome}"
-                        FontSize="18"
-                        Glyph="&#xf0f3;" />
+            <Grid Name="GridBG_NotifBtn"
+                  Grid.Column="6"
+                  Width="32"
+                  Height="32"
+                  Margin="0,1,0,0"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Stretch"
+                  CornerRadius="0,0,0,0">
+                <ToggleButton x:Name="ToggleNotificationPanelBtn"
+                              Padding="0"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Click="ToggleNotificationPanelBtnClick"
+                              Shadow="{ThemeResource SharedShadow}"
+                              Style="{ThemeResource DefaultToggleButtonStyle}">
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="18"
+                              Glyph="&#xf0f3;"/>
                 </ToggleButton>
-                <InfoBadge
-                    x:Name="NewNotificationCountBadge"
-                    Margin="0,-4,-4,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Style="{StaticResource AttentionValueInfoBadgeStyle}"
-                    Visibility="Collapsed"
-                    Value="0" />
+                <InfoBadge x:Name="NewNotificationCountBadge"
+                           Margin="0,-4,-4,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Style="{StaticResource AttentionValueInfoBadgeStyle}"
+                           Visibility="Collapsed"
+                           Value="0"/>
             </Grid>
-            <Grid
-                Name="GridBG_WindowBtn"
-                Grid.Column="7"
-                Height="31"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                CornerRadius="0,0,0,0" />
+            <Grid Name="GridBG_WindowBtn"
+                  Grid.Column="7"
+                  Height="31"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Top"
+                  CornerRadius="0,0,0,0"/>
         </Grid>
-        <Button
-            x:Name="GridBG_Icon"
-            Grid.Column="0"
-            Height="33"
-            Margin="58,8,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Click="GridBG_Icon_Click"
-            PointerEntered="GridBG_Icon_PointerEntered"
-            PointerExited="GridBG_Icon_PointerExited"
-            Style="{ThemeResource TransparentDefaultButtonStyle}">
+        <Button x:Name="GridBG_Icon"
+                Grid.Column="0"
+                Height="33"
+                Margin="58,8,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Click="GridBG_Icon_Click"
+                PointerEntered="GridBG_Icon_PointerEntered"
+                PointerExited="GridBG_Icon_PointerExited"
+                Style="{ThemeResource TransparentDefaultButtonStyle}">
             <Button.Transitions>
-                <RepositionThemeTransition />
+                <RepositionThemeTransition/>
             </Button.Transitions>
             <Button.ContentTransitions>
-                <RepositionThemeTransition />
+                <RepositionThemeTransition/>
             </Button.ContentTransitions>
-            <StackPanel
-                Margin="0,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <Image
-                    x:Name="GridBG_IconImg"
-                    Width="24"
-                    Height="24"
-                    Margin="0,-1,0,0"
-                    Opacity="0.8"
-                    Source="ms-appx:///Assets/CollapseLauncherLogo.png">
+            <StackPanel Margin="0,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                <Image x:Name="GridBG_IconImg"
+                       Width="24"
+                       Height="24"
+                       Margin="0,-1,0,0"
+                       Opacity="0.8"
+                       Source="ms-appx:///Assets/CollapseLauncherLogo.png">
                     <Image.OpacityTransition>
-                        <ScalarTransition />
+                        <ScalarTransition/>
                     </Image.OpacityTransition>
                 </Image>
-                <StackPanel
-                    Name="GridBG_IconTitle"
-                    Width="0"
-                    Margin="8,-8,0,0"
-                    VerticalAlignment="Center"
-                    Opacity="0">
+                <StackPanel Name="GridBG_IconTitle"
+                            Width="0"
+                            Margin="8,-8,0,0"
+                            VerticalAlignment="Center"
+                            Opacity="0">
                     <StackPanel.OpacityTransition>
-                        <ScalarTransition />
+                        <ScalarTransition/>
                     </StackPanel.OpacityTransition>
-                    <TextBlock
-                        Margin="-6,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="10"
-                        FontWeight="Medium"
-                        Text="Collapse"
-                        Visibility="Visible" />
-                    <TextBlock
-                        Margin="0,-3,0,-8"
-                        HorizontalAlignment="Left"
-                        FontSize="12"
-                        FontWeight="Bold"
-                        Foreground="{ThemeResource AccentColor}"
-                        Text="Launcher"
-                        Visibility="Visible" />
+                    <TextBlock Margin="-6,0,0,0"
+                               HorizontalAlignment="Left"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="Collapse"
+                               Visibility="Visible"/>
+                    <TextBlock Margin="0,-3,0,-8"
+                               HorizontalAlignment="Left"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource AccentColor}"
+                               Text="Launcher"
+                               Visibility="Visible"/>
                 </StackPanel>
-                <StackPanel
-                    x:Name="PreviewBuildIndicator"
-                    Grid.Column="4"
-                    Grid.ColumnSpan="2"
-                    Margin="-16,-12,0,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Background="{ThemeResource AccentColor}"
-                    CornerRadius="3"
-                    Visibility="Visible">
+                <StackPanel x:Name="PreviewBuildIndicator"
+                            Grid.Column="4"
+                            Grid.ColumnSpan="2"
+                            Margin="-16,-12,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="{ThemeResource AccentColor}"
+                            CornerRadius="3"
+                            Visibility="Visible">
                     <StackPanel.Transitions>
-                        <RepositionThemeTransition />
+                        <RepositionThemeTransition/>
                     </StackPanel.Transitions>
-                    <TextBlock
-                        x:Name="VersionNumberIndicator"
-                        Padding="3,0,3,0"
-                        VerticalAlignment="Center"
-                        FontSize="8"
-                        FontWeight="Bold"
-                        Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                        Text="PRE" />
+                    <TextBlock x:Name="VersionNumberIndicator"
+                               Padding="3,0,3,0"
+                               VerticalAlignment="Center"
+                               FontSize="8"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="PRE"/>
                 </StackPanel>
             </StackPanel>
         </Button>
-        <Grid
-            x:Name="NotificationLostFocusBackground"
-            VerticalAlignment="Stretch"
-            Opacity="0"
-            PointerPressed="NotificationContainerBackground_PointerPressed"
-            Visibility="Collapsed">
+        <Grid x:Name="NotificationLostFocusBackground"
+              VerticalAlignment="Stretch"
+              Opacity="0"
+              PointerPressed="NotificationContainerBackground_PointerPressed"
+              Visibility="Collapsed">
             <Grid.OpacityTransition>
-                <ScalarTransition />
+                <ScalarTransition/>
             </Grid.OpacityTransition>
-            <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" Opacity="0.00000001" />
-            <Grid Margin="0,47,0,0" Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" />
+            <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"
+                  Opacity="0.00000001"/>
+            <Grid Margin="0,47,0,0"
+                  Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"/>
         </Grid>
-        <ScrollViewer
-            x:Name="NotificationPanel"
-            Margin="0,48,-700,0"
-            HorizontalAlignment="Right"
-            Background="{ThemeResource NotificationPanelBrush}"
-            CornerRadius="0,0,0,16"
-            HorizontalScrollBarVisibility="Disabled"
-            Shadow="{ThemeResource SharedShadow}">
-            <ScrollViewer.Transitions>
-                <RepositionThemeTransition />
-            </ScrollViewer.Transitions>
-            <Grid MinWidth="608" MinHeight="200">
-                <StackPanel
-                    x:Name="NoNotificationIndicator"
-                    Margin="0,-47,0,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Orientation="Vertical">
-                    <StackPanel.OpacityTransition>
-                        <ScalarTransition />
-                    </StackPanel.OpacityTransition>
-                    <Image
-                        Width="200"
-                        Margin="0,0,0,16"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Opacity="1"
-                        Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
-                    <Grid
-                        Padding="24,8"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        CornerRadius="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock
-                            Grid.Column="2"
-                            VerticalAlignment="Center"
-                            FontSize="20"
-                            FontWeight="SemiBold"
-                            Opacity="0.50"
-                            Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}"
-                            TextAlignment="Center" />
+        <Grid x:Name="NotificationPanel"
+              Margin="0,48,-700,0"
+              HorizontalAlignment="Right"
+              Background="{ThemeResource NotificationPanelBrush}"
+              CornerRadius="0,0,0,16"
+              Shadow="{ThemeResource SharedShadow}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.Transitions>
+                <RepositionThemeTransition/>
+            </Grid.Transitions>
+            <Grid>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              x:Name="NotificationPanelScrollViewer"
+                              CanContentRenderOutsideBounds="True">
+                    <Grid MinWidth="608"
+                          MinHeight="200">
+                        <StackPanel x:Name="NoNotificationIndicator"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Orientation="Vertical">
+                            <StackPanel.OpacityTransition>
+                                <ScalarTransition/>
+                            </StackPanel.OpacityTransition>
+                            <Image Width="200"
+                                   Margin="0,0,0,16"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Opacity="1"
+                                   Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png"/>
+                            <Grid Padding="24,8"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  CornerRadius="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           Opacity="0.50"
+                                           Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}"
+                                           TextAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel x:Name="NotificationContainer"
+                                    Margin="0,0,0,7">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <PopupThemeTransition/>
+                                    <RepositionThemeTransition/>
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+                        </StackPanel>
                     </Grid>
-                </StackPanel>
-                <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
-                    <StackPanel.ChildrenTransitions>
-                        <TransitionCollection>
-                            <PopupThemeTransition />
-                            <RepositionThemeTransition />
-                        </TransitionCollection>
-                    </StackPanel.ChildrenTransitions>
-                </StackPanel>
+                </ScrollViewer>
             </Grid>
-        </ScrollViewer>
-        <Frame x:Name="WebView2Frame" />
+            <Grid x:Name="NotificationPanelClearAllGrid"
+                  VerticalAlignment="Bottom"
+                  Padding="8"
+                  Grid.Row="1"
+                  Visibility="Collapsed"
+                  Background="{ThemeResource NotificationPanelBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="NotificationPanelClearAllBtn"
+                        HorizontalAlignment="Right"
+                        Click="ClearAllNotification"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(NotificationPanelClearAllBtn)}"
+                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                        Grid.Column="1">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="4,0">
+                        <TextBlock Margin="0,-1,8,1"
+                                   FontWeight="Medium"
+                                   Text="{x:Bind helper: Locale.Lang._MainPage.NotifClearAll}"/>
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                  FontSize="16"
+                                  Glyph="&#xf2ed;"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
+        <Frame x:Name="WebView2Frame"/>
     </Grid>
 </Page>

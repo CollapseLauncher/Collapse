@@ -81,7 +81,7 @@ namespace CollapseLauncher
                     }
                 }
 
-                if (m_appMode != AppMode.Updater)
+                if (m_appMode != AppMode.Updater && LauncherConfig.GetAppConfigValue("EnableWaifu2X").ToBool())
                 {
                     ImageLoaderHelper.InitWaifu2X();
                 }

@@ -1,125 +1,115 @@
-﻿<Page
-    x:Class="CollapseLauncher.Pages.StartupPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helper="using:Hi3Helper"
-    xmlns:local="using:CollapseLauncher"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+﻿<Page x:Class="CollapseLauncher.Pages.StartupPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:helper="using:Hi3Helper"
+      xmlns:local="using:CollapseLauncher"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
     <Grid>
-        <Grid x:Name="Bg" Margin="32">
+        <Grid x:Name="Bg"
+              Margin="32">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button
-                x:Name="NextPage"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Click="NextPage_Click"
-                CornerRadius="16"
-                IsEnabled="False"
-                Style="{ThemeResource AccentButtonStyle}">
-                <StackPanel Margin="8,0" Orientation="Horizontal">
-                    <TextBlock
-                        Margin="0,0,8,0"
-                        FontWeight="Medium"
-                        Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}" />
-                    <FontIcon
-                        FontFamily="{ThemeResource FontAwesomeSolid}"
-                        FontSize="14"
-                        Glyph="&#xf061;" />
+            <Button x:Name="NextPage"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Click="NextPage_Click"
+                    CornerRadius="16"
+                    IsEnabled="False"
+                    Style="{ThemeResource AccentButtonStyle}">
+                <StackPanel Margin="8,0"
+                            Orientation="Horizontal">
+                    <TextBlock Margin="0,0,8,0"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}"/>
+                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="14"
+                              Glyph="&#xf061;"/>
                 </StackPanel>
             </Button>
-            <StackPanel
-                x:Name="RightPanel"
-                Grid.Column="1"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
+            <StackPanel x:Name="RightPanel"
+                        Grid.Column="1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
                 <!--<StackPanel.Transitions>
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>-->
-                <TextBlock
-                    Margin="0,0,0,32"
-                    Foreground="{ThemeResource SystemAccentColor}"
-                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                    Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" />
-                <TextBlock
-                    FontWeight="Normal"
-                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                    Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" />
-                <TextBlock
-                    Margin="0,0,0,32"
-                    FontWeight="Normal"
-                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                    Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}" />
-                <TextBlock Margin="0,0,0,16" Style="{ThemeResource SubtitleTextBlockStyle}">
-                    <Run FontWeight="Normal" Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}" />
-                    <Run Foreground="{ThemeResource SystemAccentColor}" Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" />
-                    <Run FontWeight="Normal" Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}" />
+                <TextBlock Margin="0,0,0,32"
+                           Foreground="{ThemeResource SystemAccentColor}"
+                           Style="{ThemeResource TitleLargeTextBlockStyle}"
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}"/>
+                <TextBlock FontWeight="Normal"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}"/>
+                <TextBlock Margin="0,0,0,32"
+                           FontWeight="Normal"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}"/>
+                <TextBlock Margin="0,0,0,16"
+                           Style="{ThemeResource SubtitleTextBlockStyle}">
+                    <Run FontWeight="Normal"
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}"/>
+                    <Run Foreground="{ThemeResource SystemAccentColor}"
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}"/>
+                    <Run FontWeight="Normal"
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}"/>
                 </TextBlock>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        x:Name="ErrMsg"
-                        Margin="0,0,0,16"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorPrimary}"
-                        Text=""
-                        TextTrimming="Clip"
-                        TextWrapping="Wrap" />
-                    <Button
-                        Click="ChooseFolder"
-                        CornerRadius="16"
-                        Style="{ThemeResource AccentButtonStyle}">
-                        <StackPanel Margin="8,0" Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                FontWeight="Medium"
-                                Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}"
-                                TextWrapping="Wrap" />
-                            <FontIcon
-                                FontFamily="{ThemeResource FontAwesomeSolid}"
-                                FontSize="14"
-                                Glyph="&#xf07b;" />
+                    <TextBlock x:Name="ErrMsg"
+                               Margin="0,0,0,16"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorPrimary}"
+                               Text=""
+                               TextTrimming="Clip"
+                               TextWrapping="Wrap"/>
+                    <Button Click="ChooseFolder"
+                            CornerRadius="16"
+                            Style="{ThemeResource AccentButtonStyle}">
+                        <StackPanel Margin="8,0"
+                                    Orientation="Horizontal">
+                            <TextBlock Margin="0,0,8,0"
+                                       FontWeight="Medium"
+                                       Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}"
+                                       TextWrapping="Wrap"/>
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="&#xf07b;"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
             </StackPanel>
-            <Grid
-                x:Name="Overlay"
-                Grid.Column="1"
-                Visibility="Collapsed">
-                <StackPanel
-                    Margin="0,200,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Orientation="Vertical">
-                    <ProgressRing
-                        x:Name="Ring"
-                        Width="48"
-                        Height="48"
-                        Margin="32"
-                        IsActive="True"
-                        IsIndeterminate="false"
-                        Maximum="100"
-                        Value="100" />
-                    <TextBlock
-                        x:Name="OverlayTitle"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="Title" />
-                    <TextBlock
-                        x:Name="OverlaySubtitle"
-                        Margin="0,8,0,192"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                        Text="Subtitle" />
+            <Grid x:Name="Overlay"
+                  Grid.Column="1"
+                  Visibility="Collapsed">
+                <StackPanel Margin="0,200,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical">
+                    <ProgressRing x:Name="Ring"
+                                  Width="48"
+                                  Height="48"
+                                  Margin="32"
+                                  IsActive="True"
+                                  IsIndeterminate="false"
+                                  Maximum="100"
+                                  Value="100"/>
+                    <TextBlock x:Name="OverlayTitle"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
+                               Text="Title"/>
+                    <TextBlock x:Name="OverlaySubtitle"
+                               Margin="0,8,0,192"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                               Text="Subtitle"/>
                 </StackPanel>
             </Grid>
         </Grid>

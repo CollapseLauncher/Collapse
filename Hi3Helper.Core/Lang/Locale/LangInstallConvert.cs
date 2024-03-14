@@ -33,6 +33,7 @@
                 public string ConvertSuccessSubtitle { get; set; } = LangFallback?._InstallConvert.ConvertSuccessSubtitle;
                 public string CookbookDownloadTitle { get; set; } = LangFallback?._InstallConvert.CookbookDownloadTitle;
                 public string CookbookDownloadSubtitle { get; set; } = LangFallback?._InstallConvert.CookbookDownloadSubtitle;
+                public string CookbookFileBrowserFileTypeCategory { get; set; } = LangFallback?._InstallConvert.CookbookFileBrowserFileTypeCategory;
                 public string CancelBtn { get; set; } = LangFallback?._InstallConvert.CancelBtn;
                 public string CancelMsgTitle { get; set; } = LangFallback?._InstallConvert.CancelMsgTitle;
                 public string CancelMsgSubtitle1 { get; set; } = LangFallback?._InstallConvert.CancelMsgSubtitle1;

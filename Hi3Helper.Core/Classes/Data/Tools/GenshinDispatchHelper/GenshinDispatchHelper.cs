@@ -101,8 +101,35 @@ namespace Hi3Helper.Data
 
         private void ParseGameResPkgProp(ref QueryProperty ValProp)
         {
-            ValProp!.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway!.GatewayProperties!.RepoDesignDataJSON!, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
-            ValProp!.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway!.GatewayProperties!.RepoDesignDataSilenceJSON!, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
+            var jsonDesignData    = Gateway!.GatewayProperties!.RepoDesignDataJSON;
+            var jsonDesignDataSil = Gateway!.GatewayProperties!.RepoDesignDataSilenceJSON;
+            #if DEBUG
+            Logger.LogWriteLine($"[GenshinDispatchHelper::ParseGameResPkgProp] DesignData Response:" +
+                                $"\r\n\tDesignData:\r\n{jsonDesignData}" +
+                                $"\r\n\tDesignData_Silence:\r\n{jsonDesignDataSil}", LogType.Debug, true);
+            #endif
+
+            if (!string.IsNullOrEmpty(jsonDesignData))
+            {
+                string[] designDataArr = jsonDesignData.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                foreach (string designData in designDataArr)
+                {
+                    PkgVersionProperties designDataSer = JsonSerializer.Deserialize<PkgVersionProperties>(designData);
+
+                    // Only serialize data_versions
+                    if (designDataSer != null && designDataSer.remoteName == "data_versions")
+                        ValProp!.ClientDesignData = designDataSer;
+                    if (designDataSer == null)
+                        Logger.LogWriteLine("[GenshinDispatchHelper::ParseGameResPkgProp] DesignData is null!", LogType.Warning, true);
+                }
+            }
+
+            if (jsonDesignDataSil != null) 
+                ValProp!.ClientDesignDataSil =
+                    (PkgVersionProperties)JsonSerializer.Deserialize(jsonDesignDataSil, typeof(PkgVersionProperties),
+                                                                     CoreLibraryJSONContext.Default);
+            else Logger.LogWriteLine("[GenshinDispatchHelper::ParseGameResPkgProp] DesignData_Silence is null!", LogType.Warning, true);
         }
 
         private async Task ParseAudioAssetsURL(QueryProperty ValProp)
