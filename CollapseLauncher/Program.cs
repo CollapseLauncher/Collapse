@@ -262,5 +262,12 @@ namespace CollapseLauncher
                 return $"Windows {w_windowsVersionNumbers[0]} (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
             }
         }
+        
+        public static int GetInstanceCount()
+        {
+            var currentProcess = Process.GetCurrentProcess();
+            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
+            return processes.Length;
+        }
     }
 }

@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -54,6 +55,7 @@ namespace CollapseLauncher
         public static IntPtr                m_windowHandle;
         public static IntPtr                m_oldWndProc;
         public static Delegate              m_newWndProcDelegate;
+        public static HandlerRoutine        m_consoleCtrlHandler;
         public static AppWindow             m_appWindow;
         public static OverlappedPresenter   m_presenter;
         public static MainPage              m_mainPage;

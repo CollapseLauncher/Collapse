@@ -340,7 +340,7 @@
     "OverlayFirstTimeTitle": "Kamu belum pernah memainkan game ini!",
     "OverlayFirstTimeSubtitle": "Mohon jalankan game ini untuk pertama kalinya terlebih dahulu dan kembali lagi untuk menggunakan fitur ini.",
 
-    "CustomArgs_Title": "Penyesuaian Argumen Pemulaian",
+    "CustomArgs_Title": "Penyesuaian Argumen Pemulaian (Tingkat Lanjut)",
     "CustomArgs_Subtitle": "Argumen Pemulaian",
     "CustomArgs_Footer1": "Untuk informasi lebih lanjut mengenai Argumen Pemulaian, silahkan cek dokumentasi",
     "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
@@ -348,7 +348,7 @@
 
     "GameBoost": "Boost Game Priority [Experimental]",
 
-    "Advanced_Title": "Pengaturan Lanjutan",
+    "Advanced_Title": "Pengaturan Tingkat Lanjut",
     "Advanced_Subtitle1": "Team Collapse Launcher",
     "Advanced_Subtitle2": "TIDAK BERTANGGUNG JAWAB",
     "Advanced_Subtitle3": "atas apapun yang terjadi dalam game, akun, mamupun sistem saat setting ini digunakan! Gunakan dengan teliti!",
@@ -1023,7 +1023,7 @@
     "OverlayFirstTimeTitle": "Kamu belum pernah memainkan game ini!",
     "OverlayFirstTimeSubtitle": "Mohon jalankan game ini untuk pertama kalinya terlebih dahulu dan kembali lagi untuk menggunakan fitur ini.",
 
-    "CustomArgs_Title": "Penyesuaian Argumen Pemulaian",
+    "CustomArgs_Title": "Penyesuaian Argumen Pemulaian (Tingkat Lanjut)",
     "CustomArgs_Subtitle": "Argumen Pemulaian",
     "CustomArgs_Footer1": "Untuk informasi lebih lanjut mengenai Argumen Pemulaian, silahkan cek dokumentasi",
     "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
@@ -1040,7 +1040,7 @@
     "Language_Help1": "Collapse saat ini tidak mendukung pengunduhan paket Audio secara langsung.",
     "Language_Help2": "Paket Audio dapat diunduh di dalam game setelah kamu menjalankan gamenya kemudian.",
     "LanguageAudio": "Audio",
-    "LanguageText": "Text",
+    "LanguageText": "Teks",
     "VO_en": "Inggris",
     "VO_cn": "Mandarin",
     "VO_jp": "Jepang",
@@ -1099,7 +1099,7 @@
     "Graphics_HDR_SceneBrightness": "Kecerahan Pemandangan",
     "Graphics_HDR_SceneBrightness_Help": "Mengatur seberapa cerah pemandangan",
 
-    "Graphics_SpecPanel": "Pengaturan Grafis Global",
+    "Graphics_SpecPanel": "Pengaturan Grafis Keseluruhan",
     "SpecEnabled": "Aktif",
     "SpecDisabled": "Mati",
     "SpecVeryLow": "S. Rendah",
@@ -1120,7 +1120,7 @@
     "OverlayFirstTimeTitle": "Anda belum pernah memainkan game ini sebelumnya!",
     "OverlayFirstTimeSubtitle": "Mohon jalankan game terlebih dahulu untuk generate file yang dibutuhkan, lalu kembali untuk menggunakan fitur ini.",
 
-    "CustomArgs_Title": "Penyesuaian Argument Pemulaian",
+    "CustomArgs_Title": "Penyesuaian Argument Pemulaian (Tingkat Lanjut)",
     "CustomArgs_Subtitle": "Argumen Pemulaian",
     "CustomArgs_Footer1": "Untuk informasi lebih lanjut mengenai Argumen Pemulaian, silahkan cek dokumentasi",
     "CustomArgs_Footer2": "Unity Standalone Player Command-line",
@@ -1134,13 +1134,13 @@
 
     "Audio_Output_Surround": "Gunakan Suara Surround",
     "Audio_DynamicRange": "Full Dynamic Range",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "Mute Suara saat Minimize",
 
     "Language": "Pengaturan Bahasa",
     "Language_Help1": "Collapse saat ini tidak dapat men-download paket Audio secara langsung.",
     "Language_Help2": "Paket Audio akan di-download di dalam game pada saat game dijalankan.",
     "LanguageAudio": "Audio",
-    "LanguageText": "Text",
+    "LanguageText": "Teks",
     "VO_en": "Inggris",
     "VO_cn": "Mandarin",
     "VO_jp": "Jepang",

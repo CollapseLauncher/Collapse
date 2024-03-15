@@ -4,9 +4,10 @@ using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
+using Microsoft.UI.Xaml;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -14,20 +15,6 @@ namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
     {
-        #region External Methods
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool IsWindowVisible(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        #endregion
-
         #region Locales
         private readonly string _popupHelp1 = Lang._Misc.Taskbar_PopupHelp1;
         private readonly string _popupHelp2 = Lang._Misc.Taskbar_PopupHelp2;
@@ -38,22 +25,35 @@ namespace CollapseLauncher
         private readonly string _hideConsole = Lang._Misc.Taskbar_HideConsole;
         private readonly string _exitApp     = Lang._Misc.Taskbar_ExitApp;
 
+        // ReSharper disable UnusedMember.Local
         private readonly string _preview = Lang._Misc.BuildChannelPreview;
         private readonly string _stable = Lang._Misc.BuildChannelStable;
+        // ReSharper restore UnusedMember.Local
         #endregion
 
         #region Main
         public TrayIcon()
         {
             this.InitializeComponent();
+
+            string instanceIndicator = "";
+            var instanceCount = MainEntryPoint.GetInstanceCount();
+
+            if (instanceCount > 1)
+            {
+                instanceIndicator = $"- #{instanceCount}";
+            }
+            
+            var isPreview = LauncherConfig.IsPreview;
+            if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
 #if DEBUG
             CollapseTaskbar.ToolTipText =
-                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}\r\n" +
+                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(LauncherConfig.IsPreview ? _preview : _stable)}\r\n" +
+                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(isPreview ? _preview : _stable)}{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";
 #endif
@@ -64,6 +64,12 @@ namespace CollapseLauncher
             ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
 
             CollapseTaskbar.Icon = Icon.FromHandle(LauncherConfig.AppIconSmall);
+            CollapseTaskbar.Visibility = Visibility.Visible;
+        }
+
+        public void Dispose()
+        {
+            CollapseTaskbar.Dispose();
         }
         #endregion
 
@@ -72,40 +78,37 @@ namespace CollapseLauncher
         /// Using H.NotifyIcon's WindowExtension to toggle visibility of main window (m_window)
         /// </summary>
         [RelayCommand]
-        public void ToggleMainVisibilityButton() => ToggleMainVisibility();
+        private void ToggleMainVisibilityButton() => ToggleMainVisibility();
 
         /// <summary>
         /// Toggle console visibility using LoggerConsole's DisposeConsole//AllocateConsole
         /// </summary>
         [RelayCommand]
-        public void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
+        private void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
 
         /// <summary>
         /// Toggle both main and console visibility while avoiding flip flop condition
         /// </summary>
         [RelayCommand]
-        public void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
+        private void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
 
         /// <summary>
         /// Using user32's SetForegroundWindow to pull both windows to foreground
         /// </summary>
         [RelayCommand]
-        public void BringToForegroundInvoke() => BringToForeground();
+        private void BringToForegroundInvoke() => BringToForeground();
 
         /// <summary>
         /// Update tray context menu
         /// </summary>
         [RelayCommand]
-        public void UpdateContextMenuInvoke() => UpdateContextMenu();
+        private void UpdateContextMenuInvoke() => UpdateContextMenu();
 
         /// <summary>
         /// Close app
         /// </summary>
         [RelayCommand]
-        public void CloseApp()
-        {
-            App.Current.Exit();
-        }
+        private void CloseApp() => (m_window as MainWindow)?.CloseApp();
         #endregion
 
         #region Taskbar Public Methods
@@ -166,7 +169,7 @@ namespace CollapseLauncher
         /// </summary>
         public void ToggleAllVisibility()
         {
-            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+            IntPtr consoleWindowHandle = GetConsoleWindow();
             IntPtr mainWindowHandle    = m_windowHandle;
             bool   isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 

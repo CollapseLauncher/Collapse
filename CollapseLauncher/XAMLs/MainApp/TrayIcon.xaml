@@ -11,7 +11,7 @@
                     LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
                     MenuActivation="RightClick"
                     RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"
-                    ToolTipText="Collapse Launcher">
+                    Visibility="Collapsed">
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
                 <MenuFlyoutItem x:Name="MainTaskbarToggle"

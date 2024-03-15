@@ -738,7 +738,8 @@
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
                                  CornerRadius="8,8,0,0"
-                                 Text="{x:Bind PreLaunchCommand, Mode=TwoWay}"/>
+                                 Text="{x:Bind PreLaunchCommand, Mode=TwoWay}"
+                                 IsSpellCheckEnabled="False"/>
                         <TextBlock Margin="0,0,0,8"
                                    FontWeight="Semibold"
                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}"/>
@@ -754,7 +755,8 @@
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
                                  CornerRadius="8,8,0,0"
-                                 Text="{x:Bind PostExitCommand, Mode=TwoWay}"/>
+                                 Text="{x:Bind PostExitCommand, Mode=TwoWay}"
+                                 IsSpellCheckEnabled="False"/>
                         <TextBlock Margin="0,0,0,16"
                                    FontWeight="Semibold"
                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}"/>

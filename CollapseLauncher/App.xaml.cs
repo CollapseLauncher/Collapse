@@ -73,12 +73,7 @@ namespace CollapseLauncher
                 if (!isAcrylicEnabled) ToggleBlurBackdrop(false);
                 if (m_appMode == AppMode.StartOnTray)
                 {
-                    WindowExtensions.Hide(m_window);
-                    Pages.HomePage.RefreshRate = Pages.HomePage.RefreshRateSlow;
-                    if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
-                    {
-                        LoggerConsole.DisposeConsole();
-                    }
+                    (m_window as MainWindow)?.ToggleToTray_AllWindow();
                 }
 
                 if (m_appMode != AppMode.Updater && LauncherConfig.GetAppConfigValue("EnableWaifu2X").ToBool())

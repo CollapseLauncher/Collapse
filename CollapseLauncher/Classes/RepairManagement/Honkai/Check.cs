@@ -373,7 +373,7 @@ namespace CollapseLauncher
             if ((fileOld?.Exists ?? false) && !file.Exists)
             {
                 // Open and read fileInfo as FileStream 
-                using (FileStream fileOldfs = new FileStream(filePathOld, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+                using (FileStream fileOldfs = new FileStream(filePathOld, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, _bufferBigLength))
                 {
                     // If pass the check above, then do CRC calculation
                     byte[] localOldCRC = CheckHash(fileOldfs, MD5.Create(), token, false);
@@ -456,7 +456,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
@@ -581,7 +581,10 @@ namespace CollapseLauncher
                 bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                     || filename.StartsWith("dxgi.dll", StringComparison.OrdinalIgnoreCase);
 
-                if (!isIncluded && !isIni && !isDriver && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
+                // Is file ignored
+                bool isFileIgnored = _ignoredUnusedFileList.Contains(asset, StringComparer.OrdinalIgnoreCase);
+
+                if (!isIncluded && !isFileIgnored && !isIni && !isDriver && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
                     && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
                     && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch
                     && !isDeltaPatch && !isFlags && !isZip && !isDirectX)
