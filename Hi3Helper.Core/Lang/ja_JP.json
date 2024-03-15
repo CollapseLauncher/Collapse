@@ -477,8 +477,9 @@
     "Waifu2X_Toggle": "Waifu2Xを使う [実験的機能]",
     "Waifu2X_Help": "背景画像の拡大処理にWaifu2Xを使用します。\n有効にすると画質が大幅に向上しますが、画像の初回読み込みにかかる時間が少し長くなります。",
     "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",
+    "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
-    "Waifu2X_Error_Output": "エラー：Waifu2Xのチェック通過に失敗したため、出力が空になりました。"
+    "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。"
   },
 
   "_Misc": {
@@ -754,6 +755,7 @@
     "ShortcutCreationSuccessSubtitle2": "位置：",
     "ShortcutCreationSuccessSubtitle3": "注：",
     "ShortcutCreationSuccessSubtitle4": " • ショートカットを使用した時、サーバーを読み込んでからゲームを起動します。",
+    "ShortcutCreationSuccessSubtitle5": "• ゲームがインストール/更新されていない場合、Collapseはゲームのインストール/更新を試みます。これらのプロセスに関するダイアログが引き続き表示されることにご留意ください。",
 
     "SteamShortcutCreationConfirmTitle": "続行しますか？",
     "SteamShortcutCreationConfirmSubtitle1": "このコンピューターでログインした全てのSteamアカウントのライブラリへショートカットを追加します。",
@@ -766,9 +768,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • この操作を再度実行することで、ショートカットアイコンの破損や欠落が修正できます。",
     "SteamShortcutCreationSuccessSubtitle5": " • 作成したショートカットはSteamの再起動後に表示されます。",
     "SteamShortcutCreationSuccessSubtitle6": " • Steamオーバーレイを使用するには、Steamを管理者として実行した上でCollapseを完全に閉じるか、ランチャー設定の「多重起動を許可する」を有効にする必要があります。",
+    "SteamShortcutCreationSuccessSubtitle7": "• ゲームがインストール/更新されていない場合、Collapseはゲームのインストール/更新を試みます。これらのプロセスに関するダイアログが引き続き表示されることにご留意ください。",
 
     "SteamShortcutCreationFailureTitle": "Steamデータフォルダーが無効です",
-    "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。"
+    "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。",
+
+    "DownloadSettingsTitle": "ダウンロード設定",
+    "DownloadSettingsOption1": "インストール完了後にゲームを起動"
   },
 
   "_FileMigrationProcess": {

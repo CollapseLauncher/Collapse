@@ -477,8 +477,9 @@
     "Waifu2X_Toggle": "使用 Waifu2X [实验性]",
     "Waifu2X_Help": "使用 Waifu2X 放大背景图像。\n开启后，图像质量会有显著提升，但首次加载图像时会多花一些时间。",
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
+    "Waifu2X_Warning_D3DMappingLayers": "警告：您的系统安装了“OpenCL™、OpenGL® 和 Vulkan® 兼容包”。该软件包被报告与 Vulkan Loader 不兼容，并且会在某些 GPU 上崩溃。请移除此软件包以启用 GPU 模式。",
     "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
-    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 检查，输出为空。"
+    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。"
   },
 
   "_Misc": {
@@ -754,6 +755,7 @@
     "ShortcutCreationSuccessSubtitle2": "位置：",
     "ShortcutCreationSuccessSubtitle3": "备注：",
     "ShortcutCreationSuccessSubtitle4": " • 使用此快捷方式将在加载区服后启动游戏。",
+    "ShortcutCreationSuccessSubtitle5": " • 如果游戏未安装/更新，Collapse 会尝试安装/更新。请注意，与这些过程相关的对话框仍会显示。",
 
     "SteamShortcutCreationConfirmTitle": "您确定您想要继续吗？",
     "SteamShortcutCreationConfirmSubtitle1": "此计算机中的每个 Steam 用户都将添加一个快捷方式。",
@@ -766,9 +768,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • 再次运行此过程将修复属于快捷方式的任何损坏/丢失的图像。",
     "SteamShortcutCreationSuccessSubtitle5": " • 新的快捷方式仅在 Steam 重新加载后才会显示。",
     "SteamShortcutCreationSuccessSubtitle6": " • 要使用 Steam 叠加层，Steam 需要以管理员身份运行，而且 Collapse 必须完全关闭或在设置中启用“允许开启多个 Collapse”选项。",
+    "SteamShortcutCreationSuccessSubtitle7": " • 如果游戏未安装/更新，Collapse 会尝试安装/更新。请注意，与这些过程相关的对话框仍会显示。",
 
     "SteamShortcutCreationFailureTitle": "无效的 Steam 数据文件夹",
-    "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。"
+    "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。",
+
+    "DownloadSettingsTitle": "下载设置",
+    "DownloadSettingsOption1": "安装后启动游戏"
   },
 
   "_FileMigrationProcess": {
