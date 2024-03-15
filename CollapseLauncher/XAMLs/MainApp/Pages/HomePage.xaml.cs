@@ -1952,6 +1952,8 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                IsSkippingUpdateCheck = true;
+
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
@@ -1996,6 +1998,7 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                IsSkippingUpdateCheck = false;
                 CurrentGameProperty._GameInstall.StartAfterInstall = false;
                 CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
