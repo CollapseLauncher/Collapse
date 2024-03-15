@@ -477,8 +477,9 @@
     "Waifu2X_Toggle": "Gunakan Waifu2X [Eksperimental]",
     "Waifu2X_Help": "Gunakan Waifu2X untuk memperbesar gambar latar belakang.\nKetika dihidupkan, kualitas gambar akan ditingkatkan secara signifikan, namun gambar akan dimuat sedikit lebih lama saat gambar dimuat untuk pertama kalinya.",
     "Waifu2X_Warning_CpuMode": "PERINGATAN: Kamu tidak memiliki GPU yang mendukung API Vulkan dan CPU kamu akan digunakan untuk memproses gambar. Proses pemrosesan akan menjadi lebih lama dari yang seharusnya.",
+    "Waifu2X_Warning_D3DMappingLayers": "PERINGATAN: Kamu memiliki \"OpenCL™, OpenGL®, dan Vulkan® Compatibility Pack\" yang terpasang di komputermu. Dikabarkan bahwa program tersebut tidak kompatibel dengan Vulkan Loader pada fitur ini dan akan menyebabkan Crash pada beberapa GPU. Silahkan hapus program tersebut untuk menggunakan GPU pada fitur ini.",
     "Waifu2X_Error_Loader": "ERROR: Gagal dalam mempersiapkan Vulkan API. Pastikan bahwa kamu memiliki GPU yang mendukung Vulkan API dan memiliki driver yang sesuai.",
-    "Waifu2X_Error_Output": "ERROR: Gagal dalam proses pengecheckan Waifu2X, output mengeluarkan gambar kosong."
+    "Waifu2X_Error_Output": "ERROR: Gagal saat menjalankan Self-test pada Waifu2X, gambar test mengeluarkan output yang kosong."
   },
 
   "_Misc": {
@@ -754,6 +755,7 @@
     "ShortcutCreationSuccessSubtitle2": "Lokasi:",
     "ShortcutCreationSuccessSubtitle3": "Catatan:",
     "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+    "ShortcutCreationSuccessSubtitle5": " • Apabila game tidak terpasang/belum diperbarui, maka Collapse akan mencoba untuk memasang atau memperbarui game. Mohon diingat bahwa dialog instalasi akan tetap muncul.",
 
     "SteamShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
     "SteamShortcutCreationConfirmSubtitle1": "Jalan pintas (Shortcut) akan ditambahkan pada setiap user Steam di dalam komputer ini.",
@@ -766,9 +768,13 @@
     "SteamShortcutCreationSuccessSubtitle4": "• Mengulangi proses ini dapat memperbaiki gambar yang hilang/rusak pada pintasan.",
     "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
     "SteamShortcutCreationSuccessSubtitle6": " • Dalam menggunakan overlay pada Steam, Steam harus berjalan sebagai administrator dan Collapse harus ditutup atau memiliki opsi \"Multiple Instances\" yang sudah dinyalakan pada menu \"Pengaturan Aplikasi\".",
+    "SteamShortcutCreationSuccessSubtitle7": "• Apabila game tidak terpasang/belum diperbarui, maka Collapse akan mencoba untuk memasang atau memperbarui game. Mohon diingat bahwa dialog instalasi akan tetap muncul.",
 
     "SteamShortcutCreationFailureTitle": "Folder data Steam tidak valid",
-    "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini."
+    "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini.",
+
+    "DownloadSettingsTitle": "Pengaturan Download",
+    "DownloadSettingsOption1": "Mulai game setelah proses install"
   },
 
   "_FileMigrationProcess": {
