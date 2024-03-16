@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -801,13 +802,15 @@ namespace CollapseLauncher.Interfaces
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x!.GetAssetSize());
             StackPanel Content = new StackPanel();
-            Button ShowBrokenFilesButton = new Button()
-            {
-                Content = Lang!._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
-                Style = Application.Current!.Resources!["AccentButtonStyle"] as Style,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                CornerRadius = new CornerRadius(14)
-            };
+            Button ShowBrokenFilesButton = 
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._HomePage!.PauseCancelDownloadBtn,
+                    null,
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Center);
+
             ShowBrokenFilesButton.Click += async (_, _) =>
             {
                 string tempPath = Path.GetTempFileName() + ".log";

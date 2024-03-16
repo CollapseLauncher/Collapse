@@ -698,16 +698,13 @@ namespace CollapseLauncher.Dialogs
                     Margin = new Thickness(0, 8, 0, 8)
                 };
 
-                StackPanel copyButtonTextPanel = new StackPanel() { Orientation = Orientation.Horizontal };
-                copyButtonTextPanel.Children.Add(new FontIcon { FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"], Glyph = "", Margin = new Thickness(0, 0, 8, 0), FontSize = 16 });
-                copyButtonTextPanel.Children.Add(new TextBlock() { Text = Lang._UnhandledExceptionPage.CopyClipboardBtn1, FontWeight = FontWeights.Medium });
-                copyButton = new Button
-                {
-                    Style = Application.Current.Resources["AccentButtonStyle"] as Style,
-                    Content = copyButtonTextPanel,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    CornerRadius = new CornerRadius(15)
-                };
+                copyButton = 
+                    UIElementExtensions.CreateButtonWithIcon<Button>(
+                        text:           Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
+                        iconGlyph:      "",
+                        buttonStyle:    "AccentButtonStyle"
+                    )
+                    .WithHorizontalAlignment(HorizontalAlignment.Center);
                 copyButton.Click += CopyTextToClipboard;
 
                 rootGrid.Children.Add(subtitleText);

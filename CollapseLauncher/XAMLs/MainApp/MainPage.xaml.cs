@@ -1,4 +1,5 @@
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages;
@@ -1034,31 +1035,14 @@ namespace CollapseLauncher
             bool IsUpdate = await CheckForNewConfigV2();
             if (IsUpdate)
             {
-                StackPanel Text = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
-                Text.Children.Add(
-                    new FontIcon
-                    {
-                        Glyph = "",
-                        FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                        FontSize = 16
-                    });
-
-                Text.Children.Add(
-                    new TextBlock
-                    {
-                        Text = Lang._AppNotification.NotifMetadataUpdateBtn,
-                        FontWeight = FontWeights.Medium,
-                        Margin = new Thickness(8, 0, 0, 0),
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-
-                Button UpdateMetadatabtn = new Button
-                {
-                    Content = Text,
-                    Margin = new Thickness(0, 0, 0, 16),
-                    Style = (Style)Application.Current.Resources["AccentButtonStyle"],
-                    CornerRadius = new CornerRadius(16)
-                };
+                Button UpdateMetadatabtn =
+                    UIElementExtensions.CreateButtonWithIcon<Button>(
+                            Lang._AppNotification!.NotifMetadataUpdateBtn,
+                            "",
+                            "FontAwesomeSolid",
+                            "AccentButtonStyle"
+                        )
+                    .WithMargin(0d, 0d, 0d, 16d);
 
                 UpdateMetadatabtn.Loaded += async (a, b) =>
                 {

@@ -1,7 +1,6 @@
-﻿using Microsoft.UI.Text;
+﻿using CollapseLauncher.Extension;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -268,44 +267,16 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public static Button GenerateNotificationButton(string IconGlyph, string Text, RoutedEventHandler ButtonAction = null, string FontIconName = "FontAwesomeSolid", string ButtonStyle = "AccentButtonStyle")
         {
-            StackPanel BtnStack = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
+            Button Btn =
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Text,
+                    IconGlyph,
+                    FontIconName,
+                    ButtonStyle
+                )
+                .WithMargin(0d, 0d, 0d, 8d);
 
-            if (IconGlyph != null)
-            {
-                BtnStack.Children.Add(
-                    new FontIcon
-                    {
-                        Glyph = IconGlyph,
-                        FontFamily = (FontFamily)Application.Current.Resources[FontIconName],
-                        Margin = new Thickness(0, 0, Text == null ? 0 : 8, 0),
-                        FontSize = 16
-                    });
-            }
-
-            if (Text != null)
-            {
-                BtnStack.Children.Add(
-                    new TextBlock
-                    {
-                        Text = Text,
-                        FontWeight = FontWeights.Medium,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-            }
-
-            Button Btn = new Button
-            {
-                Content = BtnStack,
-                Margin = new Thickness(0, 0, 0, 8),
-                Style = (Style)Application.Current.Resources[ButtonStyle],
-                CornerRadius = new CornerRadius(16)
-            };
-
-            if (ButtonAction != null)
-            {
-                Btn.Click += ButtonAction;
-            }
-
+            if (ButtonAction != null) Btn.Click += ButtonAction;
             return Btn;
         }
     }

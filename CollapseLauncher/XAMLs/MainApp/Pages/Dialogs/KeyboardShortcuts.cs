@@ -1,4 +1,5 @@
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Extension;
 using CommunityToolkit.WinUI;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
@@ -15,6 +16,8 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
+
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -98,28 +101,18 @@ namespace CollapseLauncher.Dialogs
             string gameMod = KbShortcutList["GameSelection"].GetFormattedModifier();
             string regionMod = KbShortcutList["RegionSelection"].GetFormattedModifier();
 
-            StackPanel textBlock = new StackPanel { Orientation = Orientation.Horizontal };
-            textBlock.Children.Add(new TextBlock
-            {
-                Text = "",
-                FontSize = 12,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
-            });
-            textBlock.Children.Add(new TextBlock
-                                   {
-                                       Text   = string.Format(Lang._KbShortcuts.Switch_SwapBtn, gameMod, regionMod),
-                                       Margin = new Thickness(8, 0, 0, 0)
-                                   });
+            Button modifierSwap =
+                CollapseUIExt.CreateButtonWithIcon<Button>(
+                    text:               string.Format(Lang._KbShortcuts!.Switch_SwapBtn, gameMod, regionMod),
+                    iconGlyph:          "",
+                    iconFontFamily:     "FontAwesomeSolid",
+                    buttonStyle:        "DefaultButtonStyle",
+                    iconSize:           12d,
+                    textSize:           null
+                    )
+                .WithDataContext(new KbShortcutChangeData { KeyName = "GameSelection", PageNumber = 1 })
+                .WithHorizontalAlignment(HorizontalAlignment.Right);
 
-            Button modifierSwap = new Button
-            {
-                Content = textBlock,
-                CornerRadius = new CornerRadius(5),
-                DataContext = new KbShortcutChangeData { KeyName = "GameSelection", PageNumber = 1 },
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 0, 2, 0)
-            };
             modifierSwap.Click += Swap_Click;
             changeTitleGrid.Children.Add(modifierSwap);
             Grid.SetColumn(modifierSwap, 1);
@@ -159,10 +152,10 @@ namespace CollapseLauncher.Dialogs
                                          Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 0)
                                      };
 
-            Button genButton         = new Button() { DataContext = 0, Content = new TextBlock { Text = Lang._KbShortcuts.GeneralTab, Margin        = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
-            Button changeButton      = new Button() { DataContext = 1, Content = new TextBlock { Text = Lang._KbShortcuts.SwitchTab, Margin         = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
-            Button gameFolderButton  = new Button() { DataContext = 2, Content = new TextBlock { Text = Lang._KbShortcuts.GameFolderTab, Margin     = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock { Text = Lang._KbShortcuts.GameManagementTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button genButton         = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GeneralTab)          .WithDataContext(0);
+            Button changeButton      = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.SwitchTab)           .WithDataContext(1);
+            Button gameFolderButton  = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GameFolderTab)       .WithDataContext(2);
+            Button gameManagerButton = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GameManagementTab)   .WithDataContext(3);
 
             List<object> stacks = new() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new() { genButton, changeButton, gameFolderButton, gameManagerButton };
@@ -248,21 +241,21 @@ namespace CollapseLauncher.Dialogs
 
             if (enableSwapButton)
             {
-                Button shortcutSwap = new Button
-                {
-                    Content = new TextBlock
-                              {
-                                  Text       = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0),
-                                  FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily
-                              },
-                    CornerRadius = new CornerRadius(5),
-                    DataContext = new KbShortcutChangeData
-                                  {
-                                      Description = description, PageNumber = _pageNum, KeyName = keyName,
-                                      Shortcut    = shortcut
-                                  },
-                    Margin = new Thickness(0, 0, 5, 0)
-                };
+                Button shortcutSwap =
+                    CollapseUIExt.CreateButtonWithIcon<Button>(
+                        iconGlyph:      "",
+                        iconSize:       12d,
+                        iconFontFamily: "FontAwesomeSolid",
+                        cornerRadius:   new CornerRadius(5d)
+                    )
+                    .WithMargin(0d, 0d, 5d, 0d)
+                    .WithDataContext(new KbShortcutChangeData
+                    {
+                        Description = description,
+                        PageNumber = _pageNum,
+                        KeyName = keyName,
+                        Shortcut = shortcut
+                    });
                 shortcutButtons.Children.Add(shortcutSwap);
                 shortcutSwap.Click += Swap_Click;
             }
@@ -428,18 +421,15 @@ namespace CollapseLauncher.Dialogs
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
-            Button helpButton = new Button
-            {
-                Content = new TextBlock
-                          {
-                              Text       = "info",
-                              FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
-                              FontSize   = 10
-                          },
-                Flyout = helpFlyout,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(8, -2, 0, 2)
-            };
+            Button helpButton =
+                CollapseUIExt.CreateButtonWithIcon<Button>(
+                    text: "info",
+                    iconFontFamily: "FontAwesomeSolid",
+                    textSize: 10
+                )
+                .WithMargin(8, -2, 0, 2)
+                .WithFlyout(helpFlyout);
+
             introPanel.Children.Add(helpButton);
             mainSwitchKeyContent.Children.Add(introPanel);
 

@@ -1,11 +1,11 @@
-﻿using CollapseLauncher.Helper.Animation;
-using CommunityToolkit.WinUI.Controls;
+﻿using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Windows.UI.Text;
@@ -15,25 +15,44 @@ namespace CollapseLauncher.Extension
     internal enum CornerRadiusKind { Normal, Rounded }
     internal static class UIElementExtensions
     {
-        internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text, string iconGlyph, string iconFontFamily = "FontAwesome", string buttonStyle = "DefaultButtonStyle")
+        internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",
+            string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)
             where TButtonBase : ButtonBase, new()
         {
+            bool isHasIcon = !string.IsNullOrEmpty(iconGlyph);
+            bool isHasText = !string.IsNullOrEmpty(text);
+
+            if (!isHasIcon && !isHasText)
+                throw new NullReferenceException($"[UIElementExtensions::CreateButtonWithIcon()] At least \"text\" or \"iconGlyph\" must be set!");
+
             TButtonBase buttonReturn = new TButtonBase();
-            StackPanel contentPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            contentPanel.AddElementToStackPanel(new FontIcon
+            Grid contentPanel = new Grid();
+            contentPanel.AddGridColumns(1, GridLength.Auto);
+            contentPanel.AddGridColumns(1);
+
+            textWeight ??= FontWeights.SemiBold;
+
+            if (isHasIcon) _ = contentPanel.AddElementToGridColumn(new FontIcon
             {
                 Glyph = iconGlyph,
-                FontSize = 16,
-                Margin = new Thickness(0d, 1d, 0d, 0d),
+                FontSize = iconSize,
+                Margin = new Thickness(isHasText ? 0d : -5d, isHasText ? 1d : 0d, isHasText ? 0d : -5d, 0d),
                 FontFamily = GetApplicationResource<FontFamily>(iconFontFamily)
-            });
-            contentPanel.AddElementToStackPanel(new TextBlock
+            }, 0, !isHasText ? 2 : 0);
+
+            if (isHasText)
             {
-                Text = text,
-                FontWeight = FontWeights.SemiBold,
-                Margin = new Thickness(8d, 0d, 0d, 0d)
-            });
-            buttonReturn.CornerRadius = new CornerRadius(14);
+                TextBlock textBlock = contentPanel.AddElementToGridColumn(new TextBlock
+                {
+                    Text = text,
+                    FontWeight = textWeight.Value,
+                    Margin = new Thickness(isHasIcon ? 8d : 0d, 0d, 0d, 0d)
+                }, isHasIcon ? 1 : 0, isHasIcon ? 0 : 2);
+
+                if (textSize != null) textBlock.FontSize = textSize.Value;
+            }
+
+            buttonReturn.CornerRadius = !cornerRadius.HasValue ? AttachRoundedKindCornerRadius(buttonReturn) : cornerRadius.Value;
             buttonReturn.Content = contentPanel;
             buttonReturn.Style = GetApplicationResource<Style>(buttonStyle);
             return buttonReturn;
@@ -184,5 +203,72 @@ namespace CollapseLauncher.Extension
             if (element is InfoBar infoBar && infoBar.Content is UIElement infoBarInner)
                 infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
         }
+
+        internal static ref TElement WithDataContext<TElement>(this TElement element, object dataContext)
+            where TElement : FrameworkElement
+        {
+            SetDataContext(element, dataContext);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithMargin<TElement>(this TElement element, double uniform)
+            where TElement : FrameworkElement
+        {
+            SetMargin(element, uniform);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithMargin<TElement>(this TElement element, double horizontal, double vertical)
+            where TElement : FrameworkElement
+        {
+            SetMargin(element, horizontal, vertical);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
+            where TElement : FrameworkElement
+        {
+            SetMargin(element, left, top, right, bottom);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TButton WithFlyout<TButton>(this TButton button, FlyoutBase flyout)
+            where TButton : Button
+        {
+            SetButtonFlyout(button, flyout);
+            return ref Unsafe.AsRef(ref button);
+        }
+
+        internal static ref TElement WithHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
+            where TElement : FrameworkElement
+        {
+            SetHorizontalAlignment(element, alignment);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
+            where TElement : FrameworkElement
+        {
+            SetVerticalAlignment(element, alignment);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static void SetDataContext<TElement>(this TElement element, object dataContext)
+            where TElement : FrameworkElement => element.DataContext = dataContext;
+
+        internal static void SetMargin<TElement>(this TElement element, double uniform)
+            where TElement : FrameworkElement => SetMargin(element, uniform, uniform, uniform, uniform);
+        internal static void SetMargin<TElement>(this TElement element, double horizontal, double vertical)
+            where TElement : FrameworkElement => SetMargin(element, horizontal, vertical, horizontal, vertical);
+        internal static void SetMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
+            where TElement : FrameworkElement => element.Margin = new Thickness(left, top, right, bottom);
+
+        internal static void SetButtonFlyout<TButton>(this TButton button, FlyoutBase flyout)
+            where TButton : Button => button.ContextFlyout = flyout;
+
+        internal static void SetHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
+            where TElement : FrameworkElement => element.HorizontalAlignment = alignment;
+        internal static void SetVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
+            where TElement : FrameworkElement => element.VerticalAlignment = alignment;
     }
 }

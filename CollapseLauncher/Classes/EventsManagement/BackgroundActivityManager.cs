@@ -1,10 +1,10 @@
 ﻿using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
+using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -165,34 +165,15 @@ namespace CollapseLauncher
             ProgressBar progressBar = new ProgressBar() { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true };
             progressStatusContainer.Children.Add(progressBar);
 
-            Button cancelButton = new Button()
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 4, 0, 0),
-                CornerRadius = new CornerRadius(14),
-                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
-                Content = new StackPanel()
-                {
-                    Orientation = Orientation.Horizontal,
-                    Margin = new Thickness(4, 0, 4, 0),
-                    Children =
-                    {
-                        new FontIcon()
-                        {
-                            FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
-                            Glyph = "",
-                            FontSize = 18
-                        },
-                        new TextBlock()
-                        {
-                            Text = Lang._HomePage!.PauseCancelDownloadBtn,
-                            FontWeight = FontWeights.Medium,
-                            Margin = new Thickness(8, -2, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-                        }
-                    }
-                }
-            };
+            Button cancelButton =
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._HomePage!.PauseCancelDownloadBtn,
+                    "",
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Right)
+                .WithMargin(0d, 4d, 0d, 0d);
 
             cancelButton.Click += (_, _) =>
             {
@@ -201,34 +182,15 @@ namespace CollapseLauncher
                 _parentNotifUI.IsOpen = false;
             };
 
-            Button settingsButton = new Button()
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 4, 8, 0),
-                CornerRadius = new CornerRadius(14),
-                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
-                Content = new StackPanel()
-                {
-                    Orientation = Orientation.Horizontal,
-                    Margin = new Thickness(4, 0, 4, 0),
-                    Children =
-                    {
-                        new FontIcon()
-                        {
-                            FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
-                            Glyph = "\uf013",
-                            FontSize = 18
-                        },
-                        new TextBlock()
-                        {
-                            Text = Lang._Dialogs.DownloadSettingsTitle,
-                            FontWeight = FontWeights.Medium,
-                            Margin = new Thickness(8, -2, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-                        }
-                    }
-                }
-            };
+            Button settingsButton =
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._Dialogs!.DownloadSettingsTitle,
+                    "\uf013",
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Right)
+                .WithMargin(0d, 4d, 8d, 0d);
 
             settingsButton.Click += async (_, _) => await Dialogs.SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
 
