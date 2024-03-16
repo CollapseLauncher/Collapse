@@ -44,12 +44,12 @@ namespace Hi3Helper.Shared.ClassStruct
         public NotificationActionTypeDesc? ActionType { get; set; }
         public Type BaseClassType { get; set; }
 
-        public virtual UIElement GetUIElement()
+        public virtual FrameworkElement GetFrameworkElement()
         {
             return null;
         }
 
-        protected virtual void BuildUIElement(ref Utf8JsonReader reader)
+        protected virtual void BuildFrameworkElement(ref Utf8JsonReader reader)
         {
             return;
         }
@@ -149,10 +149,10 @@ namespace Hi3Helper.Shared.ClassStruct
             BaseClassType = typeof(NotificationActionClickLink);
 
             // Build the UI element
-            BuildUIElement(ref reader);
+            BuildFrameworkElement(ref reader);
         }
 
-        public override UIElement GetUIElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (s, e) =>
+        public override FrameworkElement GetFrameworkElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (s, e) =>
         {
             new Process
             {
@@ -164,7 +164,7 @@ namespace Hi3Helper.Shared.ClassStruct
             }.Start();
         }, GlyphFont);
 
-        protected override void BuildUIElement(ref Utf8JsonReader reader)
+        protected override void BuildFrameworkElement(ref Utf8JsonReader reader)
         {
             // Do loop while the reader == true
             while (reader.Read())

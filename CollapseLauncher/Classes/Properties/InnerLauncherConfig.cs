@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Pages;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
@@ -89,12 +90,11 @@ namespace CollapseLauncher
             List<StackPanel> list = new List<StackPanel>();
             foreach (string title in ConfigV2GameCategory)
             {
-                StackPanel panel = new StackPanel { Orientation = Orientation.Horizontal };
-                TextBlock gameTitleTextBlock = new TextBlock { Text = title };
+                StackPanel panel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
+                TextBlock gameTitleTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = title });
                 TextBlock gameTitleTranslatedTextBlock = GetGameTitleRegionTranslationTextBlock(ref gameTitleTextBlock, Locale.Lang._GameClientTitles);
 
-                panel.Children.Add(gameTitleTextBlock);
-                if (gameTitleTranslatedTextBlock != null) panel.Children.Add(gameTitleTranslatedTextBlock);
+                if (gameTitleTranslatedTextBlock != null) panel.AddElementToStackPanel(gameTitleTranslatedTextBlock);
                 list.Add(panel);
             }
 
@@ -108,16 +108,15 @@ namespace CollapseLauncher
             foreach (string region in GameCategoryList)
             {
                 PresetConfigV2 config = ConfigV2.MetadataV2[GameCategory][region];
-                StackPanel panel = new StackPanel { Orientation = Orientation.Horizontal };
-                TextBlock gameRegionTextBlock = new TextBlock { Text = region };
+                StackPanel panel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
+                TextBlock gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock gameRegionTranslatedTextBlock = GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Lang._GameClientRegions);
 
-                panel.Children.Add(gameRegionTextBlock);
-                if (gameRegionTranslatedTextBlock != null) panel.Children.Add(gameRegionTranslatedTextBlock);
+                if (gameRegionTranslatedTextBlock != null) panel.AddElementToStackPanel(gameRegionTranslatedTextBlock);
 
                 if (config.IsExperimental)
                 {
-                    Grid expTag = new Grid
+                    Grid expTag =  new Grid
                     {
                         Padding = new Thickness(4, 0, 4, 0),
                         Margin = new Thickness(4, 3, 0, 0),

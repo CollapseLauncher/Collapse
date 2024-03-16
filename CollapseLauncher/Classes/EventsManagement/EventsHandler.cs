@@ -304,7 +304,7 @@ namespace CollapseLauncher
     public class NotificationInvokerProp
     {
         public TypedEventHandler<InfoBar, object> CloseAction { get; set; }
-        public UIElement OtherContent { get; set; }
+        public FrameworkElement OtherContent { get; set; }
         public NotificationProp Notification { get; set; }
         public bool IsAppNotif { get; set; } = true;
         public bool IsCustomNotif { get; set; }

@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Windows.UI.Text;
 
@@ -58,11 +59,33 @@ namespace CollapseLauncher.Extension
             return buttonReturn;
         }
 
+        internal static Grid CreateGrid() => new Grid();
+        internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) => new StackPanel() { Orientation = orientation };
+
+        internal static void AddElementToStackPanel<TElement>(this Panel stackPanel, params TElement[] elements)
+            where TElement : FrameworkElement => AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+        internal static void AddElementToStackPanel<TElement>(this Panel stackPanel, IEnumerable<TElement> elements)
+            where TElement : FrameworkElement
+        {
+            foreach (TElement element in elements)
+                stackPanel.Children.Add(element);
+        }
         internal static ref TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
             where TElement : FrameworkElement
         {
             stackPanel.Children.Add(element);
             return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static void AddGridColumns(this Grid grid, params GridLength[] columnWidths)
+        {
+            if (columnWidths.Length == 0)
+                throw new IndexOutOfRangeException($"\"columnWidth\" cannot be empty!");
+
+            for (int i = 0; i < columnWidths.Length; i++) grid.ColumnDefinitions.Add(new ColumnDefinition()
+            {
+                Width = columnWidths[i]
+            });
         }
 
         internal static void AddGridColumns(this Grid grid, int count, GridLength? columnWidth = null)
@@ -89,7 +112,6 @@ namespace CollapseLauncher.Extension
             SetElementGridColumnPosition(element, columnIndex, columnSpan);
             return ref Unsafe.AsRef(ref element);
         }
-
         internal static ref TElement AddElementToGridRow<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
@@ -97,7 +119,6 @@ namespace CollapseLauncher.Extension
             SetElementGridRowPosition(element, index, span);
             return ref Unsafe.AsRef(ref element);
         }
-
         internal static ref TElement AddElementToGridColumn<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
@@ -112,7 +133,6 @@ namespace CollapseLauncher.Extension
             Grid.SetRow(element, index);
             if (span > 0) Grid.SetRowSpan(element, span);
         }
-
         internal static void SetElementGridColumnPosition<TElement>(TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
@@ -124,7 +144,6 @@ namespace CollapseLauncher.Extension
         {
             while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
         }
-
         internal static void AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
         {
             if (!weight.HasValue) weight = FontWeights.Normal;
@@ -151,15 +170,10 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        internal static CornerRadius AttachRoundedKindCornerRadius(Control element)
+        internal static CornerRadius AttachRoundedKindCornerRadius(FrameworkElement element)
         {
             CornerRadius initialRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
-            element.SizeChanged += (sender, _) =>
-            {
-                if (sender != null && (sender is Control control))
-                    control.CornerRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
-            };
-
+            element.SizeChanged += (sender, _) => InnerSetCornerRadius(element, GetElementCornerRadius(element, CornerRadiusKind.Rounded));
             return initialRadius;
         }
 
@@ -204,6 +218,84 @@ namespace CollapseLauncher.Extension
                 infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
         }
 
+        internal static ref TElement WithWidthAndHeight<TElement>(this TElement element, double uniform)
+            where TElement : FrameworkElement
+        {
+            SetWidth(element, uniform);
+            SetHeight(element, uniform);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithWidth<TElement>(this TElement element, double width)
+            where TElement : FrameworkElement
+        {
+            SetWidth(element, width);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithHeight<TElement>(this TElement element, double height)
+            where TElement : FrameworkElement
+        {
+            SetHeight(element, height);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TGrid WithRowSpacing<TGrid>(this TGrid grid, double rowSpacing)
+            where TGrid : Grid
+        {
+            SetRowSpacing(grid, rowSpacing);
+            return ref Unsafe.AsRef(ref grid);
+        }
+        internal static ref TGrid WithColumnSpacing<TGrid>(this TGrid grid, double columnSpacing)
+            where TGrid : Grid
+        {
+            SetColumnSpacing(grid, columnSpacing);
+            return ref Unsafe.AsRef(ref grid);
+        }
+        internal static ref TGrid WithColumns<TGrid>(this TGrid grid, params GridLength[] columns)
+            where TGrid : Grid
+        {
+            SetGridSlices(grid, columns, true);
+            return ref Unsafe.AsRef(ref grid);
+        }
+        internal static ref TGrid WithRows<TGrid>(this TGrid grid, params GridLength[] rows)
+            where TGrid : Grid
+        {
+            SetGridSlices(grid, rows, false);
+            return ref Unsafe.AsRef(ref grid);
+        }
+
+        internal static ref TElement WithCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where TElement : FrameworkElement
+        {
+            SetCornerRadius(element, uniform, kind);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithCornerRadius<TElement>(this TElement element, double horizontal, double vertical, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where TElement : FrameworkElement
+        {
+            SetCornerRadius(element, horizontal, vertical, kind);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithCornerRadius<TElement>(this TElement element, double left, double top, double right, double bottom, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where TElement : FrameworkElement
+        {
+            SetCornerRadius(element, left, top, right, bottom, kind);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithVisibility<TElement>(this TElement element, Visibility visibility)
+            where TElement : FrameworkElement
+        {
+            SetVisibility(element, visibility);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithTag<TElement>(this TElement element, object tag)
+            where TElement : FrameworkElement
+        {
+            SetTag(element, tag);
+            return ref Unsafe.AsRef(ref element);
+        }
+
         internal static ref TElement WithDataContext<TElement>(this TElement element, object dataContext)
             where TElement : FrameworkElement
         {
@@ -217,18 +309,22 @@ namespace CollapseLauncher.Extension
             SetMargin(element, uniform);
             return ref Unsafe.AsRef(ref element);
         }
-
         internal static ref TElement WithMargin<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement
         {
             SetMargin(element, horizontal, vertical);
             return ref Unsafe.AsRef(ref element);
         }
-
         internal static ref TElement WithMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement
         {
             SetMargin(element, left, top, right, bottom);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithMargin<TElement>(this TElement element, Thickness thickness)
+            where TElement : FrameworkElement
+        {
+            SetMargin(element, thickness);
             return ref Unsafe.AsRef(ref element);
         }
 
@@ -245,7 +341,6 @@ namespace CollapseLauncher.Extension
             SetHorizontalAlignment(element, alignment);
             return ref Unsafe.AsRef(ref element);
         }
-
         internal static ref TElement WithVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : FrameworkElement
         {
@@ -253,22 +348,80 @@ namespace CollapseLauncher.Extension
             return ref Unsafe.AsRef(ref element);
         }
 
+        internal static void SetGridSlices<TGrid>(this TGrid grid, GridLength[] gridSlices, bool isColumn)
+            where TGrid : Grid
+        {
+            for (int i = 0; i < gridSlices.Length; i++)
+            {
+                if (isColumn)
+                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = gridSlices[i] });
+                else
+                    grid.RowDefinitions.Add(new RowDefinition { Height = gridSlices[i] });
+            }
+        }
+
+        internal static void SetVisibility<TElement>(this TElement element, Visibility visibility)
+            where TElement : UIElement => element.Visibility = visibility;
+        internal static void SetTag<TElement>(this TElement element, object tag)
+            where TElement : FrameworkElement => element.Tag = tag;
         internal static void SetDataContext<TElement>(this TElement element, object dataContext)
             where TElement : FrameworkElement => element.DataContext = dataContext;
+
+        internal static void SetCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where TElement : FrameworkElement => SetCornerRadius(element, uniform, uniform, uniform, uniform, kind);
+        internal static void SetCornerRadius<TElement>(this TElement element, double horizontal, double vertical, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where TElement : FrameworkElement => SetCornerRadius(element, horizontal, vertical, horizontal, vertical, kind);
+        internal static void SetCornerRadius<TElement>(this TElement element, double left, double top, double right, double bottom, CornerRadiusKind kind = CornerRadiusKind.Normal)
+            where TElement : FrameworkElement
+        {
+            CornerRadius cornerRadius =
+            kind == CornerRadiusKind.Normal ?
+                new CornerRadius(left, top, right, bottom) :
+                AttachRoundedKindCornerRadius(element);
+
+            InnerSetCornerRadius(element, cornerRadius);
+        }
+
+        internal static void SetRowSpacing<TGrid>(this TGrid element, double rowSpacing)
+            where TGrid : Grid => element.RowSpacing = rowSpacing;
+        internal static void SetColumnSpacing<TGrid>(this TGrid element, double columnSpacing)
+            where TGrid : Grid => element.ColumnSpacing = columnSpacing;
+
+        internal static void SetWidth<TElement>(this TElement element, double width)
+            where TElement : FrameworkElement => element.Width = width;
+        internal static void SetHeight<TElement>(this TElement element, double height)
+            where TElement : FrameworkElement => element.Height = height;
 
         internal static void SetMargin<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement => SetMargin(element, uniform, uniform, uniform, uniform);
         internal static void SetMargin<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement => SetMargin(element, horizontal, vertical, horizontal, vertical);
         internal static void SetMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
-            where TElement : FrameworkElement => element.Margin = new Thickness(left, top, right, bottom);
+            where TElement : FrameworkElement => element.SetMargin(new Thickness(left, top, right, bottom));
+        internal static void SetMargin<TElement>(this TElement element, Thickness thickness)
+            where TElement : FrameworkElement => element.Margin = thickness;
 
         internal static void SetButtonFlyout<TButton>(this TButton button, FlyoutBase flyout)
-            where TButton : Button => button.ContextFlyout = flyout;
+            where TButton : Button => button.Flyout = flyout;
 
         internal static void SetHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
             where TElement : FrameworkElement => element.HorizontalAlignment = alignment;
         internal static void SetVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : FrameworkElement => element.VerticalAlignment = alignment;
+
+        private static void InnerSetCornerRadius<TElement>(TElement element, CornerRadius cornerRadius)
+            where TElement : FrameworkElement
+        {
+            if (element == null) return;
+
+            if (element is Control control)
+                control.CornerRadius = cornerRadius;
+            else if (element is StackPanel stackPanel)
+                stackPanel.CornerRadius = cornerRadius;
+            else if (element is Grid grid)
+                grid.CornerRadius = cornerRadius;
+            else if (element is InfoBar infoBar)
+                infoBar.CornerRadius = cornerRadius;
+        }
     }
 }

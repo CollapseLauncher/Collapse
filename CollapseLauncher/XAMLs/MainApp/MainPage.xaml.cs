@@ -708,11 +708,11 @@ namespace CollapseLauncher
                 {
                     if (Entry.ActionProperty != null)
                     {
-                        Entry.OtherUIElement = Entry.ActionProperty.GetUIElement();
+                        Entry.OtherUIElement = Entry.ActionProperty.GetFrameworkElement();
                     }
 
                     SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true,
-                        Entry.IsDisposable ?? true, ClickCloseAction, (UIElement)Entry.OtherUIElement, true, Entry.Show, Entry.IsForceShowNotificationPanel);
+                        Entry.IsDisposable ?? true, ClickCloseAction, (FrameworkElement)Entry.OtherUIElement, true, Entry.Show, Entry.IsForceShowNotificationPanel);
                 }
                 await Task.Delay(250);
             }
@@ -798,7 +798,7 @@ namespace CollapseLauncher
         }
 
         private void SpawnNotificationPush(string Title, string Content, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
-            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, UIElement OtherContent = null, bool IsAppNotif = true,
+            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, FrameworkElement OtherContent = null, bool IsAppNotif = true,
             bool? Show = false, bool ForceShowNotificationPanel = false)
         {
             if (!(Show ?? false)) return;
@@ -810,34 +810,28 @@ namespace CollapseLauncher
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                StackPanel OtherContentContainer = new StackPanel
-                {
-                    Orientation = Orientation.Vertical,
-                    Margin = new Thickness(0, -4, 0, 8)
-                };
+                StackPanel OtherContentContainer = UIElementExtensions.CreateStackPanel().WithMargin(0d, -4d, 0d, 8d);
 
                 InfoBar Notification = new InfoBar
                 {
                     Title = Title,
                     Message = Content,
-                    Margin = new Thickness(4, 4, 4, 0),
-                    CornerRadius = new CornerRadius(8),
                     Severity = NotifSeverity2InfoBarSeverity(Severity),
                     IsClosable = IsClosable,
                     IsIconVisible = true,
-                    Width = m_windowSupportCustomTitle ? 600 : double.NaN,
-                    HorizontalAlignment = m_windowSupportCustomTitle ? HorizontalAlignment.Right : HorizontalAlignment.Stretch,
                     Shadow = SharedShadow,
                     IsOpen = true
-                };
+                }
+                .WithMargin(4d, 4d, 4d, 0d).WithWidth(600)
+                .WithCornerRadius(8).WithHorizontalAlignment(HorizontalAlignment.Right);
 
                 Notification.Translation += Shadow32;
 
                 if (Severity == NotifSeverity.Informational)
-                    Notification.Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"];
+                    Notification.Background = UIElementExtensions.GetApplicationResource<Brush>("InfoBarAnnouncementBrush");
 
                 if (OtherContent != null)
-                    OtherContentContainer.Children.Add(OtherContent);
+                    OtherContentContainer.AddElementToStackPanel(OtherContent);
 
                 if (Disposable)
                 {
@@ -848,7 +842,7 @@ namespace CollapseLauncher
                     };
                     NeverAskNotif.Checked += NeverAskNotif_Checked;
                     NeverAskNotif.Unchecked += NeverAskNotif_Unchecked;
-                    OtherContentContainer.Children.Add(NeverAskNotif);
+                    OtherContentContainer.AddElementToStackPanel(NeverAskNotif);
                 }
 
                 if (Disposable || OtherContent != null)
@@ -868,7 +862,7 @@ namespace CollapseLauncher
 
         private void SpawnNotificationoUI(int tagID, InfoBar Notification)
         {
-            Grid Container = new Grid() { Tag = tagID, };
+            Grid Container = UIElementExtensions.CreateGrid().WithTag(tagID);
             Notification.Loaded += (a, b) =>
             {
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
@@ -881,8 +875,8 @@ namespace CollapseLauncher
             Notification.Closed += (s, a) =>
             {
                 s.Translation -= Shadow32;
-                s.Height = 0;
-                s.Margin = new Thickness(0);
+                s.SetHeight(0d);
+                s.SetMargin(0d);
                 int msg = (int)s.Tag;
 
                 if (NotificationData.CurrentShowMsgIds.Contains(msg))
@@ -901,8 +895,8 @@ namespace CollapseLauncher
                 NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
-            Container.Children.Add(Notification);
-            NotificationContainer.Children.Add(Container);
+            Container.AddElementToGridRowColumn(Notification);
+            NotificationContainer.AddElementToStackPanel(Container);
         }
 
         private void RemoveNotificationUI(int tagID)
@@ -1050,20 +1044,15 @@ namespace CollapseLauncher
                     {
                         Text = Lang._AppNotification.NotifMetadataUpdateBtnUpdating,
                         FontWeight = FontWeights.Medium,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
+                    }.WithVerticalAlignment(VerticalAlignment.Center);
                     ProgressRing LoadBar = new ProgressRing
                     {
                         IsIndeterminate = true,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(0, 0, 8, 0),
-                        Width = 16,
-                        Height = 16,
                         Visibility = Visibility.Collapsed
-                    };
-                    StackPanel StackPane = new StackPanel() { Orientation = Orientation.Horizontal };
-                    StackPane.Children.Add(LoadBar);
-                    StackPane.Children.Add(Text);
+                    }.WithWidthAndHeight(16d).WithMargin(0d, 0d, 8d, 0d).WithVerticalAlignment(VerticalAlignment.Center);
+                    StackPanel StackPane = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
+                    StackPane.AddElementToStackPanel(LoadBar);
+                    StackPane.AddElementToStackPanel(Text);
                     (a as Button).Content = StackPane;
                     (a as Button).IsEnabled = false;
 

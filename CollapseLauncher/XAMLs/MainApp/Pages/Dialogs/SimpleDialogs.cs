@@ -104,24 +104,23 @@ namespace CollapseLauncher.Dialogs
         {
             // Default: 2 (Japanese)
             int index = 2;
-            StackPanel Panel = new StackPanel();
-            ComboBox LangBox = new ComboBox()
+            StackPanel Panel = UIElementExtensions.CreateStackPanel();
+            Panel.AddElementToStackPanel(new TextBlock()
+            {
+                Text = Lang._Dialogs.ChooseAudioLangSubtitle,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 16)
+            }.WithMargin(0d, 0d, 0d, 16d));
+            ComboBox LangBox = Panel.AddElementToStackPanel(new ComboBox()
             {
                 PlaceholderText = Lang._Dialogs.ChooseAudioLangSelectPlaceholder,
                 Width = 256,
                 ItemsSource = langlist,
                 SelectedIndex = index,
                 HorizontalAlignment = HorizontalAlignment.Center,
-            };
-            Panel.Children.Add(new TextBlock()
-            {
-                Text = Lang._Dialogs.ChooseAudioLangSubtitle,
-                TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(0, 0, 0, 16)
-            });
-            Panel.Children.Add(LangBox);
-            await SpawnDialog(Lang._Dialogs.ChooseAudioLangTitle, Panel, Content, null, Lang._Misc.Next, null, ContentDialogButton.Primary, ContentDialogTheme.Informational);
+            }.WithHorizontalAlignment(HorizontalAlignment.Center));
 
+            await SpawnDialog(Lang._Dialogs.ChooseAudioLangTitle, Panel, Content, null, Lang._Misc.Next, null, ContentDialogButton.Primary, ContentDialogTheme.Informational);
             index = LangBox.SelectedIndex;
 
             return index;
@@ -178,18 +177,24 @@ namespace CollapseLauncher.Dialogs
             };
             TargetGame.SelectionChanged += TargetGameChangedArgs;
 
-            StackPanel DialogContainer = new StackPanel() { Orientation = Orientation.Vertical };
-            StackPanel ComboBoxContainer = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
-            ComboBoxContainer.Children.Add(SourceGame);
-            ComboBoxContainer.Children.Add(new FontIcon() { Glyph = "", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(16, 0, 16, 0), Opacity = 0.5f });
-            ComboBoxContainer.Children.Add(TargetGame);
-            DialogContainer.Children.Add(new TextBlock
+            StackPanel DialogContainer = UIElementExtensions.CreateStackPanel();
+            StackPanel ComboBoxContainer = UIElementExtensions.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
+            ComboBoxContainer.AddElementToStackPanel<FrameworkElement>(
+                SourceGame,
+                new FontIcon()
+                {
+                    Glyph = "",
+                    FontFamily = UIElementExtensions.GetApplicationResource<FontFamily>("FontAwesomeSolid"),
+                    Opacity = 0.5f
+                }.WithVerticalAlignment(VerticalAlignment.Center).WithMargin(16d, 0d),
+                TargetGame
+                );
+            DialogContainer.AddElementToStackPanel(new TextBlock
             {
                 Text = Lang._InstallConvert.SelectDialogSubtitle,
-                Margin = new Thickness(0, 0, 0, 16),
-                TextWrapping = TextWrapping.Wrap,
-            });
-            DialogContainer.Children.Add(ComboBoxContainer);
+                TextWrapping = TextWrapping.Wrap
+            }.WithMargin(0d, 0d, 0d, 16d));
+            DialogContainer.AddElementToStackPanel(ComboBoxContainer);
 
             Dialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
@@ -571,12 +576,14 @@ namespace CollapseLauncher.Dialogs
 
         public static async void Dialog_InvalidPlaytime(UIElement Content, int elapsedSeconds = 0)
         {
-            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel stack = UIElementExtensions.CreateStackPanel();
 
-            stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });            
-            stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle2, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
-            stack.Children.Add(new TextBlock() { Text = string.Format(Lang._HomePage.GamePlaytime_Display, elapsedSeconds / 3600, elapsedSeconds % 3600 / 60), FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 4) });
-            stack.Children.Add(new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle3, TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 4, 0, -2) });
+            stack.AddElementToStackPanel(
+                new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
+                new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle2, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
+                new TextBlock() { Text = string.Format(Lang._HomePage.GamePlaytime_Display, elapsedSeconds / 3600, elapsedSeconds % 3600 / 60), FontWeight = FontWeights.Bold }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center),
+                new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle3, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.Bold }.WithMargin(0d, 4d, 0d, -2d).WithHorizontalAlignment(HorizontalAlignment.Center)
+                );
 
             await SpawnDialog(
                         Lang._Dialogs.InvalidPlaytimeTitle,
@@ -736,19 +743,20 @@ namespace CollapseLauncher.Dialogs
         #region Shortcut Creator Dialogs
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1, Margin = new Thickness(0, 2, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
-            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4) };
-            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
-            panel.Children.Add(pathText);
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4), HorizontalAlignment = HorizontalAlignment.Center });
+            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            panel.MaxWidth = 500d;
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1 }.WithMargin(0d, 2d, 0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
+            
+            TextBlock pathText = new TextBlock { TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0, 4d).WithHorizontalAlignment(HorizontalAlignment.Center);
+            pathText.AddTextBlockLine(path, FontWeights.Bold);
+            
+            panel.AddElementToStackPanel(
+                pathText,
+                new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            CheckBox playOnLoad = new CheckBox() { 
-                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords },
-                Margin = new Thickness(0, 4, 0, -8),
-                HorizontalAlignment = HorizontalAlignment.Center
-            };    
-            panel.Children.Add(playOnLoad);
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox() {
+                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
+            }.WithMargin(0d, 4d, 0d, -8d).WithHorizontalAlignment(HorizontalAlignment.Center));
         
             ContentDialogResult result = await SpawnDialog(
                 Lang._Dialogs.ShortcutCreationConfirmTitle,
@@ -764,18 +772,22 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 4) });
+
+            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            panel.MaxWidth = 500d;
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1 }.WithMargin(0d, 2d, 0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
+
             TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4) };
-            pathText.Inlines.Add(new Run() { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle2 });
-            pathText.Inlines.Add(new Run() { Text = path, FontWeight = FontWeights.Bold });
-            panel.Children.Add(pathText);
+            pathText.AddTextBlockLine(message: Lang._Dialogs.ShortcutCreationSuccessSubtitle2);
+            pathText.AddTextBlockLine(message: path, FontWeights.Bold);
+            panel.AddElementToStackPanel(pathText);
 
             if (play)
             {
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
+                panel.AddElementToStackPanel(
+                    new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 8d, 0d, 4d),
+                    new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d),
+                    new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d));
             }
 
             return await SpawnDialog(

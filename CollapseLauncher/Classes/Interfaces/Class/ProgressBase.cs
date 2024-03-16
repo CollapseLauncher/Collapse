@@ -801,15 +801,22 @@ namespace CollapseLauncher.Interfaces
         {
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x!.GetAssetSize());
-            StackPanel Content = new StackPanel();
-            Button ShowBrokenFilesButton = 
+            StackPanel Content = UIElementExtensions.CreateStackPanel();
+
+            Content.AddElementToStackPanel(new TextBlock()
+            {
+                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle!, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
+                Margin = new Thickness(0, 0, 0, 16),
+                TextWrapping = TextWrapping.Wrap
+            });
+            Button ShowBrokenFilesButton = Content.AddElementToStackPanel(
                 UIElementExtensions.CreateButtonWithIcon<Button>(
                     Lang._HomePage!.PauseCancelDownloadBtn,
                     null,
                     "FontAwesomeSolid",
                     "AccentButtonStyle"
                 )
-                .WithHorizontalAlignment(HorizontalAlignment.Center);
+                .WithHorizontalAlignment(HorizontalAlignment.Center));
 
             ShowBrokenFilesButton.Click += async (_, _) =>
             {
@@ -850,14 +857,6 @@ namespace CollapseLauncher.Interfaces
                     // piped to parent
                 }
             };
-
-            Content.Children!.Add(new TextBlock()
-            {
-                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle!, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
-                Margin = new Thickness(0, 0, 0, 16),
-                TextWrapping = TextWrapping.Wrap
-            });
-            Content.Children.Add(ShowBrokenFilesButton);
 
             if (totalSize == 0) return;
 

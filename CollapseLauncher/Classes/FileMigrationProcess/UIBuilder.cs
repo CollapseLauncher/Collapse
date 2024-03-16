@@ -131,14 +131,14 @@ namespace CollapseLauncher
                 XamlRoot = parentUI!.XamlRoot
             };
 
-            Grid mainGrid = new Grid { Width = 500d };
-            mainGrid.AddGridColumns(2, new GridLength(1.0d, GridUnitType.Star));
-            mainGrid.AddGridRows(1, new GridLength(1.0d, GridUnitType.Auto));
-            mainGrid.AddGridRows(3, new GridLength(20d, GridUnitType.Pixel));
+            Grid mainGrid = UIElementExtensions.CreateGrid()
+                .WithWidth(500d)
+                .WithColumns(new(1.0d, GridUnitType.Star), new(1.0d, GridUnitType.Star))
+                .WithRows(new(1.0d, GridUnitType.Auto), new(20d, GridUnitType.Pixel), new(20d, GridUnitType.Pixel), new(20d, GridUnitType.Pixel));
 
             // Build path indicator
             StackPanel pathActivityPanel = mainGrid.AddElementToGridRowColumn(
-                new StackPanel { Margin = new Thickness(0, 0, 0, 8d) },
+                UIElementExtensions.CreateStackPanel().WithMargin(0d, 0d, 0d, 8d),
                 0, 0, 0, 2
                 );
             _ = pathActivityPanel.AddElementToStackPanel(
@@ -186,11 +186,7 @@ namespace CollapseLauncher
 
             // Build progress percentage indicator
             StackPanel progressTextIndicator = mainGrid.AddElementToGridRowColumn(
-                new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    HorizontalAlignment = HorizontalAlignment.Right
-                },
+                UIElementExtensions.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Right),
                 2, 1);
             TextBlock progressTextIndicatorSubtitle = progressTextIndicator.AddElementToStackPanel(
                 new TextBlock { Text = "0", FontWeight = FontWeights.Bold });
@@ -201,12 +197,11 @@ namespace CollapseLauncher
             ProgressBar progressBarIndicator = mainGrid.AddElementToGridRowColumn(
                 new ProgressBar
                 {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Bottom,
                     Value = 0d,
                     Maximum = 100d,
                     IsIndeterminate = true
-                },
+                }.WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                .WithVerticalAlignment(VerticalAlignment.Bottom),
                 3, 0, 0, 2);
 
             // Set progress percentage indicator subtitle with progress bar value
