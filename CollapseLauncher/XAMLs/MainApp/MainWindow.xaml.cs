@@ -1,4 +1,5 @@
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using Microsoft.UI;
 using Microsoft.UI.Input;
@@ -193,6 +194,15 @@ namespace CollapseLauncher
             m_newWndProcDelegate = (WndProcDelegate)WndProc;
             IntPtr pWndProc = Marshal.GetFunctionPointerForDelegate(m_newWndProcDelegate);
             m_oldWndProc = SetWindowLongPtr(m_windowHandle, GWLP_WNDPROC, pWndProc);
+
+            m_consoleCtrlHandler += ConsoleCtrlHandler;
+            SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
+        }
+
+        private bool ConsoleCtrlHandler(uint dwCtrlType)
+        {
+            ImageLoaderHelper.DestroyWaifu2X();
+            return true;
         }
 
         public static void EnableNonClientArea()
