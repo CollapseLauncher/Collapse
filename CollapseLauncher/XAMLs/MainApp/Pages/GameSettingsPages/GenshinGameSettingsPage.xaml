@@ -894,6 +894,7 @@
                                 <CheckBox x:Name="AudioMuteOnMinimizeToggle"
                                           HorizontalAlignment="Left"
                                           VerticalAlignment="Center"
+                                          MinWidth="250"
                                           IsChecked="{x:Bind Audio_MuteOnMinimized, Mode=TwoWay}">
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
                                                TextWrapping="Wrap"/>
