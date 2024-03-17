@@ -564,7 +564,10 @@ namespace CollapseLauncher.Pages
             set
             {
                 ImageLoaderHelper.IsWaifu2XEnabled = value;
-                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                if (ImageLoaderHelper.Waifu2XStatus < Waifu2XStatus.Error)
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                else
+                    Bindings.Update();
             }
         }
 
