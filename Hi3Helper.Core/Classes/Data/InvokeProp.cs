@@ -283,5 +283,10 @@ namespace Hi3Helper
             SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
             SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
         }
+
+        public delegate bool HandlerRoutine(uint dwCtrlType);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool SetConsoleCtrlHandler(HandlerRoutine handlerRoutine, bool add);
     }
 }

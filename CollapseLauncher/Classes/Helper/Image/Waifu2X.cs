@@ -51,6 +51,9 @@ namespace CollapseLauncher.Helper.Image
         [DllImport(DllName)]
         private static extern int waifu2x_get_param(IntPtr context, Param param);
 
+        [DllImport(DllName)]
+        private static extern Waifu2XStatus waifu2x_self_test(IntPtr context);
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern long GetPackagesByPackageFamily(string packageFamilyName, ref uint count, [Out] IntPtr packageFullNames, ref uint bufferLength, [Out] IntPtr buffer);
         #endregion
@@ -82,7 +85,6 @@ namespace CollapseLauncher.Helper.Image
         private IntPtr _context;
         private byte[] _paramBuffer;
         private byte[] _modelBuffer;
-        private bool _testPassed;
         private Waifu2XStatus _status;
         #endregion
 
@@ -93,27 +95,10 @@ namespace CollapseLauncher.Helper.Image
         {
             try
             {
-                var gpuId = -1; // Do not touch Vulkan before checking D3DMappingLayers.
-                if (CheckD3DMappingLayersPackageInstalled())
-                {
-                    _status = Waifu2XStatus.D3DMappingLayers;
-                    Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
-                }
-                else
-                {
+                var gpuId = -1; // Do not touch Vulkan before VulkanTest.
+                _status = VulkanTest();
+                if (_status == Waifu2XStatus.Ok)
                     gpuId = Ncnn.DefaultGpuIndex;
-                    if (gpuId == -1)
-                    {
-                        // Fallback to CPU mode
-                        _status = Waifu2XStatus.CpuMode;
-                        Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
-                    }
-                    else
-                    {
-                        _status = Waifu2XStatus.Ok;
-                    }
-                }
-
                 _context = waifu2x_create(gpuId);
                 Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
             }
@@ -145,7 +130,7 @@ namespace CollapseLauncher.Helper.Image
             if (_context == 0) throw new NotSupportedException();
             fixed (byte* pParam = param, pModel = model)
             {
-                return waifu2x_load(_context, pParam, pModel) == 0 && Test();
+                return waifu2x_load(_context, pParam, pModel) == 0 && ProcessTest();
             }
         }
 
@@ -170,7 +155,6 @@ namespace CollapseLauncher.Helper.Image
             }
             catch (IOException)
             {
-                _testPassed = false;
                 _status = Waifu2XStatus.TestNotPassed;
                 Logger.LogWriteLine("Waifu2X model file can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
                 return false;
@@ -215,28 +199,60 @@ namespace CollapseLauncher.Helper.Image
         #endregion
 
         #region Misc
-        private bool Test()
+        public static Waifu2XStatus VulkanTest()
         {
-            if (Status == Waifu2XStatus.NotAvailable)
+            if (CheckD3DMappingLayersPackageInstalled())
             {
-                _testPassed = false;
+                Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
+                return Waifu2XStatus.D3DMappingLayers;
             }
-            else
+            var status = waifu2x_self_test(0);
+            switch (status)
             {
-                // Test scaling a 1x1 white image to 2x2 size
-                var inData = new byte[] { 0xFF, 0xFF, 0xFF };
-                var outData = new byte[2 * 2 * 3];
-                Process(1, 1, 3, inData, outData);
-                _testPassed = outData[0] != 0;
-                if (!_testPassed)
-                {
-                    Logger.LogWriteLine("Waifu2X self test failed, got an empty output image.", LogType.Error, true);
-                }
+                case Waifu2XStatus.CpuMode:
+                    Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
+                    break;
+                case Waifu2XStatus.NotAvailable:
+                    Logger.LogWriteLine("An error occurred while initializing Vulkan. Fallback to CPU mode.", LogType.Warning, true);
+                    status = Waifu2XStatus.CpuMode;
+                    break;
+                case Waifu2XStatus.Ok:
+                    Logger.LogWriteLine("Vulkan test passes and GPU mode can be used.", LogType.Default, true);
+                    break;
+                default:
+                    Logger.LogWriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
+                    status = Waifu2XStatus.NotAvailable;
+                    break;
             }
-            return _testPassed;
+            return status;
         }
 
-        private bool CheckD3DMappingLayersPackageInstalled()
+        private bool ProcessTest()
+        {
+            if (Status < Waifu2XStatus.Error)
+            {
+                _status = waifu2x_self_test(_context);
+                switch (_status)
+                {
+                    case Waifu2XStatus.TestNotPassed:
+                        Logger.LogWriteLine("Waifu2X self-test failed, got an empty output image.", LogType.Error, true);
+                        break;
+                    case Waifu2XStatus.NotAvailable:
+                        Logger.LogWriteLine("An error occurred while processing the image.", LogType.Error, true);
+                        break;
+                    case Waifu2XStatus.Ok:
+                        Logger.LogWriteLine("Waifu2X self-test passed, you can use Waifu2X function normally.", LogType.Default, true);
+                        break;
+                    default:
+                        Logger.LogWriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
+                        _status = Waifu2XStatus.NotAvailable;
+                        break;
+                }
+            }
+            return _status == Waifu2XStatus.Ok;
+        }
+
+        private static bool CheckD3DMappingLayersPackageInstalled()
         {
             const string FAMILY_NAME = "Microsoft.D3DMappingLayers_8wekyb3d8bbwe";
             uint count = 0, bufferLength = 0;
