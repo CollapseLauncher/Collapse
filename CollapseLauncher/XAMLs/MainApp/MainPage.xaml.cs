@@ -593,8 +593,8 @@ namespace CollapseLauncher
         {
             try
             {
-                IsLoadNotifComplete = false;
                 NotificationData = new NotificationPush();
+                IsLoadNotifComplete = false;
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
 
