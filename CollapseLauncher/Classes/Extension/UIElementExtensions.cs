@@ -27,9 +27,10 @@ namespace CollapseLauncher.Extension
                 throw new NullReferenceException($"[UIElementExtensions::CreateButtonWithIcon()] At least \"text\" or \"iconGlyph\" must be set!");
 
             TButtonBase buttonReturn = new TButtonBase();
-            Grid contentPanel = new Grid();
-            contentPanel.AddGridColumns(1, GridLength.Auto);
-            contentPanel.AddGridColumns(1);
+            Grid contentPanel = CreateGrid()
+                .WithColumns(GridLength.Auto, new(1, GridUnitType.Star))
+                .WithColumnSpacing(8)
+                .WithPadding(4d, 0d);
 
             textWeight ??= FontWeights.SemiBold;
 
@@ -37,17 +38,15 @@ namespace CollapseLauncher.Extension
             {
                 Glyph = iconGlyph,
                 FontSize = iconSize,
-                Margin = new Thickness(isHasText ? 0d : -5d, isHasText ? 1d : 0d, isHasText ? 0d : -5d, 0d),
                 FontFamily = GetApplicationResource<FontFamily>(iconFontFamily)
-            }, 0, !isHasText ? 2 : 0);
+            }, 0, !isHasText ? 2 : 0).WithMargin(isHasText ? 0d : -5d, isHasText ? 1d : 0d, isHasText ? 0d : -5d, 0d);
 
             if (isHasText)
             {
                 TextBlock textBlock = contentPanel.AddElementToGridColumn(new TextBlock
                 {
                     Text = text,
-                    FontWeight = textWeight.Value,
-                    Margin = new Thickness(isHasIcon ? 8d : 0d, 0d, 0d, 0d)
+                    FontWeight = textWeight.Value
                 }, isHasIcon ? 1 : 0, isHasIcon ? 0 : 2);
 
                 if (textSize != null) textBlock.FontSize = textSize.Value;
@@ -303,6 +302,31 @@ namespace CollapseLauncher.Extension
             return ref Unsafe.AsRef(ref element);
         }
 
+        internal static ref TElement WithPadding<TElement>(this TElement element, double uniform)
+            where TElement : FrameworkElement
+        {
+            SetPadding(element, uniform);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithPadding<TElement>(this TElement element, double horizontal, double vertical)
+            where TElement : FrameworkElement
+        {
+            SetPadding(element, horizontal, vertical);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithPadding<TElement>(this TElement element, double left, double top, double right, double bottom)
+            where TElement : FrameworkElement
+        {
+            SetPadding(element, left, top, right, bottom);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithPadding<TElement>(this TElement element, Thickness thickness)
+            where TElement : FrameworkElement
+        {
+            SetPadding(element, thickness);
+            return ref Unsafe.AsRef(ref element);
+        }
+
         internal static ref TElement WithMargin<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
@@ -392,6 +416,37 @@ namespace CollapseLauncher.Extension
         internal static void SetHeight<TElement>(this TElement element, double height)
             where TElement : FrameworkElement => element.Height = height;
 
+        internal static void SetPadding<TElement>(this TElement element, double uniform)
+            where TElement : FrameworkElement => SetPadding(element, uniform, uniform, uniform, uniform);
+        internal static void SetPadding<TElement>(this TElement element, double horizontal, double vertical)
+            where TElement : FrameworkElement => SetPadding(element, horizontal, vertical, horizontal, vertical);
+        internal static void SetPadding<TElement>(this TElement element, double left, double top, double right, double bottom)
+            where TElement : FrameworkElement => element.SetPadding(new Thickness(left, top, right, bottom));
+        internal static void SetPadding<TElement>(this TElement element, Thickness thickness)
+            where TElement : FrameworkElement
+        {
+            if (element == null) return;
+
+            switch (element)
+            {
+                case Control control:
+                    control.Padding = thickness;
+                    break;
+                case Border border:
+                    border.Padding = thickness;
+                    break;
+                case Grid grid:
+                    grid.Padding = thickness;
+                    break;
+                case StackPanel stackPanel:
+                    stackPanel.Padding = thickness;
+                    break;
+                case TextBlock textBlock:
+                    textBlock.Padding = thickness;
+                    break;
+            }
+        }
+
         internal static void SetMargin<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement => SetMargin(element, uniform, uniform, uniform, uniform);
         internal static void SetMargin<TElement>(this TElement element, double horizontal, double vertical)
@@ -414,14 +469,18 @@ namespace CollapseLauncher.Extension
         {
             if (element == null) return;
 
-            if (element is Control control)
-                control.CornerRadius = cornerRadius;
-            else if (element is StackPanel stackPanel)
-                stackPanel.CornerRadius = cornerRadius;
-            else if (element is Grid grid)
-                grid.CornerRadius = cornerRadius;
-            else if (element is InfoBar infoBar)
-                infoBar.CornerRadius = cornerRadius;
+            switch (element)
+            {
+                case Control control:
+                    control.CornerRadius = cornerRadius;
+                    break;
+                case StackPanel stackPanel:
+                    stackPanel.CornerRadius = cornerRadius;
+                    break;
+                case Grid grid:
+                    grid.CornerRadius = cornerRadius;
+                    break;
+            }
         }
     }
 }

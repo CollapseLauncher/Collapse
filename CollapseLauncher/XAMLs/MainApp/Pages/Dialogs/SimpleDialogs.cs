@@ -648,8 +648,8 @@ namespace CollapseLauncher.Dialogs
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
 
                 Button btn = sender as Button;
-                FontIcon fontIcon = (btn.Content as StackPanel).Children[0] as FontIcon;
-                TextBlock textBlock = (btn.Content as StackPanel).Children[1] as TextBlock;
+                FontIcon fontIcon = (btn.Content as Panel).Children[0] as FontIcon;
+                TextBlock textBlock = (btn.Content as Panel).Children[1] as TextBlock;
 
                 string lastGlyph = fontIcon.Glyph;
                 string lastText = textBlock.Text;
@@ -709,6 +709,7 @@ namespace CollapseLauncher.Dialogs
                     UIElementExtensions.CreateButtonWithIcon<Button>(
                         text:           Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
                         iconGlyph:      "",
+                        iconFontFamily: "FontAwesomeSolid",
                         buttonStyle:    "AccentButtonStyle"
                     )
                     .WithHorizontalAlignment(HorizontalAlignment.Center);

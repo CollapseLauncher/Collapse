@@ -1,6 +1,5 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
