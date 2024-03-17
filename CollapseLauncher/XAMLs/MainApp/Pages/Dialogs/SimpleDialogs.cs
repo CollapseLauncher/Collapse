@@ -931,7 +931,7 @@ namespace CollapseLauncher.Dialogs
             }
 
             // Assign the dialog to the global task
-            CurrentSpawnedDialogTask = dialog is ContentDialogCollapse dialogCollapse ? dialogCollapse.ShowAsync() : dialog.ShowAsync();
+            CurrentSpawnedDialogTask = dialog is ContentDialogCollapse dialogCollapse ? (dialog is ContentDialogOverlay overlapCollapse ? overlapCollapse.ShowAsync() : dialogCollapse.ShowAsync()) : dialog.ShowAsync();
             // Spawn and await for the result
             ContentDialogResult dialogResult = await CurrentSpawnedDialogTask;
             return dialogResult; // Return the result
