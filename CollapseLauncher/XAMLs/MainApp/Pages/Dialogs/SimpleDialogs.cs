@@ -179,12 +179,12 @@ namespace CollapseLauncher.Dialogs
 
             StackPanel DialogContainer = UIElementExtensions.CreateStackPanel();
             StackPanel ComboBoxContainer = UIElementExtensions.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
-            ComboBoxContainer.AddElementToStackPanel<FrameworkElement>(
+            ComboBoxContainer.AddElementToStackPanel(
                 SourceGame,
                 new FontIcon()
                 {
                     Glyph = "",
-                    FontFamily = UIElementExtensions.GetApplicationResource<FontFamily>("FontAwesomeSolid"),
+                    FontFamily = FontCollections.FontAwesomeSolid,
                     Opacity = 0.5f
                 }.WithVerticalAlignment(VerticalAlignment.Center).WithMargin(16d, 0d),
                 TargetGame
@@ -205,8 +205,8 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = Lang._Misc.Next,
                 IsSecondaryButtonEnabled = false,
                 DefaultButton = ContentDialogButton.Secondary,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
-                Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
+                Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
+                Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
                 XamlRoot = Content.XamlRoot
             };
             return (await Dialog.QueueAndSpawnDialog(), SourceGame, TargetGame);
@@ -218,7 +218,7 @@ namespace CollapseLauncher.Dialogs
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 });
             texts.Inlines.Add(new Hyperlink()
             {
-                Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = (SolidColorBrush)Application.Current.Resources["AccentColor"] } },
+                Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = UIElementExtensions.GetApplicationResource<Brush>("AccentColor") } },
                 NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
             });
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 });
@@ -675,53 +675,37 @@ namespace CollapseLauncher.Dialogs
 
                 bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (InnerLauncherConfig.m_window as MainWindow).rootFrame.CanGoBack;
 
-                Grid rootGrid = new Grid()
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch,
-                    RowDefinitions =
-                    {
-                        new RowDefinition() { Height = GridLength.Auto },
-                        new RowDefinition(),
-                        new RowDefinition() { Height = GridLength.Auto }
-                    }
-                };
+                Grid rootGrid = UIElementExtensions.CreateGrid()
+                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .WithVerticalAlignment(VerticalAlignment.Stretch)
+                    .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
 
-                TextBlock subtitleText = new TextBlock
+                TextBlock subtitleText = rootGrid.AddElementToGridRow(new TextBlock
                 {
                     Text = subtitle,
                     TextWrapping = TextWrapping.Wrap,
                     FontWeight = FontWeights.Medium
-                };
-                TextBox exceptionText = new TextBox
+                }, 0);
+                TextBox exceptionText = rootGrid.AddElementToGridRow(new TextBox
                 {
                     IsReadOnly = true,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch,
                     TextWrapping = TextWrapping.Wrap,
                     MaxHeight = 300,
                     AcceptsReturn = true,
-                    Text = exceptionContent,
-                    Margin = new Thickness(0, 8, 0, 8)
-                };
+                    Text = exceptionContent
+                }, 1).WithMargin(0d, 8d)
+                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                     .WithVerticalAlignment(VerticalAlignment.Stretch);
 
-                copyButton = 
+                copyButton = rootGrid.AddElementToGridRow(
                     UIElementExtensions.CreateButtonWithIcon<Button>(
                         text:           Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
                         iconGlyph:      "",
                         iconFontFamily: "FontAwesomeSolid",
                         buttonStyle:    "AccentButtonStyle"
-                    )
+                    ), 2)
                     .WithHorizontalAlignment(HorizontalAlignment.Center);
                 copyButton.Click += CopyTextToClipboard;
-
-                rootGrid.Children.Add(subtitleText);
-                rootGrid.Children.Add(exceptionText);
-                rootGrid.Children.Add(copyButton);
-
-                Grid.SetRow(subtitleText, 0);
-                Grid.SetRow(exceptionText, 1);
-                Grid.SetRow(copyButton, 2);
 
                 ContentDialogResult result = await SpawnDialog(
                     title, rootGrid, Content,
@@ -802,18 +786,17 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement Content)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
+            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            panel.MaxWidth = 500d;
 
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 4) });
+            panel.AddElementToStackPanel(
+                new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, 2d),
+                new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d));
 
-            CheckBox playOnLoad = new CheckBox()
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox()
             {
-                Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap },
-                Margin = new Thickness(0, 4, 0, -8),
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            panel.Children.Add(playOnLoad);
+                Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
+            }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, -8d));
 
             ContentDialogResult result = await SpawnDialog(
                 Lang._Dialogs.SteamShortcutCreationConfirmTitle,
@@ -829,17 +812,18 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 500 };
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 8, 0, 4) });
-            if (play)
-            {
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
-                panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
-            }
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 2) });
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 2, 0, 4) });
+            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            panel.MaxWidth = 500d;
+
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d),
+                                         new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 8d, 0d, 4d));
+            
+            if (play) panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
+                                                   new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d));
+
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
+                                         new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
+                                         new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 4d));
 
             return await SpawnDialog(
                 Lang._Dialogs.SteamShortcutCreationSuccessTitle,
@@ -852,8 +836,10 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure(UIElement Content)
         {
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, MaxWidth = 350 };
-            panel.Children.Add(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 4) });
+            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            panel.MaxWidth = 350d;
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 2d, 0d, 4d));
+
             return await SpawnDialog(
                 Lang._Dialogs.SteamShortcutCreationFailureTitle,
                 panel,
@@ -874,15 +860,12 @@ namespace CollapseLauncher.Dialogs
             };
             startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = startAfterInstall.IsOn;
 
-            StackPanel panel = new StackPanel()
-            {
-                Orientation = Orientation.Vertical,
-                Children =
-                {
-                    new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1, Margin = new Thickness(0, 0, 0, 4) },
-                    startAfterInstall,
-                }
-            };
+            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            panel.AddElementToStackPanel(
+                new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1 }.WithMargin(0d, 0d, 0d, 4d),
+                startAfterInstall
+                );
+
             return await SpawnDialog(
                 Lang._Dialogs.DownloadSettingsTitle,
                 panel,
@@ -908,7 +891,7 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = primaryText,
                 SecondaryButtonText = secondaryText,
                 DefaultButton = defaultButton,
-                Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
+                Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
                 XamlRoot = (InnerLauncherConfig.m_window is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
@@ -931,7 +914,7 @@ namespace CollapseLauncher.Dialogs
             }
 
             // Assign the dialog to the global task
-            CurrentSpawnedDialogTask = dialog is ContentDialogCollapse dialogCollapse ? (dialog is ContentDialogOverlay overlapCollapse ? overlapCollapse.ShowAsync() : dialogCollapse.ShowAsync()) : dialog.ShowAsync();
+            CurrentSpawnedDialogTask = dialog is ContentDialogCollapse dialogCollapse ? dialogCollapse.ShowAsync() : (dialog is ContentDialogOverlay overlapCollapse ? overlapCollapse.ShowAsync() : dialog.ShowAsync());
             // Spawn and await for the result
             ContentDialogResult dialogResult = await CurrentSpawnedDialogTask;
             return dialogResult; // Return the result

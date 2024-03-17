@@ -29,46 +29,40 @@ namespace CollapseLauncher
                 XamlRoot = parentUI!.XamlRoot
             };
 
-            Grid mainGrid = new Grid();
-            mainGrid.AddGridRows(3);
-            mainGrid.AddGridColumns(1, new GridLength(1.0, GridUnitType.Star));
-            mainGrid.AddGridColumns(1);
+            Grid mainGrid = UIElementExtensions.CreateGrid()
+                .WithRows(new(1.0, GridUnitType.Star), new(1.0, GridUnitType.Star), new(1.0, GridUnitType.Star))
+                .WithColumns(new(1.0, GridUnitType.Star), GridLength.Auto);
 
             // ReSharper disable once UnusedVariable
             TextBlock locateFolderSubtitle = mainGrid.AddElementToGridColumn(new TextBlock
             {
                 FontSize = 16d,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
                 TextWrapping = TextWrapping.Wrap,
                 Text = Locale.Lang._FileMigrationProcess!.LocateFolderSubtitle
-            }, 0, 2);
+            }, 0, 2).WithHorizontalAlignment(HorizontalAlignment.Stretch);
 
             TextBox choosePathTextBox = mainGrid.AddElementToGridRow(new TextBox
             {
-                Margin = new Thickness(0d, 12d, 0d, 0d),
                 IsSpellCheckEnabled = false,
                 IsRightTapEnabled = false,
-                Width = 500,
                 PlaceholderText = Locale.Lang._FileMigrationProcess.ChoosePathTextBoxPlaceholder,
                 Text = string.IsNullOrEmpty(outputPath) ? null : outputPath
-            }, 1);
+            }, 1).WithWidth(500d).WithMargin(0d, 12d, 0d, 0d);
 
             Button choosePathButton = mainGrid
                 .AddElementToGridRowColumn(UIElementExtensions
                     .CreateButtonWithIcon<Button>(Locale.Lang._FileMigrationProcess.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
-                    1, 1);
-            choosePathButton!.Margin = new Thickness(8d, 12d, 0d, 0d);
+                    1, 1).WithMargin(8d, 12d, 0d, 0d);
 
             TextBlock warningText = mainGrid.AddElementToGridRowColumn(new TextBlock
             {
                 FontStyle = Windows.UI.Text.FontStyle.Italic,
                 FontWeight = FontWeights.SemiBold,
                 Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 0, 0)),
-                Margin = new Thickness(0d, 12d, 0d, 0d),
                 Visibility = Visibility.Collapsed,
                 TextWrapping = TextWrapping.Wrap,
                 Text = ""
-            }, 2, 0, 0, 2);
+            }, 2, 0, 0, 2).WithMargin(0d, 12d, 0d, 0d);
 
             mainDialogWindow.Content = mainGrid;
 
@@ -177,10 +171,9 @@ namespace CollapseLauncher
                 new TextBlock
                 {
                     FontWeight = FontWeights.Bold,
-                    HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right
                 },
-                1, 1);
+                1, 1).WithHorizontalAlignment(HorizontalAlignment.Right);
             Run fileSizeIndicatorSubtitle = new Run { Text = Locale.Lang._Misc.PerFromToPlaceholder };
             fileSizeIndicator!.Inlines!.Add(fileSizeIndicatorSubtitle);
 

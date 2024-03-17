@@ -1103,7 +1103,7 @@ namespace CollapseLauncher
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
 
-            FontFamily Fnt = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+            FontFamily Fnt = FontCollections.FontAwesomeSolid;
 
             FontIcon IconLauncher = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconRepair = new FontIcon { FontFamily = Fnt, Glyph = "" };
@@ -1263,20 +1263,20 @@ namespace CollapseLauncher
                 NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
                 ToggleNotificationPanelBtn.Translation -= Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"];
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = FontCollections.FontAwesomeSolid;
             }
             else
             {
                 NotificationLostFocusBackground.Opacity = 0;
                 NotificationPanel.Translation -= Shadow48;
                 ToggleNotificationPanelBtn.Translation += Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesome"];
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = FontCollections.FontAwesomeRegular;
                 await Task.Delay(200);
                 NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void NotificationContainerBackground_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void NotificationContainerBackground_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             IsNotificationPanelShow = false;
             ToggleNotificationPanelBtn.IsChecked = false;

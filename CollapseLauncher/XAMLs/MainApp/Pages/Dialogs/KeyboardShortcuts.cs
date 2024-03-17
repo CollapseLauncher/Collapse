@@ -51,7 +51,7 @@ namespace CollapseLauncher.Dialogs
 
             // General shortcuts
             StackPanel genStack = CollapseUIExt.CreateStackPanel().WithVisibility(Visibility.Collapsed).WithWidth(_buttonWidth);
-            genStack.AddElementToStackPanel<FrameworkElement>(
+            genStack.AddElementToStackPanel(
                 new TextBlock
                 {
                     Text        = Lang._KbShortcuts.General_Title,
@@ -109,7 +109,7 @@ namespace CollapseLauncher.Dialogs
             changeTitleGrid.AddElementToGridColumn(modifierSwap, 1);
             changeStack.AddElementToStackPanel(changeTitleGrid);
 
-            changeStack.AddElementToStackPanel<FrameworkElement>(
+            changeStack.AddElementToStackPanel(
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
                 GenerateShortcutBlock("GameSelection",   KbShortcutList["GameSelection"],   Lang._KbShortcuts.Switch_ChangeGame,   string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc,   gameMod),   false),
                 GenerateShortcutBlock("RegionSelection", KbShortcutList["RegionSelection"], Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false),
@@ -119,7 +119,7 @@ namespace CollapseLauncher.Dialogs
 
             // Game folder
             StackPanel gameFolderStack = CollapseUIExt.CreateStackPanel().WithVisibility(Visibility.Collapsed).WithWidth(_buttonWidth);
-            gameFolderStack.AddElementToStackPanel<FrameworkElement>(
+            gameFolderStack.AddElementToStackPanel(
                 new TextBlock { Text = Lang._KbShortcuts.GameFolder_Title, FontSize = 16, FontWeight = FontWeights.Bold }.WithMargin(0d, 0d, 0d, 2d),
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
                 GenerateShortcutBlock("ScreenshotFolder", KbShortcutList["ScreenshotFolder"], Lang._KbShortcuts.GameFolder_ScreenshotFolder),
@@ -131,7 +131,7 @@ namespace CollapseLauncher.Dialogs
 
             // Game management
             StackPanel gameManageStack = CollapseUIExt.CreateStackPanel().WithVisibility(Visibility.Collapsed).WithWidth(_buttonWidth);
-            gameManageStack.AddElementToStackPanel<FrameworkElement>(
+            gameManageStack.AddElementToStackPanel(
                 new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold }.WithMargin(0d, 0d, 0d, 2d),
                 new TextBlock { Text = Lang._KbShortcuts.GameManagement_Subtitle, FontSize = 11.5, TextWrapping = TextWrapping.Wrap },
                 new MenuFlyoutSeparator().WithMargin(0d, 8d),
@@ -242,7 +242,7 @@ namespace CollapseLauncher.Dialogs
 
             if (shortcut.Modifier != VirtualKeyModifiers.None)
             {
-                shortcutButtons.AddElementToStackPanel<FrameworkElement>(
+                shortcutButtons.AddElementToStackPanel(
                     CreateKeyBoardButton(shortcut.GetFormattedModifier()),
                     new TextBlock()
                     {
@@ -267,7 +267,7 @@ namespace CollapseLauncher.Dialogs
                 Width = 42,
                 Margin = new Thickness(5, 0, 5, 0),
                 CornerRadius = new CornerRadius(5),
-                Background = Application.Current.Resources["SystemFillColorAttentionBrush"] as SolidColorBrush
+                Background = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorAttentionBrush")
             };
 
             ThemeShadow ts = new ThemeShadow();
@@ -400,7 +400,7 @@ namespace CollapseLauncher.Dialogs
                 .WithFlyout(helpFlyout);
 
             introPanel.AddElementToStackPanel(helpButton);
-            mainSwitchKeyContent.AddElementToStackPanel<FrameworkElement>(
+            mainSwitchKeyContent.AddElementToStackPanel(
                 introPanel,
                 new TextBlock
                 {
@@ -426,7 +426,7 @@ namespace CollapseLauncher.Dialogs
             keysPanel.AddElementToStackPanel(new FontIcon()
                                              {
                                                  Glyph      = "arrow-right", FontSize = 15,
-                                                 FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
+                                                 FontFamily = CollapseUIExt.GetApplicationResource<FontFamily>("FontAwesomeSolid"),
                                                  Margin     = new Thickness(10, 0, 10, 0)
                                              });
             
@@ -452,7 +452,7 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = null,
                 IsPrimaryButtonEnabled = false,
                 DefaultButton = ContentDialogButton.Primary,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                Background = CollapseUIExt.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                 XamlRoot = content.XamlRoot
             };
 

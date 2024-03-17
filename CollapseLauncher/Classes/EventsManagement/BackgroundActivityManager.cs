@@ -116,23 +116,23 @@ namespace CollapseLauncher
 
             TextBlock progressLeftTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
             {
-                Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
+                Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
                 Text = Lang!._BackgroundNotification!.LoadingTitle,
             }, 0, 0);
             TextBlock progressLeftSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
             {
-                Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
+                Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
                 Text = Lang._BackgroundNotification.Placeholder,
             }, 1, 0);
 
             TextBlock progressRightTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
             {
-                Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
+                Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
                 Text = Lang._BackgroundNotification.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 0, 1);
             TextBlock progressRightSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
             {
-                Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
+                Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
                 Text = Lang._BackgroundNotification.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 1, 1);
 

@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using CollapseLauncher.Extension;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -17,19 +18,20 @@ namespace CollapseLauncher.CustomControls
         public ContentDialogOverlay(ContentDialogTheme theme = ContentDialogTheme.Warning)
         {
             Theme = theme;
-            object? brushObj = Theme switch
+            object brushObj = (Theme switch
             {
-                ContentDialogTheme.Success => Application.Current.Resources["SystemFillColorSuccessBrush"],
-                ContentDialogTheme.Warning => Application.Current.Resources["SystemFillColorCautionBrush"],
-                ContentDialogTheme.Error => Application.Current.Resources["SystemFillColorCriticalBrush"],
-                _ => Application.Current.Resources["SystemFillColorAttentionBrush"]
-            };
+                ContentDialogTheme.Success => UIElementExtensions.GetApplicationResource<object>("SystemFillColorSuccessBrush"),
+                ContentDialogTheme.Warning => UIElementExtensions.GetApplicationResource<object>("SystemFillColorCautionBrush"),
+                ContentDialogTheme.Error => UIElementExtensions.GetApplicationResource<object>("SystemFillColorCriticalBrush"),
+                _ => UIElementExtensions.GetApplicationResource<object>("SystemFillColorAttentionBrush")
+            });
+
             if (brushObj is not null and SolidColorBrush brush)
             {
                 NColor titleColor = brush.Color;
                 titleColor.A = 255;
 
-                if (Application.Current.Resources["DialogTitleBrush"] is not null and SolidColorBrush brushTitle)
+                if (UIElementExtensions.GetApplicationResource<object>("DialogTitleBrush") is not null and SolidColorBrush brushTitle)
                     brushTitle.Color = titleColor;
             }
 
@@ -44,18 +46,14 @@ namespace CollapseLauncher.CustomControls
 
         public new IAsyncOperation<ContentDialogResult> ShowAsync()
         {
-            if (Title != null && Title is string && Theme != ContentDialogTheme.Informational)
+            if (Title != null && Title is string titleString && Theme != ContentDialogTheme.Informational)
             {
-                StackPanel titleStack = new StackPanel { Orientation = Orientation.Horizontal };
-                titleStack.Children.Add(new FontIcon
-                {
-                    Glyph = ThemeTitleGlyph,
-                    Foreground = (SolidColorBrush)Application.Current.Resources["DefaultFGColorAccentBrush"],
-                    Margin = new Thickness(0, 0, 10, 0),
-                    FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                    FontSize = 22
-                });
-                titleStack.Children.Add(new TextBlock { Text = (string)Title, Margin = new Thickness(0, -1, 0, 0) });
+                Grid titleStack = UIElementExtensions.CreateIconTextGrid(
+                        text: titleString,
+                        iconGlyph: ThemeTitleGlyph,
+                        iconSize: 20,
+                        iconFontFamily: "FontAwesomeSolid"
+                    ).WithPadding(-8d, 0d, 0d, 0d);
                 Title = titleStack;
             }
             return base.ShowAsync();

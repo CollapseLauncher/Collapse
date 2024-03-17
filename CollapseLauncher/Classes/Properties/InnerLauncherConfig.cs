@@ -116,18 +116,16 @@ namespace CollapseLauncher
 
                 if (config.IsExperimental)
                 {
-                    Grid expTag =  new Grid
-                    {
-                        Padding = new Thickness(4, 0, 4, 0),
-                        Margin = new Thickness(4, 3, 0, 0),
-                        HorizontalAlignment = HorizontalAlignment.Left,
-                        VerticalAlignment = VerticalAlignment.Stretch,
-                        CornerRadius = new CornerRadius(4),
-                        Background = new SolidColorBrush(!IsAppThemeLight ?
+                    Grid expTag = UIElementExtensions.CreateGrid()
+                        .WithPadding(4d, 0d)
+                        .WithMargin(4d, 3d, 0d, 0d)
+                        .WithHorizontalAlignment(HorizontalAlignment.Left)
+                        .WithVerticalAlignment(VerticalAlignment.Stretch)
+                        .WithBackground(new SolidColorBrush(!IsAppThemeLight ?
                             Color.FromArgb(255, 255, 255, 255) :
-                            Color.FromArgb(255, 40, 40, 40))
-                    };
-                    expTag.Children.Add(new TextBlock
+                            Color.FromArgb(255, 40, 40, 40)));
+
+                    expTag.AddElementToGridRow(new TextBlock
                     {
                         Text = GetGameChannelLabel(config.GameChannel),
                         HorizontalAlignment = HorizontalAlignment.Center,
@@ -138,8 +136,8 @@ namespace CollapseLauncher
                             Color.FromArgb(255, 40, 40, 40) :
                             Color.FromArgb(255, 255, 255, 255)),
                         FontWeight = FontWeights.Bold
-                    });
-                    panel.Children.Add(expTag);
+                    }, 0);
+                    panel.AddElementToStackPanel(expTag);
                 }
 
                 list.Add(panel);

@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Animation;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using CommunityToolkit.WinUI.Animations;
@@ -21,6 +22,8 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using WColor = Windows.UI.Color;
+using BrushBase = Microsoft.UI.Xaml.Media.Brush;
 
 namespace CollapseLauncher
 {
@@ -66,12 +69,12 @@ namespace CollapseLauncher
         {
             bool IsLight = IsAppThemeLight;
 
-            Windows.UI.Color[] _colors = await TryGetCachedPalette(bitmapInput, IsLight, bitmapPath);
+            WColor[] _colors = await TryGetCachedPalette(bitmapInput, IsLight, bitmapPath);
 
             SetColorPalette(page, _colors);
         }
 
-        private static async ValueTask<Windows.UI.Color[]> TryGetCachedPalette(Bitmap bitmapInput, bool isLight, string bitmapPath)
+        private static async ValueTask<WColor[]> TryGetCachedPalette(Bitmap bitmapInput, bool isLight, string bitmapPath)
         {
             string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
             string cachedFileHash = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
@@ -79,7 +82,7 @@ namespace CollapseLauncher
             if (File.Exists(cachedPalettePath))
             {
                 byte[] data = await File.ReadAllBytesAsync(cachedPalettePath);
-                if (!ConverterTool.TryDeserializeStruct(data, 4, out Windows.UI.Color[] output))
+                if (!ConverterTool.TryDeserializeStruct(data, 4, out WColor[] output))
                 {
                     return await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
                 }
@@ -90,54 +93,44 @@ namespace CollapseLauncher
             return await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
         }
 
-        private static async ValueTask<Windows.UI.Color[]> TryGenerateNewCachedPalette(Bitmap bitmapInput, bool IsLight, string cachedPalettePath)
+        private static async ValueTask<WColor[]> TryGenerateNewCachedPalette(Bitmap bitmapInput, bool IsLight, string cachedPalettePath)
         {
             byte[] buffer = new byte[1 << 10];
 
             string cachedPaletteDirPath = Path.GetDirectoryName(cachedPalettePath);
             if (!Directory.Exists(cachedPaletteDirPath)) Directory.CreateDirectory(cachedPaletteDirPath);
 
-            Windows.UI.Color[] _colors = new Windows.UI.Color[] { await GetPaletteList(bitmapInput, 1, IsLight, 1) };
+            WColor[] _colors = new WColor[] { await GetPaletteList(bitmapInput, 1, IsLight, 1) };
             _colors = EnsureLengthCopyLast(_colors, 4);
 
             if (!ConverterTool.TrySerializeStruct(_colors, buffer, out int read))
             {
                 byte DefVal = (byte)(IsLight ? 80 : 255);
-                Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
-                return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
+                WColor defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
+                return new WColor[] { defColor, defColor, defColor, defColor };
             }
 
             await File.WriteAllBytesAsync(cachedPalettePath, buffer[..read]);
             return _colors;
         }
 
-        public static void SetColorPalette(Page page, Windows.UI.Color[] palette = null)
+        public static void SetColorPalette(Page page, WColor[] palette = null)
         {
             if (palette == null || palette.Length < 2)
-                palette = EnsureLengthCopyLast(new Windows.UI.Color[] { (Windows.UI.Color)Application.Current.Resources["TemplateAccentColor"] }, 2);
+                palette = EnsureLengthCopyLast(new WColor[] { UIElementExtensions.GetApplicationResource<WColor>("TemplateAccentColor") }, 2);
 
-            if (IsAppThemeLight)
-            {
-                Application.Current.Resources["SystemAccentColor"] = palette[0];
-                Application.Current.Resources["SystemAccentColorDark1"] = palette[0];
-                Application.Current.Resources["SystemAccentColorDark2"] = palette[0];
-                Application.Current.Resources["SystemAccentColorDark3"] = palette[0];
-                Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
-            }
-            else
-            {
-                Application.Current.Resources["SystemAccentColor"] = palette[0];
-                Application.Current.Resources["SystemAccentColorLight1"] = palette[0];
-                Application.Current.Resources["SystemAccentColorLight2"] = palette[0];
-                Application.Current.Resources["SystemAccentColorLight3"] = palette[0];
-                Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
-            }
+            string dictColorNameTheme = IsAppThemeLight ? "Dark" : "Light";
+            UIElementExtensions.SetApplicationResource("SystemAccentColor", palette[0]);
+            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}1", palette[0]);
+            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}2", palette[0]);
+            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}3", palette[0]);
+            UIElementExtensions.SetApplicationResource("AccentColor", new SolidColorBrush(palette[0]));
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
         private static List<QuantizedColor> _generatedColors = new List<QuantizedColor>();
-        private static async Task<Windows.UI.Color> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
+        private static async Task<WColor> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
 
@@ -154,8 +147,8 @@ namespace CollapseLauncher
                         try
                         {
                             QuantizedColor averageColor = ColorThief.GetColor(bitmapinput, 1, true);
-                            Windows.UI.Color wColor = DrawingColorToColor(averageColor);
-                            Windows.UI.Color adjustedColor = wColor.SetSaturation(1.5);
+                            WColor wColor = DrawingColorToColor(averageColor);
+                            WColor adjustedColor = wColor.SetSaturation(1.5);
                             adjustedColor = IsLight ? adjustedColor.GetDarkColor() : adjustedColor.GetLightColor();
 
                             return adjustedColor;
@@ -174,7 +167,7 @@ namespace CollapseLauncher
                 LogWriteLine($"{ex}", LogType.Warning, true);
             }
 
-            Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
+            WColor defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
             return defColor;
         }
 
@@ -195,7 +188,7 @@ namespace CollapseLauncher
             return newArray;
         }
 
-        private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
+        private static WColor DrawingColorToColor(QuantizedColor i) => new WColor { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
         private async Task ApplyBackground(bool _isFirstStartup)
         {

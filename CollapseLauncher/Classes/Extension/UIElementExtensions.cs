@@ -20,13 +20,24 @@ namespace CollapseLauncher.Extension
             string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)
             where TButtonBase : ButtonBase, new()
         {
+            Grid contentPanel = CreateIconTextGrid(text, iconGlyph, iconFontFamily, iconSize, textSize, textWeight);
+            TButtonBase buttonReturn = new TButtonBase();
+
+            buttonReturn.CornerRadius = !cornerRadius.HasValue ? AttachRoundedKindCornerRadius(buttonReturn) : cornerRadius.Value;
+            buttonReturn.Content = contentPanel;
+            buttonReturn.Style = GetApplicationResource<Style>(buttonStyle);
+            return buttonReturn;
+        }
+
+        internal static Grid CreateIconTextGrid(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",
+            double iconSize = 16d, double? textSize = null, FontWeight? textWeight = null)
+        {
             bool isHasIcon = !string.IsNullOrEmpty(iconGlyph);
             bool isHasText = !string.IsNullOrEmpty(text);
 
             if (!isHasIcon && !isHasText)
-                throw new NullReferenceException($"[UIElementExtensions::CreateButtonWithIcon()] At least \"text\" or \"iconGlyph\" must be set!");
+                throw new NullReferenceException($"[UIElementExtensions::CreateIconTextGrid()] At least \"text\" or \"iconGlyph\" must be set!");
 
-            TButtonBase buttonReturn = new TButtonBase();
             Grid contentPanel = CreateGrid()
                 .WithColumns(GridLength.Auto, new(1, GridUnitType.Star))
                 .WithColumnSpacing(8)
@@ -38,8 +49,16 @@ namespace CollapseLauncher.Extension
             {
                 Glyph = iconGlyph,
                 FontSize = iconSize,
-                FontFamily = GetApplicationResource<FontFamily>(iconFontFamily)
-            }, 0, !isHasText ? 2 : 0).WithMargin(isHasText ? 0d : -5d, isHasText ? 1d : 0d, isHasText ? 0d : -5d, 0d);
+                FontFamily = iconFontFamily switch
+                {
+                    "FontAwesome" => FontCollections.FontAwesomeRegular,
+                    "FontAwesomeSolid" => FontCollections.FontAwesomeSolid,
+                    "FontAwesomeBrand" => FontCollections.FontAwesomeBrand,
+                    _ => GetApplicationResource<FontFamily>(iconFontFamily)
+                }
+            }, 0, !isHasText ? 2 : 0)
+                    .WithMargin(isHasText ? 0d : -5d, isHasText ? 1d : 0d, isHasText ? 0d : -5d, 0d)
+                    .WithVerticalAlignment(VerticalAlignment.Center);
 
             if (isHasText)
             {
@@ -47,26 +66,22 @@ namespace CollapseLauncher.Extension
                 {
                     Text = text,
                     FontWeight = textWeight.Value
-                }, isHasIcon ? 1 : 0, isHasIcon ? 0 : 2);
+                }, isHasIcon ? 1 : 0, isHasIcon ? 0 : 2).WithVerticalAlignment(VerticalAlignment.Center);
 
                 if (textSize != null) textBlock.FontSize = textSize.Value;
             }
 
-            buttonReturn.CornerRadius = !cornerRadius.HasValue ? AttachRoundedKindCornerRadius(buttonReturn) : cornerRadius.Value;
-            buttonReturn.Content = contentPanel;
-            buttonReturn.Style = GetApplicationResource<Style>(buttonStyle);
-            return buttonReturn;
+            return contentPanel;
         }
 
         internal static Grid CreateGrid() => new Grid();
         internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) => new StackPanel() { Orientation = orientation };
 
-        internal static void AddElementToStackPanel<TElement>(this Panel stackPanel, params TElement[] elements)
-            where TElement : FrameworkElement => AddElementToStackPanel(stackPanel, elements.AsEnumerable());
-        internal static void AddElementToStackPanel<TElement>(this Panel stackPanel, IEnumerable<TElement> elements)
-            where TElement : FrameworkElement
+        internal static void AddElementToStackPanel(this Panel stackPanel, params FrameworkElement[] elements)
+            => AddElementToStackPanel(stackPanel, elements.AsEnumerable());
+        internal static void AddElementToStackPanel(this Panel stackPanel, IEnumerable<FrameworkElement> elements)
         {
-            foreach (TElement element in elements)
+            foreach (FrameworkElement element in elements)
                 stackPanel.Children.Add(element);
         }
         internal static ref TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
@@ -154,7 +169,20 @@ namespace CollapseLauncher.Extension
             if (!Application.Current.Resources.ContainsKey(resourceKey))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
-            return (TReturnType)Application.Current.Resources[resourceKey];
+            object resourceObj = Application.Current.Resources[resourceKey];
+            if (resourceObj is not TReturnType)
+                throw new InvalidCastException($"Object type for resource \"{resourceKey}\" is not valid! Trying to get type: {typeof(TReturnType).Name}, but the object type is: {resourceObj.GetType().Name}");
+
+            TReturnType resource = (TReturnType)resourceObj;
+            return resource;
+        }
+
+        internal static void SetApplicationResource(string resourceKey, object value)
+        {
+            if (!Application.Current.Resources.ContainsKey(resourceKey))
+                throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
+
+            Application.Current.Resources[resourceKey] = value;
         }
 
         internal static CornerRadius GetElementCornerRadius(FrameworkElement element, CornerRadiusKind kind = CornerRadiusKind.Normal)
@@ -302,6 +330,19 @@ namespace CollapseLauncher.Extension
             return ref Unsafe.AsRef(ref element);
         }
 
+        internal static ref TElement WithBackground<TElement>(this TElement element, Brush brush)
+            where TElement : FrameworkElement
+        {
+            SetBackground(element, brush);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithForeground<TElement>(this TElement element, Brush brush)
+            where TElement : FrameworkElement
+        {
+            SetForeground(element, brush);
+            return ref Unsafe.AsRef(ref element);
+        }
+
         internal static ref TElement WithPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
@@ -443,6 +484,44 @@ namespace CollapseLauncher.Extension
                     break;
                 case TextBlock textBlock:
                     textBlock.Padding = thickness;
+                    break;
+            }
+        }
+
+        internal static void SetBackground<TElement>(this TElement element, Brush brush)
+            where TElement : FrameworkElement
+        {
+            if (element == null) return;
+
+            switch (element)
+            {
+                case Control control:
+                    control.Background = brush;
+                    break;
+                case Border border:
+                    border.Background = brush;
+                    break;
+                case Grid grid:
+                    grid.Background = brush;
+                    break;
+                case StackPanel stackPanel:
+                    stackPanel.Background = brush;
+                    break;
+            }
+        }
+
+        internal static void SetForeground<TElement>(this TElement element, Brush brush)
+            where TElement : FrameworkElement
+        {
+            if (element == null) return;
+
+            switch (element)
+            {
+                case Control control:
+                    control.Foreground = brush;
+                    break;
+                case TextBlock textBlock:
+                    textBlock.Foreground = brush;
                     break;
             }
         }

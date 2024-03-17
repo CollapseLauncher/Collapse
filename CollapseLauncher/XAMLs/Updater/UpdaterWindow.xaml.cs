@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Http;
+﻿using CollapseLauncher.Extension;
+using Hi3Helper.Http;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -140,9 +141,9 @@ namespace CollapseLauncher
             m_presenter.IsResizable = false;
             m_presenter.IsMaximizable = false;
 
-            Application.Current.Resources["WindowCaptionForeground"] = IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-            Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-            Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
+            UIElementExtensions.SetApplicationResource("WindowCaptionForeground", IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 });
+            UIElementExtensions.SetApplicationResource("WindowCaptionBackground", new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 }));
+            UIElementExtensions.SetApplicationResource("WindowCaptionBackgroundDisabled", new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 }));
         }
 
         public void SetWindowSize(IntPtr hwnd, int width, int height, int x = 0, int y = 0)

@@ -74,8 +74,8 @@ namespace CollapseLauncher.Pages.OOBE
             string[] lowerTexts = Lang._OOBEStartUpMenu.WelcomeTitleString["Lower"];
 
             // Initial StackPanel for both upper and lower
-            StackPanel upperStackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            StackPanel lowerStackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            StackPanel upperStackPanel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
+            StackPanel lowerStackPanel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
 
             // Clear the content and add the texts
             panel.Children.Clear();
@@ -285,7 +285,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         private void ChangeFontIconSettingsCard(UIElementCollection uiCollection)
         {
-            FontFamily iconFont = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+            FontFamily iconFont = FontCollections.FontAwesomeSolid;
             foreach (object containerObject in uiCollection)
             {
                 if (containerObject.GetType() == typeof(SettingsExpander))
