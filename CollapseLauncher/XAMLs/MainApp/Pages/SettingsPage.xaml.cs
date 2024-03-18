@@ -302,6 +302,7 @@ namespace CollapseLauncher.Pages
 
         private void ClickTextLinkFromTag(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
+            if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
             new Process
             {
                 StartInfo = new ProcessStartInfo

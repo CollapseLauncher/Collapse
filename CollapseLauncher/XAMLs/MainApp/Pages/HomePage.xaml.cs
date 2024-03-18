@@ -2010,7 +2010,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Set Hand Cursor
-        public static void ChangeCursor(UIElement element, InputCursor cursor)
+        private static void ChangeCursor(UIElement element, InputCursor cursor)
         {
             typeof(UIElement).InvokeMember("ProtectedCursor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, element, new object[] { cursor });
         }
