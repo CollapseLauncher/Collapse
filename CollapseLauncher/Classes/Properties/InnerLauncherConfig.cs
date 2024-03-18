@@ -119,6 +119,7 @@ namespace CollapseLauncher
                     Grid expTag = UIElementExtensions.CreateGrid()
                         .WithPadding(4d, 0d)
                         .WithMargin(4d, 3d, 0d, 0d)
+                        .WithCornerRadius(4d)
                         .WithHorizontalAlignment(HorizontalAlignment.Left)
                         .WithVerticalAlignment(VerticalAlignment.Stretch)
                         .WithBackground(new SolidColorBrush(!IsAppThemeLight ?
