@@ -346,7 +346,8 @@ namespace CollapseLauncher
                     MainWindow.SetDragArea(DragAreaMode_Full);
                     break;
                 case DragAreaTemplate.Default:
-                    MainWindow.SetDragArea(DragAreaMode_Normal);
+                    SetDefaultDragAreaAsync();
+                    //MainWindow.SetDragArea(DragAreaMode_Normal);
                     break;
             }
         }
