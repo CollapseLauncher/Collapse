@@ -84,7 +84,7 @@ namespace CollapseLauncher
                 };
                 applyUpdate.Start();
 
-                App.Current.Exit();
+                Application.Current.Exit();
             }
             catch (Exception ex)
             {

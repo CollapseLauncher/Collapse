@@ -78,41 +78,37 @@ namespace CollapseLauncher
         /// Using H.NotifyIcon's WindowExtension to toggle visibility of main window (m_window)
         /// </summary>
         [RelayCommand]
-        public void ToggleMainVisibilityButton() => ToggleMainVisibility();
+        private void ToggleMainVisibilityButton() => ToggleMainVisibility();
 
         /// <summary>
         /// Toggle console visibility using LoggerConsole's DisposeConsole//AllocateConsole
         /// </summary>
         [RelayCommand]
-        public void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
+        private void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
 
         /// <summary>
         /// Toggle both main and console visibility while avoiding flip flop condition
         /// </summary>
         [RelayCommand]
-        public void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
+        private void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
 
         /// <summary>
         /// Using user32's SetForegroundWindow to pull both windows to foreground
         /// </summary>
         [RelayCommand]
-        public void BringToForegroundInvoke() => BringToForeground();
+        private void BringToForegroundInvoke() => BringToForeground();
 
         /// <summary>
         /// Update tray context menu
         /// </summary>
         [RelayCommand]
-        public void UpdateContextMenuInvoke() => UpdateContextMenu();
+        private void UpdateContextMenuInvoke() => UpdateContextMenu();
 
         /// <summary>
         /// Close app
         /// </summary>
         [RelayCommand]
-        public void CloseApp()
-        {
-            Dispose();
-            Application.Current.Exit();
-        }
+        private void CloseApp() => (m_window as MainWindow)?.CloseApp();
         #endregion
 
         #region Taskbar Public Methods
@@ -173,7 +169,7 @@ namespace CollapseLauncher
         /// </summary>
         public void ToggleAllVisibility()
         {
-            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+            IntPtr consoleWindowHandle = GetConsoleWindow();
             IntPtr mainWindowHandle    = m_windowHandle;
             bool   isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 

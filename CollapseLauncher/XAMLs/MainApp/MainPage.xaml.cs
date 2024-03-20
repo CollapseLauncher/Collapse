@@ -110,7 +110,7 @@ namespace CollapseLauncher
 
                 if (!await CheckForAdminAccess(this))
                 {
-                    Application.Current.Exit();
+                    (m_window as MainWindow)?.CloseApp();
                     return;
                 }
                 #if !DEBUG
@@ -374,7 +374,7 @@ namespace CollapseLauncher
                     case ContentDialogResult.Primary:
                         try
                         {
-                            Process proc = new Process()
+                            Process proc = new()
                             {
                                 StartInfo = new ProcessStartInfo
                                 {
@@ -404,7 +404,7 @@ namespace CollapseLauncher
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
             {
                 WindowsPrincipal principal = new WindowsPrincipal(identity);
-                return principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator);
+                return !principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
         }
         #endregion

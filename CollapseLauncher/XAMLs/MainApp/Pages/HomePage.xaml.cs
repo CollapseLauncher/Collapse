@@ -1313,8 +1313,7 @@ namespace CollapseLauncher.Pages
                         (m_window as MainWindow)?.Minimize();
                         break;
                     case "ToTray":
-                        H.NotifyIcon.WindowExtensions.Hide(m_window!);
-                        RefreshRate = RefreshRateSlow;
+                        (m_window as MainWindow)?.ToggleToTray_MainWindow();
                         break;
                     case "Nothing":
                         break;

@@ -129,7 +129,7 @@ namespace CollapseLauncher.Pages
                         if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                         Process.Start(collapsePath);
-                        Application.Current.Exit();
+                        (m_window as MainWindow)?.CloseApp();
                     }
                     catch (Exception ex)
                     {
@@ -237,7 +237,7 @@ namespace CollapseLauncher.Pages
                         Verb = "runas"
                     }
                 }.Start();
-                Application.Current.Exit();
+                (m_window as MainWindow)?.CloseApp();
             }
             catch
             {

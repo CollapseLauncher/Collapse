@@ -401,16 +401,33 @@ namespace CollapseLauncher
             this.Minimize();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => CloseApp();
+        
+        /// <summary>
+        /// Close app and do necessary events before closing
+        /// </summary>
+        public void CloseApp()
         {
-            _TrayIcon.Dispose();
-            this.Close();
+            _TrayIcon?.Dispose();
+            Close();
         }
-
+        
         private void MainWindow_OnSizeChanged(object sender, WindowSizeChangedEventArgs args)
         {
             // Recalculate non-client area size
             EnableNonClientArea();
         }
+
+        #region Tray Icon Invoker
+        /// <summary>
+        /// <inheritdoc cref="TrayIcon.ToggleMainVisibility"/>
+        /// </summary>
+        public void ToggleToTray_MainWindow() => _TrayIcon.ToggleMainVisibility();
+
+        /// <summary>
+        /// <inheritdoc cref="TrayIcon.ToggleAllVisibility"/>
+        /// </summary>
+        public void ToggleToTray_AllWindow() => _TrayIcon.ToggleAllVisibility();
+        #endregion
     }
 }
