@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<!-- General Properties -->
 		<OutputType>WinExe</OutputType>
-		<AssemblyName>Collapse Launcher</AssemblyName>
+		<AssemblyName>CollapseLauncher</AssemblyName>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
