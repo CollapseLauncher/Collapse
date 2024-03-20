@@ -1,8 +1,5 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Http;
-#if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
-#endif
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -27,6 +24,8 @@ namespace CollapseLauncher
 {
     public static class MainEntryPoint
     {
+        public static readonly int InstanceCount = InvokeProp.GetInstanceCount();
+        
         [DllImport("Microsoft.ui.xaml.dll")]
         private static extern void XamlCheckProcessRequirements();
 
@@ -72,6 +71,10 @@ namespace CollapseLauncher
                     Environment.UserName,
                     IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
+                if (InstanceCount > 1)
+                    LogWriteLine($"Multiple instance is found! This is instance #{InstanceCount}",
+                        LogType.Scheme, true);
+                
                 FileVersionInfo winappSDKver = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
                 LogWriteLine(string.Format("Runtime: {0} - WindowsAppSDK {1}", RuntimeInformation.FrameworkDescription, winappSDKver.ProductVersion), LogType.Scheme, true);
 
@@ -261,13 +264,6 @@ namespace CollapseLauncher
             {
                 return $"Windows {w_windowsVersionNumbers[0]} (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
             }
-        }
-        
-        public static int GetInstanceCount()
-        {
-            var currentProcess = Process.GetCurrentProcess();
-            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
-            return processes.Length;
         }
     }
 }

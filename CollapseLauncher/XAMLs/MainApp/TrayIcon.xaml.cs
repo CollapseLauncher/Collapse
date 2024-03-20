@@ -37,15 +37,20 @@ namespace CollapseLauncher
             this.InitializeComponent();
 
             string instanceIndicator = "";
-            var instanceCount = MainEntryPoint.GetInstanceCount();
+            var instanceCount = MainEntryPoint.InstanceCount;
 
             if (instanceCount > 1)
             {
-                instanceIndicator = $"- #{instanceCount}";
+                instanceIndicator = $" - #{instanceCount}";
+                CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, new Guid());
+                CollapseTaskbar.SetValue(TaskbarIcon.CustomNameProperty, $"Collapse Launcher{instanceIndicator}");
             }
             
+            // ReSharper disable once UnusedVariable
             var isPreview = LauncherConfig.IsPreview;
-            if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
+            // Bug in W10: Weird border issue
+            // Verdict: disable SecondWindow ContextMenuMode, use classic.
+            // if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
 #if DEBUG
             CollapseTaskbar.ToolTipText =
                 $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}{instanceIndicator}\r\n" +
@@ -147,7 +152,7 @@ namespace CollapseLauncher
 
             if (isVisible && !forceShow)
             {
-                WindowExtensions.Hide(m_window);
+                m_window.Hide();
                 MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
@@ -155,7 +160,7 @@ namespace CollapseLauncher
             }
             else
             {
-                WindowExtensions.Show(m_window);
+                m_window.Show();
                 SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
                 // Revert refresh rate to its default

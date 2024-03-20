@@ -309,5 +309,12 @@ namespace Hi3Helper
         }
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
+        
+        public static int GetInstanceCount()
+        {
+            var currentProcess = Process.GetCurrentProcess();
+            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
+            return processes.Length;
+        }
     }
 }
