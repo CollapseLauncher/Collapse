@@ -2,11 +2,18 @@
 	<PropertyGroup>
 		<!-- General Properties -->
 		<OutputType>WinExe</OutputType>
-		<AssemblyName>CollapseLauncher</AssemblyName>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
+		<!-- Assembly Info Properties -->
+		<AssemblyName>CollapseLauncher</AssemblyName>
+		<ProductName>Collapse</ProductName>
+		<Product>Collapse</Product>
+		<Description>Collapse Launcher</Description>
+		<Company>Collapse Launcher Team</Company>
+		<Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+		<Copyright>Copyright 2020-2024 $(Company)</Copyright>
 		<!-- Versioning -->
 		<Version>1.73.7</Version>
 		<LangVersion>preview</LangVersion>
