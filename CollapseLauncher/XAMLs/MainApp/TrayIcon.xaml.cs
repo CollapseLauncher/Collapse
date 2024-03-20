@@ -4,10 +4,10 @@ using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -15,20 +15,6 @@ namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
     {
-        #region External Methods
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool IsWindowVisible(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        #endregion
-
         #region Locales
         private readonly string _popupHelp1 = Lang._Misc.Taskbar_PopupHelp1;
         private readonly string _popupHelp2 = Lang._Misc.Taskbar_PopupHelp2;
