@@ -253,7 +253,7 @@ namespace CollapseLauncher
                                     if (GetAppConfigValue("MinimizeToTray").ToBool())
                                     {
                                         // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
-                                        TrayIcon.ToggleAllVisibility();
+                                        _TrayIcon.ToggleAllVisibility();
                                         return 0;
                                     }
 
@@ -403,6 +403,7 @@ namespace CollapseLauncher
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
+            _TrayIcon.Dispose();
             this.Close();
         }
 

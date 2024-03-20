@@ -5,6 +5,7 @@ using Hi3Helper.Shared.Region;
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using Microsoft.UI.Xaml;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
@@ -38,22 +39,32 @@ namespace CollapseLauncher
         private readonly string _hideConsole = Lang._Misc.Taskbar_HideConsole;
         private readonly string _exitApp     = Lang._Misc.Taskbar_ExitApp;
 
+        // ReSharper disable UnusedMember.Local
         private readonly string _preview = Lang._Misc.BuildChannelPreview;
         private readonly string _stable = Lang._Misc.BuildChannelStable;
+        // ReSharper restore UnusedMember.Local
         #endregion
 
         #region Main
         public TrayIcon()
         {
             this.InitializeComponent();
+
+            string instanceIndicator = "";
+            var instanceCount = MainEntryPoint.GetInstanceCount();
+
+            if (instanceCount > 1)
+            {
+                instanceIndicator = $"- #{instanceCount}";
+            }
 #if DEBUG
             CollapseTaskbar.ToolTipText =
-                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}\r\n" +
+                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(LauncherConfig.IsPreview ? _preview : _stable)}\r\n" +
+                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(LauncherConfig.IsPreview ? _preview : _stable)}{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";
 #endif
@@ -64,6 +75,12 @@ namespace CollapseLauncher
             ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
 
             CollapseTaskbar.Icon = Icon.FromHandle(LauncherConfig.AppIconSmall);
+            CollapseTaskbar.Visibility = Visibility.Visible;
+        }
+
+        public void Dispose()
+        {
+            CollapseTaskbar.Dispose();
         }
         #endregion
 
@@ -104,7 +121,8 @@ namespace CollapseLauncher
         [RelayCommand]
         public void CloseApp()
         {
-            App.Current.Exit();
+            Dispose();
+            Application.Current.Exit();
         }
         #endregion
 
