@@ -141,6 +141,10 @@
 		</Content>
 	</ItemGroup>
 
+	<Target Name="PostBuild" AfterTargets="Build">
+		<Exec Command="rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" />
+	</Target>
+	
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
 			<!-- Trimmable submodule assemblies -->
