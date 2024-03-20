@@ -115,8 +115,8 @@ namespace Hi3Helper.Data
 
                 foreach (string designData in designDataArr)
                 {
-                    PkgVersionProperties designDataSer = JsonSerializer.Deserialize<PkgVersionProperties>(designData);
-
+                    var designDataSer = (PkgVersionProperties)JsonSerializer.Deserialize(designData,
+                        typeof(PkgVersionProperties), CoreLibraryJSONContext.Default); 
                     // Only serialize data_versions
                     if (designDataSer != null && designDataSer.remoteName == "data_versions")
                         ValProp!.ClientDesignData = designDataSer;

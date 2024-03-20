@@ -119,6 +119,10 @@ namespace CollapseLauncher
 #if DEBUG
             title += " [Debug]";
 #endif
+            var instanceCount = MainEntryPoint.InstanceCount;
+            if (instanceCount > 1)
+                title += $" - #{instanceCount}";
+            
             m_appWindow.Title = title;
 
             DisplayArea displayArea = DisplayArea.GetFromWindowId(m_windowID, DisplayAreaFallback.Primary);

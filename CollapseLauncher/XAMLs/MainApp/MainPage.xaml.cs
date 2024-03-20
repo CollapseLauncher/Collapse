@@ -133,7 +133,7 @@ namespace CollapseLauncher
                     m_actualMainFrameSize = new Size(window.Bounds.Width, window.Bounds.Height);
 
                 SubscribeEvents();
-                SetDefaultDragAreaAsync();
+                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
                 await InitializeStartup();
             }
@@ -295,27 +295,6 @@ namespace CollapseLauncher
             };
         }
 
-        private async void SetDefaultDragAreaAsync()
-        {
-            await Task.Delay(250);
-            ChangeTitleDragArea.Change(DragAreaTemplate.Full);
-
-            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
-            RectInt32[] inputArea = new RectInt32[]
-            {
-                GetElementPos(GridBG_RegionGrid),
-                GetElementPos(GridBG_IconGrid),
-                GetElementPos(GridBG_NotifBtn),
-                GetElementPos((m_window as MainWindow)?.MinimizeButton),
-                GetElementPos((m_window as MainWindow)?.CloseButton)
-            };
-            nonClientInputSrc.ClearAllRegionRects();
-            MainWindow.EnableNonClientArea();
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, inputArea);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
-        }
-
         private RectInt32 GetElementPos(FrameworkElement element)
         {
             GeneralTransform transformTransform = element.TransformToVisual(null);
@@ -329,27 +308,38 @@ namespace CollapseLauncher
             );
         }
 
-        private void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
+        private void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => SetDefaultDragAreaAsync();
+        private void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
+            await Task.Delay(250);
+
             InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
-            nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
             MainWindow.EnableNonClientArea();
+            MainWindow.SetDragArea(DragAreaMode_Full);
 
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:
-                    MainWindow.SetDragArea(DragAreaMode_Full);
+                    nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
                     break;
                 case DragAreaTemplate.Default:
-                    MainWindow.SetDragArea(DragAreaMode_Normal);
+                    nonClientInputSrc.ClearAllRegionRects();
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new RectInt32[]
+                    {
+                        GetElementPos(GridBG_RegionGrid),
+                        GetElementPos(GridBG_IconGrid),
+                        GetElementPos(GridBG_NotifBtn),
+                        GetElementPos((m_window as MainWindow)?.MinimizeButton),
+                        GetElementPos((m_window as MainWindow)?.CloseButton)
+                    });
                     break;
             }
+
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
         }
         #endregion
 
