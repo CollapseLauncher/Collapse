@@ -49,7 +49,7 @@ namespace Hi3Helper.Shared.ClassStruct
             return null;
         }
 
-        protected virtual void BuildFrameworkElement(ref Utf8JsonReader reader)
+        public virtual void BuildFrameworkElement(ref Utf8JsonReader reader)
         {
             return;
         }
@@ -108,7 +108,9 @@ namespace Hi3Helper.Shared.ClassStruct
                             switch (returnValue.ActionType)
                             {
                                 case NotificationActionTypeDesc.ClickLink:
-                                    returnValue = new NotificationActionClickLink(ref reader);
+                                    // Build the UI element
+                                    returnValue = new NotificationActionClickLink();
+                                    returnValue.BuildFrameworkElement(ref reader);
                                     break;
                                 default:
                                     reader.Skip();
@@ -143,13 +145,10 @@ namespace Hi3Helper.Shared.ClassStruct
         public string? GlyphFont { get; set; }
 #nullable disable
 
-        public NotificationActionClickLink(ref Utf8JsonReader reader)
+        public NotificationActionClickLink()
         {
             // Assign the class type
             BaseClassType = typeof(NotificationActionClickLink);
-
-            // Build the UI element
-            BuildFrameworkElement(ref reader);
         }
 
         public override FrameworkElement GetFrameworkElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (s, e) =>
@@ -164,7 +163,7 @@ namespace Hi3Helper.Shared.ClassStruct
             }.Start();
         }, GlyphFont);
 
-        protected override void BuildFrameworkElement(ref Utf8JsonReader reader)
+        public override void BuildFrameworkElement(ref Utf8JsonReader reader)
         {
             // Do loop while the reader == true
             while (reader.Read())

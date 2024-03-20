@@ -648,8 +648,8 @@ namespace CollapseLauncher.Dialogs
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
 
                 Button btn = sender as Button;
-                FontIcon fontIcon = (btn.Content as Panel).Children[0] as FontIcon;
-                TextBlock textBlock = (btn.Content as Panel).Children[1] as TextBlock;
+                FontIcon fontIcon = (btn.Content! as Panel).Children[0] as FontIcon;
+                TextBlock textBlock = (btn.Content! as Panel).Children[1] as TextBlock;
 
                 string lastGlyph = fontIcon.Glyph;
                 string lastText = textBlock.Text;
@@ -680,13 +680,13 @@ namespace CollapseLauncher.Dialogs
                     .WithVerticalAlignment(VerticalAlignment.Stretch)
                     .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
 
-                TextBlock subtitleText = rootGrid.AddElementToGridRow(new TextBlock
+                _ = rootGrid.AddElementToGridRow(new TextBlock
                 {
                     Text = subtitle,
                     TextWrapping = TextWrapping.Wrap,
                     FontWeight = FontWeights.Medium
                 }, 0);
-                TextBox exceptionText = rootGrid.AddElementToGridRow(new TextBox
+                _ = rootGrid.AddElementToGridRow(new TextBox
                 {
                     IsReadOnly = true,
                     TextWrapping = TextWrapping.Wrap,

@@ -163,7 +163,7 @@ namespace CollapseLauncher.Dialogs
             }
 
             mainStack.AddElementToStackPanel(mainStackContent, buttonStack);
-            mainStackContent.AddElementToStackPanel(stacks.OfType<StackPanel>());
+            mainStackContent.AddElementToStackPanel(stacks);
 
             ChangeMenuVisibility(page, stacks, buttons);
 
