@@ -43,6 +43,9 @@ namespace CollapseLauncher
             {
                 instanceIndicator = $"- #{instanceCount}";
             }
+            
+            var isPreview = LauncherConfig.IsPreview;
+            if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
 #if DEBUG
             CollapseTaskbar.ToolTipText =
                 $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}{instanceIndicator}\r\n" +
@@ -50,7 +53,7 @@ namespace CollapseLauncher
                 $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(LauncherConfig.IsPreview ? _preview : _stable)}{instanceIndicator}\r\n" +
+                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(isPreview ? _preview : _stable)}{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";
 #endif
