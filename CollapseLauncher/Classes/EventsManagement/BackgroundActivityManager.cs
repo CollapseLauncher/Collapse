@@ -87,7 +87,7 @@ namespace CollapseLauncher
             );
 
             GamePresetProperty CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            Image processLogo = progressLogoContainer.AddElementToStackPanel(
+            _ = progressLogoContainer.AddElementToStackPanel(
                 new Image()
                 {
                     Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch

@@ -23,7 +23,6 @@ using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using WColor = Windows.UI.Color;
-using BrushBase = Microsoft.UI.Xaml.Media.Brush;
 
 namespace CollapseLauncher
 {

@@ -151,8 +151,8 @@ namespace CollapseLauncher.Dialogs
             Button gameFolderButton  = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GameFolderTab)       .WithDataContext(2);
             Button gameManagerButton = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GameManagementTab)   .WithDataContext(3);
 
-            List<FrameworkElement> stacks = new() { genStack, changeStack, gameFolderStack, gameManageStack };
-            List<FrameworkElement> buttons = new() { genButton, changeButton, gameFolderButton, gameManagerButton };
+            List<StackPanel> stacks = new() { genStack, changeStack, gameFolderStack, gameManageStack };
+            List<Button> buttons = new() { genButton, changeButton, gameFolderButton, gameManagerButton };
 
             foreach (Button button in buttons)
             {
@@ -289,7 +289,9 @@ namespace CollapseLauncher.Dialogs
             return keyboxBorder;
         }
 
-        private static async void ChangeMenuVisibility(int sender, List<FrameworkElement> stacks, List<FrameworkElement> buttons)
+        private static async void ChangeMenuVisibility<T1, T2>(int sender, List<T1> stacks, List<T2> buttons)
+            where T1 : FrameworkElement
+            where T2 : FrameworkElement
         {
             try
             {
