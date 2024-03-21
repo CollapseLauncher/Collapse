@@ -148,9 +148,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.36.0, )",
-        "resolved": "0.36.0",
-        "contentHash": "MBLFHhhGrU3024JXlg2m3B2Xf0nJ0XrpPyUep6ztdSmykJzzq1M296qLcJWB6WNpKWaDOUcVVEe0DR/jiK4eng=="
+        "requested": "[0.36.2, )",
+        "resolved": "0.36.2",
+        "contentHash": "IW/z/6caqoFbxJZ7bq2ufEcaXHiNZEiL79Of7wY6EEU2NQgQ7yR1CQkNwijFEdm2pzK628jVpPLWOohBNNNc8g=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
@@ -181,9 +181,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240227000, )",
-        "resolved": "1.5.240227000",
-        "contentHash": "6rESOsREi8534J7IDpNfFYPvxQaSleXKt4A7ZYPeQyckNMQ0o1W0jZ420bJbEMz9Cw/S/8IbpPftLLZ9w/GTCQ==",
+        "requested": "[1.5.240311000, )",
+        "resolved": "1.5.240311000",
+        "contentHash": "7AYbQt/XPSbsOwLWeyP+TquJGFwfDsxRRutWZJEKhoyj9pkGDI4VgtX+Uy030PzkuuKsCm1Fz8c8H7saRyAoPg==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
@@ -989,9 +989,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240227000, )",
-        "resolved": "1.5.240227000",
-        "contentHash": "6rESOsREi8534J7IDpNfFYPvxQaSleXKt4A7ZYPeQyckNMQ0o1W0jZ420bJbEMz9Cw/S/8IbpPftLLZ9w/GTCQ==",
+        "requested": "[1.5.240311000, )",
+        "resolved": "1.5.240311000",
+        "contentHash": "7AYbQt/XPSbsOwLWeyP+TquJGFwfDsxRRutWZJEKhoyj9pkGDI4VgtX+Uy030PzkuuKsCm1Fz8c8H7saRyAoPg==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }

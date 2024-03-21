@@ -219,8 +219,8 @@ namespace Hi3Helper.Shared.ClassStruct
 
     public class NotificationPush
     {
-        public List<NotificationProp> AppPush { get; set; }
-        public List<NotificationProp> RegionPush { get; set; }
+        public List<NotificationProp> AppPush { get; set; } = new List<NotificationProp>();
+        public List<NotificationProp> RegionPush { get; set; } = new List<NotificationProp>();
         public List<int> AppPushIgnoreMsgIds { get; set; } = new List<int>();
         public List<int> RegionPushIgnoreMsgIds { get; set; } = new List<int>();
         public List<int> CurrentShowMsgIds { get; set; } = new List<int>();

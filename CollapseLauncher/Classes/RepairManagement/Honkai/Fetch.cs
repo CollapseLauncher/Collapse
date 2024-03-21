@@ -45,6 +45,7 @@ namespace CollapseLauncher
     {
         private string? _mainMetaRepoUrl;
         private readonly byte[] _collapseHeader = new byte[8] { 0x43, 0x6F, 0x6C, 0x6C, 0x61, 0x70, 0x73, 0x65 };
+        private List<string> _ignoredUnusedFileList = new List<string>();
 
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
@@ -55,6 +56,9 @@ namespace CollapseLauncher
 
             // Initialize the Senadina File Identifier
             Dictionary<string, SenadinaFileIdentifier>? senadinaFileIdentifier = null;
+
+            // Clear the _ignoredUnusedFileList
+            _ignoredUnusedFileList.Clear();
 
             // Use HttpClient instance on fetching
             Http _httpClient = new Http(true, 5, 1000, _userAgent);
@@ -445,6 +449,14 @@ namespace CollapseLauncher
                         {
                             lock (audioIndex!)
                             {
+                                // Try add the audio file which has patch from unused file check
+                                if (audioInfo.IsHasPatch)
+                                {
+                                    // Get the local file name and add it to ignored unused file list
+                                    string localPath = Path.Combine(_gamePath!, NormalizePath(_audioBaseLocalPath)!, audioInfo.Name + ".pck");
+                                    _ignoredUnusedFileList.Add(localPath);
+                                }
+
                                 // Assign based on each values
                                 FilePropertiesRemote audioAsset = new FilePropertiesRemote
                                 {
@@ -659,6 +671,20 @@ namespace CollapseLauncher
                 {
                     int blockPatchInfoIndex = patchInfo.NewBlockCatalog[xmfParser.BlockEntry[i]!.HashString!];
                     blockPatchInfo = patchInfo.PatchAsset![blockPatchInfoIndex];
+                }
+
+                // If the block has patch information, add the source block to the ignored list of unused assets
+                if (blockPatchInfo.HasValue)
+                {
+                    // Enumerate the pairs to get the old file names
+                    foreach (BlockOldPatchInfo pairs in blockPatchInfo.Value.PatchPairs)
+                    {
+                        // Get the local path and check if the file exists and does not listed into ignored list,
+                        // then add the file into the ignored list
+                        string localPath = Path.Combine(_gamePath!, NormalizePath(_blockBasePath)!, pairs.OldHashStr + ".wmv");
+                        if (File.Exists(localPath) && !_ignoredUnusedFileList.Contains(localPath))
+                            _ignoredUnusedFileList.Add(localPath);
+                    }
                 }
 
                 // Assign as FilePropertiesRemote

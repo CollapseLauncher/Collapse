@@ -477,8 +477,9 @@
     "Waifu2X_Toggle": "Usar Waifu2X [Experimental]",
     "Waifu2X_Help": "Usa Waifu2X para escalar imágenes de fondo.\nCuando está activado, la calidad de la imagen mejora significativamente, pero tardará en cargar la imagen la primera vez.",
     "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
+    "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
-    "Waifu2X_Error_Output": "ERROR: Fallo al realizar la comprobación de Waifu2X, se obtuvo un output vacío."
+    "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida."
   },
 
   "_Misc": {
@@ -754,6 +755,7 @@
     "ShortcutCreationSuccessSubtitle2": "Ubicación: ",
     "ShortcutCreationSuccessSubtitle3": "Aviso: ",
     "ShortcutCreationSuccessSubtitle4": " • Este acceso directo iniciará el juego después de cargar la región",
+    "ShortcutCreationSuccessSubtitle5": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
 
     "SteamShortcutCreationConfirmTitle": "¿Estas seguro que quieres continuar?",
     "SteamShortcutCreationConfirmSubtitle1": "Un acceso directo será añadido a todos los usuarios de Steam en este computador",
@@ -766,9 +768,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Realizar el proceso otra vez arreglara cualquier imagen corrupta/faltante del acceso directo.",
     "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Para usar el Steam overlay, es necesario iniciar Steam como administrador y Collapse debe estar cerrado completamente o tener la opción \"Multiples Ventanas\" habilitada en los ajustes.",
+    "SteamShortcutCreationSuccessSubtitle7": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
 
     "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
-    "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función."
+    "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
+
+    "DownloadSettingsTitle": "Descargando Configuración",
+    "DownloadSettingsOption1": "Iniciar el juego después de instalar "
   },
 
   "_FileMigrationProcess": {

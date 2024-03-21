@@ -650,7 +650,6 @@
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
                                   FontSize="20"
-                                  PointerPressed="ClickTextLinkFromTag"
                                   Glyph="&#xF392;"/>
                         <TextBlock Margin="0,-2,0,2"
                                    Grid.Column="1"
@@ -681,7 +680,6 @@
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
                                   FontSize="20"
-                                  PointerPressed="ClickTextLinkFromTag"
                                   Glyph="&#xF392;"/>
                         <TextBlock Margin="0,-2,0,2"
                                    Grid.Column="1"
@@ -711,7 +709,6 @@
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
                                   FontSize="20"
-                                  PointerPressed="ClickTextLinkFromTag"
                                   Glyph="&#xF392;"/>
                         <TextBlock Margin="0,-2,0,2"
                                    Grid.Column="1"

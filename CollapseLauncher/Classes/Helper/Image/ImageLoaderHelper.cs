@@ -40,10 +40,7 @@ namespace CollapseLauncher.Helper.Image
                 // Cache the status of waifu2x
                 if (_cachedStatus == Waifu2XStatus.NotInitialized)
                 {
-                    using var test = CreateWaifu2X();
-                    {
-                        _cachedStatus = test.Status;
-                    }
+                    _cachedStatus = VulkanTest();
                 }
                 return _cachedStatus;
             }
