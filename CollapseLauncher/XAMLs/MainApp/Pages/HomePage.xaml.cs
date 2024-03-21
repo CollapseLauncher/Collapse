@@ -55,7 +55,7 @@ namespace CollapseLauncher.Pages
         private HomeMenuPanel MenuPanels { get => regionNewsProp; }
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
-        
+
         private int barwidth;
         private int consoleWidth;
         
@@ -173,6 +173,7 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
                 UpdatePlaytime();
+                UpdateLastPlayed();
                 CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll(CarouselToken.Token);
 
@@ -1766,10 +1767,10 @@ namespace CollapseLauncher.Pages
         #region Playtime Buttons
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!_cachedIsGameRunning)
-            {
-                UpdatePlaytime();
-            }
+            if (_cachedIsGameRunning)
+                return;
+
+            UpdatePlaytime();
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
@@ -1786,7 +1787,7 @@ namespace CollapseLauncher.Pages
 
             int finalPlaytime = finalPlaytimeHours * 3600 + finalPlaytimeMinutes * 60;
 
-            SavePlaytimeToRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
+            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
             LogWriteLine($"Playtime counter changed to {HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m"}. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, finalPlaytime);
             PlaytimeFlyout.Hide();
@@ -1796,7 +1797,7 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
-            SavePlaytimeToRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
+            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
             LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, 0);
             PlaytimeFlyout.Hide();
@@ -1810,47 +1811,44 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Playtime Tracker Method
-        public void UpdatePlaytime(bool readRegistry = true, int currentPlaytimeValue = 0)
+        private void UpdatePlaytime(bool readRegistry = true, int value = 0)
         {
             if (readRegistry)
-                currentPlaytimeValue = ReadPlaytimeFromRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+                value = ReadPlaytimeFromRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
 
-            HourPlaytimeTextBox.Text = (currentPlaytimeValue / 3600).ToString();
-            MinutePlaytimeTextBox.Text = (currentPlaytimeValue % 3600 / 60).ToString();
-            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, HourPlaytimeTextBox.Text, MinutePlaytimeTextBox.Text);
+            HourPlaytimeTextBox.Text = (value / 3600).ToString();
+            MinutePlaytimeTextBox.Text = (value % 3600 / 60).ToString();
+            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, (value / 3600), (value % 3600 / 60));
         }
 
-        private static int ReadPlaytimeFromRegistry(string regionRegistryKey)
+        private DateTime Hoyoception => new(2012, 2, 13);
+        private void UpdateLastPlayed(bool readRegistry = true, int value = 0)
         {
-            try
+            if (readRegistry)
+                value = ReadPlaytimeFromRegistry(false, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+            
+            DateTime last = Hoyoception.AddSeconds(value).ToLocalTime();
+
+            if (value == 0)
             {
-                return (int)Registry.CurrentUser.OpenSubKey(regionRegistryKey, true).GetValue("CollapseLauncher_Playtime", 0);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
-                return 0;
+                PlaytimeLastOpen.Visibility = Visibility.Collapsed;
+                return;
             }
 
-        }
-
-        private static void SavePlaytimeToRegistry(string regionRegistryKey, int value)
-        {
-            try
-            {
-                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.DWord);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
-            }
+            PlaytimeLastOpen.Visibility = Visibility.Visible;
+            string formattedText = string.Format(Lang._HomePage.GamePlaytime_ToolTipDisplay, last.Day,
+                last.Month, last.Year, last.Hour, last.Minute);
+            ToolTipService.SetToolTip(PlaytimeBtn, formattedText);
         }
 
         private async void StartPlaytimeCounter(Process proc, PresetConfigV2 gamePreset)
         {
-            int currentPlaytime = ReadPlaytimeFromRegistry(gamePreset.ConfigRegistryLocation);
+            int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
 
             DateTime begin = DateTime.Now;
+            int lastPlayed = (int)(begin - Hoyoception).TotalSeconds;
+            SavePlaytimeToRegistry(false, gamePreset.ConfigRegistryLocation, lastPlayed);
+            UpdateLastPlayed(false, lastPlayed);
             int numOfLoops = 0;
 
 #if DEBUG
@@ -1877,47 +1875,11 @@ namespace CollapseLauncher.Pages
 #if DEBUG
                     LogWriteLine($"{gamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
 #endif
-                    SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
+                    SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
                 };
 
                 inGameTimer.Start();
-
-                if (gamePreset.GameType == GameType.Honkai)
-                {
-                    string processNameStr = Path.GetFileNameWithoutExtension(gamePreset.GameExecutableName);
-                    while (true)
-                    {
-                        // Try get the honkaiProc and auto-dispose it if the routine finishes,
-                        // then get the first process
-                        Process honkaiProc = Process.GetProcessesByName(processNameStr).FirstOrDefault();
-
-                        // If the honkaiProc is not null and also has the main window handle,
-                        // then continue to go through.
-                        // 
-                        // It replaces the switch statement where it checks for the .Length > 1
-                        // since the first process (process[0]) is not the actual active process.
-                        //
-                        // So, if it doesn't have one (IntPtr == Zero), then continue the loop until
-                        // the actual process found.
-                        if (honkaiProc != null && honkaiProc.MainWindowHandle != IntPtr.Zero)
-                        {
-                            // Assign the old proc with honkaiProc.
-                            proc = honkaiProc;
-
-                            // Wait the process
-                            LogWriteLine($"Found the main HI3 process [{proc.Id}]");
-                            await proc.WaitForExitAsync();
-                            break;
-                        }
-
-                        // If the process hasn't spawn yet or still has no MainWindowHandle,
-                        // then delay before continue to another loop routine.
-                        await Task.Delay(5000);
-                    }
-                }
-                // If not Honkai, then wait the process as usual
-                else await proc.WaitForExitAsync();
-
+                await proc.WaitForExitAsync();
                 inGameTimer.Stop();
             }
 
@@ -1930,13 +1892,40 @@ namespace CollapseLauncher.Pages
                 Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
             }
 
-            SavePlaytimeToRegistry(gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
+            SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
             LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
             if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
                 m_homePage?.DispatcherQueue.TryEnqueue(() =>
                 {
                     m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
                 });
+        }
+
+        private const string _playtimeRegName = "CollapseLauncher_Playtime";
+        private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
+        private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
+        {
+            try
+            {
+                return (int)Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!.GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
+                return 0;
+            }
+        }
+
+        private static void SavePlaytimeToRegistry(bool isPlaytime, string regionRegistryKey, int value)
+        {
+            try
+            {
+                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!.SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value, RegistryValueKind.DWord);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
+            }
         }
         #endregion
 

@@ -1379,133 +1379,138 @@
                 </Button.Flyout>
             </Button>
         </StackPanel>
-        <Button x:Name="PlaytimeBtn"
-                Grid.Row="2"
-                Grid.Column="2"
-                Margin="10,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Stretch"
-                Click="ForceUpdatePlaytimeButton_Click"
-                CornerRadius="20"
-                Shadow="{ThemeResource SharedShadow}">
-            <Button.Content>
-                <Grid>
-                    <Grid Margin="-16"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Background="{ThemeResource GameSettingsBtnBrush}"/>
-                    <StackPanel Margin="8,0"
-                                Orientation="Horizontal">
-                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                   FontSize="18"
-                                   Text=""/>
-                        <TextBlock x:Name="PlaytimeMainBtn"
-                                   Margin="8,0,0,0"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   FontWeight="Medium"
-                                   Text="-"/>
-                    </StackPanel>
-                </Grid>
-            </Button.Content>
-            <Button.Flyout>
-                <Flyout x:Name="PlaytimeFlyout">
-                    <StackPanel MaxWidth="224"
-                                Margin="0,0">
-                        <StackPanel x:Name="PlaytimeIdleStack"
-                                    MaxWidth="224"
+        <StackPanel Grid.Row="2"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Orientation="Horizontal">
+            <Button x:Name="PlaytimeBtn"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Click="ForceUpdatePlaytimeButton_Click"
+                    CornerRadius="20"
+                    Shadow="{ThemeResource SharedShadow}">
+                <Button.Content>
+                    <Grid>
+                        <Grid Margin="-16"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="{ThemeResource GameSettingsBtnBrush}"/>
+                        <StackPanel Margin="8,0"
+                                    Orientation="Horizontal">
+                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
+                                       VerticalAlignment="Center"
+                                       FontSize="18"
+                                       Text=""/>
+                            <TextBlock x:Name="PlaytimeMainBtn"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       Text="-"/>
+                            <TextBlock x:Name="PlaytimeLastOpen"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{ThemeResource FontAwesomeSolid}"
+                                       FontSize="18"
+                                       Opacity="0.25"
+                                       Text="&#xf05a;"/>
+                        </StackPanel>
+                    </Grid>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout x:Name="PlaytimeFlyout">
+                        <StackPanel MaxWidth="224"
                                     Margin="0,0">
-                            <TextBlock Margin="0,0,0,8"
-                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}"/>
-                            <StackPanel Margin="0,0"
+                            <StackPanel x:Name="PlaytimeIdleStack"
+                                        MaxWidth="224"
+                                        Margin="0,0">
+                                <TextBlock Margin="0,0,0,8"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}"/>
+                                <StackPanel Margin="0,0"
+                                            Orientation="Horizontal">
+                                    <TextBox x:Name="HourPlaytimeTextBox"
+                                             Margin="0,0,8,0"
+                                             HorizontalContentAlignment="Center"
+                                             BeforeTextChanging="NumberValidationTextBox"
+                                             Text=""/>
+                                    <TextBox x:Name="MinutePlaytimeTextBox"
+                                             Margin="2,0,8,0"
+                                             HorizontalContentAlignment="Center"
+                                             BeforeTextChanging="NumberValidationTextBox"
+                                             Text=""/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0"
+                                            Orientation="Horizontal">
+                                    <TextBlock x:Name="PlaytimeHours"
+                                               Width="55"
+                                               Margin="5,1,0,8"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}"/>
+                                    <TextBlock x:Name="PlaytimeMinutes"
+                                               Width="55"
+                                               Margin="19,1,0,8"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}"/>
+                                </StackPanel>
+                                <Button x:Name="ChangePlaytimeButton"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="ChangePlaytimeButton_Click"
+                                        CornerRadius="14"
+                                        Style="{ThemeResource AccentButtonStyle}">
+                                    <Button.Content>
+                                        <StackPanel Margin="3,0"
+                                                    Orientation="Horizontal">
+                                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                       FontSize="18"
+                                                       Text=""/>
+                                            <TextBlock Margin="7,0,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                                <Button x:Name="ResetPlaytimeButton"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="ResetPlaytimeButton_Click"
+                                        CornerRadius="14">
+                                    <Button.Content>
+                                        <StackPanel Margin="4,0"
                                         Orientation="Horizontal">
-                                <TextBox x:Name="HourPlaytimeTextBox"
-                                         Margin="0,0,8,0"
-                                         HorizontalContentAlignment="Center"
-                                         BeforeTextChanging="NumberValidationTextBox"
-                                         Text=""/>
-                                <TextBox x:Name="MinutePlaytimeTextBox"
-                                         Margin="2,0,8,0"
-                                         HorizontalContentAlignment="Center"
-                                         BeforeTextChanging="NumberValidationTextBox"
-                                         Text=""/>
+                                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
+                                           FontSize="18"
+                                           Text=""/>
+                                            <TextBlock Margin="8,0,0,0"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
                             </StackPanel>
-                            <StackPanel Margin="0,0"
-                                        Orientation="Horizontal">
-                                <TextBlock x:Name="PlaytimeHours"
-                                           Width="55"
-                                           Margin="5,1,0,8"
-                                           HorizontalAlignment="Center"
-                                           FontSize="11"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}"/>
-                                <TextBlock x:Name="PlaytimeMinutes"
-                                           Width="55"
-                                           Margin="19,1,0,8"
-                                           HorizontalAlignment="Center"
-                                           FontSize="11"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}"/>
+                            <StackPanel x:Name="PlaytimeRunningStack"
+                            MaxWidth="250"
+                            Margin="0,0"
+                            Visibility="Collapsed">
+                                <TextBlock Margin="0,0,0,8"
+                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}"/>
+                                <TextBlock Margin="0,0,0,8"
+                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}"
+                               TextWrapping="Wrap"/>
+                                <TextBlock Margin="0,0,0,0"
+                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}"
+                               TextWrapping="Wrap"/>
                             </StackPanel>
-                            <TextBlock x:Name="InvalidTimeBlock"
-                                       Margin="0,2,0,2"
-                                       HorizontalAlignment="Center"
-                                       FontSize="13"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_InvalidTimeBlock}"
-                                       Visibility="Collapsed"/>
-                            <Button x:Name="ChangePlaytimeButton"
-                                    Margin="0,8"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Click="ChangePlaytimeButton_Click"
-                                    CornerRadius="14"
-                                    Style="{ThemeResource AccentButtonStyle}">
-                                <Button.Content>
-                                    <StackPanel Margin="3,0"
-                                                Orientation="Horizontal">
-                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                   FontSize="18"
-                                                   Text=""/>
-                                        <TextBlock Margin="7,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"/>
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                            <Button x:Name="ResetPlaytimeButton"
-                                    Margin="0,8"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Click="ResetPlaytimeButton_Click"
-                                    CornerRadius="14">
-                                <Button.Content>
-                                    <StackPanel Margin="4,0"
-                                                Orientation="Horizontal">
-                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                   FontSize="18"
-                                                   Text=""/>
-                                        <TextBlock Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"/>
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
                         </StackPanel>
-                        <StackPanel x:Name="PlaytimeRunningStack"
-                                    MaxWidth="250"
-                                    Margin="0,0"
-                                    Visibility="Collapsed">
-                            <TextBlock Margin="0,0,0,8"
-                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}"/>
-                            <TextBlock Margin="0,0,0,8"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}"
-                                       TextWrapping="Wrap"/>
-                            <TextBlock Margin="0,0,0,0"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}"
-                                       TextWrapping="Wrap"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Flyout>
-            </Button.Flyout>
-        </Button>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
         <Grid x:Name="LauncherBtn"
               Grid.Row="2"
               Grid.Column="0"
