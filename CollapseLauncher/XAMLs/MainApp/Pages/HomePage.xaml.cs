@@ -1313,8 +1313,7 @@ namespace CollapseLauncher.Pages
                         (m_window as MainWindow)?.Minimize();
                         break;
                     case "ToTray":
-                        H.NotifyIcon.WindowExtensions.Hide(m_window!);
-                        RefreshRate = RefreshRateSlow;
+                        (m_window as MainWindow)?.ToggleToTray_MainWindow();
                         break;
                     case "Nothing":
                         break;
@@ -1952,6 +1951,8 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                IsSkippingUpdateCheck = true;
+
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
@@ -1996,6 +1997,7 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                IsSkippingUpdateCheck = false;
                 CurrentGameProperty._GameInstall.StartAfterInstall = false;
                 CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
@@ -2007,7 +2009,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Set Hand Cursor
-        public static void ChangeCursor(UIElement element, InputCursor cursor)
+        private static void ChangeCursor(UIElement element, InputCursor cursor)
         {
             typeof(UIElement).InvokeMember("ProtectedCursor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, element, new object[] { cursor });
         }
@@ -2103,10 +2105,17 @@ namespace CollapseLauncher.Pages
                 }
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                              $"Target Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]", LogType.Default, true);
-                
-                // Wait 5 seconds before applying
+
+                // Wait 10 seconds before applying
                 await Task.Delay(10000);
-                
+
+                // Check early exit
+                if (toTargetProc.HasExited)
+                {
+                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] has exited!", LogType.Warning, true);
+                    return;
+                }
+
                 // Assign the priority to the process and write a log (just for displaying any info)
                 toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);

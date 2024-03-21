@@ -292,8 +292,8 @@ namespace CollapseLauncher
                         _inputStream.ReadExactly(oldData.Slice(0, availableInputBytes));
 
                         // Add the old with new data in vectors
-                        fixed (byte* newDataPtr = newData)
-                        fixed (byte* oldDataPtr = oldData)
+                        fixed (byte* newDataPtr = &newData[0])
+                        fixed (byte* oldDataPtr = &oldData[0])
                         {
                             // Get the offset and remained offset
                             int offset;

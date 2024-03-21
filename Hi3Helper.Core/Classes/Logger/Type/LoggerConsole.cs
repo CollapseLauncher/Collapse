@@ -107,7 +107,12 @@ namespace Hi3Helper
             SetStdHandle(STD_OUTPUT_HANDLE, m_consoleHandle);
 
             Console.OutputEncoding = Encoding.UTF8;
-            Console.Title = "Collapse Console";
+
+            var instanceIndicator = "";
+            var instanceCount = InvokeProp.GetInstanceCount();
+
+            if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
+            Console.Title = $"Collapse Console{instanceIndicator}";
 
             if (!GetConsoleMode(m_consoleHandle, out uint mode))
             {

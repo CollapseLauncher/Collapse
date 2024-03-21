@@ -3,11 +3,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Hi3Helper
 {
     public static class InvokeProp
     {
+        #region Enums
         // Reference:
         // https://pinvoke.net/default.aspx/Enums.SystemMetric
         public enum SystemMetric
@@ -60,7 +64,9 @@ namespace Hi3Helper
             MDT_Raw_DPI = 2,
             MDT_Default = MDT_Effective_DPI
         }
+        #endregion
 
+        #region Kernel32
         [DllImport("kernel32.dll")]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
@@ -96,6 +102,30 @@ namespace Hi3Helper
         [DllImport("Kernel32.dll")]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
+        
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GlobalAlloc(GLOBAL_ALLOC_FLAGS uFlags, nuint uBytes);
+        
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GlobalFree(IntPtr hMem);
+
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GlobalLock(IntPtr hMem);
+
+        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GlobalUnlock(IntPtr hMem);
+        
+        [DllImport("kernel32.dll")]
+        public static extern bool SetConsoleCtrlHandler(HandlerRoutine handlerRoutine, bool add);
+        
+        #endregion
+
+        #region User32
 
         [DllImport("user32.dll")]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
@@ -116,11 +146,7 @@ namespace Hi3Helper
         [DllImport("user32.dll")]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForWindow(IntPtr hWnd);
-
-        [DllImport("Shcore.dll", SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
-
+        
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, UIntPtr wParam, IntPtr lParam);
@@ -147,25 +173,44 @@ namespace Hi3Helper
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EmptyClipboard();
-
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GlobalAlloc(GLOBAL_ALLOC_FLAGS uFlags, nuint uBytes);
         
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GlobalFree(IntPtr hMem);
-
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GlobalLock(IntPtr hMem);
-
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GlobalUnlock(IntPtr hMem);
+        public static extern bool IsWindowVisible(IntPtr hWnd);
 
-        public unsafe static void CopyStringToClipboard(string inputString)
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref WindowRect rectangle);
+
+        [DllImport("user32.dll")]
+        public static extern uint GetWindowLong(IntPtr hwnd, int index);
+
+        [DllImport("user32.dll")]
+        public static extern uint SetWindowLong(IntPtr hwnd, int index, uint value);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWindowLongPtr(IntPtr hwnd, int index, IntPtr value);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        [DllImport("user32.dll")]
+        public static extern bool DestroyWindow(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
+        #endregion
+
+        #region Shcore
+        [DllImport("Shcore.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
+        #endregion
+        
+        public static unsafe void CopyStringToClipboard(string inputString)
         {
             // Initialize the memory pointer
             // ReSharper disable RedundantAssignment
@@ -192,7 +237,7 @@ namespace Hi3Helper
                 // Set the bufferSize + 1, the additional 1 byte will be used to interpret the null byte
                 int bufferSize = (inputString.Length + 1);
 
-                // Allocate the Global-Moveable buffer to the kernel with given size and lock the buffer
+                // Allocate the Global-Movable buffer to the kernel with given size and lock the buffer
                 hMem = GlobalAlloc(GLOBAL_ALLOC_FLAGS.GMEM_MOVEABLE, (nuint)bufferSize);
                 stringBufferPtr = GlobalLock(hMem);
 
@@ -235,28 +280,7 @@ namespace Hi3Helper
             public int Bottom { get; set; }
             // ReSharper restore UnusedAutoPropertyAccessor.Global
         }
-
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref WindowRect rectangle);
-
-        [DllImport("user32.dll")]
-        public extern static uint GetWindowLong(IntPtr hwnd, int index);
-
-        [DllImport("user32.dll")]
-        public extern static uint SetWindowLong(IntPtr hwnd, int index, uint value);
-
-        [DllImport("user32.dll")]
-        public extern static IntPtr SetWindowLongPtr(IntPtr hwnd, int index, IntPtr value);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-
-        [DllImport("user32.dll")]
-        public static extern bool DestroyWindow(IntPtr hwnd);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
-
+        
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 
         public class InvokePresence
@@ -282,6 +306,15 @@ namespace Hi3Helper
             const UIntPtr ICON_SMALL = 0;
             SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
             SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
+        }
+
+        public delegate bool HandlerRoutine(uint dwCtrlType);
+        
+        public static int GetInstanceCount()
+        {
+            var currentProcess = Process.GetCurrentProcess();
+            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
+            return processes.Length;
         }
     }
 }

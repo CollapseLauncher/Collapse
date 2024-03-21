@@ -129,7 +129,7 @@ namespace CollapseLauncher.Pages
                         if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                         Process.Start(collapsePath);
-                        Application.Current.Exit();
+                        (m_window as MainWindow)?.CloseApp();
                     }
                     catch (Exception ex)
                     {
@@ -237,7 +237,7 @@ namespace CollapseLauncher.Pages
                         Verb = "runas"
                     }
                 }.Start();
-                Application.Current.Exit();
+                (m_window as MainWindow)?.CloseApp();
             }
             catch
             {
@@ -302,6 +302,7 @@ namespace CollapseLauncher.Pages
 
         private void ClickTextLinkFromTag(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
+            if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
             new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -564,7 +565,10 @@ namespace CollapseLauncher.Pages
             set
             {
                 ImageLoaderHelper.IsWaifu2XEnabled = value;
-                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                if (ImageLoaderHelper.Waifu2XStatus < Waifu2XStatus.Error)
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                else
+                    Bindings.Update();
             }
         }
 
