@@ -646,23 +646,24 @@ namespace CollapseLauncher.Dialogs
             async void CopyTextToClipboard(object sender, RoutedEventArgs e)
             {
                 InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
+                if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
+                {
+                    FontIcon fontIcon = panel.Children[0] as FontIcon;
+                    TextBlock textBlock = panel.Children[1] as TextBlock;
 
-                Button btn = sender as Button;
-                FontIcon fontIcon = (btn.Content! as Panel).Children[0] as FontIcon;
-                TextBlock textBlock = (btn.Content! as Panel).Children[1] as TextBlock;
+                    string lastGlyph = fontIcon.Glyph;
+                    string lastText = textBlock.Text;
 
-                string lastGlyph = fontIcon.Glyph;
-                string lastText = textBlock.Text;
+                    fontIcon.Glyph = "";
+                    textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
+                    btn.IsEnabled = false;
 
-                fontIcon.Glyph = "";
-                textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
-                btn.IsEnabled = false;
+                    await Task.Delay(1000);
 
-                await Task.Delay(1000);
-
-                fontIcon.Glyph = lastGlyph;
-                textBlock.Text = lastText;
-                btn.IsEnabled = true;
+                    fontIcon.Glyph = lastGlyph;
+                    textBlock.Text = lastText;
+                    btn.IsEnabled = true;
+                }
             }
 
             Button copyButton = null;
