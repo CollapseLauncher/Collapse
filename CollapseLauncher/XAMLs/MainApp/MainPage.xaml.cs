@@ -924,6 +924,14 @@ namespace CollapseLauncher
                 await Task.Delay(100);
             }
 
+            if (NotificationContainer.Children.Count == 0)
+            {
+                await Task.Delay(500);
+                ToggleNotificationPanelBtn.IsChecked = false;
+                IsNotificationPanelShow = false;
+                ShowHideNotificationPanel();
+            }
+
             if (button != null) button.IsEnabled = true;
         }
 
