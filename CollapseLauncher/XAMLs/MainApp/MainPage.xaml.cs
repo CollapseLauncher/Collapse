@@ -1,3 +1,4 @@
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
@@ -348,7 +349,7 @@ namespace CollapseLauncher
         {
             if (!IsPrincipalHasNoAdministratorAccess()) return true;
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
             {
                 Title = Lang._Dialogs.PrivilegeMustRunTitle,
                 Content = Lang._Dialogs.PrivilegeMustRunSubtitle,
