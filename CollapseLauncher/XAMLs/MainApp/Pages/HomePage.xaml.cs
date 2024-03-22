@@ -1821,7 +1821,7 @@ namespace CollapseLauncher.Pages
             PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, (value / 3600), (value % 3600 / 60));
         }
 
-        private DateTime Hoyoception => new(2012, 2, 13);
+        private DateTime Hoyoception => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
         private void UpdateLastPlayed(bool readRegistry = true, int value = 0)
         {
             if (readRegistry)
@@ -1846,7 +1846,7 @@ namespace CollapseLauncher.Pages
             int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
 
             DateTime begin = DateTime.Now;
-            int lastPlayed = (int)(begin - Hoyoception).TotalSeconds;
+            int lastPlayed = (int)(begin.ToUniversalTime() - Hoyoception).TotalSeconds;
             SavePlaytimeToRegistry(false, gamePreset.ConfigRegistryLocation, lastPlayed);
             UpdateLastPlayed(false, lastPlayed);
             int numOfLoops = 0;

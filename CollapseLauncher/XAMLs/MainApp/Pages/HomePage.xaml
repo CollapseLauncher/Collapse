@@ -1380,7 +1380,7 @@
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="2"
-                    Grid.Column="2"
+                    Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
                     Orientation="Horizontal">
