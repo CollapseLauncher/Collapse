@@ -13,7 +13,7 @@
 		<Description>Collapse Launcher</Description>
 		<Company>Collapse Launcher Team</Company>
 		<Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-		<Copyright>Copyright 2020-2024 $(Company)</Copyright>
+		<Copyright>Copyright 2022-2024 $(Company)</Copyright>
 		<!-- Versioning -->
 		<Version>1.73.7</Version>
 		<LangVersion>preview</LangVersion>
@@ -86,7 +86,6 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
-    
 		<PackageReference Include="GitInfo" Version="3.3.4" PrivateAssets="all" />
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
