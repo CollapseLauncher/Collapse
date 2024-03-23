@@ -6,5 +6,5 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="Transparent"
       mc:Ignorable="d">
-    <Grid/>
+    <Grid />
 </Page>

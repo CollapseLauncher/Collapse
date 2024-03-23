@@ -13,11 +13,11 @@
                     Orientation="Vertical">
             <TextBlock x:Name="Title"
                        Margin="0,0,0,24"
-                       Style="{ThemeResource TitleLargeTextBlockStyle}"/>
+                       Style="{ThemeResource TitleLargeTextBlockStyle}" />
             <TextBlock x:Name="Subtitle"
                        Margin="0,0,0,8"
                        FontSize="18"
-                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                       Style="{ThemeResource BodyStrongTextBlockStyle}" />
             <TextBox x:Name="ExceptionTextBox"
                      Height="450"
                      Margin="0,0,0,16"
@@ -27,12 +27,12 @@
                      IsReadOnly="True"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     TextWrapping="Wrap"/>
+                     TextWrapping="Wrap" />
             <Button x:Name="CopyThrow"
                     HorizontalAlignment="Stretch"
                     Click="CopyTextToClipboard"
                     Content="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.CopyClipboardBtn1}"
-                    Style="{ThemeResource AccentButtonStyle}"/>
+                    Style="{ThemeResource AccentButtonStyle}" />
             <Button x:Name="BackToPreviousPage"
                     Margin="0,16,0,0"
                     HorizontalAlignment="Stretch"
@@ -42,9 +42,9 @@
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontFamily="Segoe MDL2 Assets"
                               FontSize="14"
-                              Glyph="&#xE112;"/>
+                              Glyph="&#xE112;" />
                     <TextBlock Margin="8,0,0,0"
-                               Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.GoBackPageBtn1}"/>
+                               Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.GoBackPageBtn1}" />
                 </StackPanel>
             </Button>
         </StackPanel>

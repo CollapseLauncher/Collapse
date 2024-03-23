@@ -18,18 +18,18 @@
                           IsActive="True"
                           IsIndeterminate="false"
                           Maximum="100"
-                          Value="100"/>
+                          Value="100" />
             <TextBlock x:Name="Title"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._Misc.FeatureUnavailableTitle}"/>
+                       Text="{x:Bind helper:Locale.Lang._Misc.FeatureUnavailableTitle}" />
             <TextBlock x:Name="Subtitle"
                        Margin="0,8,0,192"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._Misc.FeatureUnavailableSubtitle}"/>
+                       Text="{x:Bind helper:Locale.Lang._Misc.FeatureUnavailableSubtitle}" />
         </StackPanel>
     </Grid>
 </Page>
