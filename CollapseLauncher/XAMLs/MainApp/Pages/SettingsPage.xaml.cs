@@ -91,11 +91,13 @@ namespace CollapseLauncher.Pages
         {
             var branchName = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
-            
+
             // Add indicator if the commit is dirty
-            if (ThisAssembly.Git.IsDirty)
-                commitShort = $"{commitShort}*";
-            
+            // CS0162: Unreachable code detected
+#pragma warning disable CS0162
+            if (ThisAssembly.Git.IsDirty) commitShort = $"{commitShort}*";
+#pragma warning restore CS0162
+
             var outString =
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
