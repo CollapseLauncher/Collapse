@@ -141,6 +141,13 @@ namespace CollapseLauncher.Extension
             return ref Unsafe.AsRef(ref element);
         }
 
+        internal static void ClearChildren<TElement>(this TElement element)
+            where TElement : Panel
+        {
+            if (element == null) return;
+            element.Children.Clear();
+        }
+
         internal static void SetElementGridRowPosition<TElement>(TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
@@ -343,6 +350,20 @@ namespace CollapseLauncher.Extension
             return ref Unsafe.AsRef(ref element);
         }
 
+        internal static ref TElement WithOpacity<TElement>(this TElement element, double opacity)
+            where TElement : FrameworkElement
+        {
+            SetOpacity(element, opacity);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static ref TElement WithStretch<TElement>(this TElement element, Stretch stretch)
+            where TElement : FrameworkElement
+        {
+            SetStretch(element, stretch);
+            return ref Unsafe.AsRef(ref element);
+        }
+
         internal static ref TElement WithPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
@@ -522,6 +543,23 @@ namespace CollapseLauncher.Extension
                     break;
                 case TextBlock textBlock:
                     textBlock.Foreground = brush;
+                    break;
+            }
+        }
+
+        internal static void SetOpacity<TElement>(this TElement element, double opacity)
+            where TElement : FrameworkElement => element.Opacity = opacity;
+
+        internal static void SetStretch<TElement>(this TElement element, Stretch stretch)
+            where TElement : FrameworkElement
+        {
+            switch (element)
+            {
+                case Image image:
+                    image.Stretch = stretch;
+                    break;
+                case MediaPlayerElement mediaPlayer:
+                    mediaPlayer.Stretch = stretch;
                     break;
             }
         }

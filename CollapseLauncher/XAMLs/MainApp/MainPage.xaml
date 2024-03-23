@@ -30,6 +30,8 @@
                    Source="ms-appx:///Assets/Images/PageBackground/default.png"
                    Stretch="UniformToFill"/>
         </Grid>
+        <Grid x:Name="BackgroundNewMediaPlayerGrid"/>
+        <Grid x:Name="BackgroundNewBackGrid"/>
         <Grid x:Name="BackgroundAcrylicMask"
               Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
               Visibility="Collapsed"/>
@@ -62,6 +64,7 @@
                        Opacity="0"
                        Source="ms-appx:///Assets/Images/PageBackground/default.png"
                        Stretch="UniformToFill"/>
+                <Grid x:Name="BackgroundNewFrontGrid"/>
                 <Frame x:Name="LauncherFrame">
                     <Frame.ContentTransitions>
                         <NavigationThemeTransition/>

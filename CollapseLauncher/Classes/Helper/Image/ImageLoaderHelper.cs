@@ -21,13 +21,15 @@ using Windows.Storage.Streams;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseLauncher.BackgroundManagement;
+using System.Linq;
 
 namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
         internal static Dictionary<string, string> SupportedImageFormats =
-            new() { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } };
+            new() { { "Supported formats", string.Join(';', BackgroundImageUtility._supportedImageExt.Select(x => $"*{x}")) } };
 
         #region Waifu2X
         private static Waifu2X _waifu2X;

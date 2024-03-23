@@ -1,3 +1,4 @@
+using CollapseLauncher.BackgroundManagement;
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
@@ -148,6 +149,7 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             RunBackgroundCheck();
+            await BackgroundImageUtility.RegisterCurrent(BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
 
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
