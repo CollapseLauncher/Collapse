@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Hi3Helper.EncTool" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Hi3Helper.EncTool/Streams/CacheStream" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Hi3Helper.EncTool/UABT" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Hi3Helper.Http" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/InnoSetupHelper/InnoSetupLogParser" vcs="Git" />
+  </component>
+</project>
