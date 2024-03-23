@@ -10,8 +10,8 @@
         <Grid x:Name="Bg"
               Margin="32">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Button x:Name="NextPage"
                     Grid.Column="0"
@@ -26,10 +26,10 @@
                             Orientation="Horizontal">
                     <TextBlock Margin="0,0,8,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}" />
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"
-                              Glyph="&#xf061;"/>
+                              Glyph="&#xf061;" />
                 </StackPanel>
             </Button>
             <StackPanel x:Name="RightPanel"
@@ -42,22 +42,22 @@
                 <TextBlock Margin="0,0,0,32"
                            Foreground="{ThemeResource SystemAccentColor}"
                            Style="{ThemeResource TitleLargeTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}"/>
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" />
                 <TextBlock FontWeight="Normal"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}"/>
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" />
                 <TextBlock Margin="0,0,0,32"
                            FontWeight="Normal"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}"/>
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}" />
                 <TextBlock Margin="0,0,0,16"
                            Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}" />
                     <Run Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}" />
                 </TextBlock>
                 <StackPanel Orientation="Vertical">
                     <TextBlock x:Name="ErrMsg"
@@ -67,7 +67,7 @@
                                Foreground="{ThemeResource TextFillColorPrimary}"
                                Text=""
                                TextTrimming="Clip"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="Wrap" />
                     <Button Click="ChooseFolder"
                             CornerRadius="16"
                             Style="{ThemeResource AccentButtonStyle}">
@@ -76,10 +76,10 @@
                             <TextBlock Margin="0,0,8,0"
                                        FontWeight="Medium"
                                        Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}"
-                                       TextWrapping="Wrap"/>
+                                       TextWrapping="Wrap" />
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="14"
-                                      Glyph="&#xf07b;"/>
+                                      Glyph="&#xf07b;" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -98,18 +98,18 @@
                                   IsActive="True"
                                   IsIndeterminate="false"
                                   Maximum="100"
-                                  Value="100"/>
+                                  Value="100" />
                     <TextBlock x:Name="OverlayTitle"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="Title"/>
+                               Text="Title" />
                     <TextBlock x:Name="OverlaySubtitle"
                                Margin="0,8,0,192"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                               Text="Subtitle"/>
+                               Text="Subtitle" />
                 </StackPanel>
             </Grid>
         </Grid>

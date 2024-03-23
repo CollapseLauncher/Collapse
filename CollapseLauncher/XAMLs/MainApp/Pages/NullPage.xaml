@@ -5,5 +5,5 @@
       xmlns:local="using:CollapseLauncher"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
-    <Grid/>
+    <Grid />
 </Page>
