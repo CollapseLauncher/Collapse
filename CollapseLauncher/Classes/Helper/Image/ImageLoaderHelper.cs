@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Background;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -15,14 +16,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using CollapseLauncher.BackgroundManagement;
-using System.Linq;
 
 namespace CollapseLauncher.Helper.Image
 {

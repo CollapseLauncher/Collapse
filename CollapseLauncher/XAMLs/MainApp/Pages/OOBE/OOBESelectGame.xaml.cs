@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Helper.Background;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -59,7 +60,7 @@ namespace CollapseLauncher.Pages.OOBE
                 bool IsSuccess = await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
 
                 if (_gamePosterBitmap != null && IsSuccess)
-                    MainPage.ApplyAccentColor(this, _gamePosterBitmap, _gamePosterPath);
+                    await ColorPaletteUtility.ApplyAccentColor(this, _gamePosterBitmap, _gamePosterPath);
 
                 NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();
 

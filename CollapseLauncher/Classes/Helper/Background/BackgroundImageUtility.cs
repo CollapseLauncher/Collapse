@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Background.Loaders;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -9,33 +10,43 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+
 #nullable enable
-namespace CollapseLauncher.BackgroundManagement
+namespace CollapseLauncher.Helper.Background
 {
-    internal static class BackgroundImageUtility
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
+    internal static partial class BackgroundImageUtility
     {
         private enum MediaType { Media, StillImage, Unknown };
 
+        internal const double TransitionDuration = 0.25d;
+        internal const double TransitionDurationSlow = 0.5d;
         internal static readonly string[] _supportedImageExt = new string[] { ".jpg", ".jpeg", ".jfif", ".png", ".bmp", ".tiff", ".tif", ".webp" };
         internal static readonly string[] _supportedMediaPlayerExt = new string[] { ".mp4", ".mov", ".mkv", ".webm", ".avi", ".gif" };
 
-        private static ImageSource? _imageSourceLast = null;
-        private static ImageSource? _imageSourceCurrent = null;
-
-        private static Image? _bgImageBackground = null;
-        private static Image? _bgImageBackgroundLast = null;
-        private static Image? _bgImageForeground = null;
-        private static Image? _bgImageForegroundLast = null;
+        private static FrameworkElement? _parentUI = null;
+        private static ImageUI? _bgImageBackground = null;
+        private static ImageUI? _bgImageBackgroundLast = null;
+        private static ImageUI? _bgImageForeground = null;
+        private static ImageUI? _bgImageForegroundLast = null;
         private static MediaPlayerElement? _bgMediaPlayerBackground = null;
 
         private static Grid? _parentBgImageBackgroundGrid = null;
         private static Grid? _parentBgImageForegroundGrid = null;
         private static Grid? _parentBgMediaPlayerBackgroundGrid = null;
 
-        private static bool _isCurrentRegistered = false;
         private static MediaType _currentAppliedMediaType = MediaType.Unknown;
 
-        private delegate Task AssignDefaultAction<T>(T element) where T : class;
+        private static CancellationTokenSourceWrapper? _cancellationToken = null;
+        private static StillImageLoader? _loaderStillImage = null;
+
+        private static bool _isCurrentDimmAnimRun = false;
+        private static bool _isCurrentUndimmAnimRun = false;
+        private static bool _isCurrentRegistered = false;
+
+        private delegate ValueTask AssignDefaultAction<T>(T element) where T : class;
 
         /// <summary>
         /// Attach and register the <c>Grid</c> of the page to be assigned with background utility.
@@ -44,11 +55,14 @@ namespace CollapseLauncher.BackgroundManagement
         /// <param name="bgImageGridForeground">The parent <c>Grid</c> for Foreground Image.</param>
         /// <param name="bgImageGridBackground">The parent <c>Grid</c> for Background Image.</param>
         /// <param name="bgMediaPlayerGrid">The parent <c>Grid</c> for Background Media Player</param>
-        internal static async Task RegisterCurrent(Grid bgImageGridForeground, Grid bgImageGridBackground, Grid bgMediaPlayerGrid)
+        internal static async Task RegisterCurrent(FrameworkElement? parentUI, Grid bgImageGridForeground, Grid bgImageGridBackground, Grid bgMediaPlayerGrid)
         {
+            // Set the parent UI
+            _parentUI = parentUI;
+
             // Initialize the background instances
-            (_bgImageForeground, _bgImageForegroundLast) = await InitializeElementGrid<Image>(bgImageGridForeground, "ImageForeground", AssignDefaultImage);
-            (_bgImageBackground, _bgImageBackgroundLast) = await InitializeElementGrid<Image>(bgImageGridBackground, "ImageBackground", AssignDefaultImage);
+            (_bgImageForeground, _bgImageForegroundLast) = await InitializeElementGrid<ImageUI>(bgImageGridForeground, "ImageForeground", AssignDefaultImage);
+            (_bgImageBackground, _bgImageBackgroundLast) = await InitializeElementGrid<ImageUI>(bgImageGridBackground, "ImageBackground", AssignDefaultImage);
             _bgMediaPlayerBackground = (await TryGetFirstGridElement<MediaPlayerElement>(bgMediaPlayerGrid, "MediaPlayer"))
                 .WithHorizontalAlignment(HorizontalAlignment.Center)
                 .WithVerticalAlignment(VerticalAlignment.Center)
@@ -59,6 +73,7 @@ namespace CollapseLauncher.BackgroundManagement
             _parentBgImageBackgroundGrid = bgImageGridBackground;
             _parentBgMediaPlayerBackgroundGrid = bgMediaPlayerGrid;
 
+            // Set that the current page has been registered
             _isCurrentRegistered = true;
         }
 
@@ -67,8 +82,8 @@ namespace CollapseLauncher.BackgroundManagement
         /// </summary>
         internal static void DetachCurrent()
         {
-            _imageSourceLast = null;
-            _imageSourceCurrent = null;
+            if (!_cancellationToken?.IsCancellationRequested ?? false)
+                _cancellationToken?.Cancel();
 
             _bgImageBackground = null;
             _bgImageForeground = null;
@@ -84,8 +99,9 @@ namespace CollapseLauncher.BackgroundManagement
             _parentBgImageBackgroundGrid = null;
             _parentBgMediaPlayerBackgroundGrid = null;
 
-            _isCurrentRegistered = false;
             _currentAppliedMediaType = MediaType.Unknown;
+
+            _isCurrentRegistered = false;
         }
 
         /// <summary>
@@ -96,12 +112,12 @@ namespace CollapseLauncher.BackgroundManagement
         /// <param name="baseTagType">The base tag to determine the element type.</param>
         /// <param name="defaultAssignAction">The delegate to perform action after the new element is created.</param>
         /// <returns>The tuple of the new "current and last" instance of the element.</returns>
-        private static async Task<(TElement?, TElement?)> InitializeElementGrid<TElement>(Grid elementGrid, string baseTagType, AssignDefaultAction<TElement>? defaultAssignAction = null)
+        private static async ValueTask<(TElement?, TElement?)> InitializeElementGrid<TElement>(Grid elementGrid, string baseTagType, AssignDefaultAction<TElement>? defaultAssignAction = null)
             where TElement : FrameworkElement, new()
         {
             // Get the type name of the element
             string? typeName = typeof(TElement).Name + '_';
-            
+
             // Find or create the element from/to the parent grid.
             TElement? elementCurrent = (await TryGetFirstGridElement(elementGrid, typeName + baseTagType + "_Current", defaultAssignAction))
                 .WithHorizontalAlignment(HorizontalAlignment.Center)
@@ -124,7 +140,7 @@ namespace CollapseLauncher.BackgroundManagement
         /// <param name="tagType">The exact tag to determine the element type.</param>
         /// <param name="defaultAssignAction">The delegate to perform action after the new element is created.</param>
         /// <returns>Returns <c>null</c> if the <c>Grid</c> is null. Returns the new or existing element from the <c>Grid</c>.</returns>
-        private static async Task<T?> TryGetFirstGridElement<T>(Grid elementGrid, string tagType, AssignDefaultAction<T>? defaultAssignAction = null)
+        private static async ValueTask<T?> TryGetFirstGridElement<T>(Grid elementGrid, string tagType, AssignDefaultAction<T>? defaultAssignAction = null)
             where T : FrameworkElement, new()
         {
             // If the parent grid is null, then return null
@@ -161,10 +177,10 @@ namespace CollapseLauncher.BackgroundManagement
         /// </summary>
         /// <typeparam name="TElement">Type of an <c>Image</c>.</typeparam>
         /// <param name="element">Instance of an <c>Image</c>.</param>
-        private static async Task AssignDefaultImage<TElement>(TElement element)
+        private static async ValueTask AssignDefaultImage<TElement>(TElement element)
         {
             // If the element type is an "Image" type, then proceed
-            if (element is Image image)
+            if (element is ImageUI image)
             {
                 // Get the default.png path and check if it exists
                 string filePath = LauncherConfig.AppDefaultBG;
@@ -181,35 +197,120 @@ namespace CollapseLauncher.BackgroundManagement
             }
         }
 
+        /// <summary>
+        /// Ensure that the <see cref="ImageUI"/> instance is already initialized
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Throw if <see cref="ImageUI"/> instance is not registered</exception>
         private static void EnsureCurrentImageRegistered()
         {
             if (_bgImageForeground == null || _bgImageForegroundLast == null) throw new ArgumentNullException("bgImageGridForeground");
             if (_bgImageBackground == null || _bgImageBackgroundLast == null) throw new ArgumentNullException("bgImageGridBackground");
         }
 
+        /// <summary>
+        /// Ensure that the <see cref="MediaPlayerElement"/> instance is already initialized
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Throw if <see cref="MediaPlayerElement"/> instance is not registered</exception>
         private static void EnsureCurrentMediaPlayerRegistered()
         {
             if (_bgMediaPlayerBackground == null) throw new ArgumentNullException("bgMediaPlayerGrid");
         }
 
-        private static void LoadBackground(string mediaPath)
+        /// <summary>
+        /// Load Still Image or Video as a background.
+        /// </summary>
+        /// <param name="mediaPath">Path of the background file</param>
+        /// <param name="isRequestInit">Request an initialization before processing the background file</param>
+        /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
+        /// <exception cref="FormatException">Throws if the background file is not supported</exception>
+        /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
+        internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false, bool isForceRecreateCache = false)
         {
-            MediaType mediaType = GetMediaType(mediaPath);
+            while (!_isCurrentRegistered) await Task.Delay(250, _cancellationToken?.Token ?? default);
 
-            switch (GetMediaType(mediaPath))
+            EnsureCurrentImageRegistered();
+            EnsureCurrentMediaPlayerRegistered();
+
+            if (_cancellationToken != null && !_cancellationToken.IsDisposed)
+            {
+                await _cancellationToken.CancelAsync();
+                _cancellationToken.Dispose();
+            }
+
+            MediaType mediaType = GetMediaType(mediaPath);
+            IBackgroundImageLoader? loader = null;
+
+            switch (mediaType)
             {
                 case MediaType.Media:
                     // TODO
                     break;
                 case MediaType.StillImage:
-                    // TODO
+                    if (_loaderStillImage == null)
+                        _loaderStillImage = new StillImageLoader(
+                            _parentUI!,
+                            _parentBgImageForegroundGrid!, _parentBgImageBackgroundGrid!,
+                            _bgImageForeground, _bgImageForegroundLast,
+                            _bgImageBackground, _bgImageBackgroundLast,
+                            TransitionDuration);
+                    loader = _loaderStillImage;
                     break;
                 case MediaType.Unknown:
                 default:
                     throw new FormatException($"Media format is unknown and cannot be determined!");
+            }
 
+            if (_currentAppliedMediaType != mediaType && _currentAppliedMediaType != MediaType.Unknown)
+            {
+                // TODO Transition between Still Image and Media background
+            }
+
+            if (loader == null) throw new NullReferenceException("No background image loader is assigned!");
+
+            _cancellationToken = new CancellationTokenSourceWrapper();
+            await loader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken.Token);
+
+            _currentAppliedMediaType = mediaType;
+        }
+
+        internal static async void Dimm()
+        {
+            while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun) { await Task.Delay(250); }
+
+            try
+            {
+                _isCurrentDimmAnimRun = true;
+                await GetImageLoader(_currentAppliedMediaType)!
+                     .DimmAsync(_cancellationToken?.Token ?? default);
+            }
+            finally
+            {
+                _isCurrentDimmAnimRun = false;
             }
         }
+
+        internal static async void Undimm()
+        {
+            while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun) { await Task.Delay(250); }
+
+            try
+            {
+                _isCurrentUndimmAnimRun = true;
+                await GetImageLoader(_currentAppliedMediaType)!
+                     .UndimmAsync(_cancellationToken?.Token ?? default);
+            }
+            finally
+            {
+                _isCurrentUndimmAnimRun = false;
+            }
+        }
+
+        private static IBackgroundImageLoader? GetImageLoader(MediaType mediaType)
+            => mediaType switch
+            {
+                MediaType.StillImage => _loaderStillImage,
+                _ => throw new NotImplementedException()
+            };
 
         private static MediaType GetMediaType(string mediaPath)
         {

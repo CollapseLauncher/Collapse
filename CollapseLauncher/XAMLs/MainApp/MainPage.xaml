@@ -16,20 +16,6 @@
         <ListView x:Name="KeyboardHandler"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
-        <Grid x:Name="Background">
-            <Image x:Name="BackgroundBack"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Opacity="0"
-                   Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                   Stretch="UniformToFill"/>
-            <Image x:Name="BackgroundBackBuffer"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Opacity="0"
-                   Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                   Stretch="UniformToFill"/>
-        </Grid>
         <Grid x:Name="BackgroundNewMediaPlayerGrid"/>
         <Grid x:Name="BackgroundNewBackGrid"/>
         <Grid x:Name="BackgroundAcrylicMask"
@@ -50,20 +36,6 @@
                         PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
                         Visibility="Visible">
             <Grid>
-                <Image x:Name="BackgroundFront"
-                       Margin="0,0,0,0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Opacity="1"
-                       Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                       Stretch="UniformToFill"/>
-                <Image x:Name="BackgroundFrontBuffer"
-                       Margin="0,0,0,0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Opacity="0"
-                       Source="ms-appx:///Assets/Images/PageBackground/default.png"
-                       Stretch="UniformToFill"/>
                 <Grid x:Name="BackgroundNewFrontGrid"/>
                 <Frame x:Name="LauncherFrame">
                     <Frame.ContentTransitions>

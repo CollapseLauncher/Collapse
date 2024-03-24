@@ -1,9 +1,10 @@
-using CollapseLauncher.BackgroundManagement;
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -47,17 +48,18 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         #region Properties
-        bool         IsLoadNotifComplete;
         private bool LockRegionChangeBtn;
-        private bool IsLoadFrameCompleted = true;
         private bool IsTitleIconForceShow;
         private bool IsNotificationPanelShow;
+        private bool IsLoadNotifComplete;
+        private bool IsLoadFrameCompleted     = true;
+        private bool IsFirstStartup           = true;
         private int  CurrentGameCategory      = -1;
         private int  CurrentGameRegion        = -1;
 
-        private  static bool         IsCurrentHideBGAnimRun  = false;
+        private RegionResourceProp _gameAPIProp { get; set; }
+
         private  static bool         IsChangeDragArea        = true;
-        private  static List<Task>   CurrentHideBGAnimQueue  = new List<Task>();
         internal static List<string> PreviousTagString       = new List<string>();
         #endregion
 
@@ -84,13 +86,6 @@ namespace CollapseLauncher
             }
         }
 
-        static MainPage()
-        {
-            IsCurrentHideBGAnimRun = false;
-            CurrentHideBGAnimQueue = new List<Task>();
-            RunHideBackgroundAnimQueue();
-        }
-
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeEvents();
@@ -102,6 +97,7 @@ namespace CollapseLauncher
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
+            BackgroundImageUtility.DetachCurrent();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -149,12 +145,11 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             RunBackgroundCheck();
-            await BackgroundImageUtility.RegisterCurrent(BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
 
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
 
-            Type Page;
+            Type Page = typeof(HomePage);
 
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
@@ -163,20 +158,11 @@ namespace CollapseLauncher
                 await DownloadConfigV2Files(true, true);
             }
 
-            if (m_appMode == AppMode.Hi3CacheUpdater)
-            {
-                LoadConfigV2CacheOnly();
-                Page = typeof(CachesPage);
-
-                // Set background opacity to 0
-                BackgroundFront.Opacity = 0;
-            }
+            if (m_appMode == AppMode.Hi3CacheUpdater) LoadConfigV2CacheOnly();
             else
             {
                 LoadConfigV2();
                 SetActivatedRegion();
-
-                Page = typeof(HomePage);
             }
 
 #if !DISABLEDISCORD
@@ -189,6 +175,9 @@ namespace CollapseLauncher
             LockRegionChangeBtn = true;
 
             PresetConfigV2 Preset = LoadSavedGameSelection();
+
+            if (m_appMode == AppMode.Hi3CacheUpdater)
+                Page = (m_appMode == AppMode.Hi3CacheUpdater && CurrentConfigV2.GameType == GameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage);
 
             InitKeyboardShortcuts();
 
@@ -413,51 +402,18 @@ namespace CollapseLauncher
                 GridBG_RegionInner.HorizontalAlignment = HorizontalAlignment.Left;
             }
 
-            Background.Visibility            = Visibility.Visible;
             BackgroundAcrylicMask.Visibility = Visibility.Visible;
-        }
-
-        public static void ReloadPageTheme(FrameworkElement page, ElementTheme startTheme)
-        {
-            bool IsComplete = false;
-            while (!IsComplete)
-            {
-                try
-                {
-                    if (page.RequestedTheme == ElementTheme.Dark)
-                        page.RequestedTheme = ElementTheme.Light;
-                    else if (page.RequestedTheme == ElementTheme.Light)
-                        page.RequestedTheme = ElementTheme.Default;
-                    else if (page.RequestedTheme == ElementTheme.Default)
-                        page.RequestedTheme = ElementTheme.Dark;
-
-                    if (page.RequestedTheme != startTheme)
-                        ReloadPageTheme(page, startTheme);
-                    IsComplete = true;
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-        }
-
-        public static ElementTheme ConvertAppThemeToElementTheme(AppThemeMode Theme)
-        {
-            switch (Theme)
-            {
-                default:
-                    return ElementTheme.Default;
-                case AppThemeMode.Dark:
-                    return ElementTheme.Dark;
-                case AppThemeMode.Light:
-                    return ElementTheme.Light;
-            }
         }
         #endregion
 
         #region Background Image
-        private void BackgroundImg_IsImageHideEvent(object sender, bool e) => HideBackgroundImage(e);
+        private void BackgroundImg_IsImageHideEvent(object sender, bool e)
+        {
+            if (IsFirstStartup) return;
+
+            if (e) BackgroundImageUtility.Dimm();
+            else BackgroundImageUtility.Undimm();
+        }
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
@@ -476,15 +432,41 @@ namespace CollapseLauncher
 
             try
             {
-                await RunApplyBackgroundTask(IsFirstStartup);
+                await BackgroundImageUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
             }
             catch (Exception ex)
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
+            
+            e.IsImageLoaded                   = true;
+        }
 
-            e.IsImageLoaded = true;
+        internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
+        {
+            IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
+            if (IsCustomBG)
+            {
+                string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                regionBackgroundProp.imgLocalPath = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+            }
+            else
+            {
+                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, CurrentConfigV2, ShowLoadingMsg))
+                {
+                    regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                }
+            }
+
+            if (!IsCustomBG || IsFirstStartup)
+            {
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                await BackgroundImgChanger.WaitForBackgroundToLoad();
+            }
+
+            IsFirstStartup = false;
+            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
         }
         #endregion
 
@@ -525,12 +507,13 @@ namespace CollapseLauncher
         #endregion
 
         #region Background Tasks
-        private async Task RunApplyBackgroundTask(bool IsFirstStartup) => await ApplyBackground(IsFirstStartup);
-
         private async void RunBackgroundCheck()
         {
             try
             {
+                // Initialize the background image utility
+                await BackgroundImageUtility.RegisterCurrent(this, BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
 
@@ -557,7 +540,8 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Error while trying to run background tasks!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
         #endregion
@@ -1104,6 +1088,8 @@ namespace CollapseLauncher
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
 
+            IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty()._GameVersion;
+
             FontFamily Fnt = FontCollections.FontAwesomeSolid;
 
             FontIcon IconLauncher = new FontIcon { FontFamily = Fnt, Glyph = "" };
@@ -1112,27 +1098,41 @@ namespace CollapseLauncher
             FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
-
-            if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
+            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
+                SettingsItem.Content = Lang._SettingsPage.PageTitle;
+                SettingsItem.Icon = IconAppSettings;
+                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
+            }
 
-                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
-                {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
-                }
-
-                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+            if (m_appMode == AppMode.Hi3CacheUpdater)
+            {
+                if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
+                return;
             }
 
-            switch (GetCurrentGameProperty()._GameVersion.GameType)
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
+
+            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
+
+            if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
+            }
+
+            if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+            }
+
+            switch (CurrentGameVersionCheck.GameType)
             {
                 case GameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
@@ -1144,7 +1144,7 @@ namespace CollapseLauncher
                     break;
             }
 
-            if (GetCurrentGameProperty()._GameVersion.GameType == GameType.Genshin)
+            if (CurrentGameVersionCheck.GameType == GameType.Genshin)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
@@ -1153,8 +1153,6 @@ namespace CollapseLauncher
             if (ResetSelection)
             {
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-                (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
-                (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
             }
         }
 
@@ -1201,7 +1199,7 @@ namespace CollapseLauncher
 
                 case "caches":
                     if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                        Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                        Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty()._GameVersion.GamePreset.GameType == GameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                     else
                         Navigate(typeof(UnavailablePage), itemTag);
                     break;

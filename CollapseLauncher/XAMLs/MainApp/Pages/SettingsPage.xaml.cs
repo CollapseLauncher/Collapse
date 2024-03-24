@@ -330,15 +330,10 @@ namespace CollapseLauncher.Pages
             string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
-                FileStream dummyStream = await ImageLoaderHelper.LoadImage(file, true, true);
-                if (dummyStream != null)
-                {
-                    await dummyStream.DisposeAsync();
-                    regionBackgroundProp.imgLocalPath = file;
-                    SetAndSaveConfigValue("CustomBGPath", file);
-                    BGPathDisplay.Text = file;
-                    BackgroundImgChanger.ChangeBackground(file);
-                }
+                regionBackgroundProp.imgLocalPath = file;
+                SetAndSaveConfigValue("CustomBGPath", file);
+                BGPathDisplay.Text = file;
+                BackgroundImgChanger.ChangeBackground(file, true, true, true);
             }
         }
 
@@ -431,7 +426,7 @@ namespace CollapseLauncher.Pages
                         }
                     }
                     BGPathDisplay.Text = regionBackgroundProp.imgLocalPath;
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, true, true, false);
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
                 }
@@ -566,7 +561,7 @@ namespace CollapseLauncher.Pages
             {
                 ImageLoaderHelper.IsWaifu2XEnabled = value;
                 if (ImageLoaderHelper.Waifu2XStatus < Waifu2XStatus.Error)
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG, true);
                 else
                     Bindings.Update();
             }
