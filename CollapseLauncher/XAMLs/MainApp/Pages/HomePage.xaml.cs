@@ -1,3 +1,4 @@
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper.Image;
@@ -2014,7 +2015,15 @@ namespace CollapseLauncher.Pages
         {
             TextBlock textBlock = null;
             if (sender is Grid grid)
-                textBlock = ((TextBlock)grid.Children[0]);
+            {
+                if (grid.Children[0] is TextBlock)
+                    textBlock = (TextBlock)grid.Children[0];
+                else if (grid.Children[0] is CompressedTextBlock compressedTextBlock)
+                {
+                    compressedTextBlock.Foreground = (Brush)Application.Current.Resources["AccentColor"];
+                    return;
+                }
+            }
             else if (sender is TextBlock block)
                 textBlock = block;
             if (textBlock != null)
@@ -2025,7 +2034,15 @@ namespace CollapseLauncher.Pages
         {
             TextBlock textBlock = null;
             if (sender is Grid grid)
-                textBlock = ((TextBlock)grid.Children[0]);
+            {
+                if (grid.Children[0] is TextBlock)
+                    textBlock = (TextBlock)grid.Children[0];
+                else if (grid.Children[0] is CompressedTextBlock compressedTextBlock)
+                {
+                    compressedTextBlock.Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                    return;
+                }
+            }
             else if (sender is TextBlock block)
                 textBlock = block;
             if (textBlock != null)
