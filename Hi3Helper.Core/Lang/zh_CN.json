@@ -442,6 +442,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "采用",
     "About_Copyright4": "。版权所有。",
+    
+    "LicenseType": "MIT 许可证",
 
     "Disclaimer": "免责声明",
     "Disclaimer1": "本程序与",
@@ -537,9 +539,9 @@
     "IAcceptAgreement": "我同意用户协议",
     "IDoNotAcceptAgreement": "我不同意用户协议",
 
-    "LangNameENUS": "英语（美国）",
+    "LangNameENUS": "英语",
     "LangNameJP": "日语",
-    "LangNameCN": "中文（简体）",
+    "LangNameCN": "汉语",
     "LangNameKR": "韩语",
 
     "Downloading": "下载中",
