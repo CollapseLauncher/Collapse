@@ -539,9 +539,9 @@
     "IAcceptAgreement": "I accept the agreement",
     "IDoNotAcceptAgreement": "I do not accept the agreement",
 
-    "LangNameENUS": "English (US)",
+    "LangNameENUS": "English",
     "LangNameJP": "Japanese",
-    "LangNameCN": "Chinese (Simplified)",
+    "LangNameCN": "Chinese",
     "LangNameKR": "Korean",
 
     "Downloading": "Downloading",
