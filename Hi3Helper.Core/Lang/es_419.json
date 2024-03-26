@@ -539,9 +539,9 @@
     "IAcceptAgreement": "He leído y acepto el Acuerdo",
     "IDoNotAcceptAgreement": "No acepto el Acuerdo",
 
-    "LangNameENUS": "Inglés (EE.UU.)",
+    "LangNameENUS": "Inglés",
     "LangNameJP": "Japonés",
-    "LangNameCN": "Chino (Simplificado)",
+    "LangNameCN": "Chino",
     "LangNameKR": "Coreano",
 
     "Downloading": "Descargando",
@@ -1043,7 +1043,7 @@
     "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
     "LanguageAudio": "Voces",
     "LanguageText": "Texto",
-    "VO_en": "Ingles",
+    "VO_en": "Inglés",
     "VO_cn": "Chino",
     "VO_jp": "Japones",
     "VO_kr": "Coreano"
@@ -1143,7 +1143,7 @@
     "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
     "LanguageAudio": "Voces",
     "LanguageText": "Texto",
-    "VO_en": "Ingles",
+    "VO_en": "Inglés",
     "VO_cn": "Chino",
     "VO_jp": "Japones",
     "VO_kr": "Coreano"
