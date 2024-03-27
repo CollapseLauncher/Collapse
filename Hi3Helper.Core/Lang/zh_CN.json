@@ -149,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "分钟",
     "GamePlaytime_Idle_ResetBtn": "重置",
     "GamePlaytime_Idle_ChangeBtn": "更改",
-    "GamePlaytime_Idle_InvalidTimeBlock": "提供的值无效。",
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
     "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 会导致游戏时间记录停止（之前的记录会被保存），并且时间会在下次 Collapse 启动时再次开始记录。",
     "GamePlaytime_Display": "{0}小时 {1}分钟",
+    "GamePlaytime_ToolTipDisplay": "最后打开于 {2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
 
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
@@ -442,6 +442,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "采用",
     "About_Copyright4": "。版权所有。",
+    
+    "LicenseType": "MIT 许可证",
 
     "Disclaimer": "免责声明",
     "Disclaimer1": "本程序与",
@@ -537,9 +539,9 @@
     "IAcceptAgreement": "我同意用户协议",
     "IDoNotAcceptAgreement": "我不同意用户协议",
 
-    "LangNameENUS": "英语（美国）",
+    "LangNameENUS": "英语",
     "LangNameJP": "日语",
-    "LangNameCN": "中文（简体）",
+    "LangNameCN": "汉语",
     "LangNameKR": "韩语",
 
     "Downloading": "下载中",

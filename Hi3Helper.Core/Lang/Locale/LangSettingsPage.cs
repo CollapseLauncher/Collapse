@@ -74,6 +74,7 @@
                 public string About_Copyright2                      { get; set; } = LangFallback?._SettingsPage.About_Copyright2;
                 public string About_Copyright3                      { get; set; } = LangFallback?._SettingsPage.About_Copyright3;
                 public string About_Copyright4                      { get; set; } = LangFallback?._SettingsPage.About_Copyright4;
+                public string MITLicense                            { get; set; } = LangFallback?._SettingsPage.MITLicense;
                 public string Disclaimer                            { get; set; } = LangFallback?._SettingsPage.Disclaimer;
                 public string Disclaimer1                           { get; set; } = LangFallback?._SettingsPage.Disclaimer1;
                 public string Disclaimer2                           { get; set; } = LangFallback?._SettingsPage.Disclaimer2;

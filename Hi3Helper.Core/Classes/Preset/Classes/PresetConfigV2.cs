@@ -305,18 +305,13 @@ namespace Hi3Helper.Preset
         {
             try
             {
-                ReadOnlySpan<char> regValue;
                 RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation!, true);
-                GeneralDataProp initValue = new GeneralDataProp();
-                byte[]? result;
-
-                if (keys is null)
-                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation!);
-                else
+                if (keys is null) keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation!);
+                var result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
+                var initValue = new GeneralDataProp();
+                if (result != null)
                 {
-                    result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                    if (result is null) return;
-                    regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
+                    ReadOnlySpan<char> regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
                     initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), CoreLibraryJSONContext.Default) ?? initValue;
                 }
 

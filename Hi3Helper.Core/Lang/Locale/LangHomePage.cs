@@ -55,10 +55,10 @@
                 public string GamePlaytime_Idle_Panel1Minutes { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_Panel1Minutes;
                 public string GamePlaytime_Idle_ResetBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ResetBtn;
                 public string GamePlaytime_Idle_ChangeBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ChangeBtn;
-                public string GamePlaytime_Idle_InvalidTimeBlock { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_InvalidTimeBlock;
                 public string GamePlaytime_Running_Info1 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info1;
                 public string GamePlaytime_Running_Info2 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info2;
                 public string GamePlaytime_Display { get; set; } = LangFallback?._HomePage.GamePlaytime_Display;
+                public string GamePlaytime_ToolTipDisplay { get; set; } = LangFallback?._HomePage.GamePlaytime_ToolTipDisplay;
                 public string PostPanel_Events { get; set; } = LangFallback?._HomePage.PostPanel_Events;
                 public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
                 public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;
