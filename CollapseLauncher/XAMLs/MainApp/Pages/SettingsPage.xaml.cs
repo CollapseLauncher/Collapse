@@ -64,9 +64,13 @@ namespace CollapseLauncher.Pages
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
-
-            // TODO: Eventually, we should make this a button which copies on click, but this works for now
-            GitVersionIndicator.Text = $"{ThisAssembly.Git.Branch} - {ThisAssembly.Git.Commit}";
+            
+            GitVersionIndicator.Text = GitVersionIndicator_Builder();
+            GitVersionIndicator_Hyperlink.NavigateUri = 
+                new Uri(new StringBuilder()
+                    .Append(ThisAssembly.Git.RepositoryUrl)
+                    .Append("commit/")
+                    .Append(ThisAssembly.Git.Sha).ToString());
 
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
@@ -83,6 +87,25 @@ namespace CollapseLauncher.Pages
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
         }
 
+        private string GitVersionIndicator_Builder()
+        {
+            var branchName = ThisAssembly.Git.Branch;
+            var commitShort = ThisAssembly.Git.Commit;
+
+            // Add indicator if the commit is dirty
+            // CS0162: Unreachable code detected
+#pragma warning disable CS0162
+            if (ThisAssembly.Git.IsDirty) commitShort = $"{commitShort}*";
+#pragma warning restore CS0162
+
+            var outString =
+                // If branch is not HEAD, show branch name and short commit
+                // Else, show full SHA 
+                branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
+
+            return outString;
+        }
+        
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);

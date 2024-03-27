@@ -16,20 +16,20 @@
         <Grid x:Name="PageContent"
               Margin="32,40,32,18">
             <Grid.RowDefinitions>
-                <RowDefinition Height="80"/>
-                <RowDefinition/>
-                <RowDefinition Height="124"/>
+                <RowDefinition Height="80" />
+                <RowDefinition />
+                <RowDefinition Height="124" />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
                        Style="{ThemeResource TitleLargeTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}"/>
+                       Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" />
             <Grid x:Name="CachesDataTableGrid"
                   Grid.Row="1"
                   VerticalAlignment="Stretch"
                   Visibility="Collapsed">
                 <Grid.ChildrenTransitions>
                     <TransitionCollection>
-                        <PopupThemeTransition/>
+                        <PopupThemeTransition />
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
                 <ListView ItemsSource="{x:Bind CurrentGameProperty._GameCache.AssetEntry}">
@@ -38,7 +38,7 @@
                                 Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
                                 CornerRadius="8">
                             <interactivity:Interaction.Behaviors>
-                                <behaviors:StickyHeaderBehavior/>
+                                <behaviors:StickyHeaderBehavior />
                             </interactivity:Interaction.Behaviors>
                             <datatable:DataTable Margin="12,0,0,8">
                                 <datatable:DataColumn MinWidth="128"
@@ -47,38 +47,38 @@
                                                       DesiredWidth="5*"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
-                                                      Tag="CacheName"/>
+                                                      Tag="CacheName" />
                                 <datatable:DataColumn CanResize="True"
                                                       Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
-                                                      Tag="CacheType"/>
+                                                      Tag="CacheType" />
                                 <datatable:DataColumn MinWidth="128"
                                                       CanResize="True"
                                                       Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}"
                                                       DesiredWidth="7*"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
-                                                      Tag="Source"/>
+                                                      Tag="Source" />
                                 <datatable:DataColumn CanResize="True"
                                                       Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
-                                                      Tag="CacheSize"/>
+                                                      Tag="CacheSize" />
                                 <datatable:DataColumn CanResize="True"
                                                       Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
-                                                      Tag="CacheCurCRC"/>
+                                                      Tag="CacheCurCRC" />
                                 <datatable:DataColumn CanResize="True"
                                                       Content="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}"
                                                       DesiredWidth="92"
                                                       FontSize="13"
                                                       FontWeight="SemiBold"
-                                                      Tag="CacheExptCRC"/>
+                                                      Tag="CacheExptCRC" />
                             </datatable:DataTable>
                         </Border>
                     </ListView.Header>
@@ -88,35 +88,34 @@
                                 <TextBlock Margin="0,0,16,0"
                                            VerticalAlignment="Center"
                                            Text="{x:Bind Name}"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Margin="0,0,16,0"
                                            VerticalAlignment="Center"
                                            Text="{x:Bind AssetTypeString}"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Margin="0,0,16,0"
                                            VerticalAlignment="Center"
                                            Text="{x:Bind Source}"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Margin="0,0,16,0"
                                            VerticalAlignment="Center"
                                            Text="{x:Bind SizeStr}"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Margin="0,0,16,0"
                                            VerticalAlignment="Center"
                                            Text="{x:Bind LocalCRC}"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Margin="0,0,16,0"
                                            VerticalAlignment="Center"
                                            Text="{x:Bind RemoteCRC}"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                             </datatable:DataRow>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     <ListView.ItemContainerStyle>
                         <Style BasedOn="{StaticResource DefaultListViewItemStyle}"
                                TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment"
-                                    Value="Left"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
@@ -127,36 +126,36 @@
                            Grid.Row="1"
                            Margin="0,0,0,16"
                            FontSize="18"
-                           TextTrimming="CharacterEllipsis"
-                           Text="{x:Bind helper:Locale.Lang._CachesPage.Status1}"/>
+                           Text="{x:Bind helper:Locale.Lang._CachesPage.Status1}"
+                           TextTrimming="CharacterEllipsis" />
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0"
                                 Margin="0,0,32,0">
                         <TextBlock Margin="0,0,0,8"
                                    FontSize="16"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"/>
+                                   Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}" />
                         <control:DockPanel HorizontalAlignment="Stretch"
                                            LastChildFill="False">
                             <TextBlock x:Name="CachesTotalStatus"
                                        control:DockPanel.Dock="Left"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._CachesPage.CachesTotalStatusNone}"/>
+                                       Text="{x:Bind helper:Locale.Lang._CachesPage.CachesTotalStatusNone}" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="%"/>
+                                       Text="%" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{Binding Value, ElementName=CachesTotalProgressBar}"/>
+                                       Text="{Binding Value, ElementName=CachesTotalProgressBar}" />
                         </control:DockPanel>
                         <ProgressBar x:Name="CachesTotalProgressBar"
                                      Height="25"
                                      Maximum="100"
-                                     Value="0"/>
+                                     Value="0" />
                     </StackPanel>
                     <Grid Grid.Row="1"
                           Grid.Column="1"
@@ -164,8 +163,8 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Bottom">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Button x:Name="UpdateCachesBtn"
                                 HorizontalAlignment="Stretch"
@@ -176,10 +175,10 @@
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
-                                          Glyph="&#xf019;"/>
+                                          Glyph="&#xf019;" />
                                 <TextBlock Margin="8,0"
                                            FontWeight="Medium"
-                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}"/>
+                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" />
                             </StackPanel>
                         </Button>
                         <SplitButton x:Name="CheckUpdateBtn"
@@ -191,10 +190,10 @@
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
-                                          Glyph="&#xf002;"/>
+                                          Glyph="&#xf002;" />
                                 <TextBlock Margin="8,0"
                                            FontWeight="Medium"
-                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}"/>
+                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
                             </StackPanel>
                             <SplitButton.Flyout>
                                 <Flyout Placement="Bottom">
@@ -208,10 +207,10 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf101;"/>
+                                                          Glyph="&#xf101;" />
                                                 <TextBlock Margin="8,0"
                                                            FontWeight="Medium"
-                                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}"/>
+                                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name="CheckUpdateFullBtn"
@@ -223,10 +222,10 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf105;"/>
+                                                          Glyph="&#xf105;" />
                                                 <TextBlock Margin="8,0"
                                                            FontWeight="Medium"
-                                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}"/>
+                                                           Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}" />
                                             </StackPanel>
                                         </Button>
                                     </StackPanel>
@@ -242,7 +241,7 @@
                                 IsEnabled="False">
                             <TextBlock Margin="8,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._Misc.Cancel}"/>
+                                       Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
                         </Button>
                     </Grid>
                     <StackPanel Grid.Row="1"
@@ -250,7 +249,7 @@
                                 Margin="0,0,0,10"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
-                                Orientation="Horizontal"/>
+                                Orientation="Horizontal" />
                 </Grid>
             </StackPanel>
         </Grid>
@@ -267,18 +266,18 @@
                               IsActive="True"
                               IsIndeterminate="false"
                               Maximum="100"
-                              Value="100"/>
+                              Value="100" />
                 <TextBlock x:Name="OverlayTitle"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="Title"/>
+                           Text="Title" />
                 <TextBlock x:Name="OverlaySubtitle"
                            Margin="0,8,0,192"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                           Text="Subtitle"/>
+                           Text="Subtitle" />
             </StackPanel>
         </Grid>
     </Grid>
