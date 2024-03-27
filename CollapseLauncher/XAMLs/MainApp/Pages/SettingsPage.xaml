@@ -4,9 +4,9 @@
 <Page x:Class="CollapseLauncher.Pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,19 +15,19 @@
       NavigationCacheMode="Enabled"
       mc:Ignorable="d">
     <Page.Resources>
-        <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
+        <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
     </Page.Resources>
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="350"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="350" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0"
                         HorizontalAlignment="Left">
                 <TextBlock Margin="0,0,0,16"
                            Style="{ThemeResource TitleLargeTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}"/>
+                           Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}" />
                 <StackPanel x:Name="AppSettings"
                             Margin="0,8"
                             HorizontalAlignment="Left">
@@ -35,101 +35,101 @@
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Margin="0,0,0,16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" />
                             <ComboBox x:Name="LanguageSelector"
                                       MinWidth="256"
                                       CornerRadius="14"
                                       DropDownClosed="UpdateEveryComboBoxLayout"
                                       ItemsSource="{x:Bind LanguageList}"
                                       MaxDropDownHeight="200"
-                                      SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}"/>
+                                      SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}" />
                             <TextBlock x:Name="AppLangSelectionWarning"
                                        Margin="0,12,0,0"
                                        FontWeight="Bold"
-                                       TextWrapping="Wrap"
                                        Foreground="{ThemeResource AccentColor}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}"
-                                       Visibility="Collapsed"/>
+                                       TextWrapping="Wrap"
+                                       Visibility="Collapsed" />
                         </StackPanel>
                         <StackPanel Margin="0,10,0,16">
                             <TextBlock Margin="0,0,0,8"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}" />
                             <TextBlock Margin="0,0,0,10"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}" />
                             <ComboBox x:Name="GameLaunchedBehaviorSelector"
                                       MinWidth="256"
                                       Margin="0,0,0,14"
                                       CornerRadius="14"
                                       MaxDropDownHeight="200"
                                       SelectedIndex="{x:Bind AppGameLaunchedBehaviorIndex, Mode=TwoWay}">
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Minimize}"/>
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}"/>
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Minimize}" />
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}" />
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}" />
                             </ComboBox>
                             <ToggleSwitch Margin="0,4"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_MinimizeToTray}"
                                           IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <ToggleSwitch x:Name="StartupToggle"
                                           Margin="0,4"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_LaunchOnStartup}"
                                           IsOn="{x:Bind IsLaunchOnStartup, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <ToggleSwitch x:Name="StartupToTrayToggle"
                                           Margin="0,4"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_StartupToTray}"
                                           IsOn="{x:Bind IsStartupToTray, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                          Visibility="Collapsed"/>
+                                          Visibility="Collapsed" />
                         </StackPanel>
                         <TextBlock Margin="0,0,0,16"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" />
                         <StackPanel Margin="0,-8,0,8">
                             <RadioButtons x:Name="AppThemeSelection"
                                           Margin="0,0,0,8"
                                           SelectedIndex="{x:Bind CurrentThemeSelection, Mode=TwoWay}">
-                                <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}"/>
-                                <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}"/>
-                                <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}"/>
+                                <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}" />
+                                <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}" />
+                                <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}" />
                             </RadioButtons>
                             <TextBlock x:Name="AppThemeSelectionWarning"
                                        Margin="0,4"
                                        FontWeight="Bold"
-                                       TextWrapping="Wrap"
                                        Foreground="{ThemeResource AccentColor}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}"
-                                       Visibility="Collapsed"/>
+                                       TextWrapping="Wrap"
+                                       Visibility="Collapsed" />
                         </StackPanel>
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableAcrylicEffect}"
                                       IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <Grid Margin="0,4,0,8">
                             <Border Background="Transparent"
                                     ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
-                                    Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}"/>
-                            <ToggleSwitch IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
-                                          IsEnabled="{x:Bind IsWaifu2XUsable}"
+                                    Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
+                            <ToggleSwitch IsEnabled="{x:Bind IsWaifu2XUsable}"
+                                          IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                           ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}">
                                 <ToggleSwitch.Header>
-                                    <StackPanel Orientation="Horizontal"
-                                                Loaded="EnableHeaderMouseEvent">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Waifu2X_Toggle}"
-                                                   VerticalAlignment="Center"/>
+                                    <StackPanel Loaded="EnableHeaderMouseEvent"
+                                                Orientation="Horizontal">
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Waifu2X_Toggle}" />
                                         <TextBlock Margin="10,0,0,0"
                                                    VerticalAlignment="Center"
                                                    FontFamily="{ThemeResource FontAwesomeSolid}"
                                                    FontSize="18"
                                                    Opacity="0.25"
-                                                   Text="{x:Bind Waifu2XToolTipIcon}"/>
+                                                   Text="{x:Bind Waifu2XToolTipIcon}" />
                                     </StackPanel>
                                 </ToggleSwitch.Header>
                             </ToggleSwitch>
@@ -138,7 +138,7 @@
                                     HorizontalAlignment="Left">
                             <CheckBox x:Name="AppBGMode"
                                       Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                      IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
+                                      IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}" />
                             <StackPanel x:Name="AppBGCustomizer"
                                         Margin="-2,8,0,0"
                                         Orientation="Horizontal"
@@ -154,11 +154,11 @@
                                                 Orientation="Horizontal">
                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                                   FontSize="22"
-                                                  Glyph="&#xF03E;"/>
+                                                  Glyph="&#xF03E;" />
                                         <TextBlock Margin="8,0,0,0"
                                                    VerticalAlignment="Center"
                                                    FontWeight="Medium"
-                                                   Text="{x:Bind helper:Locale.Lang._Misc.Select}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.Select}" />
                                     </StackPanel>
                                 </Button>
                                 <TextBlock x:Name="BGPathDisplay"
@@ -166,7 +166,7 @@
                                            Margin="12,0,0,0"
                                            VerticalAlignment="Center"
                                            Text=""
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis" />
                             </StackPanel>
                             <TextBlock x:Name="AppBGCustomizerNote"
                                        Width="368"
@@ -177,11 +177,11 @@
                                        Foreground="{ThemeResource AccentColor}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Note}"
                                        TextWrapping="Wrap"
-                                       Visibility="Collapsed"/>
+                                       Visibility="Collapsed" />
                         </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize}" />
                         <StackPanel Margin="0,0,0,8">
                             <RadioButtons x:Name="WindowSizeSelection"
                                           MaxColumns="2"
@@ -190,31 +190,31 @@
                                             Orientation="Horizontal">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                                FontSize="22"
-                                               Text="&#xf065;"/>
+                                               Text="&#xf065;" />
                                     <TextBlock Margin="10,0,0,0"
                                                VerticalAlignment="Center"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}"/>
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" />
                                 </StackPanel>
                                 <StackPanel Margin="0,-1,0,0"
                                             Orientation="Horizontal">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                                FontSize="22"
-                                               Text="&#xf066;"/>
+                                               Text="&#xf066;" />
                                     <TextBlock Margin="10,0,0,0"
                                                VerticalAlignment="Center"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}"/>
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" />
                                 </StackPanel>
                             </RadioButtons>
                         </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_Title}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_Title}" />
                         <ToggleSwitch Margin="0,4"
                                       IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <StackPanel x:Name="KbScBtns"
                                     Margin="0,8"
                                     Orientation="Horizontal"
@@ -227,11 +227,11 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                                FontSize="18"
-                                               Text="&#xf101;"/>
+                                               Text="&#xf101;" />
                                     <TextBlock Margin="8,-2,0,0"
                                                VerticalAlignment="Center"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ShowBtn}"/>
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ShowBtn}" />
                                 </StackPanel>
                             </Button>
                             <Button Height="40"
@@ -241,23 +241,23 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
                                                FontSize="18"
-                                               Text=""/>
+                                               Text="" />
                                     <TextBlock Margin="8,-2,0,0"
                                                VerticalAlignment="Center"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ResetBtn}"/>
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ResetBtn}" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC}" />
                         <ToggleSwitch x:Name="ToggleDiscordRPC"
                                       Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}"
                                       IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="ToggleDiscordGameStatus"
                                       Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_GameStatusToggle}"
@@ -265,17 +265,17 @@
                                       IsOn="{x:Bind IsDiscordGameStatusEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                      Visibility="Collapsed"/>
+                                      Visibility="Collapsed" />
                         <ToggleSwitch x:Name="ToggleDiscordIdleStatus"
                                       Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_IdleStatusToggle}"
                                       IsOn="{x:Bind IsDiscordIdleStatusEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                      Visibility="Collapsed"/>
+                                      Visibility="Collapsed" />
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}" />
                         <StackPanel Margin="0,0,0,16">
                             <RadioButtons x:Name="AppCDNSelection"
                                           ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}"
@@ -285,15 +285,15 @@
                                     <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                         <RadioButton ToolTipService.ToolTip="{x:Bind Description}">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                           Text="{x:Bind Name}"
-                                                           VerticalAlignment="Center"/>
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                           Text="{x:Bind Name}" />
                                                 <TextBlock Margin="8,0,0,0"
                                                            VerticalAlignment="Center"
                                                            FontFamily="{ThemeResource FontAwesomeSolid}"
                                                            FontSize="18"
                                                            Opacity="0.25"
-                                                           Text="&#xf05a;"/>
+                                                           Text="&#xf05a;" />
                                             </StackPanel>
                                         </RadioButton>
                                     </DataTemplate>
@@ -303,82 +303,82 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,0,16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" />
                             <Button Margin="8,-12,0,0">
                                 <Button.Content>
                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                               FontSize="12"
-                                              Glyph="&#x3f;"/>
+                                              Glyph="&#x3f;" />
                                 </Button.Content>
                                 <Button.Flyout>
                                     <Flyout>
                                         <StackPanel Width="318">
                                             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"/>
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" />
                                             <TextBlock Margin="0,8,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help1}"
-                                                       TextWrapping="Wrap"/>
+                                                       TextWrapping="Wrap" />
                                             <TextBlock Margin="0,8,0,0"
                                                        TextWrapping="Wrap">
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
-                                                     Text="4"/>
+                                                     Text="4" />
                                             </TextBlock>
                                             <TextBlock Margin="0,0,0,0"
                                                        TextWrapping="Wrap">
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
-                                                     Text="2 - 8"/>
+                                                     Text="2 - 8" />
                                             </TextBlock>
                                             <TextBlock Margin="0,16,0,0"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}"/>
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" />
                                             <TextBlock Margin="0,8,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help5}"
-                                                       TextWrapping="Wrap"/>
+                                                       TextWrapping="Wrap" />
                                             <TextBlock Margin="0,8,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help6}"
-                                                       TextWrapping="Wrap"/>
+                                                       TextWrapping="Wrap" />
                                             <TextBlock Margin="0,8,0,0"
                                                        TextWrapping="Wrap">
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
-                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}"/>
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}" />
                                             </TextBlock>
                                             <TextBlock Margin="0,0,0,0"
                                                        TextWrapping="Wrap">
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
-                                                     Text="0 - 128"/>
+                                                     Text="0 - 128" />
                                             </TextBlock>
-                                            <StackPanel Orientation="Horizontal"
-                                                        Margin="0,16,0,0">
-                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                          Glyph="&#xf071;"
-                                                          Margin="0,0,8,0"
-                                                          Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                            <StackPanel Margin="0,16,0,0"
+                                                        Orientation="Horizontal">
+                                                <FontIcon Margin="0,0,8,0"
+                                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                          Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                                          Glyph="&#xf071;" />
                                                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention}"/>
+                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention}" />
                                             </StackPanel>
                                             <TextBlock Margin="0,8,0,0"
                                                        TextWrapping="Wrap">
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention1}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
-                                                     FontWeight="Bold"
-                                                     Foreground="{ThemeResource AccentColor}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention2}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention3}"
-                                                     FontWeight="Bold"
-                                                     Foreground="{ThemeResource AccentColor}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention4}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention5}"
-                                                     FontWeight="Bold"
-                                                     Foreground="{ThemeResource AccentColor}"/>
-                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention6}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention1}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention2}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention3}" />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention4}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention5}" />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention6}" />
                                             </TextBlock>
                                         </StackPanel>
                                     </Flyout>
@@ -390,73 +390,73 @@
                                     Orientation="Horizontal">
                             <NumberBox x:Name="DownloadThreadsNumBox"
                                        Width="128"
+                                       VerticalAlignment="Bottom"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                        Maximum="8"
                                        Minimum="2"
-                                       VerticalAlignment="Bottom"
                                        SpinButtonPlacementMode="Compact"
-                                       Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}"/>
+                                       Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
                             <NumberBox x:Name="ExtractionThreadsNumBox"
                                        Width="128"
                                        Margin="16,0,0,0"
+                                       VerticalAlignment="Bottom"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}"
                                        Maximum="128"
                                        Minimum="0"
-                                       VerticalAlignment="Bottom"
                                        SpinButtonPlacementMode="Compact"
-                                       Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}"/>
+                                       Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" />
                         </StackPanel>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableDownloadChunksMerging}"
                                       IsOn="{x:Bind IsUseDownloadChunksMerging, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" />
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}"
                                       IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="ToggleIncludeGameLogs"
                                       Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_IncludeGameLogs}"
                                       IsOn="{x:Bind IsIncludeGameLogs, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                      Visibility="Collapsed"/>
+                                      Visibility="Collapsed" />
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}"
                                       IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <Grid>
                             <Border Background="Transparent"
-                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip}"/>
+                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip}" />
                             <ToggleSwitch Margin="0,4"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.LowerCollapsePrioOnGameLaunch}"
                                           IsOn="{x:Bind IsLowerCollapsePriorityOnGameLaunch, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                          ToolTipService.ToolTip=""/>
+                                          ToolTipService.ToolTip="" />
                         </Grid>
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Toggle}"
                                       IsOn="{x:Bind IsShowRegionChangeWarning, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBlock x:Name="ChangeRegionToggleWarning"
                                    Margin="0,0,0,8"
                                    FontWeight="Bold"
-                                   TextWrapping="Wrap"
                                    Foreground="{ThemeResource AccentColor}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}"
-                                   Visibility="Collapsed"/>
+                                   TextWrapping="Wrap"
+                                   Visibility="Collapsed" />
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.UseExternalBrowser}"
                                       IsOn="{x:Bind IsAlwaysUseExternalBrowser, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -466,46 +466,50 @@
                 <StackPanel>
                     <Image Width="192"
                            HorizontalAlignment="Left"
-                           Source="ms-appx:///Assets/CollapseLauncherLogo.png"/>
+                           Source="ms-appx:///Assets/CollapseLauncherLogo.png" />
                     <TextBlock Margin="0,16,0,8"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.About}"/>
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.About}" />
                     <Grid>
                         <StackPanel Grid.Column="0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="Collapse Launcher"
-                                           TextWrapping="Wrap"/>
+                                           TextWrapping="Wrap" />
                                 <TextBlock x:Name="AppVersionTextBlock"
                                            Style="{ThemeResource BodyTextBlockStyle}"
                                            Text=" 1.0.0"
-                                           TextWrapping="Wrap"/>
+                                           TextWrapping="Wrap" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright1}"
-                                           TextWrapping="Wrap"/>
+                                           TextWrapping="Wrap" />
                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright2}"
-                                           TextWrapping="WrapWholeWords"/>
+                                           TextWrapping="WrapWholeWords" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap">
-                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}"/>
+                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}" />
                                     <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
                                                UnderlineStyle="None">
                                         <Run FontWeight="Bold"
-                                             Text="MIT License"/>
+                                             Text="MIT License" />
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}"
-                                           TextWrapping="Wrap"/>
+                                           TextWrapping="Wrap" />
                             </StackPanel>
-                            <TextBlock x:Name="GitVersionIndicator"
-                                       IsTextSelectionEnabled="True"
+                            <TextBlock IsTextSelectionEnabled="True"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       TextWrapping="Wrap"/>
+                                       TextWrapping="Wrap">
+                                <Hyperlink x:Name="GitVersionIndicator_Hyperlink"
+                                           UnderlineStyle="None">
+                                    <Run x:Name="GitVersionIndicator" />
+                                </Hyperlink>
+                            </TextBlock>
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,8,0,0">
@@ -514,7 +518,7 @@
                                    Style="{ThemeResource BodyStrongTextBlockStyle}">
                             <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/issues"
                                        UnderlineStyle="None">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}" />
                             </Hyperlink>
                         </TextBlock>
                         <TextBlock Margin="0,8,0,8"
@@ -522,7 +526,7 @@
                                    Style="{ThemeResource BodyStrongTextBlockStyle}">
                             <Hyperlink NavigateUri="https://explore.transifex.com/collapse-launcher/collapse-mainapp/"
                                        UnderlineStyle="None">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HelpLocalizeBtn}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HelpLocalizeBtn}" />
                             </Hyperlink>
                         </TextBlock>
                         <TextBlock Margin="0,8,0,8"
@@ -530,7 +534,7 @@
                                    Style="{ThemeResource BodyStrongTextBlockStyle}">
                             <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/graphs/contributors"
                                        UnderlineStyle="None">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributorListBtn}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributorListBtn}" />
                             </Hyperlink>
                         </TextBlock>
                         <TextBlock Margin="0,8,0,8"
@@ -538,7 +542,7 @@
                                    Style="{ThemeResource BodyStrongTextBlockStyle}">
                             <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/pulls"
                                        UnderlineStyle="None">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}" />
                             </Hyperlink>
                         </TextBlock>
                     </StackPanel>
@@ -547,23 +551,23 @@
                     <TextBlock Margin="0,0,0,8"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer}"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="Wrap" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                TextWrapping="Wrap">
-                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer1}"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer1}" />
                         <Hyperlink FontWeight="Bold"
                                    NavigateUri="https://www.mihoyo.com"
                                    UnderlineStyle="None">
-                            <Run Text="miHoYo"/>
+                            <Run Text="miHoYo" />
                         </Hyperlink>
-                        <Run Text="/"/>
+                        <Run Text="/" />
                         <Hyperlink FontWeight="Bold"
                                    NavigateUri="https://www.hoyoverse.com/en-us"
                                    UnderlineStyle="None">
-                            <Run Text="HoYoverse"/>
+                            <Run Text="HoYoverse" />
                         </Hyperlink>
-                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer2}"/>
-                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer3}"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer2}" />
+                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer3}" />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel x:Name="HerLegacy"
@@ -571,63 +575,63 @@
                             Visibility="Collapsed">
                     <TextBlock Margin="0,0,0,8"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="Dedication"/>
+                               Text="Dedication" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="This app is also dedicated for my crush who passed away from fighting"/>
+                               Text="This app is also dedicated for my crush who passed away from fighting" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="against her's TB disease. This app has been Dedicated with Love for her."/>
+                               Text="against her's TB disease. This app has been Dedicated with Love for her." />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                               Text=""/>
+                               Text="" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="Rest In Peace~ (Jan 31st 2022)"/>
+                               Text="Rest In Peace~ (Jan 31st 2022)" />
                     <TextBlock FontSize="24">
                         <Run FontWeight="Bold"
-                             Text="Yui"/>
-                        <Run Text="( a.k.a"/>
+                             Text="Yui" />
+                        <Run Text="( a.k.a" />
                         <Run FontWeight="Bold"
-                             Text="DreadBurst"/>
-                        <Run Text=")"/>
+                             Text="DreadBurst" />
+                        <Run Text=")" />
                     </TextBlock>
                     <TextBlock Width="360"
                                Margin="0,8,0,0"
                                HorizontalAlignment="Left"
                                TextWrapping="Wrap">
-                        <Run Text="I will cherish every of our single moment we've spent together. I will never forget and remember your care, kindness, intelligent, braveness and cuteness."/>
-                        <LineBreak/>
+                        <Run Text="I will cherish every of our single moment we've spent together. I will never forget and remember your care, kindness, intelligent, braveness and cuteness." />
+                        <LineBreak />
                     </TextBlock>
                     <TextBlock Width="360"
                                HorizontalAlignment="Left"
                                TextWrapping="Wrap">
                         <Run FontWeight="Bold"
-                             Text="Yui,"/>
+                             Text="Yui," />
                     </TextBlock>
                     <TextBlock Width="360"
                                HorizontalAlignment="Left"
                                TextWrapping="Wrap">
-                        <Run Text="Thank you that you've found me and being a reason for me to change as a better person. I'm really glad about it."/>
+                        <Run Text="Thank you that you've found me and being a reason for me to change as a better person. I'm really glad about it." />
                     </TextBlock>
                     <TextBlock Width="360"
                                Margin="0,0,0,16"
                                HorizontalAlignment="Left"
                                TextWrapping="Wrap">
-                        <Run Text="Thank you... for everything."/>
+                        <Run Text="Thank you... for everything." />
                     </TextBlock>
                     <TextBlock HorizontalAlignment="Left">
                         <Run FontWeight="Bold"
                              Foreground="{ThemeResource AccentColor}"
-                             Text="I love you "/>
+                             Text="I love you " />
                         <Run FontWeight="Bold"
-                             Text=",^__ ,^)"/>
+                             Text=",^__ ,^)" />
                         <Hyperlink NavigateUri="https://www.youtube.com/watch?v=4cugGAKsSNY&amp;list=PLLH-gVOGJkTLB_ixlYZ2fo51yPxn3m1LB"
                                    UnderlineStyle="None">
-                            <Run Text="❤️"/>
+                            <Run Text="❤️" />
                         </Hyperlink>
                     </TextBlock>
                     <TextBlock Width="360"
                                Margin="0,16,0,0"
                                HorizontalAlignment="Left"
                                FontWeight="Bold">
-                        <Run Text="~neon-nyan"/>
+                        <Run Text="~neon-nyan" />
                     </TextBlock>
                 </StackPanel>
                 <Button x:Name="ButtonLinkDiscordCollapse"
@@ -642,51 +646,51 @@
                           HorizontalAlignment="Left"
                           VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <FontIcon Margin="0,-1,12,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
                                   FontSize="20"
-                                  Glyph="&#xF392;"/>
-                        <TextBlock Margin="0,-2,0,2"
-                                   Grid.Column="1"
+                                  Glyph="&#xF392;" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="0,-2,0,2"
                                    VerticalAlignment="Center"
                                    FontSize="14"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn3}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn3}" />
                     </Grid>
                 </Button>
                 <Button x:Name="ButtonLinkDiscordArmada"
                         Width="300"
                         Height="50"
                         Margin="0,8,0,8"
+                        HorizontalContentAlignment="Center"
                         Click="ClickButtonLinkFromTag"
                         CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonLinkDiscordArmada)}"
-                        HorizontalContentAlignment="Center"
                         Style="{ThemeResource AccentButtonStyle}"
                         Tag="https://discord.gg/NAYQ8TT2Ge">
                     <Grid Margin="4,0,12,0"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <FontIcon Margin="-4,-1,12,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
                                   FontSize="20"
-                                  Glyph="&#xF392;"/>
-                        <TextBlock Margin="0,-2,0,2"
-                                   Grid.Column="1"
+                                  Glyph="&#xF392;" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="0,-2,0,2"
                                    VerticalAlignment="Center"
                                    FontSize="14"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" />
                     </Grid>
                 </Button>
                 <Button x:Name="ButtonLinkDiscordHi3"
@@ -701,21 +705,21 @@
                           HorizontalAlignment="Left"
                           VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <FontIcon Margin="1,-1,12,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
                                   FontSize="20"
-                                  Glyph="&#xF392;"/>
-                        <TextBlock Margin="0,-2,0,2"
-                                   Grid.Column="1"
+                                  Glyph="&#xF392;" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="0,-2,0,2"
                                    VerticalAlignment="Center"
                                    FontSize="14"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}"/>
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" />
                     </Grid>
                 </Button>
                 <StackPanel Margin="0,16,0,0"
@@ -727,55 +731,55 @@
                                Foreground="{ThemeResource AccentColor}"
                                PointerPressed="ClickTextLinkFromTag"
                                Tag="https://web.facebook.com/kemalsetya.adhisetya/"
-                               Text="&#xF082;"/>
+                               Text="&#xF082;" />
                     <TextBlock Margin="6,0,6,0"
                                FontFamily="{ThemeResource FontAwesomeBrand}"
                                FontSize="24"
                                Foreground="{ThemeResource AccentColor}"
                                PointerPressed="ClickTextLinkFromTag"
                                Tag="https://github.com/neon-nyan/"
-                               Text="&#xF092;"/>
+                               Text="&#xF092;" />
                     <TextBlock Margin="6,0,6,0"
                                FontFamily="{ThemeResource FontAwesomeBrand}"
                                FontSize="24"
                                Foreground="{ThemeResource AccentColor}"
                                PointerPressed="ClickTextLinkFromTag"
                                Tag="https://www.reddit.com/user/justanewbie1-ID/"
-                               Text="&#xF1A2;"/>
+                               Text="&#xF1A2;" />
                     <TextBlock Margin="6,0,6,0"
                                FontFamily="{ThemeResource FontAwesomeBrand}"
                                FontSize="24"
                                Foreground="{ThemeResource AccentColor}"
                                PointerPressed="ClickTextLinkFromTag"
                                Tag="https://twitter.com/neonnyann"
-                               Text="&#xF081;"/>
+                               Text="&#xF081;" />
                     <TextBlock Margin="6,0,6,0"
                                FontFamily="{ThemeResource FontAwesomeBrand}"
                                FontSize="24"
                                Foreground="{ThemeResource AccentColor}"
                                PointerPressed="ClickTextLinkFromTag"
                                Tag="https://instagram.com/neonnyann/"
-                               Text="&#xE055;"/>
+                               Text="&#xE055;" />
                     <TextBlock Margin="6,0,6,0"
                                FontFamily="{ThemeResource FontAwesomeBrand}"
                                FontSize="24"
                                Foreground="{ThemeResource AccentColor}"
                                PointerPressed="Egg"
-                               Text="&#xE499;"/>
+                               Text="&#xE499;" />
                 </StackPanel>
                 <TextBlock Margin="0,32,0,8"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}"/>
+                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" />
                 <StackPanel Margin="0,0,0,8"
                             Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="0,0,0,16"
                                    VerticalAlignment="Center">
-                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CurVer}"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CurVer}" />
                             <Run x:Name="CurrentVersion"
                                  FontWeight="Bold"
                                  Foreground="{ThemeResource AccentColor}"
-                                 Text="0.0.0.0"/>
+                                 Text="0.0.0.0" />
                         </TextBlock>
                     </StackPanel>
                     <Button x:Name="CheckUpdateBtn"
@@ -789,11 +793,11 @@
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="20"
-                                      Glyph="&#xf105;"/>
+                                      Glyph="&#xf105;" />
                             <TextBlock Margin="8,-2,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}" />
                         </StackPanel>
                     </Button>
                     <Grid x:Name="UpdateLoadingStatus"
@@ -805,7 +809,7 @@
                         <ProgressRing Width="20"
                                       Height="20"
                                       HorizontalAlignment="Center"
-                                      IsIndeterminate="True"/>
+                                      IsIndeterminate="True" />
                     </Grid>
                     <Grid x:Name="UpdateAvailableStatus"
                           Width="300"
@@ -816,15 +820,15 @@
                         <StackPanel HorizontalAlignment="Center"
                                     Orientation="Horizontal">
                             <TextBlock FontSize="20"
-                                       Text="😆"/>
+                                       Text="😆" />
                             <TextBlock Margin="8,2,0,0"
                                        VerticalAlignment="Center">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}" />
                                 <Run x:Name="UpdateAvailableLabel"
                                      FontWeight="Bold"
                                      Foreground="{ThemeResource AccentColor}"
-                                     Text="0.0.0.0"/>
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer2}"/>
+                                     Text="0.0.0.0" />
+                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer2}" />
                             </TextBlock>
                         </StackPanel>
                     </Grid>
@@ -837,10 +841,10 @@
                         <StackPanel HorizontalAlignment="Center"
                                     Orientation="Horizontal">
                             <TextBlock FontSize="20"
-                                       Text="✅"/>
+                                       Text="✅" />
                             <TextBlock Margin="8,0,0,0"
                                        VerticalAlignment="Center"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" />
                         </StackPanel>
                     </Grid>
                     <Button x:Name="ForceUpdateBtn"
@@ -854,11 +858,11 @@
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="20"
-                                      Glyph="&#xf101;"/>
+                                      Glyph="&#xf101;" />
                             <TextBlock Margin="8,-2,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}"/>
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="ChangeReleaseBtn"
@@ -872,17 +876,17 @@
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="20"
-                                      Glyph="&#xf0ec;"/>
+                                      Glyph="&#xf0ec;" />
                             <TextBlock x:Name="ChangeReleaseBtnText"
                                        Margin="8,-2,0,0"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium"/>
+                                       FontWeight="Medium" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
                 <TextBlock Margin="0,16,0,16"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}"/>
+                           Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" />
                 <Button x:Name="ButtonAppActionRelocateFolder"
                         Width="292"
                         Margin="0,0,0,8"
@@ -891,7 +895,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="8,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" />
                 </Button>
                 <Button x:Name="ButtonAppActionOpenAppDataFolder"
                         Width="292"
@@ -901,7 +905,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="8,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" />
                 </Button>
                 <Button x:Name="ButtonAppActionClearImgFolder"
                         Width="292"
@@ -911,7 +915,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="8,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" />
                 </Button>
                 <Button x:Name="ButtonAppActionClearMetadataFolder"
                         Width="292"
@@ -921,7 +925,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="8,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearMetadataBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearMetadataBtn}" />
                 </Button>
                 <Button x:Name="ButtonAppActionClearLogsFolder"
                         Width="292"
@@ -931,7 +935,7 @@
                         Style="{ThemeResource AccentButtonStyle}">
                     <TextBlock Margin="8,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" />
                 </Button>
             </StackPanel>
         </Grid>

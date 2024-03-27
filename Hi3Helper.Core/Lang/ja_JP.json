@@ -149,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "分",
     "GamePlaytime_Idle_ResetBtn": "リセット",
     "GamePlaytime_Idle_ChangeBtn": "変更",
-    "GamePlaytime_Idle_InvalidTimeBlock": "無効な値です。",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
     "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断される（閉じた瞬間までのプレイ時間が記録されます）ことと、Collapseから起動したプレイ時間のみが加算されることに注意してください。",
     "GamePlaytime_Display": "{0}時間 {1}分",
+    "GamePlaytime_ToolTipDisplay": "前回の起動は{2:0000}年{1:00}月{0:00}日 {3:00}時{4:00}分",
 
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
@@ -442,6 +442,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
+    
+    "LicenseType": "MIT License",
 
     "Disclaimer": "免責事項",
     "Disclaimer1": "当ランチャーは",
@@ -537,9 +539,9 @@
     "IAcceptAgreement": "利用規約に同意する",
     "IDoNotAcceptAgreement": "利用規約に同意しない",
 
-    "LangNameENUS": "英語(アメリカ)",
+    "LangNameENUS": "英語",
     "LangNameJP": "日本語",
-    "LangNameCN": "中国語(簡体字)",
+    "LangNameCN": "中国語",
     "LangNameKR": "韓国語",
 
     "Downloading": "ダウンロード中",
