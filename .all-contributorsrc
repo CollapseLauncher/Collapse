@@ -20,7 +20,8 @@
         "design",
         "mentoring",
         "maintenance",
-        "review"
+        "review",
+	"projectManagement"
       ]
     },
     {
@@ -31,7 +32,22 @@
       "contributions": [
         "code",
         "maintenance",
-        "review"
+        "review",
+	"projectManagement"
+      ]
+    },
+    {
+      "login": "bagusnl",
+      "name": "Bagus Nur Listiyono",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28079733?v=4",
+      "profile": "https://github.com/bagusnl",
+      "contributions": [
+        "code",
+	"maintenance",
+	"review",
+	"promotion",
+	"infra",
+	"projectManagement"
       ]
     },
     {
@@ -62,15 +78,6 @@
       "contributions": [
         "translation",
         "bug"
-      ]
-    },
-    {
-      "login": "bagusnl",
-      "name": "Bagus Nur Listiyono",
-      "avatar_url": "https://avatars.githubusercontent.com/u/28079733?v=4",
-      "profile": "https://github.com/bagusnl",
-      "contributions": [
-        "code"
       ]
     },
     {
