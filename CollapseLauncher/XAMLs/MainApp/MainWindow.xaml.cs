@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
@@ -77,7 +78,7 @@ namespace CollapseLauncher
 
                 AnimationHelper.EnableImplicitAnimation(TitleBarFrameGrid, true);
                 AnimationHelper.EnableImplicitAnimation(BottomFrameGrid, true);
-                AnimationHelper.EnableImplicitAnimation(MainWindowGridContainer, true);
+                AnimationHelper.EnableImplicitAnimation(LoadingStatusGrid, true);
             }
             catch (Exception ex)
             {
@@ -286,9 +287,9 @@ namespace CollapseLauncher
 
         internal static void SetLegacyTitleBarColor()
         {
-            Application.Current.Resources["WindowCaptionForeground"] = IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-            Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-            Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
+            UIElementExtensions.SetApplicationResource("WindowCaptionForeground", IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 });
+            UIElementExtensions.SetApplicationResource("WindowCaptionBackground", new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 }));
+            UIElementExtensions.SetApplicationResource("WindowCaptionBackgroundDisabled", new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 }));
         }
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)

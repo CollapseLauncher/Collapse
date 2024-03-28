@@ -1,6 +1,10 @@
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -44,17 +48,18 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         #region Properties
-        bool         IsLoadNotifComplete;
         private bool LockRegionChangeBtn;
-        private bool IsLoadFrameCompleted = true;
         private bool IsTitleIconForceShow;
         private bool IsNotificationPanelShow;
+        private bool IsLoadNotifComplete;
+        private bool IsLoadFrameCompleted     = true;
+        private bool IsFirstStartup           = true;
         private int  CurrentGameCategory      = -1;
         private int  CurrentGameRegion        = -1;
 
-        private  static bool         IsCurrentHideBGAnimRun  = false;
+        private RegionResourceProp _gameAPIProp { get; set; }
+
         private  static bool         IsChangeDragArea        = true;
-        private  static List<Task>   CurrentHideBGAnimQueue  = new List<Task>();
         internal static List<string> PreviousTagString       = new List<string>();
         #endregion
 
@@ -81,13 +86,6 @@ namespace CollapseLauncher
             }
         }
 
-        static MainPage()
-        {
-            IsCurrentHideBGAnimRun = false;
-            CurrentHideBGAnimQueue = new List<Task>();
-            RunHideBackgroundAnimQueue();
-        }
-
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeEvents();
@@ -99,6 +97,7 @@ namespace CollapseLauncher
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
+            BackgroundImageUtility.DetachCurrent();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -150,7 +149,7 @@ namespace CollapseLauncher
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
 
-            Type Page;
+            Type Page = typeof(HomePage);
 
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
@@ -159,20 +158,11 @@ namespace CollapseLauncher
                 await DownloadConfigV2Files(true, true);
             }
 
-            if (m_appMode == AppMode.Hi3CacheUpdater)
-            {
-                LoadConfigV2CacheOnly();
-                Page = typeof(CachesPage);
-
-                // Set background opacity to 0
-                BackgroundFront.Opacity = 0;
-            }
+            if (m_appMode == AppMode.Hi3CacheUpdater) LoadConfigV2CacheOnly();
             else
             {
                 LoadConfigV2();
                 SetActivatedRegion();
-
-                Page = typeof(HomePage);
             }
 
 #if !DISABLEDISCORD
@@ -185,6 +175,9 @@ namespace CollapseLauncher
             LockRegionChangeBtn = true;
 
             PresetConfigV2 Preset = LoadSavedGameSelection();
+
+            if (m_appMode == AppMode.Hi3CacheUpdater)
+                Page = (m_appMode == AppMode.Hi3CacheUpdater && CurrentConfigV2.GameType == GameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage);
 
             InitKeyboardShortcuts();
 
@@ -347,7 +340,7 @@ namespace CollapseLauncher
         {
             if (!IsPrincipalHasNoAdministratorAccess()) return true;
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
             {
                 Title = Lang._Dialogs.PrivilegeMustRunTitle,
                 Content = Lang._Dialogs.PrivilegeMustRunSubtitle,
@@ -409,51 +402,18 @@ namespace CollapseLauncher
                 GridBG_RegionInner.HorizontalAlignment = HorizontalAlignment.Left;
             }
 
-            Background.Visibility            = Visibility.Visible;
             BackgroundAcrylicMask.Visibility = Visibility.Visible;
-        }
-
-        public static void ReloadPageTheme(FrameworkElement page, ElementTheme startTheme)
-        {
-            bool IsComplete = false;
-            while (!IsComplete)
-            {
-                try
-                {
-                    if (page.RequestedTheme == ElementTheme.Dark)
-                        page.RequestedTheme = ElementTheme.Light;
-                    else if (page.RequestedTheme == ElementTheme.Light)
-                        page.RequestedTheme = ElementTheme.Default;
-                    else if (page.RequestedTheme == ElementTheme.Default)
-                        page.RequestedTheme = ElementTheme.Dark;
-
-                    if (page.RequestedTheme != startTheme)
-                        ReloadPageTheme(page, startTheme);
-                    IsComplete = true;
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-        }
-
-        public static ElementTheme ConvertAppThemeToElementTheme(AppThemeMode Theme)
-        {
-            switch (Theme)
-            {
-                default:
-                    return ElementTheme.Default;
-                case AppThemeMode.Dark:
-                    return ElementTheme.Dark;
-                case AppThemeMode.Light:
-                    return ElementTheme.Light;
-            }
         }
         #endregion
 
         #region Background Image
-        private void BackgroundImg_IsImageHideEvent(object sender, bool e) => HideBackgroundImage(e);
+        private void BackgroundImg_IsImageHideEvent(object sender, bool e)
+        {
+            if (IsFirstStartup) return;
+
+            if (e) BackgroundImageUtility.Dimm();
+            else BackgroundImageUtility.Undimm();
+        }
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
@@ -472,15 +432,41 @@ namespace CollapseLauncher
 
             try
             {
-                await RunApplyBackgroundTask(IsFirstStartup);
+                await BackgroundImageUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
             }
             catch (Exception ex)
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
+            
+            e.IsImageLoaded                   = true;
+        }
 
-            e.IsImageLoaded = true;
+        internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
+        {
+            IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
+            if (IsCustomBG)
+            {
+                string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                regionBackgroundProp.imgLocalPath = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+            }
+            else
+            {
+                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, CurrentConfigV2, ShowLoadingMsg))
+                {
+                    regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                }
+            }
+
+            if (!IsCustomBG || IsFirstStartup)
+            {
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                await BackgroundImgChanger.WaitForBackgroundToLoad();
+            }
+
+            IsFirstStartup = false;
+            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
         }
         #endregion
 
@@ -521,12 +507,13 @@ namespace CollapseLauncher
         #endregion
 
         #region Background Tasks
-        private async Task RunApplyBackgroundTask(bool IsFirstStartup) => await ApplyBackground(IsFirstStartup);
-
         private async void RunBackgroundCheck()
         {
             try
             {
+                // Initialize the background image utility
+                await BackgroundImageUtility.RegisterCurrent(this, BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
 
@@ -553,7 +540,8 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Error while trying to run background tasks!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
         #endregion
@@ -697,11 +685,11 @@ namespace CollapseLauncher
                 {
                     if (Entry.ActionProperty != null)
                     {
-                        Entry.OtherUIElement = Entry.ActionProperty.GetUIElement();
+                        Entry.OtherUIElement = Entry.ActionProperty.GetFrameworkElement();
                     }
 
                     SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true,
-                        Entry.IsDisposable ?? true, ClickCloseAction, (UIElement)Entry.OtherUIElement, true, Entry.Show, Entry.IsForceShowNotificationPanel);
+                        Entry.IsDisposable ?? true, ClickCloseAction, (FrameworkElement)Entry.OtherUIElement, true, Entry.Show, Entry.IsForceShowNotificationPanel);
                 }
                 await Task.Delay(250);
             }
@@ -787,7 +775,7 @@ namespace CollapseLauncher
         }
 
         private void SpawnNotificationPush(string Title, string Content, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
-            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, UIElement OtherContent = null, bool IsAppNotif = true,
+            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, FrameworkElement OtherContent = null, bool IsAppNotif = true,
             bool? Show = false, bool ForceShowNotificationPanel = false)
         {
             if (!(Show ?? false)) return;
@@ -799,34 +787,28 @@ namespace CollapseLauncher
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                StackPanel OtherContentContainer = new StackPanel
-                {
-                    Orientation = Orientation.Vertical,
-                    Margin = new Thickness(0, -4, 0, 8)
-                };
+                StackPanel OtherContentContainer = UIElementExtensions.CreateStackPanel().WithMargin(0d, -4d, 0d, 8d);
 
                 InfoBar Notification = new InfoBar
                 {
                     Title = Title,
                     Message = Content,
-                    Margin = new Thickness(4, 4, 4, 0),
-                    CornerRadius = new CornerRadius(8),
                     Severity = NotifSeverity2InfoBarSeverity(Severity),
                     IsClosable = IsClosable,
                     IsIconVisible = true,
-                    Width = m_windowSupportCustomTitle ? 600 : double.NaN,
-                    HorizontalAlignment = m_windowSupportCustomTitle ? HorizontalAlignment.Right : HorizontalAlignment.Stretch,
                     Shadow = SharedShadow,
                     IsOpen = true
-                };
+                }
+                .WithMargin(4d, 4d, 4d, 0d).WithWidth(600)
+                .WithCornerRadius(8).WithHorizontalAlignment(HorizontalAlignment.Right);
 
                 Notification.Translation += Shadow32;
 
                 if (Severity == NotifSeverity.Informational)
-                    Notification.Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"];
+                    Notification.Background = UIElementExtensions.GetApplicationResource<Brush>("InfoBarAnnouncementBrush");
 
                 if (OtherContent != null)
-                    OtherContentContainer.Children.Add(OtherContent);
+                    OtherContentContainer.AddElementToStackPanel(OtherContent);
 
                 if (Disposable)
                 {
@@ -837,7 +819,7 @@ namespace CollapseLauncher
                     };
                     NeverAskNotif.Checked += NeverAskNotif_Checked;
                     NeverAskNotif.Unchecked += NeverAskNotif_Unchecked;
-                    OtherContentContainer.Children.Add(NeverAskNotif);
+                    OtherContentContainer.AddElementToStackPanel(NeverAskNotif);
                 }
 
                 if (Disposable || OtherContent != null)
@@ -857,7 +839,7 @@ namespace CollapseLauncher
 
         private void SpawnNotificationoUI(int tagID, InfoBar Notification)
         {
-            Grid Container = new Grid() { Tag = tagID, };
+            Grid Container = UIElementExtensions.CreateGrid().WithTag(tagID);
             Notification.Loaded += (a, b) =>
             {
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
@@ -870,8 +852,8 @@ namespace CollapseLauncher
             Notification.Closed += (s, a) =>
             {
                 s.Translation -= Shadow32;
-                s.Height = 0;
-                s.Margin = new Thickness(0);
+                s.SetHeight(0d);
+                s.SetMargin(0d);
                 int msg = (int)s.Tag;
 
                 if (NotificationData.CurrentShowMsgIds.Contains(msg))
@@ -890,8 +872,8 @@ namespace CollapseLauncher
                 NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
-            Container.Children.Add(Notification);
-            NotificationContainer.Children.Add(Container);
+            Container.AddElementToGridRowColumn(Notification);
+            NotificationContainer.AddElementToStackPanel(Container);
         }
 
         private void RemoveNotificationUI(int tagID)
@@ -926,6 +908,14 @@ namespace CollapseLauncher
                 NotificationContainer.Children.RemoveAt(stackIndex);
                 notifBar.IsOpen = false;
                 await Task.Delay(100);
+            }
+
+            if (NotificationContainer.Children.Count == 0)
+            {
+                await Task.Delay(500);
+                ToggleNotificationPanelBtn.IsChecked = false;
+                IsNotificationPanelShow = false;
+                ShowHideNotificationPanel();
             }
 
             if (button != null) button.IsEnabled = true;
@@ -1024,31 +1014,14 @@ namespace CollapseLauncher
             bool IsUpdate = await CheckForNewConfigV2();
             if (IsUpdate)
             {
-                StackPanel Text = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
-                Text.Children.Add(
-                    new FontIcon
-                    {
-                        Glyph = "",
-                        FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                        FontSize = 16
-                    });
-
-                Text.Children.Add(
-                    new TextBlock
-                    {
-                        Text = Lang._AppNotification.NotifMetadataUpdateBtn,
-                        FontWeight = FontWeights.Medium,
-                        Margin = new Thickness(8, 0, 0, 0),
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-
-                Button UpdateMetadatabtn = new Button
-                {
-                    Content = Text,
-                    Margin = new Thickness(0, 0, 0, 16),
-                    Style = (Style)Application.Current.Resources["AccentButtonStyle"],
-                    CornerRadius = new CornerRadius(16)
-                };
+                Button UpdateMetadatabtn =
+                    UIElementExtensions.CreateButtonWithIcon<Button>(
+                            Lang._AppNotification!.NotifMetadataUpdateBtn,
+                            "",
+                            "FontAwesomeSolid",
+                            "AccentButtonStyle"
+                        )
+                    .WithMargin(0d, 0d, 0d, 16d);
 
                 UpdateMetadatabtn.Loaded += async (a, b) =>
                 {
@@ -1056,20 +1029,15 @@ namespace CollapseLauncher
                     {
                         Text = Lang._AppNotification.NotifMetadataUpdateBtnUpdating,
                         FontWeight = FontWeights.Medium,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
+                    }.WithVerticalAlignment(VerticalAlignment.Center);
                     ProgressRing LoadBar = new ProgressRing
                     {
                         IsIndeterminate = true,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(0, 0, 8, 0),
-                        Width = 16,
-                        Height = 16,
                         Visibility = Visibility.Collapsed
-                    };
-                    StackPanel StackPane = new StackPanel() { Orientation = Orientation.Horizontal };
-                    StackPane.Children.Add(LoadBar);
-                    StackPane.Children.Add(Text);
+                    }.WithWidthAndHeight(16d).WithMargin(0d, 0d, 8d, 0d).WithVerticalAlignment(VerticalAlignment.Center);
+                    StackPanel StackPane = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
+                    StackPane.AddElementToStackPanel(LoadBar);
+                    StackPane.AddElementToStackPanel(Text);
                     (a as Button).Content = StackPane;
                     (a as Button).IsEnabled = false;
 
@@ -1120,7 +1088,9 @@ namespace CollapseLauncher
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
 
-            FontFamily Fnt = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+            IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty()._GameVersion;
+
+            FontFamily Fnt = FontCollections.FontAwesomeSolid;
 
             FontIcon IconLauncher = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconRepair = new FontIcon { FontFamily = Fnt, Glyph = "" };
@@ -1128,27 +1098,41 @@ namespace CollapseLauncher
             FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
-
-            if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
+            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
+                SettingsItem.Content = Lang._SettingsPage.PageTitle;
+                SettingsItem.Icon = IconAppSettings;
+                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
+            }
 
-                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
-                {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
-                }
-
-                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+            if (m_appMode == AppMode.Hi3CacheUpdater)
+            {
+                if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
+                return;
             }
 
-            switch (GetCurrentGameProperty()._GameVersion.GameType)
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
+
+            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
+
+            if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
+            }
+
+            if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+            }
+
+            switch (CurrentGameVersionCheck.GameType)
             {
                 case GameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
@@ -1160,7 +1144,7 @@ namespace CollapseLauncher
                     break;
             }
 
-            if (GetCurrentGameProperty()._GameVersion.GameType == GameType.Genshin)
+            if (CurrentGameVersionCheck.GameType == GameType.Genshin)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
@@ -1169,8 +1153,6 @@ namespace CollapseLauncher
             if (ResetSelection)
             {
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-                (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
-                (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
             }
         }
 
@@ -1217,7 +1199,7 @@ namespace CollapseLauncher
 
                 case "caches":
                     if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                        Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                        Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty()._GameVersion.GamePreset.GameType == GameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                     else
                         Navigate(typeof(UnavailablePage), itemTag);
                     break;
@@ -1280,20 +1262,20 @@ namespace CollapseLauncher
                 NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
                 ToggleNotificationPanelBtn.Translation -= Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"];
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = FontCollections.FontAwesomeSolid;
             }
             else
             {
                 NotificationLostFocusBackground.Opacity = 0;
                 NotificationPanel.Translation -= Shadow48;
                 ToggleNotificationPanelBtn.Translation += Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesome"];
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = FontCollections.FontAwesomeRegular;
                 await Task.Delay(200);
                 NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void NotificationContainerBackground_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void NotificationContainerBackground_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             IsNotificationPanelShow = false;
             ToggleNotificationPanelBtn.IsChecked = false;

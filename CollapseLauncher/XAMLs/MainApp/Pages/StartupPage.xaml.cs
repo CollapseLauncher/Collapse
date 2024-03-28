@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Extension;
+using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -81,7 +82,7 @@ namespace CollapseLauncher.Pages
             {
                 NextPage.IsEnabled = true;
                 ErrMsg.Text = $"✅ {AppGameFolder}";
-                ErrMsg.Foreground = new SolidColorBrush((Color)Application.Current.Resources["TextFillColorPrimary"]);
+                ErrMsg.Foreground = new SolidColorBrush(UIElementExtensions.GetApplicationResource<Color>("TextFillColorPrimary"));
                 ErrMsg.TextWrapping = TextWrapping.Wrap;
             }
         }

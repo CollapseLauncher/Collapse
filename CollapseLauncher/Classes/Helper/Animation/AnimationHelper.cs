@@ -7,9 +7,10 @@ using Microsoft.UI.Xaml.Hosting;
 using System;
 using System.Threading.Tasks;
 
-
 namespace CollapseLauncher.Helper.Animation
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class AnimationHelper
     {
         internal static async Task StartAnimation(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)

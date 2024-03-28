@@ -439,7 +439,7 @@
 
     "About": "À propos",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka et gablm",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\nshatyuka & gablm",
     "About_Copyright3": "Sous",
     "About_Copyright4": ". Tous droits réservés.",
 
@@ -1245,7 +1245,7 @@
     "LoadingCDNCheckingSubitle": "Recherche du réseau de diffusion de contenu (RDC) le plus proche pour vous…",
     "LoadingCDNCheckingSkipButton": "Passer la vérification du RDC",
     "LoadingBackgroundImageTitle": "Chargement de l'image",
-    "LoadingBackgroundImageSubtitle": "Cette image peut prendre du temps a être traitée.",
+    "LoadingBackgroundImageSubtitle": "Cette image peut prendre du temps à être traitée.",
 
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (inconnu)",

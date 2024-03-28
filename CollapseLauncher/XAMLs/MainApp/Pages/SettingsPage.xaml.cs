@@ -353,15 +353,10 @@ namespace CollapseLauncher.Pages
             string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
-                FileStream dummyStream = await ImageLoaderHelper.LoadImage(file, true, true);
-                if (dummyStream != null)
-                {
-                    await dummyStream.DisposeAsync();
-                    regionBackgroundProp.imgLocalPath = file;
-                    SetAndSaveConfigValue("CustomBGPath", file);
-                    BGPathDisplay.Text = file;
-                    BackgroundImgChanger.ChangeBackground(file);
-                }
+                regionBackgroundProp.imgLocalPath = file;
+                SetAndSaveConfigValue("CustomBGPath", file);
+                BGPathDisplay.Text = file;
+                BackgroundImgChanger.ChangeBackground(file, true, true, true);
             }
         }
 
@@ -454,7 +449,7 @@ namespace CollapseLauncher.Pages
                         }
                     }
                     BGPathDisplay.Text = regionBackgroundProp.imgLocalPath;
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, true, true, false);
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
                 }

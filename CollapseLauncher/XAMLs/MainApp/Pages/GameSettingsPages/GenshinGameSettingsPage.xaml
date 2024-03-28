@@ -869,7 +869,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <StackPanel Margin="0,0,0,8">
+                    <Grid Margin="0,0,0,8">
                         <controls:UniformGrid HorizontalAlignment="Left"
                                               Columns="3">
                             <StackPanel Grid.Column="0">
@@ -894,13 +894,14 @@
                                 <CheckBox x:Name="AudioMuteOnMinimizeToggle"
                                           HorizontalAlignment="Left"
                                           VerticalAlignment="Center"
+                                          MinWidth="250"
                                           IsChecked="{x:Bind Audio_MuteOnMinimized, Mode=TwoWay}">
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
                                                TextWrapping="Wrap"/>
                                 </CheckBox>
                             </StackPanel>
                         </controls:UniformGrid>
-                    </StackPanel>
+                    </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <StackPanel>
                         <TextBlock Margin="0,0,0,16"

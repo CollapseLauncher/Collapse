@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -69,7 +70,7 @@ namespace CollapseLauncher.Dialogs
                             PrimaryButtonText = Lang._Misc.Okay,
                             SecondaryButtonText = null,
                             DefaultButton = ContentDialogButton.Primary,
-                            Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                            Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                             XamlRoot = Content.XamlRoot
                         }.QueueAndSpawnDialog();
                     }
@@ -100,7 +101,7 @@ namespace CollapseLauncher.Dialogs
                     PrimaryButtonText = Lang._Misc.OkayBackToMenu,
                     SecondaryButtonText = null,
                     DefaultButton = ContentDialogButton.Primary,
-                    Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                    Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                     XamlRoot = Content.XamlRoot
                 }.QueueAndSpawnDialog();
 
@@ -481,7 +482,7 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = Lang._Misc.Yes,
                 SecondaryButtonText = Lang._Misc.No,
                 DefaultButton = ContentDialogButton.Secondary,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                 XamlRoot = Content.XamlRoot
             };
 

@@ -666,7 +666,7 @@ namespace CollapseLauncher
 
                 if (Entry.ActionProperty != null)
                 {
-                    toEntry.OtherContent = Entry.ActionProperty.GetUIElement();
+                    toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
                 }
 
                 GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;

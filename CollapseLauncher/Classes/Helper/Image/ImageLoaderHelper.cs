@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Background;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -15,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -27,7 +29,7 @@ namespace CollapseLauncher.Helper.Image
     internal static class ImageLoaderHelper
     {
         internal static Dictionary<string, string> SupportedImageFormats =
-            new() { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } };
+            new() { { "Supported formats", string.Join(';', BackgroundImageUtility._supportedImageExt.Select(x => $"*{x}")) } };
 
         #region Waifu2X
         private static Waifu2X _waifu2X;
