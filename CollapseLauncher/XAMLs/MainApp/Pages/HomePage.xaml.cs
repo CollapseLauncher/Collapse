@@ -1283,6 +1283,9 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb             = "runas";
                 proc.Start();
 
+				// Stop update check
+				IsSkippingUpdateCheck = true;
+				
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
                 StartResizableWindowPayload(
                     _gamePreset.GameExecutableName,
@@ -1321,6 +1324,7 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+				IsSkippingUpdateCheck = false;
             }
         }
 
@@ -1372,6 +1376,9 @@ namespace CollapseLauncher.Pages
 
             // Run Post Launch Command
             if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostExitCommand) PostExitCommand(_settings);
+			
+			// Re-enable update check
+			IsSkippingUpdateCheck = false;
         }
 
         private void StopGame(PresetConfigV2 gamePreset)
