@@ -1,7 +1,9 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.EncTool.Proto.StarRail;
 using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
+using System.Text;
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -28,6 +30,9 @@ namespace CollapseLauncher.GameVersioning
                     GamePreset.GameDispatchChannelName,
                     GameVersionAPI.VersionString);
             }
+
+            // Initialize Proto ID for static StarRailGateway
+            InitializeProtoId();
         }
 
         ~GameTypeStarRailVersion() => StarRailMetadataTool?.Dispose();
@@ -43,6 +48,19 @@ namespace CollapseLauncher.GameVersioning
             if (GameVersionInstalled == null)
             {
                 GameVersionInstalled = GameVersionAPI;
+            }
+        }
+
+#nullable enable
+        private void InitializeProtoId()
+        {
+            if (base.GamePreset.GameDataTemplates != null && base.GamePreset.GameDataTemplates.Count != 0)
+            {
+                byte[]? data = base.GamePreset.GetGameDataTemplate("MagicSpell", new byte[] { 2, 1, 0, 0 });
+                if (data == null) return;
+
+                string jsonResponse = Encoding.UTF8.GetString(data);
+                StarRailDispatchGatewayProps.Deserialize(jsonResponse);
             }
         }
     }
