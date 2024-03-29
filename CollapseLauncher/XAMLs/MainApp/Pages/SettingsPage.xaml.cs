@@ -87,6 +87,11 @@ namespace CollapseLauncher.Pages
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
+            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+                string.Join("; ", BackgroundMediaUtility._supportedImageExt),
+                string.Join("; ", BackgroundMediaUtility._supportedMediaPlayerExt)
+            );
+            
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
         }
 
@@ -735,6 +740,11 @@ namespace CollapseLauncher.Pages
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
+            
+            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+                string.Join("; ", BackgroundMediaUtility._supportedImageExt),
+                string.Join("; ", BackgroundMediaUtility._supportedMediaPlayerExt)
+            );
         }
 
         private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();

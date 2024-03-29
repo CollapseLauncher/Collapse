@@ -389,7 +389,7 @@
 
     "AppBG": "App Background",
     "AppBG_Checkbox": "Use Custom Background",
-    "AppBG_Note": "Note: Image must be in .png, .jpg, .tiff or .bmp format and the resolution must be less than 4096x4096",
+    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
 
     "AppThreads": "Application Threads",
     "AppThreads_Download": "Download Threads",
