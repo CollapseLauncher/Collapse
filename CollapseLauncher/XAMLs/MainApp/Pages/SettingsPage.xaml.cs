@@ -635,7 +635,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var tooltip = Lang._SettingsPage.Waifu2X_Help;
+                var tooltip = $"{Lang._SettingsPage.Waifu2X_Help}\r\n{Lang._SettingsPage.Waifu2X_Help2}";
                 switch (ImageLoaderHelper.Waifu2XStatus)
                 {
                     case Waifu2XStatus.CpuMode:
