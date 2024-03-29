@@ -40,7 +40,10 @@ namespace CollapseLauncher.Pages
     public sealed partial class SettingsPage : Page
     {
         #region Properties
-        private readonly string _collapseStartupTaskName = "CollapseLauncherStartupTask";
+
+        private const string _collapseStartupTaskName = "CollapseLauncherStartupTask";
+        private const string RepoUrl = "https://github.com/CollapseLauncher/Collapse/commit/";
+
         #endregion
 
         #region Settings Page Handler
@@ -68,8 +71,7 @@ namespace CollapseLauncher.Pages
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
             GitVersionIndicator_Hyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
-                    .Append(ThisAssembly.Git.RepositoryUrl)
-                    .Append("commit/")
+                    .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
 
             if (IsAppLangNeedRestart)
