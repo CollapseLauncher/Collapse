@@ -414,6 +414,10 @@
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
+    "VideoBackground": "Video Background Settings",
+    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_AudioVolume": "Audio Volume",
+
     "Update": "Check for Updates",
     "Update_CurVer": "Current Version:",
     "Update_CheckBtn": "Check for Update",

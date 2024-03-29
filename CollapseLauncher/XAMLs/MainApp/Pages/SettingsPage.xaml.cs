@@ -1,4 +1,6 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
@@ -29,7 +31,6 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 using Task = System.Threading.Tasks.Task;
-using CollapseLauncher.Extension;
 
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
@@ -533,6 +534,38 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsVideoBackgroundAudioMute
+        {
+            get => !GetAppConfigValue("BackgroundAudioIsMute").ToBool();
+            set
+            {
+                if (!value)
+                    BackgroundMediaUtility.Mute();
+                else
+                    BackgroundMediaUtility.Unmute();
+            }
+        }
+
+        private double VideoBackgroundAudioVolume
+        {
+            get
+            {
+                double value = GetAppConfigValue("BackgroundAudioVolume").ToDouble();
+                if (value < 0)
+                    BackgroundMediaUtility.SetVolume(0d);
+                if (value > 1)
+                    BackgroundMediaUtility.SetVolume(1d);
+
+                return value * 100d;
+            }
+            set
+            {
+                if (value < 0) return;
+                double downValue = value / 100d;
+                BackgroundMediaUtility.SetVolume(downValue);
+            }
+        }
+
         private bool IsDiscordGameStatusEnabled
         {
             get => GetAppConfigValue("EnableDiscordGameStatus").ToBool();
@@ -573,7 +606,8 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                App.ToggleBlurBackdrop(value);
+                if (BackgroundMediaUtility._currentAppliedMediaType == BackgroundMediaUtility.MediaType.StillImage)
+                    App.ToggleBlurBackdrop(value);
             }
         }
 

@@ -189,6 +189,9 @@ namespace Hi3Helper
         public static extern uint GetWindowLong(IntPtr hwnd, int index);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
         public static extern uint SetWindowLong(IntPtr hwnd, int index, uint value);
 
         [DllImport("user32.dll")]

@@ -97,7 +97,7 @@ namespace CollapseLauncher
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            BackgroundImageUtility.DetachCurrent();
+            BackgroundMediaUtility.DetachCurrent();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -411,8 +411,8 @@ namespace CollapseLauncher
         {
             if (IsFirstStartup) return;
 
-            if (e) BackgroundImageUtility.Dimm();
-            else BackgroundImageUtility.Undimm();
+            if (e) BackgroundMediaUtility.Dimm();
+            else BackgroundMediaUtility.Undimm();
         }
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
@@ -432,7 +432,7 @@ namespace CollapseLauncher
 
             try
             {
-                await BackgroundImageUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
+                await BackgroundMediaUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
             }
             catch (Exception ex)
             {
@@ -512,7 +512,7 @@ namespace CollapseLauncher
             try
             {
                 // Initialize the background image utility
-                await BackgroundImageUtility.RegisterCurrent(this, BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+                await BackgroundMediaUtility.RegisterCurrent(this, BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
 
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();

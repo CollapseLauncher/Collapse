@@ -20,16 +20,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
 namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
         internal static Dictionary<string, string> SupportedImageFormats =
-            new() { { "Supported formats", string.Join(';', BackgroundImageUtility._supportedImageExt.Select(x => $"*{x}")) } };
+            new() {
+                { "All supported formats", string.Join(';', BackgroundMediaUtility._supportedImageExt.Select(x => $"*{x}")) + ';' + string.Join(';', BackgroundMediaUtility._supportedMediaPlayerExt.Select(x => $"*{x}")) },
+                { "Image formats", string.Join(';', BackgroundMediaUtility._supportedImageExt.Select(x => $"*{x}")) },
+                { "Video formats", string.Join(';', BackgroundMediaUtility._supportedMediaPlayerExt.Select(x => $"*{x}")) }
+            };
 
         #region Waifu2X
         private static Waifu2X _waifu2X;
@@ -244,8 +248,8 @@ namespace CollapseLauncher.Helper.Image
                 FileInfo newCachedFileInfo = new FileInfo(InputFileName);
 
                 await using (FileStream newCachedFileStream = newCachedFileInfo.Create())
-                    await using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
-                        await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
+                await using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
+                    await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
 
                 InputFileInfo.Delete();
                 return newCachedFileInfo.OpenRead();
@@ -256,8 +260,8 @@ namespace CollapseLauncher.Helper.Image
             if (isCachedFileExist) return cachedFileInfo.OpenRead();
 
             await using (FileStream cachedFileStream = cachedFileInfo.Create())
-                await using (FileStream inputFileStream = InputFileInfo.OpenRead())
-                    await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
+            await using (FileStream inputFileStream = InputFileInfo.OpenRead())
+                await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
 
             return cachedFileInfo.OpenRead();
         }

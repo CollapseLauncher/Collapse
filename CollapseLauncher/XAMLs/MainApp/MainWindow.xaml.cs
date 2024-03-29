@@ -1,5 +1,6 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using Microsoft.UI;
@@ -230,8 +231,18 @@ namespace CollapseLauncher
         {
             const uint WM_SYSCOMMAND = 0x0112;
             const uint WM_SHOWWINDOW = 0x0018;
+            const uint WM_ACTIVATEAPP = 0x001C;
+
             switch (msg)
             {
+                case WM_ACTIVATEAPP:
+                    {
+                        if (wParam == 1)
+                            BackgroundMediaUtility.WindowFocused();
+                        else
+                            BackgroundMediaUtility.WindowUnfocused();
+                    }
+                    break;
                 case WM_SYSCOMMAND:
                     {
                         const uint SC_MAXIMIZE = 0xF030;
@@ -255,6 +266,7 @@ namespace CollapseLauncher
                                 }
                             case SC_MINIMIZE:
                                 {
+                                    BackgroundMediaUtility.WindowUnfocused();
                                     if (GetAppConfigValue("MinimizeToTray").ToBool())
                                     {
                                         // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
@@ -267,6 +279,7 @@ namespace CollapseLauncher
                                 }
                             case SC_RESTORE:
                                 {
+                                    BackgroundMediaUtility.WindowFocused();
                                     m_homePage?.CarouselRestartScroll();
                                     break;
                                 }
@@ -278,7 +291,10 @@ namespace CollapseLauncher
                         if (wParam == 0)
                             m_homePage?.CarouselStopScroll();
                         else
+                        {
+                            BackgroundMediaUtility.WindowFocused();
                             m_homePage?.CarouselRestartScroll();
+                        }
                         break;
                     }
             }

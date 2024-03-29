@@ -260,5 +260,11 @@ namespace CollapseLauncher
             await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(URL, default);
             await networkStream.CopyToAsync(fs);
         }
+
+        internal static bool IsWindowCurrentlyFocused()
+        {
+            IntPtr currentForegroundWindow = GetForegroundWindow();
+            return m_windowHandle == currentForegroundWindow;
+        }
     }
 }

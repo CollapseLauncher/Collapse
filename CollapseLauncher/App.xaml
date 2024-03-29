@@ -30,6 +30,12 @@
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColorLight2}" />
                             <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#FFFFFF" />
                             <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#000000" />
+                            
+                            <!-- TitleBar brushes -->
+                            <LinearGradientBrush x:Key="VideoOverlayTitleBarBrush" StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Offset="0" Color="#00000000" />
+                                <GradientStop Offset="0.67" Color="#BB000000" />
+                            </LinearGradientBrush>
 
                             <!--  Dialog brushes  -->
                             <ui:Color x:Key="DialogTitleColor">#ffd52a</ui:Color>
@@ -66,8 +72,10 @@
                                 TintOpacity="0.0" />
                             <AcrylicBrush
                                 x:Key="BackgroundImageMaskAcrylicBrush"
-                                TintColor="#000000"
-                                TintOpacity="0" />
+                                FallbackColor="#EE222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0.0" />
                             <AcrylicBrush
                                 x:Key="PageBackgroundAcrylicBrush"
                                 FallbackColor="#E1222222"
@@ -142,18 +150,27 @@
                                 TintOpacity="1" />
                             <AcrylicBrush
                                 x:Key="NavigationBarBrush"
-                                FallbackColor="#FF222222"
-                                TintColor="#222222"
+                                FallbackColor="#000000"
+                                TintColor="Transparent"
                                 TintLuminosityOpacity="1"
+                                Opacity="0"
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewContentBackground"
+                                FallbackColor="Transparent"
+                                TintColor="Transparent"
+                                TintLuminosityOpacity="0"
+                                Opacity="0"
                                 TintOpacity="0.0" />
                             <AcrylicBrush
                                 x:Key="NavigationViewDefaultPaneBackground"
-                                FallbackColor="#EE1D1D1D"
+                                FallbackColor="#DD222222"
                                 TintColor="#222222"
                                 TintLuminosityOpacity="0.80"
                                 TintOpacity="0.0" />
                             <AcrylicBrush
                                 x:Key="NavigationViewExpandedPaneBackground"
+                                FallbackColor="#DD222222"
                                 TintColor="#222222"
                                 TintLuminosityOpacity="0.80"
                                 TintOpacity="0.0" />
@@ -175,6 +192,12 @@
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}" />
                             <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#000000" />
                             <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#FFFFFF" />
+
+                            <!-- TitleBar brushes -->
+                            <LinearGradientBrush x:Key="VideoOverlayTitleBarBrush" StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Offset="0.627" Color="#00FFFFFF" />
+                                <GradientStop Offset="0.627" Color="#DDFFFFFF" />
+                            </LinearGradientBrush>
 
                             <!--  Dialog brushes  -->
                             <ui:Color x:Key="DialogTitleColor">#693758</ui:Color>
@@ -211,8 +234,9 @@
                                 TintOpacity="0" />
                             <AcrylicBrush
                                 x:Key="BackgroundImageMaskAcrylicBrush"
-                                TintColor="#FFFFFF"
-                                TintOpacity="0" />
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0.0" />
                             <AcrylicBrush
                                 x:Key="PageBackgroundAcrylicBrush"
                                 FallbackColor="#FFEEEEEE"
@@ -286,21 +310,29 @@
                                 TintOpacity="1" />
                             <AcrylicBrush
                                 x:Key="NavigationBarBrush"
-                                FallbackColor="#FFFFFFFF"
-                                TintColor="#EEEEEE"
+                                FallbackColor="#FFEEEEEE"
+                                TintColor="#00EEEEEE"
                                 TintLuminosityOpacity="1"
                                 TintOpacity="0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewContentBackground"
+                                FallbackColor="Transparent"
+                                TintColor="Transparent"
+                                TintLuminosityOpacity="0"
+                                Opacity="0"
+                                TintOpacity="0.0" />
                             <AcrylicBrush
                                 x:Key="NavigationViewDefaultPaneBackground"
                                 FallbackColor="#FFEEEEEE"
-                                TintColor="#EFEFEF"
-                                TintLuminosityOpacity="1"
-                                TintOpacity="0" />
-                            <AcrylicBrush
-                                x:Key="NavigationViewExpandedPaneBackground"
                                 TintColor="#EEEEEE"
                                 TintLuminosityOpacity="1"
-                                TintOpacity="0" />
+                                TintOpacity="0.0" />
+                            <AcrylicBrush
+                                x:Key="NavigationViewExpandedPaneBackground"
+                                FallbackColor="#FFEEEEEE"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="1"
+                                TintOpacity="0.0" />
                             <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
                                 <GradientStop Offset="0.50" Color="#00FFFFFF" />
                                 <GradientStop Offset="1" Color="#A0FFFFFF" />

@@ -179,6 +179,38 @@
                                        TextWrapping="Wrap"
                                        Visibility="Collapsed" />
                         </StackPanel>
+                        <StackPanel>
+                            <TextBlock Margin="0,16,0,8"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground}" />
+                            <ToggleSwitch x:Name="VideoBackgroundIsAudioMute"
+                                      Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAudio}"
+                                      IsOn="{x:Bind IsVideoBackgroundAudioMute, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <TextBlock Margin="0,8,0,8"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_AudioVolume}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock VerticalAlignment="Center"
+                                           HorizontalAlignment="Left"
+                                           TextWrapping="Wrap"
+                                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                                           Text="{Binding Value, ElementName=VideoBackgroundAudioVolumeSlider}"/>
+                                <Slider x:Name="VideoBackgroundAudioVolumeSlider"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Left"
+                                        Grid.Column="1"
+                                        Minimum="0"
+                                        Maximum="100"
+                                        Width="180"
+                                        Value="{x:Bind VideoBackgroundAudioVolume, Mode=TwoWay}"/>
+                            </Grid>
+                        </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize}" />

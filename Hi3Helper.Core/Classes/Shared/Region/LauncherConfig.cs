@@ -309,6 +309,8 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "MinimizeToTray", false },
             { "UseExternalBrowser", false },
             { "EnableWaifu2X", false },
+            { "BackgroundAudioVolume", 0.75d },
+            { "BackgroundAudioIsMute", true },
         };
         #endregion
     }

@@ -1,17 +1,16 @@
 ﻿using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CommunityToolkit.WinUI.Animations;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable
@@ -19,7 +18,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class StillImageLoader : IBackgroundImageLoader
+    internal class StillImageLoader : IBackgroundMediaLoader
     {
         private FrameworkElement _parentUI { get; init; }
         private Compositor _currentCompositor { get; init; }
@@ -39,7 +38,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             Grid imageFrontParentGrid, Grid imageBackParentGrid,
             ImageUI? imageFrontCurrent, ImageUI? imageFrontLast,
             ImageUI? imageBackCurrent, ImageUI? imageBackLast,
-            double animationDuration = BackgroundImageUtility.TransitionDuration)
+            double animationDuration = BackgroundMediaUtility.TransitionDuration)
         {
             _parentUI = parentUI;
             _currentCompositor = parentUI.GetElementCompositor();
@@ -74,12 +73,17 @@ namespace CollapseLauncher.Helper.Background.Loaders
                     if (imageStream == null) return;
 
                     BitmapImage bitmapImage = await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
-                    Bitmap bitmapAccentColor = await Task.Run(() => ImageLoaderHelper.Stream2Bitmap(imageStream.AsRandomAccessStream()));
 
-                    await Task.WhenAll(
-                        ColorPaletteUtility.ApplyAccentColor(_parentUI, bitmapAccentColor, filePath, isImageLoadForFirstTime),
-                        ApplyAndSwitchImage(_animationDuration, bitmapImage)
-                        );
+                    try
+                    {
+                        await Task.WhenAll(
+                            ColorPaletteUtility.ApplyAccentColor(_parentUI, imageStream.AsRandomAccessStream(), filePath, isImageLoadForFirstTime, false),
+                            ApplyAndSwitchImage(_animationDuration, bitmapImage)
+                            );
+                    }
+                    finally
+                    {
+                    }
                 }
             }
             finally
@@ -135,10 +139,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
             _isImageDimm = false;
         }
 
-        private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false)
+        private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false, bool forceHideFront = false)
         {
-            TimeSpan duration = TimeSpan.FromSeconds(hideImage ? BackgroundImageUtility.TransitionDuration : BackgroundImageUtility.TransitionDurationSlow);
-            TimeSpan durationSlow = TimeSpan.FromSeconds(BackgroundImageUtility.TransitionDuration);
+            TimeSpan duration = TimeSpan.FromSeconds(hideImage ? BackgroundMediaUtility.TransitionDuration : BackgroundMediaUtility.TransitionDurationSlow);
+            TimeSpan durationSlow = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
             float fromScale = !hideImage ? 0.95f : 1f;
             Vector3 fromTranslate = new Vector3(-((float)(_imageFrontParentGrid?.ActualWidth ?? 0) * (fromScale - 1f) / 2), -((float)(_imageFrontParentGrid?.ActualHeight ?? 0) * (fromScale - 1f) / 2), 0);
@@ -148,7 +152,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             await Task.WhenAll(
                 _imageFrontParentGrid.StartAnimation(
                     duration,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : 1f, hideImage ? 1f : 0f),
+                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : forceHideFront ? 0f : 1f, hideImage ? forceHideFront ? 0f : 1f : 0f),
                     _currentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale), new Vector3(fromScale)),
                     _currentCompositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate)
                 ),
@@ -159,8 +163,16 @@ namespace CollapseLauncher.Helper.Background.Loaders
             );
         }
 
-        public async ValueTask ShowAsync(CancellationToken token) => await ToggleImageVisibility(false, true);
+        public async ValueTask ShowAsync(CancellationToken token) => await ToggleImageVisibility(false, true, _isImageDimm);
 
-        public async ValueTask HideAsync(CancellationToken token) => await ToggleImageVisibility(true, true);
+        public async ValueTask HideAsync(CancellationToken token) => await ToggleImageVisibility(true, true, _isImageDimm);
+
+        public void Mute() => LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", true);
+        public void Unmute() => LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", false);
+        public void SetVolume(double value) => LauncherConfig.SetAndSaveConfigValue("BackgroundAudioVolume", value);
+        public void WindowFocused() { }
+        public void WindowUnfocused() { }
+        public void Play() { }
+        public void Pause() { }
     }
 }

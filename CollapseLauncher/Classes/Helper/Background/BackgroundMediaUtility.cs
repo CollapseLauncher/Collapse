@@ -17,9 +17,9 @@ namespace CollapseLauncher.Helper.Background
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
-    internal static partial class BackgroundImageUtility
+    internal static partial class BackgroundMediaUtility
     {
-        private enum MediaType { Media, StillImage, Unknown };
+        internal enum MediaType { Media, StillImage, Unknown };
 
         internal const double TransitionDuration = 0.25d;
         internal const double TransitionDurationSlow = 0.5d;
@@ -37,10 +37,12 @@ namespace CollapseLauncher.Helper.Background
         private static Grid? _parentBgImageForegroundGrid = null;
         private static Grid? _parentBgMediaPlayerBackgroundGrid = null;
 
-        private static MediaType _currentAppliedMediaType = MediaType.Unknown;
+        internal static MediaType _currentAppliedMediaType = MediaType.Unknown;
 
         private static CancellationTokenSourceWrapper? _cancellationToken = null;
         private static StillImageLoader? _loaderStillImage = null;
+        private static MediaPlayerLoader? _loaderMediaPlayer = null;
+        private static IBackgroundMediaLoader? _currentMediaLoader = null;
 
         private static bool _isCurrentDimmAnimRun = false;
         private static bool _isCurrentUndimmAnimRun = false;
@@ -63,7 +65,7 @@ namespace CollapseLauncher.Helper.Background
             // Initialize the background instances
             (_bgImageForeground, _bgImageForegroundLast) = await InitializeElementGrid<ImageUI>(bgImageGridForeground, "ImageForeground", AssignDefaultImage);
             (_bgImageBackground, _bgImageBackgroundLast) = await InitializeElementGrid<ImageUI>(bgImageGridBackground, "ImageBackground", AssignDefaultImage);
-            _bgMediaPlayerBackground = (await TryGetFirstGridElement<MediaPlayerElement>(bgMediaPlayerGrid, "MediaPlayer"))
+            _bgMediaPlayerBackground = (await TryGetFirstGridElement<MediaPlayerElement>(bgMediaPlayerGrid.WithOpacity(0), "MediaPlayer"))
                 .WithHorizontalAlignment(HorizontalAlignment.Center)
                 .WithVerticalAlignment(VerticalAlignment.Center)
                 .WithStretch(Stretch.UniformToFill);
@@ -98,6 +100,9 @@ namespace CollapseLauncher.Helper.Background
             _parentBgImageForegroundGrid = null;
             _parentBgImageBackgroundGrid = null;
             _parentBgMediaPlayerBackgroundGrid = null;
+
+            _loaderMediaPlayer = null;
+            _loaderStillImage = null;
 
             _currentAppliedMediaType = MediaType.Unknown;
 
@@ -177,7 +182,7 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         /// <typeparam name="TElement">Type of an <c>Image</c>.</typeparam>
         /// <param name="element">Instance of an <c>Image</c>.</param>
-        private static async ValueTask AssignDefaultImage<TElement>(TElement element)
+        internal static async ValueTask AssignDefaultImage<TElement>(TElement element)
         {
             // If the element type is an "Image" type, then proceed
             if (element is ImageUI image)
@@ -231,48 +236,61 @@ namespace CollapseLauncher.Helper.Background
             EnsureCurrentImageRegistered();
             EnsureCurrentMediaPlayerRegistered();
 
-            if (_cancellationToken != null && !_cancellationToken.IsDisposed)
-            {
-                await _cancellationToken.CancelAsync();
-                _cancellationToken.Dispose();
-            }
+            if (_loaderMediaPlayer == null)
+                _loaderMediaPlayer = new MediaPlayerLoader(
+                    _parentUI!,
+                    _parentBgMediaPlayerBackgroundGrid!,
+                    _bgMediaPlayerBackground);
+
+            if (_loaderStillImage == null)
+                _loaderStillImage = new StillImageLoader(
+                    _parentUI!,
+                    _parentBgImageForegroundGrid!, _parentBgImageBackgroundGrid!,
+                    _bgImageForeground, _bgImageForegroundLast,
+                    _bgImageBackground, _bgImageBackgroundLast,
+                    TransitionDuration);
 
             MediaType mediaType = GetMediaType(mediaPath);
-            IBackgroundImageLoader? loader = null;
 
             switch (mediaType)
             {
                 case MediaType.Media:
-                    // TODO
+                    _currentMediaLoader = _loaderMediaPlayer;
                     break;
                 case MediaType.StillImage:
-                    if (_loaderStillImage == null)
-                        _loaderStillImage = new StillImageLoader(
-                            _parentUI!,
-                            _parentBgImageForegroundGrid!, _parentBgImageBackgroundGrid!,
-                            _bgImageForeground, _bgImageForegroundLast,
-                            _bgImageBackground, _bgImageBackgroundLast,
-                            TransitionDuration);
-                    loader = _loaderStillImage;
+                    _currentMediaLoader = _loaderStillImage;
                     break;
                 case MediaType.Unknown:
                 default:
                     throw new FormatException($"Media format is unknown and cannot be determined!");
             }
 
-            if (_currentAppliedMediaType != mediaType && _currentAppliedMediaType != MediaType.Unknown)
+            if (_currentMediaLoader == null) throw new NullReferenceException("No background image loader is assigned!");
+
+            if (_cancellationToken != null && !_cancellationToken.IsDisposed)
             {
-                // TODO Transition between Still Image and Media background
+                if (!_cancellationToken.IsCancelled) await _cancellationToken.CancelAsync();
+                _cancellationToken.Dispose();
             }
-
-            if (loader == null) throw new NullReferenceException("No background image loader is assigned!");
-
             _cancellationToken = new CancellationTokenSourceWrapper();
-            await loader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken.Token);
+            await _currentMediaLoader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken?.Token ?? default);
+
+            if (mediaType == MediaType.Media && _currentAppliedMediaType == MediaType.Unknown)
+                await _loaderStillImage.DimmAsync(_cancellationToken?.Token ?? default);
+
+            if (_currentAppliedMediaType != mediaType && _currentAppliedMediaType != MediaType.Unknown && mediaType == MediaType.Media)
+                await _loaderStillImage!.HideAsync(_cancellationToken?.Token ?? default);
+            else if (_currentAppliedMediaType != mediaType && _currentAppliedMediaType != MediaType.Unknown && mediaType == MediaType.StillImage)
+                await _loaderMediaPlayer!.HideAsync(_cancellationToken?.Token ?? default);
+
+            await _currentMediaLoader.ShowAsync(_cancellationToken?.Token ?? default);
 
             _currentAppliedMediaType = mediaType;
         }
 
+        /// <summary>
+        /// Dimming the current loaded background
+        /// </summary>
         internal static async void Dimm()
         {
             while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun) { await Task.Delay(250); }
@@ -289,6 +307,9 @@ namespace CollapseLauncher.Helper.Background
             }
         }
 
+        /// <summary>
+        /// Undimming the current loaded background
+        /// </summary>
         internal static async void Undimm()
         {
             while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun) { await Task.Delay(250); }
@@ -305,10 +326,46 @@ namespace CollapseLauncher.Helper.Background
             }
         }
 
-        private static IBackgroundImageLoader? GetImageLoader(MediaType mediaType)
+        /// <summary>
+        /// Mute the audio of the currently loaded background
+        /// </summary>
+        internal static void Mute() => _currentMediaLoader?.Mute();
+
+        /// <summary>
+        /// Unmute the audio of the currently loaded background
+        /// </summary>
+        internal static void Unmute() => _currentMediaLoader?.Unmute();
+
+        /// <summary>
+        /// Set the volume of the audio from the currently loaded background
+        /// </summary>
+        internal static void SetVolume(double value) => _currentMediaLoader?.SetVolume(value);
+
+        /// <summary>
+        /// Trigger the unfocused window event to the currently loaded background
+        /// </summary>
+        internal static void WindowUnfocused() => _currentMediaLoader?.WindowUnfocused();
+
+        /// <summary>
+        /// Trigger the focused window event to the currently loaded background
+        /// </summary>
+        internal static void WindowFocused() => _currentMediaLoader?.WindowFocused();
+
+        /// <summary>
+        /// Play/Resume the currently loaded background
+        /// </summary>
+        internal static void Play() => _currentMediaLoader?.Play();
+
+        /// <summary>
+        /// Pause the currently loaded background
+        /// </summary>
+        internal static void Pause() => _currentMediaLoader?.Pause();
+
+        private static IBackgroundMediaLoader? GetImageLoader(MediaType mediaType)
             => mediaType switch
             {
                 MediaType.StillImage => _loaderStillImage,
+                MediaType.Media => _loaderMediaPlayer,
                 _ => throw new NotImplementedException()
             };
 

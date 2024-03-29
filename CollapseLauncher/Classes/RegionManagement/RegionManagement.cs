@@ -29,6 +29,13 @@ namespace CollapseLauncher
     public class CancellationTokenSourceWrapper : CancellationTokenSource
     {
         public bool IsDisposed = false;
+        public bool IsCancelled = false;
+
+        public new async ValueTask CancelAsync()
+        {
+            await base.CancelAsync();
+            IsCancelled = true;
+        }
         protected override void Dispose(bool disposing)
         {
             IsDisposed = true;
