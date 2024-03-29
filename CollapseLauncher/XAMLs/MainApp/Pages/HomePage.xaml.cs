@@ -112,7 +112,8 @@ namespace CollapseLauncher.Pages
         }
 
         private bool IsPageUnload { get; set; }
-        private bool NeedShowEventIcon = true;
+
+        private bool NeedShowEventIcon => GetAppConfigValue("ShowSocialMediaPanel").ToBool();
 
         private void ReturnToHomePage()
         {
@@ -452,7 +453,7 @@ namespace CollapseLauncher.Pages
         #region Event Image
         private async void HideImageEventImg(bool hide)
         {
-            if (!NeedShowEventIcon) return;
+            //if (!NeedShowEventIcon) return;
 
             if (!hide)
                 ImageEventImgGrid.Visibility = Visibility.Visible;
@@ -766,7 +767,7 @@ namespace CollapseLauncher.Pages
                         CustomStartupArgs.Visibility = Visibility.Visible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
-                        NeedShowEventIcon = false;
+                        //NeedShowEventIcon = false;
                         SpawnPreloadBox();
                     }
                     break;
