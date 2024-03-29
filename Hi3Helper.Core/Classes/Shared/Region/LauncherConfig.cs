@@ -86,7 +86,9 @@ namespace Hi3Helper.Shared.Region
         {
             SetAppConfigValue(key, value);
             SaveAppConfig();
+            #if DEBUG
             Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
+            #endif
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
 
