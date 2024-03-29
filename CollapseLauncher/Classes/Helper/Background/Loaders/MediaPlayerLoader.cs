@@ -39,7 +39,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private bool _isVolumeWindowUnfocusedChangeWatcherRunning { get; set; }
         private bool _isMediaPlayerLoading { get; set; }
-        private bool _isMediaPlayerDimm { get; set; }
+        internal bool _isMediaPlayerDimm { get; set; }
         private double _animationDuration { get; set; }
         private FileStream? _currentMediaStream { get; set; }
         private MediaSource? _currentMediaSource { get; set; }
@@ -80,10 +80,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             if (_currentMediaStream != null) await _currentMediaStream.DisposeAsync();
             if (_currentMediaSource != null) _currentMediaSource.Dispose();
-            if (_currentMediaPlayer != null)
-            {
-                _currentMediaPlayer.Dispose();
-            }
+            if (_currentMediaPlayer != null) _currentMediaPlayer.Dispose();
 
             try
             {

@@ -283,7 +283,14 @@ namespace CollapseLauncher.Helper.Background
             else if (_currentAppliedMediaType != mediaType && _currentAppliedMediaType != MediaType.Unknown && mediaType == MediaType.StillImage)
                 await _loaderMediaPlayer!.HideAsync(_cancellationToken?.Token ?? default);
 
-            await _currentMediaLoader.ShowAsync(_cancellationToken?.Token ?? default);
+            if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
+            {
+                _loaderMediaPlayer._isMediaPlayerDimm = true;
+                _loaderStillImage._isImageDimm = true;
+            }
+
+            if (mediaType == MediaType.Media || InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
+                await _currentMediaLoader.ShowAsync(_cancellationToken?.Token ?? default);
 
             _currentAppliedMediaType = mediaType;
         }

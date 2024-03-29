@@ -30,7 +30,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private Grid? _imageBackParentGrid { get; init; }
 
         private bool _isImageLoading { get; set; }
-        private bool _isImageDimm { get; set; }
+        internal bool _isImageDimm { get; set; }
         private double _animationDuration { get; set; }
 
         internal StillImageLoader(
