@@ -4,6 +4,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -16,6 +17,8 @@ using static Hi3Helper.Logger;
 namespace Hi3Helper.Preset
 {
 #nullable enable
+
+    #region Enums
     [JsonConverter(typeof(JsonStringEnumConverter<ServerRegionID>))]
     public enum ServerRegionID
     {
@@ -51,14 +54,14 @@ namespace Hi3Helper.Preset
         miHoYo,
         Cognosphere
     }
+    #endregion
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    #region Metadata Handler
     public class Stamp
     {
         public long LastUpdated { get; set; }
     }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    
     public sealed class Metadata
     {
         public Dictionary<string, Dictionary<string, PresetConfigV2>>? MetadataV2 { get; set; }
@@ -125,17 +128,21 @@ namespace Hi3Helper.Preset
 
         public int GameCount => MetadataV2?.Count ?? 0; 
         public int MaxRegionCount => MetadataV2?.Max(x => x.Value.Count) ?? 0;
-#nullable enable
     }
 
+    #endregion
+    
+#nullable enable
     [Serializable]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public sealed class PresetConfigV2
     {
+        #region Constants
         private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
         private const string PrefixRegGameConfig = "Software\\{0}\\{1}";
         private const string PrefixDefaultProgramFiles = "{1}Program Files\\{0}";
+        #endregion
 
+        #region Language Handler
         public string? GetGameLanguage()
         {
             ReadOnlySpan<char> value;
@@ -168,46 +175,6 @@ namespace Hi3Helper.Preset
                     return int.MinValue;
             }
         }
-
-        public int GetStarRailVoiceLanguageByName(string name) => name switch
-        {
-            "cn" => 0,
-            "tw" => 1,
-            "en" => 2,
-            "jp" => 3,
-            "kr" => 4,
-            _ => 3 // Set to JP by default
-        };
-
-        public string GetStarRailVoiceLanguageByID(int id) => id switch
-        {
-            0 => "cn",
-            1 => "cn", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
-            2 => "en",
-            3 => "jp",
-            4 => "kr",
-            _ => "jp" // Set to JP by default
-        };
-
-        public string GetStarRailVoiceLanguageFullNameByID(int id) => id switch
-        {
-            0 => "Chinese(PRC)",
-            1 => "Chinese(PRC)", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
-            2 => "English",
-            3 => "Japanese",
-            4 => "Korean",
-            _ => "Japanese" // Set to JP by default
-        };
-
-        public string GetStarRailVoiceLanguageFullNameByName(string name) => name switch
-        {
-            "cn" => "Chinese(PRC)",
-            "tw" => "Chinese(PRC)", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
-            "en" => "English",
-            "jp" => "Japanese",
-            "kr" => "Korean",
-            _ => "Japanese" // Set to JP by default
-        };
 
         private int GetVoiceLanguageID_StarRail(string RegPath)
         {
@@ -282,24 +249,46 @@ namespace Hi3Helper.Preset
                     break;
             }
         }
-
-        public byte[]? GetGameDataTemplate(string key, byte[] gameVersion)
+        
+        public int GetStarRailVoiceLanguageByName(string name) => name switch
         {
-            if (GameDataTemplates == null || !GameDataTemplates.ContainsKey(key) || GameDataTemplates[key] == null) return null;
+            "cn" => 0,
+            "tw" => 1,
+            "en" => 2,
+            "jp" => 3,
+            "kr" => 4,
+            _ => 3 // Set to JP by default
+        };
 
-            GameDataTemplate value = GameDataTemplates[key];
-            if (value.DataVersion == null) return null;
+        public string GetStarRailVoiceLanguageByID(int id) => id switch
+        {
+            0 => "cn",
+            1 => "cn", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
+            2 => "en",
+            3 => "jp",
+            4 => "kr",
+            _ => "jp" // Set to JP by default
+        };
 
-            int verInt = GameDataVersion.GetBytesToIntVersion(gameVersion);
-            if (!value.DataVersion.ContainsKey(verInt)) return null;
+        public string GetStarRailVoiceLanguageFullNameByID(int id) => id switch
+        {
+            0 => "Chinese(PRC)",
+            1 => "Chinese(PRC)", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
+            2 => "English",
+            3 => "Japanese",
+            4 => "Korean",
+            _ => "Japanese" // Set to JP by default
+        };
 
-            GameDataVersion verData = value.DataVersion[verInt];
-            if (!verData.isCompressed) return verData.Data;
-
-            byte[] dataOut = new byte[verData.Length];
-            BrotliDecoder.TryDecompress(verData.Data, dataOut, out _);
-            return dataOut;
-        }
+        public string GetStarRailVoiceLanguageFullNameByName(string name) => name switch
+        {
+            "cn" => "Chinese(PRC)",
+            "tw" => "Chinese(PRC)", // Force Traditional Chinese value to use Simplified Chinese since they shared the same VO files (as provided by the API)
+            "en" => "English",
+            "jp" => "Japanese",
+            "kr" => "Korean",
+            _ => "Japanese" // Set to JP by default
+        };
 
         private void SetVoiceLanguageID_Genshin(int LangID)
         {
@@ -341,7 +330,27 @@ namespace Hi3Helper.Preset
                 LogWriteLine($"Cannot save voice language ID: {LangID} to the registry!\r\n{ex}", LogType.Error, true);
             }
         }
+        
+        #endregion
+        
+        public byte[]? GetGameDataTemplate(string key, byte[] gameVersion)
+        {
+            if (GameDataTemplates == null || !GameDataTemplates.ContainsKey(key)) return null;
 
+            GameDataTemplate value = GameDataTemplates[key];
+            if (value.DataVersion == null) return null;
+
+            int verInt = GameDataVersion.GetBytesToIntVersion(gameVersion);
+            if (!value.DataVersion.ContainsKey(verInt)) return null;
+
+            GameDataVersion verData = value.DataVersion[verInt];
+            if (!verData.isCompressed) return verData.Data;
+
+            byte[] dataOut = new byte[verData.Length];
+            BrotliDecoder.TryDecompress(verData.Data, dataOut, out _);
+            return dataOut;
+        }
+        
         // WARNING!!!
         // This feature is only available for Genshin.
         public int GetRegServerNameID()
@@ -369,8 +378,10 @@ namespace Hi3Helper.Preset
             }
         }
 
+        #region Genshin Registry Handler
         // WARNING!!!
         // This feature is only available for Genshin.
+        [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
         public class GeneralDataProp
         {
             public string deviceUUID { get; set; } = "";
@@ -385,6 +396,7 @@ namespace Hi3Helper.Preset
                 get
                 {
                     string valueFromReg = _selectedServerName;
+                    // ReSharper disable once RedundantTypeArgumentsOfMethod
                     if (!Enum.TryParse<ServerRegionID>(valueFromReg, true, out ServerRegionID result))
                         return ServerRegionID.os_asia;
 
@@ -462,7 +474,9 @@ namespace Hi3Helper.Preset
             public List<string> urlCheckBanReasons { get; set; } = new List<string>();
             public bool mtrUseOldWinVersion { get; set; } = false;
         }
-
+        #endregion
+        
+        #region Game Configs Check
         public bool CheckExistingGame()
         {
             try
@@ -501,7 +515,9 @@ namespace Hi3Helper.Preset
 
             return File.Exists(Path.Combine(ActualGameDataLocation!, "config.ini")) && File.Exists(Path.Combine(ActualGameDataLocation!, GameExecutableName!));
         }
-
+        #endregion
+        
+        #region Metadata Properties
         public string? GameName { get; set; }
         public int HashID { get; set; }
         private string? SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
@@ -567,23 +583,22 @@ namespace Hi3Helper.Preset
         public string? InternalGameNameFolder { get; set; }
         public string? InternalGameNameInConfig { get; set; }
         public Dictionary<string, GameDataTemplate>? GameDataTemplates { get; set; }
-        public Dictionary<string, SteamGameProp>? ZoneSteamAssets { get; set; } = new Dictionary<string, SteamGameProp>();
+        public Dictionary<string, SteamGameProp>? ZoneSteamAssets { get; set; } = new();
+        #endregion
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    #region Misc Metadata Methods
     public class SteamGameProp
     {
         public string? URL { get; set; }
         public string? MD5 { get; set; }
     }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    
     public class GameDataTemplate
     {
         public Dictionary<int, GameDataVersion>? DataVersion { get; set; }
     }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    
     public class GameDataVersion
     {
         public byte[]? Data { get; set; }
@@ -596,4 +611,5 @@ namespace Hi3Helper.Preset
             return version[0] | version[1] << 8 | version[2] << 16 | version[3] << 24;
         }
     }
+    #endregion
 }

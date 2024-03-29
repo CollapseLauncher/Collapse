@@ -45,12 +45,6 @@ jobs:
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.3.1
-      with:
-        vs-prerelease: false
-        msbuild-architecture: ${{ matrix.platform }}
-
     - name: Restore
       run: dotnet restore CollapseLauncher --locked-mode
 
@@ -64,7 +58,7 @@ jobs:
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/preview-build/
-
+    
     - name: Notify Discord
       uses: sarisia/actions-status-discord@v1.13.0
       if: always()
