@@ -811,8 +811,8 @@ namespace CollapseLauncher.Interfaces
             });
             Button ShowBrokenFilesButton = Content.AddElementToStackPanel(
                 UIElementExtensions.CreateButtonWithIcon<Button>(
-                    Lang._HomePage!.PauseCancelDownloadBtn,
-                    null,
+                    Lang._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
+                    "\uf550",
                     "FontAwesomeSolid",
                     "AccentButtonStyle"
                 )
