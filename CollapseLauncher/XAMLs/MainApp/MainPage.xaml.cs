@@ -1001,6 +1001,8 @@ namespace CollapseLauncher
             }
 
             object selValue = ((ComboBox)sender).SelectedValue;
+            if (selValue == null) return;
+
             if (selValue != null)
             {
                 string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
