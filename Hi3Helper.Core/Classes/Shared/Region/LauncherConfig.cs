@@ -320,7 +320,7 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "EnableWaifu2X", false },
             { "BackgroundAudioVolume", 0.75d },
             { "BackgroundAudioIsMute", true },
-            { "UseInstantRegionChange", false }
+            { "UseInstantRegionChange", true }
         };
         #endregion
     }
