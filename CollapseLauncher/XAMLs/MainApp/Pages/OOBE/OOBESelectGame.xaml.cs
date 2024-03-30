@@ -79,10 +79,10 @@ namespace CollapseLauncher.Pages.OOBE
 
                     BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
                     {
-                        buffer = bitmapData.Scan0,
-                        width = bitmapData.Width,
-                        height = bitmapData.Height,
-                        channel = bitmapChannelCount
+                        Buffer = bitmapData.Scan0,
+                        Width = bitmapData.Width,
+                        Height = bitmapData.Height,
+                        Channel = bitmapChannelCount
                     };
 
                     if (_gamePosterBitmap != null && IsSuccess)

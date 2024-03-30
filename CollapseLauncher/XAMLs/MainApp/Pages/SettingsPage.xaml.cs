@@ -88,8 +88,8 @@ namespace CollapseLauncher.Pages
 #endif
 
             AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
-                string.Join("; ", BackgroundMediaUtility._supportedImageExt),
-                string.Join("; ", BackgroundMediaUtility._supportedMediaPlayerExt)
+                string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
+                string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
             
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
@@ -613,7 +613,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                if (BackgroundMediaUtility._currentAppliedMediaType == BackgroundMediaUtility.MediaType.StillImage)
+                if (BackgroundMediaUtility.CurrentAppliedMediaType == BackgroundMediaUtility.MediaType.StillImage)
                     App.ToggleBlurBackdrop(value);
             }
         }
@@ -742,8 +742,8 @@ namespace CollapseLauncher.Pages
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
             
             AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
-                string.Join("; ", BackgroundMediaUtility._supportedImageExt),
-                string.Join("; ", BackgroundMediaUtility._supportedMediaPlayerExt)
+                string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
+                string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
         }
 

@@ -1,4 +1,10 @@
-﻿using CollapseLauncher.Helper.Animation;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper.Shared.Region;
@@ -6,32 +12,27 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System;
-using System.IO;
-using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal class StillImageLoader : IBackgroundMediaLoader
     {
-        private FrameworkElement _parentUI { get; init; }
-        private Compositor _currentCompositor { get; init; }
-        private ImageUI? _imageFrontCurrent { get; init; }
-        private ImageUI? _imageFrontLast { get; init; }
-        private Grid? _imageFrontParentGrid { get; init; }
-        private ImageUI? _imageBackCurrent { get; init; }
-        private ImageUI? _imageBackLast { get; init; }
-        private Grid? _imageBackParentGrid { get; init; }
+        private FrameworkElement ParentUI { get; }
+        private Compositor CurrentCompositor { get; }
+        private ImageUI? ImageFrontCurrent { get; }
+        private ImageUI? ImageFrontLast { get; }
+        private Grid? ImageFrontParentGrid { get; }
+        private ImageUI? ImageBackCurrent { get; }
+        private ImageUI? ImageBackLast { get; }
+        private Grid? ImageBackParentGrid { get; }
 
-        private bool _isImageLoading { get; set; }
-        internal bool _isImageDimm { get; set; }
-        private double _animationDuration { get; set; }
+        private bool IsImageLoading { get; set; }
+        internal bool IsImageDimm { get; set; }
+        private double AnimationDuration { get; }
 
         internal StillImageLoader(
             FrameworkElement parentUI,
@@ -40,139 +41,197 @@ namespace CollapseLauncher.Helper.Background.Loaders
             ImageUI? imageBackCurrent, ImageUI? imageBackLast,
             double animationDuration = BackgroundMediaUtility.TransitionDuration)
         {
-            _parentUI = parentUI;
-            _currentCompositor = parentUI.GetElementCompositor();
+            ParentUI = parentUI;
+            CurrentCompositor = parentUI.GetElementCompositor();
 
-            _imageFrontCurrent = imageFrontCurrent;
-            _imageFrontLast = imageFrontLast;
-            _imageFrontParentGrid = imageFrontParentGrid;
+            ImageFrontCurrent = imageFrontCurrent;
+            ImageFrontLast = imageFrontLast;
+            ImageFrontParentGrid = imageFrontParentGrid;
 
-            _imageBackCurrent = imageBackCurrent;
-            _imageBackLast = imageBackLast;
-            _imageBackParentGrid = imageBackParentGrid;
+            ImageBackCurrent = imageBackCurrent;
+            ImageBackLast = imageBackLast;
+            ImageBackParentGrid = imageBackParentGrid;
 
-            _animationDuration = animationDuration;
-            _isImageLoading = false;
+            AnimationDuration = animationDuration;
+            IsImageLoading = false;
         }
 
-        public async ValueTask LoadAsync(string filePath, bool isImageLoadForFirstTime, bool isRequestInit, CancellationToken token)
+        public async ValueTask LoadAsync(string filePath, bool isImageLoadForFirstTime, bool isRequestInit,
+            CancellationToken token)
         {
             // Wait until the image loading sequence is completed
-            while (_isImageLoading) await Task.Delay(250, token);
+            while (IsImageLoading)
+            {
+                await Task.Delay(250, token);
+            }
 
             try
             {
                 // Set the image loading state
-                _isImageLoading = true;
+                IsImageLoading = true;
 
                 // Get the image stream
                 token.ThrowIfCancellationRequested();
-                await using (FileStream? imageStream = await ImageLoaderHelper.LoadImage(filePath, isRequestInit, isImageLoadForFirstTime))
+                await using (FileStream? imageStream =
+                             await ImageLoaderHelper.LoadImage(filePath, isRequestInit, isImageLoadForFirstTime))
                 {
                     // Return if the stream is null due to cancellation or an error.
-                    if (imageStream == null) return;
-
-                    BitmapImage bitmapImage = await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
-
-                    try
+                    if (imageStream == null)
                     {
-                        await Task.WhenAll(
-                            ColorPaletteUtility.ApplyAccentColor(_parentUI, imageStream.AsRandomAccessStream(), filePath, isImageLoadForFirstTime, false),
-                            ApplyAndSwitchImage(_animationDuration, bitmapImage)
-                            );
+                        return;
                     }
-                    finally
-                    {
-                    }
+
+                    BitmapImage bitmapImage =
+                        await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
+
+                    await Task.WhenAll(
+                        ColorPaletteUtility.ApplyAccentColor(ParentUI, imageStream.AsRandomAccessStream(), filePath,
+                            isImageLoadForFirstTime, false),
+                        ApplyAndSwitchImage(AnimationDuration, bitmapImage)
+                    );
                 }
             }
             finally
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                _isImageLoading = false;
+                IsImageLoading = false;
             }
         }
 
         private async Task ApplyAndSwitchImage(double duration, BitmapImage imageToApply)
         {
-            bool IsNeedToggleFront = InnerLauncherConfig.m_appMode != InnerLauncherConfig.AppMode.Hi3CacheUpdater;
+            bool isNeedToggleFront = InnerLauncherConfig.m_appMode != InnerLauncherConfig.AppMode.Hi3CacheUpdater;
 
             TimeSpan timeSpan = TimeSpan.FromSeconds(duration);
 
-            _imageBackLast!.Source = _imageBackCurrent!.Source;
-            _imageFrontLast!.Source = _imageFrontCurrent!.Source;
+            ImageBackLast!.Source = ImageBackCurrent!.Source;
+            ImageFrontLast!.Source = ImageFrontCurrent!.Source;
 
-            _imageBackCurrent!.Opacity = 0;
-            _imageFrontCurrent!.Opacity = 0;
+            ImageBackCurrent!.Opacity = 0;
+            ImageFrontCurrent!.Opacity = 0;
 
-            _imageBackLast!.Opacity = 1;
-            _imageFrontLast!.Opacity = 1;
-            _imageBackCurrent!.Source = imageToApply;
-            _imageFrontCurrent!.Source = imageToApply;
+            ImageBackLast!.Opacity = 1;
+            ImageFrontLast!.Opacity = 1;
+            ImageBackCurrent!.Source = imageToApply;
+            ImageFrontCurrent!.Source = imageToApply;
 
             await Task.WhenAll(
-                _imageBackCurrent.StartAnimation(timeSpan,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
-                _imageBackLast.StartAnimation(timeSpan,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1, timeSpan * 0.8)),
-                IsNeedToggleFront ? _imageFrontCurrent.StartAnimation(timeSpan,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0)) : Task.CompletedTask,
-                _imageFrontLast.StartAnimation(timeSpan,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1, timeSpan * 0.8))
-                );
+                ImageBackCurrent.StartAnimation(timeSpan,
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
+                ImageBackLast.StartAnimation(timeSpan,
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1, timeSpan * 0.8)),
+                isNeedToggleFront
+                    ? ImageFrontCurrent.StartAnimation(timeSpan,
+                        CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0))
+                    : Task.CompletedTask,
+                ImageFrontLast.StartAnimation(timeSpan,
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1, timeSpan * 0.8))
+            );
         }
 
         public async ValueTask DimmAsync(CancellationToken token)
         {
-            while (_isImageLoading) await Task.Delay(250, token);
+            while (IsImageLoading)
+            {
+                await Task.Delay(250, token);
+            }
 
-            if (!_isImageDimm) await ToggleImageVisibility(true);
-            _isImageDimm = true;
+            if (!IsImageDimm)
+            {
+                await ToggleImageVisibility(true);
+            }
+
+            IsImageDimm = true;
         }
 
         public async ValueTask UndimmAsync(CancellationToken token)
         {
-            while (_isImageLoading) await Task.Delay(250, token);
+            while (IsImageLoading)
+            {
+                await Task.Delay(250, token);
+            }
 
-            if (_isImageDimm) await ToggleImageVisibility(false);
-            _isImageDimm = false;
+            if (IsImageDimm)
+            {
+                await ToggleImageVisibility(false);
+            }
+
+            IsImageDimm = false;
         }
 
-        private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false, bool forceHideFront = false)
+        private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false,
+            bool forceHideFront = false)
         {
-            TimeSpan duration = TimeSpan.FromSeconds(hideImage ? BackgroundMediaUtility.TransitionDuration : BackgroundMediaUtility.TransitionDurationSlow);
+            TimeSpan duration = TimeSpan.FromSeconds(hideImage
+                ? BackgroundMediaUtility.TransitionDuration
+                : BackgroundMediaUtility.TransitionDurationSlow);
             TimeSpan durationSlow = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
             float fromScale = !hideImage ? 0.95f : 1f;
-            Vector3 fromTranslate = new Vector3(-((float)(_imageFrontParentGrid?.ActualWidth ?? 0) * (fromScale - 1f) / 2), -((float)(_imageFrontParentGrid?.ActualHeight ?? 0) * (fromScale - 1f) / 2), 0);
+            Vector3 fromTranslate =
+                new Vector3(-((float)(ImageFrontParentGrid?.ActualWidth ?? 0) * (fromScale - 1f) / 2),
+                    -((float)(ImageFrontParentGrid?.ActualHeight ?? 0) * (fromScale - 1f) / 2), 0);
             float toScale = hideImage ? 1.1f : 1f;
-            Vector3 toTranslate = new Vector3(-((float)(_imageFrontParentGrid?.ActualWidth ?? 0) * (toScale - 1f) / 2), -((float)(_imageFrontParentGrid?.ActualHeight ?? 0) * (toScale - 1f) / 2), 0);
+            Vector3 toTranslate = new Vector3(-((float)(ImageFrontParentGrid?.ActualWidth ?? 0) * (toScale - 1f) / 2),
+                -((float)(ImageFrontParentGrid?.ActualHeight ?? 0) * (toScale - 1f) / 2), 0);
 
             await Task.WhenAll(
-                _imageFrontParentGrid.StartAnimation(
+                ImageFrontParentGrid.StartAnimation(
                     duration,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : forceHideFront ? 0f : 1f, hideImage ? forceHideFront ? 0f : 1f : 0f),
-                    _currentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale), new Vector3(fromScale)),
-                    _currentCompositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate)
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
+                        hideImage ? 0f : forceHideFront ? 0f : 1f, hideImage ? forceHideFront ? 0f : 1f : 0f),
+                    CurrentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale),
+                        new Vector3(fromScale)),
+                    CurrentCompositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate)
                 ),
-                _imageBackParentGrid.StartAnimation(
+                ImageBackParentGrid.StartAnimation(
                     durationSlow,
-                    _currentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? (completeInvisible ? 0f : 0.4f) : 1f, hideImage ? 1f : (completeInvisible ? 0f : 0.4f))
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
+                        hideImage ? completeInvisible ? 0f : 0.4f : 1f, hideImage ? 1f : completeInvisible ? 0f : 0.4f)
                 )
             );
         }
 
-        public async ValueTask ShowAsync(CancellationToken token) => await ToggleImageVisibility(false, true, _isImageDimm);
+        public async ValueTask ShowAsync(CancellationToken token)
+        {
+            await ToggleImageVisibility(false, true, IsImageDimm);
+        }
 
-        public async ValueTask HideAsync(CancellationToken token) => await ToggleImageVisibility(true, true, _isImageDimm);
+        public async ValueTask HideAsync(CancellationToken token)
+        {
+            await ToggleImageVisibility(true, true, IsImageDimm);
+        }
 
-        public void Mute() => LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", true);
-        public void Unmute() => LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", false);
-        public void SetVolume(double value) => LauncherConfig.SetAndSaveConfigValue("BackgroundAudioVolume", value);
-        public void WindowFocused() { }
-        public void WindowUnfocused() { }
-        public void Play() { }
-        public void Pause() { }
+        public void Mute()
+        {
+            LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", true);
+        }
+
+        public void Unmute()
+        {
+            LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", false);
+        }
+
+        public void SetVolume(double value)
+        {
+            LauncherConfig.SetAndSaveConfigValue("BackgroundAudioVolume", value);
+        }
+
+        public void WindowFocused()
+        {
+        }
+
+        public void WindowUnfocused()
+        {
+        }
+
+        public void Play()
+        {
+        }
+
+        public void Pause()
+        {
+        }
     }
 }

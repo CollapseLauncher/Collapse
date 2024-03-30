@@ -30,9 +30,9 @@ namespace CollapseLauncher.Helper.Image
     {
         internal static Dictionary<string, string> SupportedImageFormats =
             new() {
-                { "All supported formats", string.Join(';', BackgroundMediaUtility._supportedImageExt.Select(x => $"*{x}")) + ';' + string.Join(';', BackgroundMediaUtility._supportedMediaPlayerExt.Select(x => $"*{x}")) },
-                { "Image formats", string.Join(';', BackgroundMediaUtility._supportedImageExt.Select(x => $"*{x}")) },
-                { "Video formats", string.Join(';', BackgroundMediaUtility._supportedMediaPlayerExt.Select(x => $"*{x}")) }
+                { "All supported formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) + ';' + string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) },
+                { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) },
+                { "Video formats", string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) }
             };
 
         #region Waifu2X
@@ -124,7 +124,7 @@ namespace CollapseLauncher.Helper.Image
                 }
 
                 resizedImageFileStream = await GenerateCachedStream(inputFileInfo, targetSourceImageWidth,
-                                                                    targetSourceImageHeight, false);
+                                                                    targetSourceImageHeight);
             }
             catch
             {
@@ -181,7 +181,7 @@ namespace CollapseLauncher.Helper.Image
             {
                 dialogOverlay.IsPrimaryButtonEnabled = false;
                 dialogOverlay.IsSecondaryButtonEnabled = false;
-                await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream()!, BitmapFileFormat.Png, false);
+                await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream()!, BitmapFileFormat.Png);
             }
 
             GC.WaitForPendingFinalizers();
@@ -216,8 +216,8 @@ namespace CollapseLauncher.Helper.Image
                 FontWeight = FontWeights.SemiBold
             });
 
-            parentGrid.AddElementToGridRowColumn(imageCropper, 0, 0);
-            parentGrid.AddElementToGridRowColumn(loadingMsgPanel, 0, 0);
+            parentGrid.AddElementToGridRowColumn(imageCropper);
+            parentGrid.AddElementToGridRowColumn(loadingMsgPanel);
 
             StorageFile file = await StorageFile.GetFileFromPathAsync(filePath);
             await imageCropper!.LoadImageFromFile(file!);
@@ -304,12 +304,12 @@ namespace CollapseLauncher.Helper.Image
             });
         }
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath)
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string filePath)
         {
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            FileStream cachedFileStream = await LoadImage(FilePath, false, false);
+            FileStream cachedFileStream = await LoadImage(filePath);
             if (cachedFileStream == null) return (null, null);
             await using (cachedFileStream)
             {
