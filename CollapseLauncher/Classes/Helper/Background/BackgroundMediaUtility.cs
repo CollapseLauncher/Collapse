@@ -38,9 +38,10 @@ namespace CollapseLauncher.Helper.Background
         private static FrameworkElement? _parentUI;
         private static ImageUI? _bgImageBackground;
         private static ImageUI? _bgImageBackgroundLast;
-        private static ImageUI? _bgImageForeground;
-        private static ImageUI? _bgImageForegroundLast;
         private static MediaPlayerElement? _bgMediaPlayerBackground;
+
+        private static Grid? _bgAcrylicMask;
+        private static Grid? _bgOverlayTitleBar;
 
         private static Grid? _parentBgImageBackgroundGrid;
         private static Grid? _parentBgImageForegroundGrid;
@@ -64,18 +65,21 @@ namespace CollapseLauncher.Helper.Background
         ///     The <see cref="Grid" /> must be empty or have existing instances of previously registered <see cref="Grid" />.
         /// </summary>
         /// <param name="parentUI">The parent UI to be assigned for the media elements.</param>
-        /// <param name="bgImageGridForeground">The parent <see cref="Grid" /> for Foreground Image.</param>
+        /// <param name="bgAcrylicMask">The acrylic mask for Background Image.</param>
+        /// <param name="bgOverlayTitleBar">The title bar shadow over Background Image.</param>
         /// <param name="bgImageGridBackground">The parent <see cref="Grid" /> for Background Image.</param>
         /// <param name="bgMediaPlayerGrid">The parent <see cref="Grid" /> for Background Media Player</param>
-        internal static async Task RegisterCurrent(FrameworkElement? parentUI, Grid bgImageGridForeground,
-            Grid bgImageGridBackground, Grid bgMediaPlayerGrid)
+        internal static async Task RegisterCurrent(FrameworkElement? parentUI, Grid bgAcrylicMask,
+            Grid bgOverlayTitleBar, Grid bgImageGridBackground, Grid bgMediaPlayerGrid)
         {
             // Set the parent UI
             _parentUI = parentUI;
 
+            // Mask stuff
+            _bgAcrylicMask = bgAcrylicMask;
+            _bgOverlayTitleBar = bgOverlayTitleBar;
+
             // Initialize the background instances
-            (_bgImageForeground, _bgImageForegroundLast) =
-                await InitializeElementGrid<ImageUI>(bgImageGridForeground, "ImageForeground", AssignDefaultImage);
             (_bgImageBackground, _bgImageBackgroundLast) =
                 await InitializeElementGrid<ImageUI>(bgImageGridBackground, "ImageBackground", AssignDefaultImage);
             _bgMediaPlayerBackground =
@@ -85,7 +89,6 @@ namespace CollapseLauncher.Helper.Background
                 .WithStretch(Stretch.UniformToFill);
 
             // Store the parent grid reference into this static variables
-            _parentBgImageForegroundGrid = bgImageGridForeground;
             _parentBgImageBackgroundGrid = bgImageGridBackground;
             _parentBgMediaPlayerBackgroundGrid = bgMediaPlayerGrid;
 
@@ -101,18 +104,16 @@ namespace CollapseLauncher.Helper.Background
             if (_cancellationToken is { IsCancellationRequested: false }) _cancellationToken.Cancel();
 
             _bgImageBackground = null;
-            _bgImageForeground = null;
             _bgImageBackgroundLast = null;
-            _bgImageForegroundLast = null;
             _bgMediaPlayerBackground = null;
 
-            _parentBgImageForegroundGrid?.ClearChildren();
             _parentBgImageBackgroundGrid?.ClearChildren();
             _parentBgMediaPlayerBackgroundGrid?.ClearChildren();
 
-            _parentBgImageForegroundGrid = null;
             _parentBgImageBackgroundGrid = null;
             _parentBgMediaPlayerBackgroundGrid = null;
+            _bgAcrylicMask = null;
+            _bgOverlayTitleBar = null;
 
             _loaderMediaPlayer = null;
             _loaderStillImage = null;
@@ -235,11 +236,6 @@ namespace CollapseLauncher.Helper.Background
         /// <exception cref="ArgumentNullException">Throw if <see cref="ImageUI" /> instance is not registered</exception>
         private static void EnsureCurrentImageRegistered()
         {
-            if (_bgImageForeground == null || _bgImageForegroundLast == null)
-            {
-                throw new NullReferenceException("bgImageGridForeground instance is null");
-            }
-
             if (_bgImageBackground == null || _bgImageBackgroundLast == null)
             {
                 throw new NullReferenceException("bgImageGridBackground instance is null");
@@ -279,13 +275,14 @@ namespace CollapseLauncher.Helper.Background
 
             _loaderMediaPlayer ??= new MediaPlayerLoader(
                 _parentUI!,
+                _bgAcrylicMask!, _bgOverlayTitleBar!,
                 _parentBgMediaPlayerBackgroundGrid!,
                 _bgMediaPlayerBackground);
 
             _loaderStillImage ??= new StillImageLoader(
                 _parentUI!,
-                _parentBgImageForegroundGrid!, _parentBgImageBackgroundGrid!,
-                _bgImageForeground, _bgImageForegroundLast,
+                _bgAcrylicMask!, _bgOverlayTitleBar!,
+                _parentBgImageBackgroundGrid!,
                 _bgImageBackground, _bgImageBackgroundLast);
 
             MediaType mediaType = GetMediaType(mediaPath);
@@ -316,11 +313,6 @@ namespace CollapseLauncher.Helper.Background
             _cancellationToken = new CancellationTokenSourceWrapper();
             await _currentMediaLoader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit,
                 _cancellationToken.Token);
-
-            if (mediaType == MediaType.Media && CurrentAppliedMediaType == MediaType.Unknown)
-            {
-                await _loaderStillImage.DimmAsync(_cancellationToken.Token);
-            }
 
             if (CurrentAppliedMediaType != mediaType && CurrentAppliedMediaType != MediaType.Unknown &&
                 mediaType == MediaType.Media)

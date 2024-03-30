@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Principal;
 using System.Text.Json;
 using System.Threading;
@@ -401,8 +402,6 @@ namespace CollapseLauncher
                 GridBG_RegionGrid.HorizontalAlignment  = HorizontalAlignment.Left;
                 GridBG_RegionInner.HorizontalAlignment = HorizontalAlignment.Left;
             }
-
-            BackgroundAcrylicMask.Visibility = Visibility.Visible;
         }
         #endregion
 
@@ -512,7 +511,7 @@ namespace CollapseLauncher
             try
             {
                 // Initialize the background image utility
-                await BackgroundMediaUtility.RegisterCurrent(this, BackgroundNewFrontGrid, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+                await BackgroundMediaUtility.RegisterCurrent(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
 
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();

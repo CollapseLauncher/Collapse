@@ -38,6 +38,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private ImageUI? CurrentMediaImage { get; }
         private Grid CurrentMediaPlayerFrameParentGrid { get; }
 
+        private Grid AcrylicMask { get; }
+        private Grid OverlayTitleBar { get; }
+
         private bool IsMediaPlayerLoading { get; set; }
         internal bool IsMediaPlayerDimm { get; set; }
         private FileStream? CurrentMediaStream { get; set; }
@@ -53,10 +56,14 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         internal MediaPlayerLoader(
             FrameworkElement parentUI,
+            Grid acrylicMask, Grid overlayTitleBar,
             Grid mediaPlayerParentGrid, MediaPlayerElement? mediaPlayerCurrent)
         {
             ParentUI = parentUI;
             CurrentCompositor = parentUI.GetElementCompositor();
+
+            AcrylicMask = acrylicMask;
+            OverlayTitleBar = overlayTitleBar;
 
             CurrentMediaPlayerFrameParentGrid = mediaPlayerParentGrid;
             CurrentMediaPlayerFrame = mediaPlayerCurrent;
@@ -258,10 +265,15 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 ? BackgroundMediaUtility.TransitionDuration
                 : BackgroundMediaUtility.TransitionDurationSlow);
             await Task.WhenAll(
-                CurrentMediaPlayerFrameParentGrid.StartAnimation(
+                AcrylicMask.StartAnimation(
                     duration,
-                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0.2f : 1f,
-                        hideImage ? 1f : 0.2f)
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 1f : 0f,
+                        hideImage ? 0f : 1f)
+                ),
+                OverlayTitleBar.StartAnimation(
+                    duration,
+                    CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : 1f,
+                        hideImage ? 1f : 0f)
                 )
             );
         }
@@ -271,7 +283,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             TimeSpan duration = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
             await CurrentMediaPlayerFrameParentGrid.StartAnimation(duration,
-                CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", IsMediaPlayerDimm ? 0.2f : 1f, 0f)
+                CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1f, 0f)
             );
 
             App.ToggleBlurBackdrop(false);

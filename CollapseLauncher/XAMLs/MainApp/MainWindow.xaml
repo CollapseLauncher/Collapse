@@ -8,7 +8,7 @@
         xmlns:uiextension="using:CollapseLauncher.Extension"
         SizeChanged="MainWindow_OnSizeChanged"
         mc:Ignorable="d">
-    <Grid x:Name="MainWindowGridContainer">
+    <Grid x:Name="MainWindowGridContainer" Background="{ThemeResource WindowBackground}">
         <Grid.Resources>
             <ThemeShadow x:Name="SharedThemeShadow"/>
         </Grid.Resources>

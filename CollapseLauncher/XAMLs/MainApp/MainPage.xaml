@@ -13,28 +13,29 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
+        <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
         <ListView x:Name="KeyboardHandler"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
         <Grid x:Name="BackgroundNewBackGrid"/>
-        <Grid x:Name="BackgroundAcrylicMask"
-              Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
-              Visibility="Collapsed"/>
         <Grid x:Name="BackgroundNewMediaPlayerGrid">
             <MediaPlayerElement x:Name="MediaPlayerFrame"
                                 Tag="MediaPlayer"
                                 Stretch="UniformToFill"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"/>
-            <Grid Height="128"
-                  Margin="48,0,0,0"
-                  Background="{ThemeResource VideoOverlayTitleBarBrush}"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Top"/>
         </Grid>
+        <Grid x:Name="BackgroundAcrylicMask"
+              Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"
+              Opacity="0"/>
+        <Grid x:Name="BackgroundOverlayTitleBar"
+              Height="64"
+              Background="{ThemeResource BackgroundOverlayTitleBarBrush}"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Top"/>
         <NavigationView x:Name="NavigationViewControl"
                         BackRequested="NavigationViewControl_BackRequested"
-                        Background="{ThemeResource NavigationBarBrush}"
+                        Background="Transparent"
                         IsBackButtonVisible="Visible"
                         IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
                         IsPaneOpen="False"
@@ -47,7 +48,6 @@
                         PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
                         Visibility="Visible">
             <Grid Background="Transparent">
-                <Grid x:Name="BackgroundNewFrontGrid" Background="Transparent"/>
                 <Frame x:Name="LauncherFrame">
                     <Frame.ContentTransitions>
                         <NavigationThemeTransition/>
