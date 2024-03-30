@@ -1003,14 +1003,11 @@ namespace CollapseLauncher
             object selValue = ((ComboBox)sender).SelectedValue;
             if (selValue == null) return;
 
-            if (selValue != null)
-            {
-                string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
-                string region = GetComboBoxGameRegionValue(selValue);
-                PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
-                ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
-                ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
-            }
+            string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
+            string region = GetComboBoxGameRegionValue(selValue);
+            PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
+            ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
+            ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
             
