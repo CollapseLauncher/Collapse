@@ -74,8 +74,6 @@ namespace CollapseLauncher.Pages.OOBE
                     };
 
                     bitmapData = _gamePosterBitmap.LockBits(new Rectangle(new Point(), _gamePosterBitmap.Size), ImageLockMode.ReadOnly, _gamePosterBitmap.PixelFormat);
-                    int bitmapBufferLength = bitmapData.Width * bitmapData.Height * bitmapChannelCount;
-                    nint bitmapBufferPtr = bitmapData.Scan0;
 
                     BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
                     {
