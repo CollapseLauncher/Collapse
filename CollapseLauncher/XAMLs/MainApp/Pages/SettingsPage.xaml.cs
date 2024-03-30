@@ -78,8 +78,11 @@ namespace CollapseLauncher.Pages
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
-            if (IsChangeRegionWarningNeedRestart)
+            if (IsChangeRegionWarningNeedRestart) 
                 ChangeRegionToggleWarning.Visibility = Visibility.Visible;
+
+            if (IsInstantRegionNeedRestart)
+                InstantRegionToggleWarning.Visibility = Visibility.Visible;
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
@@ -788,16 +791,42 @@ namespace CollapseLauncher.Pages
 
         private bool IsShowRegionChangeWarning
         {
-            get => LauncherConfig.IsShowRegionChangeWarning;
+            get
+            { 
+                var value = LauncherConfig.IsShowRegionChangeWarning;
+
+                ToggleChangeRegionInstant.Visibility = !value ? Visibility.Visible : Visibility.Collapsed;
+                return value;
+            }
             set
             {
                 IsChangeRegionWarningNeedRestart = true;
                 ChangeRegionToggleWarning.Visibility = Visibility.Visible;
 
                 LauncherConfig.IsShowRegionChangeWarning = value;
+                ToggleChangeRegionInstant.Visibility     = !value ? Visibility.Visible : Visibility.Collapsed;
+
+                if (value)
+                {
+                    // Disable instant region change and suppress its warning
+                    ToggleChangeRegionInstant.IsOn        = false;
+                    InstantRegionToggleWarning.Visibility = Visibility.Collapsed;
+                    IsInstantRegionNeedRestart            = false;
+                }
             }
         }
 
+        private bool IsInstantRegionChange
+        {
+            get => LauncherConfig.IsInstantRegionChange;
+            set
+            {
+                IsInstantRegionNeedRestart            = true;
+                InstantRegionToggleWarning.Visibility = Visibility.Visible;
+                
+                LauncherConfig.IsInstantRegionChange = value;
+            }
+        }
         private bool IsUseDownloadChunksMerging
         {
             get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();

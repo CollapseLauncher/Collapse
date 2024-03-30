@@ -713,6 +713,16 @@ namespace CollapseLauncher
             LauncherFrame.BackStack.Clear();
         }
 
+        private async void ChangeRegionInstant()
+        {
+            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
+            await LoadRegionRootButton();
+            InvokeLoadingRegionPopup(false);
+            MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+            LauncherFrame.BackStack.Clear();
+        }
+
         private async void ChangeRegion(object sender, RoutedEventArgs e)
         {
             // Disable ChangeRegionBtn and hide flyout
