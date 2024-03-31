@@ -483,19 +483,21 @@
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}"
                                    TextWrapping="Wrap"
                                    Visibility="Collapsed" />
-                        <ToggleSwitch x:Name="ToggleChangeRegionInstant"
-                                      Margin="0,4"
-                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionInstant_Toggle}"
-                                      IsOn="{x:Bind IsInstantRegionChange, Mode=TwoWay}"
-                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                        <TextBlock x:Name="InstantRegionToggleWarning"
-                                   Margin="0,0,0,8"
-                                   FontWeight="Bold"
-                                   Foreground="{ThemeResource AccentColor}"
-                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}"
-                                   TextWrapping="Wrap"
-                                   Visibility="Collapsed" />
+                        <StackPanel x:Name="PanelChangeRegionInstant">
+                            <ToggleSwitch x:Name="ToggleChangeRegionInstant"
+                                          Margin="0,4"
+                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionInstant_Toggle}"
+                                          IsOn="{x:Bind IsInstantRegionChange, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <TextBlock x:Name="InstantRegionToggleWarning"
+                                       Margin="0,0,0,8"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AccentColor}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}"
+                                       TextWrapping="Wrap"
+                                       Visibility="Collapsed" />
+                        </StackPanel>
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.UseExternalBrowser}"
                                       IsOn="{x:Bind IsAlwaysUseExternalBrowser, Mode=TwoWay}"

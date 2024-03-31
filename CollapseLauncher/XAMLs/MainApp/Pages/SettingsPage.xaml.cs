@@ -43,14 +43,19 @@ namespace CollapseLauncher.Pages
         #region Properties
 
         private const string _collapseStartupTaskName = "CollapseLauncherStartupTask";
-        private const string RepoUrl = "https://github.com/CollapseLauncher/Collapse/commit/";
-
+        private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
+        
+        private readonly bool _initIsInstantRegionChange;
+        private readonly bool _initIsShowRegionChangeWarning;
         #endregion
 
         #region Settings Page Handler
         public SettingsPage()
         {
-            this.InitializeComponent();
+            _initIsInstantRegionChange     = LauncherConfig.IsInstantRegionChange;
+            _initIsShowRegionChangeWarning = LauncherConfig.IsShowRegionChangeWarning;
+                
+            InitializeComponent();
             this.EnableImplicitAnimation(true);
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
@@ -78,7 +83,7 @@ namespace CollapseLauncher.Pages
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
-            if (IsChangeRegionWarningNeedRestart) 
+            if (IsChangeRegionWarningNeedRestart)
                 ChangeRegionToggleWarning.Visibility = Visibility.Visible;
 
             if (IsInstantRegionNeedRestart)
@@ -795,34 +800,28 @@ namespace CollapseLauncher.Pages
             { 
                 var value = LauncherConfig.IsShowRegionChangeWarning;
 
-                ToggleChangeRegionInstant.Visibility = !value ? Visibility.Visible : Visibility.Collapsed;
+                PanelChangeRegionInstant.Visibility = !value ? Visibility.Visible : Visibility.Collapsed;
                 return value;
             }
             set
             {
-                IsChangeRegionWarningNeedRestart = true;
-                ChangeRegionToggleWarning.Visibility = Visibility.Visible;
-
                 LauncherConfig.IsShowRegionChangeWarning = value;
-                ToggleChangeRegionInstant.Visibility     = !value ? Visibility.Visible : Visibility.Collapsed;
-
-                if (value)
-                {
-                    // Disable instant region change and suppress its warning
-                    ToggleChangeRegionInstant.IsOn        = false;
-                    InstantRegionToggleWarning.Visibility = Visibility.Collapsed;
-                    IsInstantRegionNeedRestart            = false;
-                }
+                IsChangeRegionWarningNeedRestart         = true;
+                
+                var valueConfig = _initIsShowRegionChangeWarning;
+                ChangeRegionToggleWarning.Visibility = value != valueConfig ? Visibility.Visible : Visibility.Collapsed;
+                PanelChangeRegionInstant.Visibility  = !value ? Visibility.Visible : Visibility.Collapsed;
             }
         }
-
+        
         private bool IsInstantRegionChange
         {
             get => LauncherConfig.IsInstantRegionChange;
             set
             {
-                IsInstantRegionNeedRestart            = true;
-                InstantRegionToggleWarning.Visibility = Visibility.Visible;
+                IsInstantRegionNeedRestart = true;
+                var valueConfig = _initIsInstantRegionChange;
+                InstantRegionToggleWarning.Visibility = value != valueConfig ? Visibility.Visible : Visibility.Collapsed;
                 
                 LauncherConfig.IsInstantRegionChange = value;
             }

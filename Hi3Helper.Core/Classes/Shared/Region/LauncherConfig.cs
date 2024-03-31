@@ -267,9 +267,14 @@ public static DiscordPresenceManager AppDiscordPresence;
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
         }
 
+        private static bool? _cachedIsInstantRegionChange = null;
         public static bool IsInstantRegionChange
         {
-            get => GetAppConfigValue("UseInstantRegionChange").ToBool();
+            get
+            {
+                _cachedIsInstantRegionChange ??= GetAppConfigValue("UseInstantRegionChange").ToBool();
+                return (bool)_cachedIsInstantRegionChange;
+            }
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
