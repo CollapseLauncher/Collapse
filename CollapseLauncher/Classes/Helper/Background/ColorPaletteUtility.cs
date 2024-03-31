@@ -107,7 +107,7 @@ namespace CollapseLauncher.Helper.Background
 
             if (!File.Exists(cachedPalettePath) || forceCreateNewCache)
             {
-                await TryGenerateNewCachedPalette(bitmapInput, isLight, null);
+                await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
             }
 
             byte[] data = await File.ReadAllBytesAsync(cachedPalettePath);
