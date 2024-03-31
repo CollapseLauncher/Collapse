@@ -104,7 +104,7 @@ namespace CollapseLauncher
         {
             try
             {
-                if (IsInstantRegionChange)
+                if (!IsShowRegionChangeWarning && IsInstantRegionChange)
                 {
                     ChangeRegionConfirmBtn.Visibility = Visibility.Collapsed;
                     ChangeRegionConfirmBtnNoWarning.Visibility = Visibility.Collapsed;
@@ -1011,7 +1011,7 @@ namespace CollapseLauncher
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
             
-            if (IsInstantRegionChange) ChangeRegionInstant();
+            if (!IsShowRegionChangeWarning && IsInstantRegionChange) ChangeRegionInstant();
         }
         #endregion
 
