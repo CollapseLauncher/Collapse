@@ -331,7 +331,7 @@ namespace CollapseLauncher
         private int _lastWindowHeight;
         private WindowRect _windowPosAndSize = new WindowRect();
 
-        public void SetWindowSize(IntPtr hwnd, int width = 1028, int height = 634)
+        public void SetWindowSize(IntPtr hwnd, int width = 1024, int height = 576)
         {
             if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
 
@@ -344,16 +344,26 @@ namespace CollapseLauncher
             int xOff = (desktopSize.Width - _lastWindowWidth) / 2;
             int yOff = (desktopSize.Height - _lastWindowHeight) / 2;
 
+            // We have no title bar
+            const int SM_CYCAPTION      = 4;
+            const int SM_CYSIZEFRAME    = 33;
+            const int SM_CXPADDEDBORDER = 92;
+            var titleBarHeight = GetSystemMetrics(SM_CYSIZEFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+                                 GetSystemMetrics(SM_CXPADDEDBORDER);
+
             // Old Interop ver. Call
             // SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
             //                             xOff, yOff, width, height,
             //                             SetWindowPosFlags.SWP_SHOWWINDOW);
 
-            // New m_appWindow built-in Move and Resize
-            m_appWindow.MoveAndResize(new RectInt32
+            // New m_appWindow built-in Move and ResizeClient
+            m_appWindow.ResizeClient(new SizeInt32
             {
                 Width = _lastWindowWidth,
-                Height = _lastWindowHeight,
+                Height = _lastWindowHeight - titleBarHeight
+            });
+            m_appWindow.Move(new PointInt32
+            {
                 X = xOff,
                 Y = yOff
             });

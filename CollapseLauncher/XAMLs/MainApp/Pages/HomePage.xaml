@@ -1380,12 +1380,100 @@
                 </Button.Flyout>
             </Button>
         </StackPanel>
-        <StackPanel Grid.Row="2"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Stretch"
-                    Orientation="Horizontal">
+        <Grid Grid.Row="2"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="LauncherBtn"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  CornerRadius="20"
+                  HorizontalAlignment="Stretch"
+                  Shadow="{ThemeResource SharedShadow}">
+                <Button x:Name="InstallGameBtn"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Click="InstallGameDialog"
+                        CornerRadius="20"
+                        Style="{ThemeResource NewAccentButtonStyle}">
+                    <Button.Content>
+                        <StackPanel Margin="16,0,16,0"
+                                    Orientation="Horizontal">
+                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
+                                       FontSize="18"
+                                       Text=""/>
+                            <TextBlock Margin="8,-2,0,0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="UpdateGameBtn"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Click="UpdateGameDialog"
+                        CornerRadius="20"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
+                                       FontSize="18"
+                                       Text=""/>
+                            <TextBlock Margin="8,0,0,0"
+                                       FontWeight="Medium"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="StartGameBtn"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Click="StartGame"
+                        CornerRadius="20"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
+                    <StackPanel Margin="16,0,16,0"
+                                Orientation="Horizontal">
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
+                                   FontSize="22"
+                                   Text=""/>
+                        <TextBlock Margin="8,-2,0,0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Medium"
+                                   Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="CancelDownloadBtn"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Click="CancelInstallationProcedure"
+                        CornerRadius="20"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
+                    <TextBlock FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"/>
+                </Button>
+                <Button x:Name="ResumeDownloadBtn"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        CornerRadius="20"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
+                    <TextBlock FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"/>
+                </Button>
+            </Grid>
             <Button x:Name="PlaytimeBtn"
+                    Grid.Row="0"
+                    Grid.Column="1"
                     Margin="10,0,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
@@ -1510,86 +1598,6 @@
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
-            </Button>
-        </StackPanel>
-        <Grid x:Name="LauncherBtn"
-              Grid.Row="2"
-              Grid.Column="0"
-              CornerRadius="20"
-              Shadow="{ThemeResource SharedShadow}">
-            <Button x:Name="InstallGameBtn"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Click="InstallGameDialog"
-                    CornerRadius="20"
-                    Style="{ThemeResource NewAccentButtonStyle}">
-                <Button.Content>
-                    <StackPanel Margin="16,0,16,0"
-                                Orientation="Horizontal">
-                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                   FontSize="18"
-                                   Text=""/>
-                        <TextBlock Margin="8,-2,0,0"
-                                   VerticalAlignment="Center"
-                                   FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button x:Name="UpdateGameBtn"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Click="UpdateGameDialog"
-                    CornerRadius="20"
-                    Style="{ThemeResource NewAccentButtonStyle}"
-                    Visibility="Collapsed">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                   FontSize="18"
-                                   Text=""/>
-                        <TextBlock Margin="8,0,0,0"
-                                   FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button x:Name="StartGameBtn"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Click="StartGame"
-                    CornerRadius="20"
-                    Style="{ThemeResource NewAccentButtonStyle}"
-                    Visibility="Collapsed">
-                <StackPanel Margin="16,0,16,0"
-                            Orientation="Horizontal">
-                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                               FontSize="22"
-                               Text=""/>
-                    <TextBlock Margin="8,-2,0,0"
-                               VerticalAlignment="Center"
-                               FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"/>
-                </StackPanel>
-            </Button>
-            <Button x:Name="CancelDownloadBtn"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Click="CancelInstallationProcedure"
-                    CornerRadius="20"
-                    Style="{ThemeResource NewAccentButtonStyle}"
-                    Visibility="Collapsed">
-                <TextBlock FontWeight="Medium"
-                           Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"/>
-            </Button>
-            <Button x:Name="ResumeDownloadBtn"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    CornerRadius="20"
-                    Style="{ThemeResource NewAccentButtonStyle}"
-                    Visibility="Collapsed">
-                <TextBlock FontWeight="Medium"
-                           Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"/>
             </Button>
         </Grid>
     </Grid>
