@@ -145,12 +145,12 @@ namespace CollapseLauncher.Helper.Background
             TElement? elementCurrent =
                 (await TryGetFirstGridElement(elementGrid, typeName + baseTagType + "_Current", defaultAssignAction))
                 .WithHorizontalAlignment(HorizontalAlignment.Center)
-                .WithVerticalAlignment(VerticalAlignment.Center)
+                .WithVerticalAlignment(VerticalAlignment.Bottom)
                 .WithStretch(Stretch.UniformToFill);
             TElement? elementLast =
                 (await TryGetFirstGridElement(elementGrid, typeName + baseTagType + "_Last", defaultAssignAction))
                 .WithHorizontalAlignment(HorizontalAlignment.Center)
-                .WithVerticalAlignment(VerticalAlignment.Center)
+                .WithVerticalAlignment(VerticalAlignment.Bottom)
                 .WithStretch(Stretch.UniformToFill);
 
             // Return the current and last element

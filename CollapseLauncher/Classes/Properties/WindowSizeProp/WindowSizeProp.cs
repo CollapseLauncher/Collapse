@@ -15,7 +15,7 @@ namespace CollapseLauncher.WindowSize
                 "Normal",
                 new WindowSizeProp()
                 {
-                    WindowBounds = new Size(1243, 726),
+                    WindowBounds = new Size(1280, 720),
                     EventPostCarouselBounds = new Size(399, 185),
                     PostPanelBounds = new Size(399, 134),
                     PostPanelBottomMargin = new Thickness(0, 0, 0, 52),
@@ -31,7 +31,7 @@ namespace CollapseLauncher.WindowSize
                 "Small",
                 new WindowSizeProp()
                 {
-                    WindowBounds = new Size(1028, 622),
+                    WindowBounds = new Size(1024, 576),
                     EventPostCarouselBounds = new Size(336, 156),
                     PostPanelBounds = new Size(336, 118),
                     PostPanelBottomMargin = new Thickness(0, 0, 0, 38),
@@ -40,7 +40,7 @@ namespace CollapseLauncher.WindowSize
                     PostPanelPaimonInnerMargin = new Thickness(0, 0, 0, 48),
                     PostPanelPaimonTextMargin = new Thickness(0, 0, 142, 0),
                     BannerIconWidth = 136,
-                    BannerIconMargin = new Thickness(0,0,70,46)
+                    BannerIconMargin = new Thickness(0,0,70,38)
                 }
             }
         };

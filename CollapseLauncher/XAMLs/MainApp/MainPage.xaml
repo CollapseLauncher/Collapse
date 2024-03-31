@@ -43,9 +43,10 @@
                         ItemInvoked="NavView_ItemInvoked"
                         Loaded="NavView_Loaded"
                         PaneClosing="NavigationPanelClosing_Event"
-                        PaneDisplayMode="LeftCompact"
                         PaneOpening="NavigationPanelOpening_Event"
+                        PaneDisplayMode="LeftCompact"
                         PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
+                        OpenPaneLength="300"
                         Visibility="Visible">
             <Grid Background="Transparent">
                 <Frame x:Name="LauncherFrame">
