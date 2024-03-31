@@ -154,7 +154,7 @@ namespace CollapseLauncher.Helper.Image
             };
 
             ImageCropper imageCropper = new ImageCropper();
-            imageCropper.AspectRatio = 113d / 66d;
+            imageCropper.AspectRatio = 16d / 9d;
             imageCropper.CropShape = CropShape.Rectangular;
             imageCropper.ThumbPlacement = ThumbPlacement.Corners;
             imageCropper.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -282,7 +282,8 @@ namespace CollapseLauncher.Helper.Image
                 Width = (int)ToWidth,
                 Height = (int)ToHeight,
                 HybridMode = HybridScaleMode.Off,
-                Interpolation = InterpolationSettings.CubicSmoother
+                Interpolation = InterpolationSettings.CubicSmoother,
+                Anchor = CropAnchor.Bottom | CropAnchor.Center
             };
 
             await Task.Run(() =>
