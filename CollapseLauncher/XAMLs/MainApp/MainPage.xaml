@@ -307,14 +307,13 @@
             </Grid.OpacityTransition>
             <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"
                   Opacity="0.00000001"/>
-            <Grid Margin="0,47,0,0"
-                  Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"/>
+            <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"/>
         </Grid>
         <Grid x:Name="NotificationPanel"
               Margin="0,48,-700,0"
               HorizontalAlignment="Right"
               Background="{ThemeResource NotificationPanelBrush}"
-              CornerRadius="0,0,0,16"
+              CornerRadius="8,0,0,8"
               Shadow="{ThemeResource SharedShadow}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
