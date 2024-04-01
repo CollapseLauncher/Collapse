@@ -1011,7 +1011,7 @@ namespace CollapseLauncher
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
             
-            if (!IsShowRegionChangeWarning && IsInstantRegionChange) ChangeRegionInstant();
+            if (!IsShowRegionChangeWarning && IsInstantRegionChange && !IsFirstStartup) ChangeRegionInstant();
         }
         #endregion
 

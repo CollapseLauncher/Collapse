@@ -41,7 +41,7 @@ namespace CollapseLauncher.Extension
             Grid contentPanel = CreateGrid()
                 .WithColumns(GridLength.Auto, new(1, GridUnitType.Star))
                 .WithColumnSpacing(8)
-                .WithPadding(4d, 0d);
+                .WithPadding(isHasText ? 4d : 0d, 0d);
 
             textWeight ??= FontWeights.SemiBold;
 
