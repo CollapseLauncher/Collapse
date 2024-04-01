@@ -14,6 +14,7 @@
                 public string Debug_IncludeGameLogs                 { get; set; } = LangFallback?._SettingsPage.Debug_IncludeGameLogs;
                 public string Debug_MultipleInstance                { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
                 public string ChangeRegionWarning_Toggle            { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
+                public string ChangeRegionInstant_Toggle            { get; set; } = LangFallback?._SettingsPage.ChangeRegionInstant_Toggle;
                 public string ChangeRegionWarning_Warning           { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Warning;
                 public string Language                              { get; set; } = LangFallback?._SettingsPage.Language;
                 public string LanguageEntry                         { get; set; } = LangFallback?._SettingsPage.LanguageEntry;
@@ -89,7 +90,7 @@
                 public string EnableAcrylicEffect                   { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging           { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
                 public string LowerCollapsePrioOnGameLaunch         { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
-                public string LowerCollapsePrioOnGameLaunch_Tooltip {get;  set;}  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
+                public string LowerCollapsePrioOnGameLaunch_Tooltip { get; set; }  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
                 public string UseExternalBrowser                    { get; set; } = LangFallback?._SettingsPage.UseExternalBrowser;
 				public string KbShortcuts_Title                     { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn                   { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;

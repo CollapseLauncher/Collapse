@@ -713,6 +713,16 @@ namespace CollapseLauncher
             LauncherFrame.BackStack.Clear();
         }
 
+        private async void ChangeRegionInstant()
+        {
+            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
+            await LoadRegionRootButton();
+            InvokeLoadingRegionPopup(false);
+            MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+            LauncherFrame.BackStack.Clear();
+        }
+
         private async void ChangeRegion(object sender, RoutedEventArgs e)
         {
             // Disable ChangeRegionBtn and hide flyout
@@ -743,7 +753,7 @@ namespace CollapseLauncher
             ShowAsyncLoadingTimedOutPill();
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
-                LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+                LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
 #if !DISABLEDISCORD
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool())
                     AppDiscordPresence.SetupPresence();

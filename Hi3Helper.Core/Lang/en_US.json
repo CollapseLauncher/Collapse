@@ -369,6 +369,7 @@
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
     "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
 
     "Language": "App Language",

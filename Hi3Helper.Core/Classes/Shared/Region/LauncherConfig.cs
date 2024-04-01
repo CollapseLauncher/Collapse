@@ -249,6 +249,7 @@ public static DiscordPresenceManager AppDiscordPresence;
         public static bool IsPreview                        = false;
         public static bool IsAppThemeNeedRestart            = false;
         public static bool IsChangeRegionWarningNeedRestart = false;
+        public static bool IsInstantRegionNeedRestart       = false;
         public static bool IsFirstInstall                   = false;
         public static bool IsConsoleEnabled
         {
@@ -264,6 +265,17 @@ public static DiscordPresenceManager AppDiscordPresence;
         {
             get => GetAppConfigValue("ShowRegionChangeWarning").ToBool();
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
+        }
+
+        private static bool? _cachedIsInstantRegionChange = null;
+        public static bool IsInstantRegionChange
+        {
+            get
+            {
+                _cachedIsInstantRegionChange ??= GetAppConfigValue("UseInstantRegionChange").ToBool();
+                return (bool)_cachedIsInstantRegionChange;
+            }
+            set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
         public static bool                 ForceInvokeUpdate     = false;
@@ -313,6 +325,7 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "EnableWaifu2X", false },
             { "BackgroundAudioVolume", 0.75d },
             { "BackgroundAudioIsMute", true },
+            { "UseInstantRegionChange", true }
         };
         #endregion
     }

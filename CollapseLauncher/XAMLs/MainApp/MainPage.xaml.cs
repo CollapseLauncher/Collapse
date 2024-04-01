@@ -24,7 +24,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Security.Principal;
 using System.Text.Json;
 using System.Threading;
@@ -61,7 +60,7 @@ namespace CollapseLauncher
         private RegionResourceProp _gameAPIProp { get; set; }
 
         private  static bool         IsChangeDragArea        = true;
-        internal static List<string> PreviousTagString       = new List<string>();
+        internal static List<string> PreviousTagString       = new();
         #endregion
 
         #region Main Routine
@@ -105,9 +104,17 @@ namespace CollapseLauncher
         {
             try
             {
-                ChangeRegionConfirmBtn.Visibility = !IsShowRegionChangeWarning ? Visibility.Collapsed : Visibility.Visible;
-                ChangeRegionConfirmBtnNoWarning.Visibility = !IsShowRegionChangeWarning ? Visibility.Visible : Visibility.Collapsed;
-
+                if (!IsShowRegionChangeWarning && IsInstantRegionChange)
+                {
+                    ChangeRegionConfirmBtn.Visibility = Visibility.Collapsed;
+                    ChangeRegionConfirmBtnNoWarning.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ChangeRegionConfirmBtn.Visibility = !IsShowRegionChangeWarning ? Visibility.Collapsed : Visibility.Visible;
+                    ChangeRegionConfirmBtnNoWarning.Visibility = !IsShowRegionChangeWarning ? Visibility.Visible : Visibility.Collapsed;
+                }
+                
                 if (!await CheckForAdminAccess(this))
                 {
                     (m_window as MainWindow)?.CloseApp();
@@ -994,16 +1001,17 @@ namespace CollapseLauncher
             }
 
             object selValue = ((ComboBox)sender).SelectedValue;
-            if (selValue != null)
-            {
-                string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
-                string region = GetComboBoxGameRegionValue(selValue);
-                PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
-                ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
-                ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
-            }
+            if (selValue == null) return;
+
+            string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
+            string region = GetComboBoxGameRegionValue(selValue);
+            PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
+            ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
+            ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
+            
+            if (!IsShowRegionChangeWarning && IsInstantRegionChange) ChangeRegionInstant();
         }
         #endregion
 
