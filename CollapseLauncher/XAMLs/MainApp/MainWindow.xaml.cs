@@ -229,9 +229,10 @@ namespace CollapseLauncher
 
         private IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
         {
-            const uint WM_SYSCOMMAND = 0x0112;
-            const uint WM_SHOWWINDOW = 0x0018;
+            const uint WM_SYSCOMMAND  = 0x0112;
+            const uint WM_SHOWWINDOW  = 0x0018;
             const uint WM_ACTIVATEAPP = 0x001C;
+            const uint WM_NCHITTEST   = 0x0084;
 
             switch (msg)
             {
@@ -247,7 +248,7 @@ namespace CollapseLauncher
                     {
                         const uint SC_MAXIMIZE = 0xF030;
                         const uint SC_MINIMIZE = 0xF020;
-                        const uint SC_RESTORE = 0xF120;
+                        const uint SC_RESTORE  = 0xF120;
                         switch (wParam)
                         {
                             case SC_MAXIMIZE:
@@ -296,6 +297,18 @@ namespace CollapseLauncher
                             m_homePage?.CarouselRestartScroll();
                         }
                         break;
+                    }
+                case WM_NCHITTEST:
+                    {
+                        // Fix "Ghost Minimize Button" issue
+                        const int HTCLIENT    = 1;
+                        const int HTMINBUTTON = 8;
+                        const int HTMAXBUTTON = 9;
+                        const int HTCLOSE     = 20;
+
+                        var result = CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
+                        if (result is HTMINBUTTON or HTMAXBUTTON or HTCLOSE) return HTCLIENT;
+                        return result;
                     }
             }
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
