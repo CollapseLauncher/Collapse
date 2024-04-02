@@ -29,6 +29,7 @@ using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 using Task = System.Threading.Tasks.Task;
 
@@ -369,12 +370,26 @@ namespace CollapseLauncher.Pages
             string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
+                var currentMediaType = BackgroundMediaUtility.GetMediaType(file);
+
+                if (currentMediaType == MediaType.StillImage)
+                {
+                    FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+
+                    if (croppedImage == null) return;
+
+                    BackgroundImgChanger.ChangeBackground(file, true, true, true, croppedImage);
+                }
+                else
+                {
+                    BackgroundImgChanger.ChangeBackground(file, true, true, true);
+                }
+                    
                 regionBackgroundProp.imgLocalPath = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(file, true, true, true);
-                var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
-                if (currentMediaType == BackgroundMediaUtility.MediaType.Media)
+                
+                if (currentMediaType == MediaType.Media)
                 {
                     CustomBGImageSettings.Visibility = Visibility.Collapsed;
                     CustomBGVideoSettings.Visibility = Visibility.Visible;
@@ -437,7 +452,7 @@ namespace CollapseLauncher.Pages
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
                     var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
-                    if (currentMediaType == BackgroundMediaUtility.MediaType.Media)
+                    if (currentMediaType == MediaType.Media)
                     {
                         CustomBGImageSettings.Visibility = Visibility.Collapsed;
                         CustomBGVideoSettings.Visibility = Visibility.Visible;
@@ -496,7 +511,7 @@ namespace CollapseLauncher.Pages
                     AppBGCustomizerNote.Visibility   = Visibility.Visible;
                         
                     var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
-                    if (currentMediaType == BackgroundMediaUtility.MediaType.Media)
+                    if (currentMediaType == MediaType.Media)
                     {
                         CustomBGImageSettings.Visibility = Visibility.Collapsed;
                         CustomBGVideoSettings.Visibility = Visibility.Visible;
@@ -659,7 +674,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                if (BackgroundMediaUtility.CurrentAppliedMediaType == BackgroundMediaUtility.MediaType.StillImage)
+                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.StillImage)
                     App.ToggleBlurBackdrop(value);
             }
         }

@@ -55,7 +55,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         }
 
         public async ValueTask LoadAsync(string filePath, bool isImageLoadForFirstTime, bool isRequestInit,
-            CancellationToken token)
+            CancellationToken token, FileStream? existingFileStream)
         {
             // Wait until the image loading sequence is completed
             while (IsImageLoading)
@@ -70,8 +70,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                 // Get the image stream
                 token.ThrowIfCancellationRequested();
-                await using (FileStream? imageStream =
-                             await ImageLoaderHelper.LoadImage(filePath, isRequestInit, isImageLoadForFirstTime))
+                await using (FileStream? imageStream = existingFileStream ??
+                              await ImageLoaderHelper.LoadImage(filePath, isRequestInit, isImageLoadForFirstTime))
                 {
                     // Return if the stream is null due to cancellation or an error.
                     if (imageStream == null)

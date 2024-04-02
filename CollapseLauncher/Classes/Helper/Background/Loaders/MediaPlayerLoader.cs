@@ -76,7 +76,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         }
 
         public async ValueTask LoadAsync(string filePath, bool isImageLoadForFirstTime, bool isRequestInit,
-            CancellationToken token)
+            CancellationToken token, FileStream? existingFileStream)
         {
             // Wait until the image loading sequence is completed
             while (IsMediaPlayerLoading)

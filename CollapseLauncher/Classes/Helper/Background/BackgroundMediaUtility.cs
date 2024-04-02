@@ -262,8 +262,8 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false,
-            bool isForceRecreateCache = false)
+        internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false, 
+            bool isForceRecreateCache = false, FileStream? existingFileStream = null)
         {
             while (!_isCurrentRegistered)
             {
@@ -312,7 +312,7 @@ namespace CollapseLauncher.Helper.Background
 
             _cancellationToken = new CancellationTokenSourceWrapper();
             await _currentMediaLoader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit,
-                _cancellationToken.Token);
+                _cancellationToken.Token, existingFileStream);
 
             if (CurrentAppliedMediaType != mediaType && CurrentAppliedMediaType != MediaType.Unknown &&
                 mediaType == MediaType.Media)
