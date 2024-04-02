@@ -110,39 +110,18 @@
                                       IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                        <Grid Margin="0,4,0,8">
-                            <Border Background="Transparent"
-                                    ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
-                                    Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
-                            <ToggleSwitch IsEnabled="{x:Bind IsWaifu2XUsable}"
-                                          IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
-                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                          ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}">
-                                <ToggleSwitch.Header>
-                                    <StackPanel Loaded="EnableHeaderMouseEvent"
-                                                Orientation="Horizontal">
-                                        <TextBlock VerticalAlignment="Center"
-                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Waifu2X_Toggle}" />
-                                        <TextBlock Margin="10,0,0,0"
-                                                   VerticalAlignment="Center"
-                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                   FontSize="18"
-                                                   Opacity="0.25"
-                                                   Text="{x:Bind Waifu2XToolTipIcon}" />
-                                    </StackPanel>
-                                </ToggleSwitch.Header>
-                            </ToggleSwitch>
-                        </Grid>
-                        <StackPanel Margin="0,4,0,8"
-                                    HorizontalAlignment="Left">
-                            <CheckBox x:Name="AppBGMode"
-                                      Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                      IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}" />
-                            <StackPanel x:Name="AppBGCustomizer"
-                                        Margin="-2,8,0,0"
-                                        Orientation="Horizontal"
-                                        Visibility="Collapsed">
+                        <TextBlock Margin="0,16,0,8"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" />
+                        <CheckBox Margin="0, 4, 0, 8"
+                                  x:Name="AppBGMode"
+                                  Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
+                                  IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
+                        <StackPanel x:Name="AppBGCustomizer" 
+                                    Margin="0, 4, 0, 8"
+                                    Visibility="Collapsed">
+                            <StackPanel Margin="-2,4,0,8"
+                                        Orientation="Horizontal">
                                 <Button x:Name="BGSelector"
                                         Height="35"
                                         Margin="-40,0,0,0"
@@ -161,34 +140,63 @@
                                                    Text="{x:Bind helper:Locale.Lang._Misc.Select}" />
                                     </StackPanel>
                                 </Button>
-                                <TextBlock x:Name="BGPathDisplay"
-                                           Width="384"
-                                           Margin="12,0,0,0"
-                                           VerticalAlignment="Center"
-                                           Text=""
-                                           TextTrimming="CharacterEllipsis" />
+                                <ScrollViewer HorizontalScrollMode="Enabled"
+                                              Margin="12,0,0,0"
+                                              Width="384">
+                                    <TextBlock x:Name="BGPathDisplay"
+                                               VerticalAlignment="Center"
+                                               Text=""
+                                               TextTrimming="CharacterEllipsis" />
+                                </ScrollViewer>
                             </StackPanel>
                             <TextBlock x:Name="AppBGCustomizerNote"
-                                       Width="368"
-                                       Margin="0,16,0,0"
-                                       HorizontalAlignment="Left"
-                                       FontSize="12"
-                                       FontWeight="Bold"
-                                       Foreground="{ThemeResource AccentColor}"
-                                       TextWrapping="Wrap"
-                                       Visibility="Collapsed" />
+                                           Width="368"
+                                           Margin="0,12,0,0"
+                                           HorizontalAlignment="Left"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{ThemeResource AccentColor}"
+                                           TextWrapping="Wrap"
+                                           Visibility="Collapsed" />
                         </StackPanel>
-                        <StackPanel>
-                            <TextBlock Margin="0,16,0,8"
-                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground}" />
+                        <StackPanel x:Name="CustomBGImageSettings"
+                                    Margin="0, 4"
+                                    Visibility="Collapsed">
+                            <Grid Margin="0,4">
+                                <Border Background="Transparent"
+                                        ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
+                                        Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
+                                <ToggleSwitch IsEnabled="{x:Bind IsWaifu2XUsable}"
+                                              IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
+                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                              ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}">
+                                    <ToggleSwitch.Header>
+                                        <StackPanel Loaded="EnableHeaderMouseEvent"
+                                                    Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.Waifu2X_Toggle}" />
+                                            <TextBlock Margin="10,0,0,0"
+                                                       VerticalAlignment="Center"
+                                                       FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                       FontSize="18"
+                                                       Opacity="0.25"
+                                                       Text="{x:Bind Waifu2XToolTipIcon}" />
+                                        </StackPanel>
+                                    </ToggleSwitch.Header>
+                                </ToggleSwitch>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel x:Name="CustomBGVideoSettings"
+                                    Margin="0, 4"
+                                    Visibility="Collapsed">
                             <ToggleSwitch x:Name="VideoBackgroundIsAudioMute"
                                           Margin="0,4"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAudio}"
                                           IsOn="{x:Bind IsVideoBackgroundAudioMute, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                            <TextBlock Margin="0,8,0,8"
+                            <TextBlock Margin="0,4"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_AudioVolume}" />
                             <Grid>
                                 <Grid.ColumnDefinitions>

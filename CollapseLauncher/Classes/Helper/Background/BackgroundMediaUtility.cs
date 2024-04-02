@@ -452,7 +452,7 @@ namespace CollapseLauncher.Helper.Background
             };
         }
 
-        private static MediaType GetMediaType(string mediaPath)
+        public static MediaType GetMediaType(string mediaPath)
         {
             string extension = Path.GetExtension(mediaPath);
             if (SupportedImageExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase))

@@ -51,7 +51,6 @@
                 public string DiscordRPC_Toggle                     { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
                 public string DiscordRPC_GameStatusToggle           { get; set; } = LangFallback?._SettingsPage.DiscordRPC_GameStatusToggle;
                 public string DiscordRPC_IdleStatusToggle           { get; set; } = LangFallback?._SettingsPage.DiscordRPC_IdleStatusToggle;
-                public string VideoBackground                       { get; set; } = LangFallback?._SettingsPage.VideoBackground;
                 public string VideoBackground_IsEnableAudio         { get; set; } = LangFallback?._SettingsPage.VideoBackground_IsEnableAudio;
                 public string VideoBackground_AudioVolume           { get; set; } = LangFallback?._SettingsPage.VideoBackground_AudioVolume;
                 public string Update                                { get; set; } = LangFallback?._SettingsPage.Update;

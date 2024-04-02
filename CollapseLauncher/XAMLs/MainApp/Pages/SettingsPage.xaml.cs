@@ -373,6 +373,17 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
                 BackgroundImgChanger.ChangeBackground(file, true, true, true);
+                var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
+                if (currentMediaType == BackgroundMediaUtility.MediaType.Media)
+                {
+                    CustomBGImageSettings.Visibility = Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -425,11 +436,24 @@ namespace CollapseLauncher.Pages
                 {
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
+                    var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
+                    if (currentMediaType == BackgroundMediaUtility.MediaType.Media)
+                    {
+                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
+                        CustomBGVideoSettings.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+                    }
                 }
                 else
                 {
-                    AppBGCustomizer.Visibility = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
+                    AppBGCustomizer.Visibility       = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
 
                 BGSelector.IsEnabled = isEnabled;
@@ -443,8 +467,10 @@ namespace CollapseLauncher.Pages
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
                     regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
-                    AppBGCustomizer.Visibility = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
+                    AppBGCustomizer.Visibility       = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -466,8 +492,20 @@ namespace CollapseLauncher.Pages
                     }
                     BGPathDisplay.Text = regionBackgroundProp.imgLocalPath;
                     BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, true, true, false);
-                    AppBGCustomizer.Visibility = Visibility.Visible;
-                    AppBGCustomizerNote.Visibility = Visibility.Visible;
+                    AppBGCustomizer.Visibility       = Visibility.Visible;
+                    AppBGCustomizerNote.Visibility   = Visibility.Visible;
+                        
+                    var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
+                    if (currentMediaType == BackgroundMediaUtility.MediaType.Media)
+                    {
+                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
+                        CustomBGVideoSettings.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+                    }
                 }
                 BGSelector.IsEnabled = value;
             }
