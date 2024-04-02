@@ -265,7 +265,7 @@ namespace CollapseLauncher.Helper.Background
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
         internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false, 
-            bool isForceRecreateCache = false, FileStream? existingFileStream = null)
+            bool isForceRecreateCache = false)
         {
             while (!_isCurrentRegistered)
             {
