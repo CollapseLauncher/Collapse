@@ -815,10 +815,11 @@ namespace CollapseLauncher.Pages
             set
             {
                 if (value < 0) return;
-                CurrentWindowSizeName = WindowSizeProfilesKey[value];
+                CurrentWindowSizeName     = WindowSizeProfilesKey[value];
+                BGPathDisplayViewer.Width = CurrentWindowSize.SettingsPanelWidth;
                 var delayedDragAreaChange = async () =>
                 {
-                    await System.Threading.Tasks.Task.Delay(250);
+                    await Task.Delay(250);
                     ChangeTitleDragArea.Change(DragAreaTemplate.Default);
                 };
                 delayedDragAreaChange();

@@ -10,6 +10,7 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       CacheMode="BitmapCache"
       Loaded="Page_Loaded"
       NavigationCacheMode="Enabled"
@@ -141,12 +142,15 @@
                                     </StackPanel>
                                 </Button>
                                 <ScrollViewer HorizontalScrollMode="Enabled"
-                                              Margin="12,0,0,0"
-                                              Width="384">
-                                    <TextBlock x:Name="BGPathDisplay"
+                                              VerticalScrollMode="Disabled"
+                                              HorizontalScrollBarVisibility="Visible"
+                                              x:Name="BGPathDisplayViewer"
+                                              Margin="12,-4,0,-4"
+                                              Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.SettingsPanelWidth}">
+                                    <TextBlock Margin="0, 4"
+                                               x:Name="BGPathDisplay"
                                                VerticalAlignment="Center"
-                                               Text=""
-                                               TextTrimming="CharacterEllipsis" />
+                                               Text=""/>
                                 </ScrollViewer>
                             </StackPanel>
                             <TextBlock x:Name="AppBGCustomizerNote"
