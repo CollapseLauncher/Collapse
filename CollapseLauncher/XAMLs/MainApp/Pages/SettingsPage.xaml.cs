@@ -377,17 +377,13 @@ namespace CollapseLauncher.Pages
                     FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
 
                     if (croppedImage == null) return;
+                    BackgroundMediaUtility.SetAlternativeFileStream(croppedImage);
+                }
 
-                    BackgroundImgChanger.ChangeBackground(file, true, true, true, croppedImage);
-                }
-                else
-                {
-                    BackgroundImgChanger.ChangeBackground(file, true, true, true);
-                }
-                    
                 regionBackgroundProp.imgLocalPath = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, true, true, true);
                 
                 if (currentMediaType == MediaType.Media)
                 {

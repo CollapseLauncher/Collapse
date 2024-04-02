@@ -76,7 +76,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         }
 
         public async ValueTask LoadAsync(string filePath, bool isImageLoadForFirstTime, bool isRequestInit,
-            CancellationToken token, FileStream? existingFileStream)
+            CancellationToken token)
         {
             // Wait until the image loading sequence is completed
             while (IsMediaPlayerLoading)
@@ -142,7 +142,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                 await GetPreviewAsColorPalette(filePath);
 
-                CurrentMediaStream = File.OpenRead(filePath);
+                CurrentMediaStream = BackgroundMediaUtility.GetAlternativeFileStream() ?? File.OpenRead(filePath);
                 CurrentMediaPlayer = new MediaPlayer();
 
                 if (InnerLauncherConfig.IsWindowCurrentlyFocused())

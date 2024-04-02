@@ -58,6 +58,8 @@ namespace CollapseLauncher.Helper.Background
         private static bool _isCurrentUndimmAnimRun;
         private static bool _isCurrentRegistered;
 
+        private static FileStream? _alternativeFileStream;
+
         private delegate ValueTask AssignDefaultAction<in T>(T element) where T : class;
 
         /// <summary>
@@ -312,7 +314,7 @@ namespace CollapseLauncher.Helper.Background
 
             _cancellationToken = new CancellationTokenSourceWrapper();
             await _currentMediaLoader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit,
-                _cancellationToken.Token, existingFileStream);
+                _cancellationToken.Token);
 
             if (CurrentAppliedMediaType != mediaType && CurrentAppliedMediaType != MediaType.Unknown &&
                 mediaType == MediaType.Media)
@@ -439,6 +441,18 @@ namespace CollapseLauncher.Helper.Background
         internal static void Pause()
         {
             _currentMediaLoader?.Pause();
+        }
+
+        public static FileStream? GetAlternativeFileStream()
+        {
+            FileStream? returnStream = _alternativeFileStream;
+            _alternativeFileStream = null;
+            return returnStream;
+        }
+
+        public static void SetAlternativeFileStream(FileStream stream)
+        {
+            _alternativeFileStream = stream;
         }
 
         private static IBackgroundMediaLoader? GetImageLoader(MediaType mediaType)

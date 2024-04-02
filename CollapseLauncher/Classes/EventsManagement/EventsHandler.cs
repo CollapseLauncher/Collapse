@@ -316,9 +316,9 @@ namespace CollapseLauncher
     #region BackgroundRegion
     internal static class BackgroundImgChanger
     {
-        static BackgroundImgChangerInvoker invoker = new BackgroundImgChangerInvoker();
+        static BackgroundImgChangerInvoker invoker = new();
         public static async Task WaitForBackgroundToLoad() => await invoker!.WaitForBackgroundToLoad();
-        public static void ChangeBackground(string ImgPath, bool IsCustom = true, bool IsForceRecreateCache = false, bool IsRequestInit = false, FileStream? fileStream = null) => invoker!.ChangeBackground(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit, fileStream);
+        public static void ChangeBackground(string ImgPath, bool IsCustom = true, bool IsForceRecreateCache = false, bool IsRequestInit = false) => invoker!.ChangeBackground(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit);
         public static void ToggleBackground(bool Hide) => invoker!.ToggleBackground(Hide);
     }
 
@@ -328,19 +328,18 @@ namespace CollapseLauncher
         public static event EventHandler<bool> IsImageHide;
         BackgroundImgProperty property;
         public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property!.IsImageLoaded) { } });
-        public void ChangeBackground(string ImgPath, bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false, FileStream? fileStream = null) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit, fileStream));
+        public void ChangeBackground(string ImgPath, bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit));
         public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);
     }
 
     internal class BackgroundImgProperty
     {
-        internal BackgroundImgProperty(string ImgPath, bool IsCustom, bool IsForceRecreateCache, bool IsRequestInit, FileStream? existingFileStream)
+        internal BackgroundImgProperty(string ImgPath, bool IsCustom, bool IsForceRecreateCache, bool IsRequestInit)
         {
             this.ImgPath              = ImgPath;
             this.IsCustom             = IsCustom;
             this.IsForceRecreateCache = IsForceRecreateCache;
             this.IsRequestInit        = IsRequestInit;
-            this.ExistingFileStream   = existingFileStream;
         }
 
         public bool IsRequestInit { get; set; }
@@ -348,7 +347,6 @@ namespace CollapseLauncher
         public bool IsImageLoaded { get; set; }
         public string ImgPath { get; private set; }
         public bool IsCustom { get; private set; }
-        public FileStream? ExistingFileStream { get; private set; }
     }
     #endregion
     #region SpawnWebView2Region

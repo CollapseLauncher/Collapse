@@ -438,7 +438,7 @@ namespace CollapseLauncher
 
             try
             {
-                await BackgroundMediaUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache, e.ExistingFileStream);
+                await BackgroundMediaUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
             }
             catch (Exception ex)
             {
