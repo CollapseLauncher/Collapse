@@ -7,7 +7,6 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -63,7 +62,7 @@ namespace CollapseLauncher
             {
                 // Unsubscribe and dispose the _httpClient
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
-                _httpClient?.Dispose();
+                _httpClient.Dispose();
             }
         }
 
@@ -81,7 +80,7 @@ namespace CollapseLauncher
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)
         {
             // Section: Eliminate unused audio files
-            List<string> audioLangList = (_gameVersionManager as GameTypeGenshinVersion)._audioVoiceLanguageList;
+            List<string> audioLangList = (_gameVersionManager as GameTypeGenshinVersion)!._audioVoiceLanguageList;
             string audioLangListPath = Path.Combine(_gamePath, $"{_execPrefix}_Data", "Persistent", "audio_lang_14");
 
             // Get the list of audio lang list
@@ -106,28 +105,69 @@ namespace CollapseLauncher
                 string ManifestPath = Path.Combine(_gamePath, "pkg_version");
 
                 // Download basic package version list
-                await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), EnsureCreationOfDirectory(ManifestPath), true, null, null, token);
+                var basicVerURL = CombineURLFromString(_gameRepoURL, "pkg_version");
+                #if DEBUG
+                LogWriteLine($"Downloading pkg_version...\r\n\t{basicVerURL}", LogType.Debug, true);
+                #endif
+                await _httpClient.Download(basicVerURL, EnsureCreationOfDirectory(ManifestPath), 
+                    true, null, null, token);
+                
                 // Download additional package lists
-                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming")), true, null, null, token);
-                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming")), true, null, null, token);
-                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming")), true, null, null, token);
-                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming")), true, null, null, token);
+                var dataVerPath = $@"{_execPrefix}_Data\StreamingAssets\data_versions_streaming";
+                var dataVerURL = CombineURLFromString(_gameRepoURL, dataVerPath);
+                #if DEBUG
+                LogWriteLine($"Downloading data_versions_streaming...\r\n\t{dataVerURL}", LogType.Debug, true);
+                #endif
+                await _httpClient.Download(dataVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, dataVerPath)), 
+                    true, null, null, token);
+
+                var silenceVerPath = $@"{_execPrefix}_Data\StreamingAssets\silence_versions_streaming";
+                var silenceVerURL = CombineURLFromString(_gameRepoURL, silenceVerPath);
+                #if DEBUG
+                LogWriteLine($"Downloading silence_versions_streaming...\r\n\t{silenceVerURL}", LogType.Debug, true);
+                #endif
+                await _httpClient.Download(silenceVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, silenceVerPath)),
+                    true, null, null, token);
+
+                var resVerPath = $@"{_execPrefix}_Data\StreamingAssets\res_versions_streaming";
+                var resVerURL = CombineURLFromString(_gameRepoURL, resVerPath);
+                #if DEBUG
+                LogWriteLine($"Downloading res_versions_streaming...\r\n\t{resVerURL}", LogType.Debug, true);
+                #endif
+                await _httpClient.Download(resVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, resVerPath)),
+                    true, null, null, token);
+
+                var videoVerPath = $@"{_execPrefix}_Data\StreamingAssets\VideoAssets\video_versions_streaming";
+                var videoVerURL = CombineURLFromString(_gameRepoURL, videoVerPath);
+                #if DEBUG
+                LogWriteLine($"Downloading video_versions_streaming...\r\n\t{videoVerURL}", LogType.Debug, true);
+                #endif
+                await _httpClient.Download(videoVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, videoVerPath)),
+                    true, null, null, token);
 
                 // Parse basic package version.
                 ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
 
                 // Build additional blks entry.
-                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
-                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "silence_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
-                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "res_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", _gameRepoURL, true);
+                var streamingAssetsPath = $"{_execPrefix}_Data\\StreamingAssets";
+                var assetBundlesPath = $@"{_execPrefix}_Data\StreamingAssets\AssetBundles";
+                
+                EnumerateManifestToAssetIndex(streamingAssetsPath, "data_versions_*", assetIndex, hashtableManifest,
+                    assetBundlesPath, "", _gameRepoURL, true);
+                EnumerateManifestToAssetIndex(streamingAssetsPath, "silence_versions_*", assetIndex, hashtableManifest,
+                    assetBundlesPath, "", _gameRepoURL, true);
+                EnumerateManifestToAssetIndex(streamingAssetsPath, "res_versions_*", assetIndex, hashtableManifest,
+                    assetBundlesPath, ".blk", _gameRepoURL, true);
 
                 // Build cutscenes entry.
-                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "*_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "", _gameRepoURL, true);
+                var videoAssetsPath = $@"{_execPrefix}_Data\StreamingAssets\VideoAssets";
+                EnumerateManifestToAssetIndex(videoAssetsPath, "*_versions_*", assetIndex, hashtableManifest,
+                    videoAssetsPath, "", _gameRepoURL, true);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Parsing primary manifest has failed!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
             }
         }
 
@@ -144,7 +184,8 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
-        private async Task<bool> BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
+        private async Task<bool> BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex,
+            Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
             try
             {
@@ -168,24 +209,37 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(streamingAssetsFolder);
                 }
 
-                string primaryParentURL;
-                string secondaryParentURL;
-
                 // Parse res_versions_external
-                primaryParentURL = CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
-                secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
+                var primaryParentURL =
+                    CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
+                var secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
+                #if DEBUG
+                LogWriteLine($"Downloading res_versions_external...\r\n\t" +
+                             $"pri: {primaryParentURL}\r\n\t"+
+                             $"sec: {secondaryParentURL}", LogType.Debug, true);
+                #endif
                 await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "res_versions_external",
                     "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
                 // Parse data_versions
-                primaryParentURL = queryProperty.ClientDesignDataURL;
-                await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
-                    "data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
+                var dataVerURL = queryProperty.ClientDesignDataURL;
+                #if DEBUG
+                LogWriteLine($"Downloading data_versions_persist...\r\n\t" +
+                             $"{dataVerURL}", LogType.Debug, true);
+                #endif
+                await ParseManifestToAssetIndex(_httpClient, dataVerURL, "",
+                    CombineURLFromString("AssetBundles", "data_versions"), "data_versions_persist", basePersistentPath,
+                    baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
 
                 // Parse data_versions (silence)
-                primaryParentURL = queryProperty.ClientDesignDataSilURL;
-                await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
-                    "silence_data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
+                var dataSilURL = queryProperty.ClientDesignDataSilURL;
+                #if DEBUG
+                LogWriteLine($"Downloading silence_data_versions_persist...\r\n\t" +
+                             $"{dataSilURL}", LogType.Debug, true);
+                #endif
+                await ParseManifestToAssetIndex(_httpClient, dataSilURL, "",
+                    CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
+                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
 
                 // Save persistent manifest numbers
                 SavePersistentRevision(queryProperty);
@@ -343,7 +397,7 @@ namespace CollapseLauncher
 
 #nullable enable
             // Write DownloadPref template
-            byte[]? PrefTemplateBytes = (base._gameVersionManager as GameTypeGenshinVersion)?.GamePreset
+            byte[]? PrefTemplateBytes = (_gameVersionManager as GameTypeGenshinVersion)?.GamePreset
                 .GetGameDataTemplate("DownloadPref", _gameVersion.VersionArrayManifest.Select(x => (byte)x).ToArray());
             if (PrefTemplateBytes != null) File.WriteAllBytes(PersistentPath + "\\DownloadPref", PrefTemplateBytes);
 #nullable disable
@@ -366,6 +420,7 @@ namespace CollapseLauncher
         #endregion
 
         #region DispatcherParser
+        // ReSharper disable once UnusedParameter.Local
         private async Task<QueryProperty> GetDispatcherQuery(Http _httpClient, CancellationToken token)
         {
             // Initialize dispatch helper
@@ -386,7 +441,7 @@ namespace CollapseLauncher
                 LogWriteLine(dFormat);
 #endif
                 // Write the decrypted query response in the log (for diagnostic)
-                WriteLog(dFormat, LogType.Default);
+                WriteLog(dFormat);
 
                 // Try decrypt the dispatcher, parse it and return it
                 return await TryDecryptAndParseDispatcher(dispatchInfo, dispatchDecryptor, dispatchHelper);
@@ -429,7 +484,7 @@ namespace CollapseLauncher
 #if DEBUG
             LogWriteLine(dFormat);
 #endif
-            WriteLog(dFormat, LogType.Default);
+            WriteLog(dFormat);
 
             // Parse the dispatcher data in protobuf format and return it as QueryProperty
             await dispatchHelper.LoadDispatch(decryptedData);
@@ -462,11 +517,14 @@ namespace CollapseLauncher
         /// <param name="parentPath"></param>
         /// <param name="acceptedExtension"></param>
         /// <param name="parentURL"></param>
+        /// <param name="forceStoreInStreaming"></param>
         private void ParseManifestToAssetIndex(string manifestPath, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath, string acceptedExtension, string parentURL, bool forceStoreInStreaming = false)
         {
             // Initialize local entry.
+            // ReSharper disable TooWideLocalVariableScope
             PkgVersionProperties entry;
-            bool isHashHasValue = false;
+            bool isHashHasValue;
+            // ReSharper restore TooWideLocalVariableScope
 
             // Iterate JSON that only contains defined extensions.
             foreach (string data in File.ReadAllLines(manifestPath).Where(x => x.EndsWith(acceptedExtension, StringComparison.OrdinalIgnoreCase)))
@@ -477,12 +535,12 @@ namespace CollapseLauncher
                 // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
                 if (!string.IsNullOrEmpty(parentPath))
                 {
-                    entry.remoteName = $"{parentPath.Replace('\\', '/')}/{entry.remoteName}";
+                    entry!.remoteName = $"{parentPath.Replace('\\', '/')}/{entry.remoteName}";
                 }
 
                 // Append remote URL for download later.
-                entry.remoteURL = CombineURLFromString(parentURL, entry.remoteName);
-                entry.isForceStoreInStreaming = forceStoreInStreaming;
+                entry!.remoteURL = CombineURLFromString(parentURL, entry.remoteName);
+                entry!.isForceStoreInStreaming = forceStoreInStreaming;
 
                 // Check if the entry is duplicated. If not, then add to asset index.
                 isHashHasValue = hashtable.ContainsKey(entry.remoteName);

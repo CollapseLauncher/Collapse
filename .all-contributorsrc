@@ -21,7 +21,7 @@
         "mentoring",
         "maintenance",
         "review",
-	"projectManagement"
+        "projectManagement"
       ]
     },
     {
@@ -33,7 +33,7 @@
         "code",
         "maintenance",
         "review",
-	"projectManagement"
+        "projectManagement"
       ]
     },
     {
@@ -43,11 +43,11 @@
       "profile": "https://github.com/bagusnl",
       "contributions": [
         "code",
-	"maintenance",
-	"review",
-	"promotion",
-	"infra",
-	"projectManagement"
+        "maintenance",
+        "review",
+        "promotion",
+        "infra",
+        "projectManagement"
       ]
     },
     {
@@ -195,6 +195,15 @@
       "profile": "https://github.com/Scighost",
       "contributions": [
         "bug"
+      ]
+    },
+    {
+      "login": "IhoFox",
+      "name": "IhoFox",
+      "avatar_url": "https://avatars.githubusercontent.com/u/133899447?v=4",
+      "profile": "https://github.com/IhoFox",
+      "contributions": [
+        "translation"
       ]
     }
   ],
