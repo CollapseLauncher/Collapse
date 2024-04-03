@@ -1,6 +1,6 @@
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -20,8 +20,8 @@ namespace CollapseLauncher.GameVersioning
         private const string _defaultIniVersionSection = "General";
         private string _defaultGameDirPath { get => Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName, GamePreset.GameDirectoryName); }
         
-        private int gameChannelID    => GamePreset.ChannelID;
-        private int gameSubChannelID => GamePreset.SubChannelID;
+        private int gameChannelID    => GamePreset.ChannelID ?? 0;
+        private int gameSubChannelID => GamePreset.SubChannelID ?? 0;
         
         private IniSection _defaultIniProfile
         {
@@ -90,9 +90,9 @@ namespace CollapseLauncher.GameVersioning
         }
         protected string GameConfigDirPath { get; set; }
         public GameVersionBase AsVersionBase => this;
-        public PresetConfigV2 GamePreset { get; set; }
+        public PresetConfig GamePreset { get; set; }
         public RegionResourceProp GameAPIProp { get; set; }
-        public GameType GameType => GamePreset.GameType;
+        public GameNameType GameType => GamePreset.GameType;
         public GameVendorProp VendorTypeProp { get; private set; }
         public string GameDirPath
         {
@@ -111,8 +111,8 @@ namespace CollapseLauncher.GameVersioning
         {
             get => GameType switch
             {
-                GameType.Genshin => "output_log.txt",
-                GameType.Honkai => "output_log.txt",
+                GameNameType.Genshin => "output_log.txt",
+                GameNameType.Honkai => "output_log.txt",
                 _ => "Player.log"
             };
         }
@@ -206,7 +206,7 @@ namespace CollapseLauncher.GameVersioning
         protected DeltaPatchProperty GameDeltaPatchProp { get => CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI); }
         #endregion
 
-        protected GameVersionBase(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
+        protected GameVersionBase(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset)
         {
             GamePreset = gamePreset;
             ParentUIElement = parentUIElement;

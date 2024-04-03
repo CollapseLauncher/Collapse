@@ -1,11 +1,11 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -19,7 +19,6 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
@@ -29,8 +28,8 @@ namespace CollapseLauncher.Dialogs
         string SourceDataIntegrityURL;
         string GameVersion;
         bool IsAlreadyConverted = false;
-        PresetConfigV2 SourceProfile;
-        PresetConfigV2 TargetProfile;
+        PresetConfig SourceProfile;
+        PresetConfig TargetProfile;
         GameConversionManagement Converter;
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -146,7 +145,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile)
+        private async Task<string> FetchDataIntegrityURL(PresetConfig Profile)
         {
             Http _Http = new Http();
             Dictionary<string, string> _RepoList;
@@ -181,7 +180,7 @@ namespace CollapseLauncher.Dialogs
             return _RepoList[GameVersion];
         }
 
-        public bool IsSourceGameExist(PresetConfigV2 Profile)
+        internal bool IsSourceGameExist(PresetConfig Profile)
         {
             string INIPath = Path.Combine(AppGameFolder, Profile.ProfileName, "config.ini");
             string GamePath;
@@ -235,11 +234,11 @@ namespace CollapseLauncher.Dialogs
             return true;
         }
 
-        public async Task<(PresetConfigV2, PresetConfigV2)> AskConvertionDestination()
+        internal async Task<(PresetConfig, PresetConfig)> AskConvertionDestination()
         {
             (ContentDialogResult Result, ComboBox SourceGame, ComboBox TargetGame) = await Dialog_SelectGameConvertRecipe(Content);
-            PresetConfigV2 SourceRet = null;
-            PresetConfigV2 TargetRet = null;
+            PresetConfig SourceRet = null;
+            PresetConfig TargetRet = null;
 
             if (SourceGame.SelectedItem == null || TargetGame.SelectedItem == null)
                 throw new OperationCanceledException();
@@ -250,9 +249,9 @@ namespace CollapseLauncher.Dialogs
             switch (Result)
             {
                 case ContentDialogResult.Secondary:
-                    SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                    SourceRet = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].
                         Values.Where(x => x.ZoneName == sourceGameRegionString).First();
-                    TargetRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                    TargetRet = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].
                         Values.Where(x => x.ZoneName == targetGameRegionString).First();
                     break;
                 case ContentDialogResult.Primary:
@@ -264,13 +263,13 @@ namespace CollapseLauncher.Dialogs
         public static List<string> GetConvertibleNameList(string ZoneName)
         {
             List<string> _out = new List<string>();
-            List<string> GameTargetProfileName = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values
+            List<string> GameTargetProfileName = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
                 .Where(x => x.ZoneName == ZoneName)
                 .Select(x => x.ConvertibleTo)
                 .First();
 
             foreach (string Entry in GameTargetProfileName)
-                _out.Add(ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values
+                _out.Add(LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
                     .Where(x => x.ZoneName == Entry)
                     .Select(x => x.ZoneName)
                     .First());
@@ -447,7 +446,7 @@ namespace CollapseLauncher.Dialogs
             CurrentGameProperty._GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
 
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
-            SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);
+            LauncherMetadataHelper.SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);
             LoadAppConfig();
         }
 

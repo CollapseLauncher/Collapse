@@ -8,7 +8,7 @@
       xmlns:local="using:CollapseLauncher"
       xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:p="using:Hi3Helper.Preset"
+      xmlns:p="using:CollapseLauncher.Helper.Metadata"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -102,7 +102,7 @@
                                   Margin="0,0,0,0"
                                   Canvas.ZIndex="2"
                                   CornerRadius="15,0,0,15"
-                                  ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
+                                  ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
                                   PlaceholderText="Honkai Impact 3rd"
                                   SelectionChanged="SetGameCategoryChange" />
                         <ComboBox x:Name="ComboBoxGameRegion"

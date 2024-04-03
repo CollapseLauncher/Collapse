@@ -1,5 +1,5 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper.Data;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -41,9 +41,9 @@ namespace CollapseLauncher.ShortcutUtils
         public string tags = "";
         #endregion
 
-        public SteamShortcut() { }
+        internal SteamShortcut() { }
 
-        public SteamShortcut(PresetConfigV2 preset, bool play = false)
+        internal SteamShortcut(PresetConfig preset, bool play = false)
         {
             AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
             
@@ -109,7 +109,7 @@ namespace CollapseLauncher.ShortcutUtils
             return (appId >> 32) - 0x10000000;
         }
 
-        public void MoveImages(string path, PresetConfigV2 preset)
+        internal void MoveImages(string path, PresetConfig preset)
         {
             if (preset == null) return;
 
@@ -120,8 +120,8 @@ namespace CollapseLauncher.ShortcutUtils
 
             string iconName = preset.GameType switch
             {
-                GameType.StarRail => "icon-starrail.ico",
-                GameType.Genshin => "icon-genshin.ico",
+                GameNameType.StarRail => "icon-starrail.ico",
+                GameNameType.Genshin => "icon-genshin.ico",
                 _ => "icon-honkai.ico",
             };
 

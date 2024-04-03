@@ -1,11 +1,12 @@
 ﻿#if !DISABLEDISCORD
+using CollapseLauncher.Helper.Metadata;
 using DiscordRPC;
-using Hi3Helper.Preset;
+using Hi3Helper;
 using System;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace Hi3Helper.DiscordPresence
+namespace CollapseLauncher.DiscordPresence
 {
     #region Enums
     public enum ActivityType
@@ -20,7 +21,6 @@ namespace Hi3Helper.DiscordPresence
         AppSettings
     }
     #endregion
-
 
     public class DiscordPresenceManager : IDisposable
     {
@@ -231,12 +231,12 @@ namespace Hi3Helper.DiscordPresence
         {
             _presence = new RichPresence
             {
-                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : null)}",
-                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
+                Details = $"{activityName} {(!isGameStatusEnabled ? LauncherMetadataHelper.CurrentMetadataConfigGameName : null)}",
+                State = $"{Lang._Misc.DiscordRP_Region} {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
                 Assets = new Assets
                 {
-                    LargeImageKey = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
-                    LargeImageText = $"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}",
+                    LargeImageKey = $"game-{LauncherMetadataHelper.CurrentMetadataConfig.GameType.ToString().ToLower()}-logo",
+                    LargeImageText = $"{LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
                     SmallImageKey = "launcher-logo",
                     SmallImageText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                 },
@@ -258,11 +258,11 @@ namespace Hi3Helper.DiscordPresence
             _presence = new RichPresence()
             {
                 Details = activityName,
-                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
+                State = $"{Lang._Misc.DiscordRP_Region} {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
                 Assets = new Assets
                 {
-                    LargeImageKey = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
-                    LargeImageText = $"{ConfigV2Store.CurrentConfigV2GameCategory}",
+                    LargeImageKey = $"game-{LauncherMetadataHelper.CurrentMetadataConfig.GameType.ToString().ToLower()}-logo",
+                    LargeImageText = $"{LauncherMetadataHelper.CurrentMetadataConfigGameName}",
                     SmallImageKey = "launcher-logo",
                     SmallImageText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                 },

@@ -1,8 +1,8 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
@@ -140,8 +139,9 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe(UIElement Content)
         {
-            Dictionary<string, PresetConfigV2> ConvertibleRegions = new Dictionary<string, PresetConfigV2>();
-            foreach (KeyValuePair<string, PresetConfigV2> Config in ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Where(x => x.Value.IsConvertible ?? false))
+            Dictionary<string, PresetConfig> ConvertibleRegions = new Dictionary<string, PresetConfig>();
+            foreach (KeyValuePair<string, PresetConfig> Config in LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName]
+                .Where(x => x.Value.IsConvertible ?? false))
                 ConvertibleRegions.Add(Config.Key, Config.Value);
 
             ContentDialogCollapse Dialog = new ContentDialogCollapse();
@@ -152,7 +152,7 @@ namespace CollapseLauncher.Dialogs
             {
                 TargetGame.IsEnabled = true;
                 Dialog.IsSecondaryButtonEnabled = false;
-                TargetGame.ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(CurrentConfigV2GameCategory, InstallationConvert.GetConvertibleNameList(
+                TargetGame.ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, InstallationConvert.GetConvertibleNameList(
                     InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox).SelectedItem)));
             });
             SelectionChangedEventHandler TargetGameChangedArgs = new SelectionChangedEventHandler((object sender, SelectionChangedEventArgs e) =>
@@ -163,7 +163,7 @@ namespace CollapseLauncher.Dialogs
             SourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(CurrentConfigV2GameCategory, new List<string>(ConvertibleRegions.Keys)),
+                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, new List<string>(ConvertibleRegions.Keys)),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };

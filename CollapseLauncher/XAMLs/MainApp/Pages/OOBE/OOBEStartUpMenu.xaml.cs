@@ -3,6 +3,7 @@ using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
@@ -757,25 +758,22 @@ namespace CollapseLauncher.Pages.OOBE
         #region Prepare Metadata and Settings Apply
         private async void PrepareMetadataAndApplySettings()
         {
-            if (!ConfigV2Store.IsConfigV2StampExist() || !ConfigV2Store.IsConfigV2ContentExist())
+            try
             {
-                try
-                {
-                    LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                    LoadingMessageHelper.SetProgressBarState(100, true);
-                    LoadingMessageHelper.SetProgressBarValue(100);
-                    LoadingMessageHelper.ShowLoadingFrame();
+                LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
+                LoadingMessageHelper.SetProgressBarState(100, true);
+                LoadingMessageHelper.SetProgressBarValue(100);
+                LoadingMessageHelper.ShowLoadingFrame();
 
-                    await DownloadConfigV2Files(true, true);
-                    LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle2);
-                    LoadingMessageHelper.SetProgressBarState(100, false);
-                    LoadingMessageHelper.SetProgressBarValue(100);
-                    await Task.Delay(5000);
+                await LauncherMetadataHelper.Initialize(false, false);
+                LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle2);
+                LoadingMessageHelper.SetProgressBarState(100, false);
+                LoadingMessageHelper.SetProgressBarValue(100);
+                await Task.Delay(5000);
 
-                    LoadingMessageHelper.HideLoadingFrame();
-                }
-                catch { }
+                LoadingMessageHelper.HideLoadingFrame();
             }
+            catch { }
 
             HideUIs(MainUI, IntroSequenceUI);
             OverlayFrame.Navigate(typeof(OOBESelectGame), null, null);

@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.GameSettings.Universal;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
 // ReSharper disable PossibleNullReferenceException
@@ -56,7 +56,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCollapseMisc   = CollapseMiscSetting.Load();
 
             // Load Preset
-            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameType.Honkai, HonkaiSettingsJSONContext.Default);
+            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameNameType.Honkai, HonkaiSettingsJSONContext.Default);
         }
 
         public void ReloadSettings() => InitializeSettings();

@@ -2,12 +2,12 @@
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -20,28 +20,28 @@ namespace CollapseLauncher.Statics
 {
     internal class GamePresetProperty : IDisposable
     {
-        internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfig GamePreset)
         {
             _GamePreset = CopyGamePreset(GamePreset);
             _APIResouceProp = APIResouceProp!.Copy();
 
             switch (GamePreset!.GameType)
             {
-                case GameType.Honkai:
+                case GameNameType.Honkai:
                     _GameVersion = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, _GamePreset);
                     _GameSettings = new HonkaiSettings(_GameVersion);
                     _GameCache = new HonkaiCache(UIElementParent, _GameVersion);
                     _GameRepair = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
                     _GameInstall = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
                     break;
-                case GameType.StarRail:
+                case GameNameType.StarRail:
                     _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, _GamePreset);
                     _GameSettings = new StarRailSettings(_GameVersion);
                     _GameCache = new StarRailCache(UIElementParent, _GameVersion);
                     _GameRepair = new StarRailRepair(UIElementParent, _GameVersion);
                     _GameInstall = new StarRailInstall(UIElementParent, _GameVersion);
                     break;
-                case GameType.Genshin:
+                case GameNameType.Genshin:
                     _GameVersion = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, _GamePreset);
                     _GameSettings = new GenshinSettings(_GameVersion);
                     _GameCache = null;
@@ -70,17 +70,16 @@ namespace CollapseLauncher.Statics
         #region Goofy Ah Copy Method. TODO: Use Generics for this :pepehands:
 
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
-        private PresetConfigV2 CopyGamePreset(PresetConfigV2 GamePreset) =>
-            new PresetConfigV2()
+        private PresetConfig CopyGamePreset(PresetConfig GamePreset) =>
+            new PresetConfig()
             {
                 ActualGameDataLocation             = GamePreset.ActualGameDataLocation,
                 BetterHi3LauncherVerInfoReg        = GamePreset.BetterHi3LauncherVerInfoReg,
                 ConvertibleTo                      = CopyReturn(GamePreset.ConvertibleTo),
                 DispatcherKey                      = GamePreset.DispatcherKey,
                 DispatcherKeyBitLength             = GamePreset.DispatcherKeyBitLength,
-                FallbackGameType                   = GamePreset.FallbackGameType,
                 FallbackLanguage                   = GamePreset.FallbackLanguage,
-                GameChannel                        = GamePreset.GameChannel,
+                Channel                            = GamePreset.Channel,
                 GameDefaultCVLanguage              = GamePreset.GameDefaultCVLanguage,
                 GameDirectoryName                  = GamePreset.GameDirectoryName,
                 GameDispatchArrayURL               = CopyReturn(GamePreset.GameDispatchArrayURL),
@@ -124,17 +123,17 @@ namespace CollapseLauncher.Statics
                 GameDataTemplates                  = new Dictionary<string, GameDataTemplate>(GamePreset.GameDataTemplates ?? new Dictionary<string, GameDataTemplate>()),
                 ZoneSteamAssets                    = new Dictionary<string, SteamGameProp>(GamePreset.ZoneSteamAssets ?? new Dictionary<string, SteamGameProp>()),
                 #if DEBUG
-                IsRepairEnabled      = true,
-                IsCacheUpdateEnabled = true,
+                IsRepairEnabled                    = true,
+                IsCacheUpdateEnabled               = true,
                 #else
-                IsRepairEnabled = GamePreset.IsRepairEnabled,
-                IsCacheUpdateEnabled = GamePreset.IsCacheUpdateEnabled,
+                IsRepairEnabled                    = GamePreset.IsRepairEnabled,
+                IsCacheUpdateEnabled               = GamePreset.IsCacheUpdateEnabled,
                 #endif
             };
         #endregion
 
         internal RegionResourceProp _APIResouceProp { get; set; }
-        internal PresetConfigV2 _GamePreset { get; set; }
+        internal PresetConfig _GamePreset { get; set; }
         internal IGameSettings _GameSettings { get; set; }
         internal IRepair _GameRepair { get; set; }
         internal ICache _GameCache { get; set; }
@@ -198,14 +197,14 @@ namespace CollapseLauncher.Statics
         public static int CurrentGameHashID { get; set; }
         public static GamePresetProperty GetCurrentGameProperty() => Vault![CurrentGameHashID];
 
-        public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfig GamePreset)
         {
             LastGameHashID = LastGameHashID == 0 ? GamePreset!.HashID : LastGameHashID;
             CurrentGameHashID = GamePreset!.HashID;
             RegisterGameProperty(UIElementParent, APIResouceProp, GamePreset);
         }
 
-        public static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        public static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfig GamePreset)
         {
             CleanupUnusedGameProperty();
             if (Vault!.ContainsKey(GamePreset!.HashID))

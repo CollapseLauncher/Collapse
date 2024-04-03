@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -22,7 +23,7 @@ namespace CollapseLauncher
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
-        private PresetConfigV2 SourceProfile, TargetProfile;
+        private PresetConfig SourceProfile, TargetProfile;
         private List<FileProperties> SourceFileManifest;
         private List<FileProperties> TargetFileManifest;
         private Http _http;
@@ -36,7 +37,7 @@ namespace CollapseLauncher
         string ConvertStatus, ConvertDetail;
         byte DownloadThread;
 
-        public GameConversionManagement(PresetConfigV2 SourceProfile, PresetConfigV2 TargetProfile,
+        internal GameConversionManagement(PresetConfig SourceProfile, PresetConfig TargetProfile,
             string BaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
         {
             this._http = new Http();

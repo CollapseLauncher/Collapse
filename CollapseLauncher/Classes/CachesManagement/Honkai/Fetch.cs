@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
@@ -14,7 +15,6 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 
 namespace CollapseLauncher
 {
@@ -86,15 +86,9 @@ namespace CollapseLauncher
                 try
                 {
                     // Init the key and decrypt it if exist.
-                    string key = null;
-                    if (_gameVersionManager.GamePreset.DispatcherKey != null)
-                    {
-                        mhyEncTool Decryptor = new mhyEncTool();
-                        Decryptor.InitMasterKey(ConfigV2!.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
-
-                        key = _gameVersionManager.GamePreset.DispatcherKey;
-                        Decryptor.DecryptStringWithMasterKey(ref key);
-                    }
+                    if (string.IsNullOrEmpty(_gameVersionManager.GamePreset.DispatcherKey))
+                        throw new NullReferenceException($"Dispatcher key is null or empty!");
+                    string key = _gameVersionManager.GamePreset.DispatcherKey;
 
                     // Try assign dispatcher
                     dispatch = await KianaDispatch.GetDispatch(baseURL, _gameVersionManager.GamePreset.GameDispatchURLTemplate, _gameVersionManager.GamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
@@ -239,7 +233,18 @@ namespace CollapseLauncher
         private byte[] GetAssetIndexSalt(string data)
         {
             // Get the salt from the string and return as byte[]
-            mhyEncTool saltTool = new mhyEncTool(data, ConfigV2!.MasterKey);
+            byte[] key;
+            if (DataCooker.IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey.Key))
+            {
+                DataCooker.GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey.Key, out long keyCompSize, out long keyDecompSize);
+                key = new byte[keyCompSize];
+                DataCooker.ServeV3Data(LauncherMetadataHelper.CurrentMasterKey.Key, key, (int)keyCompSize, (int)keyDecompSize, out _);
+            }
+            else
+            {
+                key = LauncherMetadataHelper.CurrentMasterKey.Key;
+            }
+            mhyEncTool saltTool = new mhyEncTool(data, key);
             return saltTool.GetSalt();
         }
 

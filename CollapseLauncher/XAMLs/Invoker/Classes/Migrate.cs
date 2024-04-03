@@ -1,6 +1,6 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;

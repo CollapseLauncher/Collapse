@@ -1,7 +1,4 @@
 using Hi3Helper.Data;
-#if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
-#endif
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -236,15 +233,10 @@ namespace Hi3Helper.Shared.Region
         }
         public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread").ToInt();
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadata"); }
-        public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder!, "stampv2.json"); }
-        public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder!, "metadatav2.json"); }
+        public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder!, "stampv3.json"); }
+        public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder!, "metadatav3_{0}.json"); }
 
-#if !DISABLEDISCORD
-#pragma warning disable CA2211
-public static DiscordPresenceManager AppDiscordPresence;
-#pragma warning restore CA2211
-#endif
-        public static readonly bool IsAppLangNeedRestart             = false;
+        public static readonly bool IsAppLangNeedRestart    = false;
 
         public static bool IsPreview                        = false;
         public static bool IsAppThemeNeedRestart            = false;

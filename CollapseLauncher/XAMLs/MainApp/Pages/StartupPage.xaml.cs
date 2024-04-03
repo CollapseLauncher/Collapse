@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,7 +15,6 @@ using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -185,21 +185,18 @@ namespace CollapseLauncher.Pages
 
         private async void NextPage_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
+            try
             {
-                try
-                {
-                    await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                    await DownloadConfigV2Files(true, true);
-                    Ring.IsIndeterminate = false;
-                    OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
-                    OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;
-                    await Task.Delay(2000);
-                }
-                catch (Exception ex)
-                {
-                    ErrorSender.SendException(ex, ErrorType.Connection);
-                }
+                await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
+                await LauncherMetadataHelper.Initialize(false, false);
+                Ring.IsIndeterminate = false;
+                OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
+                OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;
+                await Task.Delay(2000);
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.Connection);
             }
 
             // (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage_SelectGame), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });

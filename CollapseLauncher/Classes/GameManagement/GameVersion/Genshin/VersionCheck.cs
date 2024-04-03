@@ -1,5 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 
@@ -11,7 +11,7 @@ namespace CollapseLauncher.GameVersioning
         public readonly List<string> _audioVoiceLanguageList = new List<string> { "Chinese", "English(US)", "Japanese", "Korean" };
         #endregion
 
-        public GameTypeGenshinVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
+        public GameTypeGenshinVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset)
             : base(parentUIElement, gameRegionProp, gamePreset)
         {
             // Try check for reinitializing game version.

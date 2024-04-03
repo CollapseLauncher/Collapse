@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -92,10 +92,10 @@ namespace CollapseLauncher
                 {
                     Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch
                     {
-                        GameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
-                        GameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
-                        GameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
-                        GameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
+                        GameNameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
+                        GameNameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
+                        GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
+                        GameNameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
                         _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
                     }))
                 }.WithWidthAndHeight(64));

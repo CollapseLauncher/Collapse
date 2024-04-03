@@ -1,15 +1,15 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.DiscordPresence;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
 using Microsoft.UI.Input;
@@ -38,7 +38,6 @@ using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -159,19 +158,10 @@ namespace CollapseLauncher
 
             Type Page = typeof(HomePage);
 
-            if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
-            {
-                LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
-                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
-                await DownloadConfigV2Files(true, true);
-            }
+            bool isCacheUpdaterMode = m_appMode == AppMode.Hi3CacheUpdater;
+            await LauncherMetadataHelper.Initialize(isCacheUpdaterMode);
 
-            if (m_appMode == AppMode.Hi3CacheUpdater) LoadConfigV2CacheOnly();
-            else
-            {
-                LoadConfigV2();
-                SetActivatedRegion();
-            }
+            if (isCacheUpdaterMode) SetActivatedRegion();
 
 #if !DISABLEDISCORD
             bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
@@ -182,15 +172,14 @@ namespace CollapseLauncher
             // Lock ChangeBtn for first start
             LockRegionChangeBtn = true;
 
-            PresetConfigV2 Preset = LoadSavedGameSelection();
-
+            PresetConfig presetConfig = LoadSavedGameSelection();
             if (m_appMode == AppMode.Hi3CacheUpdater)
-                Page = (m_appMode == AppMode.Hi3CacheUpdater && CurrentConfigV2.GameType == GameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage);
+                Page = (m_appMode == AppMode.Hi3CacheUpdater && presetConfig.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage);
 
             InitKeyboardShortcuts();
 
             InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
-            if (await LoadRegionFromCurrentConfigV2(Preset))
+            if (await LoadRegionFromCurrentConfigV2(presetConfig))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
             }
@@ -209,14 +198,18 @@ namespace CollapseLauncher
             UpdateLayout();
 
             // Find the last selected category/title and region
-            string LastCategory = CurrentConfigV2GameCategory;
-            string LastRegion = CurrentConfigV2GameRegion;
-            int indexOfCategory = ConfigV2GameCategory.IndexOf(LastCategory);
-            int indexOfRegion = ConfigV2GameRegions.IndexOf(LastRegion);
+            string lastName = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+            string lastRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+
+            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName);
+
+            int indexOfName = gameNameCollection.IndexOf(lastName);
+            int indexOfRegion = gameRegionCollection.IndexOf(lastRegion);
 
             // Rebuild Game Titles and Regions ComboBox items
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
-            ComboBoxGameCategory.SelectedIndex = indexOfCategory;
+            ComboBoxGameCategory.SelectedIndex = indexOfName;
             ComboBoxGameRegion.SelectedIndex = indexOfRegion;
 
             InitializeNavigationItems(false);
@@ -459,7 +452,7 @@ namespace CollapseLauncher
             }
             else
             {
-                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, CurrentConfigV2, ShowLoadingMsg))
+                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, LauncherMetadataHelper.CurrentMetadataConfig, ShowLoadingMsg))
                 {
                     regionBackgroundProp.imgLocalPath = AppDefaultBG;
                 }
@@ -954,27 +947,29 @@ namespace CollapseLauncher
         #endregion
 
         #region Game Selector Method
-        private PresetConfigV2 LoadSavedGameSelection()
+        private PresetConfig LoadSavedGameSelection()
         {
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
 
-            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+            string gameName = GetAppConfigValue("GameCategory").ToString();
 
-            if (!GetConfigV2Regions(GameCategory))
-                GameCategory = ConfigV2GameCategory.FirstOrDefault();
+            List<string>? gameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+            if (regionCollection == null)
+                gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection.Keys.FirstOrDefault();
 
-            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(GameCategory);
+            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(gameName);
 
-            int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
+            int IndexCategory = gameCollection.IndexOf(gameName);
             if (IndexCategory < 0) IndexCategory = 0;
 
-            int IndexRegion = GetPreviousGameRegion(GameCategory);
+            int IndexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
             CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
             CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
-            return LoadCurrentConfigV2(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue), GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
+            return LauncherMetadataHelper.GetMetadataConfig(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue), GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
         #nullable enable
@@ -983,7 +978,7 @@ namespace CollapseLauncher
             object? selectedItem = ((ComboBox)sender).SelectedItem;
             if (selectedItem == null) return;
             string SelectedCategoryString = GetComboBoxGameRegionValue(selectedItem);
-            GetConfigV2Regions(SelectedCategoryString);
+            // REMOVED: GetConfigV2Regions(SelectedCategoryString);
 
             List<StackPanel> CurRegionList = BuildGameRegionListUI(SelectedCategoryString);
             ComboBoxGameRegion.ItemsSource = CurRegionList;
@@ -1005,9 +1000,9 @@ namespace CollapseLauncher
 
             string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
             string region = GetComboBoxGameRegionValue(selValue);
-            PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
-            ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
-            ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
+            PresetConfig preset = LauncherMetadataHelper.GetMetadataConfig(category, region);
+            ChangeRegionWarningText.Text = preset.Channel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.Channel) : string.Empty;
+            ChangeRegionWarning.Visibility = preset.Channel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
             
@@ -1018,7 +1013,7 @@ namespace CollapseLauncher
         #region Metadata Update Method
         private async Task CheckMetadataUpdateInBackground()
         {
-            bool IsUpdate = await CheckForNewConfigV2();
+            bool IsUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
             if (IsUpdate)
             {
                 Button UpdateMetadatabtn =
@@ -1062,7 +1057,7 @@ namespace CollapseLauncher
 
                     try
                     {
-                        await DownloadConfigV2Files(true, true);
+                        await LauncherMetadataHelper.RunMetadataUpdate();
                         IsChangeDragArea = false;
                         MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                     }
@@ -1141,17 +1136,17 @@ namespace CollapseLauncher
 
             switch (CurrentGameVersionCheck.GameType)
             {
-                case GameType.Honkai:
+                case GameNameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "honkaigamesettings" });
                     break;
-                case GameType.StarRail:
+                case GameNameType.StarRail:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
                     break;
             }
 
-            if (CurrentGameVersionCheck.GameType == GameType.Genshin)
+            if (CurrentGameVersionCheck.GameType == GameNameType.Genshin)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
@@ -1206,7 +1201,7 @@ namespace CollapseLauncher
 
                 case "caches":
                     if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                        Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty()._GameVersion.GamePreset.GameType == GameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                        Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty()._GameVersion.GamePreset.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                     else
                         Navigate(typeof(UnavailablePage), itemTag);
                     break;
@@ -1428,7 +1423,7 @@ namespace CollapseLauncher
 
         private int GetIndexOfRegionStringOrDefault(string category)
         {
-            int? index = GetPreviousGameRegion(category);
+            int? index = LauncherMetadataHelper.GetPreviousGameRegion(category);
 
             return index == -1 || index == null ? 0 : index ?? 0;
         }
@@ -1469,7 +1464,7 @@ namespace CollapseLauncher
 
                 int numIndex = 0;
                 VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
-                for (; numIndex <= ConfigV2.GameCount; numIndex++)
+                for (; numIndex <= LauncherMetadataHelper.CurrentGameNameCount; numIndex++)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
@@ -1489,7 +1484,7 @@ namespace CollapseLauncher
 
                 numIndex = 0;
                 keyModifier = KbShortcutList["RegionSelection"].Modifier;
-                while (numIndex < ConfigV2.MaxRegionCount)
+                while (numIndex < LauncherMetadataHelper.CurrentGameRegionMaxCount)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
@@ -1587,15 +1582,17 @@ namespace CollapseLauncher
 
         private void RestoreCurrentRegion()
         {
-            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+            string gameName = GetAppConfigValue("GameCategory").ToString();
 
-            if (!GetConfigV2Regions(GameCategory))
-                GameCategory = ConfigV2GameCategory.FirstOrDefault();
+            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+            if (gameRegionCollection == null)
+                gameName = gameRegionCollection.FirstOrDefault();
 
-            int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
+            int IndexCategory = gameNameCollection.IndexOf(gameName);
             if (IndexCategory < 0) IndexCategory = 0;
 
-            int IndexRegion = GetPreviousGameRegion(GameCategory);
+            int IndexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
@@ -1685,7 +1682,7 @@ namespace CollapseLauncher
 
             string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
             {
-                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                 _ => "ScreenShot"
             });
 
@@ -1743,7 +1740,7 @@ namespace CollapseLauncher
         {
             if (!CurrentGameProperty.IsGameRunning) return;
 
-            PresetConfigV2 gamePreset = CurrentGameProperty._GameVersion.GamePreset;
+            PresetConfig gamePreset = CurrentGameProperty._GameVersion.GamePreset;
             try
             {
                 var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
@@ -1795,13 +1792,13 @@ namespace CollapseLauncher
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
             switch (CurrentGameProperty._GamePreset.GameType)
             {
-                case GameType.Honkai:
+                case GameNameType.Honkai:
                     Navigate(typeof(HonkaiGameSettingsPage), "honkaigamesettings");
                     break;
-                case GameType.Genshin:
+                case GameNameType.Genshin:
                     Navigate(typeof(GenshinGameSettingsPage), "genshingamesettings");
                     break;
-                case GameType.StarRail:
+                case GameNameType.StarRail:
                     Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
                     break;
             }
@@ -1840,38 +1837,40 @@ namespace CollapseLauncher
 
             string oldGameCategory = GetAppConfigValue("GameCategory").ToString();
 
-            string GameName = args.Game;
+            string gameName = args.Game;
 
-            if (!GetConfigV2Regions(GameName))
+            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+            if (gameRegionCollection == null)
             {
-                bool res = int.TryParse(args.Game, out int Game);
-                if (!res || Game < 0 || Game >= ConfigV2GameCategory.Count)
+                bool res = int.TryParse(args.Game, out int gameIndex);
+                if (!res || gameIndex < 0 || gameIndex >= gameNameCollection.Count)
                     return true;
-                GameName = ConfigV2GameCategory[Game];
+                gameName = gameNameCollection[gameIndex];
+                gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
             }
-
-            SetAndSaveConfigValue("GameCategory", GameName);
-            GetConfigV2Regions(GameName);
+            SetAndSaveConfigValue("GameCategory", gameName);
 
             if (args.Region != null)
             {
-                string GameRegion = args.Region;
-                if (!ConfigV2GameRegions.Contains(GameRegion))
+                string gameRegion = args.Region;
+                if (!gameRegionCollection.Contains(gameRegion))
                 {
-                    bool res = int.TryParse(args.Region, out int Region);
-                    if (!res || Region < 0 || Region >= ConfigV2GameRegions.Count)
+                    bool res = int.TryParse(args.Region, out int regionIndex);
+                    if (!res || regionIndex < 0 || regionIndex >= gameRegionCollection.Count)
                         return true;
-                    GameRegion = ConfigV2GameRegions[Region];
+                    gameRegion = gameRegionCollection[regionIndex];
                 }
 
-                string oldGameRegion = ConfigV2GameRegions.ElementAt(GetPreviousGameRegion(GameName));
+                int oldGameRegionIndex = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
+                string oldGameRegion = gameRegionCollection.ElementAt(oldGameRegionIndex);
                 if (oldGameRegion == null)
                     return true;
 
-                SetPreviousGameRegion(GameName, GameRegion);
-                SetAndSaveConfigValue("GameRegion", GameRegion);
+                LauncherMetadataHelper.SetPreviousGameRegion(gameName, gameRegion);
+                SetAndSaveConfigValue("GameRegion", gameRegion);
 
-                if (oldGameCategory == GameName && oldGameRegion == GameRegion)
+                if (oldGameCategory == gameName && oldGameRegion == gameRegion)
                     return true;
             }
 
@@ -1892,7 +1891,7 @@ namespace CollapseLauncher
 
                 LockRegionChangeBtn = true;
 
-                PresetConfigV2 Preset = LoadSavedGameSelection();
+                PresetConfig Preset = LoadSavedGameSelection();
 
                 InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
                 if (await LoadRegionFromCurrentConfigV2(Preset))

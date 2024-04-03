@@ -1,5 +1,5 @@
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using System;
 
@@ -17,7 +17,7 @@ namespace CollapseLauncher.GameVersioning
         public bool IsPreloadSenadinaVersion { get => GameVersionAPIPreload.HasValue ? GameVersionAPIPreload.Value.ToVersion() >= senadinaVersion : false; }
         #endregion
 
-        public GameTypeHonkaiVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
+        public GameTypeHonkaiVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset)
             : base(parentUIElement, gameRegionProp, gamePreset)
         {
             // Try check for reinitializing game version from XMF file.

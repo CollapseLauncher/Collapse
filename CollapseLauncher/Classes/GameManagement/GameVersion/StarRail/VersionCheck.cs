@@ -1,7 +1,7 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using System.Text;
 
@@ -13,7 +13,7 @@ namespace CollapseLauncher.GameVersioning
         public SRMetadata StarRailMetadataTool { get; set; }
         #endregion
 
-        public GameTypeStarRailVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
+        public GameTypeStarRailVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset)
             : base(parentUIElement, gameRegionProp, gamePreset)
         {
             // Try check for reinitializing game version.

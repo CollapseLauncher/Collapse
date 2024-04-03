@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,7 +21,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -63,12 +62,12 @@ namespace CollapseLauncher
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
         private CancellationTokenSourceWrapper CurrentRegionLoadTokenSource;
 
-        private string RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(CurrentConfigV2GameCategory, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(CurrentConfigV2GameRegion, Lang._GameClientRegions)}"; }
+        private string RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
         private List<object> LastNavigationItem;
         private HomeMenuPanel LastRegionNewsProp;
         public static string PreviousTag = string.Empty;
 
-        public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
+        internal async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfig preset)
         {
             IsExplicitCancel = false;
             LogWriteLine($"Initializing {RegionToChangeName}...", LogType.Scheme, true);
@@ -142,7 +141,7 @@ namespace CollapseLauncher
             ResetRegionProp();
         }
 
-        private async ValueTask<bool> TryLoadResourceInfo(ResourceLoadingType resourceType, PresetConfigV2 preset, bool ShowLoadingMsg = true)
+        private async ValueTask<bool> TryLoadResourceInfo(ResourceLoadingType resourceType, PresetConfig preset, bool ShowLoadingMsg = true)
         {
             uint CurrentTimeout = resourceType == ResourceLoadingType.DownloadBackground ? BackgroundImageLoadTimeout : LoadTimeout;
             uint RetryCount = 0;
@@ -197,9 +196,9 @@ namespace CollapseLauncher
             return false;
         }
 
-        private async ValueTask FetchLauncherLocalizedResources(CancellationToken Token, PresetConfigV2 Preset)
+        private async ValueTask FetchLauncherLocalizedResources(CancellationToken Token, PresetConfig Preset)
         {
-            regionBackgroundProp = Preset.LauncherSpriteURLMultiLang ?
+            regionBackgroundProp = Preset.LauncherSpriteURLMultiLang ?? false ?
                 await TryGetMultiLangResourceProp(Token, Preset) :
                 await TryGetSingleLangResourceProp(Token, Preset);
 
@@ -315,7 +314,7 @@ namespace CollapseLauncher
             }
         }
 
-        private string GetDeviceId(PresetConfigV2 Preset)
+        private string GetDeviceId(PresetConfig Preset)
         {
             var deviceId = (string)Registry.GetValue(Preset.InstallRegistryLocation, "UUID", null);
             if (deviceId == null)
@@ -328,7 +327,7 @@ namespace CollapseLauncher
             return deviceId;
         }
 
-        private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfigV2 Preset)
+        private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfig Preset)
         {
             _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, InternalAppJSONContext.Default, token);
             if (!string.IsNullOrEmpty(Preset.LauncherPluginURL))
@@ -379,22 +378,22 @@ namespace CollapseLauncher
 #endif
         }
 
-        private async ValueTask<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
+        private async ValueTask<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken Token, PresetConfig Preset)
         {
             RegionResourceProp ret = await GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token, Preset);
 
             return ret.data.adv == null
               || ((ret.data.adv.version ?? 5) <= 4
-                && Preset.GameType == GameType.Honkai) ?
+                && Preset.GameType == GameNameType.Honkai) ?
                     await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) :
                     ret;
         }
 
-        private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)
+        private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfig Preset)
             => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), InternalAppJSONContext.Default, token);
 
 
-        private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token, PresetConfigV2 Preset)
+        private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token, PresetConfig Preset)
             => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, InternalAppJSONContext.Default, token);
 
         private void ResetRegionProp()
@@ -409,7 +408,7 @@ namespace CollapseLauncher
             };
         }
 
-        private void GetLauncherAdvInfo(CancellationToken Token, PresetConfigV2 Preset)
+        private void GetLauncherAdvInfo(CancellationToken Token, PresetConfig Preset)
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
@@ -449,7 +448,7 @@ namespace CollapseLauncher
                 }
 
                 string desc = url;
-                if (!Preset.IsHideSocMedDesc)
+                if (!Preset.IsHideSocMedDesc ?? false)
                 {
                     desc = item.tittle;
                     if (string.IsNullOrEmpty(desc) && links.Any() && !string.IsNullOrEmpty(links[0].title))
@@ -561,7 +560,7 @@ namespace CollapseLauncher
                 if (ShowLoadingMsg)
                 {
                     // Send the message to loading status
-                    LoadingMessageHelper.SetMessage(null, string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", currentTimeout));
+                    LoadingMessageHelper.SetMessage(null, string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}", currentTimeout));
                     if (!IsLoadRegionCancellationRequestEnabled)
                     {
                         IsLoadRegionCancellationRequestEnabled = true;
@@ -570,7 +569,7 @@ namespace CollapseLauncher
                 }
 
                 // Send the exception without changing into the Error page
-                LogWriteLine($"Loading Game: {CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion} has timed-out (> {currentTimeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
+                LogWriteLine($"Loading Game: {LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion} has timed-out (> {currentTimeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
                 ErrorSender.SendExceptionWithoutPage(ex, ErrorType.Connection);
             });
 
@@ -616,7 +615,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void FinalizeLoadRegion(PresetConfigV2 preset)
+        private void FinalizeLoadRegion(PresetConfig preset)
         {
             // Log if region has been successfully loaded
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
@@ -628,7 +627,7 @@ namespace CollapseLauncher
             InitializeNavigationItems();
         }
 
-        private void LoadGameStaticsByGameType(PresetConfigV2 preset)
+        private void LoadGameStaticsByGameType(PresetConfig preset)
         {
             GamePropertyVault.AttachNotifForCurrentGame();
             DisposeAllPageStatics();
@@ -743,11 +742,11 @@ namespace CollapseLauncher
 
             // Set and Save CurrentRegion in AppConfig
             SetAndSaveConfigValue("GameCategory", GameCategory);
-            SetPreviousGameRegion(GameCategory, GameRegion);
+            LauncherMetadataHelper.SetPreviousGameRegion(GameCategory, GameRegion);
 
             // Load Game ConfigV2 List before loading the region
             IsLoadRegionComplete = false;
-            PresetConfigV2 Preset = LoadCurrentConfigV2(GameCategory, GameRegion);
+            PresetConfig Preset = LauncherMetadataHelper.GetMetadataConfig(GameCategory, GameRegion);
 
             // Start region loading
             ShowAsyncLoadingTimedOutPill();

@@ -1,6 +1,6 @@
-﻿using Hi3Helper.Data;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using System;
 using System.IO;
 

@@ -1,8 +1,8 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.DiscordPresence;
+using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using Hi3Helper;
-using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
@@ -13,13 +13,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -70,6 +67,11 @@ namespace CollapseLauncher
         public static GameVersion           AppCurrentVersion;
         public static Color                 SystemAppTheme { get => new UISettings().GetColorValue(UIColorType.Background); }
         public static AppThemeMode          CurrentAppTheme;
+#if !DISABLEDISCORD
+#pragma warning disable CA2211
+        public static DiscordPresenceManager AppDiscordPresence;
+#pragma warning restore CA2211
+#endif
         public static bool IsAppThemeLight
         {
             get => CurrentAppTheme switch
@@ -90,7 +92,7 @@ namespace CollapseLauncher
         public static List<StackPanel> BuildGameTitleListUI()
         {
             List<StackPanel> list = new List<StackPanel>();
-            foreach (string title in ConfigV2GameCategory)
+            foreach (string title in LauncherMetadataHelper.GetGameNameCollection())
             {
                 StackPanel panel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock gameTitleTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = title });
@@ -105,18 +107,18 @@ namespace CollapseLauncher
 
         public static List<StackPanel> BuildGameRegionListUI(string GameCategory, List<string> GameCategoryList = null)
         {
-            GameCategoryList ??= ConfigV2GameRegions;
+            GameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(GameCategory);
             List<StackPanel> list = new List<StackPanel>();
             foreach (string region in GameCategoryList)
             {
-                PresetConfigV2 config = ConfigV2.MetadataV2[GameCategory][region];
+                PresetConfig config = LauncherMetadataHelper.GetMetadataConfig(GameCategory, region);
                 StackPanel panel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock gameRegionTranslatedTextBlock = GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Lang._GameClientRegions);
 
                 if (gameRegionTranslatedTextBlock != null) panel.AddElementToStackPanel(gameRegionTranslatedTextBlock);
 
-                if (config.IsExperimental)
+                if (config.Channel != GameChannel.Stable)
                 {
                     Grid expTag = UIElementExtensions.CreateGrid()
                         .WithPadding(4d, 0d)
@@ -130,7 +132,7 @@ namespace CollapseLauncher
 
                     expTag.AddElementToGridRow(new TextBlock
                     {
-                        Text = GetGameChannelLabel(config.GameChannel),
+                        Text = GetGameChannelLabel(config.Channel),
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
                         FontSize = 10,
@@ -215,50 +217,6 @@ namespace CollapseLauncher
             NotificationData.RegionPushIgnoreMsgIds = LocalNotificationData.RegionPushIgnoreMsgIds;
             NotificationData.CurrentShowMsgIds      = LocalNotificationData.CurrentShowMsgIds;
             NotificationData.EliminatePushList();
-        }
-
-        public static async Task<bool> CheckForNewConfigV2()
-        {
-            Stamp ConfigStamp = null;
-
-            try
-            {
-                await using BridgedNetworkStream s = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default);
-                ConfigStamp = await s.DeserializeAsync<Stamp>(CoreLibraryJSONContext.Default);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed while checking for new metadata!\r\n{ex}", LogType.Error, true);
-                return false;
-            }
-
-            bool isMetadataOutdated = ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
-            LogWriteLine($"Checking for metadata update...\r\n" +
-                         $"  LocalStamp  : {ConfigV2LastUpdate}\r\n" +
-                         $"  RemoteStamp : {ConfigStamp?.LastUpdated}\r\n" +
-                         $"  Out of date?: {isMetadataOutdated}", LogType.Warning, true);
-            return isMetadataOutdated;
-        }
-
-        public static async Task DownloadConfigV2Files(bool Stamp, bool Content)
-        {
-            using (Http _httpClient = new Http())
-            {
-                if (!Directory.Exists(AppGameConfigMetadataFolder))
-                    Directory.CreateDirectory(AppGameConfigMetadataFolder);
-
-                if (Stamp) await GetConfigV2Content(_httpClient, "stamp", AppGameConfigV2StampPath);
-                if (Content) await GetConfigV2Content(_httpClient, "config", AppGameConfigV2MetadataPath);
-            }
-        }
-
-        private static async Task GetConfigV2Content(Http _httpClient, string prefix, string output)
-        {
-            string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + prefix);
-
-            await using FileStream fs = new FileStream(output, FileMode.Create, FileAccess.Write);
-            await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(URL, default);
-            await networkStream.CopyToAsync(fs);
         }
 
         internal static bool IsWindowCurrentlyFocused()

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -15,7 +16,6 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 
 namespace CollapseLauncher
 {
@@ -454,7 +454,7 @@ namespace CollapseLauncher
             YSDispatchDec decryptor = new YSDispatchDec();
 
             // Initialize the master key
-            decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+            decryptor.InitMasterKey(LauncherMetadataHelper.CurrentMasterKey.Key, LauncherMetadataHelper.CurrentMasterKey.BitSize, RSAEncryptionPadding.Pkcs1);
 
             // Return the decryptor
             return decryptor;

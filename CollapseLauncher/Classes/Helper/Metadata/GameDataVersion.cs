@@ -1,0 +1,33 @@
+﻿using System;
+
+#nullable enable
+namespace CollapseLauncher.Helper.Metadata
+{
+    public class GameDataVersion
+    {
+        private byte[]? _data;
+        public byte[]? Data
+        {
+            get => _data;
+            init
+            {
+                if (DataCooker.IsServeV3Data(value))
+                {
+                    DataCooker.GetServeV3DataSize(value, out long compressedSize, out long decompressedSize);
+                    byte[] dataOut = new byte[decompressedSize];
+                    DataCooker.ServeV3Data(value, dataOut, (int)compressedSize, (int)decompressedSize, out int dataWritten);
+                    _data = dataOut;
+                }
+                _data = value;
+            }
+        }
+        public long Length { get; set; }
+        public bool isCompressed { get; set; }
+
+        public static int GetBytesToIntVersion(byte[] version)
+        {
+            if (version.Length != 4) throw new FormatException("Argument: version must have 4 bytes");
+            return version[0] | version[1] << 8 | version[2] << 16 | version[3] << 24;
+        }
+    }
+}

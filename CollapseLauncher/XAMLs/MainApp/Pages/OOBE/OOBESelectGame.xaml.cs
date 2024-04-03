@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Background;
+using CollapseLauncher.Helper.Metadata;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -8,7 +9,6 @@ using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages.OOBE
@@ -21,7 +21,6 @@ namespace CollapseLauncher.Pages.OOBE
         public OOBESelectGame()
         {
             this.InitializeComponent();
-            LoadConfigV2();
             GameCategorySelect.ItemsSource = BuildGameTitleListUI();
             BackgroundFrame.Navigate(typeof(OOBESelectGameBG));
             this.RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
@@ -32,7 +31,7 @@ namespace CollapseLauncher.Pages.OOBE
             // Set and Save CurrentRegion in AppConfig
             string categorySelected = GetComboBoxGameRegionValue(GameCategorySelect.SelectedValue);
             SetAppConfigValue("GameCategory", categorySelected);
-            SetPreviousGameRegion(categorySelected, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
+            LauncherMetadataHelper.SetPreviousGameRegion(categorySelected, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
             SaveAppConfig();
 
             (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom });
@@ -59,7 +58,8 @@ namespace CollapseLauncher.Pages.OOBE
                 BarBGLoading.Visibility = Visibility.Visible;
                 BarBGLoading.IsIndeterminate = true;
                 FadeBackground(1, 0.25);
-                bool IsSuccess = await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
+                PresetConfig gameConfig = LauncherMetadataHelper.GetMetadataConfig(_selectedCategory, _selectedRegion);
+                bool IsSuccess = await TryLoadGameDetails(gameConfig);
 
                 BitmapData bitmapData = null;
 
@@ -133,7 +133,7 @@ namespace CollapseLauncher.Pages.OOBE
         private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _selectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
-            GetConfigV2Regions(_selectedCategory);
+            // REMOVED GetConfigV2Regions(_selectedCategory);
             GameRegionSelect.ItemsSource = BuildGameRegionListUI(_selectedCategory);
             GameRegionSelect.IsEnabled = true;
             NextPage.IsEnabled = false;

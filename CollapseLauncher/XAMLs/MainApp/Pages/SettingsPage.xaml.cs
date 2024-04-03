@@ -1,3 +1,6 @@
+#if !DISABLEDISCORD
+using CollapseLauncher.DiscordPresence;
+#endif
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
@@ -5,9 +8,6 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
 using Hi3Helper.Data;
-#if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
-#endif
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -32,6 +32,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 using Task = System.Threading.Tasks.Task;
+using CollapseLauncher.Helper.Metadata;
 
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
@@ -166,8 +167,8 @@ namespace CollapseLauncher.Pages
                     try
                     {
                         var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
-                        if (collapsePath == null || AppGameConfigMetadataFolder == null) return;
-                        Directory.Delete(AppGameConfigMetadataFolder, true);
+                        if (collapsePath == null || LauncherMetadataHelper.LauncherMetadataFolder == null) return;
+                        Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
                         Process.Start(collapsePath);
                         (m_window as MainWindow)?.CloseApp();
                     }

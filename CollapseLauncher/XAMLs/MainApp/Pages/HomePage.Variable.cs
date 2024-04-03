@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -53,12 +54,12 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                GameType gameType = CurrentGameProperty._GamePreset.GameType;
+                GameNameType gameType = CurrentGameProperty._GamePreset.GameType;
                 return gameType switch
                 {
-                    GameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
-                    GameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
-                    GameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
+                    GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
+                    GameNameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
+                    GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
                     _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
                 };
             }

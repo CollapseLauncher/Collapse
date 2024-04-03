@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
 using Microsoft.Win32;
 using System.IO;
 using System.Linq;
@@ -9,18 +9,18 @@ namespace CollapseLauncher.ShortcutUtils
 {
     public static class ShortcutCreator
     {
-        public static void CreateShortcut(string path, PresetConfigV2 preset, bool play = false)
+        internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
             string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
             string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
-            
+
             if (play)
                 url += " -p";
 
             string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcon/" + preset.GameType switch
             {
-                GameType.StarRail => "icon-starrail.ico",
-                GameType.Genshin => "icon-genshin.ico",
+                GameNameType.StarRail => "icon-starrail.ico",
+                GameNameType.Genshin => "icon-genshin.ico",
                 _ => "icon-honkai.ico",
             });
 
@@ -37,7 +37,7 @@ namespace CollapseLauncher.ShortcutUtils
         /// Source:
         /// https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/blob/8bdee1383446d3b81e240a4300baaf337d48ec92/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
 
-        public static bool AddToSteam(PresetConfigV2 preset, bool play)
+        internal static bool AddToSteam(PresetConfig preset, bool play)
         {
             var paths = GetShortcutsPath();
 
@@ -52,7 +52,7 @@ namespace CollapseLauncher.ShortcutUtils
                 string userId = splitPath[splitPath.Length - 3];
 
                 parser.Insert(preset, play);
-                
+
                 parser.Save();
                 LogWriteLine(string.Format("[ShortcutCreator::AddToSteam] Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
             }
@@ -60,7 +60,7 @@ namespace CollapseLauncher.ShortcutUtils
             return true;
         }
 
-        public static bool IsAddedToSteam(PresetConfigV2 preset)
+        internal static bool IsAddedToSteam(PresetConfig preset)
         {
             var paths = GetShortcutsPath();
 
@@ -100,7 +100,7 @@ namespace CollapseLauncher.ShortcutUtils
                 {
                     string y = x.Split("\\").Last();
                     return y != "ac" && y != "0" && y != "anonymous";
-                } ).ToArray();
+                }).ToArray();
 
             for (int i = 0; i < res.Length; i++)
             {

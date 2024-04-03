@@ -1,8 +1,8 @@
-﻿using CollapseLauncher.Statics;
-using Hi3Helper;
-#if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
+﻿#if !DISABLEDISCORD
+using CollapseLauncher.DiscordPresence;
 #endif
+using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
