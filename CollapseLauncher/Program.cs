@@ -24,7 +24,7 @@ namespace CollapseLauncher
 {
     public static class MainEntryPoint
     {
-        public static readonly int InstanceCount = InvokeProp.GetInstanceCount();
+        public static int InstanceCount;
         
         [DllImport("Microsoft.ui.xaml.dll")]
         private static extern void XamlCheckProcessRequirements();
@@ -35,6 +35,7 @@ namespace CollapseLauncher
 #if PREVIEW
             IsPreview = true;
 #endif
+            InstanceCount = InvokeProp.GetInstanceCount();
             AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
             AppCurrentVersionString = AppCurrentVersion.VersionString;
 
