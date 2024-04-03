@@ -258,24 +258,24 @@ namespace CollapseLauncher.Pages
             if (!isCacheIconExist)
             {
                 using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
-                using (Stream copyIconFileStream = new MemoryStream())
-                await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
-                {
-                    // Copy remote stream to memory stream
-                    await iconFileStream.CopyToAsync(copyIconFileStream);
-                    copyIconFileStream.Position = 0;
-                    // Get the icon image information and set the resized frame size
-                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                    int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
-                    int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
+                    using (Stream copyIconFileStream = new MemoryStream())
+                        await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
+                        {
+                            // Copy remote stream to memory stream
+                            await iconFileStream.CopyToAsync(copyIconFileStream);
+                            copyIconFileStream.Position = 0;
+                            // Get the icon image information and set the resized frame size
+                            ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                            int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
+                            int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
 
-                    copyIconFileStream.Position = 0; // Reset the original icon stream position
-                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
-                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                            copyIconFileStream.Position = 0; // Reset the original icon stream position
+                            await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
+                            cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                    // Set the source from cached icon stream
-                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-                }
+                            // Set the source from cached icon stream
+                            source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                        }
             }
             else
             {
@@ -1634,24 +1634,24 @@ namespace CollapseLauncher.Pages
                     Directory.CreateDirectory(Path.GetDirectoryName(logPath));
 
                 using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    while (true)
+                    using (StreamReader reader = new StreamReader(fs))
                     {
-                        while (!reader.EndOfStream)
+                        while (true)
                         {
-                            string line;
-                            line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                            if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                            while (!reader.EndOfStream)
                             {
-                                StartExclusiveWindowPayload();
-                                RequireWindowExclusivePayload = false;
+                                string line;
+                                line = await reader.ReadLineAsync(WatchOutputLog.Token);
+                                if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                                {
+                                    StartExclusiveWindowPayload();
+                                    RequireWindowExclusivePayload = false;
+                                }
+                                LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
                             }
-                            LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
+                            await Task.Delay(100, WatchOutputLog.Token);
                         }
-                        await Task.Delay(100, WatchOutputLog.Token);
                     }
-                }
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)

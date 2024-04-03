@@ -44,7 +44,9 @@ namespace CollapseLauncher.Helper.Background
         private static Grid? _bgOverlayTitleBar;
 
         private static Grid? _parentBgImageBackgroundGrid;
+    #pragma warning disable CS0169 // Field is never used
         private static Grid? _parentBgImageForegroundGrid;
+    #pragma warning restore CS0169 // Field is never used
         private static Grid? _parentBgMediaPlayerBackgroundGrid;
 
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;

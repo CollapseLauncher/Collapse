@@ -248,8 +248,8 @@ namespace CollapseLauncher.Helper.Image
                 FileInfo newCachedFileInfo = new FileInfo(InputFileName);
 
                 await using (FileStream newCachedFileStream = newCachedFileInfo.Create())
-                await using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
-                    await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
+                    await using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
+                        await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
 
                 InputFileInfo.Delete();
                 return newCachedFileInfo.OpenRead();
@@ -260,8 +260,8 @@ namespace CollapseLauncher.Helper.Image
             if (isCachedFileExist) return cachedFileInfo.OpenRead();
 
             await using (FileStream cachedFileStream = cachedFileInfo.Create())
-            await using (FileStream inputFileStream = InputFileInfo.OpenRead())
-                await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
+                await using (FileStream inputFileStream = InputFileInfo.OpenRead())
+                    await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
 
             return cachedFileInfo.OpenRead();
         }
