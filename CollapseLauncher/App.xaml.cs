@@ -1,5 +1,4 @@
 using CollapseLauncher.Helper.Image;
-using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
@@ -10,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
@@ -39,7 +39,8 @@ namespace CollapseLauncher
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
-                
+                SetPreferredAppMode(ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+
                 switch (m_appMode)
                 {
                     case AppMode.Updater:

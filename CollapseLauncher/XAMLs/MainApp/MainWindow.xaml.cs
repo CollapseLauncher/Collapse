@@ -243,11 +243,12 @@ namespace CollapseLauncher
 
         private IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
         {
-            const uint WM_SYSCOMMAND  = 0x0112;
-            const uint WM_SHOWWINDOW  = 0x0018;
-            const uint WM_ACTIVATEAPP = 0x001C;
-            const uint WM_NCHITTEST   = 0x0084;
-            const uint WM_NCCALCSIZE  = 0x0083;
+            const uint WM_SYSCOMMAND    = 0x0112;
+            const uint WM_SHOWWINDOW    = 0x0018;
+            const uint WM_ACTIVATEAPP   = 0x001C;
+            const uint WM_NCHITTEST     = 0x0084;
+            const uint WM_NCCALCSIZE    = 0x0083;
+            const uint WM_SETTINGCHANGE = 0x001A;
 
             switch (msg)
             {
@@ -333,6 +334,15 @@ namespace CollapseLauncher
                 case WM_NCCALCSIZE:
                     {
                         if (!m_isWindows11 && wParam == 1) return 0;
+                        break;
+                    }
+                case WM_SETTINGCHANGE:
+                    {
+                        var setting = Marshal.PtrToStringAnsi(lParam);
+                        if (setting == "ImmersiveColorSet")
+                        {
+                            SetPreferredAppMode(ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+                        }
                         break;
                     }
             }

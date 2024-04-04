@@ -64,7 +64,6 @@ namespace CollapseLauncher
         public static bool                  IsCustomBG            = false;
         public static bool                  IsSkippingUpdateCheck = false;
         public static GameVersion           AppCurrentVersion;
-        public static Color                 SystemAppTheme { get => new UISettings().GetColorValue(UIColorType.Background); }
         public static AppThemeMode          CurrentAppTheme;
 #if !DISABLEDISCORD
 #pragma warning disable CA2211
@@ -77,7 +76,7 @@ namespace CollapseLauncher
             {
                 AppThemeMode.Dark => false,
                 AppThemeMode.Light => true,
-                _ => SystemAppTheme.ToString() == "#FFFFFFFF"
+                _ => !ShouldAppsUseDarkMode()
             };
         }
 

@@ -68,6 +68,15 @@ namespace Hi3Helper
             MDT_Raw_DPI = 2,
             MDT_Default = MDT_Effective_DPI
         }
+
+        public enum PreferredAppMode
+        {
+            Default,
+            AllowDark,
+            ForceDark,
+            ForceLight,
+            Max
+        };
         #endregion
 
         #region Kernel32
@@ -303,6 +312,7 @@ namespace Hi3Helper
             public void HideWindow() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMINIMIZED);
         }
 
+        #region shell32
         [DllImport("shell32.dll", SetLastError = true)]
         public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
 
@@ -314,9 +324,10 @@ namespace Hi3Helper
             SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
             SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
         }
+        #endregion
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
-        
+
         public static int GetInstanceCount()
         {
             var currentProcess = Process.GetCurrentProcess();
@@ -324,6 +335,7 @@ namespace Hi3Helper
             return processes.Length;
         }
 
+        #region dwmapi
         public struct MARGINS
         {
             public int cxLeftWidth;
@@ -334,5 +346,17 @@ namespace Hi3Helper
 
         [DllImport("dwmapi.dll")]
         public static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+        #endregion
+
+        #region uxtheme
+        [DllImport("uxtheme.dll", EntryPoint = "#132")]
+        [return:MarshalAs(UnmanagedType.I1)]
+        public static extern bool ShouldAppsUseDarkMode();
+
+        // Note: Can only use "Default" and "AllowDark" to support Windows 10 1809
+        [DllImport("uxtheme.dll", EntryPoint = "#135")]
+        [return:MarshalAs(UnmanagedType.I1)]
+        public static extern PreferredAppMode SetPreferredAppMode(PreferredAppMode preferredAppMode);
+        #endregion
     }
 }

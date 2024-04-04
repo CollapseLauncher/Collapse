@@ -383,7 +383,7 @@ namespace CollapseLauncher.Pages.OOBE
             string themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (!Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
-                CurrentAppTheme = SystemAppTheme.ToString() == "#FFFFFFFF" ? AppThemeMode.Light : AppThemeMode.Dark;
+                CurrentAppTheme = !InvokeProp.ShouldAppsUseDarkMode() ? AppThemeMode.Light : AppThemeMode.Dark;
                 LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})", LogType.Warning, true);
             }
 
