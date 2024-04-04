@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-#nullable enable
+﻿#nullable enable
 namespace CollapseLauncher.Helper.Metadata
 {
     public class Stamp

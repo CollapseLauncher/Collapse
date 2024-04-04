@@ -359,7 +359,8 @@ namespace CollapseLauncher.Helper.Background
                 IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
                 if (loader == null) return;
                 await loader.DimmAsync(_cancellationToken?.Token ?? default);
-            }
+            } 
+            catch { }
             finally
             {
                 _isCurrentDimmAnimRun = false;
@@ -383,6 +384,7 @@ namespace CollapseLauncher.Helper.Background
                 if (loader == null) return;
                 await loader.UndimmAsync(_cancellationToken?.Token ?? default);
             }
+            catch { }
             finally
             {
                 _isCurrentUndimmAnimRun = false;

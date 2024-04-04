@@ -48,13 +48,14 @@ namespace CollapseLauncher
     {
         #region Properties
         private bool LockRegionChangeBtn;
+        private bool DisableInstantRegionChange;
         private bool IsTitleIconForceShow;
         private bool IsNotificationPanelShow;
         private bool IsLoadNotifComplete;
-        private bool IsLoadFrameCompleted     = true;
-        private bool IsFirstStartup           = true;
-        private int  CurrentGameCategory      = -1;
-        private int  CurrentGameRegion        = -1;
+        private bool IsLoadFrameCompleted = true;
+        private bool IsFirstStartup       = true;
+        private int  CurrentGameCategory  = -1;
+        private int  CurrentGameRegion    = -1;
 
         private RegionResourceProp _gameAPIProp { get; set; }
 
@@ -119,11 +120,11 @@ namespace CollapseLauncher
                     (m_window as MainWindow)?.CloseApp();
                     return;
                 }
-                #if !DEBUG
+#if !DEBUG
                 LauncherUpdateWatcher.StartCheckUpdate(false);
-                #else 
+#else 
                 LogWriteLine("Running debug build, stopping update checks!", LogType.Error, false);
-                #endif
+#endif
 
                 LoadGamePreset();
                 SetThemeParameters();
@@ -161,7 +162,7 @@ namespace CollapseLauncher
             bool isCacheUpdaterMode = m_appMode == AppMode.Hi3CacheUpdater;
             await LauncherMetadataHelper.Initialize(isCacheUpdaterMode);
 
-            if (isCacheUpdaterMode) SetActivatedRegion();
+            if (!isCacheUpdaterMode) SetActivatedRegion();
 
 #if !DISABLEDISCORD
             bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
@@ -1005,8 +1006,9 @@ namespace CollapseLauncher
             ChangeRegionWarning.Visibility = preset.Channel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
-            
-            if (!IsShowRegionChangeWarning && IsInstantRegionChange && !IsFirstStartup) ChangeRegionInstant();
+
+            if (!IsShowRegionChangeWarning && IsInstantRegionChange && !DisableInstantRegionChange && !IsFirstStartup)
+                ChangeRegionInstant();
         }
         #endregion
 
@@ -1828,7 +1830,6 @@ namespace CollapseLauncher
         #endregion
 
         #region AppActivation
-
         private bool SetActivatedRegion()
         {
             var args = m_arguments.StartGame;
@@ -1877,37 +1878,43 @@ namespace CollapseLauncher
             return false;
         }
 
+        private async void ChangeToActivatedRegion()
+        {
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
+                return;
+
+            bool sameRegion = SetActivatedRegion();
+
+            DisableInstantRegionChange = true;
+            LockRegionChangeBtn        = true;
+            IsLoadRegionComplete       = false;
+
+            PresetConfig preset = LoadSavedGameSelection();
+
+            ShowAsyncLoadingTimedOutPill();
+            if (await LoadRegionFromCurrentConfigV2(preset))
+            {
+#if !DISABLEDISCORD
+                if (GetAppConfigValue("EnableDiscordRPC").ToBool() && !sameRegion)
+                    AppDiscordPresence.SetupPresence();
+#endif
+                InvokeLoadingRegionPopup(false);
+                LauncherFrame.BackStack.Clear();
+                MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater? typeof(CachesPage) : typeof(HomePage));
+                LogWriteLine($"Region changed to {preset.ZoneFullname}", LogType.Scheme, true);
+            }
+
+            LockRegionChangeBtn        = false;
+            DisableInstantRegionChange = false;
+        }
+
         public void OpenAppActivation()
         {
             if (m_arguments.StartGame == null)
                 return;
 
-            DispatcherQueue.TryEnqueue(async () => {
-
-                if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
-                    return;
-
-                bool sameRegion = SetActivatedRegion();
-
-                LockRegionChangeBtn = true;
-
-                PresetConfig Preset = LoadSavedGameSelection();
-
-                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
-                if (await LoadRegionFromCurrentConfigV2(Preset))
-                {
-#if !DISABLEDISCORD
-                    if (GetAppConfigValue("EnableDiscordRPC").ToBool() && !sameRegion)
-                        AppDiscordPresence.SetupPresence();
-#endif
-                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                    InvokeLoadingRegionPopup(false);
-                }
-
-                LockRegionChangeBtn = false;
-            });
+            DispatcherQueue.TryEnqueue(ChangeToActivatedRegion);
         }
-
         #endregion
     }
 }
