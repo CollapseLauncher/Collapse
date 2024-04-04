@@ -300,14 +300,19 @@ namespace CollapseLauncher
                     }
                 case WM_NCHITTEST:
                     {
-                        // Fix "Ghost Minimize Button" issue
                         const int HTCLIENT    = 1;
+                        const int HTCAPTION   = 2;
                         const int HTMINBUTTON = 8;
-                        const int HTMAXBUTTON = 9;
-                        const int HTCLOSE     = 20;
+                        const int HTTOP       = 12;
 
                         var result = CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
-                        if (result is HTMINBUTTON or HTMAXBUTTON or HTCLOSE) return HTCLIENT;
+
+                        // Fix "Ghost Minimize Button" issue
+                        if (result == HTMINBUTTON) return HTCLIENT;
+
+                        // Fix "Caption Resize" issue
+                        if (result == HTTOP) return HTCAPTION;
+
                         return result;
                     }
             }
