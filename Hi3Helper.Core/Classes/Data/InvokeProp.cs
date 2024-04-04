@@ -22,10 +22,14 @@ namespace Hi3Helper
 
         // Reference:
         // https://pinvoke.net/default.aspx/Enums/SetWindowPosFlags.html
+        [Flags]
         public enum SetWindowPosFlags : uint
         {
-            SWP_NOMOVE = 2,
-            SWP_SHOWWINDOW = 0x40,
+            SWP_NOSIZE       = 1,
+            SWP_NOMOVE       = 2,
+            SWP_NOZORDER     = 4,
+            SWP_FRAMECHANGED = 0x20,
+            SWP_SHOWWINDOW   = 0x40,
         }
 
         public enum SpecialWindowHandles
@@ -319,5 +323,16 @@ namespace Hi3Helper
             var processes = Process.GetProcessesByName(currentProcess.ProcessName);
             return processes.Length;
         }
+
+        public struct MARGINS
+        {
+            public int cxLeftWidth;
+            public int cxRightWidth;
+            public int cyTopHeight;
+            public int cyBottomHeight;
+        }
+
+        [DllImport("dwmapi.dll")]
+        public static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
     }
 }

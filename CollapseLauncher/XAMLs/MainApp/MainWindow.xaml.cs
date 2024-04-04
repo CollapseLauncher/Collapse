@@ -18,6 +18,7 @@ using Windows.Graphics;
 using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
+using static Hi3Helper.InvokeProp.SetWindowPosFlags;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using SizeN = System.Drawing.Size;
@@ -203,6 +204,19 @@ namespace CollapseLauncher
 
             m_consoleCtrlHandler += ConsoleCtrlHandler;
             SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
+
+            // Hide window border but keep drop shadow
+            if (!m_isWindows11)
+            {
+                var margin = new MARGINS()
+                {
+                    cyBottomHeight = 1,
+                };
+                DwmExtendFrameIntoClientArea(m_windowHandle, ref margin);
+
+                var flags = SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED;
+                SetWindowPos(m_windowHandle, 0, 0, 0, 0, 0, flags);
+            }
         }
 
         private bool ConsoleCtrlHandler(uint dwCtrlType)
@@ -233,6 +247,7 @@ namespace CollapseLauncher
             const uint WM_SHOWWINDOW  = 0x0018;
             const uint WM_ACTIVATEAPP = 0x001C;
             const uint WM_NCHITTEST   = 0x0084;
+            const uint WM_NCCALCSIZE  = 0x0083;
 
             switch (msg)
             {
@@ -314,6 +329,11 @@ namespace CollapseLauncher
                         if (result == HTTOP) return HTCAPTION;
 
                         return result;
+                    }
+                case WM_NCCALCSIZE:
+                    {
+                        if (!m_isWindows11 && wParam == 1) return 0;
+                        break;
                     }
             }
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);

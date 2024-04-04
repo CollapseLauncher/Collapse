@@ -44,7 +44,6 @@ namespace CollapseLauncher
 
         public static AppMode               m_appMode;
         public static Arguments             m_arguments = new Arguments();
-        public static ushort[]              w_windowsVersionNumbers;
         public static bool                  m_isWindows11;
         public static Window                m_window;
         public static Microsoft.UI.WindowId m_windowID;
