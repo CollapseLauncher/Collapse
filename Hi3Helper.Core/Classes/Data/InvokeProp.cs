@@ -355,7 +355,6 @@ namespace Hi3Helper
 
         // Note: Can only use "Default" and "AllowDark" to support Windows 10 1809
         [DllImport("uxtheme.dll", EntryPoint = "#135")]
-        [return:MarshalAs(UnmanagedType.I1)]
         public static extern PreferredAppMode SetPreferredAppMode(PreferredAppMode preferredAppMode);
         #endregion
     }
