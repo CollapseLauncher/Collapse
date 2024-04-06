@@ -34,9 +34,9 @@ namespace CollapseLauncher
         #region Main
         public TrayIcon()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            string instanceIndicator = "";
+            var instanceIndicator = "";
             var instanceCount = MainEntryPoint.InstanceCount;
 
             if (instanceCount > 1)
@@ -46,19 +46,17 @@ namespace CollapseLauncher
                 CollapseTaskbar.SetValue(TaskbarIcon.CustomNameProperty, $"Collapse Launcher{instanceIndicator}");
             }
             
-            // ReSharper disable once UnusedVariable
-            var isPreview = LauncherConfig.IsPreview;
             // Bug in W10: Weird border issue
             // Verdict: disable SecondWindow ContextMenuMode, use classic.
             // if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
 #if DEBUG
             CollapseTaskbar.ToolTipText =
-                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}{instanceIndicator}\r\n" +
+                $"Collapse Launcher{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(isPreview ? _preview : _stable)}{instanceIndicator}\r\n" +
+                $"Collapse Launcher{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";
 #endif
