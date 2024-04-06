@@ -34,6 +34,16 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Top"
               Background="{ThemeResource BackgroundOverlayTitleBarBrush}" />
+        <Border BorderThickness="0"
+                BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
+                Background="{ThemeResource NavigationViewUnfoldedPaneBackground}"
+                Width="48"
+                Margin="0"
+                CornerRadius="8"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Left"
+                Translation="0,0,16"
+                Shadow="{ThemeResource SharedShadow}"/>
         <NavigationView x:Name="NavigationViewControl"
                         BackRequested="NavigationViewControl_BackRequested"
                         Background="Transparent"
@@ -97,96 +107,110 @@
                     <StackPanel VerticalAlignment="Top"
                                 Canvas.ZIndex="2"
                                 Orientation="Horizontal">
-                        <ComboBox x:Name="ComboBoxGameCategory"
+                        <Grid x:Name="ComboBoxGameGrid"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}"
+                              Translation="0,0,12"
+                              Shadow="{ThemeResource SharedShadow}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="ComboBoxGameCategory"
                                   MinWidth="167"
-                                  Margin="0,0,0,0"
                                   Canvas.ZIndex="2"
                                   CornerRadius="15,0,0,15"
                                   ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
                                   PlaceholderText="Honkai Impact 3rd"
-                                  SelectionChanged="SetGameCategoryChange" />
-                        <ComboBox x:Name="ComboBoxGameRegion"
+                                  SelectionChanged="SetGameCategoryChange"
+                                  Style="{ThemeResource AcrylicComboBoxStyle}" />
+                            <ComboBox x:Name="ComboBoxGameRegion"
                                   MinWidth="148"
-                                  Margin="0,0,8,0"
+                                  Grid.Column="1"
                                   Canvas.ZIndex="2"
                                   CornerRadius="0,15,15,0"
                                   PlaceholderText="Southeast Asia"
-                                  SelectionChanged="EnableRegionChangeButton" />
-                        <Button x:Name="ChangeRegionConfirmBtnNoWarning"
+                                  SelectionChanged="EnableRegionChangeButton"
+                                  Style="{ThemeResource AcrylicComboBoxStyle}" />
+                        </Grid>
+                        <Grid x:Name="ChangeGameBtnGrid"
+                              Margin="8,0,0,0"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeGameBtnGrid)}">
+                            <Button x:Name="ChangeRegionConfirmBtnNoWarning"
                                 Click="ChangeRegionNoWarning"
-                                CornerRadius="15"
+                                CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeRegionConfirmBtnNoWarning)}"
                                 IsEnabled="False"
-                                Style="{ThemeResource AccentButtonStyle}"
+                                Style="{ThemeResource NewAccentButtonStyle}"
                                 Visibility="Collapsed">
-                            <Button.Content>
-                                <TextBlock Margin="4,0"
+                                <Button.Content>
+                                    <TextBlock Margin="4,0"
                                            FontWeight="Medium"
                                            Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
-                            </Button.Content>
-                        </Button>
-                        <Button x:Name="ChangeRegionConfirmBtn"
-                                CornerRadius="15"
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="ChangeRegionConfirmBtn"
+                                CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeRegionConfirmBtn)}"
                                 IsEnabled="False"
-                                Style="{ThemeResource AccentButtonStyle}">
-                            <Button.Content>
-                                <TextBlock Margin="4,0"
+                                Style="{ThemeResource NewAccentButtonStyle}">
+                                <Button.Content>
+                                    <TextBlock Margin="4,0"
                                            FontWeight="Medium"
                                            Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
-                            </Button.Content>
-                            <Button.Flyout>
-                                <Flyout>
-                                    <StackPanel>
-                                        <TextBlock Width="200"
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel>
+                                            <TextBlock Width="200"
                                                    Margin="0,0,0,12"
                                                    FontWeight="Medium"
                                                    Style="{ThemeResource BaseTextBlockStyle}"
                                                    Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" />
-                                        <StackPanel x:Name="ChangeRegionWarning"
+                                            <StackPanel x:Name="ChangeRegionWarning"
                                                     Visibility="Collapsed">
-                                            <TextBlock Width="200"
+                                                <TextBlock Width="200"
                                                        FontSize="14"
                                                        FontWeight="Medium"
                                                        Style="{ThemeResource BaseTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeWarnTitle}" />
-                                            <TextBlock x:Name="ChangeRegionWarningText"
+                                                <TextBlock x:Name="ChangeRegionWarningText"
                                                        Width="200"
                                                        Margin="0,0,0,12"
                                                        FontSize="12"
                                                        FontWeight="Normal"
                                                        Style="{ThemeResource BaseTextBlockStyle}"
                                                        Text="" />
-                                        </StackPanel>
-                                        <Button x:Name="ChangeRegionBtn"
+                                            </StackPanel>
+                                            <Button x:Name="ChangeRegionBtn"
                                                 HorizontalAlignment="Stretch"
                                                 Click="ChangeRegion"
                                                 CornerRadius="14"
                                                 Style="{ThemeResource AccentButtonStyle}">
-                                            <Button.Content>
-                                                <Grid Margin="-36,-8"
+                                                <Button.Content>
+                                                    <Grid Margin="-36,-8"
                                                       Padding="36,8">
-                                                    <ProgressBar x:Name="ChangeRegionConfirmProgressBar"
+                                                        <ProgressBar x:Name="ChangeRegionConfirmProgressBar"
                                                                  Margin="-36,0,-36,-28"
                                                                  IsIndeterminate="True"
                                                                  ShowError="False"
                                                                  ShowPaused="False"
                                                                  Visibility="Collapsed" />
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <FontIcon VerticalAlignment="Center"
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <FontIcon VerticalAlignment="Center"
                                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                                                   FontSize="16"
                                                                   Glyph="&#xf362;" />
-                                                        <TextBlock Margin="8,-1,0,0"
+                                                            <TextBlock Margin="8,-1,0,0"
                                                                    VerticalAlignment="Center"
                                                                    FontWeight="Medium"
                                                                    Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Button.Content>
-                                        </Button>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Button.Content>
+                                            </Button>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </Grid>
                     </StackPanel>
                 </StackPanel>
             </Grid>
@@ -204,7 +228,7 @@
                               VerticalAlignment="Stretch"
                               Click="ToggleNotificationPanelBtnClick"
                               Shadow="{ThemeResource SharedShadow}"
-                              Style="{ThemeResource DefaultToggleButtonStyle}">
+                              Style="{ThemeResource AcrylicToggleButtonStyle}">
                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
                               FontSize="18"
                               Glyph="&#xf0f3;" />
@@ -228,12 +252,14 @@
                 Grid.Column="0"
                 Height="33"
                 Margin="58,8,0,0"
+                Translation="0,0,8"
+                Shadow="{ThemeResource SharedShadow}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Click="GridBG_Icon_Click"
                 PointerEntered="GridBG_Icon_PointerEntered"
                 PointerExited="GridBG_Icon_PointerExited"
-                Style="{ThemeResource TransparentDefaultButtonStyle}">
+                Style="{ThemeResource AcrylicButtonStyle}">
             <Button.Transitions>
                 <RepositionThemeTransition />
             </Button.Transitions>
