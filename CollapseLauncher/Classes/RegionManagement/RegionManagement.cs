@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -27,7 +28,7 @@ namespace CollapseLauncher
 {
     public class CancellationTokenSourceWrapper : CancellationTokenSource
     {
-        public bool IsDisposed = false;
+        public bool IsDisposed;
         public bool IsCancelled = false;
 
         public new async ValueTask CancelAsync()
@@ -42,7 +43,11 @@ namespace CollapseLauncher
         }
     }
 
-    public sealed partial class MainPage : Page
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]      
+    public sealed partial class MainPage
     {
         private enum ResourceLoadingType
         {
@@ -53,19 +58,19 @@ namespace CollapseLauncher
 
         private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
-        private bool IsExplicitCancel { get; set; } = false;
-        private bool IsLoadRegionCancellationRequestEnabled { get; set; } = false;
+        private bool IsExplicitCancel { get; set; }
+        private bool IsLoadRegionCancellationRequestEnabled { get; set; }
 
-        private uint MaxRetry = 5; // Max 5 times of retry attempt
-        private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
-        private uint BackgroundImageLoadTimeout = 3600; // Give background image download 1 hour of timeout
-        private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
-        private CancellationTokenSourceWrapper CurrentRegionLoadTokenSource;
+        private const uint                           MaxRetry                   = 5; // Max 5 times of retry attempt
+        private const uint                           LoadTimeout                = 10; // 10 seconds of initial Load Timeout
+        private const uint                           BackgroundImageLoadTimeout = 3600; // Give background image download 1 hour of timeout
+        private const uint                           LoadTimeoutStep            = 5; // Step 5 seconds for each timeout retries
+        private       CancellationTokenSourceWrapper CurrentRegionLoadTokenSource;
 
-        private string RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
-        private List<object> LastNavigationItem;
-        private HomeMenuPanel LastRegionNewsProp;
-        public static string PreviousTag = string.Empty;
+        private static  string        RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
+        private         List<object>  LastNavigationItem;
+        private         HomeMenuPanel LastRegionNewsProp;
+        internal static string        PreviousTag = string.Empty;
 
         internal async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfig preset)
         {
@@ -131,7 +136,7 @@ namespace CollapseLauncher
         public void ClearMainPageState()
         {
             // Clear NavigationViewControl Items and Reset Region props
-            LastNavigationItem = new List<object>(NavigationViewControl.MenuItems);
+            LastNavigationItem = [..NavigationViewControl.MenuItems];
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.IsSettingsVisible = false;
             PreviousTag = "launcher";
@@ -147,49 +152,47 @@ namespace CollapseLauncher
             uint RetryCount = 0;
             while (RetryCount < MaxRetry)
             {
-                using (CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper())
+                using CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
+                // Register token source for cancellation registration
+                CurrentRegionLoadTokenSource = tokenSource;
+
+                // Watch for timeout
+                WatchAndCancelIfTimeout(tokenSource, CurrentTimeout);
+
+                // Assign task based on type
+                ConfiguredValueTaskAwaitable loadTask = (resourceType switch
+                                                         {
+                                                             ResourceLoadingType.LocalizedResource => FetchLauncherLocalizedResources(tokenSource.Token, preset),
+                                                             ResourceLoadingType.DownloadInformation => FetchLauncherDownloadInformation(tokenSource.Token, preset),
+                                                             ResourceLoadingType.DownloadBackground => DownloadBackgroundImage(tokenSource.Token),
+                                                             _ => throw new InvalidOperationException("Operation is not supported!")
+                                                         }).ConfigureAwait(false);
+
+                try
                 {
-                    // Register token source for cancellation registration
-                    CurrentRegionLoadTokenSource = tokenSource;
+                    // Run and await task
+                    await loadTask;
 
-                    // Watch for timeout
-                    WatchAndCancelIfTimeout(tokenSource, CurrentTimeout);
-
-                    // Assign task based on type
-                    ConfiguredValueTaskAwaitable loadTask = (resourceType switch
-                    {
-                        ResourceLoadingType.LocalizedResource => FetchLauncherLocalizedResources(tokenSource.Token, preset),
-                        ResourceLoadingType.DownloadInformation => FetchLauncherDownloadInformation(tokenSource.Token, preset),
-                        ResourceLoadingType.DownloadBackground => DownloadBackgroundImage(tokenSource.Token),
-                        _ => throw new InvalidOperationException($"Operation is not supported!")
-                    }).ConfigureAwait(false);
-
-                    try
-                    {
-                        // Run and await task
-                        await loadTask;
-
-                        // Return true as successful
-                        return true;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException($"Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, ShowLoadingMsg);
-                    }
-                    catch (Exception ex)
-                    {
-                        CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, ShowLoadingMsg);
-                    }
-
-                    // If explicit cancel was triggered, then return false
-                    if (IsExplicitCancel)
-                    {
-                        return false;
-                    }
-
-                    // Increment retry count
-                    RetryCount++;
+                    // Return true as successful
+                    return true;
                 }
+                catch (OperationCanceledException)
+                {
+                    CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException("Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, ShowLoadingMsg);
+                }
+                catch (Exception ex)
+                {
+                    CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, ShowLoadingMsg);
+                }
+
+                // If explicit cancel was triggered, then return false
+                if (IsExplicitCancel)
+                {
+                    return false;
+                }
+
+                // Increment retry count
+                RetryCount++;
             }
 
             // Return false as fail
@@ -226,11 +229,11 @@ namespace CollapseLauncher
 
         internal static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, CancellationToken token)
         {
-            // Initialize the FileInfo and check if the file is exist
+            // Initialize the FileInfo and check if the file exist
             FileInfo fI = new FileInfo(outputPath);
             bool isFileExist = IsFileCompletelyDownloaded(fI);
 
-            // If the file and the file assumed to be exist, then return
+            // If the file and the file assumed to exist, then return
             if (isFileExist) return;
 
             // If not, then try download the file
@@ -243,22 +246,23 @@ namespace CollapseLauncher
             string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
             string outputFileName = Path.GetFileName(fileInfo.FullName);
 
-            // Try get the prop file which includes the filename + the suggested size provided
+            // Try to get the prop file which includes the filename + the suggested size provided
             // by the network stream if it has been downloaded before
             string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
             // Check if the file is found (not null), then try parse the information
-            if (!string.IsNullOrEmpty(propFilePath))
+            if (string.IsNullOrEmpty(propFilePath))
             {
-                // Try split the filename into a segment by # char
-                string[] propSegment = Path.GetFileName(propFilePath).Split('#');
-                // Assign the check if the condition met and set the file existence status
-                return propSegment.Length >= 2
-                    && long.TryParse(propSegment[1], null, out long suggestedSize)
-                    && fileInfo.Exists && fileInfo.Length == suggestedSize;
+                return false;
             }
 
+            // Try split the filename into a segment by # char
+            string[] propSegment = Path.GetFileName(propFilePath).Split('#');
+            // Assign the check if the condition met and set the file existence status
+            return propSegment.Length >= 2
+                   && long.TryParse(propSegment[1], null, out long suggestedSize)
+                   && fileInfo.Exists && fileInfo.Length == suggestedSize;
+
             // If the prop doesn't exist, then return false to assume that the file doesn't exist
-            return false;
         }
 
         internal static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
@@ -271,9 +275,9 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
-                // Try get the remote stream and download the file
-                using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
-                using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                // Try to get the remote stream and download the file
+                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                await using Stream outStream = fileInfo.Open(new FileStreamOptions()
                 {
                     Access = FileAccess.Write,
                     Mode = FileMode.Create,
@@ -288,26 +292,22 @@ namespace CollapseLauncher
                 string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
                 string outputFilename = Path.GetFileName(fileInfo.FullName);
                 string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                File.Create(propFilePath).Dispose();
+                await File.Create(propFilePath).DisposeAsync();
 
                 // Copy (and download) the remote streams to local
-                int read = 0;
+                int read;
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer, 0, read, token);
 
                 LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
                     + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
             }
-#if DEBUG
-            catch
-            {
-                throw;
-#else
+#if !DEBUG
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex, ErrorType.Connection);
-#endif
             }
+#endif
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
@@ -317,13 +317,15 @@ namespace CollapseLauncher
         private string GetDeviceId(PresetConfig Preset)
         {
             var deviceId = (string)Registry.GetValue(Preset.InstallRegistryLocation, "UUID", null);
-            if (deviceId == null)
+            if (deviceId != null)
             {
-                const string regKeyCryptography = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography";
-                var guid = (string)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ?? Guid.NewGuid().ToString();
-                deviceId = guid.Replace("-", "") + (long)DateTime.Now.Subtract(DateTime.UnixEpoch).TotalMilliseconds;
-                Registry.SetValue(Preset.InstallRegistryLocation, "UUID", deviceId);
+                return deviceId;
             }
+
+            const string regKeyCryptography = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography";
+            var          guid               = (string)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ?? Guid.NewGuid().ToString();
+            deviceId = guid.Replace("-", "") + (long)DateTime.Now.Subtract(DateTime.UnixEpoch).TotalMilliseconds;
+            Registry.SetValue(Preset.InstallRegistryLocation, "UUID", deviceId);
             return deviceId;
         }
 
@@ -333,7 +335,7 @@ namespace CollapseLauncher
             if (!string.IsNullOrEmpty(Preset.LauncherPluginURL))
             {
                 RegionResourceProp _pluginAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherPluginURL, GetDeviceId(Preset)), InternalAppJSONContext.Default, token);
-                if (_pluginAPIProp?.data != null && _pluginAPIProp?.data?.plugins != null)
+                if (_pluginAPIProp?.data is { plugins: not null })
                 {
 #if DEBUG
                     LogWriteLine("[FetchLauncherDownloadInformation] Loading plugin handle!");
@@ -412,7 +414,7 @@ namespace CollapseLauncher
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
-            regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
+            regionNewsProp.sideMenuPanel = [];
             foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
             {
                 // Default: links
@@ -420,15 +422,14 @@ namespace CollapseLauncher
                 List<LinkProp> links = item.links;
                 if (links == null && !string.IsNullOrEmpty(item.url))
                 {
-                    links = new List<LinkProp>
-                    {
-                        new() { title = item.title, url = item.url }
-                    };
-                    links = links.Concat(item.other_links).ToList();
+                #pragma warning disable IDE0059
+                    links = [new LinkProp { title = item.title, url = item.url }];
+                #pragma warning restore IDE0059
+                    links = [.. links, .. item.other_links];
                 }
 
                 string url = item.icon_link;
-                if (string.IsNullOrEmpty(url) && links.Any() && !string.IsNullOrEmpty(links[0].url))
+                if (string.IsNullOrEmpty(url) && links.Count != 0 && !string.IsNullOrEmpty(links[0].url))
                 {
                     url = links[0].url;
                 }
@@ -474,7 +475,7 @@ namespace CollapseLauncher
         {
             if (regionBackgroundProp.data.banner.Count == 0) return;
 
-            regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
+            regionNewsProp.imageCarouselPanel = [];
             foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
             {
                 regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp(Token)
@@ -528,13 +529,14 @@ namespace CollapseLauncher
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (!IsFileCompletelyDownloaded(fInfo))
+            if (IsFileCompletelyDownloaded(fInfo))
             {
-                TryDownloadToCompletenessAsync(URL, fInfo, token);
-                return URL;
+                return cachePath;
             }
 
-            return cachePath;
+            TryDownloadToCompletenessAsync(URL, fInfo, token);
+            return URL;
+
         }
 
         public static async ValueTask<string> GetCachedSpritesAsync(string URL, CancellationToken token)
@@ -555,12 +557,13 @@ namespace CollapseLauncher
 
         private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout, bool ShowLoadingMsg)
         {
+            var timeout = currentTimeout;
             DispatcherQueue.TryEnqueue(() =>
             {
                 if (ShowLoadingMsg)
                 {
                     // Send the message to loading status
-                    LoadingMessageHelper.SetMessage(null, string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}", currentTimeout));
+                    LoadingMessageHelper.SetMessage(null, string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}", timeout));
                     if (!IsLoadRegionCancellationRequestEnabled)
                     {
                         IsLoadRegionCancellationRequestEnabled = true;
@@ -569,7 +572,7 @@ namespace CollapseLauncher
                 }
 
                 // Send the exception without changing into the Error page
-                LogWriteLine($"Loading Game: {LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion} has timed-out (> {currentTimeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
+                LogWriteLine($"Loading Game: {LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion} has timed-out (> {timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
                 ErrorSender.SendExceptionWithoutPage(ex, ErrorType.Connection);
             });
 
@@ -586,7 +589,7 @@ namespace CollapseLauncher
             LockRegionChangeBtn = false;
             IsLoadRegionCancellationRequestEnabled = false;
 
-            if (CurrentRegionLoadTokenSource != null && !CurrentRegionLoadTokenSource.IsDisposed)
+            if (CurrentRegionLoadTokenSource is { IsDisposed: false })
                 CurrentRegionLoadTokenSource.Cancel();
 
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
@@ -601,18 +604,20 @@ namespace CollapseLauncher
 
         private async void WatchAndCancelIfTimeout(CancellationTokenSourceWrapper TokenSource, uint Timeout)
         {
-            // Wait until it timeout
+            // Wait until it's timeout
             await Task.Delay((int)Timeout * 1000);
 
             // If cancel has been triggered, then return
             if (TokenSource.IsCancellationRequested) return;
 
             // If InnerTask still not loaded successfully, then cancel it
-            if (!IsLoadRegionComplete && !TokenSource.IsDisposed)
+            if (IsLoadRegionComplete || TokenSource.IsDisposed)
             {
-                TokenSource.Cancel();
-                DisableKbShortcuts();
+                return;
             }
+
+            await ((CancellationTokenSource)TokenSource).CancelAsync();
+            DisableKbShortcuts();
         }
 
         private void FinalizeLoadRegion(PresetConfig preset)

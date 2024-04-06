@@ -15,6 +15,7 @@ using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 #nullable enable
 namespace CollapseLauncher.Helper.Background
 {
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class BackgroundMediaUtility
@@ -26,7 +27,7 @@ namespace CollapseLauncher.Helper.Background
             Unknown
         }
 
-        internal const double TransitionDuration = 0.25d;
+        internal const double TransitionDuration     = 0.25d;
         internal const double TransitionDurationSlow = 0.5d;
 
         internal static readonly string[] SupportedImageExt =
@@ -35,9 +36,9 @@ namespace CollapseLauncher.Helper.Background
         internal static readonly string[] SupportedMediaPlayerExt =
             [".mp4", ".mov", ".mkv", ".webm", ".avi", ".gif"];
 
-        private static FrameworkElement? _parentUI;
-        private static ImageUI? _bgImageBackground;
-        private static ImageUI? _bgImageBackgroundLast;
+        private static FrameworkElement?   _parentUI;
+        private static ImageUI?            _bgImageBackground;
+        private static ImageUI?            _bgImageBackgroundLast;
         private static MediaPlayerElement? _bgMediaPlayerBackground;
 
         private static Grid? _bgAcrylicMask;
@@ -52,9 +53,9 @@ namespace CollapseLauncher.Helper.Background
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private static CancellationTokenSourceWrapper? _cancellationToken;
-        private static StillImageLoader? _loaderStillImage;
-        private static MediaPlayerLoader? _loaderMediaPlayer;
-        private static IBackgroundMediaLoader? _currentMediaLoader;
+        private static StillImageLoader?               _loaderStillImage;
+        private static MediaPlayerLoader?              _loaderMediaPlayer;
+        private static IBackgroundMediaLoader?         _currentMediaLoader;
 
         private static bool _isCurrentDimmAnimRun;
         private static bool _isCurrentUndimmAnimRun;
@@ -73,14 +74,15 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="bgOverlayTitleBar">The title bar shadow over Background Image.</param>
         /// <param name="bgImageGridBackground">The parent <see cref="Grid" /> for Background Image.</param>
         /// <param name="bgMediaPlayerGrid">The parent <see cref="Grid" /> for Background Media Player</param>
-        internal static async Task RegisterCurrent(FrameworkElement? parentUI, Grid bgAcrylicMask,
-            Grid bgOverlayTitleBar, Grid bgImageGridBackground, Grid bgMediaPlayerGrid)
+        internal static async Task RegisterCurrent(FrameworkElement? parentUI,          Grid bgAcrylicMask,
+                                                   Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
+                                                   Grid              bgMediaPlayerGrid)
         {
             // Set the parent UI
             _parentUI = parentUI;
 
             // Mask stuff
-            _bgAcrylicMask = bgAcrylicMask;
+            _bgAcrylicMask     = bgAcrylicMask;
             _bgOverlayTitleBar = bgOverlayTitleBar;
 
             // Initialize the background instances
@@ -88,12 +90,12 @@ namespace CollapseLauncher.Helper.Background
                 await InitializeElementGrid<ImageUI>(bgImageGridBackground, "ImageBackground", AssignDefaultImage);
             _bgMediaPlayerBackground =
                 (await TryGetFirstGridElement<MediaPlayerElement>(bgMediaPlayerGrid.WithOpacity(0), "MediaPlayer"))
-                .WithHorizontalAlignment(HorizontalAlignment.Center)
-                .WithVerticalAlignment(VerticalAlignment.Center)
-                .WithStretch(Stretch.UniformToFill);
+               .WithHorizontalAlignment(HorizontalAlignment.Center)
+               .WithVerticalAlignment(VerticalAlignment.Center)
+               .WithStretch(Stretch.UniformToFill);
 
             // Store the parent grid reference into this static variables
-            _parentBgImageBackgroundGrid = bgImageGridBackground;
+            _parentBgImageBackgroundGrid       = bgImageGridBackground;
             _parentBgMediaPlayerBackgroundGrid = bgMediaPlayerGrid;
 
             // Set that the current page has been registered
@@ -105,22 +107,25 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal static void DetachCurrent()
         {
-            if (_cancellationToken is { IsCancellationRequested: false }) _cancellationToken.Cancel();
+            if (_cancellationToken is { IsCancellationRequested: false })
+            {
+                _cancellationToken.Cancel();
+            }
 
-            _bgImageBackground = null;
-            _bgImageBackgroundLast = null;
+            _bgImageBackground       = null;
+            _bgImageBackgroundLast   = null;
             _bgMediaPlayerBackground = null;
 
             _parentBgImageBackgroundGrid?.ClearChildren();
             _parentBgMediaPlayerBackgroundGrid?.ClearChildren();
 
-            _parentBgImageBackgroundGrid = null;
+            _parentBgImageBackgroundGrid       = null;
             _parentBgMediaPlayerBackgroundGrid = null;
-            _bgAcrylicMask = null;
-            _bgOverlayTitleBar = null;
+            _bgAcrylicMask                     = null;
+            _bgOverlayTitleBar                 = null;
 
             _loaderMediaPlayer = null;
-            _loaderStillImage = null;
+            _loaderStillImage  = null;
 
             CurrentAppliedMediaType = MediaType.Unknown;
 
@@ -139,7 +144,7 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="defaultAssignAction">The delegate to perform action after the new element is created.</param>
         /// <returns>The tuple of the new "current and last" instance of the element.</returns>
         private static async ValueTask<(TElement?, TElement?)> InitializeElementGrid<TElement>(Grid elementGrid,
-            string baseTagType, AssignDefaultAction<TElement>? defaultAssignAction = null)
+                                                                                               string baseTagType, AssignDefaultAction<TElement>? defaultAssignAction = null)
             where TElement : FrameworkElement, new()
         {
             // Get the type name of the element
@@ -148,14 +153,14 @@ namespace CollapseLauncher.Helper.Background
             // Find or create the element from/to the parent grid.
             TElement? elementCurrent =
                 (await TryGetFirstGridElement(elementGrid, typeName + baseTagType + "_Current", defaultAssignAction))
-                .WithHorizontalAlignment(HorizontalAlignment.Center)
-                .WithVerticalAlignment(VerticalAlignment.Bottom)
-                .WithStretch(Stretch.UniformToFill);
+               .WithHorizontalAlignment(HorizontalAlignment.Center)
+               .WithVerticalAlignment(VerticalAlignment.Bottom)
+               .WithStretch(Stretch.UniformToFill);
             TElement? elementLast =
                 (await TryGetFirstGridElement(elementGrid, typeName + baseTagType + "_Last", defaultAssignAction))
-                .WithHorizontalAlignment(HorizontalAlignment.Center)
-                .WithVerticalAlignment(VerticalAlignment.Bottom)
-                .WithStretch(Stretch.UniformToFill);
+               .WithHorizontalAlignment(HorizontalAlignment.Center)
+               .WithVerticalAlignment(VerticalAlignment.Bottom)
+               .WithStretch(Stretch.UniformToFill);
 
             // Return the current and last element
             return (elementCurrent, elementLast);
@@ -170,29 +175,22 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="defaultAssignAction">The delegate to perform action after the new element is created.</param>
         /// <returns>Returns <c>null</c> if the <c>Grid</c> is null. Returns the new or existing element from the <c>Grid</c>.</returns>
         private static async ValueTask<T?> TryGetFirstGridElement<T>(Grid? elementGrid, string tagType,
-            AssignDefaultAction<T>? defaultAssignAction = null)
+                                                                     AssignDefaultAction<T>? defaultAssignAction = null)
             where T : FrameworkElement, new()
         {
             // If the parent grid is null, then return null
-            if (elementGrid == null)
-            {
-                return null;
-            }
+            if (elementGrid == null) return null;
 
             // Try to find the existing element at the first pos of the
             // parent's grid with the corresponding tag. If not found,
             // assign it as null instead
             T? targetElement = elementGrid.Children
-                .OfType<T>()
-                .FirstOrDefault(x => x.Tag is string tagString && tagString == tagType);
+                                          .OfType<T>()
+                                          .FirstOrDefault(x => x.Tag is string tagString && tagString == tagType);
 
             // If the existing element is not found, then starts
             // create a new one
-            if (targetElement != null)
-            {
-                // Return an existing instance from the parent grid
-                return targetElement;
-            }
+            if (targetElement != null) return targetElement; // Return an existing instance from the parent grid
 
             // Create a new instance of the element and add it into parent grid
             T newElement = elementGrid.AddElementToGridRowColumn(new T());
@@ -227,7 +225,8 @@ namespace CollapseLauncher.Helper.Background
 
                 // Read the default.png image and load it to
                 // the image element.
-                await using FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                await using FileStream fileStream =
+                    new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 BitmapImage imageSource = new BitmapImage();
                 await imageSource.SetSourceAsync(fileStream.AsRandomAccessStream());
                 image.Source = imageSource;
@@ -266,8 +265,8 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false, 
-            bool isForceRecreateCache = false)
+        internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false,
+                                                  bool   isForceRecreateCache = false)
         {
             while (!_isCurrentRegistered)
             {
@@ -278,26 +277,29 @@ namespace CollapseLauncher.Helper.Background
             EnsureCurrentMediaPlayerRegistered();
 
             _loaderMediaPlayer ??= new MediaPlayerLoader(
-                _parentUI!,
-                _bgAcrylicMask!, _bgOverlayTitleBar!,
-                _parentBgMediaPlayerBackgroundGrid!,
-                _bgMediaPlayerBackground);
+                                                         _parentUI!,
+                                                         _bgAcrylicMask!, _bgOverlayTitleBar!,
+                                                         _parentBgMediaPlayerBackgroundGrid!,
+                                                         _bgMediaPlayerBackground);
 
             _loaderStillImage ??= new StillImageLoader(
-                _parentUI!,
-                _bgAcrylicMask!, _bgOverlayTitleBar!,
-                _parentBgImageBackgroundGrid!,
-                _bgImageBackground, _bgImageBackgroundLast);
+                                                       _parentUI!,
+                                                       _bgAcrylicMask!, _bgOverlayTitleBar!,
+                                                       _parentBgImageBackgroundGrid!,
+                                                       _bgImageBackground, _bgImageBackgroundLast);
 
             MediaType mediaType = GetMediaType(mediaPath);
 
             _currentMediaLoader = mediaType switch
-            {
-                MediaType.Media => _loaderMediaPlayer,
-                MediaType.StillImage => _loaderStillImage,
-                MediaType.Unknown => throw new FormatException("Media format is unknown and cannot be determined!"),
-                _ => throw new FormatException("Media format is unknown and cannot be determined!")
-            };
+                                  {
+                                      MediaType.Media => _loaderMediaPlayer,
+                                      MediaType.StillImage => _loaderStillImage,
+                                      MediaType.Unknown =>
+                                          throw new
+                                              FormatException("Media format is unknown and cannot be determined!"),
+                                      _ => throw new
+                                          FormatException("Media format is unknown and cannot be determined!")
+                                  };
 
             if (_currentMediaLoader == null)
             {
@@ -316,7 +318,7 @@ namespace CollapseLauncher.Helper.Background
 
             _cancellationToken = new CancellationTokenSourceWrapper();
             await _currentMediaLoader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit,
-                _cancellationToken.Token);
+                                                _cancellationToken.Token);
 
             if (CurrentAppliedMediaType != mediaType && CurrentAppliedMediaType != MediaType.Unknown &&
                 mediaType == MediaType.Media)
@@ -332,10 +334,10 @@ namespace CollapseLauncher.Helper.Background
             if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
             {
                 _loaderMediaPlayer.IsMediaPlayerDimm = true;
-                _loaderStillImage.IsImageDimm = true;
+                _loaderStillImage.IsImageDimm        = true;
             }
 
-            if (mediaType == MediaType.Media || InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
+            if ((mediaType == MediaType.Media || InnerLauncherConfig.m_appCurrentFrameName != "HomePage") && CurrentAppliedMediaType != mediaType)
             {
                 await _currentMediaLoader.ShowAsync(_cancellationToken.Token);
             }
@@ -357,10 +359,13 @@ namespace CollapseLauncher.Helper.Background
             {
                 _isCurrentDimmAnimRun = true;
                 IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
-                if (loader == null) return;
+                if (loader == null)
+                {
+                    return;
+                }
+
                 await loader.DimmAsync(_cancellationToken?.Token ?? default);
-            } 
-            catch { }
+            }
             finally
             {
                 _isCurrentDimmAnimRun = false;
@@ -381,10 +386,13 @@ namespace CollapseLauncher.Helper.Background
             {
                 _isCurrentUndimmAnimRun = true;
                 IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
-                if (loader == null) return;
+                if (loader == null)
+                {
+                    return;
+                }
+
                 await loader.UndimmAsync(_cancellationToken?.Token ?? default);
             }
-            catch { }
             finally
             {
                 _isCurrentUndimmAnimRun = false;
@@ -462,12 +470,12 @@ namespace CollapseLauncher.Helper.Background
         private static IBackgroundMediaLoader? GetImageLoader(MediaType mediaType)
         {
             return mediaType switch
-            {
-                MediaType.StillImage => _loaderStillImage,
-                MediaType.Media => _loaderMediaPlayer,
-                MediaType.Unknown => null,
-                _ => throw new NotImplementedException()
-            };
+                   {
+                       MediaType.StillImage => _loaderStillImage,
+                       MediaType.Media => _loaderMediaPlayer,
+                       MediaType.Unknown => null,
+                       _ => throw new NotImplementedException()
+                   };
         }
 
         public static MediaType GetMediaType(string mediaPath)
@@ -478,12 +486,7 @@ namespace CollapseLauncher.Helper.Background
                 return MediaType.StillImage;
             }
 
-            if (SupportedMediaPlayerExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
-            {
-                return MediaType.Media;
-            }
-
-            return MediaType.Unknown;
+            return SupportedMediaPlayerExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase) ? MediaType.Media : MediaType.Unknown;
         }
     }
 }

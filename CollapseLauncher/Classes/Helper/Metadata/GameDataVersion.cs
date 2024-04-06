@@ -15,14 +15,14 @@ namespace CollapseLauncher.Helper.Metadata
                 {
                     DataCooker.GetServeV3DataSize(value, out long compressedSize, out long decompressedSize);
                     byte[] dataOut = new byte[decompressedSize];
-                    DataCooker.ServeV3Data(value, dataOut, (int)compressedSize, (int)decompressedSize, out int dataWritten);
+                    DataCooker.ServeV3Data(value, dataOut, (int)compressedSize, (int)decompressedSize, out _);
                     _data = dataOut;
                 }
                 _data = value;
             }
         }
         public long Length { get; set; }
-        public bool isCompressed { get; set; }
+        public bool IsCompressed { get; set; }
 
         public static int GetBytesToIntVersion(byte[] version)
         {

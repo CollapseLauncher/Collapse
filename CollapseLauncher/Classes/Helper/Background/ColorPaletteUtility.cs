@@ -23,27 +23,17 @@ namespace CollapseLauncher.Helper.Background
     internal struct BitmapInputStruct
     {
         internal IntPtr Buffer;
-        internal int Width;
-        internal int Height;
-        internal int Channel;
+        internal int    Width;
+        internal int    Height;
+        internal int    Channel;
     }
 
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class ColorPaletteUtility
     {
-        /*
-        internal static async Task ApplyAccentColor<T>(T page, string filePath, bool isImageLoadForFirstTime)
-            where T : FrameworkElement
-        {
-            await using FileStream stream =
-                new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            await ApplyAccentColor(page, stream.AsRandomAccessStream(), filePath, isImageLoadForFirstTime, false);
-        }
-        */
-
-        internal static async Task ApplyAccentColor<T>(T page, IRandomAccessStream stream, string filePath,
-            bool isImageLoadForFirstTime, bool isContinuousGeneration)
+        internal static async Task ApplyAccentColor<T>(T    page, IRandomAccessStream stream, string filePath,
+                                                       bool isImageLoadForFirstTime, bool isContinuousGeneration)
             where T : FrameworkElement
         {
             using Bitmap bitmapAccentColor = await Task.Run(() => ImageLoaderHelper.Stream2Bitmap(stream));
@@ -52,27 +42,27 @@ namespace CollapseLauncher.Helper.Background
             try
             {
                 int bitmapChannelCount = bitmapAccentColor.PixelFormat switch
-                {
-                    PixelFormat.Format32bppRgb => 4,
-                    PixelFormat.Format32bppArgb => 4,
-                    PixelFormat.Format24bppRgb => 3,
-                    _ => throw new NotSupportedException(
-                        $"Pixel format of the image: {bitmapAccentColor.PixelFormat} is unsupported!")
-                };
+                                         {
+                                             PixelFormat.Format32bppRgb => 4,
+                                             PixelFormat.Format32bppArgb => 4,
+                                             PixelFormat.Format24bppRgb => 3,
+                                             _ => throw new NotSupportedException(
+                                              $"Pixel format of the image: {bitmapAccentColor.PixelFormat} is unsupported!")
+                                         };
 
                 bitmapData = bitmapAccentColor.LockBits(new Rectangle(new Point(), bitmapAccentColor.Size),
-                    ImageLockMode.ReadOnly, bitmapAccentColor.PixelFormat);
+                                                        ImageLockMode.ReadOnly, bitmapAccentColor.PixelFormat);
 
                 BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
                 {
-                    Buffer = bitmapData.Scan0,
-                    Width = bitmapData.Width,
-                    Height = bitmapData.Height,
+                    Buffer  = bitmapData.Scan0,
+                    Width   = bitmapData.Width,
+                    Height  = bitmapData.Height,
                     Channel = bitmapChannelCount
                 };
 
                 await ApplyAccentColor(page, bitmapInputStruct, filePath, isImageLoadForFirstTime,
-                    isContinuousGeneration);
+                                       isContinuousGeneration);
             }
             finally
             {
@@ -83,18 +73,20 @@ namespace CollapseLauncher.Helper.Background
             }
         }
 
-        internal static async Task ApplyAccentColor<T>(T page, BitmapInputStruct bitmapInput, string bitmapPath,
-            bool forceCreateNewCache = false, bool isContinuousGeneration = false)
+        internal static async Task ApplyAccentColor<T>(T    page, BitmapInputStruct bitmapInput, string bitmapPath,
+                                                       bool forceCreateNewCache    = false,
+                                                       bool isContinuousGeneration = false)
             where T : FrameworkElement
         {
             bool isLight = InnerLauncherConfig.IsAppThemeLight;
             WColor[] colors = await TryGetCachedPalette(bitmapInput, isLight, bitmapPath, forceCreateNewCache,
-                isContinuousGeneration);
-            SetColorPalette(page, colors);
+                                                        isContinuousGeneration);
+            SetColorPalette(page, colors[0]);
         }
 
         private static async ValueTask<WColor[]> TryGetCachedPalette(BitmapInputStruct bitmapInput, bool isLight,
-            string bitmapPath, bool forceCreateNewCache, bool isContinuousGeneration)
+                                                                     string bitmapPath, bool forceCreateNewCache,
+                                                                     bool isContinuousGeneration)
         {
             if (isContinuousGeneration)
             {
@@ -102,7 +94,7 @@ namespace CollapseLauncher.Helper.Background
             }
 
             string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
-            string cachedFileHash = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
+            string cachedFileHash    = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
             cachedPalettePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, cachedFileHash);
 
             if (!File.Exists(cachedPalettePath) || forceCreateNewCache)
@@ -119,21 +111,17 @@ namespace CollapseLauncher.Helper.Background
             return output;
         }
 
-        internal static void SetColorPalette<T>(T page, WColor[]? palette = null)
+        internal static void SetColorPalette<T>(T page, WColor? palette = null)
             where T : FrameworkElement
         {
-            if (palette == null || palette.Length < 2)
-            {
-                palette = ConverterTool.EnsureLengthCopyLast(
-                    [UIElementExtensions.GetApplicationResource<WColor>("TemplateAccentColor")], 2);
-            }
+            if (!palette.HasValue) return;
 
             string dictColorNameTheme = InnerLauncherConfig.IsAppThemeLight ? "Dark" : "Light";
-            UIElementExtensions.SetApplicationResource("SystemAccentColor", palette[0]);
-            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}1", palette[0]);
-            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}2", palette[0]);
-            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}3", palette[0]);
-            UIElementExtensions.SetApplicationResource("AccentColor", new SolidColorBrush(palette[0]));
+            UIElementExtensions.SetApplicationResource("SystemAccentColor", palette);
+            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}1", palette);
+            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}2", palette);
+            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}3", palette);
+            UIElementExtensions.SetApplicationResource("AccentColor", new SolidColorBrush(palette.Value));
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(InnerLauncherConfig.CurrentAppTheme));
         }
@@ -151,12 +139,12 @@ namespace CollapseLauncher.Helper.Background
                 try
                 {
                     page.RequestedTheme = page.RequestedTheme switch
-                    {
-                        ElementTheme.Dark => ElementTheme.Light,
-                        ElementTheme.Light => ElementTheme.Default,
-                        ElementTheme.Default => ElementTheme.Dark,
-                        _ => page.RequestedTheme
-                    };
+                                          {
+                                              ElementTheme.Dark => ElementTheme.Light,
+                                              ElementTheme.Light => ElementTheme.Default,
+                                              ElementTheme.Default => ElementTheme.Dark,
+                                              _ => page.RequestedTheme
+                                          };
 
                     if (page.RequestedTheme != startTheme)
                     {
@@ -175,15 +163,15 @@ namespace CollapseLauncher.Helper.Background
         public static ElementTheme ConvertAppThemeToElementTheme(AppThemeMode theme)
         {
             return theme switch
-            {
-                AppThemeMode.Dark => ElementTheme.Dark,
-                AppThemeMode.Light => ElementTheme.Light,
-                _ => ElementTheme.Default
-            };
+                   {
+                       AppThemeMode.Dark => ElementTheme.Dark,
+                       AppThemeMode.Light => ElementTheme.Light,
+                       _ => ElementTheme.Default
+                   };
         }
 
         private static async ValueTask<WColor[]> TryGenerateNewCachedPalette(BitmapInputStruct bitmapInput,
-            bool isLight, string? cachedPalettePath)
+                                                                             bool isLight, string? cachedPalettePath)
         {
             WColor[] colors = [await GetPaletteList(bitmapInput, isLight)];
             colors = ConverterTool.EnsureLengthCopyLast(colors, 4);
@@ -220,16 +208,17 @@ namespace CollapseLauncher.Helper.Background
 
             try
             {
-                LumaUtils.DarkThreshold = isLight ? 200f : 400f;
+                LumaUtils.DarkThreshold        = isLight ? 200f : 400f;
                 LumaUtils.IgnoreWhiteThreshold = isLight ? 900f : 800f;
                 LumaUtils.ChangeCoeToBT601();
 
                 QuantizedColor averageColor = await Task.Run(() =>
-                        ColorThief.GetColor(bitmapInput.Buffer, bitmapInput.Channel, bitmapInput.Width,
-                            bitmapInput.Height, 1))
-                    .ConfigureAwait(false);
+                                                                 ColorThief.GetColor(bitmapInput.Buffer,
+                                                                     bitmapInput.Channel, bitmapInput.Width,
+                                                                     bitmapInput.Height, 1))
+                                                        .ConfigureAwait(false);
 
-                WColor wColor = DrawingColorToColor(averageColor);
+                WColor wColor        = DrawingColorToColor(averageColor);
                 WColor adjustedColor = wColor.SetSaturation(1.5);
                 adjustedColor = isLight ? adjustedColor.GetDarkColor() : adjustedColor.GetLightColor();
 

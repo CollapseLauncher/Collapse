@@ -978,7 +978,7 @@ namespace CollapseLauncher
         {
             object? selectedItem = ((ComboBox)sender).SelectedItem;
             if (selectedItem == null) return;
-            string SelectedCategoryString = GetComboBoxGameRegionValue(selectedItem);
+            string? SelectedCategoryString = GetComboBoxGameRegionValue(selectedItem);
             // REMOVED: GetConfigV2Regions(SelectedCategoryString);
 
             List<StackPanel> CurRegionList = BuildGameRegionListUI(SelectedCategoryString);

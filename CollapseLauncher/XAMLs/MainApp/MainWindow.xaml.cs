@@ -89,17 +89,10 @@ namespace CollapseLauncher
             }
         }
 
-        public void StartSetupPage()
-        {
-            SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
-            rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
-        }
-
         public void StartMainPage()
         {
             SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
-            // rootFrame.Navigate(typeof(Prototype.MainPageNew), null, new DrillInNavigationTransitionInfo());
         }
 
         private void InitializeAppWindowAndIntPtr()

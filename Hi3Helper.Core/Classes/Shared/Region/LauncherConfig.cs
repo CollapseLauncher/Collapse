@@ -315,7 +315,7 @@ namespace Hi3Helper.Shared.Region
             { "MinimizeToTray", false },
             { "UseExternalBrowser", false },
             { "EnableWaifu2X", false },
-            { "BackgroundAudioVolume", 0.75d },
+            { "BackgroundAudioVolume", 0.5d },
             { "BackgroundAudioIsMute", true },
             { "UseInstantRegionChange", true }
         };
