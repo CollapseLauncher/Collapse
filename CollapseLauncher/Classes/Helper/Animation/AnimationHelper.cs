@@ -9,6 +9,18 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.Helper.Animation
 {
+    [Flags]
+    public enum VisualPropertyType
+    {
+        None = 0,
+        Opacity = 1 << 0,
+        Offset = 1 << 1,
+        Scale = 1 << 2,
+        Size = 1 << 3,
+        RotationAngleInDegrees = 1 << 4,
+        All = ~0
+    }
+
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class AnimationHelper
@@ -46,6 +58,23 @@ namespace CollapseLauncher.Helper.Animation
             EnableImplicitAnimation(page.Content, recursiveAssignment, easingFunction);
         }
 
+        internal static void EnableSingleImplicitAnimation(this UIElement element,
+                                                     VisualPropertyType type,
+                                                     CompositionEasingFunction easingFunction = null)
+        {
+            Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
+            Compositor compositor = rootFrameVisual!.Compositor;
+
+            ImplicitAnimationCollection animationCollection =
+                rootFrameVisual.ImplicitAnimations != null ?
+                    rootFrameVisual.ImplicitAnimations : compositor!.CreateImplicitAnimationCollection();
+
+            KeyFrameAnimation animation = CreateAnimationByType(compositor, type, 250, 0, easingFunction);
+            animationCollection[type.ToString()] = animation;
+
+            rootFrameVisual.ImplicitAnimations = animationCollection;
+        }
+
         internal static void EnableImplicitAnimation(this UIElement element,
                                                      bool recursiveAssignment = false,
                                                      CompositionEasingFunction easingFunction = null)
@@ -59,29 +88,19 @@ namespace CollapseLauncher.Helper.Animation
                     rootFrameVisual.ImplicitAnimations != null ?
                         rootFrameVisual.ImplicitAnimations : compositor!.CreateImplicitAnimationCollection();
 
-                Vector2KeyFrameAnimation sizeKeyframeAnimation = compositor!.CreateVector2KeyFrameAnimation();
-                Vector3KeyFrameAnimation offsetKeyframeAnimation = compositor!.CreateVector3KeyFrameAnimation();
-                Vector3KeyFrameAnimation scaleKeyframeAnimation = compositor!.CreateVector3KeyFrameAnimation();
+                foreach (VisualPropertyType type in Enum.GetValues<VisualPropertyType>())
+                {
+                    KeyFrameAnimation animation = CreateAnimationByType(compositor, type, 250, 0, easingFunction);
 
-                sizeKeyframeAnimation!.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easingFunction);
-                sizeKeyframeAnimation!.Duration = TimeSpan.FromMilliseconds(250);
-                sizeKeyframeAnimation!.Target = "Size";
-
-                offsetKeyframeAnimation!.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easingFunction);
-                offsetKeyframeAnimation!.Duration = TimeSpan.FromMilliseconds(250);
-                offsetKeyframeAnimation!.Target = "Offset";
-
-                scaleKeyframeAnimation!.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easingFunction);
-                scaleKeyframeAnimation!.Duration = TimeSpan.FromMilliseconds(250);
-                scaleKeyframeAnimation!.Target = "Scale";
-
-                animationCollection.TryAddImplicitCollectionAnimation("Size", sizeKeyframeAnimation);
-                animationCollection.TryAddImplicitCollectionAnimation("Offset", offsetKeyframeAnimation);
-                animationCollection.TryAddImplicitCollectionAnimation("Scale", scaleKeyframeAnimation);
+                    if (animation != null)
+                    {
+                        animationCollection[type.ToString()] = animation;
+                    }
+                }
 
                 rootFrameVisual.ImplicitAnimations = animationCollection;
 
-                EnableElementVisibilityAnimation(compositor!, rootFrameVisual!, element!);
+                EnableElementVisibilityAnimation(compositor!, element!);
             }
             catch (Exception ex)
             {
@@ -89,6 +108,15 @@ namespace CollapseLauncher.Helper.Animation
             }
 
             if (!recursiveAssignment) return;
+
+            if (element is Button button && button.Content is UIElement buttonContent)
+                buttonContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
+
+            if (element is Page page && page.Content is UIElement pageContent)
+                pageContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
+
+            if (element is NavigationView navigationView && navigationView.Content is UIElement navigationViewContent)
+                navigationViewContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
 
             if (element is Panel panel)
                 foreach (UIElement childrenElement in panel.Children!)
@@ -109,9 +137,40 @@ namespace CollapseLauncher.Helper.Animation
                 infoBarInner.EnableImplicitAnimation(true, easingFunction);
         }
 
-        private static void EnableElementVisibilityAnimation(Compositor compositor, Visual elementVisual, UIElement element)
+        private static KeyFrameAnimation CreateAnimationByType(Compositor compositor, VisualPropertyType type,
+            double duration = 800, double delay = 0, CompositionEasingFunction easing = null)
+        {
+            KeyFrameAnimation animation;
+
+            switch (type)
+            {
+                case VisualPropertyType.Offset:
+                case VisualPropertyType.Scale:
+                    animation = compositor.CreateVector3KeyFrameAnimation();
+                    break;
+                case VisualPropertyType.Size:
+                    animation = compositor.CreateVector2KeyFrameAnimation();
+                    break;
+                case VisualPropertyType.Opacity:
+                case VisualPropertyType.RotationAngleInDegrees:
+                    animation = compositor.CreateScalarKeyFrameAnimation();
+                    break;
+                default:
+                    return null;
+            }
+
+            animation.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easing);
+            animation.Duration = TimeSpan.FromMilliseconds(duration);
+            animation.DelayTime = TimeSpan.FromMilliseconds(delay);
+            animation.Target = type.ToString();
+
+            return animation;
+        }
+
+        private static void EnableElementVisibilityAnimation(Compositor compositor, UIElement element)
         {
             TimeSpan animDur = TimeSpan.FromSeconds(0.25d);
+            ElementCompositionPreview.SetIsTranslationEnabled(element, true);
 
             ScalarKeyFrameAnimation HideOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
             ScalarKeyFrameAnimation ShowOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
@@ -139,15 +198,6 @@ namespace CollapseLauncher.Helper.Animation
             Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
             Compositor compositor = rootFrameVisual!.Compositor;
             return compositor;
-        }
-
-        private static void TryAddImplicitCollectionAnimation(this ImplicitAnimationCollection collection,
-                                                              string key, ICompositionAnimationBase animation)
-        {
-            if (!collection!.ContainsKey(key!))
-            {
-                collection[key] = animation;
-            }
         }
     }
 }

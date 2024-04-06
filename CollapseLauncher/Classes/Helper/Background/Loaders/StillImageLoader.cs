@@ -156,34 +156,42 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                                          ? BackgroundMediaUtility.TransitionDuration
                                                          : BackgroundMediaUtility.TransitionDurationSlow);
 
+            float fromScale = 1f;
+            Vector3 fromTranslate =
+                new Vector3(-((float)(ImageBackParentGrid?.ActualWidth ?? 0) * (fromScale - 1f) / 2),
+                    -((float)(ImageBackParentGrid?.ActualHeight ?? 0) * (fromScale - 1f) / 2), 0);
+            float toScale = 1.07f;
+            Vector3 toTranslate = new Vector3(-((float)(ImageBackParentGrid?.ActualWidth ?? 0) * (toScale - 1f) / 2),
+                -((float)(ImageBackParentGrid?.ActualHeight ?? 0) * (toScale - 1f) / 2), 0);
+
             if (completeInvisible)
             {
                 await Task.WhenAll(
-                                   ImageBackParentGrid.StartAnimation(
-                                                                      duration,
-                                                                      CurrentCompositor
-                                                                         .CreateScalarKeyFrameAnimation("Opacity",
-                                                                              hideImage
-                                                                                  ? completeInvisible ? 0f : 0.4f
-                                                                                  : 1f, hideImage ? 1f : 0f)
-                                                                     )
-                                  );
+                    ImageBackParentGrid.StartAnimation(
+                        duration,
+                        CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? completeInvisible ? 0f : 0.4f : 1f, hideImage ? 1f : 0f)
+                    )
+                );
             }
             else
             {
                 await Task.WhenAll(
-                                   AcrylicMask.StartAnimation(
-                                                              duration,
-                                                              CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
-                                                                  hideImage ? 1f : 0f, hideImage ? 0f : 1f)
-                                                             ),
-                                   OverlayTitleBar.StartAnimation(
-                                                                  duration,
-                                                                  CurrentCompositor
-                                                                     .CreateScalarKeyFrameAnimation("Opacity",
-                                                                          hideImage ? 0f : 1f, hideImage ? 1f : 0f)
-                                                                 )
-                                  );
+                    AcrylicMask.StartAnimation(
+                        duration,
+                        CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
+                            hideImage ? 1f : 0f, hideImage ? 0f : 1f)
+                                              ),
+                    OverlayTitleBar.StartAnimation(
+                         duration,
+                         CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
+                            hideImage ? 0f : 1f, hideImage ? 1f : 0f)
+                        ),
+                    ImageBackParentGrid.StartAnimation(
+                        duration,
+                        CurrentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(hideImage ? toScale : fromScale), new Vector3(!hideImage ? toScale : fromScale)),
+                        CurrentCompositor.CreateVector3KeyFrameAnimation("Translation", hideImage ? toTranslate : fromTranslate, !hideImage ? toTranslate : fromTranslate)
+                    )
+                );
             }
         }
 
