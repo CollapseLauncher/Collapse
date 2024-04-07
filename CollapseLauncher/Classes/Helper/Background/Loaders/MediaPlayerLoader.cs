@@ -9,11 +9,8 @@ using Windows.Graphics.Imaging;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
-using Windows.UI;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
-using ColorThiefDotNet;
-using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
@@ -24,8 +21,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
-using Microsoft.UI;
-using CollapseLauncher.Helper.Image;
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -33,7 +28,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class MediaPlayerLoader : IBackgroundMediaLoader
+    internal class MediaPlayerLoader : IBackgroundMediaLoader, IDisposable
     {
         private FrameworkElement ParentUI          { get; }
         private Compositor       CurrentCompositor { get; }
@@ -56,7 +51,11 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private SoftwareBitmap?    CurrentFrameBitmap       { get; set; }
         private CanvasImageSource? CurrentCanvasImageSource { get; set; }
         private CanvasDevice?      CanvasDevice             { get; set; }
+
+#if USEDYNAMICVIDEOPALETTE
         private CanvasBitmap?      CanvasBitmap             { get; set; }
+
+#endif
 
         internal MediaPlayerLoader(
             FrameworkElement parentUI,
@@ -80,6 +79,20 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                                                                        .UniformToFill));
 
             IsMediaPlayerLoading = false;
+        }
+
+        ~MediaPlayerLoader() => Dispose();
+
+        public void Dispose()
+        {
+            CurrentMediaPlayer?.Dispose();
+            CurrentStopwatch?.Stop();
+            InnerCancellationToken?.Dispose();
+            CurrentFrameBitmap?.Dispose();
+            CanvasDevice?.Dispose();
+            CurrentMediaStream?.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         public async ValueTask LoadAsync(string            filePath, bool isImageLoadForFirstTime, bool isRequestInit,

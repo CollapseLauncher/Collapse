@@ -18,8 +18,10 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal static class BackgroundMediaUtility
+    internal class BackgroundMediaUtility : IDisposable
     {
+        internal static BackgroundMediaUtility Current { get; private set; }
+
         internal enum MediaType
         {
             Media,
@@ -36,30 +38,27 @@ namespace CollapseLauncher.Helper.Background
         internal static readonly string[] SupportedMediaPlayerExt =
             [".mp4", ".mov", ".mkv", ".webm", ".avi", ".gif"];
 
-        private static FrameworkElement?   _parentUI;
-        private static ImageUI?            _bgImageBackground;
-        private static ImageUI?            _bgImageBackgroundLast;
-        private static MediaPlayerElement? _bgMediaPlayerBackground;
+        private FrameworkElement?   _parentUI;
+        private ImageUI?            _bgImageBackground;
+        private ImageUI?            _bgImageBackgroundLast;
+        private MediaPlayerElement? _bgMediaPlayerBackground;
 
-        private static Grid? _bgAcrylicMask;
-        private static Grid? _bgOverlayTitleBar;
+        private Grid? _bgAcrylicMask;
+        private Grid? _bgOverlayTitleBar;
 
-        private static Grid? _parentBgImageBackgroundGrid;
-    #pragma warning disable CS0169 // Field is never used
-        private static Grid? _parentBgImageForegroundGrid;
-    #pragma warning restore CS0169 // Field is never used
-        private static Grid? _parentBgMediaPlayerBackgroundGrid;
+        private Grid? _parentBgImageBackgroundGrid;
+        private Grid? _parentBgMediaPlayerBackgroundGrid;
 
-        internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
+        internal MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
-        private static CancellationTokenSourceWrapper? _cancellationToken;
-        private static StillImageLoader?               _loaderStillImage;
-        private static MediaPlayerLoader?              _loaderMediaPlayer;
-        private static IBackgroundMediaLoader?         _currentMediaLoader;
+        private CancellationTokenSourceWrapper? _cancellationToken;
+        private StillImageLoader?               _loaderStillImage;
+        private MediaPlayerLoader?              _loaderMediaPlayer;
+        private IBackgroundMediaLoader?         _currentMediaLoader;
 
-        private static bool _isCurrentDimmAnimRun;
-        private static bool _isCurrentUndimmAnimRun;
-        private static bool _isCurrentRegistered;
+        private bool _isCurrentDimmAnimRun;
+        private bool _isCurrentUndimmAnimRun;
+        private bool _isCurrentRegistered;
 
         private static FileStream? _alternativeFileStream;
 
@@ -75,61 +74,76 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="bgImageGridBackground">The parent <see cref="Grid" /> for Background Image.</param>
         /// <param name="bgMediaPlayerGrid">The parent <see cref="Grid" /> for Background Media Player</param>
         internal static async Task RegisterCurrent(FrameworkElement? parentUI,          Grid bgAcrylicMask,
-                                                   Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
-                                                   Grid              bgMediaPlayerGrid)
+                                                                          Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
+                                                                          Grid              bgMediaPlayerGrid)
         {
             // Set the parent UI
-            _parentUI = parentUI;
-
-            // Mask stuff
-            _bgAcrylicMask     = bgAcrylicMask;
-            _bgOverlayTitleBar = bgOverlayTitleBar;
+            FrameworkElement? ui = parentUI;
 
             // Initialize the background instances
-            (_bgImageBackground, _bgImageBackgroundLast) =
+            var (bgImageBackground, bgImageBackgroundLast) =
                 await InitializeElementGrid<ImageUI>(bgImageGridBackground, "ImageBackground", AssignDefaultImage);
-            _bgMediaPlayerBackground =
+            var bgMediaPlayerBackground =
                 (await TryGetFirstGridElement<MediaPlayerElement>(bgMediaPlayerGrid.WithOpacity(0), "MediaPlayer"))
                .WithHorizontalAlignment(HorizontalAlignment.Center)
                .WithVerticalAlignment(VerticalAlignment.Center)
                .WithStretch(Stretch.UniformToFill);
 
-            // Store the parent grid reference into this static variables
+            Current = new BackgroundMediaUtility(ui, bgAcrylicMask, bgOverlayTitleBar,
+                                               bgImageGridBackground, bgMediaPlayerGrid, bgImageBackground,
+                                               bgImageBackgroundLast, bgMediaPlayerBackground);
+        }
+
+        private BackgroundMediaUtility(FrameworkElement? parentUI,              Grid bgAcrylicMask,
+                                       Grid              bgOverlayTitleBar,     Grid bgImageGridBackground,
+                                       Grid              bgMediaPlayerGrid,     ImageUI? bgImageBackground,
+                                       ImageUI?          bgImageBackgroundLast, MediaPlayerElement? mediaPlayerElement)
+        {
+            _parentUI                          = parentUI;
+            _bgAcrylicMask                     = bgAcrylicMask;
+            _bgOverlayTitleBar                 = bgOverlayTitleBar;
             _parentBgImageBackgroundGrid       = bgImageGridBackground;
             _parentBgMediaPlayerBackgroundGrid = bgMediaPlayerGrid;
+
+            _bgImageBackground       = bgImageBackground;
+            _bgImageBackgroundLast   = bgImageBackgroundLast;
+            _bgMediaPlayerBackground = mediaPlayerElement;
 
             // Set that the current page has been registered
             _isCurrentRegistered = true;
         }
 
+        ~BackgroundMediaUtility() => Dispose();
+
         /// <summary>
-        ///     Detach the current background utility from the previously attached <see cref="Grid" />.
+        ///     Detach and dispose the current background utility from the previously attached <see cref="Grid" />.
         /// </summary>
-        internal static void DetachCurrent()
+        public void Dispose()
         {
             if (_cancellationToken is { IsCancellationRequested: false })
             {
                 _cancellationToken.Cancel();
             }
+            _cancellationToken?.Dispose();
 
             _bgImageBackground       = null;
             _bgImageBackgroundLast   = null;
             _bgMediaPlayerBackground = null;
-
-            _parentBgImageBackgroundGrid?.ClearChildren();
-            _parentBgMediaPlayerBackgroundGrid?.ClearChildren();
 
             _parentBgImageBackgroundGrid       = null;
             _parentBgMediaPlayerBackgroundGrid = null;
             _bgAcrylicMask                     = null;
             _bgOverlayTitleBar                 = null;
 
+            _loaderMediaPlayer?.Dispose();
             _loaderMediaPlayer = null;
+            _loaderStillImage?.Dispose();
             _loaderStillImage  = null;
 
             CurrentAppliedMediaType = MediaType.Unknown;
 
             _isCurrentRegistered = false;
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -237,7 +251,7 @@ namespace CollapseLauncher.Helper.Background
         ///     Ensure that the <see cref="ImageUI" /> instance is already initialized
         /// </summary>
         /// <exception cref="ArgumentNullException">Throw if <see cref="ImageUI" /> instance is not registered</exception>
-        private static void EnsureCurrentImageRegistered()
+        private void EnsureCurrentImageRegistered()
         {
             if (_bgImageBackground == null || _bgImageBackgroundLast == null)
             {
@@ -249,7 +263,7 @@ namespace CollapseLauncher.Helper.Background
         ///     Ensure that the <see cref="MediaPlayerElement" /> instance is already initialized
         /// </summary>
         /// <exception cref="ArgumentNullException">Throw if <see cref="MediaPlayerElement" /> instance is not registered</exception>
-        private static void EnsureCurrentMediaPlayerRegistered()
+        private void EnsureCurrentMediaPlayerRegistered()
         {
             if (_bgMediaPlayerBackground == null)
             {
@@ -265,12 +279,12 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal static async Task LoadBackground(string mediaPath, bool isRequestInit = false,
+        internal async Task LoadBackground(string mediaPath, bool isRequestInit = false,
                                                   bool   isForceRecreateCache = false)
         {
             while (!_isCurrentRegistered)
             {
-                await Task.Delay(250, _cancellationToken?.Token ?? default);
+                await Task.Delay(250,  _cancellationToken?.Token ?? default);
             }
 
             EnsureCurrentImageRegistered();
@@ -348,7 +362,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Dimming the current loaded background
         /// </summary>
-        internal static async void Dimm()
+        internal async void Dimm()
         {
             while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun)
             {
@@ -375,7 +389,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Undimming the current loaded background
         /// </summary>
-        internal static async void Undimm()
+        internal async void Undimm()
         {
             while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun)
             {
@@ -402,7 +416,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Mute the audio of the currently loaded background
         /// </summary>
-        internal static void Mute()
+        internal void Mute()
         {
             _currentMediaLoader?.Mute();
         }
@@ -410,7 +424,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Unmute the audio of the currently loaded background
         /// </summary>
-        internal static void Unmute()
+        internal void Unmute()
         {
             _currentMediaLoader?.Unmute();
         }
@@ -418,7 +432,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Set the volume of the audio from the currently loaded background
         /// </summary>
-        internal static void SetVolume(double value)
+        internal void SetVolume(double value)
         {
             _currentMediaLoader?.SetVolume(value);
         }
@@ -426,7 +440,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Trigger the unfocused window event to the currently loaded background
         /// </summary>
-        internal static void WindowUnfocused()
+        internal void WindowUnfocused()
         {
             _currentMediaLoader?.WindowUnfocused();
         }
@@ -434,7 +448,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Trigger the focused window event to the currently loaded background
         /// </summary>
-        internal static void WindowFocused()
+        internal void WindowFocused()
         {
             _currentMediaLoader?.WindowFocused();
         }
@@ -442,7 +456,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Play/Resume the currently loaded background
         /// </summary>
-        internal static void Play()
+        internal void Play()
         {
             _currentMediaLoader?.Play();
         }
@@ -450,7 +464,7 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Pause the currently loaded background
         /// </summary>
-        internal static void Pause()
+        internal void Pause()
         {
             _currentMediaLoader?.Pause();
         }
@@ -467,7 +481,7 @@ namespace CollapseLauncher.Helper.Background
             _alternativeFileStream = stream;
         }
 
-        private static IBackgroundMediaLoader? GetImageLoader(MediaType mediaType)
+        private IBackgroundMediaLoader? GetImageLoader(MediaType mediaType)
         {
             return mediaType switch
                    {

@@ -98,7 +98,6 @@ namespace CollapseLauncher
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            BackgroundMediaUtility.DetachCurrent();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -427,8 +426,8 @@ namespace CollapseLauncher
         {
             if (IsFirstStartup) return;
 
-            if (e) BackgroundMediaUtility.Dimm();
-            else BackgroundMediaUtility.Undimm();
+            if (e) BackgroundMediaUtility.Current.Dimm();
+            else BackgroundMediaUtility.Current.Undimm();
         }
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
@@ -448,7 +447,7 @@ namespace CollapseLauncher
 
             try
             {
-                await BackgroundMediaUtility.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
+                await BackgroundMediaUtility.Current.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
             }
             catch (Exception ex)
             {

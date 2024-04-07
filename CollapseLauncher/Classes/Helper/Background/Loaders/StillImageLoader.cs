@@ -20,7 +20,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class StillImageLoader : IBackgroundMediaLoader
+    internal class StillImageLoader : IBackgroundMediaLoader, IDisposable
     {
         private FrameworkElement ParentUI            { get; }
         private Compositor       CurrentCompositor   { get; }
@@ -54,6 +54,13 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             AnimationDuration = animationDuration;
             IsImageLoading    = false;
+        }
+
+        ~StillImageLoader() => Dispose();
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
 
         public async ValueTask LoadAsync(string            filePath, bool isImageLoadForFirstTime, bool isRequestInit,

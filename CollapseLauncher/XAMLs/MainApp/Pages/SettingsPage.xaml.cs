@@ -606,9 +606,9 @@ namespace CollapseLauncher.Pages
             set
             {
                 if (!value)
-                    BackgroundMediaUtility.Mute();
+                    BackgroundMediaUtility.Current.Mute();
                 else
-                    BackgroundMediaUtility.Unmute();
+                    BackgroundMediaUtility.Current.Unmute();
             }
         }
 
@@ -618,9 +618,9 @@ namespace CollapseLauncher.Pages
             {
                 double value = GetAppConfigValue("BackgroundAudioVolume").ToDouble();
                 if (value < 0)
-                    BackgroundMediaUtility.SetVolume(0d);
+                    BackgroundMediaUtility.Current.SetVolume(0d);
                 if (value > 1)
-                    BackgroundMediaUtility.SetVolume(1d);
+                    BackgroundMediaUtility.Current.SetVolume(1d);
 
                 return value * 100d;
             }
@@ -628,7 +628,7 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
                 double downValue = value / 100d;
-                BackgroundMediaUtility.SetVolume(downValue);
+                BackgroundMediaUtility.Current.SetVolume(downValue);
             }
         }
 
@@ -672,7 +672,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.StillImage)
+                if (BackgroundMediaUtility.Current.CurrentAppliedMediaType == MediaType.StillImage)
                     App.ToggleBlurBackdrop(value);
             }
         }
