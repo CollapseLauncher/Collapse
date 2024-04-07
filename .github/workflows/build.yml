@@ -45,8 +45,9 @@ jobs:
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
-    - name: Restore
-      run: dotnet restore CollapseLauncher --locked-mode
+    # - name: Restore
+      # run: dotnet restore CollapseLauncher --locked-mode
+      # Don't need to do restore explicitly, should be done on Build time
 
     - name: Build
       run: |
