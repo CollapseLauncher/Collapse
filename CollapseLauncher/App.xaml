@@ -390,6 +390,7 @@
                             <AcrylicBrush x:Key="AcrylicComboBoxBackgroundDisabled" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.40" TintOpacity="0.0" />
 
                             <!-- For Acrylic Button  -->
+                            <SolidColorBrush x:Key="AccentButtonForegroundDisabled" Color="#AA000000"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackground" FallbackColor="#D0FFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.80" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundFocused" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.70" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundPointerOver" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.70" TintOpacity="0.0" />
