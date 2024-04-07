@@ -121,9 +121,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -237,72 +234,4 @@
 			-->
 		</ItemGroup>
 	</Target>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\LauncherMetadataHelper.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\Stamp.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\MetadataType.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\Hashable.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\MasterKeyConfig.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\PresetConfig.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\DataCooker.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\SteamGameProp.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\GameDataTemplate.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\GameDataVersion.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\JsonConverter\ServeV3Converter.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\JsonConverter\Extension.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\GeneralDataProp.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Metadata\BHI3LInfo.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\DiscordPresence\DiscordPresenceManager.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\Background\WindowBackdropUtility.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\WindowUtility.cs" />
-	</ItemGroup>
 </Project>

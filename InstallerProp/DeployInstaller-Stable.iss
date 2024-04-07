@@ -42,7 +42,6 @@ OutputBaseFilename=CL-{#AppVersion}_Installer
 
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0; Parameters: "hi3cacheupdate"
 Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
