@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using Microsoft.UI.Xaml;
@@ -38,10 +39,11 @@ namespace CollapseLauncher.Pages.OOBE
                                                          false);
             SaveAppConfig();
 
-            (m_window as MainWindow)?.rootFrame.Navigate(typeof(MainPage), null,
+            (WindowUtility.CurrentWindow as MainWindow)?.rootFrame.Navigate(typeof(MainPage), null,
                                                          new SlideNavigationTransitionInfo
                                                              { Effect = SlideNavigationTransitionEffect.FromBottom });
-            MainWindow.ToggleAcrylic();
+
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
         }
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)

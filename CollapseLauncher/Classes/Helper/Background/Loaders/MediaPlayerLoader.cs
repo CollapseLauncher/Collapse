@@ -156,7 +156,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 CurrentMediaStream = BackgroundMediaUtility.GetAlternativeFileStream() ?? File.OpenRead(filePath);
                 CurrentMediaPlayer = new MediaPlayer();
 
-                if (InnerLauncherConfig.IsWindowCurrentlyFocused())
+                if (WindowUtility.IsCurrentWindowInFocus())
                 {
                     CurrentMediaPlayer.AutoPlay = true;
                 }

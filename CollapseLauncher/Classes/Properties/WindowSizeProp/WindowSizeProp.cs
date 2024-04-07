@@ -1,8 +1,8 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Helper;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.WindowSize
@@ -62,7 +62,7 @@ namespace CollapseLauncher.WindowSize
             set
             {
                 SetAppConfigValue("WindowSizeProfile", value);
-                (m_window as MainWindow).SetWindowSize(m_windowHandle, CurrentWindowSize.WindowBounds.Width, CurrentWindowSize.WindowBounds.Height);
+                WindowUtility.SetWindowSize(CurrentWindowSize.WindowBounds.Width, CurrentWindowSize.WindowBounds.Height);
             }
         }
         internal static WindowSizeProp CurrentWindowSize { get => WindowSizeProfiles[CurrentWindowSizeName]; }

@@ -21,7 +21,7 @@ namespace CollapseLauncher.Helper.Loading
         /// </summary>
         internal static void Initialize()
         {
-            if (InnerLauncherConfig.m_window is MainWindow window)
+            if (WindowUtility.CurrentWindow is MainWindow window)
                 currentMainWindow = window;
         }
 

@@ -89,7 +89,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
 		<PackageReference Include="GitInfo" Version="3.3.4" PrivateAssets="all" />
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
 		<PackageReference Include="ImageEx" Version="2.1.1" />
 		<PackageReference Include="Markdig.Signed" Version="0.36.2" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
@@ -296,5 +296,13 @@
 	
 	<ItemGroup>
 	  <NativeLibs Remove="Classes\DiscordPresence\DiscordPresenceManager.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\Background\WindowBackdropUtility.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\WindowUtility.cs" />
 	</ItemGroup>
 </Project>

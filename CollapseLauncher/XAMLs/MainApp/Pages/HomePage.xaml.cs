@@ -47,6 +47,7 @@ using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using Hi3Helper.EncTool.WindowTool;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -261,13 +262,14 @@ namespace CollapseLauncher.Pages
                     using (Stream copyIconFileStream = new MemoryStream())
                         await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
                         {
+                            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
                             // Copy remote stream to memory stream
                             await iconFileStream.CopyToAsync(copyIconFileStream);
                             copyIconFileStream.Position = 0;
                             // Get the icon image information and set the resized frame size
                             ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                            int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
-                            int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
+                            int width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                            int height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
                             copyIconFileStream.Position = 0; // Reset the original icon stream position
                             await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
@@ -1303,15 +1305,15 @@ namespace CollapseLauncher.Pages
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
                     case "Minimize":
-                        (m_window as MainWindow)?.Minimize();
+                        WindowUtility.WindowMinimize();
                         break;
                     case "ToTray":
-                        (m_window as MainWindow)?.ToggleToTray_MainWindow();
+                        WindowUtility.ToggleToTray_MainWindow();
                         break;
                     case "Nothing":
                         break;
                     default:
-                        (m_window as MainWindow)?.Minimize();
+                        WindowUtility.WindowMinimize();
                         break;
                 }
 
@@ -1362,16 +1364,16 @@ namespace CollapseLauncher.Pages
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
             {
                 case "Minimize":
-                    (m_window as MainWindow)?.Restore();
+                    WindowUtility.WindowRestore();
                     break;
                 case "ToTray":
-                    H.NotifyIcon.WindowExtensions.Show(m_window!);
-                    (m_window as MainWindow)?.Restore();
+                    H.NotifyIcon.WindowExtensions.Show(WindowUtility.CurrentWindow!);
+                    WindowUtility.WindowRestore();
                     break;
                 case "Nothing":
                     break;
                 default:
-                    (m_window as MainWindow)?.Restore();
+                    WindowUtility.WindowRestore();
                     break;
             }
 

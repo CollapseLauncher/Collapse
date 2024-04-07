@@ -34,6 +34,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -66,10 +67,9 @@ namespace CollapseLauncher.Pages
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
-
-                DisplayInformation displayInfo = DisplayInformation.CreateForWindowId(InnerLauncherConfig.m_windowID);
+                
                 // ReSharper disable once UnusedVariable
-                DisplayAdvancedColorInfo colorInfo = displayInfo.GetAdvancedColorInfo();
+                DisplayAdvancedColorInfo colorInfo = WindowUtility.CurrentWindowDisplayColorInfo;
 #if SIMULATEGIHDR
                 IsHDREnabled = true;
                 IsHDRSupported = true;

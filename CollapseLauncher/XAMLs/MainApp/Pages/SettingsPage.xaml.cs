@@ -33,6 +33,7 @@ using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.Medi
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 using Task = System.Threading.Tasks.Task;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper;
 
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
@@ -170,7 +171,7 @@ namespace CollapseLauncher.Pages
                         if (collapsePath == null || LauncherMetadataHelper.LauncherMetadataFolder == null) return;
                         Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
                         Process.Start(collapsePath);
-                        (m_window as MainWindow)?.CloseApp();
+                        (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
                     }
                     catch (Exception ex)
                     {
@@ -278,7 +279,7 @@ namespace CollapseLauncher.Pages
                         Verb = "runas"
                     }
                 }.Start();
-                (m_window as MainWindow)?.CloseApp();
+                (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
             }
             catch
             {

@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -674,7 +675,7 @@ namespace CollapseLauncher.Dialogs
                 string title = ErrorSender.ExceptionTitle;
                 string subtitle = ErrorSender.ExceptionSubtitle;
 
-                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (InnerLauncherConfig.m_window as MainWindow).rootFrame.CanGoBack;
+                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
 
                 Grid rootGrid = UIElementExtensions.CreateGrid()
                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
@@ -893,7 +894,7 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = secondaryText,
                 DefaultButton = defaultButton,
                 Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = (InnerLauncherConfig.m_window is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
+                XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
             // Queue and spawn the dialog instance
@@ -906,7 +907,7 @@ namespace CollapseLauncher.Dialogs
             while (CurrentSpawnedDialogTask != null && CurrentSpawnedDialogTask.Status == AsyncStatus.Started) await Task.Delay(200);
 
             // Set the theme of the content
-            if (InnerLauncherConfig.m_window is MainWindow window)
+            if (WindowUtility.CurrentWindow is MainWindow window)
             {
                 if (dialog is ContentDialogCollapse contentDialogCollapse)
                     window.ContentDialog = contentDialogCollapse;

@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
@@ -43,10 +44,11 @@ namespace CollapseLauncher.Pages.OOBE
         {
             thisCurrent = this;
             this.InitializeComponent();
-            MainWindow.EnableNonClientArea();
+            WindowUtility.EnableWindowNonClientArea();
             SaveInitialLogoAndTitleTextPos();
 
-            MainWindow.ToggleAcrylic(true);
+            App.ToggleBlurBackdrop(true);
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
             ChangeFontIconSettingsCard(SettingsCardContainer.Children);
 
             ThemeChangerInvoker.ThemeEvent += ThemeChangerInvoker_ThemeEvent;

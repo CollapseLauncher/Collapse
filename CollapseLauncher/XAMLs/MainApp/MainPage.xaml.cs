@@ -2,6 +2,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
@@ -89,9 +90,9 @@ namespace CollapseLauncher
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeEvents();
-            if (IsChangeDragArea)
+            if (IsChangeDragArea && !App.IsAppKilled)
             {
-                MainWindow.SetDragArea(DragAreaMode_Full);
+                WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
             }
 #if !DISABLEDISCORD
             AppDiscordPresence.Dispose();
@@ -117,7 +118,8 @@ namespace CollapseLauncher
                 
                 if (!await CheckForAdminAccess(this))
                 {
-                    (m_window as MainWindow)?.CloseApp();
+                    if (WindowUtility.CurrentWindow is MainWindow mainWindow)
+                        mainWindow?.CloseApp();
                     return;
                 }
 #if !DEBUG
@@ -135,8 +137,8 @@ namespace CollapseLauncher
                 #endif
                 if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
-                if (m_window is MainWindow window)
-                    m_actualMainFrameSize = new Size(window.Bounds.Width, window.Bounds.Height);
+                if (WindowUtility.CurrentWindow is MainWindow)
+                    m_actualMainFrameSize = new Size((float)WindowUtility.CurrentWindow.Bounds.Width, (float)WindowUtility.CurrentWindow.Bounds.Height);
 
                 SubscribeEvents();
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
@@ -265,40 +267,54 @@ namespace CollapseLauncher
         #region Drag Area
         private RectInt32[] DragAreaMode_Normal
         {
-            get => new RectInt32[2]
+            get
             {
-                new RectInt32((int)(TitleBarDrag1.ActualOffset.X * m_appDPIScale),
-                              0,
-                              (int)(TitleBarDrag1.ActualWidth * m_appDPIScale),
-                              (int)(48 * m_appDPIScale)),
-                new RectInt32((int)(TitleBarDrag2.ActualOffset.X * m_appDPIScale),
-                              0,
-                              (int)(TitleBarDrag2.ActualWidth * m_appDPIScale),
-                              (int)(48 * m_appDPIScale))
-            };
+                double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                RectInt32[] rect = new RectInt32[2]
+                {
+
+                    new RectInt32((int)(TitleBarDrag1.ActualOffset.X * scaleFactor),
+                                  0,
+                                  (int)(TitleBarDrag1.ActualWidth * scaleFactor),
+                                  (int)(48 * scaleFactor)),
+                    new RectInt32((int)(TitleBarDrag2.ActualOffset.X * scaleFactor),
+                                  0,
+                                  (int)(TitleBarDrag2.ActualWidth * scaleFactor),
+                                  (int)(48 * scaleFactor))
+                };
+                return rect;
+            }
         }
 
         private RectInt32[] DragAreaMode_Full
         {
-            get => new RectInt32[1]
+            get
             {
-                new RectInt32(0,
-                              0,
-                              (int)((m_windowPosSize.Width - 96) * m_appDPIScale),
-                              (int)(48 * m_appDPIScale))
-            };
+                Rect currentWindowPos = WindowUtility.CurrentWindowPosition;
+                double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+
+                RectInt32[] rect = new RectInt32[1]
+                {
+                    new RectInt32(0,
+                                  0,
+                                  (int)((currentWindowPos.Width - 96) * scaleFactor),
+                                  (int)(48 * scaleFactor))
+                };
+                return rect;
+            }
         }
 
         private RectInt32 GetElementPos(FrameworkElement element)
         {
             GeneralTransform transformTransform = element.TransformToVisual(null);
             Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
 
             return new RectInt32(
-                _X: (int)Math.Round(bounds.X * m_appDPIScale),
-                _Y: (int)Math.Round(bounds.Y * m_appDPIScale),
-                _Width: (int)Math.Round(bounds.Width * m_appDPIScale),
-                _Height: (int)Math.Round(bounds.Height * m_appDPIScale)
+                _X: (int)Math.Round(bounds.X * scaleFactor),
+                _Y: (int)Math.Round(bounds.Y * scaleFactor),
+                _Width: (int)Math.Round(bounds.Width * scaleFactor),
+                _Height: (int)Math.Round(bounds.Height * scaleFactor)
             );
         }
 
@@ -310,9 +326,9 @@ namespace CollapseLauncher
         {
             await Task.Delay(250);
 
-            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_windowID);
-            MainWindow.EnableNonClientArea();
-            MainWindow.SetDragArea(DragAreaMode_Full);
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId.Value);
+            WindowUtility.EnableWindowNonClientArea();
+            WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
 
             switch (e.Template)
             {
@@ -326,8 +342,8 @@ namespace CollapseLauncher
                         GetElementPos(GridBG_RegionGrid),
                         GetElementPos(GridBG_IconGrid),
                         GetElementPos(GridBG_NotifBtn),
-                        GetElementPos((m_window as MainWindow)?.MinimizeButton),
-                        GetElementPos((m_window as MainWindow)?.CloseButton)
+                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
+                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
                     });
                     break;
             }

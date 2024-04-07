@@ -46,20 +46,13 @@ namespace CollapseLauncher
         public static AppMode              m_appMode;
         public static Arguments            m_arguments = new();
         public static bool                 m_isWindows11;
-        public static Window?              m_window;
-        public static WindowId             m_windowID;
-        public static Rect                 m_windowPosSize;
-        public static IntPtr               m_windowHandle;
         public static IntPtr               m_oldWndProc;
         public static Delegate?            m_newWndProcDelegate;
         public static HandlerRoutine?      m_consoleCtrlHandler;
-        public static AppWindow?           m_appWindow;
-        public static OverlappedPresenter? m_presenter;
         public static MainPage?            m_mainPage;
         public static HomePage?            m_homePage;
         public static bool                 m_windowSupportCustomTitle = false;
         public static Size                 m_actualMainFrameSize;
-        public static double               m_appDPIScale;
         public static string?              m_appCurrentFrameName;
         public static NotificationPush?    NotificationData;
         public static bool                 IsCustomBG            = false;
@@ -255,12 +248,6 @@ namespace CollapseLauncher
             NotificationData.RegionPushIgnoreMsgIds = localNotificationData?.RegionPushIgnoreMsgIds;
             NotificationData.CurrentShowMsgIds      = localNotificationData?.CurrentShowMsgIds;
             NotificationData.EliminatePushList();
-        }
-
-        internal static bool IsWindowCurrentlyFocused()
-        {
-            IntPtr currentForegroundWindow = GetForegroundWindow();
-            return m_windowHandle == currentForegroundWindow;
         }
     }
 }

@@ -133,9 +133,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.59, )",
-        "resolved": "1.11.59",
-        "contentHash": "0tMaGzTJ5uFFMCYvprZ4hRYg6Dm5E+/WeMFJiD5K83Fe/Y6kyLaRKcfrfUwfb1j428XzB4/2RR7sdxoQX5eaEA=="
+        "requested": "[1.11.60, )",
+        "resolved": "1.11.60",
+        "contentHash": "7Uzaf1Mxeuxne33LpTZfSsuRW4sRRX6FWMolOSxXcaAwcKvFevH2E+P6tb4dMWhdyUdBfi0N0yyPZ8hqodfEYg=="
       },
       "ImageEx": {
         "type": "Direct",
@@ -160,6 +160,12 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.5.240227000"
         }
+      },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.2, )",
+        "resolved": "8.0.2",
+        "contentHash": "hKTrehpfVzOhAz0mreaTAZgbz0DrMEbWq4n3hAo8Ks6WdxdqQhNPvzOqn9VygKuWf1bmxPdraqzTaXriO/sn0A=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
@@ -346,8 +352,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.26.0",
-        "contentHash": "AkWr2Hz/rycJapYHXS3gT5UVq8K8D2gkNA70ePe22oejNVGMkw5Mtasri2VbNtBCgbqtE8MsIPYp73xud2wAVQ=="
+        "resolved": "3.26.1",
+        "contentHash": "CHZX8zXqhF/fdUtd+AYzew8T2HFkAoe5c7lbGxZY/qryAlQXckDvM5BfOJjXlMS7kyICqQTMszj4w1bX5uBJ/w=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
@@ -958,7 +964,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.26.0, )",
+          "Google.Protobuf": "[3.26.1, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
