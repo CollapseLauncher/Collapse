@@ -1,11 +1,14 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Helper.Loading
 {
@@ -67,10 +70,17 @@ namespace CollapseLauncher.Helper.Loading
 
             isCurrentlyShow = true;
             currentMainWindow!.LoadingStatusGrid!.Visibility = Visibility.Visible;
-            currentMainWindow!.LoadingStatusGrid!.Margin = new Thickness(0);
             currentMainWindow!.LoadingStatusBackgroundGrid!.Visibility = Visibility.Visible;
-            await AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, TimeSpan.FromSeconds(0.25),
-                currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0));
+
+            TimeSpan duration = TimeSpan.FromSeconds(0.25);
+
+            await Task.WhenAll(
+                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
+                currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
+                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
+                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(), new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), 0)),
+                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0))
+                );
         }
 
         /// <summary>
@@ -81,9 +91,16 @@ namespace CollapseLauncher.Helper.Loading
             if (!isCurrentlyShow) return;
 
             isCurrentlyShow = false;
-            currentMainWindow!.LoadingStatusGrid!.Margin = new Thickness(0, 0, 0, -(currentMainWindow.LoadingStatusGrid.ActualHeight + 16));
-            await AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, TimeSpan.FromSeconds(0.25),
-                currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1));
+
+            TimeSpan duration = TimeSpan.FromSeconds(0.25);
+            await Task.WhenAll(
+                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
+                currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
+                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
+                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), 0), new Vector3()),
+                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1))
+                );
+
             currentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
             currentMainWindow.LoadingStatusBackgroundGrid!.Visibility = Visibility.Collapsed;
             HideActionButton();

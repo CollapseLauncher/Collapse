@@ -38,9 +38,8 @@ namespace CollapseLauncher
                 else
                     StartMainPage();
 
-                AnimationHelper.EnableImplicitAnimation(TitleBarFrameGrid, true);
-                AnimationHelper.EnableImplicitAnimation(BottomFrameGrid, true);
-                AnimationHelper.EnableImplicitAnimation(LoadingStatusGrid, true);
+                TitleBarFrameGrid.EnableImplicitAnimation(true);
+                LoadingStatusUIContainer.EnableImplicitAnimation(true);
             }
             catch (Exception ex)
             {

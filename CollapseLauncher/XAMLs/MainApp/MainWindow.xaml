@@ -47,28 +47,27 @@
               Visibility="Collapsed"/>
         <Grid x:Name="MiddleFrameGrid"
               Grid.Row="1"/>
-        <Grid x:Name="BottomFrameGrid"
-              Grid.Row="2"
-              VerticalAlignment="Bottom">
-            <Grid x:Name="LoadingStatusGrid"
-                  Margin="0,0,0,-64"
+        <Grid x:Name="LoadingStatusGrid"
+                  Margin="0,0,0,0"
                   Padding="16"
                   x:FieldModifier="internal"
                   Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
-                  Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid x:Name="LoadingStatusUIContainer"
+                  Visibility="Collapsed"
+                  Grid.Row="2"
+                  VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="LoadingStatusUIContainer"
                       Margin="0,0,16,0"
                       VerticalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <ProgressRing x:Name="LoadingStatusProgressRing"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <ProgressRing x:Name="LoadingStatusProgressRing"
                                   Grid.Column="0"
                                   Width="24"
                                   Height="24"
@@ -76,23 +75,23 @@
                                   HorizontalAlignment="Left"
                                   x:FieldModifier="internal"
                                   IsIndeterminate="True"/>
-                    <Grid Grid.Column="1"
+                <Grid Grid.Column="1"
                           Margin="0,-2,0,0"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="LoadingStatusTextTitle"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="LoadingStatusTextTitle"
                                    Grid.Column="0"
                                    VerticalAlignment="Center"
                                    x:FieldModifier="internal"
                                    FontWeight="Bold"
                                    Text="Never gonna give you up"
                                    TextWrapping="WrapWholeWords"/>
-                        <TextBlock x:Name="LoadingStatusTextSeparator"
+                    <TextBlock x:Name="LoadingStatusTextSeparator"
                                    Grid.Column="1"
                                    Margin="8,0"
                                    VerticalAlignment="Center"
@@ -100,16 +99,16 @@
                                    FontWeight="Bold"
                                    Text="●"
                                    TextWrapping="WrapWholeWords"/>
-                        <TextBlock x:Name="LoadingStatusTextSubtitle"
+                    <TextBlock x:Name="LoadingStatusTextSubtitle"
                                    Grid.Column="2"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"
                                    x:FieldModifier="internal"
                                    Text="Never gonna let you down. Never gonna run around and desert you. Never gonna make you cry. Never gonna say goodbye. Never gonna tell a lie and hurt you."
                                    TextWrapping="Wrap"/>
-                    </Grid>
                 </Grid>
-                <Button x:Name="LoadingStatusActionButton"
+            </Grid>
+            <Button x:Name="LoadingStatusActionButton"
                         Grid.Column="1"
                         HorizontalAlignment="Right"
                         x:FieldModifier="internal"
@@ -118,8 +117,8 @@
                         Style="{ThemeResource AccentButtonStyle}"
                         Translation="0,0,16"
                         Visibility="Collapsed">
-                    <StackPanel Orientation="Horizontal">
-                        <FontIcon x:Name="LoadingStatusActionButtonIcon"
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon x:Name="LoadingStatusActionButtonIcon"
                                   Margin="0,0,8,0"
                                   VerticalAlignment="Center"
                                   x:FieldModifier="internal"
@@ -127,11 +126,10 @@
                                   FontSize="16"
                                   Glyph="&#xf00c;"
                                   Visibility="Collapsed"/>
-                        <Grid x:Name="LoadingStatusActionButtonContentContainer"
+                    <Grid x:Name="LoadingStatusActionButtonContentContainer"
                               x:FieldModifier="internal"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
+                </StackPanel>
+            </Button>
         </Grid>
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
                                              x:FieldModifier="internal"/>
