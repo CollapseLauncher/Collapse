@@ -29,7 +29,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class MediaPlayerLoader : IBackgroundMediaLoader, IDisposable
+    internal class MediaPlayerLoader : IBackgroundMediaLoader
     {
         private FrameworkElement ParentUI          { get; }
         private Compositor       CurrentCompositor { get; }
@@ -40,9 +40,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private Grid AcrylicMask     { get; }
         private Grid OverlayTitleBar { get; }
-
+        
+        public   bool                            IsBackgroundDimm { get; set; }
         private  bool                            IsMediaPlayerLoading   { get; set; }
-        internal bool                            IsMediaPlayerDimm      { get; set; }
         private  FileStream?                     CurrentMediaStream     { get; set; }
         private  MediaPlayer?                    CurrentMediaPlayer     { get; set; }
         private  Stopwatch?                      CurrentStopwatch       { get; set; }
@@ -299,8 +299,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private async ValueTask ToggleImageVisibility(bool hideImage)
         {
-            if (IsMediaPlayerDimm == hideImage) return;
-            IsMediaPlayerDimm = hideImage;
+            if (IsBackgroundDimm == hideImage) return;
+            IsBackgroundDimm = hideImage;
 
             TimeSpan duration = TimeSpan.FromSeconds(hideImage
                                                          ? BackgroundMediaUtility.TransitionDuration

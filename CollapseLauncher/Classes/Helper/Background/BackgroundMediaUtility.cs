@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
 using Hi3Helper.Shared.Region;
@@ -53,8 +52,8 @@ namespace CollapseLauncher.Helper.Background
         internal MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
-        private StillImageLoader?               _loaderStillImage;
-        private MediaPlayerLoader?              _loaderMediaPlayer;
+        private IBackgroundMediaLoader?         _loaderStillImage;
+        private IBackgroundMediaLoader?         _loaderMediaPlayer;
         private IBackgroundMediaLoader?         _currentMediaLoader;
 
         private bool _isCurrentRegistered;
@@ -349,7 +348,7 @@ namespace CollapseLauncher.Helper.Background
 
             if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
             {
-                _loaderMediaPlayer.IsMediaPlayerDimm = true;
+                _loaderMediaPlayer.IsBackgroundDimm = true;
             }
 
             if ((mediaType == MediaType.Media || InnerLauncherConfig.m_appCurrentFrameName != "HomePage") && CurrentAppliedMediaType != mediaType)

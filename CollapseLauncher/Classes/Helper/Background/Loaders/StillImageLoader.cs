@@ -21,20 +21,20 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class StillImageLoader : IBackgroundMediaLoader, IDisposable
+    internal class StillImageLoader : IBackgroundMediaLoader
     {
         private FrameworkElement ParentUI            { get; }
         private Compositor       CurrentCompositor   { get; }
         private ImageUI?         ImageBackCurrent    { get; }
         private ImageUI?         ImageBackLast       { get; }
         private Grid?            ImageBackParentGrid { get; }
-
-        private Grid                    AcrylicMask     { get; }
-        private Grid                    OverlayTitleBar { get; }
-        private ActionBlock<ValueTask>? ActionTaskQueue { get; set; }
+        
+        public  bool                    IsBackgroundDimm { get; set; }
+        private Grid                    AcrylicMask      { get; }
+        private Grid                    OverlayTitleBar  { get; }
+        private ActionBlock<ValueTask>? ActionTaskQueue  { get; set; }
 
         private  double AnimationDuration { get; }
-        private  bool   IsImageDimm       { get; set; }
 
         internal StillImageLoader(
             FrameworkElement parentUI,
@@ -140,8 +140,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false)
         {
-            if (IsImageDimm == hideImage) return;
-            IsImageDimm = hideImage;
+            if (IsBackgroundDimm == hideImage) return;
+            IsBackgroundDimm = hideImage;
 
             TimeSpan duration = TimeSpan.FromSeconds(hideImage
                                                          ? BackgroundMediaUtility.TransitionDuration
