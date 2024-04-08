@@ -153,7 +153,7 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_StatusChanged(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 CachesDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
                 CachesStatus.Text = e.ActivityStatus;
@@ -165,7 +165,7 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_ProgressChanged(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 CachesTotalProgressBar.Value = e.ProgressTotalPercentage;
             });

@@ -35,7 +35,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 CurrentGameProperty = GetCurrentGameProperty();
-                DispatcherQueue.TryEnqueue(() =>
+                DispatcherQueue?.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
@@ -63,7 +63,7 @@ namespace CollapseLauncher.Pages
             if (!IsNoReload)
             {
                 LogWriteLine("[HI3 GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-                DispatcherQueue.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
+                DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
             }
         }
 
@@ -226,7 +226,7 @@ namespace CollapseLauncher.Pages
 
         private void OnUnload(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ToggleRegistrySubscribe(false);
                 RegistryWatcher?.Dispose();

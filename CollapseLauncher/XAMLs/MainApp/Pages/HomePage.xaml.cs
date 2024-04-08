@@ -910,7 +910,7 @@ namespace CollapseLauncher.Pages
         #region Community Button
         private void OpenCommunityButtonLink(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue.TryEnqueue(() => CommunityToolsBtn.Flyout.Hide());
+            DispatcherQueue?.TryEnqueue(() => CommunityToolsBtn.Flyout.Hide());
             OpenButtonLinkFromTag(sender, e);
         }
         #endregion
@@ -1039,12 +1039,12 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
+            DispatcherQueue?.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
         }
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
                 string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
@@ -1162,7 +1162,7 @@ namespace CollapseLauncher.Pages
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_StatusChanged_Inner(e);
             else
-                DispatcherQueue.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
+                DispatcherQueue?.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
         }
 
         private void GameInstall_StatusChanged_Inner(TotalPerfileStatus e)
@@ -1179,7 +1179,7 @@ namespace CollapseLauncher.Pages
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_ProgressChanged_Inner(e);
             else
-                DispatcherQueue.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
+                DispatcherQueue?.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
         }
 
         private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
@@ -1866,7 +1866,7 @@ namespace CollapseLauncher.Pages
                         elapsedSeconds = numOfLoops * 60;
 
                     if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                        m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                        m_homePage?.DispatcherQueue?.TryEnqueue(() =>
                         {
                             m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
                         });
@@ -1893,7 +1893,7 @@ namespace CollapseLauncher.Pages
             SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
             LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
             if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                m_homePage?.DispatcherQueue?.TryEnqueue(() =>
                 {
                     m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
                 });

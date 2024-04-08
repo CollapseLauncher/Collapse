@@ -153,7 +153,7 @@ namespace CollapseLauncher.Pages
 
         private void _repairTool_StatusChanged(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 RepairDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
                 RepairStatus.Text = e.ActivityStatus;
@@ -167,7 +167,7 @@ namespace CollapseLauncher.Pages
 
         private void _repairTool_ProgressChanged(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 RepairPerFileProgressBar.Value = e.ProgressPerFilePercentage;
                 RepairTotalProgressBar.Value = e.ProgressTotalPercentage;

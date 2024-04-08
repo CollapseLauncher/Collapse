@@ -816,7 +816,7 @@ namespace CollapseLauncher.Pages.OOBE
                         currentCompositor.CreateVector3KeyFrameAnimation("Translation", to.Item3, from.Item3)
                         );
                 await task;
-                DispatcherQueue.TryEnqueue(() => x.Visibility = to.Item4);
+                DispatcherQueue?.TryEnqueue(() => x.Visibility = to.Item4);
                 return Task.CompletedTask;
             }));
         }
@@ -834,7 +834,7 @@ namespace CollapseLauncher.Pages.OOBE
                 Tuple<float, Vector3, Vector3, Visibility> ToValue = PreviouslyFromHiddenUIsElement[i];
                 AnimTask.Add(Task.Run(async () =>
                 {
-                    DispatcherQueue.TryEnqueue(() => element.Visibility = ToValue.Item4);
+                    DispatcherQueue?.TryEnqueue(() => element.Visibility = ToValue.Item4);
                     await element.StartAnimation(duration,
                         currentCompositor.CreateScalarKeyFrameAnimation("Opacity", ToValue.Item1, FromValue.Item1),
                         currentCompositor.CreateVector3KeyFrameAnimation("Scale", ToValue.Item2, FromValue.Item2),
@@ -853,15 +853,15 @@ namespace CollapseLauncher.Pages.OOBE
                 await Task.WhenAll(
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => ToggleLogoMode(true, IsSmallSize, IsLauncherCustomizationDone));
+                        DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(true, IsSmallSize, IsLauncherCustomizationDone));
                         await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, -32, 0), new Vector3(0, 0, 0)));
-                        DispatcherQueue.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Collapsed);
+                        DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Collapsed);
                     }),
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Visible);
+                        DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Visible);
                         await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, 0), new Vector3(0, 32, 0)));
@@ -904,15 +904,15 @@ namespace CollapseLauncher.Pages.OOBE
                 await Task.WhenAll(
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => ToggleLogoMode(false, IsSmallSize, IsLauncherCustomizationDone));
+                        DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(false, IsSmallSize, IsLauncherCustomizationDone));
                         await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, -32, 0), new Vector3(0, 0, 0)));
-                        DispatcherQueue.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Collapsed);
+                        DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Collapsed);
                     }),
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Visible);
+                        DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Visible);
                         await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, 0), new Vector3(0, 32, 0)));

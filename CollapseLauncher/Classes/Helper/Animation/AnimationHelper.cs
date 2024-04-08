@@ -29,13 +29,13 @@ namespace CollapseLauncher.Helper.Animation
         {
             foreach (KeyFrameAnimation anim in animBase!)
             {
-                if (element!.DispatcherQueue!.HasThreadAccess)
+                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
                 {
                     anim!.Duration = duration;
                     element.StartAnimation(anim);
                 }
                 else
-                    element.DispatcherQueue.TryEnqueue(() =>
+                    element?.DispatcherQueue?.TryEnqueue(() =>
                     {
                         anim!.Duration = duration;
                         element.StartAnimation(anim);

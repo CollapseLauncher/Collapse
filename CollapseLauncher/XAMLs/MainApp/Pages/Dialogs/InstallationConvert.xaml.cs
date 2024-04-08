@@ -134,7 +134,7 @@ namespace CollapseLauncher.Dialogs
             TargetProfile.ActualGameDataLocation = Path.Combine(Path.GetDirectoryName(SourceProfile.ActualGameDataLocation), $"{TargetProfile.GameDirectoryName}_ConvertedTo-{TargetProfile.ProfileName}");
             string TargetINIPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName, "config.ini");
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 0;
 
@@ -279,7 +279,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoDownloadRecipe()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 1;
 
@@ -310,7 +310,7 @@ namespace CollapseLauncher.Dialogs
 
             Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, GameVersion, cPath, tokenSource.Token);
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 1;
 
@@ -323,7 +323,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step2ProgressEvents(object sender, DownloadEvent e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step2ProgressStatus.Text = $"{e.ProgressPercentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed))}";
                 Step2ProgressRing.Value = e.ProgressPercentage;
@@ -332,7 +332,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoPrepareIngredients()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 2;
 
@@ -346,7 +346,7 @@ namespace CollapseLauncher.Dialogs
             await Converter.StartPreparation();
             Converter.ProgressChanged -= Step3ProgressEvents;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 2;
 
@@ -359,7 +359,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step3ProgressEvents(object sender, ConvertProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step3ProgressRing.Value = e.Percentage;
                 Step3ProgressTitle.Text = e.ProgressStatus;
@@ -369,7 +369,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoConversion()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 3;
 
@@ -383,7 +383,7 @@ namespace CollapseLauncher.Dialogs
             await Converter.StartConversion();
             Converter.ProgressChanged -= Step4ProgressEvents;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 3;
 
@@ -396,7 +396,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step4ProgressEvents(object sender, ConvertProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step4ProgressRing.Value = e.Percentage;
                 Step4ProgressStatus.Text = e.ProgressDetail;
@@ -405,7 +405,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoVerification()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 4;
 
@@ -419,7 +419,7 @@ namespace CollapseLauncher.Dialogs
             await Converter.PostConversionVerify();
             Converter.ProgressChanged -= Step5ProgressEvents;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 4;
 
@@ -432,7 +432,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step5ProgressEvents(object sender, ConvertProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step5ProgressRing.Value = e.Percentage;
                 Step5ProgressStatus.Text = e.ProgressDetail;

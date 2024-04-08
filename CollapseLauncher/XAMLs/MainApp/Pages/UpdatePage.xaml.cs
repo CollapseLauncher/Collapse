@@ -188,7 +188,7 @@ namespace CollapseLauncher.Pages
 
         private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Status.Text = e.status;
                 if (!string.IsNullOrEmpty(e.newver))
@@ -201,7 +201,7 @@ namespace CollapseLauncher.Pages
 
         private void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = e.ProgressPercentage;

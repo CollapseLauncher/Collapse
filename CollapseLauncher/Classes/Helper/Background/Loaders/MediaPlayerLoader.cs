@@ -222,7 +222,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 #if USEDYNAMICVIDEOPALETTE
         private void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
         {
-            ParentUI.DispatcherQueue.TryEnqueue(() =>
+            ParentUI?.DispatcherQueue?.TryEnqueue(() =>
             {
                 int bitmapWidth  = CurrentFrameBitmap?.PixelWidth ?? 0;
                 int bitmapHeight = CurrentFrameBitmap?.PixelHeight ?? 0;
@@ -274,7 +274,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                     ? adjustedColor.GetDarkColor()
                     : adjustedColor.GetLightColor();
 
-                ParentUI.DispatcherQueue.TryEnqueue(() => ColorPaletteUtility.SetColorPalette(ParentUI, adjustedColor));
+                ParentUI?.DispatcherQueue?.TryEnqueue(() => ColorPaletteUtility.SetColorPalette(ParentUI, adjustedColor));
             });
         }
 #endif

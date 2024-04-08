@@ -558,7 +558,7 @@ namespace CollapseLauncher
         private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout, bool ShowLoadingMsg)
         {
             var timeout = currentTimeout;
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 if (ShowLoadingMsg)
                 {

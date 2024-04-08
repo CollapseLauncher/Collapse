@@ -90,7 +90,7 @@ namespace CollapseLauncher
 
         private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = e.ProgressPercentage;

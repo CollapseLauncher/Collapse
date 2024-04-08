@@ -240,8 +240,8 @@ namespace CollapseLauncher
             if (e.Exception.GetType() == typeof(NotImplementedException))
             {
                 PreviousTag = "unavailable";
-                if (!DispatcherQueue.HasThreadAccess)
-                    DispatcherQueue.TryEnqueue(() => MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage)));
+                if (!DispatcherQueue?.HasThreadAccess ?? false)
+                    DispatcherQueue?.TryEnqueue(() => MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage)));
                 else
                     MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
 
@@ -800,7 +800,7 @@ namespace CollapseLauncher
 
             NotificationData.CurrentShowMsgIds.Add(MsgId);
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 StackPanel OtherContentContainer = UIElementExtensions.CreateStackPanel().WithMargin(0d, -4d, 0d, 8d);
 
@@ -1928,7 +1928,7 @@ namespace CollapseLauncher
             if (m_arguments.StartGame == null)
                 return;
 
-            DispatcherQueue.TryEnqueue(ChangeToActivatedRegion);
+            DispatcherQueue?.TryEnqueue(ChangeToActivatedRegion);
         }
         #endregion
     }

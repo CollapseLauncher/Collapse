@@ -39,7 +39,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty = GetCurrentGameProperty();
                 Settings = CurrentGameProperty._GameSettings as StarRailSettings;
 
-                DispatcherQueue.TryEnqueue(() =>
+                DispatcherQueue?.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
@@ -67,7 +67,7 @@ namespace CollapseLauncher.Pages
             if (!IsNoReload)
             {
                 LogWriteLine("[HSR GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-                DispatcherQueue.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
+                DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
             }
         }
 
@@ -239,7 +239,7 @@ namespace CollapseLauncher.Pages
 
         private void OnUnload(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ToggleRegistrySubscribe(false);
                 RegistryWatcher?.Dispose();
