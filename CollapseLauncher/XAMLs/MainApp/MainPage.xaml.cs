@@ -426,8 +426,8 @@ namespace CollapseLauncher
         {
             if (IsFirstStartup) return;
 
-            if (e) BackgroundMediaUtility.Current.Dimm();
-            else BackgroundMediaUtility.Current.Undimm();
+            if (e) BackgroundMediaUtility.Current?.Dimm();
+            else BackgroundMediaUtility.Current?.Undimm();
         }
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
@@ -447,7 +447,7 @@ namespace CollapseLauncher
 
             try
             {
-                await BackgroundMediaUtility.Current.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache);
+                await (BackgroundMediaUtility.Current?.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache) ?? Task.CompletedTask);
             }
             catch (Exception ex)
             {

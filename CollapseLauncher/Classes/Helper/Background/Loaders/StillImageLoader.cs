@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CommunityToolkit.WinUI.Animations;
@@ -28,12 +29,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private ImageUI?         ImageBackLast       { get; }
         private Grid?            ImageBackParentGrid { get; }
 
-        private Grid AcrylicMask     { get; }
-        private Grid OverlayTitleBar { get; }
+        private Grid                    AcrylicMask     { get; }
+        private Grid                    OverlayTitleBar { get; }
+        private ActionBlock<ValueTask>? ActionTaskQueue { get; set; }
 
-        private  bool   IsImageLoading    { get; set; }
-        internal bool   IsImageDimm       { get; set; }
         private  double AnimationDuration { get; }
+        private  bool   IsImageDimm       { get; set; }
 
         internal StillImageLoader(
             FrameworkElement parentUI,
@@ -53,7 +54,16 @@ namespace CollapseLauncher.Helper.Background.Loaders
             ImageBackParentGrid = imageBackParentGrid;
 
             AnimationDuration = animationDuration;
-            IsImageLoading    = false;
+            ActionTaskQueue   = new ActionBlock<ValueTask>(async (action) => {
+                await action.ConfigureAwait(false);
+            },
+                new ExecutionDataflowBlockOptions
+                {
+                    EnsureOrdered = true,
+                    MaxMessagesPerTask = 1,
+                    MaxDegreeOfParallelism = 1,
+                    TaskScheduler = TaskScheduler.Default
+                });
         }
 
         ~StillImageLoader() => Dispose();
@@ -66,17 +76,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
         public async ValueTask LoadAsync(string            filePath, bool isImageLoadForFirstTime, bool isRequestInit,
                                          CancellationToken token)
         {
-            // Wait until the image loading sequence is completed
-            while (IsImageLoading)
-            {
-                await Task.Delay(250, token);
-            }
-
             try
             {
-                // Set the image loading state
-                IsImageLoading = true;
-
                 // Get the image stream
                 token.ThrowIfCancellationRequested();
                 await using FileStream? imageStream = BackgroundMediaUtility.GetAlternativeFileStream() ??
@@ -103,7 +104,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                IsImageLoading = false;
             }
         }
 
@@ -128,38 +128,21 @@ namespace CollapseLauncher.Helper.Background.Loaders
                               );
         }
 
-        public async ValueTask DimmAsync(CancellationToken token)
+        public void Dimm(CancellationToken token)
         {
-            while (IsImageLoading)
-            {
-                await Task.Delay(250, token);
-            }
-
-            if (!IsImageDimm)
-            {
-                await ToggleImageVisibility(true);
-            }
-
-            IsImageDimm = true;
+            ActionTaskQueue?.Post(ToggleImageVisibility(true));
         }
 
-        public async ValueTask UndimmAsync(CancellationToken token)
+        public void Undimm(CancellationToken token)
         {
-            while (IsImageLoading)
-            {
-                await Task.Delay(250, token);
-            }
-
-            if (IsImageDimm)
-            {
-                await ToggleImageVisibility(false);
-            }
-
-            IsImageDimm = false;
+            ActionTaskQueue?.Post(ToggleImageVisibility(false));
         }
 
         private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false)
         {
+            if (IsImageDimm == hideImage) return;
+            IsImageDimm = hideImage;
+
             TimeSpan duration = TimeSpan.FromSeconds(hideImage
                                                          ? BackgroundMediaUtility.TransitionDuration
                                                          : BackgroundMediaUtility.TransitionDurationSlow);

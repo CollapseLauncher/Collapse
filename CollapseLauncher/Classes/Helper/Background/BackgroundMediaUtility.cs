@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
 using Hi3Helper.Shared.Region;
@@ -20,7 +21,7 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal class BackgroundMediaUtility : IDisposable
     {
-        internal static BackgroundMediaUtility Current { get; private set; }
+        internal static BackgroundMediaUtility? Current { get; private set; }
 
         internal enum MediaType
         {
@@ -56,8 +57,6 @@ namespace CollapseLauncher.Helper.Background
         private MediaPlayerLoader?              _loaderMediaPlayer;
         private IBackgroundMediaLoader?         _currentMediaLoader;
 
-        private bool _isCurrentDimmAnimRun;
-        private bool _isCurrentUndimmAnimRun;
         private bool _isCurrentRegistered;
 
         private static FileStream? _alternativeFileStream;
@@ -139,6 +138,9 @@ namespace CollapseLauncher.Helper.Background
             _loaderMediaPlayer = null;
             _loaderStillImage?.Dispose();
             _loaderStillImage  = null;
+
+            _alternativeFileStream?.Dispose();
+            _alternativeFileStream = null;
 
             CurrentAppliedMediaType = MediaType.Unknown;
 
@@ -348,7 +350,6 @@ namespace CollapseLauncher.Helper.Background
             if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
             {
                 _loaderMediaPlayer.IsMediaPlayerDimm = true;
-                _loaderStillImage.IsImageDimm        = true;
             }
 
             if ((mediaType == MediaType.Media || InnerLauncherConfig.m_appCurrentFrameName != "HomePage") && CurrentAppliedMediaType != mediaType)
@@ -362,55 +363,23 @@ namespace CollapseLauncher.Helper.Background
         /// <summary>
         ///     Dimming the current loaded background
         /// </summary>
-        internal async void Dimm()
+        internal void Dimm()
         {
-            while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun)
-            {
-                await Task.Delay(250);
-            }
+            IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
+            if (loader == null) return;
 
-            try
-            {
-                _isCurrentDimmAnimRun = true;
-                IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
-                if (loader == null)
-                {
-                    return;
-                }
-
-                await loader.DimmAsync(_cancellationToken?.Token ?? default);
-            }
-            finally
-            {
-                _isCurrentDimmAnimRun = false;
-            }
+            loader.Dimm(_cancellationToken?.Token ?? default);
         }
 
         /// <summary>
         ///     Undimming the current loaded background
         /// </summary>
-        internal async void Undimm()
+        internal void Undimm()
         {
-            while (_isCurrentDimmAnimRun || _isCurrentUndimmAnimRun)
-            {
-                await Task.Delay(250);
-            }
+            IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
+            if (loader == null) return;
 
-            try
-            {
-                _isCurrentUndimmAnimRun = true;
-                IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
-                if (loader == null)
-                {
-                    return;
-                }
-
-                await loader.UndimmAsync(_cancellationToken?.Token ?? default);
-            }
-            finally
-            {
-                _isCurrentUndimmAnimRun = false;
-            }
+            loader.Undimm(_cancellationToken?.Token ?? default);
         }
 
         /// <summary>

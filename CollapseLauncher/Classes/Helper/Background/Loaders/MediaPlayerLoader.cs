@@ -21,6 +21,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+using System.Threading.Tasks.Dataflow;
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -47,6 +48,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private  Stopwatch?                      CurrentStopwatch       { get; set; }
         private  CancellationTokenSourceWrapper? InnerCancellationToken { get; set; }
         private  List<bool>?                     FocusState             { get; set; }
+        private ActionBlock<ValueTask>?          ActionTaskQueue        { get; set; }
 
         private SoftwareBitmap?    CurrentFrameBitmap       { get; set; }
         private CanvasImageSource? CurrentCanvasImageSource { get; set; }
@@ -79,6 +81,16 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                                                                        .UniformToFill));
 
             IsMediaPlayerLoading = false;
+            ActionTaskQueue = new ActionBlock<ValueTask>(async (action) => {
+                await action.ConfigureAwait(false);
+            },
+                new ExecutionDataflowBlockOptions
+                {
+                    EnsureOrdered = true,
+                    MaxMessagesPerTask = 1,
+                    MaxDegreeOfParallelism = 1,
+                    TaskScheduler = TaskScheduler.Default
+                });
         }
 
         ~MediaPlayerLoader() => Dispose();
@@ -275,38 +287,21 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
-        public async ValueTask DimmAsync(CancellationToken token)
+        public void Dimm(CancellationToken token)
         {
-            while (IsMediaPlayerLoading)
-            {
-                await Task.Delay(250, token);
-            }
-
-            if (!IsMediaPlayerDimm)
-            {
-                await ToggleImageVisibility(true);
-            }
-
-            IsMediaPlayerDimm = true;
+            ActionTaskQueue?.Post(ToggleImageVisibility(true));
         }
 
-        public async ValueTask UndimmAsync(CancellationToken token)
+        public void Undimm(CancellationToken token)
         {
-            while (IsMediaPlayerLoading)
-            {
-                await Task.Delay(250, token);
-            }
-
-            if (IsMediaPlayerDimm)
-            {
-                await ToggleImageVisibility(false);
-            }
-
-            IsMediaPlayerDimm = false;
+            ActionTaskQueue?.Post(ToggleImageVisibility(false));
         }
 
         private async ValueTask ToggleImageVisibility(bool hideImage)
         {
+            if (IsMediaPlayerDimm == hideImage) return;
+            IsMediaPlayerDimm = hideImage;
+
             TimeSpan duration = TimeSpan.FromSeconds(hideImage
                                                          ? BackgroundMediaUtility.TransitionDuration
                                                          : BackgroundMediaUtility.TransitionDurationSlow);

@@ -304,11 +304,11 @@
                     {
                         if (wParam == 1)
                         {
-                            BackgroundMediaUtility.Current.WindowFocused();
+                            BackgroundMediaUtility.Current?.WindowFocused();
                         }
                         else
                         {
-                            BackgroundMediaUtility.Current.WindowUnfocused();
+                            BackgroundMediaUtility.Current?.WindowUnfocused();
                         }
                     }
                         break;
@@ -335,7 +335,7 @@
                             }
                             case SC_MINIMIZE:
                             {
-                                BackgroundMediaUtility.Current.WindowUnfocused();
+                                BackgroundMediaUtility.Current?.WindowUnfocused();
                                 if (LauncherConfig.GetAppConfigValue("MinimizeToTray").ToBool())
                                 {
                                     // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
@@ -352,7 +352,7 @@
                             }
                             case SC_RESTORE:
                             {
-                                BackgroundMediaUtility.Current.WindowFocused();
+                                BackgroundMediaUtility.Current?.WindowFocused();
                                 InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
                                 break;
                             }
@@ -368,7 +368,7 @@
                         }
                         else
                         {
-                            BackgroundMediaUtility.Current.WindowFocused();
+                            BackgroundMediaUtility.Current?.WindowFocused();
                             InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
                         }
 
