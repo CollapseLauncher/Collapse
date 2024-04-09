@@ -57,7 +57,6 @@ namespace CollapseLauncher
         public static NotificationPush?    NotificationData;
         public static bool                 IsCustomBG            = false;
         public static bool                 IsSkippingUpdateCheck = false;
-        public static GameVersion          AppCurrentVersion;
         public static AppThemeMode         CurrentAppTheme;
     #if !DISABLEDISCORD
     #pragma warning disable CA2211

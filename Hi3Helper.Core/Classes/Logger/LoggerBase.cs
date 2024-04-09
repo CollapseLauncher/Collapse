@@ -13,6 +13,7 @@ namespace Hi3Helper
     public class LoggerBase
     {
         #region Properties
+        public static string CurrentLauncherVersion = "vUnknown";
         private FileStream _logStream { get; set; }
         private StreamWriter _logWriter { get; set; }
         private string _logFolder { get; set; }
@@ -144,7 +145,7 @@ namespace Hi3Helper
             // Append the build name
             fallbackString += LauncherConfig.IsPreview ? "-pre" : "-sta";
             // Append current app version
-            fallbackString += LauncherConfig.AppCurrentVersionString;
+            fallbackString += CurrentLauncherVersion;
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
             _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}.log");

@@ -19,6 +19,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using System.IO;
+using CollapseLauncher.Helper.Update;
 
 namespace CollapseLauncher
 {
@@ -36,8 +37,6 @@ namespace CollapseLauncher
 #if PREVIEW
             IsPreview = true;
 #endif
-            AppCurrentVersion       = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
-            AppCurrentVersionString = AppCurrentVersion.VersionString;
 
             try
             {
@@ -67,7 +66,7 @@ namespace CollapseLauncher
                 }
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
-                    AppCurrentVersion.VersionString,
+                    LauncherUpdateHelper.LauncherCurrentVersionString,
                     GetVersionString(),
                     Environment.UserName,
                     IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);

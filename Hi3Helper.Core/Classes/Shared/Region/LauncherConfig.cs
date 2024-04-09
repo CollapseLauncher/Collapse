@@ -220,7 +220,6 @@ namespace Hi3Helper.Shared.Region
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder!, "config.ini");
         public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder,  "ignore_notif_ids.json");
         
-        public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
         public static long   AppGameConfigLastUpdate;
         public static int AppCurrentThread

@@ -904,6 +904,8 @@
     "UpdateHeader4": "Speed:",
     "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",
 
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
+
     "UpdateStatus1": "Fetching Update:",
     "UpdateMessage1": "Connecting to Update Repository...",
     "UpdateStatus2": "Verifying:",

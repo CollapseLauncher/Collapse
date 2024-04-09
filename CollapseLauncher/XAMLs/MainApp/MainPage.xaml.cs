@@ -7,6 +7,7 @@ using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
@@ -69,7 +70,7 @@ namespace CollapseLauncher
         {
             try
             {
-                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion.VersionString} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 m_mainPage                             =  this;
@@ -121,16 +122,11 @@ namespace CollapseLauncher
                         mainWindow?.CloseApp();
                     return;
                 }
-#if !DEBUG
-                LauncherUpdateWatcher.StartCheckUpdate(false);
-#else 
-                LogWriteLine("Running debug build, stopping update checks!", LogType.Error, false);
-#endif
 
                 LoadGamePreset();
                 SetThemeParameters();
 
-                VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
+                VersionNumberIndicator.Text = LauncherUpdateHelper.LauncherCurrentVersionString;
                 #if DEBUG
                 VersionNumberIndicator.Text += "d";
                 #endif
@@ -548,6 +544,13 @@ namespace CollapseLauncher
 
                 // Check Metadata Update in Background
                 await CheckMetadataUpdateInBackground();
+
+#if !DEBUG
+                // Run the update check and trigger routine
+                LauncherUpdateHelper.RunUpdateCheckDetached();
+#else 
+                LogWriteLine("Running debug build, stopping update checks!", LogType.Error, false);
+#endif
             }
             catch (JsonException ex)
             {
@@ -694,9 +697,9 @@ namespace CollapseLauncher
                 GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
 
                 if (Entry.ValidForVerBelow == null && IsNotificationTimestampValid(Entry)
-                    || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, ValidForVerBelow)
-                        && LauncherUpdateWatcher.CompareVersion(ValidForVerAbove, AppCurrentVersion))
-                    || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, ValidForVerBelow))
+                    || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
+                        && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
+                    || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow))
                 {
                     if (Entry.ActionProperty != null)
                     {

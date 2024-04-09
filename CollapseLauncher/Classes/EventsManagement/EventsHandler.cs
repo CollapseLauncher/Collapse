@@ -8,6 +8,7 @@ using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
@@ -34,87 +35,46 @@ namespace CollapseLauncher
                 return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);
             }
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "FunctionNeverReturns")]
-        public static async void StartCheckUpdate(bool forceUpdate)
-        {
-            UpdateChannelName = IsPreview ? "preview" : "stable";
-            while (true)
-            {
-                if ((!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate) && !IsSkippingUpdateCheck)
-                {
-                    try
-                    {
-                        // Force disable cooldown when its being forcefully updated
-                        if (forceUpdate)
-                            isUpdateCooldownActive = false;
-                        // Stopping auto update when it was recently called. Workaround for update being called twice on metadata update.
-                        if (!isUpdateCooldownActive)
-                        {
-                            if (!isMetered || forceUpdate)
-                            {
-                                isUpdateCooldownActive = true;
-                                using (Updater updater = new Updater(UpdateChannelName))
-                                {
-                                    UpdateInfo info = await updater.StartCheck();
-                                    GameVersion RemoteVersion = new GameVersion(info!.FutureReleaseEntry!.Version!.Version);
-
-                                    AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
-                                    UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata!.time };
-
-                                    if (CompareVersion(AppCurrentVersion, RemoteVersion))
-                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
-                                    else
-                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
-                                }
-                                ForceInvokeUpdate = false;
-                            }
-                            else
-                            {
-                                LogWriteLine($"Current network state is metered or disconnected! Auto update is skipped.\r\n\tPlease check your connection or use `Check for Update` button in Settings menu to update.", LogType.Warning, true);
-                            }
-                            isUpdateCooldownActive = true;
-                        }
-                        else LogWriteLine("Update was recently invoked! Stopping auto update until it resets in 15 minutes", LogType.Error, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriteLine($"Update check has failed! Will retry in 15 mins.\r\n{ex}", LogType.Error, true);
-                    }
-                }
-                // Delay for 15 to 60 minutes depending on metered
-                await Task.Delay((isMetered ? 3600 : 900) * 1000);
-                // Reset isUpdateRecentlyInvoked to release the lock
-                isUpdateCooldownActive = false;
-            }
-        }
-
-        private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
-        {
-            string relativePath = ConverterTool.CombineURLFromString(UpdateChannelName, "fileindex.json");
-            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
-            return await ms!.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
-        }
-
-        public static bool CompareVersion(GameVersion? CurrentVer, GameVersion? ComparedVer)
-        {
-            if (CurrentVer == null || ComparedVer == null) return false;
-            return CurrentVer.Value.ToVersion() < ComparedVer.Value.ToVersion();
-        }
     }
 
     public class AppUpdateVersionProp
     {
-        public string ver { get; set; }
-        public long time { get; set; }
-        public List<AppUpdateVersionFileProp> f { get; set; }
+        [JsonPropertyName("f")]
+        public List<AppUpdateVersionFileProp> FileList { get; set; }
+
+        [JsonPropertyName("forceUpdate")]
+        public bool IsForceUpdate { get; set; }
+
+        [JsonIgnore]
+        public DateTime? TimeLocalTime
+        {
+            get => DateTimeOffset.FromUnixTimeSeconds(UnixTime).DateTime.ToLocalTime();
+        }
+
+        [JsonPropertyName("time")]
+        public long UnixTime { get; set; }
+
+        [JsonIgnore]
+        public GameVersion? Version
+        {
+            get
+            {
+                if (!GameVersion.TryParse(VersionString, out GameVersion? result))
+                    return null;
+
+                return result;
+            }
+        }
+
+        [JsonPropertyName("ver")]
+        public string VersionString { get; set; }
     }
 
     public class AppUpdateVersionFileProp
     {
-        public string p { get; set; }
-        public string crc { get; set; }
-        public long s { get; set; }
+        [JsonPropertyName("p")] public string FilePath { get; set; }
+        [JsonPropertyName("crc")] public string FileMD5Hash { get; set; }
+        [JsonPropertyName("s")] public long FileSize { get; set; }
     }
 
     internal class LauncherUpdateInvoker

@@ -4,6 +4,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:local="using:CollapseLauncher"
+      xmlns:localUpdateHelper="using:CollapseLauncher.Helper.Update"
+      xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="{ThemeResource UpdatePageAcrylicBrush}"
@@ -132,7 +134,45 @@
                 <Grid Margin="0,48,0,48"
                       Background="{ThemeResource WindowTrayBrush}"
                       CornerRadius="8">
-                    <ScrollViewer>
+                    <Grid.Resources>
+                        <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0"
+                          Visibility="{x:Bind localUpdateHelper:LauncherUpdateHelper.AppUpdateVersionProp.IsForceUpdate}"
+                          Padding="12,8"
+                          Background="{ThemeResource SystemFillColorCautionBrush}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                  FontSize="16"
+                                  Glyph="&#xf071;"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Left"
+                                  Grid.Column="1"
+                                  Foreground="{ThemeResource TextFillColorInverse}"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateForcedHeader}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalTextAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Grid.Column="1"
+                                  Foreground="{ThemeResource TextFillColorInverse}"/>
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                  FontSize="16"
+                                  Glyph="&#xf071;"
+                                  Grid.Column="2"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Right"
+                                  Foreground="{ThemeResource TextFillColorInverse}"/>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1">
                         <markdown:MarkdownTextBlock x:Name="ReleaseNotesBox"
                                                     Padding="16"
                                                     VerticalAlignment="Stretch"
@@ -145,7 +185,8 @@
             <StackPanel x:Name="CancelUpdateCountdownBox"
                         Grid.Row="1"
                         HorizontalAlignment="Right"
-                        Orientation="Horizontal">
+                        Orientation="Horizontal"
+                        Visibility="{x:Bind localUpdateHelper:LauncherUpdateHelper.AppUpdateVersionProp.IsForceUpdate}">
                 <Button x:Name="CancelUpdateCountdownBtn"
                         HorizontalAlignment="Right"
                         Click="CancelCountdownClick"

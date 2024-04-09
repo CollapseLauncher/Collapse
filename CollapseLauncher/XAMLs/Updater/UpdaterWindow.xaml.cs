@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Update;
 using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using System;
@@ -35,7 +36,7 @@ namespace CollapseLauncher
             this.Title = title += "[DEBUG]";
 #endif
             UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
-            CurrentVersionLabel.Text = AppCurrentVersion.VersionString;
+            CurrentVersionLabel.Text = LauncherUpdateHelper.LauncherCurrentVersionString;
 
             StartAsyncRoutine();
         }
@@ -53,7 +54,7 @@ namespace CollapseLauncher
 
                 await using BridgedNetworkStream metadataStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
                 updateInfo = await metadataStream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
-                NewVersionLabel.Text = new GameVersion(updateInfo.ver).VersionString;
+                NewVersionLabel.Text = updateInfo.VersionString;
 
                 using (Http _httpClient = new Http(true))
                 {
@@ -63,11 +64,11 @@ namespace CollapseLauncher
                 }
 
                 File.WriteAllText(Path.Combine(workingDir, "..\\", "release"), m_arguments.Updater.UpdateChannel.ToString().ToLower());
-                GameVersion ver = new GameVersion(updateInfo.ver);
+                GameVersion ver = updateInfo.Version.Value;
                 Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, ver.VersionString);
                 ActivityStatus.Text = Lang._UpdatePage.UpdateMessage5;
 
-                File.WriteAllText(newVerTagPath, updateInfo.ver);
+                File.WriteAllText(newVerTagPath, updateInfo.VersionString);
 
                 await Task.Delay(5000);
                 Process applyUpdate = new Process()

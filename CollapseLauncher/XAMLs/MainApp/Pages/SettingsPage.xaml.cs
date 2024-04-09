@@ -34,6 +34,7 @@ using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 using Task = System.Threading.Tasks.Task;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Update;
 
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
@@ -65,7 +66,7 @@ namespace CollapseLauncher.Pages
             LoadAppConfig();
             this.DataContext = this;
 
-            string Version = $" {AppCurrentVersion.VersionString}";
+            string Version = $" {LauncherUpdateHelper.LauncherCurrentVersionString}";
 #if DEBUG
             Version = Version + "d";
 #endif
@@ -289,34 +290,25 @@ namespace CollapseLauncher.Pages
 
         private async void CheckUpdate(object sender, RoutedEventArgs e)
         {
-
-            if (LauncherUpdateWatcher.isMetered)
-            {
-                switch (await Dialog_MeteredConnectionWarning(Content))
-                {
-                    case ContentDialogResult.Primary:
-                        UpdateLoadingStatus.Visibility = Visibility.Visible;
-                        UpdateAvailableStatus.Visibility = Visibility.Collapsed;
-                        UpToDateStatus.Visibility = Visibility.Collapsed;
-                        CheckUpdateBtn.IsEnabled = false;
-                        ForceInvokeUpdate = true;
-                        LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
-                        LauncherUpdateWatcher.StartCheckUpdate(true);
-                        break;
-
-                    case ContentDialogResult.Secondary:
-                        return;
-                }
-            }
-            else
+            try
             {
                 UpdateLoadingStatus.Visibility = Visibility.Visible;
                 UpdateAvailableStatus.Visibility = Visibility.Collapsed;
                 UpToDateStatus.Visibility = Visibility.Collapsed;
                 CheckUpdateBtn.IsEnabled = false;
                 ForceInvokeUpdate = true;
+
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
-                LauncherUpdateWatcher.StartCheckUpdate(true);
+                bool isUpdateAvailable = await LauncherUpdateHelper.IsUpdateAvailable(true);
+                LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = isUpdateAvailable, NewVersionName = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value });
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                UpdateLoadingStatus.Visibility = Visibility.Collapsed;
+                UpdateAvailableStatus.Visibility = Visibility.Collapsed;
+                UpToDateStatus.Visibility = Visibility.Collapsed;
+                CheckUpdateBtn.IsEnabled = true;
             }
         }
 
@@ -331,15 +323,14 @@ namespace CollapseLauncher.Pages
                 UpdateAvailableStatus.Visibility = Visibility.Visible;
                 UpToDateStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableLabel.Text = e.NewVersionName.VersionString + (ChannelName);
-                LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
             }
             else
             {
                 UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableStatus.Visibility = Visibility.Collapsed;
                 UpToDateStatus.Visibility = Visibility.Visible;
-                LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
             }
+            LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
         }
 
         private void ClickTextLinkFromTag(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)

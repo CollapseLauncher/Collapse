@@ -1,7 +1,8 @@
 ﻿#if !DISABLEDISCORD
     using System;
     using CollapseLauncher.Helper.Metadata;
-    using DiscordRPC;
+using CollapseLauncher.Helper.Update;
+using DiscordRPC;
     using Hi3Helper;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -239,7 +240,7 @@
                                 {
                                     LargeImageKey = "launcher-logo",
                                     LargeImageText =
-                                        $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                                        $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                                 }
                             };
                             break;
@@ -261,7 +262,7 @@
                         LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
                         LargeImageText = $"{LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
                         SmallImageKey  = "launcher-logo",
-                        SmallImageText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                        SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                     },
                     Timestamps = new Timestamps
                     {
@@ -287,7 +288,7 @@
                         LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
                         LargeImageText = $"{LauncherMetadataHelper.CurrentMetadataConfigGameName}",
                         SmallImageKey  = "launcher-logo",
-                        SmallImageText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                        SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                     }
                 };
             }

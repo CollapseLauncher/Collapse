@@ -70,6 +70,15 @@ namespace CollapseLauncher
 #nullable disable
     }
 
+    public static class GameVersionExt
+    {
+        public static bool Compare(this GameVersion? fromVersion, GameVersion? toVersion)
+        {
+            if (!fromVersion.HasValue || !toVersion.HasValue) return false;
+            return fromVersion.Value.ToVersion() < toVersion.Value.ToVersion();
+        }
+    }
+
     public struct GameVersion
     {
         public GameVersion(int major, int minor, int build, int revision = 0)
@@ -80,7 +89,7 @@ namespace CollapseLauncher
             Revision = revision;
         }
 
-        public GameVersion(int[] ver)
+        public GameVersion(ReadOnlySpan<int> ver)
         {
             if (!(ver.Length == 3 || ver.Length == 4))
             {
@@ -118,6 +127,28 @@ namespace CollapseLauncher
             {
                 if (!int.TryParse(ver[3], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[3]}");
             }
+        }
+
+        public static bool TryParse(string version, out GameVersion? result)
+        {
+            result = null;
+            Span<Range> ranges = stackalloc Range[8];
+            ReadOnlySpan<char> versionSpan = version.AsSpan();
+            int splitRanges = versionSpan.Split(ranges, '.', StringSplitOptions.TrimEntries);
+
+            if (!(splitRanges == 3 || splitRanges == 4)) return false;
+
+            Span<int> versionSplits = stackalloc int[4];
+            for (int i = 0; i < splitRanges; i++)
+            {
+                if (!int.TryParse(versionSpan[ranges[i]], null, out int versionParsed))
+                    return false;
+
+                versionSplits[i] = versionParsed;
+            }
+
+            result = new GameVersion(versionSplits);
+            return true;
         }
 
         public bool IsMatch(string versionToCompare)
