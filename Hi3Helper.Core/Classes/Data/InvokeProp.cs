@@ -335,6 +335,13 @@ namespace Hi3Helper
             return processes.Length;
         }
 
+        public static Process[] GetInstanceProcesses()
+        {
+            var currentProcess = Process.GetCurrentProcess();
+            var processes      = Process.GetProcessesByName(currentProcess.ProcessName);
+            return processes;
+        }
+
         #region dwmapi
         public struct MARGINS
         {
