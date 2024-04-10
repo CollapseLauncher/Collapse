@@ -25,8 +25,7 @@ namespace CollapseLauncher
 {
     public static class MainEntryPoint
     {
-        public static int       InstanceCount;
-        public static Process[] InstanceProcesses;
+        public static int InstanceCount;
         
         [DllImport("Microsoft.ui.xaml.dll")]
         private static extern void XamlCheckProcessRequirements();
@@ -123,30 +122,35 @@ namespace CollapseLauncher
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-                InstanceCount     = InvokeProp.GetInstanceCount();
-                InstanceProcesses = InvokeProp.GetInstanceProcesses();
-                
-                LogWriteLine($"Detected {InstanceCount} instances", LogType.Default, false);
-                
-                if (InstanceCount > 1)
+                var instanceCount = InvokeProp.GetInstanceCount();
+                if (instanceCount > 1)
                 {
-                    LogWriteLine($"Multiple instances found! This is instance #{InstanceCount}",
-                                 LogType.Scheme, true);
-                    LogWriteLine($"Enumerating instances...", LogType.Debug, false);
-                    foreach (Process p in InstanceProcesses)
+                    var curPId = Process.GetCurrentProcess().Id;
+                    LogWriteLine($"Detected {instanceCount} instances! Current PID: {curPId}", LogType.Default, true);
+                    LogWriteLine($"Enumerating instances...");
+                    var instanceProcesses = InvokeProp.GetInstanceProcesses();
+                    foreach (Process p in instanceProcesses)
                     {
+                        if (p == null) continue;
                         try
                         {
-                            LogWriteLine($"Name: {p.ProcessName}",      LogType.NoTag, false);
-                            LogWriteLine($"MainModule: {p.MainModule}", LogType.NoTag, false);
-                            LogWriteLine($"PID: {p.Id}",                LogType.NoTag, false);
+                            LogWriteLine($"Name: {p.ProcessName}",                LogType.NoTag, true);
+                            LogWriteLine($"MainModule: {p.MainModule?.FileName}", LogType.NoTag, true);
+                            LogWriteLine($"PID: {p.Id}",                          LogType.NoTag, true);
+                            InstanceCount++;
                         }
                         catch (Exception ex)
                         {
-                            LogWriteLine("Failed to get instance process info!\r\n\tIgnoring...");
+                            LogWriteLine($"Failed when trying to fetch an instance information! " +
+                                         $"InstanceCount is not incremented.\r\n{ex}",
+                                         LogType.Error, true);
                         }
                     }
+
+                    LogWriteLine($"Multiple instances found! This is instance #{InstanceCount}",
+                                 LogType.Scheme, true);
                 }
+                else InstanceCount = 1;
                 
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())
