@@ -824,9 +824,6 @@ namespace CollapseLauncher
 
                 Notification.Translation += Shadow32;
 
-                if (Severity == NotifSeverity.Informational)
-                    Notification.Background = UIElementExtensions.GetApplicationResource<Brush>("InfoBarAnnouncementBrush");
-
                 if (OtherContent != null)
                     OtherContentContainer.AddElementToStackPanel(OtherContent);
 
