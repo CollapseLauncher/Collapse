@@ -36,8 +36,15 @@ namespace CollapseLauncher.Helper.Update
 
         internal static async void RunUpdateCheckDetached()
         {
-            bool isUpdateAvailable = await IsUpdateAvailable();
-            LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = isUpdateAvailable, NewVersionName = AppUpdateVersionProp?.Version ?? default });
+            try
+            {
+                bool isUpdateAvailable = await IsUpdateAvailable();
+                LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = isUpdateAvailable, NewVersionName = AppUpdateVersionProp?.Version ?? default });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"The squirrel check throws an error, Skipping update check!\r\n{ex}", LogType.Warning, true);
+            }
         }
 
         internal static async Task<bool> IsUpdateAvailable(bool isForceCheckUpdate = false)
