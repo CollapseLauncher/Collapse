@@ -53,6 +53,11 @@
                                 <GradientStop Offset="0" Color="#00000000" />
                                 <GradientStop Offset="0.6" Color="#FF000000" />
                             </LinearGradientBrush>
+                            <AcrylicBrush x:Key="InfoBarInformationalSeverityBackgroundBrush"
+                                FallbackColor="#DD222222"
+                                TintColor="#222222"
+                                TintLuminosityOpacity="0.5"
+                                TintOpacity="0.0" />
 
                             <!--  Page brushes  -->
                             <AcrylicBrush
@@ -247,6 +252,12 @@
                                 <GradientStop Offset="0" Color="#00FFFFFF" />
                                 <GradientStop Offset="0.6" Color="#FFFFFFFF" />
                             </LinearGradientBrush>
+                            <AcrylicBrush x:Key="InfoBarInformationalSeverityBackgroundBrush"
+                                FallbackColor="#E0FFFFFF"
+                                TintColor="#EEEEEE"
+                                TintLuminosityOpacity="0.8"
+                                TintOpacity="0.0" />
+                                          
 
                             <!--  Page brushes  -->
                             <AcrylicBrush
@@ -395,9 +406,9 @@
 
                             <!-- For Acrylic Button  -->
                             <SolidColorBrush x:Key="NewAccentButtonForegroundDisabled" Color="#AA000000"/>
-                            <SolidColorBrush x:Key="NewAccentButtonForegroundPointerOver" Color="#AA000000"/>
-                            <SolidColorBrush x:Key="NewAccentButtonForegroundPressed" Color="#AA000000"/>
-                            <SolidColorBrush x:Key="NewAccentButtonForeground" Color="#AA000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundPointerOver" Color="#DDFFFFFF"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundPressed" Color="#CCFFFFFF"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForeground" Color="#FFFFFF"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackground" FallbackColor="#D0FFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.80" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundFocused" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.70" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundPointerOver" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.70" TintOpacity="0.0" />
