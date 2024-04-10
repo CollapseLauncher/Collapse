@@ -108,6 +108,8 @@ namespace CollapseLauncher
             {
                 if (!IsShowRegionChangeWarning && IsInstantRegionChange)
                 {
+                    ChangeGameBtnGrid.Visibility = Visibility.Collapsed;
+                    ChangeGameBtnGridShadow.Visibility = Visibility.Collapsed;
                     ChangeRegionConfirmBtn.Visibility = Visibility.Collapsed;
                     ChangeRegionConfirmBtnNoWarning.Visibility = Visibility.Collapsed;
                 }

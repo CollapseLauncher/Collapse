@@ -408,7 +408,7 @@
                             <AcrylicBrush x:Key="AcrylicComboBoxBackgroundDisabled" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.40" TintOpacity="0.0" />
 
                             <!-- For Acrylic Button  -->
-                            <AcrylicBrush x:Key="NewAccentButtonBackgroundDisabled" TintColor="#88FFFFFF"/>
+                            <AcrylicBrush x:Key="NewAccentButtonBackgroundDisabled" TintColor="#88FFFFFF" FallbackColor="#88FFFFFF"/>
                             <AcrylicBrush x:Key="NewAccentButtonBackgroundPointerOver" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}" Opacity="0.9"/>
                             <AcrylicBrush x:Key="NewAccentButtonBackgroundPressed" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}" Opacity="0.8"/>
                             <AcrylicBrush x:Key="NewAccentButtonBackground" TintColor="{ThemeResource SystemAccentColor}" FallbackColor="{ThemeResource SystemAccentColor}"/>
