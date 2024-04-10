@@ -47,7 +47,6 @@ namespace CollapseLauncher.Pages.OOBE
             WindowUtility.EnableWindowNonClientArea();
             SaveInitialLogoAndTitleTextPos();
 
-            App.ToggleBlurBackdrop(true);
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
             ChangeFontIconSettingsCard(SettingsCardContainer.Children);
 
