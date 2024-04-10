@@ -31,7 +31,7 @@
 
             internal static List<Stamp>?  LauncherMetadataStamp      { get; private set; }
             internal static List<Stamp>?  NewUpdateMetadataStamp     { get; private set; }
-            internal static List<string>? LauncherGameNameCollection => LauncherGameNameRegionCollection?.Keys.ToList();
+            internal static List<string?>? LauncherGameNameCollection => LauncherGameNameRegionCollection?.Keys.ToList();
 
             internal static Dictionary<string?, Dictionary<string, PresetConfig>?>? LauncherMetadataConfig
             {
@@ -78,6 +78,9 @@
 
             internal static PresetConfig? GetMetadataConfig(string? gameName, string? gameRegion)
             {
+                ArgumentException.ThrowIfNullOrEmpty(gameName);
+                ArgumentException.ThrowIfNullOrEmpty(gameRegion);
+                
                 PresetConfig? config = LauncherMetadataConfig?[gameName]?[gameRegion];
                 if (config != null)
                 {
@@ -309,7 +312,7 @@
                                 await configLocalStream.DisposeAsync();
 
                                 // If the dictionary doesn't contain the dictionary of the game, then initialize it
-                                Dictionary<string, PresetConfig>? presetConfigDict = [];
+                                Dictionary<string, PresetConfig> presetConfigDict = [];
                                 if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
                                 {
                                     // Initialize and add the game preset config dictionary
@@ -523,7 +526,7 @@
                 }
             }
 
-            internal static List<string>? GetGameNameCollection()
+            internal static List<string?>? GetGameNameCollection()
             {
                 return LauncherGameNameRegionCollection?.Keys.ToList();
             }
@@ -532,7 +535,7 @@
             {
                 if (!(!LauncherGameNameRegionCollection?.ContainsKey(gameName) ?? false))
                 {
-                    return LauncherGameNameRegionCollection?[gameName];
+                    return LauncherGameNameRegionCollection?[gameName]!;
                 }
 
                 Logger.LogWriteLine($"Game region collection for name: \"{gameName}\" isn't exist!", LogType.Error,
@@ -544,12 +547,12 @@
             internal static int GetPreviousGameRegion(string? gameName)
             {
                 // Get the config key name
-                string  iniKeyName = $"LastRegion_{gameName.Replace(" ", string.Empty)}";
+                string  iniKeyName = $"LastRegion_{gameName!.Replace(" ", string.Empty)}";
                 string? gameRegion;
 
                 // Get the region collection
                 List<string?>? gameRegionCollection = GetGameRegionCollection(gameName);
-                gameRegionCollection ??= LauncherGameNameRegionCollection?.FirstOrDefault().Value;
+                gameRegionCollection ??= LauncherGameNameRegionCollection?.FirstOrDefault().Value!;
 
                 // Throw if the collection is empty or null
                 if (gameRegionCollection == null || gameRegionCollection.Count == 0)
@@ -574,7 +577,7 @@
 
             public static void SetPreviousGameRegion(string? gameCategoryName, string? regionName, bool isSave = true)
             {
-                string iniKeyName = $"LastRegion_{gameCategoryName.Replace(" ", string.Empty)}";
+                string iniKeyName = $"LastRegion_{gameCategoryName?.Replace(" ", string.Empty)}";
 
                 if (isSave)
                 {

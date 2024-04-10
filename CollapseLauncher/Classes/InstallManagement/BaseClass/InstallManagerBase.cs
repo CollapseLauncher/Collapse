@@ -1413,7 +1413,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (config != null && config.game_info.installed
              && !string.IsNullOrEmpty(config.game_info.install_path))
             {
-                FileInfo execPath = new FileInfo(Path.Combine(config.game_info.install_path, _gameVersionManager.GamePreset.GameExecutableName));
+                FileInfo execPath = new FileInfo(Path.Combine(config.game_info.install_path, _gameVersionManager.GamePreset.GameExecutableName!));
                 OutputPath = config.game_info.install_path;
                 return execPath.Exists && execPath.Length > 1 >> 16;
             }
