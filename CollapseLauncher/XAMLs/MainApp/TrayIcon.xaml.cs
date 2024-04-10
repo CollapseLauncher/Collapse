@@ -1,16 +1,16 @@
+using CollapseLauncher.Helper;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
-using Microsoft.UI.Xaml;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using CollapseLauncher.Helper;
 
 namespace CollapseLauncher
 {
@@ -123,8 +123,8 @@ namespace CollapseLauncher
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
-                IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
-                if (InvokeProp.m_consoleHandle == IntPtr.Zero) return;
+                IntPtr consoleWindowHandle = GetConsoleWindow();
+                if (m_consoleHandle == IntPtr.Zero) return;
                 if (IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();
@@ -134,7 +134,7 @@ namespace CollapseLauncher
                 else
                 {
                     LoggerConsole.AllocateConsole();
-                    SetForegroundWindow(InvokeProp.GetConsoleWindow());
+                    SetForegroundWindow(GetConsoleWindow());
                     ConsoleTaskbarToggle.Text = _hideConsole;
                     LogWriteLine("Console is visible!");
                 }
@@ -200,7 +200,7 @@ namespace CollapseLauncher
         public void BringToForeground()
         {
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
-            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+            IntPtr consoleWindowHandle = GetConsoleWindow();
 
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 
@@ -240,7 +240,7 @@ namespace CollapseLauncher
             }
             
             // Force refresh all text based on their respective window state
-            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+            IntPtr consoleWindowHandle = GetConsoleWindow();
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
             
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);

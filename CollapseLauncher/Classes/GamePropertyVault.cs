@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -69,7 +70,7 @@ namespace CollapseLauncher.Statics
 
         #region Goofy Ah Copy Method. TODO: Use Generics for this :pepehands:
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         private PresetConfig CopyGamePreset(PresetConfig GamePreset) =>
             new PresetConfig()
             {
@@ -274,7 +275,7 @@ namespace CollapseLauncher.Statics
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PartialTypeWithSinglePart")]
+    [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     internal partial class PageStatics
     {
         internal static CommunityToolsProperty _CommunityToolsProperty { get; set; }

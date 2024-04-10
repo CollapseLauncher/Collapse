@@ -1,6 +1,7 @@
 using Hi3Helper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace CollapseLauncher.FileDialogCOM
      * Please refer to this link for more information:
      * https://learn.microsoft.com/en-us/dotnet/standard/native-interop/comwrappers-source-generation
      */
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedTypeParameter")]
+    [SuppressMessage("ReSharper", "UnusedTypeParameter")]
     public static class FileDialogNative
     {
         private static IntPtr parentHandler = IntPtr.Zero;

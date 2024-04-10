@@ -1,55 +1,60 @@
-using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
 #if !DISABLEDISCORD
-using CollapseLauncher.DiscordPresence;
+    using CollapseLauncher.DiscordPresence;
 #endif
-using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
-using CollapseLauncher.ShortcutUtils;
-using Hi3Helper;
-using Hi3Helper.Screen;
-using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Input;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Win32;
-using PhotoSauce.MagicScaler;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI.Text;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.RegionResourceListHelper;
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using Brush = Microsoft.UI.Xaml.Media.Brush;
-using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
-using Image = Microsoft.UI.Xaml.Controls.Image;
-using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
-using Hi3Helper.EncTool.WindowTool;
-using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Helper;
+    using CollapseLauncher.CustomControls;
+    using CollapseLauncher.Dialogs;
+    using CollapseLauncher.Extension;
+    using CollapseLauncher.FileDialogCOM;
+    using CollapseLauncher.GameSettings.Genshin;
+    using CollapseLauncher.Helper;
+    using CollapseLauncher.Helper.Image;
+    using CollapseLauncher.Helper.Metadata;
+    using CollapseLauncher.Interfaces;
+    using CollapseLauncher.ShortcutUtils;
+    using CollapseLauncher.Statics;
+    using H.NotifyIcon;
+    using Hi3Helper;
+    using Hi3Helper.EncTool.WindowTool;
+    using Hi3Helper.Screen;
+    using Hi3Helper.Shared.ClassStruct;
+    using Microsoft.UI.Input;
+    using Microsoft.UI.Text;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
+    using Microsoft.UI.Xaml.Input;
+    using Microsoft.UI.Xaml.Media.Animation;
+    using Microsoft.UI.Xaml.Media.Imaging;
+    using Microsoft.Win32;
+    using PhotoSauce.MagicScaler;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Numerics;
+    using System.Reflection;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Windows.Foundation;
+    using Windows.UI.Text;
+    using static CollapseLauncher.Dialogs.SimpleDialogs;
+    using static CollapseLauncher.InnerLauncherConfig;
+    using static CollapseLauncher.RegionResourceListHelper;
+    using static Hi3Helper.Data.ConverterTool;
+    using static Hi3Helper.Locale;
+    using static Hi3Helper.Logger;
+    using static Hi3Helper.Shared.Region.LauncherConfig;
+    using Brush = Microsoft.UI.Xaml.Media.Brush;
+    using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
+    using Image = Microsoft.UI.Xaml.Controls.Image;
+    using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+    using Size = System.Drawing.Size;
+    using Timer = System.Timers.Timer;
 
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage : Page
     {
@@ -1135,14 +1140,14 @@ namespace CollapseLauncher.Pages
             catch (NullReferenceException ex)
             {
                 IsPageUnload = true;
-                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
                 IsPageUnload = true;
-                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
             }
             finally
@@ -1323,10 +1328,10 @@ namespace CollapseLauncher.Pages
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
             }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
 				IsSkippingUpdateCheck = false;
             }
         }
@@ -1367,7 +1372,7 @@ namespace CollapseLauncher.Pages
                     WindowUtility.WindowRestore();
                     break;
                 case "ToTray":
-                    H.NotifyIcon.WindowExtensions.Show(WindowUtility.CurrentWindow!);
+                    WindowExtensions.Show(WindowUtility.CurrentWindow!);
                     WindowUtility.WindowRestore();
                     break;
                 case "Nothing":
@@ -1396,7 +1401,7 @@ namespace CollapseLauncher.Pages
                     p.Kill();
                 }
             }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
@@ -1444,7 +1449,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                 }
 
-                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
 
@@ -1487,7 +1492,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                 }
 
-                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
 
@@ -1511,7 +1516,7 @@ namespace CollapseLauncher.Pages
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
 
-                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
 
@@ -1853,7 +1858,7 @@ namespace CollapseLauncher.Pages
             LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
 #endif
 
-            using (var inGameTimer = new System.Timers.Timer())
+            using (var inGameTimer = new Timer())
             {
                 inGameTimer.Interval = 60000;
                 inGameTimer.Elapsed += (o, e) =>
@@ -2078,10 +2083,10 @@ namespace CollapseLauncher.Pages
 
         private void GenshinHDREnforcer()
         {
-            GameSettings.Genshin.WindowsHDR GenshinHDR = new GameSettings.Genshin.WindowsHDR();
+            WindowsHDR GenshinHDR = new WindowsHDR();
             try
             {
-                GameSettings.Genshin.WindowsHDR.Load();
+                WindowsHDR.Load();
                 GenshinHDR.isHDR = true;
                 GenshinHDR.Save();
                 LogWriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);
@@ -2171,10 +2176,10 @@ namespace CollapseLauncher.Pages
 
                 await _procPreGLC.WaitForExitAsync();
             }
-            catch ( System.ComponentModel.Win32Exception ex )
+            catch ( Win32Exception ex )
             {
                 LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
             }
             finally
             {
@@ -2200,7 +2205,7 @@ namespace CollapseLauncher.Pages
             }
             // Ignore external errors
             catch ( InvalidOperationException ) {}
-            catch (System.ComponentModel.Win32Exception) {}
+            catch (Win32Exception) {}
         }
 
         private async void PostExitCommand(IGameSettingsUniversal _settings)
@@ -2239,10 +2244,10 @@ namespace CollapseLauncher.Pages
 
                 await procPostGLC.WaitForExitAsync();
             }
-            catch ( System.ComponentModel.Win32Exception ex )
+            catch ( Win32Exception ex )
             {
                 LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
         }
         #endregion

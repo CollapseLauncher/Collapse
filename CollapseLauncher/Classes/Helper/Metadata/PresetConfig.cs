@@ -1,14 +1,14 @@
-﻿using System;
+﻿using CollapseLauncher.Helper.Metadata.JsonConverter;
+using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CollapseLauncher.Helper.Metadata.JsonConverter;
-using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Microsoft.Win32;
 using static Hi3Helper.Logger;
 
 #nullable enable

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Threading.Tasks;
-using Windows.Storage.Streams;
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using Hi3Helper;
@@ -14,6 +7,13 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Threading.Tasks;
+using Windows.Storage.Streams;
 using static Hi3Helper.Logger;
 using WColor = Windows.UI.Color;
 

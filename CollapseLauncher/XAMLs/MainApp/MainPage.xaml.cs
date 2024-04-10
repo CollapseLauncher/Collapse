@@ -23,6 +23,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -495,7 +496,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
-            Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+            KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
             GridBG_RegionGrid.SizeChanged += GridBG_RegionGrid_SizeChanged;
             MainPageGrid.SizeChanged += MainPageGrid_SizeChanged;
@@ -512,7 +513,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
-            Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
+            KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
             GridBG_RegionGrid.SizeChanged -= GridBG_RegionGrid_SizeChanged;
             MainPageGrid.SizeChanged -= MainPageGrid_SizeChanged;
@@ -1379,7 +1380,7 @@ namespace CollapseLauncher
             GridBG_IconImg.Opacity = 0.8d;
         }
 
-        private void GridBG_Icon_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void GridBG_Icon_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (!IsTitleIconForceShow)
             {
@@ -1390,7 +1391,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void GridBG_Icon_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void GridBG_Icon_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             if (!IsTitleIconForceShow)
             {
@@ -1669,7 +1670,7 @@ namespace CollapseLauncher
         {
             if (CannotUseKbShortcuts)
                 return;
-            await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
+            await Dialog_ShowKbShortcuts(this);
         }
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1780,7 +1781,7 @@ namespace CollapseLauncher
                     p.Kill();
                 }
             }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }

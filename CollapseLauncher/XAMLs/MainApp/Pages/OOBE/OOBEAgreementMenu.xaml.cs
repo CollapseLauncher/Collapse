@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.IO;
@@ -49,7 +50,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         public void SetParentUI(OOBEStartUpMenu startUpParentUI) => OOBEAgreementMenuExtensions.oobeStartParentUI = startUpParentUI;
 
-        private void Button_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             OOBEAgreementMenuExtensions.oobeStartParentUI.StartLauncherConfiguration();
         }

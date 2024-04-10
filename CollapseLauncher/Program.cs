@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Update;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
@@ -7,8 +8,7 @@ using Squirrel;
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -18,8 +18,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using System.IO;
-using CollapseLauncher.Helper.Update;
 
 namespace CollapseLauncher
 {

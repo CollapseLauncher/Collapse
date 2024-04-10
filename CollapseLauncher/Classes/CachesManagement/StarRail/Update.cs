@@ -4,6 +4,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     internal partial class StarRailCache
     {
         // ReSharper disable once UnusedParameter.Local

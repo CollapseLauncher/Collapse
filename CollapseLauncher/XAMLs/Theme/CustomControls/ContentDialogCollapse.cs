@@ -1,4 +1,5 @@
 ﻿// using Hi3Helper.Shared.ClassStruct;
+
 using CollapseLauncher.Extension;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;

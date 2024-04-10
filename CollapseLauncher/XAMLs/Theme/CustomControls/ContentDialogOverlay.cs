@@ -1,11 +1,11 @@
 ﻿#nullable enable
-using CollapseLauncher.Extension;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Windows.Foundation;
-using NColor = Windows.UI.Color;
+    using CollapseLauncher.Extension;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Media;
+    using Windows.Foundation;
+    using NColor = Windows.UI.Color;
 
-namespace CollapseLauncher.CustomControls
+    namespace CollapseLauncher.CustomControls
 {
     public class ContentDialogOverlay : ContentDialog
     {

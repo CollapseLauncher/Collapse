@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using System;
@@ -85,7 +86,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
             }
         }
 

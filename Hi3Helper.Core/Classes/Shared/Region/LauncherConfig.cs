@@ -4,6 +4,7 @@ using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -22,8 +23,8 @@ namespace Hi3Helper.Shared.Region
     }
     #endregion
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "InconsistentNaming")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "RedundantDefaultMemberInitializer")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods

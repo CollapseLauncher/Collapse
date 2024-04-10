@@ -2,10 +2,11 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI;
-using Hi3Helper.Preset;
+using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -279,7 +280,7 @@ namespace CollapseLauncher.Dialogs
             TextBlock keybox = new TextBlock()
             {
                 Text = key,
-                Foreground = new SolidColorBrush(Application.Current.RequestedTheme == ApplicationTheme.Dark ? Microsoft.UI.Colors.Black : Microsoft.UI.Colors.White),
+                Foreground = new SolidColorBrush(Application.Current.RequestedTheme == ApplicationTheme.Dark ? Colors.Black : Colors.White),
                 FontWeight = FontWeights.Medium,
                 TextAlignment = TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
@@ -361,7 +362,7 @@ namespace CollapseLauncher.Dialogs
             Flyout helpFlyout = new Flyout
                                 {
                                     Content = helpStack,
-                                    Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop
+                                    Placement = FlyoutPlacementMode.RightEdgeAlignedTop
                                 };
             helpStack.AddElementToStackPanel(
                 new TextBlock()

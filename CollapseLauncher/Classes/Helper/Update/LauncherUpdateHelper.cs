@@ -1,14 +1,14 @@
-﻿using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
-using Squirrel;
-using Squirrel.Sources;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿#nullable enable
+    using Hi3Helper;
+    using Hi3Helper.Data;
+    using Hi3Helper.Shared.Region;
+    using Squirrel;
+    using Squirrel.Sources;
+    using System;
+    using System.Reflection;
+    using System.Threading.Tasks;
 
-#nullable enable
-namespace CollapseLauncher.Helper.Update
+    namespace CollapseLauncher.Helper.Update
 {
     internal static class LauncherUpdateHelper
     {

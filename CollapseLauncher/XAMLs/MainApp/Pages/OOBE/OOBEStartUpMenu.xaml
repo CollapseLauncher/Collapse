@@ -70,7 +70,7 @@
                                 <AnimatedIcon Width="24"
                                               MinHeight="{ThemeResource ComboBoxMinHeight}"
                                               HorizontalAlignment="Center">
-                                    <animatedvisuals:AnimatedBackVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"/>
+                                    <animatedvisuals:AnimatedBackVisualSource />
                                     <AnimatedIcon.FallbackIconSource>
                                         <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                                         FontSize="12"
@@ -317,7 +317,7 @@
                                           MinHeight="{ThemeResource ComboBoxMinHeight}"
                                           Margin="0,-4,0,-8"
                                           HorizontalAlignment="Center">
-                                <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"/>
+                                <animatedvisuals:AnimatedChevronDownSmallVisualSource />
                                 <AnimatedIcon.FallbackIconSource>
                                     <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                                     FontSize="12"

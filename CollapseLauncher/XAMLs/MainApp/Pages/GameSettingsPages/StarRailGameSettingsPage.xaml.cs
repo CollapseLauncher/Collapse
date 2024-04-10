@@ -1,28 +1,31 @@
 ﻿#if !DISABLEDISCORD
-using CollapseLauncher.DiscordPresence;
+    using CollapseLauncher.DiscordPresence;
 #endif
-using CollapseLauncher.Statics;
-using CollapseLauncher.GameSettings.StarRail;
-using CollapseLauncher.Interfaces;
-using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Win32;
-using RegistryUtils;
-using System;
-using System.IO;
-using CollapseLauncher.Dialogs;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
-using Hi3Helper;
-using CollapseLauncher.Helper.Animation;
+    using CollapseLauncher.Dialogs;
+    using CollapseLauncher.GameSettings.StarRail;
+    using CollapseLauncher.Helper.Animation;
+    using CollapseLauncher.Interfaces;
+    using CollapseLauncher.Statics;
+    using Hi3Helper;
+    using Hi3Helper.Shared.ClassStruct;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Media;
+    using Microsoft.UI.Xaml.Navigation;
+    using Microsoft.Win32;
+    using RegistryUtils;
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Numerics;
+    using Windows.UI;
+    using static Hi3Helper.Locale;
+    using static Hi3Helper.Logger;
+    using static Hi3Helper.Shared.Region.LauncherConfig;
+    using static CollapseLauncher.Statics.GamePropertyVault;
 
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class StarRailGameSettingsPage
     {
         private GamePresetProperty CurrentGameProperty   { get; set; }
@@ -79,7 +82,7 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
-            GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
+            GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
 
             InheritApplyTextColor = ApplyText.Foreground!;
@@ -109,7 +112,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occured while exporting registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
+                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
             }
@@ -135,7 +138,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occured while importing registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
+                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
             }

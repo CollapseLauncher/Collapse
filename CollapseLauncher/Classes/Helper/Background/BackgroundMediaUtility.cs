@@ -1,15 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable

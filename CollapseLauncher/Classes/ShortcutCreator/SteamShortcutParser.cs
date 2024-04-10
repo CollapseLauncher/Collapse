@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -176,7 +177,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (strRes.Count != 9 || boolRes.Count != 6)
             {
-                LogWriteLine("Invalid shortcut! Skipping...", Hi3Helper.LogType.Error);
+                LogWriteLine("Invalid shortcut! Skipping...", LogType.Error);
                 return null;
             }
 

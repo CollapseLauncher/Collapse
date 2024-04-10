@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using System;
 using static Hi3Helper.Logger;
 
@@ -41,7 +42,7 @@ namespace CollapseLauncher.Prototype
                 GridBG_IconTitle.Visibility = Visibility.Collapsed;
         }
 
-        private void NotificationContainerBackground_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void NotificationContainerBackground_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
         }
     }

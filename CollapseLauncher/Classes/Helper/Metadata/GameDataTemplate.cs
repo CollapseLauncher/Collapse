@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+    using System.Collections.Generic;
 
-#nullable enable
-namespace CollapseLauncher.Helper.Metadata
+    namespace CollapseLauncher.Helper.Metadata
 {
     public class GameDataTemplate
     {

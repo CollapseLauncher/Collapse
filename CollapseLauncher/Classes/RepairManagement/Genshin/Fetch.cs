@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameVersioning;
-using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Microsoft.Win32;
 using System.IO;
 using System.Linq;
@@ -91,7 +92,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (!Directory.Exists(steamUserData))
             {
-                LogWriteLine("[ShortcutCreator::GetShortcutsPath] " + steamUserData + " is not a valid folder.", Hi3Helper.LogType.Error);
+                LogWriteLine("[ShortcutCreator::GetShortcutsPath] " + steamUserData + " is not a valid folder.", LogType.Error);
                 return null;
             }
 
@@ -105,7 +106,7 @@ namespace CollapseLauncher.ShortcutUtils
             for (int i = 0; i < res.Length; i++)
             {
                 res[i] = Path.Combine(res[i], @"config\shortcuts.vdf");
-                LogWriteLine("[ShortcutCreator::GetShortcutsPath] Found profile: " + res[i], Hi3Helper.LogType.Debug);
+                LogWriteLine("[ShortcutCreator::GetShortcutsPath] Found profile: " + res[i], LogType.Debug);
             }
 
             return res;

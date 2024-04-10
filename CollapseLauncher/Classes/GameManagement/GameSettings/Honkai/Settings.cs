@@ -5,6 +5,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Microsoft.Win32;
 using System.IO;
+
 // ReSharper disable PossibleNullReferenceException
 
 namespace CollapseLauncher.GameSettings.Honkai

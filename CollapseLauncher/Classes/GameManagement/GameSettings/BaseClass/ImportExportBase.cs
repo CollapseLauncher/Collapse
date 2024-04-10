@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.UABT;
 using Hi3Helper.UABT.Binary;
 using Microsoft.Win32;
 using System;
@@ -80,7 +81,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         private void ReadLegacyValues(Stream fs)
         {
-            using (EndianBinaryReader reader = new EndianBinaryReader(fs, Hi3Helper.UABT.EndianType.BigEndian, true))
+            using (EndianBinaryReader reader = new EndianBinaryReader(fs, EndianType.BigEndian, true))
             {
                 short count = reader.ReadInt16();
                 Logger.LogWriteLine($"File has {count} values.");

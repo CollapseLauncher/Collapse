@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;

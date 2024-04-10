@@ -1,10 +1,7 @@
-﻿using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +11,6 @@ using Windows.Foundation;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher

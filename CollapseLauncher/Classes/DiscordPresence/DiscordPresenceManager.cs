@@ -1,9 +1,9 @@
 ﻿#if !DISABLEDISCORD
-    using System;
     using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Helper.Update;
-using DiscordRPC;
+    using CollapseLauncher.Helper.Update;
+    using DiscordRPC;
     using Hi3Helper;
+    using System;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Shared.Region.LauncherConfig;
 

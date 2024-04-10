@@ -161,6 +161,12 @@
           "Microsoft.WindowsAppSDK": "1.5.240227000"
         }
       },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.4, )",
+        "resolved": "8.0.4",
+        "contentHash": "PZb5nfQ+U19nhnmnR9T1jw+LTmozhuG2eeuzuW5A7DqxD/UXW2ucjmNJqnqOuh8rdPzM3MQXoF8AfFCedJdCUw=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
         "requested": "[8.0.0-preview.7.23375.6, )",
@@ -950,7 +956,6 @@
       "hi3helper.core": {
         "type": "Project",
         "dependencies": {
-          "DiscordRPC": "[1.0.0, )",
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Http": "[1.0.0, )"
         }

@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Windows.Foundation;
-using Windows.UI;
-using CollapseLauncher.DiscordPresence;
+﻿using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Windows.Foundation;
+using Windows.UI;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using WindowId = Microsoft.UI.WindowId;
 
 #nullable enable
 namespace CollapseLauncher

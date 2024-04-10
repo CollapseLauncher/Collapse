@@ -1,11 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using CollapseLauncher.Helper.Animation;
+﻿using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper.Shared.Region;
@@ -13,6 +6,13 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable

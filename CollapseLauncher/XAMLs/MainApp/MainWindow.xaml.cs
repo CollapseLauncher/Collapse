@@ -2,10 +2,14 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Pages;
+using CollapseLauncher.Pages.OOBE;
+using Hi3Helper;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
@@ -33,7 +37,7 @@ namespace CollapseLauncher
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
                     WindowUtility.CurrentWindowIsResizable = false;
                     WindowUtility.CurrentWindowIsMaximizable = false;
-                    rootFrame.Navigate(typeof(Pages.OOBE.OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
+                    rootFrame.Navigate(typeof(OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
                 }
                 else
                     StartMainPage();
@@ -43,7 +47,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
                 Console.ReadLine();
             }
         }
@@ -101,8 +105,8 @@ namespace CollapseLauncher
                 WindowUtility.CurrentWindowIsResizable = false;
                 WindowUtility.CurrentWindowIsMaximizable = false;
 
-                WindowUtility.CurrentAppWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
-                WindowUtility.CurrentAppWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+                WindowUtility.CurrentAppWindow.TitleBar.ButtonBackgroundColor = new Color { A = 0, B = 0, G = 0, R = 0 };
+                WindowUtility.CurrentAppWindow.TitleBar.ButtonInactiveBackgroundColor = new Color { A = 0, B = 0, G = 0, R = 0 };
 
                 // Hide system menu
                 var controlsHwnd = FindWindowEx(WindowUtility.CurrentWindowPtr, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
@@ -142,13 +146,13 @@ namespace CollapseLauncher
         {
             if (e.QuitFromUpdateMenu)
             {
-                overlayFrame.Navigate(typeof(Pages.NullPage), null, new EntranceNavigationTransitionInfo());
+                overlayFrame.Navigate(typeof(NullPage), null, new EntranceNavigationTransitionInfo());
                 return;
             }
 
             if (e.IsUpdateAvailable)
             {
-                overlayFrame.Navigate(typeof(Pages.UpdatePage));
+                overlayFrame.Navigate(typeof(UpdatePage));
             }
         }
 

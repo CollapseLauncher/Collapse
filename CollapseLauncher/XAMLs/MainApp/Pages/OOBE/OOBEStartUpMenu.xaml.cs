@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -9,13 +10,13 @@ using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -330,14 +331,14 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private void GridBG_Icon_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void GridBG_Icon_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             UIElement obj = sender as UIElement;
             obj.Scale += new Vector3(0.1f);
             obj.Opacity = 1f;
         }
 
-        private void GridBG_Icon_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void GridBG_Icon_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             UIElement obj = sender as UIElement;
             obj.Scale -= new Vector3(0.1f);
@@ -690,7 +691,7 @@ namespace CollapseLauncher.Pages.OOBE
         {
             string folder;
             bool Selected = false;
-            switch (await Dialogs.SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
+            switch (await SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
             {
                 case ContentDialogResult.Primary:
                     AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
@@ -703,7 +704,7 @@ namespace CollapseLauncher.Pages.OOBE
                     {
                         if (!CheckIfFolderIsValid(folder))
                         {
-                            await Dialogs.SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
+                            await SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
                             break;
                         }
 

@@ -5,8 +5,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
-      xmlns:local="using:CollapseLauncher"
-      xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:p="using:CollapseLauncher.Helper.Metadata"
       Unloaded="Page_Unloaded"

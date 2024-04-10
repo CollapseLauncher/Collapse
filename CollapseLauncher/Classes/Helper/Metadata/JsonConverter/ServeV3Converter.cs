@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿#nullable enable
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
-#nullable enable
-namespace CollapseLauncher.Helper.Metadata.JsonConverter
+    namespace CollapseLauncher.Helper.Metadata.JsonConverter
 {
     internal class ServeV3StringConverter : JsonConverter<string>
     {

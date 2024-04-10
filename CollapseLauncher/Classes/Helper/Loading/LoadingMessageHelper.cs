@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
-using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

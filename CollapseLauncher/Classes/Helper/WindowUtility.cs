@@ -1,9 +1,4 @@
 ﻿#nullable enable
-    using System;
-    using System.Runtime.InteropServices;
-    using Windows.Foundation;
-    using Windows.Graphics;
-    using Windows.UI;
     using CollapseLauncher.Extension;
     using CollapseLauncher.FileDialogCOM;
     using CollapseLauncher.Helper.Background;
@@ -17,6 +12,11 @@
     using Microsoft.UI.Windowing;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Media;
+    using System;
+    using System.Runtime.InteropServices;
+    using Windows.Foundation;
+    using Windows.Graphics;
+    using Windows.UI;
     using WinRT.Interop;
     using Size = System.Drawing.Size;
     using WindowId = Microsoft.UI.WindowId;

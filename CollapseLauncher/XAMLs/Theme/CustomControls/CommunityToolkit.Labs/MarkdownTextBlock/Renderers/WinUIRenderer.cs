@@ -10,6 +10,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Helpers;
 using Markdig.Renderers;
 using Markdig.Syntax;
+using Markdig.Syntax.Inlines;
 using System;
 using System.Collections.Generic;
 
@@ -59,7 +60,7 @@ public class WinUIRenderer : RendererBase
     public void WriteLeafInline(LeafBlock leafBlock)
     {
         if (leafBlock == null || leafBlock.Inline == null) throw new ArgumentNullException(nameof(leafBlock));
-        var inline = (Markdig.Syntax.Inlines.Inline)leafBlock.Inline;
+        var inline = (Inline)leafBlock.Inline;
         while (inline != null)
         {
             Write(inline);

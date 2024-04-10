@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Hi3Helper;
+using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using Hi3Helper;
 
 namespace CollapseLauncher.Helper.Metadata
 {

@@ -243,13 +243,13 @@ namespace Hi3Helper
                 // If inputString is null or empty, then return
                 if (string.IsNullOrEmpty(inputString))
                 {
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
                     return;
                 }
 
                 // Try open the Clipboard
                 if (!(isOpenClipboardSuccess = OpenClipboard(IntPtr.Zero)))
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
 
                 // Set the bufferSize + 1, the additional 1 byte will be used to interpret the null byte
                 int bufferSize = (inputString.Length + 1);
@@ -260,7 +260,7 @@ namespace Hi3Helper
 
                 // Write the inputString as a UTF-8 bytes into the string buffer
                 if (!Encoding.UTF8.TryGetBytes(inputString, new Span<byte>((byte*)stringBufferPtr, inputString.Length), out int bufferWritten))
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
 
                 // Always set the null byte at the end of the buffer
                 ((byte*)stringBufferPtr!)![bufferWritten] = 0x00; // Write the null (terminator) byte
@@ -272,11 +272,11 @@ namespace Hi3Helper
                 // the clearance is failed, then clear the buffer at "finally" block
                 if (!EmptyClipboard() || SetClipboardData(1, hMem) == IntPtr.Zero)
                 {
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
                     return;
                 }
 
-                Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Content has been set to Clipboard buffer with size: {bufferSize} bytes", LogType.Debug, true);
+                LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Content has been set to Clipboard buffer with size: {bufferSize} bytes", LogType.Debug, true);
             }
             finally
             {

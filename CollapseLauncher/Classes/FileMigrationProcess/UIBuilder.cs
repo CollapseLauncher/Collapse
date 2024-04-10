@@ -1,6 +1,6 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -12,6 +12,8 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System.IO;
 using System.Threading.Tasks;
+using Windows.UI;
+using Windows.UI.Text;
 
 namespace CollapseLauncher
 {
@@ -56,9 +58,9 @@ namespace CollapseLauncher
 
             TextBlock warningText = mainGrid.AddElementToGridRowColumn(new TextBlock
             {
-                FontStyle = Windows.UI.Text.FontStyle.Italic,
+                FontStyle = FontStyle.Italic,
                 FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 0, 0)),
+                Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
                 Visibility = Visibility.Collapsed,
                 TextWrapping = TextWrapping.Wrap,
                 Text = ""

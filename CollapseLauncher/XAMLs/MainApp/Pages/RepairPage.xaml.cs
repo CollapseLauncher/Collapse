@@ -1,20 +1,20 @@
 ﻿#if !DISABLEDISCORD
-using CollapseLauncher.DiscordPresence;
+    using CollapseLauncher.DiscordPresence;
 #endif
-using CollapseLauncher.Statics;
-using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using System;
-using System.Threading.Tasks;
-using static CollapseLauncher.Statics.GamePropertyVault;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+    using CollapseLauncher.Statics;
+    using Hi3Helper;
+    using Hi3Helper.Shared.ClassStruct;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
+    using System;
+    using System.Threading.Tasks;
+    using static CollapseLauncher.Statics.GamePropertyVault;
+    using static Hi3Helper.Locale;
+    using static Hi3Helper.Logger;
+    using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
     public sealed partial class RepairPage : Page
     {

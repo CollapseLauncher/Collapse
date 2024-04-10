@@ -1,13 +1,13 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Threading.Tasks;
-using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;

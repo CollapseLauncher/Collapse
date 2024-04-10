@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hi3Helper;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -48,7 +49,7 @@ namespace CollapseLauncher
 
                 if (allowedProtocolCommands.IndexOf(args[0]) == -1)
                 {
-                    LogWriteLine("This command does not exist or cannot be activated using a protocol.", Hi3Helper.LogType.Error);
+                    LogWriteLine("This command does not exist or cannot be activated using a protocol.", LogType.Error);
                     m_appMode = AppMode.Launcher;
                     return;
                 }

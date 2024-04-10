@@ -573,7 +573,7 @@ namespace CollapseLauncher
                 }
 
                 // Send the exception without changing into the Error page
-                LogWriteLine($"Loading Game: {LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion} has timed-out (> {timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
+                LogWriteLine($"Loading Game: {LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion} has timed-out (> {timeout} seconds). Retrying...", LogType.Warning);
                 ErrorSender.SendExceptionWithoutPage(ex, ErrorType.Connection);
             });
 

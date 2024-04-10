@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
-using Windows.Media.Playback;
-using Windows.Storage;
-using Windows.Storage.FileProperties;
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -20,8 +9,19 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Windows.Graphics.Imaging;
+using Windows.Media.Playback;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
+using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders

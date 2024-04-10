@@ -1,13 +1,13 @@
 ﻿#nullable enable
+    using CollapseLauncher.Helper.Loading;
+    using Hi3Helper;
+    using Hi3Helper.Data;
+    using Hi3Helper.Shared.Region;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using CollapseLauncher.Helper.Loading;
-    using Hi3Helper;
-    using Hi3Helper.Data;
-    using Hi3Helper.Shared.Region;
 
     namespace CollapseLauncher.Helper.Metadata
     {

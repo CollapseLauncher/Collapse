@@ -1,7 +1,7 @@
-﻿using System;
+﻿#nullable enable
+    using System;
 
-#nullable enable
-namespace CollapseLauncher.Helper.Metadata
+    namespace CollapseLauncher.Helper.Metadata
 {
     public class GameDataVersion
     {
