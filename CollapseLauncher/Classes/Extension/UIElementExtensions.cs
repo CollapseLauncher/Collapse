@@ -184,6 +184,19 @@ namespace CollapseLauncher.Extension
             return resource;
         }
 
+#nullable enable
+        internal static (object?, object?, object?) GetApplicationResourcePair(string resourceKey)
+        {
+            object? lightObject = Application.Current.Resources.MergedDictionaries.Select(x => x.ThemeDictionaries.Where(x => (x.Key is string dictKey && dictKey == "Light") && x.Value is ResourceDictionary)).Select(x => x.FirstOrDefault(y => y.Key is string resourceKey && resourceKey.Equals(resourceKey, StringComparison.InvariantCultureIgnoreCase)).Value);
+
+            object? lightObject = Application.Current.Resources.MergedDictionaries.Select(x => x.ThemeDictionaries.Where(x => x.Key is string dictKey && dictKey == "Light").FirstOrDefault(x => x.Value is object));
+            object? darkObject = Application.Current.Resources.MergedDictionaries.Select(x => x.ThemeDictionaries.Where(x => x.Key is string dictKey && (dictKey == "Dark" || dictKey == "Default")).FirstOrDefault(x => (x.Key as string) == resourceKey).Value).FirstOrDefault();
+            object? highContrastObject = Application.Current.Resources.MergedDictionaries.Select(x => x.ThemeDictionaries.Where(x => x.Key is string dictKey && dictKey == "HighContrast").FirstOrDefault(x => (x.Key as string) == resourceKey).Value).FirstOrDefault();
+
+            return (lightObject, darkObject, highContrastObject);
+        }
+#nullable disable
+
         internal static void SetApplicationResource(string resourceKey, object value)
         {
             if (!Application.Current.Resources.ContainsKey(resourceKey))

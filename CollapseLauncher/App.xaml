@@ -201,6 +201,10 @@
                             <AcrylicBrush x:Key="AcrylicComboBoxBackgroundDisabled" FallbackColor="#DD222222" TintColor="#222222" TintLuminosityOpacity="0.30" TintOpacity="0.0" />
 
                             <!-- For Acrylic Button  -->
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundDisabled" Color="#DDFFFFFF"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundPointerOver" Color="#EE000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundPressed" Color="#CC000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForeground" Color="#FF111111"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackground" FallbackColor="#88222222" TintColor="#AA222222" TintLuminosityOpacity="0.30" TintOpacity="0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundFocused" FallbackColor="#BB222222" TintColor="#222222" TintLuminosityOpacity="0.50" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundPointerOver" FallbackColor="#BB222222" TintColor="#222222" TintLuminosityOpacity="0.50" TintOpacity="0.0" />
@@ -390,7 +394,10 @@
                             <AcrylicBrush x:Key="AcrylicComboBoxBackgroundDisabled" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.40" TintOpacity="0.0" />
 
                             <!-- For Acrylic Button  -->
-                            <SolidColorBrush x:Key="AccentButtonForegroundDisabled" Color="#AA000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundDisabled" Color="#AA000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundPointerOver" Color="#AA000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForegroundPressed" Color="#AA000000"/>
+                            <SolidColorBrush x:Key="NewAccentButtonForeground" Color="#AA000000"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackground" FallbackColor="#D0FFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.80" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundFocused" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.70" TintOpacity="0.0" />
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundPointerOver" FallbackColor="#FFFFFFFF" TintColor="#FFFFFF" TintLuminosityOpacity="0.70" TintOpacity="0.0" />
@@ -911,7 +918,7 @@
                     </Style>
 
                     <Style x:Key="NewAccentButtonStyle" TargetType="Button">
-                        <Setter Property="Foreground" Value="{ThemeResource AccentButtonForeground}" />
+                        <Setter Property="Foreground" Value="{ThemeResource NewAccentButtonForeground}" />
                         <Setter Property="Background" Value="{ThemeResource AccentButtonBackground}" />
                         <Setter Property="BackgroundSizing" Value="OuterBorderEdge" />
                         <Setter Property="BorderBrush" Value="{ThemeResource AccentButtonBorderBrush}" />
@@ -960,7 +967,7 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushPointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonForegroundPointerOver}" />
+                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource NewAccentButtonForegroundPointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                 </VisualState>
@@ -974,7 +981,7 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonForegroundPressed}" />
+                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource NewAccentButtonForegroundPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                 </VisualState>
@@ -988,7 +995,7 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonBorderBrushDisabled}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
-                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentButtonForegroundDisabled}" />
+                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource NewAccentButtonForegroundDisabled}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                 </VisualState>

@@ -58,7 +58,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="GameDetailsHomepage_Click"
                         CornerRadius="0,0,8,8"
-                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Style="{ThemeResource AccentButtonStyle}"
                         Tag="{x:Bind GameDetailsHomepageLink}"
                         ToolTipService.ToolTip="{x:Bind GameDetailsHomepageLink}">
                     <Grid HorizontalAlignment="Stretch">
