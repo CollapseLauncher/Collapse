@@ -10,12 +10,12 @@
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow" />
+        <ThemeShadow x:Name="SharedShadow"/>
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
         <ListView x:Name="KeyboardHandler" />
     </Page.Resources>
-    <Grid x:Name="MainPageGrid">
+    <Grid x:Name="MainPageGrid" Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundNewBackGrid" />
         <Grid x:Name="BackgroundNewMediaPlayerGrid">
             <MediaPlayerElement x:Name="MediaPlayerFrame"
@@ -37,7 +37,7 @@
                 Background="{ThemeResource NavigationViewUnfoldedPaneBackground}"
                 Width="48"
                 Margin="0"
-                CornerRadius="8"
+                CornerRadius="0,8,8,0"
                 VerticalAlignment="Stretch"
                 HorizontalAlignment="Left"
                 Translation="0,0,16"
@@ -102,13 +102,18 @@
                             VerticalAlignment="Center"
                             CanDrag="True"
                             Orientation="Horizontal">
-                    <StackPanel VerticalAlignment="Top"
-                                Canvas.ZIndex="2"
-                                Orientation="Horizontal">
-                        <Grid x:Name="ComboBoxGameGrid"
-                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}"
+                    <Grid VerticalAlignment="Top"
+                          Canvas.ZIndex="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid x:Name="ComboBoxGameGridShadow"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGridShadow)}"
                               Translation="0,0,12"
-                              Shadow="{ThemeResource SharedShadow}">
+                              Shadow="{ThemeResource SharedShadow}"/>
+                        <Grid x:Name="ComboBoxGameGrid"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
@@ -130,7 +135,14 @@
                                   SelectionChanged="EnableRegionChangeButton"
                                   Style="{ThemeResource AcrylicComboBoxStyle}" />
                         </Grid>
+                        <Grid x:Name="ChangeGameBtnGridShadow"
+                              Grid.Column="1"
+                              Margin="8,0,0,0"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeGameBtnGridShadow)}"
+                              Translation="0,0,12"
+                              Shadow="{ThemeResource SharedShadow}"/>
                         <Grid x:Name="ChangeGameBtnGrid"
+                              Grid.Column="1"
                               Margin="8,0,0,0"
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ChangeGameBtnGrid)}">
                             <Button x:Name="ChangeRegionConfirmBtnNoWarning"
@@ -209,7 +221,7 @@
                                 </Button.Flyout>
                             </Button>
                         </Grid>
-                    </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Grid>
             <Grid Name="GridBG_NotifBtn"

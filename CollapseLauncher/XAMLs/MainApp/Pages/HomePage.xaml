@@ -12,6 +12,7 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="using:CommunityToolkit.WinUI"
+      xmlns:extension="using:CollapseLauncher.Extension"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       Unloaded="Page_Unloaded"
@@ -1393,14 +1394,15 @@
             <Grid x:Name="LauncherBtn"
                   Grid.Row="0"
                   Grid.Column="0"
-                  CornerRadius="20"
+                  Translation="0,0,32"
+                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
                   HorizontalAlignment="Stretch"
                   Shadow="{ThemeResource SharedShadow}">
                 <Button x:Name="InstallGameBtn"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Click="InstallGameDialog"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
                         Style="{ThemeResource NewAccentButtonStyle}">
                     <Button.Content>
                         <StackPanel Margin="16,0,16,0"
@@ -1419,7 +1421,7 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Click="UpdateGameDialog"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <Button.Content>
@@ -1437,7 +1439,7 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Click="StartGame"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <StackPanel Margin="16,0,16,0"
@@ -1455,7 +1457,7 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Click="CancelInstallationProcedure"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <TextBlock FontWeight="Medium"
@@ -1464,7 +1466,7 @@
                 <Button x:Name="ResumeDownloadBtn"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        CornerRadius="20"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <TextBlock FontWeight="Medium"
@@ -1478,7 +1480,8 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
                     Click="ForceUpdatePlaytimeButton_Click"
-                    CornerRadius="20"
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
+                    Translation="0,0,32"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Content>
                     <Grid>

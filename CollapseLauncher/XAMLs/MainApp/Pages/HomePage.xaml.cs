@@ -159,10 +159,8 @@
                 TryLoadEventPanelImage();
 
                 SocMedPanel.Translation += Shadow48;
-                LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
                 CommunityToolsBtn.Translation += Shadow32;
-                PlaytimeBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
                     || MenuPanels.articlePanel != null)
@@ -858,9 +856,6 @@
                     {
                         _cachedIsGameRunning = true;
 
-                        if (StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation -= Shadow16;
-
                         StartGameBtn.IsEnabled = false;
                         StartGameBtn.Content = BtnRunningGame;
 
@@ -883,9 +878,6 @@
                     }
 
                     _cachedIsGameRunning = false;
-
-                    if (!StartGameBtn.IsEnabled)
-                        LauncherBtn.Translation += Shadow16;
 
                     StartGameBtn.IsEnabled = true;
                     StartGameBtn.Content = BtnStartGame;
