@@ -109,7 +109,7 @@ namespace Hi3Helper
             Console.OutputEncoding = Encoding.UTF8;
 
             var instanceIndicator = "";
-            var instanceCount = InvokeProp.GetInstanceCount();
+            var instanceCount = EnumerateInstances();
 
             if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
             Console.Title = $"Collapse Console{instanceIndicator}";

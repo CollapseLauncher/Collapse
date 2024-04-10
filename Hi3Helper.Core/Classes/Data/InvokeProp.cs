@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable MemberCanBePrivate.Global
@@ -328,18 +329,57 @@ namespace Hi3Helper
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
 
-        public static int GetInstanceCount()
-        {
-            var currentProcess = Process.GetCurrentProcess();
-            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
-            return processes.Length;
-        }
-
         public static Process[] GetInstanceProcesses()
         {
             var currentProcess = Process.GetCurrentProcess();
             var processes      = Process.GetProcessesByName(currentProcess.ProcessName);
+            
             return processes;
+        }
+
+        public static int EnumerateInstances()
+        {
+            var instanceProc  = GetInstanceProcesses();
+            var instanceCount = instanceProc.Length;
+
+            var finalInstanceCount = 0;
+            
+            if (instanceCount > 1)
+            {
+                var curPId = Process.GetCurrentProcess().Id;
+                LogWriteLine($"Detected {instanceCount} instances! Current PID: {curPId}", LogType.Default, true);
+                LogWriteLine($"Enumerating instances...");
+                foreach (Process p in instanceProc)
+                {
+                    if (p == null) continue;
+                    try
+                    {
+                        if (p.MainWindowHandle == IntPtr.Zero)
+                        {
+                            LogWriteLine("Process does not have window, skipping...", LogType.NoTag, true);
+                            continue;
+                        }
+                            
+                        LogWriteLine($"Name: {p.ProcessName}",                LogType.NoTag, true);
+                        LogWriteLine($"MainModule: {p.MainModule?.FileName}", LogType.NoTag, true);
+                        LogWriteLine($"PID: {p.Id}",                          LogType.NoTag, true);
+                            
+                        finalInstanceCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed when trying to fetch an instance information! " +
+                                     $"InstanceCount is not incremented.\r\n{ex}",
+                                     LogType.Error, true);
+                    }
+                }
+
+                LogWriteLine($"Multiple instances found! This is instance #{finalInstanceCount}",
+                             LogType.Scheme, true);
+            }
+            else finalInstanceCount = 1;
+
+            return finalInstanceCount;
         }
 
         #region dwmapi

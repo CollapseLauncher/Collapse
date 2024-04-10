@@ -122,35 +122,7 @@ namespace CollapseLauncher
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-                var instanceCount = InvokeProp.GetInstanceCount();
-                if (instanceCount > 1)
-                {
-                    var curPId = Process.GetCurrentProcess().Id;
-                    LogWriteLine($"Detected {instanceCount} instances! Current PID: {curPId}", LogType.Default, true);
-                    LogWriteLine($"Enumerating instances...");
-                    var instanceProcesses = InvokeProp.GetInstanceProcesses();
-                    foreach (Process p in instanceProcesses)
-                    {
-                        if (p == null) continue;
-                        try
-                        {
-                            LogWriteLine($"Name: {p.ProcessName}",                LogType.NoTag, true);
-                            LogWriteLine($"MainModule: {p.MainModule?.FileName}", LogType.NoTag, true);
-                            LogWriteLine($"PID: {p.Id}",                          LogType.NoTag, true);
-                            InstanceCount++;
-                        }
-                        catch (Exception ex)
-                        {
-                            LogWriteLine($"Failed when trying to fetch an instance information! " +
-                                         $"InstanceCount is not incremented.\r\n{ex}",
-                                         LogType.Error, true);
-                        }
-                    }
-
-                    LogWriteLine($"Multiple instances found! This is instance #{InstanceCount}",
-                                 LogType.Scheme, true);
-                }
-                else InstanceCount = 1;
+                InstanceCount = InvokeProp.EnumerateInstances();
                 
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())
