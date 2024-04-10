@@ -135,9 +135,16 @@ namespace CollapseLauncher
                     LogWriteLine($"Enumerating instances...", LogType.Debug, false);
                     foreach (Process p in InstanceProcesses)
                     {
-                        LogWriteLine($"Name: {p.ProcessName}", LogType.NoTag, false);
-                        LogWriteLine($"MainModule: {p.MainModule}", LogType.NoTag, false);
-                        LogWriteLine($"PID: {p.Id}", LogType.NoTag, false);
+                        try
+                        {
+                            LogWriteLine($"Name: {p.ProcessName}",      LogType.NoTag, false);
+                            LogWriteLine($"MainModule: {p.MainModule}", LogType.NoTag, false);
+                            LogWriteLine($"PID: {p.Id}",                LogType.NoTag, false);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriteLine("Failed to get instance process info!\r\n\tIgnoring...");
+                        }
                     }
                 }
                 
