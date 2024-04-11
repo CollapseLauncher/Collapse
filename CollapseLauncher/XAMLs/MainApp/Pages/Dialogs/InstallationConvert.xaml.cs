@@ -441,7 +441,7 @@ namespace CollapseLauncher.Dialogs
 
         public void ApplyConfiguration()
         {
-            CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
+            // CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
             CurrentGameProperty._GameVersion.Reinitialize();
             CurrentGameProperty._GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
 

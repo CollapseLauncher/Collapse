@@ -94,7 +94,9 @@ namespace CollapseLauncher.GameVersioning
 
         protected string             GameConfigDirPath { get; set; }
         public    GameVersionBase    AsVersionBase     => this;
-        public    PresetConfig       GamePreset        { get; set; }
+        public    string             GameName          { get; set; }
+        public    string             GameRegion        { get; set; }
+        public    PresetConfig       GamePreset        { get => LauncherMetadataHelper.LauncherMetadataConfig?[GameName]?[GameRegion]; }
         public    RegionResourceProp GameAPIProp       { get; set; }
         public    GameNameType       GameType          => GamePreset.GameType;
         public    GameVendorProp     VendorTypeProp    { get; private set; }
@@ -237,11 +239,12 @@ namespace CollapseLauncher.GameVersioning
 
         #endregion
 
-        protected GameVersionBase(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset)
+        protected GameVersionBase(UIElement parentUIElement, RegionResourceProp gameRegionProp, string gameName, string gameRegion)
         {
-            GamePreset      = gamePreset;
             ParentUIElement = parentUIElement;
             GameAPIProp     = gameRegionProp;
+            GameName        = gameName;
+            GameRegion      = gameRegion;
 
             // Initialize INIs props
             InitializeIniProp();

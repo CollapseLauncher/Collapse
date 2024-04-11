@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.InvokeProp;
@@ -97,8 +98,8 @@ namespace CollapseLauncher
             return list;
         }
 
-        public static List<StackPanel> BuildGameRegionListUI(string?        gameCategory,
-                                                             List<string?>? gameCategoryList = null)
+        public static async ValueTask<List<StackPanel>> BuildGameRegionListUI(string?        gameCategory,
+                                                                              List<string?>? gameCategoryList = null)
         {
             gameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(gameCategory);
             List<StackPanel> list = [];
@@ -109,7 +110,7 @@ namespace CollapseLauncher
 
             foreach (string? region in gameCategoryList)
             {
-                PresetConfig? config              = LauncherMetadataHelper.GetMetadataConfig(gameCategory, region);
+                PresetConfig? config              = await LauncherMetadataHelper.GetMetadataConfig(gameCategory, region);
                 StackPanel    panel               = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock     gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock? gameRegionTranslatedTextBlock =

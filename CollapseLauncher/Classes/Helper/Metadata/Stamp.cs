@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using System;
+
 namespace CollapseLauncher.Helper.Metadata
 {
     public class Stamp
@@ -9,5 +11,6 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? MetadataInclude { get; set; } = null;
         public string? GameName { get; set; } = null;
         public string? GameRegion { get; set; } = null;
+        public DateTime LastModifiedTimeUtc { get; set; } = default;
     }
 }

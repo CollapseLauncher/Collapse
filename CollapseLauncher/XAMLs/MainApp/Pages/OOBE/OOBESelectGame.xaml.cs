@@ -66,7 +66,7 @@ namespace CollapseLauncher.Pages.OOBE
                 BarBGLoading.Visibility      = Visibility.Visible;
                 BarBGLoading.IsIndeterminate = true;
                 FadeBackground(1, 0.25);
-                PresetConfig? gameConfig = LauncherMetadataHelper.GetMetadataConfig(SelectedCategory, SelectedRegion);
+                PresetConfig? gameConfig = await LauncherMetadataHelper.GetMetadataConfig(SelectedCategory, SelectedRegion);
                 bool          isSuccess  = await TryLoadGameDetails(gameConfig);
 
                 BitmapData? bitmapData = null;
@@ -143,10 +143,10 @@ namespace CollapseLauncher.Pages.OOBE
             await Task.Delay((int)(dur * 1000));
         }
 
-        private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
-            GameRegionSelect.ItemsSource = BuildGameRegionListUI(SelectedCategory);
+            GameRegionSelect.ItemsSource = await BuildGameRegionListUI(SelectedCategory);
             GameRegionSelect.IsEnabled   = true;
             NextPage.IsEnabled           = false;
             NextPage.Opacity             = 0;

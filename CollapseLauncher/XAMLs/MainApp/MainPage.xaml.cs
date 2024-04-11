@@ -173,14 +173,14 @@ namespace CollapseLauncher
             // Lock ChangeBtn for first start
             LockRegionChangeBtn = true;
 
-            PresetConfig presetConfig = LoadSavedGameSelection();
+            (PresetConfig presetConfig, string gameName, string gameRegion) = await LoadSavedGameSelection();
             if (m_appMode == AppMode.Hi3CacheUpdater)
                 Page = (m_appMode == AppMode.Hi3CacheUpdater && presetConfig.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage);
 
             InitKeyboardShortcuts();
 
             InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
-            if (await LoadRegionFromCurrentConfigV2(presetConfig))
+            if (await LoadRegionFromCurrentConfigV2(presetConfig, gameName, gameRegion))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
             }
@@ -968,7 +968,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Game Selector Method
-        private PresetConfig LoadSavedGameSelection()
+        private async ValueTask<(PresetConfig, string, string)> LoadSavedGameSelection()
         {
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
 
@@ -981,7 +981,7 @@ namespace CollapseLauncher
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();
 
-            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(gameName);
+            ComboBoxGameRegion.ItemsSource = await BuildGameRegionListUI(gameName);
 
             var indexCategory                    = gameCollection.IndexOf(gameName!);
             if (indexCategory < 0) indexCategory = 0;
@@ -992,25 +992,28 @@ namespace CollapseLauncher
             ComboBoxGameRegion.SelectedIndex   = indexRegion;
             CurrentGameCategory                = ComboBoxGameCategory.SelectedIndex;
             CurrentGameRegion                  = ComboBoxGameRegion.SelectedIndex;
-            
-            return
-                LauncherMetadataHelper.GetMetadataConfig(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue),
-                                                         GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
+
+            string? gameNameLookup = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
+            string? gameRegionLookup = GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue);
+
+            return (await LauncherMetadataHelper.GetMetadataConfig(gameNameLookup, gameRegionLookup),
+                                                                  gameNameLookup,
+                                                                  gameRegionLookup);
         }
         
-        private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
+        private async void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
             object? selectedItem = ((ComboBox)sender).SelectedItem;
             if (selectedItem == null) return;
             string? selectedCategoryString = GetComboBoxGameRegionValue(selectedItem);
             // REMOVED: GetConfigV2Regions(SelectedCategoryString);
             
-            ComboBoxGameRegion.ItemsSource   = BuildGameRegionListUI(selectedCategoryString);
+            ComboBoxGameRegion.ItemsSource   = await BuildGameRegionListUI(selectedCategoryString);
             ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(selectedCategoryString);
         }
         #nullable disable
 
-        private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
+        private async void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
             if (ComboBoxGameCategory.SelectedIndex == CurrentGameCategory && ComboBoxGameRegion.SelectedIndex == CurrentGameRegion)
             {
@@ -1024,7 +1027,7 @@ namespace CollapseLauncher
 
             string category = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
             string region = GetComboBoxGameRegionValue(selValue);
-            PresetConfig preset = LauncherMetadataHelper.GetMetadataConfig(category, region);
+            PresetConfig preset = await LauncherMetadataHelper.GetMetadataConfig(category, region);
             
             ChangeRegionWarningText.Text = preset!.Channel != GameChannel.Stable
                 ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.Channel)
@@ -1922,10 +1925,10 @@ namespace CollapseLauncher
             LockRegionChangeBtn        = true;
             IsLoadRegionComplete       = false;
 
-            PresetConfig preset = LoadSavedGameSelection();
+            (PresetConfig preset, string gameName, string gameRegion) = await LoadSavedGameSelection();
 
             ShowAsyncLoadingTimedOutPill();
-            if (await LoadRegionFromCurrentConfigV2(preset))
+            if (await LoadRegionFromCurrentConfigV2(preset, gameName, gameRegion))
             {
 #if !DISABLEDISCORD
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool() && !sameRegion)

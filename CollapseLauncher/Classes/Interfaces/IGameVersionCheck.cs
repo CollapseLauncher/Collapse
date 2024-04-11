@@ -18,6 +18,9 @@ namespace CollapseLauncher.Interfaces
 
     internal interface IGameVersionCheck
     {
+        string GameName { get; }
+        string GameRegion { get; }
+
         /// <summary>
         /// Get the base of the instance
         /// </summary>
@@ -37,7 +40,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or sets the game preset
         /// </summary>
-        PresetConfig GamePreset { get; set; }
+        PresetConfig GamePreset { get; }
 
         /// <summary>
         /// Returns or set the API properties
