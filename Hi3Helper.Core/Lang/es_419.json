@@ -369,6 +369,7 @@
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
 
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
+    "ChangeRegionInstant_Toggle": "Cambio de región instantánea ",
     "ChangeRegionWarning_Warning": "*Necesitas reiniciar la aplicación para que los cambios del tema surtan efecto.",
 
     "Language": "Idioma de la Aplicación",
@@ -389,7 +390,7 @@
 
     "AppBG": "Fondo de la Aplicación",
     "AppBG_Checkbox": "Usar Fondo Personalizado",
-    "AppBG_Note": "Aviso: La imagen debe estar en formato .png, .jpg, .tiff o .bmp y la resolución debe ser menor que 4096x4096",
+    "AppBG_Note": "Formatos admitidos:\r\nImagen: {0}\r\nVideo: {1}",
 
     "AppThreads": "Hilos de Aplicación",
     "AppThreads_Download": "Hilos de Descarga",
@@ -413,6 +414,10 @@
     "DiscordRPC_Toggle": "Mostrar Presencia de Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
     "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
+
+    "VideoBackground": "Ajustes Video de Fondo",
+    "VideoBackground_IsEnableAudio": "Permitir Audio",
+    "VideoBackground_AudioVolume": "Volumen de Audio",
 
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
@@ -478,6 +483,7 @@
 
     "Waifu2X_Toggle": "Usar Waifu2X [Experimental]",
     "Waifu2X_Help": "Usa Waifu2X para escalar imágenes de fondo.\nCuando está activado, la calidad de la imagen mejora significativamente, pero tardará en cargar la imagen la primera vez.",
+    "Waifu2X_Help2": "¡Solo disponible para imágenes fijas!",
     "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
     "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
@@ -879,8 +885,8 @@
   },
 
   "_UpdatePage": {
-    "PageTitle1": "¡UNA ACTUALIZACIÓN",
-    "PageTitle2": "ESTÁ DISPONIBLE!",
+    "PageTitle1": "¡NUEVA",
+    "PageTitle2": "ACTUALIZACIÓN DISPONIBLE!",
     "VerCurLabel": "Versión Actual:",
     "VerNewLabel": "Nueva Versión:",
     "VerChannelLabel": "Canal de Actualización:",
@@ -897,6 +903,8 @@
     "UpdateHeader3": "Tamaño de la Descarga:",
     "UpdateHeader4": "Velocidad:",
     "UpdateHeader5PlaceHolder": "Descargando Actualización [- / -]:",
+
+    "UpdateForcedHeader": "El launcher será actualizado forzosamente debido a cambios urgentes para asegurar el funcionamiento correcto ",
 
     "UpdateStatus1": "Obteniendo Actualización:",
     "UpdateMessage1": "Conectándose al Repositorio de Actualizaciones...",
