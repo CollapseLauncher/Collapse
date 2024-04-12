@@ -9,7 +9,6 @@
       xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       CacheMode="BitmapCache"
