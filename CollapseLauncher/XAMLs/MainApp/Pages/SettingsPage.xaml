@@ -557,20 +557,15 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-                <StackPanel Margin="0,16,0,0"
-                            Orientation="Horizontal">
-                    <TextBlock TextWrapping="Wrap">
-                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}" />
-                        <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
-                                   UnderlineStyle="None">
-                            <Run FontWeight="Bold"
-                                 Text="MIT License" />
-                        </Hyperlink>
-                    </TextBlock>
-                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}"
-                               TextWrapping="Wrap" />
-                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,16,0,0">
+                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}" />
+                    <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
+                               UnderlineStyle="None">
+                        <Run FontWeight="Bold"
+                             Text="MIT License" />
+                    </Hyperlink>
+                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}"/>
+                </TextBlock>
                 <TextBlock IsTextSelectionEnabled="True"
                            Style="{ThemeResource BodyTextBlockStyle}"
                            TextWrapping="Wrap">
