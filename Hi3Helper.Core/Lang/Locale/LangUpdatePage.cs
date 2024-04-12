@@ -26,6 +26,8 @@
                 public string UpdateHeader4 { get; set; } = LangFallback?._UpdatePage.UpdateHeader4;
                 public string UpdateHeader5PlaceHolder { get; set; } = LangFallback?._UpdatePage.UpdateHeader5PlaceHolder;
 
+                public string UpdateForcedHeader { get; set; } = LangFallback?._UpdatePage.UpdateForcedHeader;
+
                 public string UpdateStatus1 { get; set; } = LangFallback?._UpdatePage.UpdateStatus1;
                 public string UpdateMessage1 { get; set; } = LangFallback?._UpdatePage.UpdateMessage1;
                 public string UpdateStatus2 { get; set; } = LangFallback?._UpdatePage.UpdateStatus2;

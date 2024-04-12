@@ -46,6 +46,7 @@ namespace CollapseLauncher
 
             // Reset status and progress
             // ResetStatusAndProgress();
+            _token = new CancellationTokenSourceWrapper();
 
             // Step 1: Fetch asset indexes
             _assetIndex = await Fetch(_token!.Token);

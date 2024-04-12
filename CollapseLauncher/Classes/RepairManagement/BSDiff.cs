@@ -2,6 +2,7 @@
 // https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/src/bsdiff/BinaryPatchUtility.cs
 
 // using SharpCompress.Compressors.BZip2;
+
 using System;
 using System.Diagnostics;
 using System.IO;

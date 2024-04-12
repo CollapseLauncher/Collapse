@@ -14,6 +14,7 @@
                 public string Debug_IncludeGameLogs                 { get; set; } = LangFallback?._SettingsPage.Debug_IncludeGameLogs;
                 public string Debug_MultipleInstance                { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
                 public string ChangeRegionWarning_Toggle            { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
+                public string ChangeRegionInstant_Toggle            { get; set; } = LangFallback?._SettingsPage.ChangeRegionInstant_Toggle;
                 public string ChangeRegionWarning_Warning           { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Warning;
                 public string Language                              { get; set; } = LangFallback?._SettingsPage.Language;
                 public string LanguageEntry                         { get; set; } = LangFallback?._SettingsPage.LanguageEntry;
@@ -50,6 +51,8 @@
                 public string DiscordRPC_Toggle                     { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
                 public string DiscordRPC_GameStatusToggle           { get; set; } = LangFallback?._SettingsPage.DiscordRPC_GameStatusToggle;
                 public string DiscordRPC_IdleStatusToggle           { get; set; } = LangFallback?._SettingsPage.DiscordRPC_IdleStatusToggle;
+                public string VideoBackground_IsEnableAudio         { get; set; } = LangFallback?._SettingsPage.VideoBackground_IsEnableAudio;
+                public string VideoBackground_AudioVolume           { get; set; } = LangFallback?._SettingsPage.VideoBackground_AudioVolume;
                 public string Update                                { get; set; } = LangFallback?._SettingsPage.Update;
                 public string Update_CurVer                         { get; set; } = LangFallback?._SettingsPage.Update_CurVer;
                 public string Update_CheckBtn                       { get; set; } = LangFallback?._SettingsPage.Update_CheckBtn;
@@ -86,7 +89,7 @@
                 public string EnableAcrylicEffect                   { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging           { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
                 public string LowerCollapsePrioOnGameLaunch         { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
-                public string LowerCollapsePrioOnGameLaunch_Tooltip {get;  set;}  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
+                public string LowerCollapsePrioOnGameLaunch_Tooltip { get; set; }  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
                 public string UseExternalBrowser                    { get; set; } = LangFallback?._SettingsPage.UseExternalBrowser;
 				public string KbShortcuts_Title                     { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn                   { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
@@ -101,6 +104,7 @@
                 public string AppBehavior_StartupToTray             { get; set; } = LangFallback?._SettingsPage.AppBehavior_StartupToTray;
                 public string Waifu2X_Toggle                        { get; set; } = LangFallback?._SettingsPage.Waifu2X_Toggle;
                 public string Waifu2X_Help                          { get; set; } = LangFallback?._SettingsPage.Waifu2X_Help;
+                public string Waifu2X_Help2                         { get; set; } = LangFallback?._SettingsPage.Waifu2X_Help2;
                 public string Waifu2X_Warning_CpuMode               { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_CpuMode;
                 public string Waifu2X_Warning_D3DMappingLayers      { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
                 public string Waifu2X_Error_Loader                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Loader;

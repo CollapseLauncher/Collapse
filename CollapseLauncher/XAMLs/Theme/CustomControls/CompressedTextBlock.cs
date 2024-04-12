@@ -1,10 +1,10 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
-using Microsoft.UI.Xaml.Media;
 
 namespace CollapseLauncher.CustomControls
 {

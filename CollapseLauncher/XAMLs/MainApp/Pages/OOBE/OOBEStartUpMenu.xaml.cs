@@ -1,19 +1,22 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -42,10 +45,10 @@ namespace CollapseLauncher.Pages.OOBE
         {
             thisCurrent = this;
             this.InitializeComponent();
-            MainWindow.EnableNonClientArea();
+            WindowUtility.EnableWindowNonClientArea();
             SaveInitialLogoAndTitleTextPos();
 
-            MainWindow.ToggleAcrylic(true);
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
             ChangeFontIconSettingsCard(SettingsCardContainer.Children);
 
             ThemeChangerInvoker.ThemeEvent += ThemeChangerInvoker_ThemeEvent;
@@ -74,8 +77,8 @@ namespace CollapseLauncher.Pages.OOBE
             string[] lowerTexts = Lang._OOBEStartUpMenu.WelcomeTitleString["Lower"];
 
             // Initial StackPanel for both upper and lower
-            StackPanel upperStackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            StackPanel lowerStackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            StackPanel upperStackPanel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
+            StackPanel lowerStackPanel = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
 
             // Clear the content and add the texts
             panel.Children.Clear();
@@ -285,7 +288,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         private void ChangeFontIconSettingsCard(UIElementCollection uiCollection)
         {
-            FontFamily iconFont = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+            FontFamily iconFont = FontCollections.FontAwesomeSolid;
             foreach (object containerObject in uiCollection)
             {
                 if (containerObject.GetType() == typeof(SettingsExpander))
@@ -328,14 +331,14 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private void GridBG_Icon_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void GridBG_Icon_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             UIElement obj = sender as UIElement;
             obj.Scale += new Vector3(0.1f);
             obj.Opacity = 1f;
         }
 
-        private void GridBG_Icon_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void GridBG_Icon_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             UIElement obj = sender as UIElement;
             obj.Scale -= new Vector3(0.1f);
@@ -382,7 +385,7 @@ namespace CollapseLauncher.Pages.OOBE
             string themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (!Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
-                CurrentAppTheme = SystemAppTheme.ToString() == "#FFFFFFFF" ? AppThemeMode.Light : AppThemeMode.Dark;
+                CurrentAppTheme = !InvokeProp.ShouldAppsUseDarkMode() ? AppThemeMode.Light : AppThemeMode.Dark;
                 LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})", LogType.Warning, true);
             }
 
@@ -688,7 +691,7 @@ namespace CollapseLauncher.Pages.OOBE
         {
             string folder;
             bool Selected = false;
-            switch (await Dialogs.SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
+            switch (await SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
             {
                 case ContentDialogResult.Primary:
                     AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
@@ -701,7 +704,7 @@ namespace CollapseLauncher.Pages.OOBE
                     {
                         if (!CheckIfFolderIsValid(folder))
                         {
-                            await Dialogs.SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
+                            await SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
                             break;
                         }
 
@@ -757,25 +760,22 @@ namespace CollapseLauncher.Pages.OOBE
         #region Prepare Metadata and Settings Apply
         private async void PrepareMetadataAndApplySettings()
         {
-            if (!ConfigV2Store.IsConfigV2StampExist() || !ConfigV2Store.IsConfigV2ContentExist())
+            try
             {
-                try
-                {
-                    LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                    LoadingMessageHelper.SetProgressBarState(100, true);
-                    LoadingMessageHelper.SetProgressBarValue(100);
-                    LoadingMessageHelper.ShowLoadingFrame();
+                LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
+                LoadingMessageHelper.SetProgressBarState(100, true);
+                LoadingMessageHelper.SetProgressBarValue(100);
+                LoadingMessageHelper.ShowLoadingFrame();
 
-                    await DownloadConfigV2Files(true, true);
-                    LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle2);
-                    LoadingMessageHelper.SetProgressBarState(100, false);
-                    LoadingMessageHelper.SetProgressBarValue(100);
-                    await Task.Delay(5000);
+                await LauncherMetadataHelper.Initialize(false, false);
+                LoadingMessageHelper.SetMessage(Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle2);
+                LoadingMessageHelper.SetProgressBarState(100, false);
+                LoadingMessageHelper.SetProgressBarValue(100);
+                await Task.Delay(5000);
 
-                    LoadingMessageHelper.HideLoadingFrame();
-                }
-                catch { }
+                LoadingMessageHelper.HideLoadingFrame();
             }
+            catch { }
 
             HideUIs(MainUI, IntroSequenceUI);
             OverlayFrame.Navigate(typeof(OOBESelectGame), null, null);
@@ -816,7 +816,7 @@ namespace CollapseLauncher.Pages.OOBE
                         currentCompositor.CreateVector3KeyFrameAnimation("Translation", to.Item3, from.Item3)
                         );
                 await task;
-                DispatcherQueue.TryEnqueue(() => x.Visibility = to.Item4);
+                DispatcherQueue?.TryEnqueue(() => x.Visibility = to.Item4);
                 return Task.CompletedTask;
             }));
         }
@@ -834,7 +834,7 @@ namespace CollapseLauncher.Pages.OOBE
                 Tuple<float, Vector3, Vector3, Visibility> ToValue = PreviouslyFromHiddenUIsElement[i];
                 AnimTask.Add(Task.Run(async () =>
                 {
-                    DispatcherQueue.TryEnqueue(() => element.Visibility = ToValue.Item4);
+                    DispatcherQueue?.TryEnqueue(() => element.Visibility = ToValue.Item4);
                     await element.StartAnimation(duration,
                         currentCompositor.CreateScalarKeyFrameAnimation("Opacity", ToValue.Item1, FromValue.Item1),
                         currentCompositor.CreateVector3KeyFrameAnimation("Scale", ToValue.Item2, FromValue.Item2),
@@ -853,15 +853,15 @@ namespace CollapseLauncher.Pages.OOBE
                 await Task.WhenAll(
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => ToggleLogoMode(true, IsSmallSize, IsLauncherCustomizationDone));
+                        DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(true, IsSmallSize, IsLauncherCustomizationDone));
                         await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, -32, 0), new Vector3(0, 0, 0)));
-                        DispatcherQueue.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Collapsed);
+                        DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Collapsed);
                     }),
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Visible);
+                        DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Visible);
                         await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, 0), new Vector3(0, 32, 0)));
@@ -904,15 +904,15 @@ namespace CollapseLauncher.Pages.OOBE
                 await Task.WhenAll(
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => ToggleLogoMode(false, IsSmallSize, IsLauncherCustomizationDone));
+                        DispatcherQueue?.TryEnqueue(() => ToggleLogoMode(false, IsSmallSize, IsLauncherCustomizationDone));
                         await CustomizationContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, -32, 0), new Vector3(0, 0, 0)));
-                        DispatcherQueue.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Collapsed);
+                        DispatcherQueue?.TryEnqueue(() => CustomizationContainer.Visibility = Visibility.Collapsed);
                     }),
                     Task.Run(async () =>
                     {
-                        DispatcherQueue.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Visible);
+                        DispatcherQueue?.TryEnqueue(() => LauncherFolderContainer.Visibility = Visibility.Visible);
                         await LauncherFolderContainer.StartAnimation(TimeSpan.FromSeconds(0.5),
                             currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
                             currentCompositor.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, 0), new Vector3(0, 32, 0)));

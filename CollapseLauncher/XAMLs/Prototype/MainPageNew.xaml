@@ -1,10 +1,7 @@
 ﻿<Page x:Class="CollapseLauncher.Prototype.MainPageNew"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="using:CollapseLauncher"
-      xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:helper="using:Hi3Helper"
-      xmlns:p="using:Hi3Helper.Preset"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
@@ -133,8 +130,7 @@
                                    Opacity="0.8"
                                    Margin="-6,0,0,0"
                                    HorizontalAlignment="Left"
-                                   Visibility="Visible">
-                        </TextBlock>
+                                   Visibility="Visible" />
                         <TextBlock Text="Launcher"
                                    FontWeight="Bold"
                                    FontSize="12"
@@ -142,8 +138,7 @@
                                    Margin="0,-3,0,-8"
                                    Foreground="{ThemeResource AccentColor}"
                                    HorizontalAlignment="Left"
-                                   Visibility="Visible">
-                        </TextBlock>
+                                   Visibility="Visible" />
                     </StackPanel>
                     <StackPanel x:Name="PreviewBuildIndicator"
                                 Margin="-16,-12,0,0"

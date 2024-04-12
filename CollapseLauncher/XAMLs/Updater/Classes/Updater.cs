@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Update;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Squirrel;
 using Squirrel.Sources;
@@ -8,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -88,7 +88,7 @@ namespace CollapseLauncher
                         return true;
                     }
 
-                    Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, AppCurrentVersion.VersionString);
+                    Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, LauncherUpdateHelper.LauncherCurrentVersionString);
                     Status.message = Lang._UpdatePage.UpdateMessage4;
                     UpdateStatus();
 
@@ -129,7 +129,7 @@ namespace CollapseLauncher
                 await using (BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream($"{this.ChannelName.ToLower()}/fileindex.json", default))
                 {
                     AppUpdateVersionProp updateInfo = await stream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
-                    NewVersionTag = new GameVersion(updateInfo.ver);
+                    NewVersionTag = updateInfo.Version.Value;
                     UpdateStatus();
                     UpdateProgress();
                 }

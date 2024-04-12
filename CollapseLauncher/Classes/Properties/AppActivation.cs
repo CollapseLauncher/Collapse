@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CollapseLauncher.Helper.Update;
+using Microsoft.Win32;
 using Microsoft.Windows.AppLifecycle;
 using System;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace CollapseLauncher
 
             protocol.SetValue("", "CollapseLauncher protocol");
             protocol.SetValue("URL Protocol", "");
-            protocol.SetValue("Version", AppCurrentVersionString);
+            protocol.SetValue("Version", LauncherUpdateHelper.LauncherCurrentVersionString);
 
             RegistryKey command = protocol.CreateSubKey("shell\\open\\command", true);
 

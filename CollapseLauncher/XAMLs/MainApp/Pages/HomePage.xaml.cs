@@ -1,53 +1,60 @@
-using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
-using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
-using CollapseLauncher.ShortcutUtils;
-using Hi3Helper;
-using Hi3Helper.Preset;
-using Hi3Helper.Screen;
-using Hi3Helper.Shared.ClassStruct;
 #if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
+    using CollapseLauncher.DiscordPresence;
 #endif
-using Microsoft.UI.Input;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Win32;
-using PhotoSauce.MagicScaler;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI.Text;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.RegionResourceListHelper;
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using Brush = Microsoft.UI.Xaml.Media.Brush;
-using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
-using Image = Microsoft.UI.Xaml.Controls.Image;
-using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
-using Hi3Helper.EncTool.WindowTool;
+    using CollapseLauncher.CustomControls;
+    using CollapseLauncher.Dialogs;
+    using CollapseLauncher.Extension;
+    using CollapseLauncher.FileDialogCOM;
+    using CollapseLauncher.GameSettings.Genshin;
+    using CollapseLauncher.Helper;
+    using CollapseLauncher.Helper.Image;
+    using CollapseLauncher.Helper.Metadata;
+    using CollapseLauncher.Interfaces;
+    using CollapseLauncher.ShortcutUtils;
+    using CollapseLauncher.Statics;
+    using H.NotifyIcon;
+    using Hi3Helper;
+    using Hi3Helper.EncTool.WindowTool;
+    using Hi3Helper.Screen;
+    using Hi3Helper.Shared.ClassStruct;
+    using Microsoft.UI.Input;
+    using Microsoft.UI.Text;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
+    using Microsoft.UI.Xaml.Input;
+    using Microsoft.UI.Xaml.Media.Animation;
+    using Microsoft.UI.Xaml.Media.Imaging;
+    using Microsoft.Win32;
+    using PhotoSauce.MagicScaler;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Numerics;
+    using System.Reflection;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Windows.Foundation;
+    using Windows.UI.Text;
+    using static CollapseLauncher.Dialogs.SimpleDialogs;
+    using static CollapseLauncher.InnerLauncherConfig;
+    using static CollapseLauncher.RegionResourceListHelper;
+    using static Hi3Helper.Data.ConverterTool;
+    using static Hi3Helper.Locale;
+    using static Hi3Helper.Logger;
+    using static Hi3Helper.Shared.Region.LauncherConfig;
+    using Brush = Microsoft.UI.Xaml.Media.Brush;
+    using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
+    using Image = Microsoft.UI.Xaml.Controls.Image;
+    using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+    using Size = System.Drawing.Size;
+    using Timer = System.Timers.Timer;
 
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage : Page
     {
@@ -111,7 +118,8 @@ namespace CollapseLauncher.Pages
         }
 
         private bool IsPageUnload { get; set; }
-        private bool NeedShowEventIcon = true;
+
+        private bool NeedShowEventIcon => GetAppConfigValue("ShowSocialMediaPanel").ToBool();
 
         private void ReturnToHomePage()
         {
@@ -151,10 +159,8 @@ namespace CollapseLauncher.Pages
                 TryLoadEventPanelImage();
 
                 SocMedPanel.Translation += Shadow48;
-                LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
                 CommunityToolsBtn.Translation += Shadow32;
-                PlaytimeBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
                     || MenuPanels.articlePanel != null)
@@ -256,24 +262,25 @@ namespace CollapseLauncher.Pages
             if (!isCacheIconExist)
             {
                 using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
-                using (Stream copyIconFileStream = new MemoryStream())
-                await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
-                {
-                    // Copy remote stream to memory stream
-                    await iconFileStream.CopyToAsync(copyIconFileStream);
-                    copyIconFileStream.Position = 0;
-                    // Get the icon image information and set the resized frame size
-                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                    int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
-                    int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
+                    using (Stream copyIconFileStream = new MemoryStream())
+                        await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
+                        {
+                            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                            // Copy remote stream to memory stream
+                            await iconFileStream.CopyToAsync(copyIconFileStream);
+                            copyIconFileStream.Position = 0;
+                            // Get the icon image information and set the resized frame size
+                            ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                            int width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                            int height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                    copyIconFileStream.Position = 0; // Reset the original icon stream position
-                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
-                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                            copyIconFileStream.Position = 0; // Reset the original icon stream position
+                            await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
+                            cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                    // Set the source from cached icon stream
-                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-                }
+                            // Set the source from cached icon stream
+                            source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                        }
             }
             else
             {
@@ -451,7 +458,7 @@ namespace CollapseLauncher.Pages
         #region Event Image
         private async void HideImageEventImg(bool hide)
         {
-            if (!NeedShowEventIcon) return;
+            //if (!NeedShowEventIcon) return;
 
             if (!hide)
                 ImageEventImgGrid.Visibility = Visibility.Visible;
@@ -712,7 +719,7 @@ namespace CollapseLauncher.Pages
         {
             Visibility RepairGameButtonVisible = (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
-            if ((!(CurrentGameProperty._GameVersion.GamePreset.IsConvertible ?? false)) || (CurrentGameProperty._GameVersion.GameType != GameType.Honkai))
+            if ((!(CurrentGameProperty._GameVersion.GamePreset.IsConvertible ?? false)) || (CurrentGameProperty._GameVersion.GameType != GameNameType.Honkai))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             // Clear the _CommunityToolsProperty statics
@@ -746,7 +753,7 @@ namespace CollapseLauncher.Pages
                 }
             }
 
-            if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
+            if (CurrentGameProperty._GameVersion.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
 
             GameInstallationState = CurrentGameProperty._GameVersion.GetGameState();
             switch (GameInstallationState)
@@ -765,7 +772,7 @@ namespace CollapseLauncher.Pages
                         CustomStartupArgs.Visibility = Visibility.Visible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
-                        NeedShowEventIcon = false;
+                        //NeedShowEventIcon = false;
                         SpawnPreloadBox();
                     }
                     break;
@@ -825,7 +832,7 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
-            FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+            FontFamily FF = FontCollections.FontAwesomeSolid;
             VerticalAlignment TVAlign = VerticalAlignment.Center;
             Orientation SOrient = Orientation.Horizontal;
             Thickness Margin = new Thickness(0, -2, 8, 0);
@@ -833,13 +840,13 @@ namespace CollapseLauncher.Pages
             FontWeight FW = FontWeights.Medium;
             string Gl = "";
 
-            StackPanel BtnStartGame = new StackPanel() { Orientation = SOrient, Margin = SMargin };
-            BtnStartGame.Children.Add(new TextBlock() { FontWeight = FW, Margin = Margin, VerticalAlignment = TVAlign, Text = Lang._HomePage.StartBtn });
-            BtnStartGame.Children.Add(new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
+            StackPanel BtnStartGame = UIElementExtensions.CreateStackPanel(SOrient).WithMargin(SMargin);
+            BtnStartGame.AddElementToStackPanel(new TextBlock() { FontWeight = FW, Text = Lang._HomePage.StartBtn }.WithVerticalAlignment(TVAlign).WithMargin(Margin),
+                                                new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
 
-            StackPanel BtnRunningGame = new StackPanel() { Orientation = SOrient, Margin = SMargin };
-            BtnRunningGame.Children.Add(new TextBlock() { FontWeight = FW, Margin = Margin, VerticalAlignment = TVAlign, Text = Lang._HomePage.StartBtnRunning });
-            BtnRunningGame.Children.Add(new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
+            StackPanel BtnRunningGame = UIElementExtensions.CreateStackPanel(SOrient).WithMargin(SMargin);
+            BtnRunningGame.AddElementToStackPanel(new TextBlock() { FontWeight = FW, Text = Lang._HomePage.StartBtnRunning }.WithVerticalAlignment(TVAlign).WithMargin(Margin),
+                                                  new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
 
             try
             {
@@ -848,9 +855,6 @@ namespace CollapseLauncher.Pages
                     while (CurrentGameProperty.IsGameRunning)
                     {
                         _cachedIsGameRunning = true;
-
-                        if (StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation -= Shadow16;
 
                         StartGameBtn.IsEnabled = false;
                         StartGameBtn.Content = BtnRunningGame;
@@ -874,9 +878,6 @@ namespace CollapseLauncher.Pages
                     }
 
                     _cachedIsGameRunning = false;
-
-                    if (!StartGameBtn.IsEnabled)
-                        LauncherBtn.Translation += Shadow16;
 
                     StartGameBtn.IsEnabled = true;
                     StartGameBtn.Content = BtnStartGame;
@@ -906,7 +907,7 @@ namespace CollapseLauncher.Pages
         #region Community Button
         private void OpenCommunityButtonLink(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue.TryEnqueue(() => CommunityToolsBtn.Flyout.Hide());
+            DispatcherQueue?.TryEnqueue(() => CommunityToolsBtn.Flyout.Hide());
             OpenButtonLinkFromTag(sender, e);
         }
         #endregion
@@ -960,26 +961,12 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = Lang._HomePage.PreloadNotifCompleteTitle;
                     PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, ver);
                     PreloadDialogBox.IsClosable = true;
-
-                    StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
-                    Text.Children.Add(
-                        new FontIcon
-                        {
-                            Glyph = "",
-                            FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                            FontSize = 16
-                        });
-
-                    Text.Children.Add(
-                        new TextBlock
-                        {
-                            Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn,
-                            FontWeight = FontWeights.Medium,
-                            Margin = new Thickness(8, 0, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-                        });
-
-                    DownloadPreBtn.Content = Text;
+                    DownloadPreBtn.Content = UIElementExtensions.CreateIconTextGrid(
+                        text: Lang._HomePage.PreloadNotifIntegrityCheckBtn,
+                        iconGlyph: "",
+                        iconFontFamily: "FontAwesomeSolid",
+                        textWeight: FontWeights.Medium
+                    );
                 }
                 PreloadDialogBox.IsOpen = true;
             }
@@ -1049,12 +1036,12 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
+            DispatcherQueue?.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
         }
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
                 string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
@@ -1145,14 +1132,14 @@ namespace CollapseLauncher.Pages
             catch (NullReferenceException ex)
             {
                 IsPageUnload = true;
-                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
                 IsPageUnload = true;
-                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
             }
             finally
@@ -1172,7 +1159,7 @@ namespace CollapseLauncher.Pages
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_StatusChanged_Inner(e);
             else
-                DispatcherQueue.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
+                DispatcherQueue?.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
         }
 
         private void GameInstall_StatusChanged_Inner(TotalPerfileStatus e)
@@ -1189,7 +1176,7 @@ namespace CollapseLauncher.Pages
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_ProgressChanged_Inner(e);
             else
-                DispatcherQueue.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
+                DispatcherQueue?.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
         }
 
         private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
@@ -1257,9 +1244,9 @@ namespace CollapseLauncher.Pages
         {
             // Initialize values
             IGameSettingsUniversal _Settings   = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
-            PresetConfigV2         _gamePreset = CurrentGameProperty!._GameVersion!.GamePreset!;
+            PresetConfig         _gamePreset = CurrentGameProperty!._GameVersion!.GamePreset!;
 
-            var isGenshin  = CurrentGameProperty!._GameVersion.GameType == GameType.Genshin;
+            var isGenshin  = CurrentGameProperty!._GameVersion.GameType == GameNameType.Genshin;
             var giForceHDR = false;
             
             try
@@ -1296,6 +1283,9 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb             = "runas";
                 proc.Start();
 
+				// Stop update check
+				IsSkippingUpdateCheck = true;
+				
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
                 StartResizableWindowPayload(
                     _gamePreset.GameExecutableName,
@@ -1312,15 +1302,15 @@ namespace CollapseLauncher.Pages
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
                     case "Minimize":
-                        (m_window as MainWindow)?.Minimize();
+                        WindowUtility.WindowMinimize();
                         break;
                     case "ToTray":
-                        (m_window as MainWindow)?.ToggleToTray_MainWindow();
+                        WindowUtility.ToggleToTray_MainWindow();
                         break;
                     case "Nothing":
                         break;
                     default:
-                        (m_window as MainWindow)?.Minimize();
+                        WindowUtility.WindowMinimize();
                         break;
                 }
 
@@ -1330,10 +1320,11 @@ namespace CollapseLauncher.Pages
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
             }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
+				IsSkippingUpdateCheck = false;
             }
         }
 
@@ -1370,24 +1361,27 @@ namespace CollapseLauncher.Pages
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
             {
                 case "Minimize":
-                    (m_window as MainWindow)?.Restore();
+                    WindowUtility.WindowRestore();
                     break;
                 case "ToTray":
-                    H.NotifyIcon.WindowExtensions.Show(m_window!);
-                    (m_window as MainWindow)?.Restore();
+                    WindowExtensions.Show(WindowUtility.CurrentWindow!);
+                    WindowUtility.WindowRestore();
                     break;
                 case "Nothing":
                     break;
                 default:
-                    (m_window as MainWindow)?.Restore();
+                    WindowUtility.WindowRestore();
                     break;
             }
 
             // Run Post Launch Command
             if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostExitCommand) PostExitCommand(_settings);
+			
+			// Re-enable update check
+			IsSkippingUpdateCheck = false;
         }
 
-        private void StopGame(PresetConfigV2 gamePreset)
+        private void StopGame(PresetConfig gamePreset)
         {
             ArgumentNullException.ThrowIfNull(gamePreset);
             try
@@ -1399,7 +1393,7 @@ namespace CollapseLauncher.Pages
                     p.Kill();
                 }
             }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
@@ -1407,7 +1401,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Resizable Window Payload
-        internal async void StartResizableWindowPayload(string executableName, IGameSettingsUniversal settings, GameType gameType)
+        internal async void StartResizableWindowPayload(string executableName, IGameSettingsUniversal settings, GameNameType gameType)
         {
             try
             {
@@ -1422,7 +1416,7 @@ namespace CollapseLauncher.Pages
                 // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
                 // it impossible to use custom resolution (but since you are using Collapse, it's now
                 // possible :teriStare:)
-                bool isNeedToResetPos = gameType == GameType.StarRail;
+                bool isNeedToResetPos = gameType == GameNameType.StarRail;
                 await resizableWindowHook.StartHook(executableName, ResizableWindowHookToken.Token, isNeedToResetPos);
             }
             catch (Exception ex)
@@ -1439,7 +1433,7 @@ namespace CollapseLauncher.Pages
         {
             StringBuilder parameter = new StringBuilder();
 
-            if (CurrentGameProperty._GameVersion.GameType == GameType.Honkai)
+            if (CurrentGameProperty._GameVersion.GameType == GameNameType.Honkai)
             {
                 if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
                 {
@@ -1447,7 +1441,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                 }
 
-                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
 
@@ -1482,7 +1476,7 @@ namespace CollapseLauncher.Pages
                         break;
                 }
             }
-            if (CurrentGameProperty._GameVersion.GameType == GameType.StarRail)
+            if (CurrentGameProperty._GameVersion.GameType == GameNameType.StarRail)
             {
                 if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
                 {
@@ -1490,7 +1484,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                 }
 
-                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
 
@@ -1505,7 +1499,7 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
             }
-            if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin)
+            if (CurrentGameProperty._GameVersion.GameType == GameNameType.Genshin)
             {
                 if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
                 {
@@ -1514,7 +1508,7 @@ namespace CollapseLauncher.Pages
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
 
-                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
 
@@ -1561,7 +1555,7 @@ namespace CollapseLauncher.Pages
         #region Media Pack
         public async Task<bool> CheckMediaPackInstalled()
         {
-            if (CurrentGameProperty._GameVersion.GameType != GameType.Honkai) return true;
+            if (CurrentGameProperty._GameVersion.GameType != GameNameType.Honkai) return true;
 
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\WindowsFeatures\WindowsMediaVersion");
             if (reg != null)
@@ -1639,24 +1633,24 @@ namespace CollapseLauncher.Pages
                     Directory.CreateDirectory(Path.GetDirectoryName(logPath));
 
                 using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    while (true)
+                    using (StreamReader reader = new StreamReader(fs))
                     {
-                        while (!reader.EndOfStream)
+                        while (true)
                         {
-                            string line;
-                            line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                            if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                            while (!reader.EndOfStream)
                             {
-                                StartExclusiveWindowPayload();
-                                RequireWindowExclusivePayload = false;
+                                string line;
+                                line = await reader.ReadLineAsync(WatchOutputLog.Token);
+                                if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                                {
+                                    StartExclusiveWindowPayload();
+                                    RequireWindowExclusivePayload = false;
+                                }
+                                LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
                             }
-                            LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
+                            await Task.Delay(100, WatchOutputLog.Token);
                         }
-                        await Task.Delay(100, WatchOutputLog.Token);
                     }
-                }
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
@@ -1701,7 +1695,7 @@ namespace CollapseLauncher.Pages
         {
             string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
             {
-                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                 _ => "ScreenShot"
             });
 
@@ -1842,7 +1836,7 @@ namespace CollapseLauncher.Pages
             ToolTipService.SetToolTip(PlaytimeBtn, formattedText);
         }
 
-        private async void StartPlaytimeCounter(Process proc, PresetConfigV2 gamePreset)
+        private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset)
         {
             int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
 
@@ -1856,7 +1850,7 @@ namespace CollapseLauncher.Pages
             LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
 #endif
 
-            using (var inGameTimer = new System.Timers.Timer())
+            using (var inGameTimer = new Timer())
             {
                 inGameTimer.Interval = 60000;
                 inGameTimer.Elapsed += (o, e) =>
@@ -1869,7 +1863,7 @@ namespace CollapseLauncher.Pages
                         elapsedSeconds = numOfLoops * 60;
 
                     if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                        m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                        m_homePage?.DispatcherQueue?.TryEnqueue(() =>
                         {
                             m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
                         });
@@ -1896,7 +1890,7 @@ namespace CollapseLauncher.Pages
             SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
             LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {gamePreset.ProfileName} playtime.", LogType.Default, true);
             if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                m_homePage?.DispatcherQueue.TryEnqueue(() =>
+                m_homePage?.DispatcherQueue?.TryEnqueue(() =>
                 {
                     m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
                 });
@@ -2027,7 +2021,7 @@ namespace CollapseLauncher.Pages
             else if (sender is TextBlock block)
                 textBlock = block;
             if (textBlock != null)
-                textBlock.Foreground = (Brush)Application.Current.Resources["AccentColor"];
+                textBlock.Foreground = UIElementExtensions.GetApplicationResource<Brush>("AccentColor");
         }
 
         private void HyperLink_OnPointerExited(object sender, PointerRoutedEventArgs e)
@@ -2046,7 +2040,7 @@ namespace CollapseLauncher.Pages
             else if (sender is TextBlock block)
                 textBlock = block;
             if (textBlock != null)
-                textBlock.Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                textBlock.Foreground = UIElementExtensions.GetApplicationResource<Brush>("TextFillColorPrimaryBrush");
         }
         #endregion
 
@@ -2081,10 +2075,10 @@ namespace CollapseLauncher.Pages
 
         private void GenshinHDREnforcer()
         {
-            GameSettings.Genshin.WindowsHDR GenshinHDR = new GameSettings.Genshin.WindowsHDR();
+            WindowsHDR GenshinHDR = new WindowsHDR();
             try
             {
-                GameSettings.Genshin.WindowsHDR.Load();
+                WindowsHDR.Load();
                 GenshinHDR.isHDR = true;
                 GenshinHDR.Save();
                 LogWriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);
@@ -2174,10 +2168,10 @@ namespace CollapseLauncher.Pages
 
                 await _procPreGLC.WaitForExitAsync();
             }
-            catch ( System.ComponentModel.Win32Exception ex )
+            catch ( Win32Exception ex )
             {
                 LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
             }
             finally
             {
@@ -2203,7 +2197,7 @@ namespace CollapseLauncher.Pages
             }
             // Ignore external errors
             catch ( InvalidOperationException ) {}
-            catch (System.ComponentModel.Win32Exception) {}
+            catch (Win32Exception) {}
         }
 
         private async void PostExitCommand(IGameSettingsUniversal _settings)
@@ -2242,10 +2236,10 @@ namespace CollapseLauncher.Pages
 
                 await procPostGLC.WaitForExitAsync();
             }
-            catch ( System.ComponentModel.Win32Exception ex )
+            catch ( Win32Exception ex )
             {
                 LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new System.ComponentModel.Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
+                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
         }
         #endregion

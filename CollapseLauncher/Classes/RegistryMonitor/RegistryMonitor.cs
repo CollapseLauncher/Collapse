@@ -3,12 +3,13 @@
  * =============================================================================================
  * Original code by: Thomas Freudenberg ©2003 - 2005
  * https://www.codeproject.com/Articles/4502/RegistryMonitor-a-NET-wrapper-class-for-RegNotifyC
- * 
+ *
  * This code might have been modified to adjust the use for Collapse project.
  * Hence, the original code is licensed under The Code Project Open License (CPOL) 1.02
  * https://www.codeproject.com/info/cpol10.aspx
  */
 
+using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;
@@ -148,7 +149,7 @@ namespace RegistryUtils
 #if DEBUG
             LogWriteLine($"RegistryMonitor Initialized!\r\n" +
                 $"  Hive: {registryHive}\r\n" +
-                $"  subKey: {subKey}", Hi3Helper.LogType.Debug, true);
+                $"  subKey: {subKey}", LogType.Debug, true);
 #endif
         }
 
@@ -165,12 +166,12 @@ namespace RegistryUtils
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
                 new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
             }
             _disposed = true;
 #if DEBUG
-            LogWriteLine($"RegistryMonitor Disposed!", Hi3Helper.LogType.Debug, true);
+            LogWriteLine($"RegistryMonitor Disposed!", LogType.Debug, true);
 #endif
         }
 
@@ -355,7 +356,7 @@ namespace RegistryUtils
 #if DEBUG
                         LogWriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +
                             $"  Hive: {_registryHive}\r\n" +
-                            $"  subName: {_registrySubName}", Hi3Helper.LogType.Debug, true);
+                            $"  subName: {_registrySubName}", LogType.Debug, true);
 #endif
                         OnRegChanged();
                     }

@@ -1,16 +1,14 @@
-﻿using Hi3Helper.Http;
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Update;
+using Hi3Helper;
+using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -39,7 +37,7 @@ namespace CollapseLauncher
             this.Title = title += "[DEBUG]";
 #endif
             UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
-            CurrentVersionLabel.Text = AppCurrentVersion.VersionString;
+            CurrentVersionLabel.Text = LauncherUpdateHelper.LauncherCurrentVersionString;
 
             StartAsyncRoutine();
         }
@@ -57,7 +55,7 @@ namespace CollapseLauncher
 
                 await using BridgedNetworkStream metadataStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
                 updateInfo = await metadataStream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
-                NewVersionLabel.Text = new GameVersion(updateInfo.ver).VersionString;
+                NewVersionLabel.Text = updateInfo.VersionString;
 
                 using (Http _httpClient = new Http(true))
                 {
@@ -67,11 +65,11 @@ namespace CollapseLauncher
                 }
 
                 File.WriteAllText(Path.Combine(workingDir, "..\\", "release"), m_arguments.Updater.UpdateChannel.ToString().ToLower());
-                GameVersion ver = new GameVersion(updateInfo.ver);
+                GameVersion ver = updateInfo.Version.Value;
                 Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, ver.VersionString);
                 ActivityStatus.Text = Lang._UpdatePage.UpdateMessage5;
 
-                File.WriteAllText(newVerTagPath, updateInfo.ver);
+                File.WriteAllText(newVerTagPath, updateInfo.VersionString);
 
                 await Task.Delay(5000);
                 Process applyUpdate = new Process()
@@ -88,13 +86,13 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
             }
         }
 
         private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = e.ProgressPercentage;
@@ -110,69 +108,20 @@ namespace CollapseLauncher
         {
             this.InitializeComponent();
             this.Activate();
-            // Initialize Window Handlers
-            m_windowHandle = GetActiveWindow();
-            m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
-            m_appWindow = AppWindow.GetFromWindowId(m_windowID);
-            m_appWindow.Changed += AppWindow_Changed;
-            m_presenter = m_appWindow.Presenter as OverlappedPresenter;
-            DisplayArea displayArea = DisplayArea.GetFromWindowId(m_windowID, DisplayAreaFallback.Primary);
-
-            // Get Monitor DPI
-            IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
-            if (GetDpiForMonitor(hMonitor, Monitor_DPI_Type.MDT_Default, out uint dpiX, out uint _) != 0)
-            {
-                throw new Exception("Could not get DPI for monitor.");
-            }
-
-            m_appDPIScale = (uint)(((long)dpiX * 100 + (96 >> 1)) / 96) / 100.0;
+            WindowUtility.RegisterWindow(this);
         }
 
         public void InitializeWindowSettings()
         {
             InitializeAppWindowAndIntPtr();
 
-            SetWindowSize(m_windowHandle, 540, 320);
+            WindowUtility.SetWindowSize(540, 320);
+            WindowUtility.CurrentWindowTitlebarExtendContent = true;
+            WindowUtility.CurrentWindow.SetTitleBar(DragArea);
 
-            ExtendsContentIntoTitleBar = true;
-
-            SetTitleBar(DragArea);
-            m_presenter.IsResizable = false;
-            m_presenter.IsMaximizable = false;
-
-            Application.Current.Resources["WindowCaptionForeground"] = IsAppThemeLight ? new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 } : new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-            Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-            Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-        }
-
-        public void SetWindowSize(IntPtr hwnd, int width, int height, int x = 0, int y = 0)
-        {
-            var dpi = GetDpiForWindow(hwnd);
-            float scalingFactor = (float)dpi / 96;
-            width = (int)(width * scalingFactor);
-            height = (int)(height * scalingFactor);
-
-            SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
-                                        x, y, width, height,
-                                        SetWindowPosFlags.SWP_NOMOVE);
-        }
-
-        PointInt32 LastPos;
-        private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
-        {
-            // TEMPORARY HACK:
-            // This one to prevent app to maximize since Maximize button in Windows 10 cannot be disabled.
-            if (args.DidPresenterChange)
-            {
-                if (m_appWindow.Position.X > -128 || m_appWindow.Position.Y > -128)
-                    m_presenter.Restore();
-
-                sender.Move(LastPos);
-                SetWindowSize(m_windowHandle, 540, 320);
-            }
-
-            if (!(m_appWindow.Position.X < 0 || m_appWindow.Position.Y < 0))
-                LastPos = m_appWindow.Position;
+            WindowUtility.CurrentWindowIsResizable = false;
+            WindowUtility.CurrentWindowIsMaximizable = false;
+            WindowUtility.ApplyWindowTitlebarLegacyColor();
         }
     }
 }

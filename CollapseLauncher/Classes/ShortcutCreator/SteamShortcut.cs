@@ -1,9 +1,12 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
+using Hi3Helper.Data;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Hashing;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
@@ -41,9 +44,9 @@ namespace CollapseLauncher.ShortcutUtils
         public string tags = "";
         #endregion
 
-        public SteamShortcut() { }
+        internal SteamShortcut() { }
 
-        public SteamShortcut(PresetConfigV2 preset, bool play = false)
+        internal SteamShortcut(PresetConfig preset, bool play = false)
         {
             AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
             
@@ -89,7 +92,7 @@ namespace CollapseLauncher.ShortcutUtils
         private static uint GeneratePreliminaryId(string exe, string appname)
         {
             string key = exe + appname;
-            var crc32 = new System.IO.Hashing.Crc32();
+            var crc32 = new Crc32();
             crc32.Append(SteamShortcutParser.ANSI.GetBytes(key));
             uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
             return (top << 32) | 0x02000000;
@@ -109,7 +112,7 @@ namespace CollapseLauncher.ShortcutUtils
             return (appId >> 32) - 0x10000000;
         }
 
-        public void MoveImages(string path, PresetConfigV2 preset)
+        internal void MoveImages(string path, PresetConfig preset)
         {
             if (preset == null) return;
 
@@ -120,8 +123,8 @@ namespace CollapseLauncher.ShortcutUtils
 
             string iconName = preset.GameType switch
             {
-                GameType.StarRail => "icon-starrail.ico",
-                GameType.Genshin => "icon-genshin.ico",
+                GameNameType.StarRail => "icon-starrail.ico",
+                GameNameType.Genshin => "icon-genshin.ico",
                 _ => "icon-honkai.ico",
             };
 
@@ -156,7 +159,7 @@ namespace CollapseLauncher.ShortcutUtils
             if (!File.Exists(path))
                 return "";
             FileStream stream = File.OpenRead(path);
-            var hash = System.Security.Cryptography.MD5.Create().ComputeHash(stream);
+            var hash = MD5.Create().ComputeHash(stream);
             stream.Close();
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
@@ -182,10 +185,10 @@ namespace CollapseLauncher.ShortcutUtils
 
                 File.Delete(steamPath);
 
-                LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), Hi3Helper.LogType.Error);
+                LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), LogType.Error);
             }
             
-            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + cdnURL + " could not be downloaded successfully.", Hi3Helper.LogType.Error);
+            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + cdnURL + " could not be downloaded successfully.", LogType.Error);
             return;
         }
 
@@ -208,13 +211,13 @@ namespace CollapseLauncher.ShortcutUtils
                 long fileLength = netStream.Length;
 
                 // Copy (and download) the remote streams to local
-                LogWriteLine($"Start downloading resource from: {url}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
                 int read = 0;
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer, 0, read, token);
 
                 LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
-                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", Hi3Helper.LogType.Default, true);
+                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
             }
             catch (Exception ex)
             {

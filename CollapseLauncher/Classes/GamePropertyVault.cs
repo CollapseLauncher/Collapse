@@ -2,17 +2,18 @@
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -20,29 +21,29 @@ namespace CollapseLauncher.Statics
 {
     internal class GamePresetProperty : IDisposable
     {
-        internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
         {
-            _GamePreset = CopyGamePreset(GamePreset);
-            _APIResouceProp = APIResouceProp!.Copy();
+            PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
 
+            _APIResouceProp = APIResouceProp!.Copy();
             switch (GamePreset!.GameType)
             {
-                case GameType.Honkai:
-                    _GameVersion = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, _GamePreset);
+                case GameNameType.Honkai:
+                    _GameVersion = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
                     _GameSettings = new HonkaiSettings(_GameVersion);
                     _GameCache = new HonkaiCache(UIElementParent, _GameVersion);
                     _GameRepair = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
                     _GameInstall = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
                     break;
-                case GameType.StarRail:
-                    _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, _GamePreset);
+                case GameNameType.StarRail:
+                    _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
                     _GameSettings = new StarRailSettings(_GameVersion);
                     _GameCache = new StarRailCache(UIElementParent, _GameVersion);
                     _GameRepair = new StarRailRepair(UIElementParent, _GameVersion);
                     _GameInstall = new StarRailInstall(UIElementParent, _GameVersion);
                     break;
-                case GameType.Genshin:
-                    _GameVersion = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, _GamePreset);
+                case GameNameType.Genshin:
+                    _GameVersion = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
                     _GameSettings = new GenshinSettings(_GameVersion);
                     _GameCache = null;
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
@@ -53,88 +54,8 @@ namespace CollapseLauncher.Statics
             }
         }
 
-        private static T[] CopyReturn<T>(T[] Source)
-        {
-            if (Source == null) return null;
-            T[] returnNew = new T[Source.Length];
-            Array.Copy(Source, returnNew, Source.Length);
-            return returnNew;
-        }
-
-        private static List<T> CopyReturn<T>(IEnumerable<T> Source)
-        {
-            if (Source == null) return null;
-            return new List<T>(Source);
-        }
-
-        #region Goofy Ah Copy Method. TODO: Use Generics for this :pepehands:
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
-        private PresetConfigV2 CopyGamePreset(PresetConfigV2 GamePreset) =>
-            new PresetConfigV2()
-            {
-                ActualGameDataLocation             = GamePreset.ActualGameDataLocation,
-                BetterHi3LauncherVerInfoReg        = GamePreset.BetterHi3LauncherVerInfoReg,
-                ConvertibleTo                      = CopyReturn(GamePreset.ConvertibleTo),
-                DispatcherKey                      = GamePreset.DispatcherKey,
-                DispatcherKeyBitLength             = GamePreset.DispatcherKeyBitLength,
-                FallbackGameType                   = GamePreset.FallbackGameType,
-                FallbackLanguage                   = GamePreset.FallbackLanguage,
-                GameChannel                        = GamePreset.GameChannel,
-                GameDefaultCVLanguage              = GamePreset.GameDefaultCVLanguage,
-                GameDirectoryName                  = GamePreset.GameDirectoryName,
-                GameDispatchArrayURL               = CopyReturn(GamePreset.GameDispatchArrayURL),
-                GameDispatchChannelName            = GamePreset.GameDispatchChannelName,
-                GameDispatchDefaultName            = GamePreset.GameDispatchDefaultName,
-                GameDispatchURL                    = GamePreset.GameDispatchURL,
-                GameDispatchURLTemplate            = GamePreset.GameDispatchURLTemplate,
-                GameExecutableName                 = GamePreset.GameExecutableName,
-                GameGatewayDefault                 = GamePreset.GameGatewayDefault,
-                GameGatewayURLTemplate             = GamePreset.GameGatewayURLTemplate,
-                GameName                           = GamePreset.GameName,
-                GameSupportedLanguages             = CopyReturn(GamePreset.GameSupportedLanguages),
-                GameType                           = GamePreset.GameType,
-                HashID                             = GamePreset.HashID,
-                InternalGameNameFolder             = GamePreset.InternalGameNameFolder,
-                InternalGameNameInConfig           = GamePreset.InternalGameNameInConfig,
-                IsConvertible                      = GamePreset.IsConvertible,
-                IsExperimental                     = GamePreset.IsExperimental,
-                IsGenshin                          = GamePreset.IsGenshin,
-                IsHideSocMedDesc                   = GamePreset.IsHideSocMedDesc,
-                LauncherResourceURL                = GamePreset.LauncherResourceURL,
-                LauncherSpriteURL                  = GamePreset.LauncherSpriteURL,
-                LauncherSpriteURLMultiLang         = GamePreset.LauncherSpriteURLMultiLang,
-                LauncherSpriteURLMultiLangFallback = GamePreset.LauncherSpriteURLMultiLangFallback,
-                ProfileName                        = GamePreset.ProfileName,
-                ProtoDispatchKey                   = GamePreset.ProtoDispatchKey,
-                SteamGameID                        = GamePreset.SteamGameID,
-                SteamInstallRegistryLocation       = GamePreset.SteamInstallRegistryLocation,
-                UseRightSideProgress               = GamePreset.UseRightSideProgress,
-                VendorType                         = GamePreset.VendorType,
-                ZoneDescription                    = GamePreset.ZoneDescription,
-                ZoneFullname                       = GamePreset.ZoneFullname,
-                ZoneLogoURL                        = GamePreset.ZoneLogoURL,
-                ZoneName                           = GamePreset.ZoneName,
-                ZonePosterURL                      = GamePreset.ZonePosterURL,
-                ZoneURL                            = GamePreset.ZoneURL,
-                ChannelID                          = GamePreset.ChannelID,
-                SubChannelID                       = GamePreset.SubChannelID,
-                LauncherID                         = GamePreset.LauncherID,
-                LauncherPluginURL                  = GamePreset.LauncherPluginURL,
-                GameDataTemplates                  = new Dictionary<string, GameDataTemplate>(GamePreset.GameDataTemplates ?? new Dictionary<string, GameDataTemplate>()),
-                ZoneSteamAssets                    = new Dictionary<string, SteamGameProp>(GamePreset.ZoneSteamAssets ?? new Dictionary<string, SteamGameProp>()),
-                #if DEBUG
-                IsRepairEnabled      = true,
-                IsCacheUpdateEnabled = true,
-                #else
-                IsRepairEnabled = GamePreset.IsRepairEnabled,
-                IsCacheUpdateEnabled = GamePreset.IsCacheUpdateEnabled,
-                #endif
-            };
-        #endregion
-
         internal RegionResourceProp _APIResouceProp { get; set; }
-        internal PresetConfigV2 _GamePreset { get; set; }
+        internal PresetConfig _GamePreset { get => _GameVersion.GamePreset; }
         internal IGameSettings _GameSettings { get; set; }
         internal IRepair _GameRepair { get; set; }
         internal ICache _GameCache { get; set; }
@@ -182,7 +103,6 @@ namespace CollapseLauncher.Statics
             _GameInstall?.Dispose();
 
             _APIResouceProp = null;
-            _GamePreset = null;
             _GameSettings = null;
             _GameRepair = null;
             _GameCache = null;
@@ -198,15 +118,19 @@ namespace CollapseLauncher.Statics
         public static int CurrentGameHashID { get; set; }
         public static GamePresetProperty GetCurrentGameProperty() => Vault![CurrentGameHashID];
 
-        public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
         {
+            PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
+
             LastGameHashID = LastGameHashID == 0 ? GamePreset!.HashID : LastGameHashID;
             CurrentGameHashID = GamePreset!.HashID;
-            RegisterGameProperty(UIElementParent, APIResouceProp, GamePreset);
+            RegisterGameProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
         }
 
-        public static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        private static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
         {
+            PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
+
             CleanupUnusedGameProperty();
             if (Vault!.ContainsKey(GamePreset!.HashID))
             {
@@ -216,7 +140,7 @@ namespace CollapseLauncher.Statics
                 return;
             }
 
-            GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GamePreset);
+            GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
             Vault.Add(GamePreset.HashID, Property);
 #if DEBUG
             Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
@@ -275,7 +199,7 @@ namespace CollapseLauncher.Statics
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PartialTypeWithSinglePart")]
+    [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     internal partial class PageStatics
     {
         internal static CommunityToolsProperty _CommunityToolsProperty { get; set; }

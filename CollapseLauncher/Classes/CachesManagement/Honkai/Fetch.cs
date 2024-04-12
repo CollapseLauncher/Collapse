@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
@@ -8,13 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 
 namespace CollapseLauncher
 {
@@ -23,14 +22,14 @@ namespace CollapseLauncher
         private async Task<List<CacheAsset>> Fetch(CancellationToken token)
         {
             // Initialize asset index for the return
-            List<CacheAsset> returnAsset = new List<CacheAsset>();
+            List<CacheAsset> returnAsset = new();
 
             // Use HttpClient instance on fetching
-            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            Http httpClient = new Http(true, 5, 1000, _userAgent);
             try
             {
                 // Subscribe the event listener
-                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
+                httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
 
                 // Build _gameRepoURL from loading Dispatcher and Gateway
                 await BuildGameRepoURL(token);
@@ -53,23 +52,23 @@ namespace CollapseLauncher
 
                     // uint = Count of the assets available
                     // long = Total size of the assets available
-                    (int, long) count = await FetchByType(type, _httpClient, returnAsset, token);
+                    (int, long) count = await FetchByType(type, httpClient, returnAsset, token);
 
                     // Write a log about the metadata
-                    LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
-                    LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
-                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
+                    LogWriteLine($"Cache Metadata [T: {type}]:",                         LogType.Default, true);
+                    LogWriteLine($"    Cache Count = {count.Item1}",                     LogType.NoTag,   true);
+                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag,   true);
 
                     // Increment the Total Size and Count
                     _progressTotalCount += count.Item1;
-                    _progressTotalSize += count.Item2;
+                    _progressTotalSize  += count.Item2;
                 }
             }
             finally
             {
                 // Unsubscribe the event listener and dispose Http client
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
-                _httpClient.Dispose();
+                httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
+                httpClient.Dispose();
             }
 
             // Return asset index
@@ -78,26 +77,26 @@ namespace CollapseLauncher
 
         private async Task BuildGameRepoURL(CancellationToken token)
         {
-            KianaDispatch dispatch = null;
-            Exception lastException = null;
+            KianaDispatch dispatch      = null;
+            Exception     lastException = null;
 
             foreach (string baseURL in _gameVersionManager!.GamePreset!.GameDispatchArrayURL!)
             {
                 try
                 {
                     // Init the key and decrypt it if exist.
-                    string key = null;
-                    if (_gameVersionManager.GamePreset.DispatcherKey != null)
+                    if (string.IsNullOrEmpty(_gameVersionManager.GamePreset.DispatcherKey))
                     {
-                        mhyEncTool Decryptor = new mhyEncTool();
-                        Decryptor.InitMasterKey(ConfigV2!.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
-
-                        key = _gameVersionManager.GamePreset.DispatcherKey;
-                        Decryptor.DecryptStringWithMasterKey(ref key);
+                        throw new NullReferenceException("Dispatcher key is null or empty!");
                     }
 
+                    string key = _gameVersionManager.GamePreset.DispatcherKey;
+
                     // Try assign dispatcher
-                    dispatch = await KianaDispatch.GetDispatch(baseURL, _gameVersionManager.GamePreset.GameDispatchURLTemplate, _gameVersionManager.GamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
+                    dispatch = await KianaDispatch.GetDispatch(baseURL,
+                                                               _gameVersionManager.GamePreset.GameDispatchURLTemplate,
+                                                               _gameVersionManager.GamePreset.GameDispatchChannelName,
+                                                               key, _gameVersion.VersionArray, token);
                     lastException = null;
                     break;
                 }
@@ -111,26 +110,31 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            _gameGateway = await KianaDispatch.GetGameserver(dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
+            _gameGateway =
+                await KianaDispatch.GetGameserver(dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
         private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
 
-        private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex, CancellationToken token)
+        private async Task<(int, long)> FetchByType(CacheAssetType type, Http httpClient, List<CacheAsset> assetIndex,
+                                                    CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
-            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
+            _status!.ActivityStatus             = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
             _status.IsProgressTotalIndetermined = true;
-            _status.IsIncludePerFileIndicator = false;
+            _status.IsIncludePerFileIndicator   = false;
             UpdateStatus();
 
             // Get the asset index properties
             string baseURL = string.Format(_gameRepoURL!, type.ToString().ToLowerInvariant());
-            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d")!, type == CacheAssetType.Data ? "Data" : "Resource");
+            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d")!,
+                                                 type == CacheAssetType.Data ? "Data" : "Resource");
 
             // Get a direct HTTP Stream
-            using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(_httpClient.GetHttpClient(), assetIndexURL, null, null, token);
+            using HttpResponseInputStream remoteStream =
+                await HttpResponseInputStream.CreateStreamAsync(httpClient.GetHttpClient(), assetIndexURL, null, null,
+                                                                token);
             using XORStream xorStream = new XORStream(remoteStream);
 
             // Build the asset index and return the count and size of each type
@@ -158,22 +162,23 @@ namespace CollapseLauncher
         }
         */
 
-        private (int, long) BuildAssetIndex(CacheAssetType type, string baseURL, XORStream stream, List<CacheAsset> assetIndex)
+        private (int, long) BuildAssetIndex(CacheAssetType   type, string baseURL, XORStream stream,
+                                            List<CacheAsset> assetIndex)
         {
-            int count = 0;
-            long size = 0;
+            int  count = 0;
+            long size  = 0;
 
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            bool isFirst = type == CacheAssetType.Data;
+            bool isFirst               = type == CacheAssetType.Data;
             bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
-            BundleFile bundleFile = new BundleFile(stream);
+            BundleFile     bundleFile    = new BundleFile(stream);
             SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 
             // Try get the asset index file as byte[] and load it as TextAsset
-            byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
+            byte[]    dataRaw       = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
             // Iterate lines of the TextAsset
@@ -186,21 +191,21 @@ namespace CollapseLauncher
                 if (isFirst)
                 {
                     _gameSalt = GetAssetIndexSalt(line.ToString());
-                    isFirst = false;
+                    isFirst   = false;
                     continue;
                 }
 
                 // Get the lucky number if it does so 👀
                 if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
                 {
-                    _luckyNumber = luckyNumber;
+                    _luckyNumber          = luckyNumber;
                     isNeedReadLuckyNumber = false;
                     continue;
                 }
 
                 // If the line is not started with '{' and ended with '}' (JSON),
                 // then skip it.
-                if (line[0] != '{' && line[line.Length - 1] != '}')
+                if (line[0] != '{' && line[^1] != '}')
                 {
                     LogWriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
                     continue;
@@ -220,7 +225,7 @@ namespace CollapseLauncher
                         size += content.CS;
 
                         // Set base URL and Path and add it to asset index
-                        content.BaseURL = baseURL;
+                        content.BaseURL  = baseURL;
                         content.BasePath = GetAssetBasePathByType(type);
                         assetIndex.Add(content);
                     }
@@ -228,7 +233,8 @@ namespace CollapseLauncher
                 catch (Exception ex)
                 {
                     // If failed while parsing the file, then skip it.
-                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}", LogType.Warning, true);
+                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}",
+                                 LogType.Warning, true);
                 }
             }
 
@@ -239,7 +245,21 @@ namespace CollapseLauncher
         private byte[] GetAssetIndexSalt(string data)
         {
             // Get the salt from the string and return as byte[]
-            mhyEncTool saltTool = new mhyEncTool(data, ConfigV2!.MasterKey);
+            byte[] key;
+            if (DataCooker.IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key))
+            {
+                DataCooker.GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
+                                              out long keyDecompSize);
+                key = new byte[keyCompSize];
+                DataCooker.ServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key, key, (int)keyCompSize,
+                                       (int)keyDecompSize, out _);
+            }
+            else
+            {
+                key = LauncherMetadataHelper.CurrentMasterKey?.Key;
+            }
+
+            mhyEncTool saltTool = new mhyEncTool(data, key);
             return saltTool.GetSalt();
         }
 
@@ -260,19 +280,21 @@ namespace CollapseLauncher
 
         public KianaDispatch GetCurrentGateway() => _gameGateway;
 
-        public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(Http _httpClient, CacheAssetType type, CancellationToken token)
+        public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(
+            Http httpClient, CacheAssetType type, CancellationToken token)
         {
             // Initialize asset index for the return
-            List<CacheAsset> returnAsset = new List<CacheAsset>();
+            List<CacheAsset> returnAsset = new();
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
             await BuildGameRepoURL(token);
 
             // Fetch the progress
-            _ = await FetchByType(type, _httpClient, returnAsset, token);
+            _ = await FetchByType(type, httpClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
-            return (returnAsset, _gameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(_gameGateway), _luckyNumber);
+            return (returnAsset, _gameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(_gameGateway),
+                    _luckyNumber);
         }
     }
 }

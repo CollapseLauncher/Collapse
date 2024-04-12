@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -800,14 +801,23 @@ namespace CollapseLauncher.Interfaces
         {
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x!.GetAssetSize());
-            StackPanel Content = new StackPanel();
-            Button ShowBrokenFilesButton = new Button()
+            StackPanel Content = UIElementExtensions.CreateStackPanel();
+
+            Content.AddElementToStackPanel(new TextBlock()
             {
-                Content = Lang!._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
-                Style = Application.Current!.Resources!["AccentButtonStyle"] as Style,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                CornerRadius = new CornerRadius(14)
-            };
+                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle!, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
+                Margin = new Thickness(0, 0, 0, 16),
+                TextWrapping = TextWrapping.Wrap
+            });
+            Button ShowBrokenFilesButton = Content.AddElementToStackPanel(
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
+                    "\uf550",
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Center));
+
             ShowBrokenFilesButton.Click += async (_, _) =>
             {
                 string tempPath = Path.GetTempFileName() + ".log";
@@ -847,14 +857,6 @@ namespace CollapseLauncher.Interfaces
                     // piped to parent
                 }
             };
-
-            Content.Children!.Add(new TextBlock()
-            {
-                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle!, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
-                Margin = new Thickness(0, 0, 0, 16),
-                TextWrapping = TextWrapping.Wrap
-            });
-            Content.Children.Add(ShowBrokenFilesButton);
 
             if (totalSize == 0) return;
 

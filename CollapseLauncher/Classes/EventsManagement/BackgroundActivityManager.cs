@@ -1,10 +1,11 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -61,138 +62,93 @@ namespace CollapseLauncher
                 Background = (Brush)Application.Current!.Resources!["InfoBarAnnouncementBrush"],
                 IsOpen = true,
                 IsClosable = false,
-                Margin = new Thickness(4, 4, 4, 0),
-                CornerRadius = new CornerRadius(8),
                 Shadow = _infoBarShadow,
                 Title = activityTitle,
                 Message = activitySubtitle
-            };
-            _parentNotifUI.Translation += LauncherConfig.Shadow32;
+            }
+            .WithMargin(4d, 4d, 4d, 0)
+            .WithCornerRadius(8);
+            _parentNotifUI.Translation = LauncherConfig.Shadow32;
 
-            StackPanel _parentContainer = new StackPanel() { Margin = _parentNotifUI.IsClosable ? containerClosableMargin : containerNotClosableMargin };
+            StackPanel _parentContainer = UIElementExtensions.CreateStackPanel()
+                .WithMargin(_parentNotifUI.IsClosable ? containerClosableMargin : containerNotClosableMargin);
+
             _parentNotifUI.Content = _parentContainer;
-            Grid _parentGrid = new Grid()
-            {
-                ColumnDefinitions = {
-                    new ColumnDefinition() { Width = new GridLength(72) },
-                    new ColumnDefinition()
-                }
-            };
-            _parentContainer.Children!.Add(_parentGrid);
+            Grid _parentGrid = _parentContainer.AddElementToStackPanel(
+                UIElementExtensions.CreateGrid()
+                    .WithColumns(new(72), new(1, GridUnitType.Star))
+            );
 
-            StackPanel progressLogoContainer = new StackPanel()
-            {
-                CornerRadius = new CornerRadius(8),
-                Width = 64,
-                Height = 64,
-                Margin = new Thickness(0, 4, 8, 4)
-            };
-            _parentGrid.Children!.Add(progressLogoContainer);
-            Grid.SetColumn(progressLogoContainer, 0);
+            StackPanel progressLogoContainer = _parentGrid.AddElementToGridColumn(
+                UIElementExtensions.CreateStackPanel()
+                    .WithWidthAndHeight(64d)
+                    .WithMargin(0d, 4d, 8d, 4d)
+                    .WithCornerRadius(8),
+                0
+            );
 
             GamePresetProperty CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            Image processLogo = new Image()
-            {
-                Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch
+            _ = progressLogoContainer.AddElementToStackPanel(
+                new Image()
                 {
-                    GameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
-                    GameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
-                    GameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
-                    GameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
-                    _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
-                })),
-                Width = 64,
-                Height = 64
-            };
-            progressLogoContainer.Children!.Add(processLogo);
-
-            StackPanel progressStatusContainer = new StackPanel()
-            {
-                Margin = new Thickness(8, -4, 0, 0),
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            _parentGrid.Children.Add(progressStatusContainer);
-            Grid.SetColumn(progressStatusContainer, 1);
-
-            Grid progressStatusGrid = new Grid()
-            {
-                Margin = new Thickness(0, 0, 0, 16),
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition(),
-                    new ColumnDefinition()
-                },
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition()
-                }
-            };
-            progressStatusContainer.Children!.Add(progressStatusGrid);
-
-            TextBlock progressLeftTitle = new TextBlock()
-            {
-                Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
-                Text = Lang!._BackgroundNotification!.LoadingTitle,
-            };
-            TextBlock progressLeftSubtitle = new TextBlock()
-            {
-                Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
-                Text = Lang._BackgroundNotification.Placeholder,
-            };
-
-            TextBlock progressRightTitle = new TextBlock()
-            {
-                Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
-                Text = Lang._BackgroundNotification.Placeholder,
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-            TextBlock progressRightSubtitle = new TextBlock()
-            {
-                Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
-                Text = Lang._BackgroundNotification.Placeholder,
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-            progressStatusGrid.Children!.Add(progressLeftTitle);
-            progressStatusGrid.Children!.Add(progressLeftSubtitle);
-            progressStatusGrid.Children!.Add(progressRightTitle);
-            progressStatusGrid.Children!.Add(progressRightSubtitle);
-            Grid.SetColumn(progressLeftTitle, 0); Grid.SetRow(progressLeftTitle, 0);
-            Grid.SetColumn(progressLeftSubtitle, 0); Grid.SetRow(progressLeftSubtitle, 1);
-            Grid.SetColumn(progressRightTitle, 1); Grid.SetRow(progressRightTitle, 0);
-            Grid.SetColumn(progressRightSubtitle, 1); Grid.SetRow(progressRightSubtitle, 1);
-
-            ProgressBar progressBar = new ProgressBar() { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true };
-            progressStatusContainer.Children.Add(progressBar);
-
-            Button cancelButton = new Button()
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 4, 0, 0),
-                CornerRadius = new CornerRadius(14),
-                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
-                Content = new StackPanel()
-                {
-                    Orientation = Orientation.Horizontal,
-                    Margin = new Thickness(4, 0, 4, 0),
-                    Children =
+                    Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch
                     {
-                        new FontIcon()
-                        {
-                            FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
-                            Glyph = "",
-                            FontSize = 18
-                        },
-                        new TextBlock()
-                        {
-                            Text = Lang._HomePage!.PauseCancelDownloadBtn,
-                            FontWeight = FontWeights.Medium,
-                            Margin = new Thickness(8, -2, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-                        }
-                    }
-                }
-            };
+                        GameNameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
+                        GameNameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
+                        GameNameType.StarRail => "ms-appx:///Assets/Images/GameLogo/starrail-logo.png",
+                        GameNameType.Zenless => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
+                        _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
+                    }))
+                }.WithWidthAndHeight(64));
+
+            StackPanel progressStatusContainer = _parentGrid.AddElementToGridColumn(
+                UIElementExtensions.CreateStackPanel()
+                    .WithVerticalAlignment(VerticalAlignment.Center)
+                    .WithMargin(8d, -4d, 0, 0),
+                1
+            );
+
+            Grid progressStatusGrid = progressStatusContainer.AddElementToStackPanel(
+                UIElementExtensions.CreateGrid()
+                    .WithColumns(new(1, GridUnitType.Star), new(1, GridUnitType.Star))
+                    .WithRows(new(1, GridUnitType.Star), new(1, GridUnitType.Star))
+                    .WithMargin(0d, 0d, 0d, 16d)
+            );
+
+            TextBlock progressLeftTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            {
+                Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
+                Text = Lang!._BackgroundNotification!.LoadingTitle,
+            }, 0, 0);
+            TextBlock progressLeftSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            {
+                Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
+                Text = Lang._BackgroundNotification.Placeholder,
+            }, 1, 0);
+
+            TextBlock progressRightTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            {
+                Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
+                Text = Lang._BackgroundNotification.Placeholder
+            }.WithHorizontalAlignment(HorizontalAlignment.Right), 0, 1);
+            TextBlock progressRightSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            {
+                Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
+                Text = Lang._BackgroundNotification.Placeholder
+            }.WithHorizontalAlignment(HorizontalAlignment.Right), 1, 1);
+
+            ProgressBar progressBar = progressStatusContainer.AddElementToStackPanel(
+                new ProgressBar() { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true });
+
+            Button cancelButton =
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._HomePage!.PauseCancelDownloadBtn,
+                    "",
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Right)
+                .WithMargin(0d, 4d, 0d, 0d);
 
             cancelButton.Click += (_, _) =>
             {
@@ -201,48 +157,23 @@ namespace CollapseLauncher
                 _parentNotifUI.IsOpen = false;
             };
 
-            Button settingsButton = new Button()
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 4, 8, 0),
-                CornerRadius = new CornerRadius(14),
-                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
-                Content = new StackPanel()
-                {
-                    Orientation = Orientation.Horizontal,
-                    Margin = new Thickness(4, 0, 4, 0),
-                    Children =
-                    {
-                        new FontIcon()
-                        {
-                            FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
-                            Glyph = "\uf013",
-                            FontSize = 18
-                        },
-                        new TextBlock()
-                        {
-                            Text = Lang._Dialogs.DownloadSettingsTitle,
-                            FontWeight = FontWeights.Medium,
-                            Margin = new Thickness(8, -2, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-                        }
-                    }
-                }
-            };
+            Button settingsButton =
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._Dialogs!.DownloadSettingsTitle,
+                    "\uf013",
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Right)
+                .WithMargin(0d, 4d, 8d, 0d);
 
-            settingsButton.Click += async (_, _) => await Dialogs.SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
+            settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings(_parentContainer, CurrentGameProperty);
 
-            StackPanel controlButtons = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Children =
-                {
-                    settingsButton,
-                    cancelButton
-                }
-            };
-            _parentContainer.Children.Add(controlButtons);
+            StackPanel controlButtons = _parentContainer.AddElementToStackPanel(
+                UIElementExtensions.CreateStackPanel(Orientation.Horizontal)
+                    .WithHorizontalAlignment(HorizontalAlignment.Right)
+            );
+            controlButtons.AddElementToStackPanel(settingsButton, cancelButton);
 
             EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {

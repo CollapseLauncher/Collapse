@@ -1,11 +1,11 @@
-﻿namespace Hi3Helper.Preset
+﻿namespace CollapseLauncher.Helper.Metadata
 {
-    public class BHI3LInfo
+    internal class BHI3LInfo
     {
         public BHI3LInfo_GameInfo game_info { get; set; }
     }
 
-    public class BHI3LInfo_GameInfo
+    internal class BHI3LInfo_GameInfo
     {
         public string version { get; set; }
         public string install_path { get; set; }

@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Update;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
@@ -7,8 +8,7 @@ using Squirrel;
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -18,13 +18,12 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using System.IO;
 
 namespace CollapseLauncher
 {
     public static class MainEntryPoint
     {
-        public static readonly int InstanceCount = InvokeProp.GetInstanceCount();
+        public static int InstanceCount;
         
         [DllImport("Microsoft.ui.xaml.dll")]
         private static extern void XamlCheckProcessRequirements();
@@ -35,8 +34,6 @@ namespace CollapseLauncher
 #if PREVIEW
             IsPreview = true;
 #endif
-            AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
-            AppCurrentVersionString = AppCurrentVersion.VersionString;
 
             try
             {
@@ -66,14 +63,10 @@ namespace CollapseLauncher
                 }
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
-                    AppCurrentVersion.VersionString,
+                    LauncherUpdateHelper.LauncherCurrentVersionString,
                     GetVersionString(),
                     Environment.UserName,
                     IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
-
-                if (InstanceCount > 1)
-                    LogWriteLine($"Multiple instance is found! This is instance #{InstanceCount}",
-                        LogType.Scheme, true);
                 
                 FileVersionInfo winappSDKver = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
                 LogWriteLine(string.Format("Runtime: {0} - WindowsAppSDK {1}", RuntimeInformation.FrameworkDescription, winappSDKver.ProductVersion), LogType.Scheme, true);
@@ -127,6 +120,8 @@ namespace CollapseLauncher
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
+                InstanceCount = InvokeProp.EnumerateInstances();
+                
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())
                 {
@@ -253,16 +248,15 @@ namespace CollapseLauncher
 
         public static string GetVersionString()
         {
-            OperatingSystem osDetail = Environment.OSVersion;
-            w_windowsVersionNumbers = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
-            m_isWindows11 = w_windowsVersionNumbers[2] >= 22000;
+            var version = Environment.OSVersion.Version;
+            m_isWindows11 = version.Build >= 22000;
             if (m_isWindows11)
             {
-                return $"Windows 11 (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
+                return $"Windows 11 (build: {version.Build}.{version.Revision})";
             }
             else
             {
-                return $"Windows {w_windowsVersionNumbers[0]} (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
+                return $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
-using Hi3Helper.Preset;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 
@@ -18,6 +18,9 @@ namespace CollapseLauncher.Interfaces
 
     internal interface IGameVersionCheck
     {
+        string GameName { get; }
+        string GameRegion { get; }
+
         /// <summary>
         /// Get the base of the instance
         /// </summary>
@@ -37,7 +40,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or sets the game preset
         /// </summary>
-        PresetConfigV2 GamePreset { get; set; }
+        PresetConfig GamePreset { get; }
 
         /// <summary>
         /// Returns or set the API properties
@@ -47,7 +50,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns the type of the game
         /// </summary>
-        GameType GameType { get; }
+        GameNameType GameType { get; }
 
         /// <summary>
         /// Returns the name of the engine output log file
