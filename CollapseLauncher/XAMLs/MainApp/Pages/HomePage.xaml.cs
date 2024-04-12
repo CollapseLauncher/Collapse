@@ -119,7 +119,7 @@
 
         private bool IsPageUnload { get; set; }
 
-        private bool NeedShowEventIcon => GetAppConfigValue("ShowSocialMediaPanel").ToBool();
+        private bool NeedShowEventIcon => GetAppConfigValue("ShowEventsPanel").ToBool();
 
         private void ReturnToHomePage()
         {
@@ -148,13 +148,13 @@
                 GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
-                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
-
-                if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
                 {
-                    SocMedPanel.Visibility = Visibility.Collapsed;
+                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
                     ImageEventImgGrid.Visibility = Visibility.Collapsed;
                 }
+
+                if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
+                    SocMedPanel.Visibility = Visibility.Collapsed;
 
                 TryLoadEventPanelImage();
 
@@ -343,6 +343,8 @@
             if (!hide)
                 ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
 
+            HideImageEventImg(hide);
+
             Storyboard storyboard = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
             OpacityAnimation.From = hide ? 1 : 0;
@@ -389,7 +391,6 @@
 
         private async void HideSocialMediaPanel(bool hide)
         {
-            HideImageEventImg(hide);
             if (!hide)
             {
                 SocMedPanel.Visibility = Visibility.Visible;
