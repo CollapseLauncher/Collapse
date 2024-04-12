@@ -14,26 +14,26 @@
         <Grid x:Name="MainUI"
               Visibility="Collapsed">
             <Grid.ChildrenTransitions>
-                <PopupThemeTransition/>
+                <PopupThemeTransition />
             </Grid.ChildrenTransitions>
             <Image x:Name="ContainerBackgroundImage"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Opacity="0.5"
                    Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
-                   Stretch="UniformToFill"/>
+                   Stretch="UniformToFill" />
             <Grid x:Name="ContainerGrid"
                   Margin="64"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MaxWidth="478"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition MaxWidth="478" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <StackPanel x:Name="CollapseLogoContainer"
                             HorizontalAlignment="Left"
@@ -46,10 +46,10 @@
                            PointerExited="GridBG_Icon_PointerExited"
                            Source="ms-appx:///Assets/CollapseLauncherLogo.png">
                         <Image.OpacityTransition>
-                            <ScalarTransition/>
+                            <ScalarTransition />
                         </Image.OpacityTransition>
                         <Image.ScaleTransition>
-                            <Vector3Transition Duration="0:0:0.2"/>
+                            <Vector3Transition Duration="0:0:0.2" />
                         </Image.ScaleTransition>
                     </Image>
                 </StackPanel>
@@ -63,7 +63,7 @@
                             Style="{ThemeResource TransparentDefaultButtonStyle}"
                             Visibility="Collapsed">
                         <Button.OpacityTransition>
-                            <ScalarTransition/>
+                            <ScalarTransition />
                         </Button.OpacityTransition>
                         <Button.Content>
                             <StackPanel>
@@ -75,11 +75,11 @@
                                         <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                                         FontSize="12"
                                                         Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                                        Glyph="&#xE70D;"/>
+                                                        Glyph="&#xE70D;" />
                                     </AnimatedIcon.FallbackIconSource>
                                 </AnimatedIcon>
                                 <TextBlock FontWeight="Bold"
-                                           Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.SetupBackButton}"/>
+                                           Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.SetupBackButton}" />
                             </StackPanel>
                         </Button.Content>
                     </Button>
@@ -93,12 +93,12 @@
                         <TextBlock FontSize="48"
                                    FontWeight="Light"
                                    Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}"
-                                   TextWrapping="Wrap"/>
+                                   TextWrapping="Wrap" />
                         <TextBlock Margin="0,0,0,0"
                                    FontSize="48"
                                    FontWeight="Bold"
                                    Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}"
-                                   TextWrapping="Wrap"/>
+                                   TextWrapping="Wrap" />
                     </StackPanel>
                 </Grid>
                 <ScrollViewer x:Name="LauncherFolderContainer"
@@ -111,28 +111,28 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center">
                         <StackPanel.Transitions>
-                            <EntranceThemeTransition/>
+                            <EntranceThemeTransition />
                         </StackPanel.Transitions>
                         <TextBlock Margin="0,0,0,16"
                                    FontSize="32"
                                    Foreground="{ThemeResource SystemAccentColor}"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}"/>
+                                   Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" />
                         <TextBlock FontWeight="Normal"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}"/>
+                                   Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" />
                         <TextBlock Margin="0,0,0,32"
                                    FontWeight="Normal"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}"/>
+                                   Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}" />
                         <TextBlock Margin="0,0,0,16"
                                    Style="{ThemeResource SubtitleTextBlockStyle}">
                             <Run FontWeight="Normal"
-                                 Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}"/>
+                                 Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}" />
                             <Run Foreground="{ThemeResource SystemAccentColor}"
-                                 Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}"/>
+                                 Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" />
                             <Run FontWeight="Normal"
-                                 Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}"/>
+                                 Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}" />
                         </TextBlock>
                         <StackPanel Orientation="Vertical">
                             <TextBlock x:Name="ErrMsg"
@@ -143,7 +143,7 @@
                                        Foreground="{ThemeResource TextFillColorPrimary}"
                                        Text=""
                                        TextTrimming="Clip"
-                                       TextWrapping="Wrap"/>
+                                       TextWrapping="Wrap" />
                             <Button Click="ChooseFolder"
                                     CornerRadius="16"
                                     Style="{ThemeResource AccentButtonStyle}">
@@ -152,10 +152,10 @@
                                     <FontIcon Margin="0,0,8,0"
                                               FontFamily="{ThemeResource FontAwesomeSolid}"
                                               FontSize="14"
-                                              Glyph="&#xf07b;"/>
+                                              Glyph="&#xf07b;" />
                                     <TextBlock FontWeight="Medium"
                                                Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}"
-                                               TextWrapping="Wrap"/>
+                                               TextWrapping="Wrap" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -169,7 +169,7 @@
                     <StackPanel x:Name="SettingsCardContainer">
                         <TextBlock Margin="0,0,0,16"
                                    FontSize="32"
-                                   Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationTitle}"/>
+                                   Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationTitle}" />
                         <controls:SettingsCard x:Name="SettingsCardItemLanguage"
                                                Margin="0,2"
                                                Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageDescription}"
@@ -179,7 +179,7 @@
                                       ItemsSource="{x:Bind LangList}"
                                       MaxDropDownHeight="200"
                                       SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
-                                      SelectionChanged="FixComboBoxSize"/>
+                                      SelectionChanged="FixComboBoxSize" />
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="SettingsCardItemWindowSize"
                                                Margin="0,2"
@@ -189,8 +189,8 @@
                             <ComboBox x:Name="SelectWindowSize"
                                       SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}"
                                       SelectionChanged="FixComboBoxSize">
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}"/>
-                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" />
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" />
                             </ComboBox>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="SettingsCardItemPreferredCDN"
@@ -205,7 +205,7 @@
                                     <Button.Content>
                                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                                   FontSize="12"
-                                                  Glyph="&#xf021;"/>
+                                                  Glyph="&#xf021;" />
                                     </Button.Content>
                                 </Button>
                                 <Button Margin="0,0,8,0"
@@ -213,7 +213,7 @@
                                     <Button.Content>
                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                                   FontSize="12"
-                                                  Glyph="&#x3f;"/>
+                                                  Glyph="&#x3f;" />
                                     </Button.Content>
                                     <Button.Flyout>
                                         <Flyout>
@@ -221,28 +221,28 @@
                                                 <TextBlock TextWrapping="WrapWholeWords">
                                                     <Run FontSize="20"
                                                          FontWeight="Bold"
-                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_1}"/>
+                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_1}" />
                                                     <Run FontSize="12"
-                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_2}"/>
+                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_2}" />
                                                     <Run FontSize="12"
                                                          FontWeight="Bold"
-                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_3}"/>
+                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_3}" />
                                                     <Run FontSize="12"
-                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_4}"/>
+                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_4}" />
                                                 </TextBlock>
                                                 <TextBlock MaxWidth="380"
                                                            Margin="0,8,0,0"
                                                            TextWrapping="Wrap">
-                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_1}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_1}" />
                                                     <Run FontWeight="Bold"
-                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_2}"/>
-                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_3}"/>
+                                                         Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_2}" />
+                                                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_3}" />
                                                 </TextBlock>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_4}"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_4}" />
                                                 <TextBlock Margin="0,12,0,0"
                                                            FontSize="20"
                                                            FontWeight="Bold"
-                                                           Text="{x:Bind helper:Locale.Lang._StartupPage.CDNsAvailable}"/>
+                                                           Text="{x:Bind helper:Locale.Lang._StartupPage.CDNsAvailable}" />
                                                 <ItemsControl MaxWidth="380"
                                                               Margin="0,0,0,-8"
                                                               ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
@@ -251,9 +251,9 @@
                                                             <StackPanel Margin="0,8">
                                                                 <TextBlock FontSize="16"
                                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                                           Text="{x:Bind Name}"/>
+                                                                           Text="{x:Bind Name}" />
                                                                 <TextBlock Text="{x:Bind Description}"
-                                                                           TextWrapping="Wrap"/>
+                                                                           TextWrapping="Wrap" />
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -264,7 +264,7 @@
                                 </Button>
                                 <ComboBox x:Name="SelectCDN"
                                           SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}"
-                                          SelectionChanged="FixComboBoxSize"/>
+                                          SelectionChanged="FixComboBoxSize" />
                             </StackPanel>
                         </controls:SettingsCard>
                         <controls:SettingsExpander x:Name="SettingsCardItemTheme"
@@ -278,16 +278,16 @@
                                     <ComboBox x:Name="SettingsAppThemeCombobox"
                                               SelectedIndex="{x:Bind SelectedTheme, Mode=TwoWay}"
                                               SelectionChanged="FixComboBoxSize">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}"/>
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}"/>
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}"/>
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}" />
                                     </ComboBox>
                                 </controls:SettingsCard>
                                 <controls:SettingsCard Description="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription}"
                                                        Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader}">
                                     <CheckBox Checked="CustomBackgroundCheckedOpen"
                                               Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                              Unchecked="CustomBackgroundCheckedClose"/>
+                                              Unchecked="CustomBackgroundCheckedClose" />
                                 </controls:SettingsCard>
                             </controls:SettingsExpander.Items>
                         </controls:SettingsExpander>
@@ -304,14 +304,14 @@
                         Opacity="0"
                         Style="{ThemeResource TransparentDefaultButtonStyle}">
                     <Button.OpacityTransition>
-                        <ScalarTransition/>
+                        <ScalarTransition />
                     </Button.OpacityTransition>
                     <Button.Content>
                         <StackPanel>
                             <TextBlock FontSize="16"
                                        FontStretch="UltraExpanded"
                                        FontWeight="SemiBold"
-                                       Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.SetupNextButton}"/>
+                                       Text="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.SetupNextButton}" />
                             <AnimatedIcon x:Name="DropDownGlyph"
                                           Width="24"
                                           MinHeight="{ThemeResource ComboBoxMinHeight}"
@@ -322,7 +322,7 @@
                                     <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                                     FontSize="12"
                                                     Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                                    Glyph="&#xE70D;"/>
+                                                    Glyph="&#xE70D;" />
                                 </AnimatedIcon.FallbackIconSource>
                             </AnimatedIcon>
                         </StackPanel>
@@ -334,19 +334,19 @@
               Margin="64"
               VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Image x:Name="WelcomeVLogo"
                    Height="128"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
                    Opacity="0"
-                   Source="ms-appx:///Assets/CollapseLauncherLogo.png"/>
+                   Source="ms-appx:///Assets/CollapseLauncherLogo.png" />
             <StackPanel x:Name="WelcomeVCarouselGrid"
                         Grid.Row="1"
                         Margin="0,32,0,0"
@@ -355,27 +355,27 @@
                     <TextBlock x:Name="WelcomeVCarouselText1"
                                FontSize="32"
                                Opacity="0"
-                               Text="Welcome"/>
+                               Text="Welcome" />
                     <TextBlock x:Name="WelcomeVCarouselText2"
                                FontSize="32"
                                Opacity="0"
-                               Text=" To"/>
+                               Text=" To" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock x:Name="WelcomeVCarouselText3"
                                FontSize="48"
                                FontWeight="Bold"
                                Opacity="0"
-                               Text="Collapse"/>
+                               Text="Collapse" />
                     <TextBlock x:Name="WelcomeVCarouselText4"
                                FontSize="48"
                                FontWeight="Bold"
                                Opacity="0"
-                               Text=" Launcher"/>
+                               Text=" Launcher" />
                 </StackPanel>
             </StackPanel>
         </Grid>
         <Frame x:Name="OverlayFrame"
-               x:FieldModifier="internal"/>
+               x:FieldModifier="internal" />
     </Grid>
 </Page>

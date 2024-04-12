@@ -17,18 +17,18 @@
                           IsActive="True"
                           IsIndeterminate="false"
                           Maximum="100"
-                          Value="100"/>
+                          Value="100" />
             <TextBlock x:Name="Title"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.OverlayNotInstalledTitle}"/>
+                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.OverlayNotInstalledTitle}" />
             <TextBlock x:Name="Subtitle"
                        Margin="0,8,0,192"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.OverlayNotInstalledSubtitle}"/>
+                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.OverlayNotInstalledSubtitle}" />
         </StackPanel>
     </Grid>
 </Page>

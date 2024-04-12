@@ -13,26 +13,26 @@
                         VerticalAlignment="Center">
                 <TextBlock FontSize="76"
                            FontWeight="Normal"
-                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header1}"/>
+                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header1}" />
                 <TextBlock Margin="0,-24,0,0"
                            FontSize="80"
                            FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}"/>
+                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}" />
                 <Button x:Name="ShowErrorBtn"
                         Margin="0,16,0,0"
                         Click="ShowError"
                         Content="{x:Bind helper:Locale.Lang._DisconnectedPage.ShowErrorBtn}"
                         CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ShowErrorBtn)}"
-                        Style="{ThemeResource AccentButtonStyle}"/>
+                        Style="{ThemeResource AccentButtonStyle}" />
             </StackPanel>
             <TextBlock VerticalAlignment="Bottom"
                        FontSize="16"
                        Opacity="0.75">
-                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer1}"/>
+                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer1}" />
                 <Run FontWeight="Bold"
                      Foreground="{ThemeResource AccentColor}"
-                     Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer2}"/>
-                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}"/>
+                     Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer2}" />
+                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}" />
             </TextBlock>
         </Grid>
         <Image Width="467"
@@ -41,6 +41,6 @@
                HorizontalAlignment="Right"
                VerticalAlignment="Bottom"
                PointerPressed="PaimonClicked"
-               Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png"/>
+               Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
     </Grid>
 </Page>

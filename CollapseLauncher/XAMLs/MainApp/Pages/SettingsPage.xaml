@@ -1,4 +1,4 @@
-<!--  ReSharper disable IdentifierTypo  -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.SettingsPage"
@@ -9,8 +9,8 @@
       xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       CacheMode="BitmapCache"
       Loaded="Page_Loaded"
       NavigationCacheMode="Enabled"
@@ -112,14 +112,14 @@
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBlock Margin="0,16,0,8"
-                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" />
-                        <CheckBox Margin="0, 4, 0, 8"
-                                  x:Name="AppBGMode"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" />
+                        <CheckBox x:Name="AppBGMode"
+                                  Margin="0,4,0,8"
                                   Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                  IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
-                        <StackPanel x:Name="AppBGCustomizer" 
-                                    Margin="0, 4, 0, 8"
+                                  IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}" />
+                        <StackPanel x:Name="AppBGCustomizer"
+                                    Margin="0,4,0,8"
                                     Visibility="Collapsed">
                             <StackPanel Margin="-2,4,0,8"
                                         Orientation="Horizontal">
@@ -141,30 +141,30 @@
                                                    Text="{x:Bind helper:Locale.Lang._Misc.Select}" />
                                     </StackPanel>
                                 </Button>
-                                <ScrollViewer HorizontalScrollMode="Enabled"
-                                              VerticalScrollMode="Disabled"
-                                              HorizontalScrollBarVisibility="Visible"
-                                              x:Name="BGPathDisplayViewer"
+                                <ScrollViewer x:Name="BGPathDisplayViewer"
+                                              Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.SettingsPanelWidth}"
                                               Margin="12,-4,0,-4"
-                                              Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.SettingsPanelWidth}">
-                                    <TextBlock Margin="0, 4"
-                                               x:Name="BGPathDisplay"
+                                              HorizontalScrollBarVisibility="Visible"
+                                              HorizontalScrollMode="Enabled"
+                                              VerticalScrollMode="Disabled">
+                                    <TextBlock x:Name="BGPathDisplay"
+                                               Margin="0,4"
                                                VerticalAlignment="Center"
-                                               Text=""/>
+                                               Text="" />
                                 </ScrollViewer>
                             </StackPanel>
                             <TextBlock x:Name="AppBGCustomizerNote"
-                                           Width="368"
-                                           Margin="0,12,0,0"
-                                           HorizontalAlignment="Left"
-                                           FontSize="12"
-                                           FontWeight="Bold"
-                                           Foreground="{ThemeResource AccentColor}"
-                                           TextWrapping="Wrap"
-                                           Visibility="Collapsed" />
+                                       Width="368"
+                                       Margin="0,12,0,0"
+                                       HorizontalAlignment="Left"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AccentColor}"
+                                       TextWrapping="Wrap"
+                                       Visibility="Collapsed" />
                         </StackPanel>
                         <StackPanel x:Name="CustomBGImageSettings"
-                                    Margin="0, 4"
+                                    Margin="0,4"
                                     Visibility="Collapsed">
                             <Grid Margin="0,4">
                                 <Border Background="Transparent"
@@ -192,7 +192,7 @@
                             </Grid>
                         </StackPanel>
                         <StackPanel x:Name="CustomBGVideoSettings"
-                                    Margin="0, 4"
+                                    Margin="0,4"
                                     Visibility="Collapsed">
                             <ToggleSwitch x:Name="VideoBackgroundIsAudioMute"
                                           Margin="0,4"
