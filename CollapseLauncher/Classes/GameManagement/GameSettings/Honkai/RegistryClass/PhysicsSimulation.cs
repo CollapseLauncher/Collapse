@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Microsoft.Win32;
 using System;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -64,7 +65,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot.SetValue(_ValueName, UsePhysicsSimulation, Microsoft.Win32.RegistryValueKind.DWord);
+                RegistryRoot.SetValue(_ValueName, UsePhysicsSimulation, RegistryValueKind.DWord);
                 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {_ValueName} : {UsePhysicsSimulation}", LogType.Debug, true);
                 #endif

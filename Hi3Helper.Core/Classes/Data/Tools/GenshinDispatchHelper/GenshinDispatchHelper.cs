@@ -14,10 +14,10 @@ namespace Hi3Helper.Data
     public class GenshinDispatchHelper : IDisposable
     {
         private Http.Http _httpClient;
-        private string DispatchBaseURL { get; set; }
-        private string RegionSubdomain { get; set; }
-        private string ChannelName = "OSRELWin";
-        private string Version { get; set; }
+        private string    DispatchBaseURL { get; set; }
+        private string    RegionSubdomain { get; set; }
+        private string    ChannelName = "OSRELWin";
+        private string    Version { get; set; }
 
         private GenshinGateway Gateway;
         private QueryProperty returnValProp;

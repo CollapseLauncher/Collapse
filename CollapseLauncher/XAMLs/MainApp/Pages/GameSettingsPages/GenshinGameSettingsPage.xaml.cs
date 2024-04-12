@@ -1,43 +1,46 @@
-using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
-using Hi3Helper;
 #if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
+    using CollapseLauncher.DiscordPresence;
 #endif
-using Hi3Helper.Shared.ClassStruct;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using Microsoft.Graphics.Canvas.Brushes;
-using Microsoft.Graphics.Canvas.Effects;
-using Microsoft.Graphics.Display;
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Win32;
-using RegistryUtils;
-using System;
-using System.IO;
-using System.Numerics;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Globalization.NumberFormatting;
-using Windows.Graphics.DirectX;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
-using Brush = Microsoft.UI.Xaml.Media.Brush;
-using CollapseLauncher.Helper.Animation;
+    using CollapseLauncher.GameSettings.Genshin;
+    using CollapseLauncher.Helper;
+    using CollapseLauncher.Helper.Animation;
+    using CollapseLauncher.Interfaces;
+    using CollapseLauncher.Statics;
+    using Hi3Helper;
+    using Hi3Helper.Shared.ClassStruct;
+    using Microsoft.Graphics.Canvas;
+    using Microsoft.Graphics.Canvas.Brushes;
+    using Microsoft.Graphics.Canvas.Effects;
+    using Microsoft.Graphics.Canvas.UI.Xaml;
+    using Microsoft.Graphics.Display;
+    using Microsoft.UI;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
+    using Microsoft.UI.Xaml.Media;
+    using Microsoft.UI.Xaml.Navigation;
+    using Microsoft.Win32;
+    using RegistryUtils;
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Numerics;
+    using System.Threading.Tasks;
+    using Windows.Foundation;
+    using Windows.Globalization.NumberFormatting;
+    using Windows.Graphics.DirectX;
+    using Windows.Storage;
+    using Windows.Storage.Streams;
+    using Windows.UI;
+    using static Hi3Helper.Locale;
+    using static Hi3Helper.Logger;
+    using static Hi3Helper.Shared.Region.LauncherConfig;
+    using static CollapseLauncher.Statics.GamePropertyVault;
+    using Brush = Microsoft.UI.Xaml.Media.Brush;
 
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class GenshinGameSettingsPage
     {
         #region Properties
@@ -61,15 +64,14 @@ namespace CollapseLauncher.Pages
             try
             {
                 CurrentGameProperty = GetCurrentGameProperty();
-                DispatcherQueue.TryEnqueue(() =>
+                DispatcherQueue?.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
-
-                DisplayInformation displayInfo = DisplayInformation.CreateForWindowId(InnerLauncherConfig.m_windowID);
+                
                 // ReSharper disable once UnusedVariable
-                DisplayAdvancedColorInfo colorInfo = displayInfo.GetAdvancedColorInfo();
+                DisplayAdvancedColorInfo colorInfo = WindowUtility.CurrentWindowDisplayColorInfo;
 #if SIMULATEGIHDR
                 IsHDREnabled = true;
                 IsHDRSupported = true;
@@ -100,7 +102,7 @@ namespace CollapseLauncher.Pages
             if (!IsNoReload)
             {
                 LogWriteLine("[GI GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-                DispatcherQueue.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
+                DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
             }
         }
 
@@ -134,7 +136,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occurred while exporting registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
+                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
             }
@@ -160,7 +162,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occurred while importing registry!\r\n{ex}", LogType.Error, true);
-                ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
+                ApplyText.Foreground = new SolidColorBrush(new Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
             }
@@ -198,7 +200,7 @@ namespace CollapseLauncher.Pages
                 else
                 {
 #if !DISABLEDISCORD
-                    AppDiscordPresence.SetActivity(ActivityType.GameSettings);
+                    InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.GameSettings);
 #endif
                 }
             }
@@ -264,7 +266,7 @@ namespace CollapseLauncher.Pages
         
         private void OnUnload(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 try
                 {

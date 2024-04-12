@@ -1,13 +1,15 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
+using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class StarRailGameSettingsPage : INotifyPropertyChanged
     {
         #region Methods
@@ -87,7 +89,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                Size size = ScreenProp.GetScreenSize();
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -174,7 +176,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                    Size size = ScreenProp.GetScreenSize();
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;

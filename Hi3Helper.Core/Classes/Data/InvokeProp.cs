@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable MemberCanBePrivate.Global
@@ -22,10 +23,14 @@ namespace Hi3Helper
 
         // Reference:
         // https://pinvoke.net/default.aspx/Enums/SetWindowPosFlags.html
+        [Flags]
         public enum SetWindowPosFlags : uint
         {
-            SWP_NOMOVE = 2,
-            SWP_SHOWWINDOW = 0x40,
+            SWP_NOSIZE       = 1,
+            SWP_NOMOVE       = 2,
+            SWP_NOZORDER     = 4,
+            SWP_FRAMECHANGED = 0x20,
+            SWP_SHOWWINDOW   = 0x40,
         }
 
         public enum SpecialWindowHandles
@@ -64,6 +69,15 @@ namespace Hi3Helper
             MDT_Raw_DPI = 2,
             MDT_Default = MDT_Effective_DPI
         }
+
+        public enum PreferredAppMode
+        {
+            Default,
+            AllowDark,
+            ForceDark,
+            ForceLight,
+            Max
+        };
         #endregion
 
         #region Kernel32
@@ -189,6 +203,9 @@ namespace Hi3Helper
         public static extern uint GetWindowLong(IntPtr hwnd, int index);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
         public static extern uint SetWindowLong(IntPtr hwnd, int index, uint value);
 
         [DllImport("user32.dll")]
@@ -226,13 +243,13 @@ namespace Hi3Helper
                 // If inputString is null or empty, then return
                 if (string.IsNullOrEmpty(inputString))
                 {
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
                     return;
                 }
 
                 // Try open the Clipboard
                 if (!(isOpenClipboardSuccess = OpenClipboard(IntPtr.Zero)))
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
 
                 // Set the bufferSize + 1, the additional 1 byte will be used to interpret the null byte
                 int bufferSize = (inputString.Length + 1);
@@ -243,7 +260,7 @@ namespace Hi3Helper
 
                 // Write the inputString as a UTF-8 bytes into the string buffer
                 if (!Encoding.UTF8.TryGetBytes(inputString, new Span<byte>((byte*)stringBufferPtr, inputString.Length), out int bufferWritten))
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
 
                 // Always set the null byte at the end of the buffer
                 ((byte*)stringBufferPtr!)![bufferWritten] = 0x00; // Write the null (terminator) byte
@@ -255,11 +272,11 @@ namespace Hi3Helper
                 // the clearance is failed, then clear the buffer at "finally" block
                 if (!EmptyClipboard() || SetClipboardData(1, hMem) == IntPtr.Zero)
                 {
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
                     return;
                 }
 
-                Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Content has been set to Clipboard buffer with size: {bufferSize} bytes", LogType.Debug, true);
+                LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Content has been set to Clipboard buffer with size: {bufferSize} bytes", LogType.Debug, true);
             }
             finally
             {
@@ -296,6 +313,7 @@ namespace Hi3Helper
             public void HideWindow() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMINIMIZED);
         }
 
+        #region shell32
         [DllImport("shell32.dll", SetLastError = true)]
         public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
 
@@ -307,14 +325,84 @@ namespace Hi3Helper
             SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
             SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
         }
+        #endregion
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
-        
-        public static int GetInstanceCount()
+
+        public static Process[] GetInstanceProcesses()
         {
             var currentProcess = Process.GetCurrentProcess();
-            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
-            return processes.Length;
+            var processes      = Process.GetProcessesByName(currentProcess.ProcessName);
+            
+            return processes;
         }
+
+        public static int EnumerateInstances()
+        {
+            var instanceProc  = GetInstanceProcesses();
+            var instanceCount = instanceProc.Length;
+
+            var finalInstanceCount = 0;
+            
+            if (instanceCount > 1)
+            {
+                var curPId = Process.GetCurrentProcess().Id;
+                LogWriteLine($"Detected {instanceCount} instances! Current PID: {curPId}", LogType.Default, true);
+                LogWriteLine($"Enumerating instances...");
+                foreach (Process p in instanceProc)
+                {
+                    if (p == null) continue;
+                    try
+                    {
+                        if (p.MainWindowHandle == IntPtr.Zero)
+                        {
+                            LogWriteLine("Process does not have window, skipping...", LogType.NoTag, true);
+                            continue;
+                        }
+                            
+                        LogWriteLine($"Name: {p.ProcessName}",                LogType.NoTag, true);
+                        LogWriteLine($"MainModule: {p.MainModule?.FileName}", LogType.NoTag, true);
+                        LogWriteLine($"PID: {p.Id}",                          LogType.NoTag, true);
+                            
+                        finalInstanceCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed when trying to fetch an instance information! " +
+                                     $"InstanceCount is not incremented.\r\n{ex}",
+                                     LogType.Error, true);
+                    }
+                }
+
+                LogWriteLine($"Multiple instances found! This is instance #{finalInstanceCount}",
+                             LogType.Scheme, true);
+            }
+            else finalInstanceCount = 1;
+
+            return finalInstanceCount;
+        }
+
+        #region dwmapi
+        public struct MARGINS
+        {
+            public int cxLeftWidth;
+            public int cxRightWidth;
+            public int cyTopHeight;
+            public int cyBottomHeight;
+        }
+
+        [DllImport("dwmapi.dll")]
+        public static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+        #endregion
+
+        #region uxtheme
+        [DllImport("uxtheme.dll", EntryPoint = "#132")]
+        [return:MarshalAs(UnmanagedType.I1)]
+        public static extern bool ShouldAppsUseDarkMode();
+
+        // Note: Can only use "Default" and "AllowDark" to support Windows 10 1809
+        [DllImport("uxtheme.dll", EntryPoint = "#135")]
+        public static extern PreferredAppMode SetPreferredAppMode(PreferredAppMode preferredAppMode);
+        #endregion
     }
 }

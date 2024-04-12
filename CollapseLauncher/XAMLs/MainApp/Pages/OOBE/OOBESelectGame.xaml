@@ -4,7 +4,6 @@
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
-      xmlns:local="using:CollapseLauncher.Pages.OOBE"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="Transparent"
       mc:Ignorable="d">
@@ -33,7 +32,7 @@
                                   MinHeight="{ThemeResource ComboBoxMinHeight}"
                                   Margin="0,-4,0,-8"
                                   HorizontalAlignment="Center">
-                        <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"/>
+                        <animatedvisuals:AnimatedChevronDownSmallVisualSource />
                         <AnimatedIcon.FallbackIconSource>
                             <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                             FontSize="12"
@@ -66,7 +65,7 @@
                                       MinHeight="{ThemeResource ComboBoxMinHeight}"
                                       Margin="0,-8,0,-4"
                                       HorizontalAlignment="Center">
-                            <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"/>
+                            <animatedvisuals:AnimatedChevronDownSmallVisualSource />
                             <AnimatedIcon.FallbackIconSource>
                                 <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                                 FontSize="12"

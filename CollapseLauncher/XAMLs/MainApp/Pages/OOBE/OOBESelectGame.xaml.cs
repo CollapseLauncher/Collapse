@@ -1,39 +1,49 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Background;
+using CollapseLauncher.Helper.Metadata;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
+#nullable enable
 namespace CollapseLauncher.Pages.OOBE
 {
-    public sealed partial class OOBESelectGame : Page
+    public sealed partial class OOBESelectGame
     {
-        private string _selectedCategory { get; set; }
-        private string _selectedRegion { get; set; }
+        private string? SelectedCategory { get; set; }
+        private string? SelectedRegion   { get; set; }
+        private string? _lastSelectedCategory = "";
 
         public OOBESelectGame()
         {
-            this.InitializeComponent();
-            LoadConfigV2();
+            InitializeComponent();
             GameCategorySelect.ItemsSource = BuildGameTitleListUI();
             BackgroundFrame.Navigate(typeof(OOBESelectGameBG));
-            this.RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
         }
 
         private void NextPage_Click(object sender, RoutedEventArgs e)
         {
             // Set and Save CurrentRegion in AppConfig
-            string categorySelected = GetComboBoxGameRegionValue(GameCategorySelect.SelectedValue);
+            string? categorySelected = GetComboBoxGameRegionValue(GameCategorySelect.SelectedValue);
             SetAppConfigValue("GameCategory", categorySelected);
-            SetPreviousGameRegion(categorySelected, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
+            LauncherMetadataHelper.SetPreviousGameRegion(categorySelected,
+                                                         GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue),
+                                                         false);
             SaveAppConfig();
 
-            (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom });
-            MainWindow.ToggleAcrylic();
+            (WindowUtility.CurrentWindow as MainWindow)?.rootFrame.Navigate(typeof(MainPage), null,
+                                                         new SlideNavigationTransitionInfo
+                                                             { Effect = SlideNavigationTransitionEffect.FromBottom });
+
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
         }
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)
@@ -42,71 +52,104 @@ namespace CollapseLauncher.Pages.OOBE
             // (m_window as MainWindow).rootFrame.GoBack();
         }
 
-        private string lastSelectedCategory = "";
+
         private async void GameSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             object value = ((ComboBox)sender).SelectedValue;
             if (value is not null)
             {
-                _selectedRegion = GetComboBoxGameRegionValue(value);
+                SelectedRegion = GetComboBoxGameRegionValue(value);
 
                 NextPage.IsEnabled = true;
-                NextPage.Opacity = 1;
+                NextPage.Opacity   = 1;
 
-                BarBGLoading.Visibility = Visibility.Visible;
+                BarBGLoading.Visibility      = Visibility.Visible;
                 BarBGLoading.IsIndeterminate = true;
                 FadeBackground(1, 0.25);
-                bool IsSuccess = await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
+                PresetConfig? gameConfig = await LauncherMetadataHelper.GetMetadataConfig(SelectedCategory, SelectedRegion);
+                bool          isSuccess  = await TryLoadGameDetails(gameConfig);
 
-                if (_gamePosterBitmap != null && IsSuccess)
-                    MainPage.ApplyAccentColor(this, _gamePosterBitmap, _gamePosterPath);
+                BitmapData? bitmapData = null;
 
-                NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();
+                try
+                {
+                    int bitmapChannelCount = _gamePosterBitmap.PixelFormat switch
+                    {
+                        PixelFormat.Format32bppRgb => 4,
+                        PixelFormat.Format32bppArgb => 4,
+                        PixelFormat.Format24bppRgb => 3,
+                        _ => throw new NotSupportedException($"Pixel format of the image: {_gamePosterBitmap.PixelFormat} is unsupported!")
+                    };
 
-                this.BackgroundFrame.Navigate(typeof(OOBESelectGameBG), null, transition);
+                    bitmapData = _gamePosterBitmap.LockBits(new Rectangle(new Point(), _gamePosterBitmap.Size),
+                                                            ImageLockMode.ReadOnly, _gamePosterBitmap.PixelFormat);
+
+                    BitmapInputStruct bitmapInputStruct = new BitmapInputStruct
+                    {
+                        Buffer  = bitmapData.Scan0,
+                        Width   = bitmapData.Width,
+                        Height  = bitmapData.Height,
+                        Channel = bitmapChannelCount
+                    };
+
+                    if (isSuccess)
+                    {
+                        await ColorPaletteUtility.ApplyAccentColor(this, bitmapInputStruct, _gamePosterPath);
+                    }
+                }
+                finally
+                {
+                    if (bitmapData != null)
+                    {
+                        _gamePosterBitmap.UnlockBits(bitmapData);
+                    }
+                }
+
+                NavigationTransitionInfo transition = _lastSelectedCategory == SelectedCategory
+                    ? new SuppressNavigationTransitionInfo()
+                    : new DrillInNavigationTransitionInfo();
+
+                BackgroundFrame.Navigate(typeof(OOBESelectGameBG), null, transition);
                 FadeBackground(0.25, 1);
                 BarBGLoading.IsIndeterminate = false;
-                BarBGLoading.Visibility = Visibility.Collapsed;
+                BarBGLoading.Visibility      = Visibility.Collapsed;
 
-                lastSelectedCategory = _selectedCategory;
+                _lastSelectedCategory = SelectedCategory;
 
                 return;
             }
-            else
-            {
-                NextPage.IsEnabled = true;
-                NextPage.Opacity = 1;
-                return;
-            }
+
+            NextPage.IsEnabled = true;
+            NextPage.Opacity   = 1;
         }
 
         private async void FadeBackground(double from, double to)
         {
-            double dur = 0.250;
+            double     dur          = 0.250;
             Storyboard storyBufBack = new Storyboard();
 
-            DoubleAnimation OpacityBufBack = new DoubleAnimation();
-            OpacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
+            DoubleAnimation opacityBufBack = new DoubleAnimation();
+            opacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
 
-            OpacityBufBack.From = from; OpacityBufBack.To = to;
+            opacityBufBack.From = from;
+            opacityBufBack.To   = to;
 
-            Storyboard.SetTarget(OpacityBufBack, BackgroundFrame);
-            Storyboard.SetTargetProperty(OpacityBufBack, "Opacity");
-            storyBufBack.Children.Add(OpacityBufBack);
+            Storyboard.SetTarget(opacityBufBack, BackgroundFrame);
+            Storyboard.SetTargetProperty(opacityBufBack, "Opacity");
+            storyBufBack.Children.Add(opacityBufBack);
 
             storyBufBack.Begin();
 
             await Task.Delay((int)(dur * 1000));
         }
 
-        private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
-            GetConfigV2Regions(_selectedCategory);
-            GameRegionSelect.ItemsSource = BuildGameRegionListUI(_selectedCategory);
-            GameRegionSelect.IsEnabled = true;
-            NextPage.IsEnabled = false;
-            NextPage.Opacity = 0;
+            SelectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
+            GameRegionSelect.ItemsSource = await BuildGameRegionListUI(SelectedCategory);
+            GameRegionSelect.IsEnabled   = true;
+            NextPage.IsEnabled           = false;
+            NextPage.Opacity             = 0;
         }
     }
 }

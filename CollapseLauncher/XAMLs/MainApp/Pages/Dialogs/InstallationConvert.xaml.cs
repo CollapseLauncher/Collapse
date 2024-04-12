@@ -1,10 +1,11 @@
 ﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -18,7 +19,6 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
@@ -28,8 +28,8 @@ namespace CollapseLauncher.Dialogs
         string SourceDataIntegrityURL;
         string GameVersion;
         bool IsAlreadyConverted = false;
-        PresetConfigV2 SourceProfile;
-        PresetConfigV2 TargetProfile;
+        PresetConfig SourceProfile;
+        PresetConfig TargetProfile;
         GameConversionManagement Converter;
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -69,7 +69,7 @@ namespace CollapseLauncher.Dialogs
                             PrimaryButtonText = Lang._Misc.Okay,
                             SecondaryButtonText = null,
                             DefaultButton = ContentDialogButton.Primary,
-                            Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                            Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                             XamlRoot = Content.XamlRoot
                         }.QueueAndSpawnDialog();
                     }
@@ -100,7 +100,7 @@ namespace CollapseLauncher.Dialogs
                     PrimaryButtonText = Lang._Misc.OkayBackToMenu,
                     SecondaryButtonText = null,
                     DefaultButton = ContentDialogButton.Primary,
-                    Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                    Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                     XamlRoot = Content.XamlRoot
                 }.QueueAndSpawnDialog();
 
@@ -134,7 +134,7 @@ namespace CollapseLauncher.Dialogs
             TargetProfile.ActualGameDataLocation = Path.Combine(Path.GetDirectoryName(SourceProfile.ActualGameDataLocation), $"{TargetProfile.GameDirectoryName}_ConvertedTo-{TargetProfile.ProfileName}");
             string TargetINIPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName, "config.ini");
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 0;
 
@@ -145,7 +145,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile)
+        private async Task<string> FetchDataIntegrityURL(PresetConfig Profile)
         {
             Http _Http = new Http();
             Dictionary<string, string> _RepoList;
@@ -180,7 +180,7 @@ namespace CollapseLauncher.Dialogs
             return _RepoList[GameVersion];
         }
 
-        public bool IsSourceGameExist(PresetConfigV2 Profile)
+        internal bool IsSourceGameExist(PresetConfig Profile)
         {
             string INIPath = Path.Combine(AppGameFolder, Profile.ProfileName, "config.ini");
             string GamePath;
@@ -234,11 +234,11 @@ namespace CollapseLauncher.Dialogs
             return true;
         }
 
-        public async Task<(PresetConfigV2, PresetConfigV2)> AskConvertionDestination()
+        internal async Task<(PresetConfig, PresetConfig)> AskConvertionDestination()
         {
             (ContentDialogResult Result, ComboBox SourceGame, ComboBox TargetGame) = await Dialog_SelectGameConvertRecipe(Content);
-            PresetConfigV2 SourceRet = null;
-            PresetConfigV2 TargetRet = null;
+            PresetConfig SourceRet = null;
+            PresetConfig TargetRet = null;
 
             if (SourceGame.SelectedItem == null || TargetGame.SelectedItem == null)
                 throw new OperationCanceledException();
@@ -249,9 +249,9 @@ namespace CollapseLauncher.Dialogs
             switch (Result)
             {
                 case ContentDialogResult.Secondary:
-                    SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                    SourceRet = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].
                         Values.Where(x => x.ZoneName == sourceGameRegionString).First();
-                    TargetRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                    TargetRet = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].
                         Values.Where(x => x.ZoneName == targetGameRegionString).First();
                     break;
                 case ContentDialogResult.Primary:
@@ -263,13 +263,13 @@ namespace CollapseLauncher.Dialogs
         public static List<string> GetConvertibleNameList(string ZoneName)
         {
             List<string> _out = new List<string>();
-            List<string> GameTargetProfileName = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values
+            List<string> GameTargetProfileName = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
                 .Where(x => x.ZoneName == ZoneName)
                 .Select(x => x.ConvertibleTo)
                 .First();
 
             foreach (string Entry in GameTargetProfileName)
-                _out.Add(ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values
+                _out.Add(LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
                     .Where(x => x.ZoneName == Entry)
                     .Select(x => x.ZoneName)
                     .First());
@@ -279,7 +279,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoDownloadRecipe()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 1;
 
@@ -310,7 +310,7 @@ namespace CollapseLauncher.Dialogs
 
             Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, GameVersion, cPath, tokenSource.Token);
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 1;
 
@@ -323,7 +323,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step2ProgressEvents(object sender, DownloadEvent e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step2ProgressStatus.Text = $"{e.ProgressPercentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed))}";
                 Step2ProgressRing.Value = e.ProgressPercentage;
@@ -332,7 +332,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoPrepareIngredients()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 2;
 
@@ -346,7 +346,7 @@ namespace CollapseLauncher.Dialogs
             await Converter.StartPreparation();
             Converter.ProgressChanged -= Step3ProgressEvents;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 2;
 
@@ -359,7 +359,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step3ProgressEvents(object sender, ConvertProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step3ProgressRing.Value = e.Percentage;
                 Step3ProgressTitle.Text = e.ProgressStatus;
@@ -369,7 +369,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoConversion()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 3;
 
@@ -383,7 +383,7 @@ namespace CollapseLauncher.Dialogs
             await Converter.StartConversion();
             Converter.ProgressChanged -= Step4ProgressEvents;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 3;
 
@@ -396,7 +396,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step4ProgressEvents(object sender, ConvertProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step4ProgressRing.Value = e.Percentage;
                 Step4ProgressStatus.Text = e.ProgressDetail;
@@ -405,7 +405,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoVerification()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 4;
 
@@ -419,7 +419,7 @@ namespace CollapseLauncher.Dialogs
             await Converter.PostConversionVerify();
             Converter.ProgressChanged -= Step5ProgressEvents;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 ProgressSlider.Value = 4;
 
@@ -432,7 +432,7 @@ namespace CollapseLauncher.Dialogs
 
         private void Step5ProgressEvents(object sender, ConvertProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 Step5ProgressRing.Value = e.Percentage;
                 Step5ProgressStatus.Text = e.ProgressDetail;
@@ -441,12 +441,12 @@ namespace CollapseLauncher.Dialogs
 
         public void ApplyConfiguration()
         {
-            CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
+            // CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
             CurrentGameProperty._GameVersion.Reinitialize();
             CurrentGameProperty._GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
 
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
-            SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);
+            LauncherMetadataHelper.SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);
             LoadAppConfig();
         }
 
@@ -481,7 +481,7 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = Lang._Misc.Yes,
                 SecondaryButtonText = Lang._Misc.No,
                 DefaultButton = ContentDialogButton.Secondary,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
                 XamlRoot = Content.XamlRoot
             };
 
@@ -521,12 +521,12 @@ namespace CollapseLauncher.Dialogs
 
                 try
                 {
-                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", Hi3Helper.LogType.Default, true);
+                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
                     File.Move(filePath, destFilePath, true);
                 }
                 catch (Exception ex)
                 {
-                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", Hi3Helper.LogType.Error, true);
+                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
                 }
             }
 

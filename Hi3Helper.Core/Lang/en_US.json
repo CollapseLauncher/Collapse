@@ -369,6 +369,7 @@
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
     "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
 
     "Language": "App Language",
@@ -389,7 +390,7 @@
 
     "AppBG": "App Background",
     "AppBG_Checkbox": "Use Custom Background",
-    "AppBG_Note": "Note: Image must be in .png, .jpg, .tiff or .bmp format and the resolution must be less than 4096x4096",
+    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
 
     "AppThreads": "Application Threads",
     "AppThreads_Download": "Download Threads",
@@ -413,6 +414,10 @@
     "DiscordRPC_Toggle": "Show Discord Presence",
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
+
+    "VideoBackground": "Video Background Settings",
+    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "Check for Updates",
     "Update_CurVer": "Current Version:",
@@ -478,6 +483,7 @@
 
     "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
     "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
+    "Waifu2X_Help2": "Only available for still images!",
     "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
     "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
     "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
@@ -897,6 +903,8 @@
     "UpdateHeader3": "Download Size:",
     "UpdateHeader4": "Speed:",
     "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",
+
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
 
     "UpdateStatus1": "Fetching Update:",
     "UpdateMessage1": "Connecting to Update Repository...",

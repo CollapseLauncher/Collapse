@@ -5,12 +5,13 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
 namespace CollapseLauncher.InstallManager
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     internal class GameInstallPackage : IAssetIndexSummary
     {
         #region Properties

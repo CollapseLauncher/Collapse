@@ -1,13 +1,13 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
@@ -1401,7 +1401,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Try parsing the config
                 value = Encoding.UTF8.GetString(keyValue);
-                config = value.Deserialize<BHI3LInfo>(CoreLibraryJSONContext.Default);
+                config = value.Deserialize<BHI3LInfo>(InternalAppJSONContext.Default);
             }
             catch (Exception ex)
             {
@@ -1413,7 +1413,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (config != null && config.game_info.installed
              && !string.IsNullOrEmpty(config.game_info.install_path))
             {
-                FileInfo execPath = new FileInfo(Path.Combine(config.game_info.install_path, _gameVersionManager.GamePreset.GameExecutableName));
+                FileInfo execPath = new FileInfo(Path.Combine(config.game_info.install_path, _gameVersionManager.GamePreset.GameExecutableName!));
                 OutputPath = config.game_info.install_path;
                 return execPath.Exists && execPath.Length > 1 >> 16;
             }

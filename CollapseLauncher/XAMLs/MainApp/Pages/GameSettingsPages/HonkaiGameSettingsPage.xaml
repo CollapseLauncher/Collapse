@@ -487,12 +487,10 @@
                                                       Margin="0,0,16,0"
                                                       IsOn="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}"
                                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}">
-                                        </ToggleSwitch>
+                                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" />
                                     </StackPanel>
                                 </Grid>
-                                <Grid>
-                                </Grid>
+                                <Grid />
                                 <MenuFlyoutSeparator Margin="0,8,0,0"/>
                                 <TextBlock Margin="0,8,0,4"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"

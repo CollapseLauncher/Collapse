@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -68,7 +68,7 @@ namespace CollapseLauncher.Pages.OOBE
         public static bool IsNeedLoad = false;
         public static bool IsSuccess = false;
 
-        public static async Task<bool> TryLoadGameDetails(PresetConfigV2 config = null)
+        internal static async Task<bool> TryLoadGameDetails(PresetConfig config = null)
         {
             try
             {

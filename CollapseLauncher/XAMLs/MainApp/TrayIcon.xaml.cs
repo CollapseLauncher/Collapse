@@ -1,10 +1,11 @@
+using CollapseLauncher.Helper;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
-using Microsoft.UI.Xaml;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.InvokeProp;
@@ -34,9 +35,9 @@ namespace CollapseLauncher
         #region Main
         public TrayIcon()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            string instanceIndicator = "";
+            var instanceIndicator = "";
             var instanceCount = MainEntryPoint.InstanceCount;
 
             if (instanceCount > 1)
@@ -46,19 +47,17 @@ namespace CollapseLauncher
                 CollapseTaskbar.SetValue(TaskbarIcon.CustomNameProperty, $"Collapse Launcher{instanceIndicator}");
             }
             
-            // ReSharper disable once UnusedVariable
-            var isPreview = LauncherConfig.IsPreview;
             // Bug in W10: Weird border issue
             // Verdict: disable SecondWindow ContextMenuMode, use classic.
             // if (isPreview) CollapseTaskbar.ContextMenuMode = ContextMenuMode.SecondWindow;
 #if DEBUG
             CollapseTaskbar.ToolTipText =
-                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}{instanceIndicator}\r\n" +
+                $"Collapse Launcher{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(isPreview ? _preview : _stable)}{instanceIndicator}\r\n" +
+                $"Collapse Launcher{instanceIndicator}\r\n" +
                 $"{_popupHelp1}\r\n" +
                 $"{_popupHelp2}";
 #endif
@@ -113,7 +112,7 @@ namespace CollapseLauncher
         /// Close app
         /// </summary>
         [RelayCommand]
-        private void CloseApp() => (m_window as MainWindow)?.CloseApp();
+        private void CloseApp() => (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
         #endregion
 
         #region Taskbar Public Methods
@@ -124,8 +123,8 @@ namespace CollapseLauncher
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
-                IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
-                if (InvokeProp.m_consoleHandle == IntPtr.Zero) return;
+                IntPtr consoleWindowHandle = GetConsoleWindow();
+                if (m_consoleHandle == IntPtr.Zero) return;
                 if (IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();
@@ -135,7 +134,7 @@ namespace CollapseLauncher
                 else
                 {
                     LoggerConsole.AllocateConsole();
-                    SetForegroundWindow(InvokeProp.GetConsoleWindow());
+                    SetForegroundWindow(GetConsoleWindow());
                     ConsoleTaskbarToggle.Text = _hideConsole;
                     LogWriteLine("Console is visible!");
                 }
@@ -147,12 +146,12 @@ namespace CollapseLauncher
         /// </summary>
         public void ToggleMainVisibility(bool forceShow = false)
         {
-            IntPtr mainWindowHandle = m_windowHandle;
+            IntPtr mainWindowHandle = WindowUtility.CurrentWindowPtr;
             var    isVisible        = IsWindowVisible(mainWindowHandle);
 
             if (isVisible && !forceShow)
             {
-                m_window.Hide();
+                WindowUtility.CurrentWindow?.Hide();
                 MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
@@ -160,7 +159,7 @@ namespace CollapseLauncher
             }
             else
             {
-                m_window.Show();
+                WindowUtility.CurrentWindow?.Show();
                 SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
                 // Revert refresh rate to its default
@@ -175,7 +174,7 @@ namespace CollapseLauncher
         public void ToggleAllVisibility()
         {
             IntPtr consoleWindowHandle = GetConsoleWindow();
-            IntPtr mainWindowHandle    = m_windowHandle;
+            IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
             bool   isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 
             bool isConsoleVisible = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);
@@ -200,8 +199,8 @@ namespace CollapseLauncher
         /// </summary>
         public void BringToForeground()
         {
-            IntPtr mainWindowHandle    = m_windowHandle;
-            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+            IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
+            IntPtr consoleWindowHandle = GetConsoleWindow();
 
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 
@@ -241,8 +240,8 @@ namespace CollapseLauncher
             }
             
             // Force refresh all text based on their respective window state
-            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
-            IntPtr mainWindowHandle    = m_windowHandle;
+            IntPtr consoleWindowHandle = GetConsoleWindow();
+            IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
             
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
             bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);

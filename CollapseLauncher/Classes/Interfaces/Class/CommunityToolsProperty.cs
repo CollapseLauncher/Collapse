@@ -1,5 +1,5 @@
-﻿using Hi3Helper;
-using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
@@ -11,8 +11,8 @@ namespace CollapseLauncher
 {
     public class CommunityToolsProperty
     {
-        public Dictionary<GameType, List<CommunityToolsEntry>> OfficialToolsDictionary { get; set; }
-        public Dictionary<GameType, List<CommunityToolsEntry>> CommunityToolsDictionary { get; set; }
+        public Dictionary<GameNameType, List<CommunityToolsEntry>> OfficialToolsDictionary { get; set; }
+        public Dictionary<GameNameType, List<CommunityToolsEntry>> CommunityToolsDictionary { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public ObservableCollection<CommunityToolsEntry> OfficialToolsList;

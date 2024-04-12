@@ -9,13 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
 
 namespace CollapseLauncher
 {
@@ -426,12 +424,6 @@ namespace CollapseLauncher
             // Initialize dispatch helper
             using (GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(_dispatcherRegionID, _gameVersionManager.GamePreset.ProtoDispatchKey, _dispatcherURL, _gameVersion.VersionString, token))
             {
-                // Get the master decryptor
-                YSDispatchDec dispatchDecryptor = InitializeMasterDecryptor();
-
-                // Do decryption for Genshin key
-                DecryptDispatchKey(dispatchDecryptor);
-
                 // Get the dispatcher info
                 YSDispatchInfo dispatchInfo = await dispatchHelper.LoadDispatchInfo();
 
@@ -444,40 +436,16 @@ namespace CollapseLauncher
                 WriteLog(dFormat);
 
                 // Try decrypt the dispatcher, parse it and return it
-                return await TryDecryptAndParseDispatcher(dispatchInfo, dispatchDecryptor, dispatchHelper);
+                return await TryDecryptAndParseDispatcher(dispatchInfo, dispatchHelper);
             }
         }
 
-        private YSDispatchDec InitializeMasterDecryptor()
+        private async Task<QueryProperty> TryDecryptAndParseDispatcher(YSDispatchInfo dispatchInfo, GenshinDispatchHelper dispatchHelper)
         {
-            // Initialize master decryptor
-            YSDispatchDec decryptor = new YSDispatchDec();
+            YSDispatchDec dispatchDecryptor = new YSDispatchDec();
 
-            // Initialize the master key
-            decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
-
-            // Return the decryptor
-            return decryptor;
-        }
-
-        private void DecryptDispatchKey(in YSDispatchDec decryptor)
-        {
-            // Initialize local variable for key decryption
-            string key = _dispatcherKey;
-            int keyLength = _dispatcherKeyLength;
-
-            // Decrypt the key and initialize the dispatcher decoder
-            decryptor.DecryptStringWithMasterKey(ref key);
-            decryptor.InitYSDecoder(key, RSAEncryptionPadding.Pkcs1, keyLength);
-
-            // Then, initialize the RSA key
-            decryptor.InitRSA();
-        }
-
-        private async Task<QueryProperty> TryDecryptAndParseDispatcher(YSDispatchInfo dispatchInfo, YSDispatchDec dispatchDecryptor, GenshinDispatchHelper dispatchHelper)
-        {
             // Decrypt the dispatcher data from the dispatcher info content
-            byte[] decryptedData = dispatchDecryptor.DecryptYSDispatch(dispatchInfo.content);
+            byte[] decryptedData = dispatchDecryptor.DecryptYSDispatch(dispatchInfo.content, _gameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0, _gameVersionManager.GamePreset.DispatcherKey);
 
             // DEBUG ONLY: Show the decrypted Proto as Base64 format
             string dFormat = string.Format("Proto Response (RAW Decrypted form):\r\n{0}", Convert.ToBase64String(decryptedData));

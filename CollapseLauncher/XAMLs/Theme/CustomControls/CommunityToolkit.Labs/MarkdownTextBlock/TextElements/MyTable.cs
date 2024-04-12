@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Markdig.Extensions.Tables;
+using Microsoft.UI;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI;
 using System.Linq;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;

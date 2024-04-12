@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         public bool Contains(SteamShortcut shortcut) => _shortcuts.FindIndex(x => x.preliminaryAppID == shortcut.preliminaryAppID) != -1;
 
-        public void Insert(PresetConfigV2 preset, bool play = false)
+        internal void Insert(PresetConfig preset, bool play = false)
         {
             SteamShortcut shortcut = new SteamShortcut(preset, play);
 
@@ -33,7 +34,7 @@ namespace CollapseLauncher.ShortcutUtils
             {
                 _shortcuts.RemoveAll(x => x.preliminaryAppID == shortcut.preliminaryAppID);
             }
-            
+
             _shortcuts.Add(shortcut);
             shortcut.MoveImages(_path, preset);
         }
@@ -176,7 +177,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (strRes.Count != 9 || boolRes.Count != 6)
             {
-                LogWriteLine("Invalid shortcut! Skipping...", Hi3Helper.LogType.Error);
+                LogWriteLine("Invalid shortcut! Skipping...", LogType.Error);
                 return null;
             }
 

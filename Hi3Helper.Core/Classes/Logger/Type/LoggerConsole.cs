@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Hi3Helper.InvokeProp;
@@ -6,7 +7,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "MethodOverloadWithOptionalParameter")]
+    [SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
     public class LoggerConsole : LoggerBase, ILog
     {
         public LoggerConsole(string folderPath, Encoding encoding) : base(folderPath, encoding)
@@ -109,7 +110,7 @@ namespace Hi3Helper
             Console.OutputEncoding = Encoding.UTF8;
 
             var instanceIndicator = "";
-            var instanceCount = InvokeProp.GetInstanceCount();
+            var instanceCount = EnumerateInstances();
 
             if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
             Console.Title = $"Collapse Console{instanceIndicator}";

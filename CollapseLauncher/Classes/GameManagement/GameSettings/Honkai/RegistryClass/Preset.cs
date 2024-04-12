@@ -1,5 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -66,7 +66,7 @@ namespace CollapseLauncher.GameSettings
         /// <param name="gameType">The type of the game</param>
         /// <param name="jsonContext">JSON source generation context</param>
         /// <returns>The instance of preset</returns>
-        public static Preset<T1, TObjectType> LoadPreset(GameType gameType, TObjectType jsonContext)
+        public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, TObjectType jsonContext)
         {
             string presetPath = Path.Combine(AppFolder, $"Assets\\Presets\\{gameType}\\", $"{typeof(T1).Name}.json");
             return new Preset<T1, TObjectType>(presetPath, jsonContext);
