@@ -369,6 +369,7 @@
     "Debug_MultipleInstance": "允许开启多个 Collapse",
 
     "ChangeRegionWarning_Toggle": "显示区域更改警告",
+    "ChangeRegionInstant_Toggle": "选择后立即更改区服",
     "ChangeRegionWarning_Warning": "*您需要重新启动应用程序使此设置生效。",
 
     "Language": "应用语言",
@@ -389,7 +390,7 @@
 
     "AppBG": "应用背景",
     "AppBG_Checkbox": "使用自定义背景",
-    "AppBG_Note": "注：图像必须是 .png、.jpg、.tiff 或 .bmp 格式，分辨率必须低于 4096x4096。",
+    "AppBG_Note": "可接受的格式：\r\n图像：{0}\r\n视频：{1}",
 
     "AppThreads": "应用线程",
     "AppThreads_Download": "下载线程",
@@ -413,6 +414,10 @@
     "DiscordRPC_Toggle": "显示 Discord 状态",
     "DiscordRPC_GameStatusToggle": "在 Discord 状态中显示当前游戏",
     "DiscordRPC_IdleStatusToggle": "空闲时显示 RPC",
+
+    "VideoBackground": "视频背景设置",
+    "VideoBackground_IsEnableAudio": "启用声音",
+    "VideoBackground_AudioVolume": "音量",
 
     "Update": "检查更新",
     "Update_CurVer": "当前版本：",
@@ -478,6 +483,7 @@
 
     "Waifu2X_Toggle": "使用 Waifu2X [实验性]",
     "Waifu2X_Help": "使用 Waifu2X 放大背景图像。\n开启后，图像质量会有显著提升，但首次加载图像时会多花一些时间。",
+    "Waifu2X_Help2": "仅对静态图像生效！",
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系统安装了“OpenCL™、OpenGL® 和 Vulkan® 兼容包”。该软件包被报告与 Vulkan Loader 不兼容，并且会在某些 GPU 上崩溃。请移除此软件包以启用 GPU 模式。",
     "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
@@ -897,6 +903,8 @@
     "UpdateHeader3": "下载大小：",
     "UpdateHeader4": "速度：",
     "UpdateHeader5PlaceHolder": "正在下载更新 [- / -]：",
+
+    "UpdateForcedHeader": "由于紧急的变更，启动器将被强制更新以确保启动器正常工作。",
 
     "UpdateStatus1": "正在获取更新：",
     "UpdateMessage1": "正在连接到更新仓库……",
