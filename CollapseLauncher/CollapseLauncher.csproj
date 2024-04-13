@@ -80,12 +80,12 @@
 		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.0.240109" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240328-rc" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
+		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240328-rc" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
 		<PackageReference Include="GitInfo" Version="3.3.4" PrivateAssets="all" />
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />

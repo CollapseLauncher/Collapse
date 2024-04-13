@@ -35,14 +35,14 @@
       },
       "CommunityToolkit.WinUI.Controls.ImageCropper": {
         "type": "Direct",
-        "requested": "[8.0.240109, )",
-        "resolved": "8.0.240109",
-        "contentHash": "7O2K0bW9tAN3TEP2PHDfxsKIq1glSh58dh1l0gj/te+6WtdXIO9vz0IGgI46H50o2gDiTcv5LUy0aa75gH6fNA==",
+        "requested": "[8.1.240328-rc, )",
+        "resolved": "8.1.240328-rc",
+        "contentHash": "W23a9N7L9GY0F7Cq8Egs7qansEo/14C6C9EPCgh9sleRwgk+y+QHdhNFFnZsLw2qdSoJW5FmEqehTDjKm6zr9g==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.0.240109",
+          "CommunityToolkit.WinUI.Extensions": "8.1.240328-rc",
           "Microsoft.Graphics.Win2D": "1.0.0.30",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
-          "Microsoft.WindowsAppSDK": "1.3.230331000"
+          "Microsoft.WindowsAppSDK": "1.5.240311000"
         }
       },
       "CommunityToolkit.WinUI.Controls.Primitives": {
@@ -91,13 +91,13 @@
       },
       "CommunityToolkit.WinUI.Extensions": {
         "type": "Direct",
-        "requested": "[8.0.240109, )",
-        "resolved": "8.0.240109",
-        "contentHash": "4CpGj3g3Tn2KfNRvwg/USyL7KAdY0rKqfc4ZYk57buoVpvAQLcmMpL/+/kbRe9Pixj4HY5On6H39bqTntd3+DQ==",
+        "requested": "[8.1.240328-rc, )",
+        "resolved": "8.1.240328-rc",
+        "contentHash": "n/UMjCRktQ/e2QbiJGB6iTrZUkUu90YjY8D0UiRfiy/8BL+zP8L+sZ3eX32TLDeY4CxnAO6nXfal+a0BNL8jyA==",
         "dependencies": {
           "CommunityToolkit.Common": "8.2.1",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
-          "Microsoft.WindowsAppSDK": "1.3.230331000"
+          "Microsoft.WindowsAppSDK": "1.5.240311000"
         }
       },
       "CommunityToolkit.WinUI.Media": {
@@ -160,12 +160,6 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.5.240227000"
         }
-      },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.4, )",
-        "resolved": "8.0.4",
-        "contentHash": "PZb5nfQ+U19nhnmnR9T1jw+LTmozhuG2eeuzuW5A7DqxD/UXW2ucjmNJqnqOuh8rdPzM3MQXoF8AfFCedJdCUw=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
