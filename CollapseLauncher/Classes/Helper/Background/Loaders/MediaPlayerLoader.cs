@@ -36,7 +36,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal class MediaPlayerLoader : IBackgroundMediaLoader
     {
+    #pragma warning disable CS0169 // Field is never used
         private bool _isFocusChangeRunning;
+    #pragma warning restore CS0169 // Field is never used
 
         private FrameworkElement ParentUI          { get; }
         private Compositor       CurrentCompositor { get; }

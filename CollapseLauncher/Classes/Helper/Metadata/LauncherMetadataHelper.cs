@@ -613,7 +613,7 @@ namespace CollapseLauncher.Helper.Metadata
             return LauncherGameNameRegionCollection?.Keys.ToList();
         }
 
-        internal static List<string>? GetGameRegionCollection(string gameName)
+        internal static List<string?>? GetGameRegionCollection(string gameName)
         {
             if (!(!LauncherGameNameRegionCollection?.ContainsKey(gameName) ?? false))
             {

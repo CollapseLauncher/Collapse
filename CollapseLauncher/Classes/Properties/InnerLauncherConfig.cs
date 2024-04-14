@@ -101,6 +101,7 @@ namespace CollapseLauncher
         public static async ValueTask<List<StackPanel>> BuildGameRegionListUI(string?        gameCategory,
                                                                               List<string?>? gameCategoryList = null)
         {
+            ArgumentException.ThrowIfNullOrEmpty(gameCategory);
             gameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(gameCategory);
             List<StackPanel> list = [];
             if (gameCategoryList == null)

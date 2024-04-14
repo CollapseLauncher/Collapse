@@ -204,7 +204,7 @@ namespace CollapseLauncher
 
             #nullable enable
             List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName)!;
+            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!)!;
 
             int indexOfName = gameNameCollection.IndexOf(lastName!);
             int indexOfRegion = gameRegionCollection.IndexOf(lastRegion!);
