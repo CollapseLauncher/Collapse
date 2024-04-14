@@ -1,6 +1,9 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
+#if USEFFMPEGFORVIDEOBG
+using FFmpegInteropX;
+#endif
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.Graphics.Canvas;
@@ -31,11 +34,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal class MediaPlayerLoader : IBackgroundMediaLoader
     {
+        private bool _isFocusChangeRunning;
+
         private FrameworkElement ParentUI          { get; }
         private Compositor       CurrentCompositor { get; }
 
         private MediaPlayerElement? CurrentMediaPlayerFrame           { get; }
-        private ImageUI?            CurrentMediaImage                 { get; }
         private Grid                CurrentMediaPlayerFrameParentGrid { get; }
 
         private Grid AcrylicMask     { get; }
@@ -45,18 +49,22 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private  bool                            IsMediaPlayerLoading   { get; set; }
         private  FileStream?                     CurrentMediaStream     { get; set; }
         private  MediaPlayer?                    CurrentMediaPlayer     { get; set; }
-        private  Stopwatch?                      CurrentStopwatch       { get; set; }
         private  CancellationTokenSourceWrapper? InnerCancellationToken { get; set; }
         private  List<bool>?                     FocusState             { get; set; }
         private ActionBlock<ValueTask>?          ActionTaskQueue        { get; set; }
 
+#if USEFFMPEGFORVIDEOBG
+        private FFmpegMediaSource?               CurrentFFmpegMediaSource { get; set; }
+#endif
+
+
+#if USEDYNAMICVIDEOPALETTE
+        private ImageUI?           CurrentMediaImage        { get; }
+        private Stopwatch?         CurrentStopwatch         { get; set; }
         private SoftwareBitmap?    CurrentFrameBitmap       { get; set; }
         private CanvasImageSource? CurrentCanvasImageSource { get; set; }
         private CanvasDevice?      CanvasDevice             { get; set; }
-
-#if USEDYNAMICVIDEOPALETTE
         private CanvasBitmap?      CanvasBitmap             { get; set; }
-
 #endif
 
         internal MediaPlayerLoader(
@@ -72,6 +80,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             CurrentMediaPlayerFrameParentGrid = mediaPlayerParentGrid;
             CurrentMediaPlayerFrame           = mediaPlayerCurrent;
+
+#if USEDYNAMICVIDEOPALETTE
             CurrentMediaImage = mediaPlayerParentGrid.AddElementToGridRowColumn(new ImageUI()
                                                                                    .WithHorizontalAlignment(HorizontalAlignment
                                                                                        .Center)
@@ -79,6 +89,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                                                                        .Center)
                                                                                    .WithStretch(Stretch
                                                                                        .UniformToFill));
+#endif
 
             IsMediaPlayerLoading = false;
             ActionTaskQueue = new ActionBlock<ValueTask>(async (action) => {
@@ -97,11 +108,13 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void Dispose()
         {
-            CurrentMediaPlayer?.Dispose();
+#if USEDYNAMICVIDEOPALETTE
             CurrentStopwatch?.Stop();
-            InnerCancellationToken?.Dispose();
-            CurrentFrameBitmap?.Dispose();
             CanvasDevice?.Dispose();
+            CurrentFrameBitmap?.Dispose();
+#endif
+            CurrentMediaPlayer?.Dispose();
+            InnerCancellationToken?.Dispose();
             CurrentMediaStream?.Dispose();
 
             GC.SuppressFinalize(this);
@@ -153,10 +166,11 @@ namespace CollapseLauncher.Helper.Background.Loaders
 #endif
                 }
 
-                await BackgroundMediaUtility.AssignDefaultImage(CurrentMediaImage);
-
                 int canvasWidth  = (int)CurrentMediaPlayerFrameParentGrid.ActualWidth;
                 int canvasHeight = (int)CurrentMediaPlayerFrameParentGrid.ActualHeight;
+
+#if USEDYNAMICVIDEOPALETTE
+                await BackgroundMediaUtility.AssignDefaultImage(CurrentMediaImage);
 
                 CanvasDevice = CanvasDevice.GetSharedDevice();
                 if (CurrentFrameBitmap == null)
@@ -175,10 +189,15 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 CurrentMediaImage!.Source = CurrentCanvasImageSource;
 
                 CurrentStopwatch = Stopwatch.StartNew();
+#endif
 
                 await GetPreviewAsColorPalette(filePath);
 
                 CurrentMediaStream = BackgroundMediaUtility.GetAlternativeFileStream() ?? File.OpenRead(filePath);
+
+#if !USEFFMPEGFORVIDEOBG
+                EnsureIfFormatIsDashOrUnsupported(CurrentMediaStream);
+#endif
                 CurrentMediaPlayer = new MediaPlayer();
 
                 if (WindowUtility.IsCurrentWindowInFocus())
@@ -192,14 +211,33 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 CurrentMediaPlayer.IsMuted          = isAudioMute;
                 CurrentMediaPlayer.Volume           = lastAudioVolume;
                 CurrentMediaPlayer.IsLoopingEnabled = true;
+
+#if !USEFFMPEGFORVIDEOBG
                 CurrentMediaPlayer.SetStreamSource(CurrentMediaStream.AsRandomAccessStream());
+#else
+                if (CurrentFFmpegMediaSource != null)
+                {
+                    CurrentFFmpegMediaSource.Dispose();
+                    CurrentFFmpegMediaSource = null;
+                }
+
+                CurrentFFmpegMediaSource ??= await FFmpegMediaSource.CreateFromStreamAsync(CurrentMediaStream.AsRandomAccessStream());
+
+                await CurrentFFmpegMediaSource.OpenWithMediaPlayerAsync(CurrentMediaPlayer);
+#endif
+
 #if USEDYNAMICVIDEOPALETTE
                 CurrentMediaPlayer.IsVideoFrameServerEnabled =  true;
                 CurrentMediaPlayer.VideoFrameAvailable       += FrameGrabberEvent;
 #endif
 
-                CurrentMediaPlayerFrame!.SetMediaPlayer(CurrentMediaPlayer);
+                CurrentMediaPlayerFrame?.SetMediaPlayer(CurrentMediaPlayer);
                 VolumeWindowUnfocusedChangeWatcher(InnerCancellationToken);
+            }
+            catch
+            {
+                CurrentMediaStream?.Dispose();
+                throw;
             }
             finally
             {
@@ -209,15 +247,39 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
+#if !USEFFMPEGFORVIDEOBG
+        private void EnsureIfFormatIsDashOrUnsupported(Stream stream)
+        {
+            ReadOnlySpan<byte> dashSignature = "ftypdash"u8;
+
+            byte[] buffer = new byte[64];
+            stream.ReadExactly(buffer);
+
+            try
+            {
+                if (buffer.AsSpan(4).StartsWith(dashSignature))
+                    throw new FormatException($"The video format is in \"MPEG-DASH\" format, which is unsupported.");
+            }
+            finally
+            {
+                stream.Position = 0;
+            }
+        }
+
+#endif
+
         private async ValueTask GetPreviewAsColorPalette(string file)
         {
-            StorageFile                storageFile = await StorageFile.GetFileFromPathAsync(file);
+            StorageFile                storageFile = await GetFileAsStorageFile(file);
             using StorageItemThumbnail thumbnail   = await storageFile.GetThumbnailAsync(ThumbnailMode.VideosView);
             await using Stream         stream      = thumbnail.AsStream();
 
             await ColorPaletteUtility.ApplyAccentColor(ParentUI, stream.AsRandomAccessStream(), string.Empty, false,
                                                        true);
         }
+
+        private async ValueTask<StorageFile> GetFileAsStorageFile(string filePath)
+            => await StorageFile.GetFileFromPathAsync(filePath);
 
 #if USEDYNAMICVIDEOPALETTE
         private void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
@@ -277,7 +339,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 ParentUI?.DispatcherQueue?.TryEnqueue(() => ColorPaletteUtility.SetColorPalette(ParentUI, adjustedColor));
             });
         }
-#endif
 
         private unsafe IntPtr ArrayToPtr(byte[] buffer)
         {
@@ -286,6 +347,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 return (IntPtr)bufferPtr;
             }
         }
+#endif
 
         public void Dimm(CancellationToken token)
         {
@@ -358,7 +420,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 CurrentMediaPlayer.Dispose();
             }
 
+#if USEDYNAMICVIDEOPALETTE
             CurrentStopwatch?.Stop();
+#endif
 
             bool isLastAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
 #if !USEDYNAMICVIDEOPALETTE
@@ -387,8 +451,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
             CurrentMediaPlayer!.IsMuted = false;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", false);
         }
-
-        private bool _isFocusChangeRunning;
 
         private async void VolumeWindowUnfocusedChangeWatcher(CancellationTokenSourceWrapper token)
         {

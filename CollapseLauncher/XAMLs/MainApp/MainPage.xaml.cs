@@ -454,6 +454,7 @@ namespace CollapseLauncher
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
             
             e.IsImageLoaded                   = true;
