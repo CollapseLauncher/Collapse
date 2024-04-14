@@ -633,7 +633,7 @@ namespace CollapseLauncher.Helper.Metadata
             string? gameRegion;
 
             // Get the region collection
-            List<string>? gameRegionCollection = GetGameRegionCollection(gameName);
+            List<string?>? gameRegionCollection = GetGameRegionCollection(gameName);
             gameRegionCollection ??= LauncherGameNameRegionCollection?.FirstOrDefault().Value!;
 
             // Throw if the collection is empty or null

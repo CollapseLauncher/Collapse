@@ -431,7 +431,7 @@ namespace CollapseLauncher
             else BackgroundMediaUtility.Current?.Undimm();
         }
 
-        private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
+        private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
             e.IsImageLoaded                   = false;
             regionBackgroundProp.imgLocalPath = e.ImgPath;
