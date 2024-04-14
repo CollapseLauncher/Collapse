@@ -308,7 +308,7 @@
                                     <ScrollViewer x:Name="ContentScrollViewer"
                                                   HorizontalScrollBarVisibility="Disabled"
                                                   IsTabStop="False"
-                                                  VerticalScrollBarVisibility="Disabled"
+                                                  VerticalScrollBarVisibility="Auto"
                                                   ZoomMode="Disabled">
                                         <Grid Background="{ThemeResource ContentDialogTopOverlay}"
                                               BorderBrush="{ThemeResource ContentDialogSeparatorBorderBrush}"
