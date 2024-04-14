@@ -1636,53 +1636,63 @@ namespace CollapseLauncher
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
+            DisableInstantRegionChange = true;
             RestoreCurrentRegion();
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
-                return;
-
-            if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
+            
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel)
+                                     || index >= ComboBoxGameCategory.Items.Count
+                                     || ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]
+               )
             {
-                ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
-                ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue));
-                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
-                ChangeRegionConfirmBtn.IsEnabled = false;
-                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
-                CannotUseKbShortcuts = true;
+                DisableInstantRegionChange = false;
+                return;
             }
+
+            ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
+            ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue));
+            ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+            ChangeRegionConfirmBtn.IsEnabled          = false;
+            ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+            CannotUseKbShortcuts                      = true;
+            DisableInstantRegionChange                = false;
         }
 
         private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
+            DisableInstantRegionChange = true;
             RestoreCurrentRegion();
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
-                return;
+            
 
-            if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index])
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel)
+                                     || index >= ComboBoxGameRegion.Items.Count 
+                                     || ComboBoxGameRegion.SelectedValue == ComboBoxGameRegion.Items[index])
             {
-                ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
-                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
-                ChangeRegionConfirmBtn.IsEnabled = false;
-                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
-                CannotUseKbShortcuts = true;
+                DisableInstantRegionChange = false;
+                return;
             }
+
+            ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
+            ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+            ChangeRegionConfirmBtn.IsEnabled          = false;
+            ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+            CannotUseKbShortcuts                      = true;
+            DisableInstantRegionChange                = false;
         }
 
         private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (CannotUseKbShortcuts)
-                return;
+            if (CannotUseKbShortcuts) return;
+
             await Dialog_ShowKbShortcuts(this);
         }
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
-                return;
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0])
-                return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
 
             DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
@@ -1692,11 +1702,9 @@ namespace CollapseLauncher
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
-                return;
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem)
-                return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
 
             DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
@@ -1791,11 +1799,9 @@ namespace CollapseLauncher
         }
         private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
-                return;
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2])
-                return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) return;
 
             DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
@@ -1865,8 +1871,7 @@ namespace CollapseLauncher
         private bool SetActivatedRegion()
         {
             var args = m_arguments.StartGame;
-            if (args == null)
-                return true;
+            if (args == null) return true;
 
             string oldGameCategory = GetAppConfigValue("GameCategory").ToString();
 
@@ -1878,8 +1883,8 @@ namespace CollapseLauncher
             if (gameRegionCollection == null)
             {
                 bool res = int.TryParse(args.Game, out int gameIndex);
-                if (!res || gameIndex < 0 || gameIndex >= gameNameCollection.Count)
-                    return true;
+                if (!res || gameIndex < 0 || gameIndex >= gameNameCollection.Count) return true;
+
                 gameName = gameNameCollection[gameIndex];
                 gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
             }
@@ -1892,21 +1897,19 @@ namespace CollapseLauncher
                 if (!gameRegionCollection.Contains(gameRegion))
                 {
                     bool res = int.TryParse(args.Region, out int regionIndex);
-                    if (!res || regionIndex < 0 || regionIndex >= gameRegionCollection.Count)
-                        return true;
+                    if (!res || regionIndex < 0 || regionIndex >= gameRegionCollection.Count) return true;
+
                     gameRegion = gameRegionCollection[regionIndex];
                 }
 
                 int oldGameRegionIndex = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
                 string oldGameRegion = gameRegionCollection.ElementAt(oldGameRegionIndex);
-                if (oldGameRegion == null)
-                    return true;
+                if (oldGameRegion == null) return true;
 
                 LauncherMetadataHelper.SetPreviousGameRegion(gameName, gameRegion);
                 SetAndSaveConfigValue("GameRegion", gameRegion);
 
-                if (oldGameCategory == gameName && oldGameRegion == gameRegion)
-                    return true;
+                if (oldGameCategory == gameName && oldGameRegion == gameRegion) return true;
             }
 
             return false;
@@ -1914,8 +1917,7 @@ namespace CollapseLauncher
 
         private async void ChangeToActivatedRegion()
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
-                return;
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
 
             bool sameRegion = SetActivatedRegion();
 
@@ -1944,8 +1946,7 @@ namespace CollapseLauncher
 
         public void OpenAppActivation()
         {
-            if (m_arguments.StartGame == null)
-                return;
+            if (m_arguments.StartGame == null) return;
 
             DispatcherQueue?.TryEnqueue(ChangeToActivatedRegion);
         }
