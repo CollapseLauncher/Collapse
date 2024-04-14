@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable
@@ -54,13 +55,23 @@ namespace CollapseLauncher.Helper.Background
         private CancellationTokenSourceWrapper? _cancellationToken;
         private IBackgroundMediaLoader?         _loaderStillImage;
         private IBackgroundMediaLoader?         _loaderMediaPlayer;
-        private IBackgroundMediaLoader?         _currentMediaLoader;
 
         private bool _isCurrentRegistered;
 
         private static FileStream? _alternativeFileStream;
 
-        private delegate ValueTask AssignDefaultAction<in T>(T element) where T : class;
+        private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
+        internal  delegate void               ThrowExceptionAction(Exception element);
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) => {
+            await action.ConfigureAwait(false);
+        },
+        new ExecutionDataflowBlockOptions
+        {
+            EnsureOrdered = true,
+            MaxMessagesPerTask = 1,
+            MaxDegreeOfParallelism = 1,
+            TaskScheduler = TaskScheduler.Default
+        });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -72,8 +83,8 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="bgImageGridBackground">The parent <see cref="Grid" /> for Background Image.</param>
         /// <param name="bgMediaPlayerGrid">The parent <see cref="Grid" /> for Background Media Player</param>
         internal static async Task RegisterCurrent(FrameworkElement? parentUI,          Grid bgAcrylicMask,
-                                                                          Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
-                                                                          Grid              bgMediaPlayerGrid)
+                                                   Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
+                                                   Grid              bgMediaPlayerGrid)
         {
             // Set the parent UI
             FrameworkElement? ui = parentUI;
@@ -280,83 +291,82 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal async Task LoadBackground(string mediaPath, bool isRequestInit = false,
-                                                  bool   isForceRecreateCache = false)
+        internal void LoadBackground(string mediaPath,                  bool                  isRequestInit = false,
+                                     bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null)
         {
-            while (!_isCurrentRegistered)
+            SharedActionBlockQueue?.Post(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction));
+        }
+
+        private async Task LoadBackgroundInner(string mediaPath,                  bool                  isRequestInit = false,
+                                                bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null)
+        {
+            try
             {
-                await Task.Delay(250,  _cancellationToken?.Token ?? default);
-            }
-
-            EnsureCurrentImageRegistered();
-            EnsureCurrentMediaPlayerRegistered();
-
-            _loaderMediaPlayer ??= new MediaPlayerLoader(
-                                                         _parentUI!,
-                                                         _bgAcrylicMask!, _bgOverlayTitleBar!,
-                                                         _parentBgMediaPlayerBackgroundGrid!,
-                                                         _bgMediaPlayerBackground);
-
-            _loaderStillImage ??= new StillImageLoader(
-                                                       _parentUI!,
-                                                       _bgAcrylicMask!, _bgOverlayTitleBar!,
-                                                       _parentBgImageBackgroundGrid!,
-                                                       _bgImageBackground, _bgImageBackgroundLast);
-
-            MediaType mediaType = GetMediaType(mediaPath);
-
-            _currentMediaLoader = mediaType switch
-                                  {
-                                      MediaType.Media => _loaderMediaPlayer,
-                                      MediaType.StillImage => _loaderStillImage,
-                                      MediaType.Unknown =>
-                                          throw new
-                                              FormatException("Media format is unknown and cannot be determined!"),
-                                      _ => throw new
-                                          FormatException("Media format is unknown and cannot be determined!")
-                                  };
-
-            if (_currentMediaLoader == null)
-            {
-                throw new NullReferenceException("No background image loader is assigned!");
-            }
-
-            if (_cancellationToken is { IsDisposed: false })
-            {
-                if (!_cancellationToken.IsCancelled)
+                while (!_isCurrentRegistered)
                 {
-                    await _cancellationToken.CancelAsync();
+                    await Task.Delay(250, _cancellationToken?.Token ?? default);
                 }
 
-                _cancellationToken.Dispose();
+                EnsureCurrentImageRegistered();
+                EnsureCurrentMediaPlayerRegistered();
+
+                _loaderMediaPlayer ??= new MediaPlayerLoader(
+                                                             _parentUI!,
+                                                             _bgAcrylicMask!, _bgOverlayTitleBar!,
+                                                             _parentBgMediaPlayerBackgroundGrid!,
+                                                             _bgMediaPlayerBackground);
+
+                _loaderStillImage ??= new StillImageLoader(
+                                                           _parentUI!,
+                                                           _bgAcrylicMask!, _bgOverlayTitleBar!,
+                                                           _parentBgImageBackgroundGrid!,
+                                                           _bgImageBackground, _bgImageBackgroundLast);
+
+                MediaType mediaType = GetMediaType(mediaPath);
+
+                if (_cancellationToken is { IsDisposed: false })
+                {
+                    if (!_cancellationToken.IsCancelled)
+                    {
+                        await _cancellationToken.CancelAsync();
+                    }
+
+                    _cancellationToken.Dispose();
+                }
+
+                _cancellationToken = new CancellationTokenSourceWrapper();
+                await (mediaType switch
+                {
+                    MediaType.Media => _loaderMediaPlayer,
+                    MediaType.StillImage => _loaderStillImage,
+                    _ => throw new InvalidCastException()
+                }).LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken.Token);
+
+                switch (mediaType)
+                {
+                    case MediaType.Media:
+                        _loaderStillImage.Hide();
+                        _loaderMediaPlayer.Show();
+                        break;
+                    case MediaType.StillImage:
+                        _loaderStillImage.Show();
+                        _loaderMediaPlayer.Hide();
+                        break;
+                }
+
+                if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
+                {
+                    _loaderMediaPlayer.IsBackgroundDimm = true;
+                    _loaderStillImage.IsBackgroundDimm = true;
+                }
+
+                CurrentAppliedMediaType = mediaType;
             }
-
-            _cancellationToken = new CancellationTokenSourceWrapper();
-            await _currentMediaLoader.LoadAsync(mediaPath, isForceRecreateCache, isRequestInit,
-                                                _cancellationToken.Token);
-
-            if (CurrentAppliedMediaType != mediaType && CurrentAppliedMediaType != MediaType.Unknown &&
-                mediaType == MediaType.Media)
+            catch (Exception ex)
             {
-                await _loaderStillImage.HideAsync(_cancellationToken.Token);
+                if (throwAction != null)
+                    throwAction(ex);
             }
-            else if (CurrentAppliedMediaType != mediaType && CurrentAppliedMediaType != MediaType.Unknown &&
-                     mediaType == MediaType.StillImage)
-            {
-                await _loaderMediaPlayer.HideAsync(_cancellationToken.Token);
-            }
-
-            if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
-            {
-                _loaderMediaPlayer.IsBackgroundDimm = true;
-            }
-
-            if ((mediaType == MediaType.Media || InnerLauncherConfig.m_appCurrentFrameName != "HomePage") && CurrentAppliedMediaType != mediaType)
-            {
-                await _currentMediaLoader.ShowAsync(_cancellationToken.Token);
-            }
-
-            CurrentAppliedMediaType = mediaType;
         }
 
         /// <summary>
@@ -364,10 +374,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Dimm()
         {
-            IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
-            if (loader == null) return;
-
-            loader.Dimm(_cancellationToken?.Token ?? default);
+            _loaderMediaPlayer?.Dimm();
+            _loaderStillImage?.Dimm();
         }
 
         /// <summary>
@@ -375,10 +383,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Undimm()
         {
-            IBackgroundMediaLoader? loader = GetImageLoader(CurrentAppliedMediaType);
-            if (loader == null) return;
-
-            loader.Undimm(_cancellationToken?.Token ?? default);
+            _loaderMediaPlayer?.Undimm();
+            _loaderStillImage?.Undimm();
         }
 
         /// <summary>
@@ -386,7 +392,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Mute()
         {
-            _currentMediaLoader?.Mute();
+            _loaderMediaPlayer?.Mute();
+            _loaderStillImage?.Mute();
         }
 
         /// <summary>
@@ -394,7 +401,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Unmute()
         {
-            _currentMediaLoader?.Unmute();
+            _loaderMediaPlayer?.Unmute();
+            _loaderStillImage?.Unmute();
         }
 
         /// <summary>
@@ -402,7 +410,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void SetVolume(double value)
         {
-            _currentMediaLoader?.SetVolume(value);
+            _loaderMediaPlayer?.SetVolume(value);
+            _loaderStillImage?.SetVolume(value);
         }
 
         /// <summary>
@@ -410,7 +419,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void WindowUnfocused()
         {
-            _currentMediaLoader?.WindowUnfocused();
+            _loaderMediaPlayer?.WindowUnfocused();
+            _loaderStillImage?.WindowUnfocused();
         }
 
         /// <summary>
@@ -418,7 +428,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void WindowFocused()
         {
-            _currentMediaLoader?.WindowFocused();
+            _loaderMediaPlayer?.WindowFocused();
+            _loaderStillImage?.WindowFocused();
         }
 
         /// <summary>
@@ -426,7 +437,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Play()
         {
-            _currentMediaLoader?.Play();
+            _loaderMediaPlayer?.Play();
+            _loaderStillImage?.Play();
         }
 
         /// <summary>
@@ -434,7 +446,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Pause()
         {
-            _currentMediaLoader?.Pause();
+            _loaderMediaPlayer?.Pause();
+            _loaderStillImage?.Pause();
         }
 
         public static FileStream? GetAlternativeFileStream()
@@ -447,17 +460,6 @@ namespace CollapseLauncher.Helper.Background
         public static void SetAlternativeFileStream(FileStream stream)
         {
             _alternativeFileStream = stream;
-        }
-
-        private IBackgroundMediaLoader? GetImageLoader(MediaType mediaType)
-        {
-            return mediaType switch
-                   {
-                       MediaType.StillImage => _loaderStillImage,
-                       MediaType.Media => _loaderMediaPlayer,
-                       MediaType.Unknown => null,
-                       _ => throw new NotImplementedException()
-                   };
         }
 
         public static MediaType GetMediaType(string mediaPath)

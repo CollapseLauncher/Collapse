@@ -1,30 +1,32 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Animation;
+﻿using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
 #if USEFFMPEGFORVIDEOBG
 using FFmpegInteropX;
-#endif
 using Hi3Helper;
+
+#endif
 using Hi3Helper.Shared.Region;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using Windows.Graphics.Imaging;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+
+#if USEDYNAMICVIDEOPALETTE
+using CollapseLauncher.Extension;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using System.Diagnostics;
+using Windows.Graphics.Imaging;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+#endif
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -46,17 +48,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private Grid OverlayTitleBar { get; }
         
         public   bool                            IsBackgroundDimm { get; set; }
-        private  bool                            IsMediaPlayerLoading   { get; set; }
         private  FileStream?                     CurrentMediaStream     { get; set; }
         private  MediaPlayer?                    CurrentMediaPlayer     { get; set; }
         private  CancellationTokenSourceWrapper? InnerCancellationToken { get; set; }
-        private  List<bool>?                     FocusState             { get; set; }
-        private ActionBlock<ValueTask>?          ActionTaskQueue        { get; set; }
-
 #if USEFFMPEGFORVIDEOBG
-        private FFmpegMediaSource?               CurrentFFmpegMediaSource { get; set; }
+        private  FFmpegMediaSource?              CurrentFFmpegMediaSource { get; set; }
 #endif
-
 
 #if USEDYNAMICVIDEOPALETTE
         private ImageUI?           CurrentMediaImage        { get; }
@@ -90,18 +87,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                                                                    .WithStretch(Stretch
                                                                                        .UniformToFill));
 #endif
-
-            IsMediaPlayerLoading = false;
-            ActionTaskQueue = new ActionBlock<ValueTask>(async (action) => {
-                await action.ConfigureAwait(false);
-            },
-                new ExecutionDataflowBlockOptions
-                {
-                    EnsureOrdered = true,
-                    MaxMessagesPerTask = 1,
-                    MaxDegreeOfParallelism = 1,
-                    TaskScheduler = TaskScheduler.Default
-                });
         }
 
         ~MediaPlayerLoader() => Dispose();
@@ -120,15 +105,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
             GC.SuppressFinalize(this);
         }
 
-        public async ValueTask LoadAsync(string            filePath, bool isImageLoadForFirstTime, bool isRequestInit,
-                                         CancellationToken token)
+        public async Task LoadAsync(string filePath,      bool              isImageLoadForFirstTime,
+                                    bool   isRequestInit, CancellationToken token)
         {
-            // Wait until the image loading sequence is completed
-            while (IsMediaPlayerLoading)
-            {
-                await Task.Delay(250, token);
-            }
-
             if (CurrentMediaStream != null)
             {
                 await CurrentMediaStream.DisposeAsync();
@@ -145,13 +124,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 {
                     await InnerCancellationToken.CancelAsync();
                     InnerCancellationToken.Dispose();
-                }
-
-                FocusState ??= [];
-
-                if (FocusState.Count > 0)
-                {
-                    FocusState.Clear();
                 }
 
                 InnerCancellationToken = new CancellationTokenSourceWrapper();
@@ -232,7 +204,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
 #endif
 
                 CurrentMediaPlayerFrame?.SetMediaPlayer(CurrentMediaPlayer);
-                VolumeWindowUnfocusedChangeWatcher(InnerCancellationToken);
             }
             catch
             {
@@ -243,7 +214,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                IsMediaPlayerLoading = false;
             }
         }
 
@@ -349,17 +319,17 @@ namespace CollapseLauncher.Helper.Background.Loaders
         }
 #endif
 
-        public void Dimm(CancellationToken token)
+        public void Dimm()
         {
-            ActionTaskQueue?.Post(ToggleImageVisibility(true));
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(true));
         }
 
-        public void Undimm(CancellationToken token)
+        public void Undimm()
         {
-            ActionTaskQueue?.Post(ToggleImageVisibility(false));
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(false));
         }
 
-        private async ValueTask ToggleImageVisibility(bool hideImage)
+        private async Task ToggleImageVisibility(bool hideImage)
         {
             if (IsBackgroundDimm == hideImage) return;
             IsBackgroundDimm = hideImage;
@@ -383,8 +353,18 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 );
         }
 
-        public async ValueTask ShowAsync(CancellationToken token)
+        public void Show()
         {
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ShowInner());
+        }
+
+        private async Task ShowInner()
+        {
+            if (CurrentMediaPlayerFrameParentGrid.Opacity > 0f) return;
+
+#if !USEDYNAMICVIDEOPALETTE
+            App.ToggleBlurBackdrop(false);
+#endif
             TimeSpan duration = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
             await CurrentMediaPlayerFrameParentGrid
@@ -392,14 +372,21 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                CurrentCompositor
                                   .CreateScalarKeyFrameAnimation("Opacity", 1f, 0f)
                               );
-
-#if !USEDYNAMICVIDEOPALETTE
-            App.ToggleBlurBackdrop(false);
-#endif
         }
 
-        public async ValueTask HideAsync(CancellationToken token)
+        public void Hide()
         {
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(HideInner());
+        }
+
+        private async Task HideInner()
+        {
+            bool isLastAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
+#if !USEDYNAMICVIDEOPALETTE
+            App.ToggleBlurBackdrop(isLastAcrylicEnabled);
+#endif
+
+            if (CurrentMediaPlayerFrameParentGrid.Opacity < 1f) return;
             TimeSpan duration = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
             await CurrentMediaPlayerFrameParentGrid
@@ -421,84 +408,54 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
 
 #if USEDYNAMICVIDEOPALETTE
-            CurrentStopwatch?.Stop();
-#endif
-
-            bool isLastAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
-#if !USEDYNAMICVIDEOPALETTE
-            App.ToggleBlurBackdrop(isLastAcrylicEnabled);
+                CurrentStopwatch?.Stop();
 #endif
         }
 
         public void WindowUnfocused()
         {
-            FocusState?.Add(false);
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(WindowUnfocusedInner());
+        }
+
+        private async Task WindowUnfocusedInner()
+        {
+            double currentAudioVolume = CurrentMediaPlayer?.Volume ?? 0;
+            await InterpolateVolumeChange((float)currentAudioVolume, 0f, true);
+            Pause();
         }
 
         public void WindowFocused()
         {
-            FocusState?.Add(true);
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(WindowFocusedInner());
+        }
+
+        private async Task WindowFocusedInner()
+        {
+            double currentAudioVolume = LauncherConfig.GetAppConfigValue("BackgroundAudioVolume")
+                                                      .ToDouble();
+            Play();
+            await InterpolateVolumeChange(0f, (float)currentAudioVolume, false);
         }
 
         public void Mute()
         {
-            CurrentMediaPlayer!.IsMuted = true;
+            if (CurrentMediaPlayer == null) return;
+            CurrentMediaPlayer.IsMuted = true;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", true);
         }
 
         public void Unmute()
         {
-            CurrentMediaPlayer!.IsMuted = false;
+            if (CurrentMediaPlayer == null) return;
+
+            CurrentMediaPlayer.IsMuted = false;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", false);
-        }
-
-        private async void VolumeWindowUnfocusedChangeWatcher(CancellationTokenSourceWrapper token)
-        {
-#if DEBUG
-            Logger.LogWriteLine("[MediaPlayerLoader] Window focus watcher is starting!", LogType.Debug, true);
-#endif
-
-            while (token is { IsDisposed: false, IsCancelled: false })
-            {
-                while (FocusState?.Count > 0)
-                {
-                    while (_isFocusChangeRunning)
-                    {
-                        await Task.Delay(100);
-                    }
-
-                    _isFocusChangeRunning = true;
-                    if (FocusState[0])
-                    {
-                        double currentAudioVolume =
-                            LauncherConfig.GetAppConfigValue("BackgroundAudioVolume").ToDouble();
-                        Play();
-                        await InterpolateVolumeChange(0f, (float)currentAudioVolume, false);
-                    }
-                    else
-                    {
-                        double currentAudioVolume = CurrentMediaPlayer!.Volume;
-                        await InterpolateVolumeChange((float)currentAudioVolume, 0f, true);
-                        Pause();
-                    }
-
-                    lock (FocusState)
-                    {
-                        FocusState.RemoveAt(0);
-                        _isFocusChangeRunning = false;
-                    }
-                }
-
-                await Task.Delay(100);
-            }
-
-#if DEBUG
-            Logger.LogWriteLine("[MediaPlayerLoader] Window focus watcher is closing!", LogType.Debug, true);
-#endif
         }
 
         private async ValueTask InterpolateVolumeChange(float from, float to, bool isMute)
         {
+            if (CurrentMediaPlayer == null) return;
+
             double tFrom = from;
             double tTo   = to;
 
@@ -507,7 +464,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             Loops:
             current                    += inc;
-            CurrentMediaPlayer!.Volume =  current;
+            CurrentMediaPlayer.Volume =  current;
 
             await Task.Delay(10);
             if (isMute && current > tTo - inc)
@@ -520,7 +477,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 goto Loops;
             }
 
-            CurrentMediaPlayer!.Volume = tTo;
+            CurrentMediaPlayer.Volume = tTo;
         }
 
         public void SetVolume(double value)

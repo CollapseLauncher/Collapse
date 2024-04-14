@@ -446,16 +446,12 @@ namespace CollapseLauncher
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
             }
 
-            try
-            {
-                await (BackgroundMediaUtility.Current?.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache) ?? Task.CompletedTask);
-            }
-            catch (Exception ex)
+            BackgroundMediaUtility.Current?.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
-            }
+            });
             
             e.IsImageLoaded                   = true;
         }

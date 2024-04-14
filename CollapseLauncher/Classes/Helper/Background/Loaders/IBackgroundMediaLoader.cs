@@ -13,11 +13,11 @@
     {
         bool IsBackgroundDimm { get; set; }
 
-        ValueTask LoadAsync(string filePath, bool isForceRecreateCache = false, bool isRequestInit = false, CancellationToken token = default);
-        void Dimm(CancellationToken   token = default);
-        void Undimm(CancellationToken token = default);
-        ValueTask ShowAsync(CancellationToken   token = default);
-        ValueTask HideAsync(CancellationToken   token = default);
+        Task LoadAsync(string filePath, bool isForceRecreateCache = false, bool isRequestInit = false, CancellationToken token = default);
+        void Dimm();
+        void Undimm();
+        void Show();
+        void Hide();
         void Mute();
         void Unmute();
         void SetVolume(double value);

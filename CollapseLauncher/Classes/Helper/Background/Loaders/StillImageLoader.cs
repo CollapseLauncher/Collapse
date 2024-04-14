@@ -12,7 +12,6 @@ using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 
 #nullable enable
@@ -28,13 +27,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private ImageUI?         ImageBackCurrent    { get; }
         private ImageUI?         ImageBackLast       { get; }
         private Grid?            ImageBackParentGrid { get; }
-        
-        public  bool                    IsBackgroundDimm { get; set; }
-        private Grid                    AcrylicMask      { get; }
-        private Grid                    OverlayTitleBar  { get; }
-        private ActionBlock<ValueTask>? ActionTaskQueue  { get; set; }
-
-        private  double AnimationDuration { get; }
+        private Grid             AcrylicMask         { get; }
+        private Grid             OverlayTitleBar     { get; }
+        private double           AnimationDuration   { get; }
+        public  bool             IsBackgroundDimm    { get; set; }
 
         internal StillImageLoader(
             FrameworkElement parentUI,
@@ -54,16 +50,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
             ImageBackParentGrid = imageBackParentGrid;
 
             AnimationDuration = animationDuration;
-            ActionTaskQueue   = new ActionBlock<ValueTask>(async (action) => {
-                await action.ConfigureAwait(false);
-            },
-                new ExecutionDataflowBlockOptions
-                {
-                    EnsureOrdered = true,
-                    MaxMessagesPerTask = 1,
-                    MaxDegreeOfParallelism = 1,
-                    TaskScheduler = TaskScheduler.Default
-                });
         }
 
         ~StillImageLoader() => Dispose();
@@ -73,8 +59,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
             GC.SuppressFinalize(this);
         }
 
-        public async ValueTask LoadAsync(string            filePath, bool isImageLoadForFirstTime, bool isRequestInit,
-                                         CancellationToken token)
+        public async Task LoadAsync(string filePath,      bool              isImageLoadForFirstTime,
+                                    bool   isRequestInit, CancellationToken token)
         {
             try
             {
@@ -128,17 +114,17 @@ namespace CollapseLauncher.Helper.Background.Loaders
                               );
         }
 
-        public void Dimm(CancellationToken token)
+        public void Dimm()
         {
-            ActionTaskQueue?.Post(ToggleImageVisibility(true));
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(true));
         }
 
-        public void Undimm(CancellationToken token)
+        public void Undimm()
         {
-            ActionTaskQueue?.Post(ToggleImageVisibility(false));
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(false));
         }
 
-        private async ValueTask ToggleImageVisibility(bool hideImage, bool completeInvisible = false)
+        private async Task ToggleImageVisibility(bool hideImage, bool completeInvisible = false)
         {
             if (IsBackgroundDimm == hideImage) return;
             IsBackgroundDimm = hideImage;
@@ -184,14 +170,16 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
-        public async ValueTask ShowAsync(CancellationToken token)
+        public void Show()
         {
-            await ToggleImageVisibility(false, true);
+            if (ImageBackParentGrid?.Opacity > 0f) return;
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(false, true));
         }
 
-        public async ValueTask HideAsync(CancellationToken token)
+        public void Hide()
         {
-            await ToggleImageVisibility(true, true);
+            if (ImageBackParentGrid?.Opacity < 1f) return;
+            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(true, true));
         }
 
         public void Mute()
