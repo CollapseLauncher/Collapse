@@ -519,6 +519,18 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Warning
                 );
 
+        public static async Task<ContentDialogResult> Dialog_OOBEVideoBackgroundPreviewUnavailable(UIElement Content) =>
+            await SpawnDialog(
+                        Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableHeader,
+                        Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableDescription,
+                        Content,
+                        null,
+                        Lang._Misc.OkayHappy,
+                        null,
+                        ContentDialogButton.Primary,
+                        ContentDialogTheme.Informational
+                );
+
         public static async Task<ContentDialogResult> Dialog_InstallMediaPackageFinished(UIElement Content) =>
             await SpawnDialog(
                         Lang._Dialogs.InstallMediaPackCompleteTitle,

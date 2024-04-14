@@ -100,6 +100,7 @@ namespace CollapseLauncher
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
+            BackgroundMediaUtility.Current?.Dispose();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)

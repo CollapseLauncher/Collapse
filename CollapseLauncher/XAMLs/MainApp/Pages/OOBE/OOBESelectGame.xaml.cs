@@ -48,7 +48,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)
         {
-            OOBEStartUpMenu.thisCurrent.OverlayFrameGoBack();
+            OOBEStartUpMenu.ThisCurrent?.OverlayFrameGoBack();
             // (m_window as MainWindow).rootFrame.GoBack();
         }
 
@@ -128,11 +128,12 @@ namespace CollapseLauncher.Pages.OOBE
             double     dur          = 0.250;
             Storyboard storyBufBack = new Storyboard();
 
-            DoubleAnimation opacityBufBack = new DoubleAnimation();
-            opacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
-
-            opacityBufBack.From = from;
-            opacityBufBack.To   = to;
+            DoubleAnimation opacityBufBack = new DoubleAnimation
+            {
+                Duration = new Duration(TimeSpan.FromSeconds(dur)),
+                From     = from,
+                To       = to
+            };
 
             Storyboard.SetTarget(opacityBufBack, BackgroundFrame);
             Storyboard.SetTargetProperty(opacityBufBack, "Opacity");

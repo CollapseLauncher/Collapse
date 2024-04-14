@@ -1249,6 +1249,9 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
 
+    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
+    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
+
     "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
     "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
     "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
