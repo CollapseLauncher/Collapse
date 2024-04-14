@@ -594,7 +594,7 @@
                     <TextBlock Margin="0,8,0,8"
                                HorizontalAlignment="Left"
                                Style="{ThemeResource BodyStrongTextBlockStyle}">
-                        <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/graphs/contributors"
+                        <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse#contributors"
                                    UnderlineStyle="None">
                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributorListBtn}" />
                         </Hyperlink>
