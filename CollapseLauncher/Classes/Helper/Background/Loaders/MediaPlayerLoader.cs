@@ -196,6 +196,37 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 CurrentFFmpegMediaSource ??= await FFmpegMediaSource.CreateFromStreamAsync(CurrentMediaStream.AsRandomAccessStream());
 
                 await CurrentFFmpegMediaSource.OpenWithMediaPlayerAsync(CurrentMediaPlayer);
+                const string MediaInfoStrFormat = @"Playing background video with FFmpeg!
+    Media Duration: {0}
+    Video Resolution: {9}x{10} px
+    Video Codec: {1}
+    Video Codec Decoding Method: {3}
+    Video Decoder Engine: {11}
+    Video Bitrate: {2} bps
+    Video Bitdepth: {11} Bits
+    Audio Codec: {4}
+    Audio Bitrate: {5} bps
+    Audio Channel: {6}
+    Audio Sample: {7}Hz
+    Audio Bitwide: {8} Bits
+";
+                Logger.LogWriteLine(
+                    string.Format(MediaInfoStrFormat,
+                    CurrentFFmpegMediaSource.Duration.ToString("c"),                                // 0
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.CodecName ?? "No Video Stream",    // 1
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.Bitrate ?? 0,                      // 2
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.DecoderEngine                      // 3
+                    == DecoderEngine.FFmpegD3D11HardwareDecoder ? "Hardware" : "Software",
+                    CurrentFFmpegMediaSource.CurrentAudioStream?.CodecName ?? "No Audio Stream",    // 4
+                    CurrentFFmpegMediaSource.CurrentAudioStream?.Bitrate ?? 0,                      // 5
+                    CurrentFFmpegMediaSource.CurrentAudioStream?.Channels ?? 0,                     // 6
+                    CurrentFFmpegMediaSource.CurrentAudioStream?.SampleRate ?? 0,                   // 7
+                    CurrentFFmpegMediaSource.CurrentAudioStream?.BitsPerSample ?? 0,                // 8
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.PixelWidth ?? 0,                   // 9
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.PixelHeight ?? 0,                  // 10
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.BitsPerSample ?? 0,                // 11
+                    CurrentFFmpegMediaSource.CurrentVideoStream?.DecoderEngine ?? 0                 // 12
+                    ), LogType.Debug, true);
 #endif
 
 #if USEDYNAMICVIDEOPALETTE
