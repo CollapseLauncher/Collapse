@@ -1249,6 +1249,9 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "Imagen Personalizada de Fondo",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Usar una Imagen personalizada en lugar de la predeterminada.",
 
+    "VideoBackgroundPreviewUnavailableHeader": "La vista previa del video no está disponible",
+    "VideoBackgroundPreviewUnavailableDescription": "No es posible previsualizar el video en la pantalla de ajustes del primer inicio (OOBE), ¡Pero no te preocupes!, igual será aplicado una vez termines la configuración. ",
+
     "LoadingInitializationTitle": "Preparando primer inicio del Launcher",
     "LoadingCDNCheckboxCheckLatency": "(Comprobando latencia...)",
     "LoadingCDNCheckboxPlaceholder": "Comprobando Recomendación de CDN...",
