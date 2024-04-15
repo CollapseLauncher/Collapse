@@ -1249,6 +1249,9 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "Gambar Latar Belakang Kustom",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Gunakan gambar latar belakang kustom ketimbang dengan bawaan.",
 
+    "VideoBackgroundPreviewUnavailableHeader": "Preview untuk Background Video Tidak Tersedia",
+    "VideoBackgroundPreviewUnavailableDescription": "Kamu saat ini tidak bisa melihat preview background video di dalam OOBE, tapi jangan khawatir! Video background kamu akan diterapkan setelah kamu menyelesaikan tahap OOBE ini.",
+
     "LoadingInitializationTitle": "Mempersiapkan Launcher untuk Pertama Kalinya",
     "LoadingCDNCheckboxCheckLatency": "(Memeriksa Latensi...)",
     "LoadingCDNCheckboxPlaceholder": "Memeriksa Rekomendasi CDN...",
