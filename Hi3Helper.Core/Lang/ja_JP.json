@@ -1249,6 +1249,9 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "カスタム背景",
     "CustomizationSettingsStyleCustomBackgroundDescription": "デフォルトの画像の代わりに好きな画像を背景に表示します",
 
+    "VideoBackgroundPreviewUnavailableHeader": "カスタム動画背景はプレビューできません",
+    "VideoBackgroundPreviewUnavailableDescription": "現在の画面ではカスタム動画背景がプレビューされていませんが、ご安心ください！選択したカスタム動画背景は、初期設定の完了後に適用されます。",
+
     "LoadingInitializationTitle": "ランチャー初回起動時の初期化を行っています",
     "LoadingCDNCheckboxCheckLatency": "（接続速度をテスト中…）",
     "LoadingCDNCheckboxPlaceholder": "CDNおすすめ度を検証中…",
