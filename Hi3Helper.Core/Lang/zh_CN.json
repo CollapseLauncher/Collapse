@@ -1249,6 +1249,9 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "自定义背景图像",
     "CustomizationSettingsStyleCustomBackgroundDescription": "使用自定义背景图像而不是默认图像。",
 
+    "VideoBackgroundPreviewUnavailableHeader": "视频背景预览不可用",
+    "VideoBackgroundPreviewUnavailableDescription": "无法在启动设置页面预览视频背景，但不用担心！完成启动设置后，您的视频背景就会被应用。",
+
     "LoadingInitializationTitle": "正在为启动器首次启动初始化",
     "LoadingCDNCheckboxCheckLatency": "（正在检测延迟……）",
     "LoadingCDNCheckboxPlaceholder": "正在检测 CDN 推荐……",
