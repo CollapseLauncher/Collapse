@@ -9,7 +9,7 @@
 	url = https://github.com/neon-nyan/ColorThief
 [submodule "Hi3Helper.EncTool"]
 	path = Hi3Helper.EncTool
-	url = https://github.com/neon-nyan/Hi3Helper.EncTool
+	url = https://github.com/CollapseLauncher/Private-EncTool
 [submodule "InnoSetupHelper/InnoSetupLogParser"]
 	path = InnoSetupHelper/InnoSetupLogParser
 	url = https://github.com/CollapseLauncher/InnoSetupLogParser
