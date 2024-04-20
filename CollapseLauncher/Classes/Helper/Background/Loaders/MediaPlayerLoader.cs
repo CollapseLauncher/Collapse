@@ -167,7 +167,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                 await GetPreviewAsColorPalette(filePath);
 
-                CurrentMediaStream = BackgroundMediaUtility.GetAlternativeFileStream() ?? File.OpenRead(filePath);
+                CurrentMediaStream = BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamUtility.FileStreamOpenReadOpt);
 
 #if !USEFFMPEGFORVIDEOBG
                 EnsureIfFormatIsDashOrUnsupported(CurrentMediaStream);

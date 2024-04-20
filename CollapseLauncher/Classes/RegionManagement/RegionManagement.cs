@@ -395,7 +395,6 @@ namespace CollapseLauncher
         private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfig Preset)
             => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), InternalAppJSONContext.Default, token);
 
-
         private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token, PresetConfig Preset)
             => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, InternalAppJSONContext.Default, token);
 

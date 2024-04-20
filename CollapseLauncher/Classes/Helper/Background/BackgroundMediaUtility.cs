@@ -252,7 +252,7 @@ namespace CollapseLauncher.Helper.Background
                 // Read the default.png image and load it to
                 // the image element.
                 await using FileStream fileStream =
-                    new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 64 << 10, true);
                 BitmapImage imageSource = new BitmapImage();
                 await imageSource.SetSourceAsync(fileStream.AsRandomAccessStream());
                 image.Source = imageSource;
