@@ -13,7 +13,7 @@
         public override string Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
-            JsonSerializerOptions options) => Extension.GetServeV3String(reader.ValueSpan);
+            JsonSerializerOptions options) => Extension.GetServeV3String(reader);
 
         public override void Write(
                 Utf8JsonWriter writer,
@@ -49,7 +49,7 @@
             while (reader.TokenType == JsonTokenType.String)
             {
                 // Try retrieve the data if it's a raw string or a ServeV3 string
-                string returnString = Extension.GetServeV3String(reader.ValueSpan);
+                string returnString = Extension.GetServeV3String(reader);
                 returnValue?.Add(returnString); // Add the string
                 reader.Read(); // Read the next token
             }
