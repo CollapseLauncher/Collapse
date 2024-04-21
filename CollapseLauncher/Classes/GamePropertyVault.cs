@@ -49,6 +49,13 @@ namespace CollapseLauncher.Statics
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
                     _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
                     break;
+                case GameNameType.Zenless:
+                    _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                    _GameSettings = new StarRailSettings(_GameVersion);
+                    _GameCache = null;
+                    _GameRepair = null;
+                    _GameInstall = new StarRailInstall(UIElementParent, _GameVersion);
+                    break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
             }

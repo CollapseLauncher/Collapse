@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
@@ -10,6 +11,7 @@ namespace CollapseLauncher
 {
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(RegionResourcePluginValidate))]
+    [JsonSerializable(typeof(HoYoPlayLauncherResources))]
     [JsonSerializable(typeof(CommunityToolsProperty))]
     [JsonSerializable(typeof(AppUpdateVersionProp))]
     [JsonSerializable(typeof(RegionResourceProp))]
