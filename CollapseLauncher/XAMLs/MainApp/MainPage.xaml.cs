@@ -36,7 +36,6 @@ using Windows.Graphics;
 using Windows.System;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -59,8 +58,6 @@ namespace CollapseLauncher
         private bool IsFirstStartup       = true;
         private int  CurrentGameCategory  = -1;
         private int  CurrentGameRegion    = -1;
-
-        private RegionResourceProp _gameAPIProp { get; set; }
 
         private  static bool         IsChangeDragArea        = true;
         internal static List<string> PreviousTagString       = new();
@@ -435,21 +432,21 @@ namespace CollapseLauncher
         private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
             e.IsImageLoaded                   = false;
-            regionBackgroundProp.imgLocalPath = e.ImgPath;
+            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
             IsCustomBG                        = e.IsCustom;
 
             if (e.IsCustom)
-                SetAndSaveConfigValue("CustomBGPath", regionBackgroundProp.imgLocalPath);
+                SetAndSaveConfigValue("CustomBGPath", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
 
-            if (!File.Exists(regionBackgroundProp.imgLocalPath))
+            if (!File.Exists(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal))
             {
                 LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
-                regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
             }
 
-            BackgroundMediaUtility.Current?.LoadBackground(regionBackgroundProp.imgLocalPath, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
+            BackgroundMediaUtility.Current?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
             {
-                regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             });
@@ -463,19 +460,25 @@ namespace CollapseLauncher
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                regionBackgroundProp.imgLocalPath = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
             }
             else
             {
-                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, LauncherMetadataHelper.CurrentMetadataConfig, ShowLoadingMsg))
+                try
                 {
-                    regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                    await DownloadBackgroundImage(default);
+                }
+                catch (Exception ex)
+                {
+                    ErrorSender.SendException(ex);
+                    LogWriteLine($"Failed while downloading default background image!\r\n{ex}", LogType.Error, true);
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 }
             }
 
             if (!IsCustomBG || IsFirstStartup)
             {
-                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, IsCustomBG);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
             }
 
@@ -1575,7 +1578,7 @@ namespace CollapseLauncher
 
         private void RefreshPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel))
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete))
                 return;
 
             switch (PreviousTag)
@@ -1639,7 +1642,7 @@ namespace CollapseLauncher
             DisableInstantRegionChange = true;
             RestoreCurrentRegion();
             
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel)
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete)
                                      || index >= ComboBoxGameCategory.Items.Count
                                      || ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]
                )
@@ -1665,7 +1668,7 @@ namespace CollapseLauncher
             RestoreCurrentRegion();
             
 
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete || IsExplicitCancel)
+            if (CannotUseKbShortcuts || !(IsLoadRegionComplete)
                                      || index >= ComboBoxGameRegion.Items.Count 
                                      || ComboBoxGameRegion.SelectedValue == ComboBoxGameRegion.Items[index])
             {
@@ -1690,7 +1693,7 @@ namespace CollapseLauncher
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
+            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
 
@@ -1702,7 +1705,7 @@ namespace CollapseLauncher
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
+            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
 
@@ -1799,7 +1802,7 @@ namespace CollapseLauncher
         }
         private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
+            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) return;
 
@@ -1810,7 +1813,7 @@ namespace CollapseLauncher
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
+            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts)
                 return;
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
                 return;
@@ -1822,7 +1825,7 @@ namespace CollapseLauncher
 
         private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts)
+            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last())
@@ -1917,7 +1920,7 @@ namespace CollapseLauncher
 
         private async void ChangeToActivatedRegion()
         {
-            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotUseKbShortcuts) return;
+            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
 
             bool sameRegion = SetActivatedRegion();
 

@@ -250,4 +250,40 @@
 	<Target Name="PostBuild" AfterTargets="Publish">
 	  <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
 	</Target>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\StreamUtility.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\ILauncherApi.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\Sophon\SophonLauncherApiLoader.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\Sophon\LauncherGameNews.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Extension\TaskExtensions.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\LauncherApiBase.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\HoYoPlay\HoYoPlayLauncherApiLoader.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\JsonConverter\SanitizeUrlStringConverter.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <NativeLibs Remove="Classes\Helper\JsonConverter\EmptyStringAsNullConverter.cs" />
+	</ItemGroup>
 </Project>

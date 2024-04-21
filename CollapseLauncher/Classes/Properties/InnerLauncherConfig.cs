@@ -111,7 +111,10 @@ namespace CollapseLauncher
 
             foreach (string? region in gameCategoryList)
             {
-                PresetConfig? config              = await LauncherMetadataHelper.GetMetadataConfig(gameCategory, region);
+                if (region == null)
+                    throw new NullReferenceException($"Region name is empty!");
+
+                PresetConfig? config              = LauncherMetadataHelper.LauncherMetadataConfig?[gameCategory]?[region];
                 StackPanel    panel               = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock     gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock? gameRegionTranslatedTextBlock =

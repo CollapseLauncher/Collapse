@@ -1,74 +1,72 @@
 #if !DISABLEDISCORD
-    using CollapseLauncher.DiscordPresence;
+using CollapseLauncher.DiscordPresence;
 #endif
-    using CollapseLauncher.CustomControls;
-    using CollapseLauncher.Dialogs;
-    using CollapseLauncher.Extension;
-    using CollapseLauncher.FileDialogCOM;
-    using CollapseLauncher.GameSettings.Genshin;
-    using CollapseLauncher.Helper;
-    using CollapseLauncher.Helper.Image;
-    using CollapseLauncher.Helper.Metadata;
-    using CollapseLauncher.Interfaces;
-    using CollapseLauncher.ShortcutUtils;
-    using CollapseLauncher.Statics;
-    using H.NotifyIcon;
-    using Hi3Helper;
-    using Hi3Helper.EncTool.WindowTool;
-    using Hi3Helper.Screen;
-    using Hi3Helper.Shared.ClassStruct;
-    using Microsoft.UI.Input;
-    using Microsoft.UI.Text;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Controls;
-    using Microsoft.UI.Xaml.Controls.Primitives;
-    using Microsoft.UI.Xaml.Input;
-    using Microsoft.UI.Xaml.Media.Animation;
-    using Microsoft.UI.Xaml.Media.Imaging;
-    using Microsoft.Win32;
-    using PhotoSauce.MagicScaler;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Numerics;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Windows.Foundation;
-    using Windows.UI.Text;
-    using static CollapseLauncher.Dialogs.SimpleDialogs;
-    using static CollapseLauncher.InnerLauncherConfig;
-    using static CollapseLauncher.RegionResourceListHelper;
-    using static Hi3Helper.Data.ConverterTool;
-    using static Hi3Helper.Locale;
-    using static Hi3Helper.Logger;
-    using static Hi3Helper.Shared.Region.LauncherConfig;
-    using Brush = Microsoft.UI.Xaml.Media.Brush;
-    using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
-    using Image = Microsoft.UI.Xaml.Controls.Image;
-    using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
-    using Size = System.Drawing.Size;
-    using Timer = System.Timers.Timer;
+using CollapseLauncher.CustomControls;
+using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces;
+using CollapseLauncher.ShortcutUtils;
+using CollapseLauncher.Statics;
+using H.NotifyIcon;
+using Hi3Helper;
+using Hi3Helper.EncTool.WindowTool;
+using Hi3Helper.Screen;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Input;
+using Microsoft.UI.Text;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Win32;
+using PhotoSauce.MagicScaler;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Text;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using Brush = Microsoft.UI.Xaml.Media.Brush;
+using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
+using Image = Microsoft.UI.Xaml.Controls.Image;
+using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+using Size = System.Drawing.Size;
+using Timer = System.Timers.Timer;
 
-    namespace CollapseLauncher.Pages
+namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage : Page
     {
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
-        private HomeMenuPanel MenuPanels { get => regionNewsProp; }
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
 
         private int barwidth;
         private int consoleWidth;
-        
-        public static  int RefreshRateDefault { get; } = 200;
-        public static  int RefreshRateSlow    { get; } = 1000;
+
+        public static int RefreshRateDefault { get; } = 200;
+        public static int RefreshRateSlow { get; } = 1000;
 
         private static int _refreshRate;
 
@@ -100,7 +98,7 @@
             RefreshRate = RefreshRateDefault;
             this.Loaded += StartLoadedRoutine;
 
-            m_homePage  =  this;
+            m_homePage = this;
             InitializeConsoleValues();
         }
 
@@ -162,8 +160,7 @@
                 GameStartupSetting.Translation += Shadow32;
                 CommunityToolsBtn.Translation += Shadow32;
 
-                if (MenuPanels.imageCarouselPanel != null
-                    || MenuPanels.articlePanel != null)
+                if (IsCarouselPanelAvailable || IsPostPanelAvailable)
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
@@ -238,11 +235,17 @@
         #region EventPanel
         private async void TryLoadEventPanelImage()
         {
+            // Get the url and article image path
+            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
+                .LauncherGameNews.Content.Background.FeaturedEventIconBtnUrl;
+            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
+                .LauncherGameNews.Content.Background.FeaturedEventIconBtnImg;
+
             // If the region event panel property is null, then return
-            if (regionNewsProp.eventPanel == null) return;
+            if (string.IsNullOrEmpty(featuredEventIconImg)) return;
 
             // Get the cached filename and path
-            string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon);
+            string cachedFileHash = BytesToCRC32Simple(featuredEventIconImg);
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
             if (ImageLoaderHelper.IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";
@@ -262,25 +265,25 @@
             if (!isCacheIconExist)
             {
                 using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
-                    using (Stream copyIconFileStream = new MemoryStream())
-                        await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
-                        {
-                            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                            // Copy remote stream to memory stream
-                            await iconFileStream.CopyToAsync(copyIconFileStream);
-                            copyIconFileStream.Position = 0;
-                            // Get the icon image information and set the resized frame size
-                            ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                            int width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                            int height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                using (Stream copyIconFileStream = new MemoryStream())
+                await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg, PageToken.Token))
+                {
+                    double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                    // Copy remote stream to memory stream
+                    await iconFileStream.CopyToAsync(copyIconFileStream);
+                    copyIconFileStream.Position = 0;
+                    // Get the icon image information and set the resized frame size
+                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                    int width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                    int height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                            copyIconFileStream.Position = 0; // Reset the original icon stream position
-                            await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
-                            cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                    copyIconFileStream.Position = 0; // Reset the original icon stream position
+                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream, (uint)width, (uint)height); // Start resizing
+                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                            // Set the source from cached icon stream
-                            source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-                        }
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                }
             }
             else
             {
@@ -294,7 +297,7 @@
             // Set event icon props
             ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
             ImageEventImg.Source = source;
-            ImageEventImg.Tag = regionNewsProp.eventPanel.url;
+            ImageEventImg.Tag = featuredEventArticleUrl;
 
             if (IsCustomBG)
             {
@@ -306,17 +309,17 @@
         #region Carousel
         private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
         {
-            if (MenuPanels.imageCarouselPanel == null) return;
+            if (!IsCarouselPanelAvailable) return;
             try
             {
                 while (true)
                 {
                     await Task.Delay(delay * 1000, token);
-                    if (MenuPanels.imageCarouselPanel == null) return;
-                    if (ImageCarousel.SelectedIndex != MenuPanels.imageCarouselPanel.Count - 1)
+                    if (!IsCarouselPanelAvailable) return;
+                    if (ImageCarousel.SelectedIndex != GameNewsData.NewsCarousel.Count - 1)
                         ImageCarousel.SelectedIndex++;
                     else
-                        for (int i = MenuPanels.imageCarouselPanel.Count; i > 0; i--)
+                        for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
                             ImageCarousel.SelectedIndex = i - 1;
                             await Task.Delay(100, token);
@@ -874,7 +877,7 @@
 #if !DISABLEDISCORD
                         AppDiscordPresence.SetActivity(ActivityType.Play);
 #endif
-                        
+
                         await Task.Delay(RefreshRate, Token);
                     }
 
@@ -893,7 +896,7 @@
 
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-                    
+
 #if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle);
 #endif
@@ -1244,12 +1247,12 @@
         private async void StartGame(object sender, RoutedEventArgs e)
         {
             // Initialize values
-            IGameSettingsUniversal _Settings   = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
-            PresetConfig         _gamePreset = CurrentGameProperty!._GameVersion!.GamePreset!;
+            IGameSettingsUniversal _Settings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
+            PresetConfig _gamePreset = CurrentGameProperty!._GameVersion!.GamePreset!;
 
-            var isGenshin  = CurrentGameProperty!._GameVersion.GameType == GameNameType.Genshin;
+            var isGenshin = CurrentGameProperty!._GameVersion.GameType == GameNameType.Genshin;
             var giForceHDR = false;
-            
+
             try
             {
                 if (!await CheckMediaPackInstalled()) return;
@@ -1264,29 +1267,29 @@
                     _Settings.SettingsCollapseMisc.UseAdvancedGameSettings &&
                     _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand) PreLaunchCommand(_Settings);
 
-                Process proc                    = new Process();
-                proc.StartInfo.FileName         = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
-                proc.StartInfo.UseShellExecute  = true;
-                proc.StartInfo.Arguments        = GetLaunchArguments(_Settings)!;
+                Process proc = new Process();
+                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Arguments = GetLaunchArguments(_Settings)!;
                 LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
                 if (File.Exists(Path.Combine(GameDirPath!, "@AltLaunchMode")))
                 {
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
                     proc.StartInfo.WorkingDirectory = (CurrentGameProperty!._GameVersion.GamePreset!.ZoneName == "Bilibili" ||
-                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) : 
+                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
                             Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
                 }
                 else
                 {
                     proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
                 }
-                proc.StartInfo.UseShellExecute  = false;
-                proc.StartInfo.Verb             = "runas";
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.Verb = "runas";
                 proc.Start();
 
-				// Stop update check
-				IsSkippingUpdateCheck = true;
-				
+                // Stop update check
+                IsSkippingUpdateCheck = true;
+
                 // Start the resizable window payload (also use the same token as PlaytimeToken)
                 StartResizableWindowPayload(
                     _gamePreset.GameExecutableName,
@@ -1325,7 +1328,7 @@
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
-				IsSkippingUpdateCheck = false;
+                IsSkippingUpdateCheck = false;
             }
         }
 
@@ -1333,7 +1336,7 @@
         private async void GameRunningWatcher(IGameSettingsUniversal _settings)
         {
             ArgumentNullException.ThrowIfNull(_settings);
-            
+
             await Task.Delay(5000);
             while (_cachedIsGameRunning)
             {
@@ -1377,9 +1380,9 @@
 
             // Run Post Launch Command
             if (_settings.SettingsCollapseMisc.UseAdvancedGameSettings && _settings.SettingsCollapseMisc.UseGamePostExitCommand) PostExitCommand(_settings);
-			
-			// Re-enable update check
-			IsSkippingUpdateCheck = false;
+
+            // Re-enable update check
+            IsSkippingUpdateCheck = false;
         }
 
         private void StopGame(PresetConfig gamePreset)
@@ -1634,24 +1637,24 @@
                     Directory.CreateDirectory(Path.GetDirectoryName(logPath));
 
                 using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-                    using (StreamReader reader = new StreamReader(fs))
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    while (true)
                     {
-                        while (true)
+                        while (!reader.EndOfStream)
                         {
-                            while (!reader.EndOfStream)
+                            string line;
+                            line = await reader.ReadLineAsync(WatchOutputLog.Token);
+                            if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
-                                string line;
-                                line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                                if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
-                                {
-                                    StartExclusiveWindowPayload();
-                                    RequireWindowExclusivePayload = false;
-                                }
-                                LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
+                                StartExclusiveWindowPayload();
+                                RequireWindowExclusivePayload = false;
                             }
-                            await Task.Delay(100, WatchOutputLog.Token);
+                            LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
                         }
+                        await Task.Delay(100, WatchOutputLog.Token);
                     }
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
@@ -1822,7 +1825,7 @@
         {
             if (readRegistry)
                 value = ReadPlaytimeFromRegistry(false, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
-            
+
             DateTime last = Hoyoception.AddSeconds(value).ToLocalTime();
 
             if (value == 0)
@@ -1956,7 +1959,7 @@
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
-                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled()) 
+                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
             }
             catch (TaskCanceledException)
@@ -2121,7 +2124,7 @@
                 toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
@@ -2145,12 +2148,12 @@
 
                 _procPreGLC = new Process();
 
-                _procPreGLC.StartInfo.FileName               = "cmd.exe";
-                _procPreGLC.StartInfo.Arguments              = "/S /C " + "\"" + preGameLaunchCommand + "\"";
-                _procPreGLC.StartInfo.CreateNoWindow         = true;
-                _procPreGLC.StartInfo.UseShellExecute        = false;
+                _procPreGLC.StartInfo.FileName = "cmd.exe";
+                _procPreGLC.StartInfo.Arguments = "/S /C " + "\"" + preGameLaunchCommand + "\"";
+                _procPreGLC.StartInfo.CreateNoWindow = true;
+                _procPreGLC.StartInfo.UseShellExecute = false;
                 _procPreGLC.StartInfo.RedirectStandardOutput = true;
-                _procPreGLC.StartInfo.RedirectStandardError  = true;
+                _procPreGLC.StartInfo.RedirectStandardError = true;
 
                 _procPreGLC.OutputDataReceived += (sender, e) =>
                                                   {
@@ -2169,7 +2172,7 @@
 
                 await _procPreGLC.WaitForExitAsync();
             }
-            catch ( Win32Exception ex )
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
@@ -2188,7 +2191,7 @@
                 {
                     // Kill main and child processes
                     Process taskKill = new Process();
-                    taskKill.StartInfo.FileName  = "taskkill";
+                    taskKill.StartInfo.FileName = "taskkill";
                     taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
                     taskKill.Start();
                     taskKill.WaitForExit();
@@ -2197,8 +2200,8 @@
                 }
             }
             // Ignore external errors
-            catch ( InvalidOperationException ) {}
-            catch (Win32Exception) {}
+            catch (InvalidOperationException) { }
+            catch (Win32Exception) { }
         }
 
         private async void PostExitCommand(IGameSettingsUniversal _settings)
@@ -2214,12 +2217,12 @@
 
                 Process procPostGLC = new Process();
 
-                procPostGLC.StartInfo.FileName               = "cmd.exe";
-                procPostGLC.StartInfo.Arguments              = "/S /C " + "\"" + postGameExitCommand + "\"";
-                procPostGLC.StartInfo.CreateNoWindow         = true;
-                procPostGLC.StartInfo.UseShellExecute        = false;
+                procPostGLC.StartInfo.FileName = "cmd.exe";
+                procPostGLC.StartInfo.Arguments = "/S /C " + "\"" + postGameExitCommand + "\"";
+                procPostGLC.StartInfo.CreateNoWindow = true;
+                procPostGLC.StartInfo.UseShellExecute = false;
                 procPostGLC.StartInfo.RedirectStandardOutput = true;
-                procPostGLC.StartInfo.RedirectStandardError  = true;
+                procPostGLC.StartInfo.RedirectStandardError = true;
 
                 procPostGLC.OutputDataReceived += (sender, e) =>
                                                   {
@@ -2237,7 +2240,7 @@
 
                 await procPostGLC.WaitForExitAsync();
             }
-            catch ( Win32Exception ex )
+            catch (Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));

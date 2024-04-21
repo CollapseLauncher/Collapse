@@ -347,7 +347,7 @@
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
+                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}">
                     <ItemsControl.Transitions>
                         <PopupThemeTransition />
                     </ItemsControl.Transitions>
@@ -365,7 +365,7 @@
                                     PointerExited="FadeOutSocMedButton"
                                     Shadow="{ThemeResource SharedShadow}"
                                     Style="{ThemeResource EllipsisButtonRevealStyle}"
-                                    Tag="{Binding URL}">
+                                    Tag="{Binding SocialMediaUrl}">
                                 <ToolTipService.ToolTip>
                                     <ToolTip Opened="ShowSocMedFlyout"
                                              Tag="{Binding ElementName=SocMedButton}"
@@ -381,28 +381,28 @@
                                                     PointerExited="HideSocMedFlyout"
                                                     Tag="{Binding ElementName=SocMedFlyout}">
                                             <StackPanel Margin="8,8,8,0"
-                                                        Visibility="{Binding IsQRExist, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                        Visibility="{Binding IsHasQr, Converter={ThemeResource BooleanToVisibilityConverter}}">
                                                 <Grid Margin="0,0,0,8"
                                                       Background="White"
                                                       CornerRadius="5">
                                                     <Image Width="160"
                                                            HorizontalAlignment="Center"
-                                                           Source="{Binding QR}" />
+                                                           Source="{Binding QrImg}" />
                                                 </Grid>
                                                 <TextBlock Margin="0,0,0,4"
                                                            HorizontalAlignment="Center"
                                                            FontWeight="Bold"
-                                                           Text="{Binding QR_Description}"
+                                                           Text="{Binding QrTitle}"
                                                            TextWrapping="Wrap"
-                                                           Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                           Visibility="{Binding IsHasQrDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
                                             </StackPanel>
-                                            <StackPanel Visibility="{Binding ShowLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
-                                                <ItemsControl ItemsSource="{Binding Links}">
+                                            <StackPanel Visibility="{Binding IsHasLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                <ItemsControl ItemsSource="{Binding QrLinks}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
                                                             <Button HorizontalAlignment="Center"
                                                                     Click="OpenSocMedLink"
-                                                                    Tag="{Binding url}">
+                                                                    Tag="{Binding Url}">
                                                                 <Button.Template>
                                                                     <ControlTemplate>
                                                                         <TextBlock Margin="2,2"
@@ -410,7 +410,7 @@
                                                                                    Loaded="SetHandCursor"
                                                                                    PointerEntered="HyperLink_OnPointerEntered"
                                                                                    PointerExited="HyperLink_OnPointerExited"
-                                                                                   Text="{Binding title}"
+                                                                                   Text="{Binding Title}"
                                                                                    TextDecorations="Underline"
                                                                                    TextWrapping="Wrap" />
                                                                     </ControlTemplate>
@@ -421,9 +421,9 @@
                                                 </ItemsControl>
                                             </StackPanel>
                                             <TextBlock HorizontalAlignment="Center"
-                                                       Text="{Binding Description}"
+                                                       Text="{Binding Title}"
                                                        TextWrapping="Wrap"
-                                                       Visibility="{Binding ShowDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                       Visibility="{Binding IsHasDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
                                         </StackPanel>
                                         <Flyout.FlyoutPresenterStyle>
                                             <Style TargetType="FlyoutPresenter">
@@ -462,10 +462,10 @@
                                 </Button.Resources>
                                 <Grid>
                                     <imageex:ImageEx x:Name="Icon"
-                                                     Source="{Binding Icon}" />
+                                                     Source="{Binding IconImg}" />
                                     <imageex:ImageEx x:Name="IconHover"
                                                      Opacity="0"
-                                                     Source="{Binding IconHover}" />
+                                                     Source="{Binding IconImgHover}" />
                                 </Grid>
                             </Button>
                         </DataTemplate>
@@ -509,7 +509,7 @@
                               MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}"
                               HorizontalAlignment="Center"
                               CornerRadius="8"
-                              ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
+                              ItemsSource="{x:Bind GameNewsData.NewsCarousel}"
                               Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource CollapseFlipViewStyle}"
                               Visibility="Collapsed">
@@ -520,9 +520,9 @@
                                                  Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
-                                                 Source="{Binding Icon}"
-                                                 Tag="{Binding URL}"
-                                                 ToolTipService.ToolTip="{Binding Description}" />
+                                                 Source="{Binding CarouselImg}"
+                                                 Tag="{Binding CarouselUrl}"
+                                                 ToolTipService.ToolTip="{Binding CarouselTitle}" />
                             </DataTemplate>
                         </FlipView.ItemTemplate>
                     </FlipView>
@@ -537,7 +537,7 @@
                           Visibility="Collapsed">
                         <PipsPager VerticalAlignment="Center"
                                    NextButtonVisibility="VisibleOnPointerOver"
-                                   NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
+                                   NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
                                    Orientation="Horizontal"
                                    PreviousButtonVisibility="VisibleOnPointerOver"
                                    SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
@@ -566,13 +566,13 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostEventPanelVisible}">
                                     <StackPanel Margin="0,0,16,10">
-                                        <ItemsControl ItemsSource="{x:Bind local:RegionResourceListHelper.regionNewsProp.articlePanel.Events}">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
-                                                            Tag="{Binding url}">
+                                                            Tag="{Binding PostUrl}">
                                                         <Button.Template>
                                                             <ControlTemplate>
                                                                 <Grid Margin="0,2"
@@ -580,18 +580,18 @@
                                                                       Background="Transparent"
                                                                       PointerEntered="HyperLink_OnPointerEntered"
                                                                       PointerExited="HyperLink_OnPointerExited"
-                                                                      ToolTipService.ToolTip="{Binding title}">
+                                                                      ToolTipService.ToolTip="{Binding Title}">
                                                                     <customcontrol:CompressedTextBlock Margin="0,0,56,0"
                                                                                                        HorizontalAlignment="Left"
                                                                                                        VerticalAlignment="Center"
                                                                                                        Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                                       Text="{Binding title}"
+                                                                                                       Text="{Binding Title}"
                                                                                                        TextTrimming="CharacterEllipsis" />
                                                                     <TextBlock HorizontalAlignment="Right"
                                                                                VerticalAlignment="Center"
                                                                                FontWeight="Bold"
                                                                                Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding show_time}" />
+                                                                               Text="{Binding PostDate}" />
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Button.Template>
@@ -635,13 +635,13 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,10">
-                                        <ItemsControl ItemsSource="{x:Bind local:RegionResourceListHelper.regionNewsProp.articlePanel.Notices}">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
-                                                            Tag="{Binding url}">
+                                                            Tag="{Binding PostUrl}">
                                                         <Button.Template>
                                                             <ControlTemplate>
                                                                 <Grid Margin="0,2"
@@ -649,18 +649,18 @@
                                                                       Background="Transparent"
                                                                       PointerEntered="HyperLink_OnPointerEntered"
                                                                       PointerExited="HyperLink_OnPointerExited"
-                                                                      ToolTipService.ToolTip="{Binding title}">
+                                                                      ToolTipService.ToolTip="{Binding Title}">
                                                                     <customcontrol:CompressedTextBlock Margin="0,0,56,0"
                                                                                                        HorizontalAlignment="Left"
                                                                                                        VerticalAlignment="Center"
                                                                                                        Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                                       Text="{Binding title}"
+                                                                                                       Text="{Binding Title}"
                                                                                                        TextTrimming="CharacterEllipsis" />
                                                                     <TextBlock HorizontalAlignment="Right"
                                                                                VerticalAlignment="Center"
                                                                                FontWeight="Bold"
                                                                                Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding show_time}" />
+                                                                               Text="{Binding PostDate}" />
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Button.Template>
@@ -704,13 +704,13 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,10">
-                                        <ItemsControl ItemsSource="{x:Bind local:RegionResourceListHelper.regionNewsProp.articlePanel.Info}">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
-                                                            Tag="{Binding url}">
+                                                            Tag="{Binding PostUrl}">
                                                         <Button.Template>
                                                             <ControlTemplate>
                                                                 <Grid Margin="0,2"
@@ -718,18 +718,18 @@
                                                                       Background="Transparent"
                                                                       PointerEntered="HyperLink_OnPointerEntered"
                                                                       PointerExited="HyperLink_OnPointerExited"
-                                                                      ToolTipService.ToolTip="{Binding title}">
+                                                                      ToolTipService.ToolTip="{Binding Title}">
                                                                     <customcontrol:CompressedTextBlock Margin="0,0,56,0"
                                                                                                        HorizontalAlignment="Left"
                                                                                                        VerticalAlignment="Center"
                                                                                                        Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                                       Text="{Binding title}"
+                                                                                                       Text="{Binding Title}"
                                                                                                        TextTrimming="CharacterEllipsis" />
                                                                     <TextBlock HorizontalAlignment="Right"
                                                                                VerticalAlignment="Center"
                                                                                FontWeight="Bold"
                                                                                Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding show_time}" />
+                                                                               Text="{Binding PostDate}" />
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Button.Template>

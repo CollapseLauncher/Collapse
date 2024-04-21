@@ -5,8 +5,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using CollapseLauncher.Helper.Metadata;
+// ReSharper disable ReplaceSliceWithRangeIndexer
 
-namespace CollapseLauncher.Helper.Metadata.JsonConverter
+namespace CollapseLauncher.Helper.JsonConverter
 {
     internal static class Extension
     {
@@ -15,47 +17,41 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
         {
             ReadOnlySpan<byte> data = jsonReader.ValueSpan;
 
-            bool isValidB64Data = false,
-                 isValidServeV3Data = false,
-                 isBufferUsePool = data.Length <= DataPoolLimit;
+            bool isValidB64Data  = false;
+            bool isBufferUsePool = data.Length <= DataPoolLimit;
 
             // Check if the string is a base64 string. 
             isValidB64Data = Base64.IsValid(data);
-            if (isValidB64Data)
+            if (!isValidB64Data) return jsonReader.ValueIsEscaped ? ReturnUnescapedData(data) : Encoding.UTF8.GetString(data);
+
+            // Get the output data span and decode the base64 data to raw data
+            byte[] dataBytes = isBufferUsePool ? ArrayPool<byte>.Shared.Rent(data.Length) : new byte[data.Length];
+
+            try
             {
-                // Get the output data span and decode the base64 data to raw data
-                byte[] dataBytes = isBufferUsePool ? ArrayPool<byte>.Shared.Rent(data.Length) : new byte[data.Length];
+                OperationStatus opStatus = Base64.DecodeFromUtf8(data, dataBytes, out _, out int dataB64DecodedWritten, true);
+                if (opStatus != OperationStatus.Done)
+                    throw new InvalidOperationException($"Data is not a valid Base64! (Status: {opStatus})");
 
-                try
-                {
-                    OperationStatus opStatus = Base64.DecodeFromUtf8(data, dataBytes, out _, out int dataB64DecodedWritten, true);
-                    if (opStatus != OperationStatus.Done)
-                        throw new InvalidOperationException($"Data is not a valid Base64! (Status: {opStatus})");
+                // Assign read-only span as per b64 written length
+                ReadOnlySpan<byte> dataBase64Decoded = dataBytes.AsSpan(0, dataB64DecodedWritten);
 
-                    // Assign read-only span as per b64 written length
-                    ReadOnlySpan<byte> dataBase64Decoded = dataBytes.AsSpan(0, dataB64DecodedWritten);
+                // Check if the data is ServeV3 data. If no, then return as a raw string
+                var isValidServeV3Data = DataCooker.IsServeV3Data(dataBase64Decoded);
+                if (!isValidServeV3Data) return jsonReader.ValueIsEscaped ?
+                    ReturnUnescapedData(dataBase64Decoded) :
+                    Encoding.UTF8.GetString(dataBase64Decoded);
 
-                    // Check if the data is ServeV3 data. If no, then return as a raw string
-                    isValidServeV3Data = DataCooker.IsServeV3Data(dataBase64Decoded);
-                    if (!isValidServeV3Data) return jsonReader.ValueIsEscaped ?
-                            ReturnUnescapedData(dataBase64Decoded) :
-                            Encoding.UTF8.GetString(dataBase64Decoded);
-
-                    // Try decode the ServeV3 data and return it
-                    return DecodeJSONServeV3Data(dataBase64Decoded, jsonReader.ValueIsEscaped);
-                }
-                finally
-                {
-                    if (isBufferUsePool) ArrayPool<byte>.Shared.Return(dataBytes, true);
-                }
+                // Try to decode the ServeV3 data and return it
+                return DecodeJsonServeV3Data(dataBase64Decoded, jsonReader.ValueIsEscaped);
             }
-
-            return jsonReader.ValueIsEscaped ?
-                            ReturnUnescapedData(data) :
-                            Encoding.UTF8.GetString(data);
+            finally
+            {
+                if (isBufferUsePool) ArrayPool<byte>.Shared.Return(dataBytes, true);
+            }
         }
 
-        private static string DecodeJSONServeV3Data(ReadOnlySpan<byte> dataBytes, bool isValueEscaped)
+        private static string DecodeJsonServeV3Data(ReadOnlySpan<byte> dataBytes, bool isValueEscaped)
         {
             // Get the size and initialize the output buffer
             DataCooker.GetServeV3DataSize(dataBytes, out long compressedSize, out long decompressedSize);
@@ -79,7 +75,7 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
             }
         }
 
-        private static string ReturnUnescapedData(ReadOnlySpan<byte> data)
+        internal static string ReturnUnescapedData(ReadOnlySpan<byte> data)
         {
             // Get the buffer array
             bool isUsePool = data.Length <= DataPoolLimit;
@@ -88,14 +84,17 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
             try
             {
                 int indexOfFirstEscape = data.IndexOf(JsonConstants.BackSlash);
+                if (indexOfFirstEscape == -1) return Encoding.UTF8.GetString(data);
 
-                if (TryUnescape(data, bufferOut, indexOfFirstEscape, out int written))
+                if (!TryUnescape(data, bufferOut, indexOfFirstEscape, out int written))
                 {
-                    string outString = Encoding.UTF8.GetString(bufferOut.AsSpan(0, written));
-                    return outString;
+                    throw new
+                        InvalidOperationException($"String data contains invalid character data and unescape is failed!");
                 }
 
-                throw new InvalidOperationException($"String data contains invalid character data and unescaping is failed!");
+                string outString = Encoding.UTF8.GetString(bufferOut.AsSpan(0, written));
+                return outString;
+
             }
             finally
             {
@@ -103,11 +102,30 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
             }
         }
 
+        internal static unsafe string StripTabsAndNewlinesUtf8(ReadOnlySpan<char> s)
+        {
+            if (s.Length == 0) return "";
+
+            int len = s.Length;
+            char* newChars = stackalloc char[len];
+            char* currentChar = newChars;
+
+            for (int i = 0; i < len; ++i)
+            {
+                char c = s[i];
+                if (c == JsonConstants.CarriageReturn
+                 || c == JsonConstants.LineFeed
+                 || c == JsonConstants.Tab) continue;
+                *currentChar++ = c;
+            }
+            return new string(newChars, 0, (int)(currentChar - newChars));
+        }
+
         #region .NET Runtime reference
         // Docs:
         // https://github.com/dotnet/runtime/blob/907eff84ef204a2d71c10e7cd726b76951b051bd/src/libraries/System.Text.Json/src/System/Text/Json/Reader/JsonReaderHelper.Unescaping.cs#L429
 
-        private static partial class JsonConstants
+        internal static partial class JsonConstants
         {
             public const byte OpenBrace = (byte)'{';
             public const byte CloseBrace = (byte)'}';
@@ -198,8 +216,8 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
             public const int DateTimeNumFractionDigits = 7;  // TimeSpan and DateTime formats allow exactly up to many digits for specifying the fraction after the seconds.
             public const int MaxDateTimeFraction = 9_999_999;  // The largest fraction expressible by TimeSpan and DateTime formats
             public const int DateTimeParseNumFractionDigits = 16; // The maximum number of fraction digits the Json DateTime parser allows
-            public const int MaximumDateTimeOffsetParseLength = (MaximumFormatDateTimeOffsetLength +
-                (DateTimeParseNumFractionDigits - DateTimeNumFractionDigits)); // Like StandardFormat 'O' for DateTimeOffset, but allowing 9 additional (up to 16) fraction digits.
+            public const int MaximumDateTimeOffsetParseLength = MaximumFormatDateTimeOffsetLength +
+                (DateTimeParseNumFractionDigits - DateTimeNumFractionDigits); // Like StandardFormat 'O' for DateTimeOffset, but allowing 9 additional (up to 16) fraction digits.
             public const int MinimumDateTimeParseLength = 10; // YYYY-MM-DD
             public const int MaximumEscapedDateTimeOffsetParseLength = MaxExpansionFactorWhileEscaping * MaximumDateTimeOffsetParseLength;
 
@@ -326,7 +344,7 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
 
                             // To find the unicode scalar:
                             // (0x400 * (High surrogate - 0xD800)) + Low surrogate - 0xDC00 + 0x10000
-                            scalar = (JsonConstants.BitShiftBy10 * (scalar - JsonConstants.HighSurrogateStartValue))
+                            scalar = JsonConstants.BitShiftBy10 * (scalar - JsonConstants.HighSurrogateStartValue)
                                 + (lowSurrogate - JsonConstants.LowSurrogateStartValue)
                                 + JsonConstants.UnicodePlane01StartValue;
                         }
@@ -406,7 +424,7 @@ namespace CollapseLauncher.Helper.Metadata.JsonConverter
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsInRangeInclusive(uint value, uint lowerBound, uint upperBound)
-            => (value - lowerBound) <= (upperBound - lowerBound);
+            => value - lowerBound <= upperBound - lowerBound;
         #endregion
     }
 }

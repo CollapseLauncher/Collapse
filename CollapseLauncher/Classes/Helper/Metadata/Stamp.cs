@@ -12,5 +12,6 @@ namespace CollapseLauncher.Helper.Metadata
         public string? GameName { get; set; } = null;
         public string? GameRegion { get; set; } = null;
         public DateTime LastModifiedTimeUtc { get; set; } = default;
+        public string? PresetConfigVersion { get; set; }
     }
 }
