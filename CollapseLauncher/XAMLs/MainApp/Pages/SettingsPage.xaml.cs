@@ -375,10 +375,10 @@ namespace CollapseLauncher.Pages
                     BackgroundMediaUtility.SetAlternativeFileStream(croppedImage);
                 }
 
-                regionBackgroundProp.imgLocalPath = file;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, true, true, true);
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, true);
                 
                 if (currentMediaType == MediaType.Media)
                 {
@@ -442,7 +442,7 @@ namespace CollapseLauncher.Pages
                 {
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
+                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
                     if (currentMediaType == MediaType.Media)
                     {
                         CustomBGImageSettings.Visibility = Visibility.Collapsed;
@@ -471,7 +471,7 @@ namespace CollapseLauncher.Pages
                 if (!value)
                 {
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
-                    regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
                     AppBGCustomizer.Visibility       = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
@@ -483,25 +483,25 @@ namespace CollapseLauncher.Pages
                     string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(BGPath))
                     {
-                        regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                     }
                     else
                     {
                         if (!File.Exists(BGPath))
                         {
-                            regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                         }
                         else
                         {
-                            regionBackgroundProp.imgLocalPath = BGPath;
+                            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = BGPath;
                         }
                     }
-                    BGPathDisplay.Text = regionBackgroundProp.imgLocalPath;
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, true, true, false);
+                    BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, false);
                     AppBGCustomizer.Visibility       = Visibility.Visible;
                     AppBGCustomizerNote.Visibility   = Visibility.Visible;
                         
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(regionBackgroundProp.imgLocalPath);
+                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
                     if (currentMediaType == MediaType.Media)
                     {
                         CustomBGImageSettings.Visibility = Visibility.Collapsed;
@@ -677,7 +677,7 @@ namespace CollapseLauncher.Pages
             {
                 ImageLoaderHelper.IsWaifu2XEnabled = value;
                 if (ImageLoaderHelper.Waifu2XStatus < Waifu2XStatus.Error)
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, IsCustomBG);
                 else
                     Bindings.Update();
             }

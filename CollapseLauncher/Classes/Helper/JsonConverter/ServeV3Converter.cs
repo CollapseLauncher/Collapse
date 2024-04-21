@@ -1,10 +1,10 @@
 ﻿#nullable enable
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-    namespace CollapseLauncher.Helper.Metadata.JsonConverter
+namespace CollapseLauncher.Helper.JsonConverter
 {
     internal class ServeV3StringConverter : JsonConverter<string>
     {
@@ -36,7 +36,7 @@
             // Initialize and check if the token is a start of an array
             List<string>? returnValue = null;
             if (reader.TokenType != JsonTokenType.StartArray) // Throw if it's not
-                throw new JsonException($"The start token of the JSON field is not a start of an array!");
+                throw new JsonException("The start token of the JSON field is not a start of an array!");
 
             // Read the next value or token
             reader.Read();
@@ -56,7 +56,7 @@
 
             // If the token is not an end of an array, then throw
             if (reader.TokenType != JsonTokenType.EndArray)
-                throw new JsonException($"The end token of the JSON field is not an end of an array!");
+                throw new JsonException("The end token of the JSON field is not an end of an array!");
 
             // Return the list
             return returnValue;
@@ -67,7 +67,7 @@
                 List<string>? baseType,
                 JsonSerializerOptions options)
         {
-            throw new JsonException($"Serializing is not supported!");
+            throw new JsonException("Serializing is not supported!");
         }
     }
 }

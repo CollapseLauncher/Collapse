@@ -92,8 +92,8 @@ namespace CollapseLauncher.Pages.OOBE
                 _gameDescription = config.ZoneDescription;
 
                 // TODO: Use FallbackCDNUtil to get the sprites
-                _gamePosterPath = await MainPage.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
-                _gameLogoPath = await MainPage.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), default);
+                _gamePosterPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
+                _gameLogoPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), default);
 
                 using (IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream())
                 {

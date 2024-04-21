@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata.JsonConverter;
+﻿using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
@@ -50,6 +51,13 @@ namespace CollapseLauncher.Helper.Metadata
         Cognosphere
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter<LauncherType>))]
+    public enum LauncherType
+    {
+        Sophon,
+        HoYoPlay
+    }
+
     internal class PresetConfig
     {
         #region Constants
@@ -64,10 +72,14 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Config Propeties
 
+        [JsonIgnore]
+        public  ILauncherApi?    GameLauncherApi { get; set; }
+
         [JsonPropertyName("GameChannel")] public GameChannel       Channel { get; init; }
         public                                   AudioLanguageType GameDefaultCVLanguage { get; init; }
         public                                   GameNameType      GameType { get; init; } = GameNameType.Unknown;
         public                                   GameVendorType    VendorType { get; init; }
+        public                                   LauncherType      LauncherType { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BetterHi3LauncherVerInfoReg { get; init; }
@@ -108,7 +120,6 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameGatewayURLTemplate { get; init; }
 
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameName { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
@@ -124,6 +135,11 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherResourceURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherNewsURL { get; init; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherCPSType { get; init; }
+
         public string? ProfileName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
@@ -132,22 +148,16 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SteamInstallRegistryLocation { get; init; }
 
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneDescription { get; init; }
-
-        [JsonConverter(typeof(ServeV3StringConverter))]
+        
         public string? ZoneFullname { get; init; }
 
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneLogoURL { get; init; }
 
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneName { get; init; }
 
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZonePosterURL { get; init; }
 
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringListConverter))]
