@@ -16,31 +16,31 @@ namespace CollapseLauncher.Helper.JsonConverter
         internal static string GetServeV3String(Utf8JsonReader jsonReader)
         {
             ReadOnlySpan<byte> data = jsonReader.ValueSpan;
-
-            bool isValidB64Data  = false;
             bool isBufferUsePool = data.Length <= DataPoolLimit;
 
-            // Check if the string is a base64 string. 
-            isValidB64Data = Base64.IsValid(data);
-            if (!isValidB64Data) return jsonReader.ValueIsEscaped ? ReturnUnescapedData(data) : Encoding.UTF8.GetString(data);
-
-            // Get the output data span and decode the base64 data to raw data
+            // Get the output data span and decode the Base64 data to raw data
             byte[] dataBytes = isBufferUsePool ? ArrayPool<byte>.Shared.Rent(data.Length) : new byte[data.Length];
 
             try
             {
+                // Get the status if the string is probably Base64 encoded or not
+                bool isValidB64Data = Base64.IsValid(data);
+                if (!isValidB64Data) return jsonReader.ValueIsEscaped ?
+                    ReturnUnescapedData(data) :
+                    Encoding.UTF8.GetString(data);
+
                 OperationStatus opStatus = Base64.DecodeFromUtf8(data, dataBytes, out _, out int dataB64DecodedWritten, true);
                 if (opStatus != OperationStatus.Done)
                     throw new InvalidOperationException($"Data is not a valid Base64! (Status: {opStatus})");
 
-                // Assign read-only span as per b64 written length
+                // Assign read-only span as per Base64 written length
                 ReadOnlySpan<byte> dataBase64Decoded = dataBytes.AsSpan(0, dataB64DecodedWritten);
 
-                // Check if the data is ServeV3 data. If no, then return as a raw string
-                var isValidServeV3Data = DataCooker.IsServeV3Data(dataBase64Decoded);
-                if (!isValidServeV3Data) return jsonReader.ValueIsEscaped ?
-                    ReturnUnescapedData(dataBase64Decoded) :
-                    Encoding.UTF8.GetString(dataBase64Decoded);
+                // Check if the data is Base64 encoded and indeed aServeV3 data and is base64 data. If no, then return as a raw string
+                bool isValidServeV3Data = DataCooker.IsServeV3Data(dataBase64Decoded);
+                if (!(isValidB64Data && isValidServeV3Data)) return jsonReader.ValueIsEscaped ?
+                    ReturnUnescapedData(data) :
+                    Encoding.UTF8.GetString(data);
 
                 // Try to decode the ServeV3 data and return it
                 return DecodeJsonServeV3Data(dataBase64Decoded, jsonReader.ValueIsEscaped);

@@ -120,6 +120,7 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameGatewayURLTemplate { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameName { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
@@ -140,6 +141,7 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherCPSType { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ProfileName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
@@ -148,16 +150,22 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SteamInstallRegistryLocation { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneDescription { get; init; }
-        
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneFullname { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneLogoURL { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneName { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZonePosterURL { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ZoneURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringListConverter))]
