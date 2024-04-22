@@ -232,9 +232,7 @@ namespace Hi3Helper.Shared.Region
             }
         }
         public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread").ToInt();
-        public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadata"); }
-        public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder!, "stampv3.json"); }
-        public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder!, "metadatav3_{0}.json"); }
+        public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadatav3"); }
 
         public static readonly bool IsAppLangNeedRestart    = false;
 
