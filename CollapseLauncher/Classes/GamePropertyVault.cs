@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
+using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -50,11 +51,11 @@ namespace CollapseLauncher.Statics
                     _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                    _GameVersion = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
                     _GameSettings = new StarRailSettings(_GameVersion);
                     _GameCache = null;
                     _GameRepair = null;
-                    _GameInstall = new StarRailInstall(UIElementParent, _GameVersion);
+                    _GameInstall = new ZenlessInstall(UIElementParent, _GameVersion);
                     break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");

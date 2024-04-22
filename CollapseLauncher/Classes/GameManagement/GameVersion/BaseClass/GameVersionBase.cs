@@ -156,15 +156,11 @@ namespace CollapseLauncher.GameVersioning
 
                 // If no installation installed, then return null
                 if (currentInstalled == null)
-                {
                     return null;
-                }
 
                 // Check if the pre_download_game property has value. If not, then return null
-                if (GameAPIProp.data.pre_download_game == null)
-                {
+                if (string.IsNullOrEmpty(GameAPIProp?.data?.pre_download_game?.latest?.version))
                     return null;
-                }
 
                 return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
             }
@@ -638,6 +634,16 @@ namespace CollapseLauncher.GameVersioning
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
+        }
+
+        protected virtual void TryReinitializeGameVersion()
+        {
+            // Check if the GameVersionInstalled == null (version config doesn't exist),
+            // Reinitialize the version config and save the version config by assigning GameVersionInstalled.
+            if (GameVersionInstalled == null)
+            {
+                GameVersionInstalled = GameVersionAPI;
             }
         }
 

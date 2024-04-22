@@ -40,16 +40,6 @@ namespace CollapseLauncher.GameVersioning
 
         public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp == null ? null : GameDeltaPatchProp;
 
-        private void TryReinitializeGameVersion()
-        {
-            // Check if the GameVersionInstalled == null (version config doesn't exist),
-            // Reinitialize the version config and save the version config by assigning GameVersionInstalled.
-            if (GameVersionInstalled == null)
-            {
-                GameVersionInstalled = GameVersionAPI;
-            }
-        }
-
 #nullable enable
         private void InitializeProtoId()
         {
