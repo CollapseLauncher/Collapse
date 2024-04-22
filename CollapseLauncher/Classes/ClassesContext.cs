@@ -13,6 +13,7 @@ namespace CollapseLauncher
     [JsonSerializable(typeof(RegionResourcePluginValidate))]
     [JsonSerializable(typeof(HoYoPlayLauncherResources))]
     [JsonSerializable(typeof(CommunityToolsProperty))]
+    [JsonSerializable(typeof(HoYoPlayLauncherNews))]
     [JsonSerializable(typeof(AppUpdateVersionProp))]
     [JsonSerializable(typeof(RegionResourceProp))]
     [JsonSerializable(typeof(NotificationPush))]

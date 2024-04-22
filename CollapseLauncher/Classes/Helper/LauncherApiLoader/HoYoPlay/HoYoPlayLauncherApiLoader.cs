@@ -54,7 +54,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 game = sophonResourceCurrentPackage
             };
 
-            RegionResourceProp resourcePropRoot = new RegionResourceProp
+            RegionResourceProp sophonResourcePropRoot = new RegionResourceProp
             {
                 data = sophonResourceData
             };
@@ -62,7 +62,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             ConvertPluginResources(sophonResourceData, hypPluginResource);
             ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
 
-            base.LauncherGameResource = resourcePropRoot;
+            base.LauncherGameResource = sophonResourcePropRoot;
         }
 
         #region Convert Plugin Resources
@@ -198,10 +198,51 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         }
         #endregion
 
+        #region Convert Launcher News
+        private void EnsureInitializeSophonLauncherNews(ref LauncherGameNews? sophonLauncherNewsData)
+        {
+            if (sophonLauncherNewsData == null)
+                sophonLauncherNewsData = new LauncherGameNews();
+
+            if (sophonLauncherNewsData.Content == null)
+                sophonLauncherNewsData.Content = new LauncherGameNewsData();
+
+            if (sophonLauncherNewsData.Content.Background == null)
+                sophonLauncherNewsData.Content.Background = new LauncherGameNewsBackground();
+        }
+
+        private void ConvertLauncherBackground(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        {
+            if (string.IsNullOrEmpty(hypLauncherInfoData?.BackgroundImageUrl)) return;
+
+            if (sophonLauncherNewsData?.Content?.Background == null) return;
+            sophonLauncherNewsData.Content.Background.BackgroundImg = hypLauncherInfoData?.BackgroundImageUrl;
+        }
+        #endregion
+
         protected override async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
-            // TODO: HoYoPlay API reading and conversion into Sophon format
-            await base.LoadLauncherNews(onTimeoutRoutine, token);
+            HoYoPlayLauncherNews? hypLauncherBackground = await TaskExtensions
+                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(PresetConfig?.LauncherSpriteURL, InternalAppJSONContext.Default, token),
+                                                           ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                                        .ConfigureAwait(false);
+
+            HoYoPlayLauncherNews? hypLauncherNews = await TaskExtensions
+                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(PresetConfig?.LauncherNewsURL, InternalAppJSONContext.Default, token),
+                                                           ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                                        .ConfigureAwait(false);
+
+            // Merge background image
+            if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)
+                hypLauncherNews.Data.GameInfoList = hypLauncherBackground?.Data?.GameInfoList;
+
+            LauncherGameNews? sophonLauncherNewsRoot = null;
+            EnsureInitializeSophonLauncherNews(ref sophonLauncherNewsRoot);
+            ConvertLauncherBackground(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+
+            base.LauncherGameNews = sophonLauncherNewsRoot;
         }
     }
 }

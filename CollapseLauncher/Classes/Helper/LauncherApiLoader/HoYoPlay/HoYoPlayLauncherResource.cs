@@ -7,7 +7,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
     public class HoYoPlayLauncherResources
     {
         [JsonPropertyName("data")]
-        public LauncherData? Data { get; set; }
+        public LauncherResourceData? Data { get; set; }
 
         [JsonPropertyName("message")]
         public string? ResultMessage { get; set; }
@@ -17,7 +17,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public int? ReturnCode { get; set; }
     }
 
-    public class LauncherData
+    public class LauncherResourceData
     {
         [JsonPropertyName("game_packages")]
         public List<LauncherPackages>? LauncherPackages { get; set; }

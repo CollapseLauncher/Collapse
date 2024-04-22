@@ -27,7 +27,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
         [JsonPropertyName("message")] public string? ReturnMessage { get; init; }
 
-        [JsonPropertyName("data")] public LauncherGameNewsData? Content { get; init; }
+        [JsonPropertyName("data")] public LauncherGameNewsData? Content { get; set; }
     }
 
     public class LauncherGameNewsData
@@ -39,7 +39,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         private readonly List<LauncherGameNewsCarousel>? _newsCarousel;
         private readonly List<LauncherGameNewsPost>?     _newsPost;
 
-        [JsonPropertyName("adv")] public LauncherGameNewsBackground? Background { get; init; }
+        [JsonPropertyName("adv")] public LauncherGameNewsBackground? Background { get; set; }
 
         [JsonPropertyName("banner")]
         public List<LauncherGameNewsCarousel>? NewsCarousel

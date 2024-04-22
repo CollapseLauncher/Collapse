@@ -108,6 +108,7 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
+		<PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
 		<PackageReference Include="Roman-Numerals" Version="2.0.0" />
 		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
