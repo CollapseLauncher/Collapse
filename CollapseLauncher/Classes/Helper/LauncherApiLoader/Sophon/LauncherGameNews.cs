@@ -36,8 +36,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         private List<LauncherGameNewsPost>? _newsPostTypeActivity;
         private List<LauncherGameNewsPost>? _newsPostTypeAnnouncement;
 
-        private readonly List<LauncherGameNewsCarousel>? _newsCarousel;
-        private readonly List<LauncherGameNewsPost>?     _newsPost;
+        private List<LauncherGameNewsCarousel>? _newsCarousel;
+        private List<LauncherGameNewsPost>?     _newsPost;
 
         [JsonPropertyName("adv")] public LauncherGameNewsBackground? Background { get; set; }
 
@@ -45,14 +45,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         public List<LauncherGameNewsCarousel>? NewsCarousel
         {
             get => _newsCarousel;
-            init => _newsCarousel = value?.OrderBy(x => x.CarouselOrder).ToList();
+            set => _newsCarousel = value?.OrderBy(x => x.CarouselOrder).ToList();
         }
 
         [JsonPropertyName("post")]
         public List<LauncherGameNewsPost>? NewsPost
         {
             get => _newsPost;
-            init => _newsPost = value?.OrderBy(x => x.PostOrder).ToList();
+            set => _newsPost = value?.OrderBy(x => x.PostOrder).ToList();
         }
 
         [JsonPropertyName("icon")] public List<LauncherGameNewsSocialMedia>? SocialMedia { get; init; }

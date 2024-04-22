@@ -198,28 +198,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         }
         #endregion
 
-        #region Convert Launcher News
-        private void EnsureInitializeSophonLauncherNews(ref LauncherGameNews? sophonLauncherNewsData)
-        {
-            if (sophonLauncherNewsData == null)
-                sophonLauncherNewsData = new LauncherGameNews();
-
-            if (sophonLauncherNewsData.Content == null)
-                sophonLauncherNewsData.Content = new LauncherGameNewsData();
-
-            if (sophonLauncherNewsData.Content.Background == null)
-                sophonLauncherNewsData.Content.Background = new LauncherGameNewsBackground();
-        }
-
-        private void ConvertLauncherBackground(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
-        {
-            if (string.IsNullOrEmpty(hypLauncherInfoData?.BackgroundImageUrl)) return;
-
-            if (sophonLauncherNewsData?.Content?.Background == null) return;
-            sophonLauncherNewsData.Content.Background.BackgroundImg = hypLauncherInfoData?.BackgroundImageUrl;
-        }
-        #endregion
-
         protected override async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             HoYoPlayLauncherNews? hypLauncherBackground = await TaskExtensions
@@ -241,8 +219,76 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             LauncherGameNews? sophonLauncherNewsRoot = null;
             EnsureInitializeSophonLauncherNews(ref sophonLauncherNewsRoot);
             ConvertLauncherBackground(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+            ConvertLauncherNews(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
 
             base.LauncherGameNews = sophonLauncherNewsRoot;
+            base.LauncherGameNews?.Content?.InjectDownloadableItemCancelToken(token);
         }
+
+        #region Convert Launcher News
+        private void EnsureInitializeSophonLauncherNews(ref LauncherGameNews? sophonLauncherNewsData)
+        {
+            if (sophonLauncherNewsData == null)
+                sophonLauncherNewsData = new LauncherGameNews();
+
+            if (sophonLauncherNewsData.Content == null)
+                sophonLauncherNewsData.Content = new LauncherGameNewsData();
+
+            if (sophonLauncherNewsData.Content.Background == null)
+                sophonLauncherNewsData.Content.Background = new LauncherGameNewsBackground();
+
+            if (sophonLauncherNewsData.Content.NewsPost == null)
+                sophonLauncherNewsData.Content.NewsPost = new List<LauncherGameNewsPost>();
+
+            if (sophonLauncherNewsData.Content.NewsCarousel == null)
+                sophonLauncherNewsData.Content.NewsCarousel = new List<LauncherGameNewsCarousel>();
+        }
+
+        private void ConvertLauncherBackground(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        {
+            if (string.IsNullOrEmpty(hypLauncherInfoData?.BackgroundImageUrl)) return;
+
+            if (sophonLauncherNewsData?.Content?.Background == null) return;
+            sophonLauncherNewsData.Content.Background.BackgroundImg = hypLauncherInfoData?.BackgroundImageUrl;
+        }
+
+        private void ConvertLauncherNews(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        {
+            int index = 0;
+            if (hypLauncherInfoData?.GameNewsContent?.NewsPostsList != null)
+            {
+                // Post
+                foreach (LauncherContentData hypPostData in hypLauncherInfoData.GameNewsContent.NewsPostsList)
+                {
+                    sophonLauncherNewsData?.Content?.NewsPost?.Add(new LauncherGameNewsPost()
+                    {
+                        PostDate = hypPostData.Date,
+                        PostUrl = hypPostData.ClickLink,
+                        PostId = string.Empty,
+                        PostOrder = index++,
+                        PostType = hypPostData.ContentType,
+                        Title = hypPostData.Title
+                    });
+                }
+            }
+
+            index = 0;
+            if (hypLauncherInfoData?.GameNewsContent?.NewsCarouselList != null)
+            {
+                // Carousel
+                foreach (LauncherNewsBanner hypCarouselData in hypLauncherInfoData.GameNewsContent.NewsCarouselList)
+                {
+                    sophonLauncherNewsData?.Content?.NewsCarousel?.Add(new LauncherGameNewsCarousel
+                    {
+                        CarouselId = hypCarouselData.Id,
+                        CarouselOrder = index++,
+                        CarouselImg = hypCarouselData.Image?.ImageUrl,
+                        CarouselUrl = hypCarouselData.Image?.ClickLink,
+                        CarouselTitle = hypCarouselData.Image?.Title
+                    });
+                }
+            }
+        }
+        #endregion
     }
 }
