@@ -328,8 +328,8 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         // iunno
         public bool   disableFallbackControllerType { get; set; } = false;
-        public double lastShowDoorProgress     = -1.0;
-        public int    globalPerfSettingVersion = 2;
+        public double lastShowDoorProgress          { get; set; } = -1.0;
+        public int    globalPerfSettingVersion      { get; set; } = 2;
         #endregion
 
         #region Methods
