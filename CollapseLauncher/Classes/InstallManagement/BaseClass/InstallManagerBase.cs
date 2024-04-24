@@ -1599,6 +1599,7 @@ namespace CollapseLauncher.InstallManager.Base
                 _gameVersionManager.GetGamePreloadZip() :
                 _gameVersionManager.GetGameLatestZip(gameState))
             {
+                if (asset == null) continue;
                 await TryAddResourceVersionList(asset, packageList);
             }
         }
