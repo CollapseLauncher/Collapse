@@ -33,7 +33,7 @@ namespace CollapseLauncher.InstallManager
 
         public GameInstallPackage(RegionResourceVersion packageProperty, string pathOutput, string overrideVersion = null)
         {
-            if (packageProperty == null || pathOutput == null) throw new ArgumentNullException();
+            if (packageProperty == null || pathOutput == null) throw new NullReferenceException();
             
             if (packageProperty.path != null)
             {

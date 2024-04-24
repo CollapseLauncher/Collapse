@@ -365,7 +365,10 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual bool IsGameHasPreload()
         {
-            return GameAPIProp.data.pre_download_game != null;
+            if (GamePreset.LauncherType == LauncherType.Sophon)
+                return GameAPIProp.data.pre_download_game != null;
+
+            return GameAPIProp.data.pre_download_game.latest != null || GameAPIProp.data.pre_download_game.diffs != null;
         }
 
         public virtual bool IsGameHasDeltaPatch()
