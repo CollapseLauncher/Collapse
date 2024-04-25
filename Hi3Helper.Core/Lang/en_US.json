@@ -220,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Status",
     "Status1": "Click \"Quick Check\" or \"Full Check\" to check Caches for updates",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "Total Progress",
     "CachesStatusCancelled": "Operation has been canceled!",
     "CachesStatusFetchingType": "Fetching Caches Type: {0}",
