@@ -102,6 +102,10 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(assetDir!);
                 }
 
+#if DEBUG
+                LogWriteLine($"Downloading cache [T: {asset.DataType}]: {asset.N} at URL: {asset.ConcatURL}", LogType.Debug, true);
+#endif
+
                 // Do multi-session download for asset that has applicable size
                 if (asset.CS >= _sizeForMultiDownload)
                 {
@@ -114,7 +118,9 @@ namespace CollapseLauncher
                     await httpClient!.Download(asset.ConcatURL, asset.ConcatPath, true, null, null, token);
                 }
 
+#if !DEBUG
                 LogWriteLine($"Downloaded cache [T: {asset.DataType}]: {asset.N}", LogType.Default, true);
+#endif
             }
 
             // Remove Asset Entry display

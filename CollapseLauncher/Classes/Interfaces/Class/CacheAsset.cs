@@ -30,6 +30,8 @@ namespace CollapseLauncher.Interfaces
         // File size of the cache file.
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long CS { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public long DLM { get; set; }
         public CacheAssetType DataType { get; set; }
         public CacheAssetStatus Status { get; set; }
         public CachePatchInfo? PatchInfo { get; set; }
