@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "Налаштування програми",
     "NotifNeverAsk": "Ніколи не показувати знову",
     "NotifNoNewNotifs": "Немає нових повідомлень",
+    "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "Меню",
     "NavigationUtilities": "Утиліти"
   },
@@ -148,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "Хвилин",
     "GamePlaytime_Idle_ResetBtn": "Скинути",
     "GamePlaytime_Idle_ChangeBtn": "Змінити",
-    "GamePlaytime_Idle_InvalidTimeBlock": "Надано некоректні значення.",
     "GamePlaytime_Running_Info1": "Ця гра вже запущена, тому час гри змінити не можна.",
     "GamePlaytime_Running_Info2": "Будь ласка, пам'ятайте, що повне закриття Collapse зупинить відслідження часу гри (збережеться те, що було дограно до того часу), і відсліджуватися будуть лише сесії запущені за допомогою Collapse.",
     "GamePlaytime_Display": "{0}г {1}хв",
+    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
 
     "PostPanel_Events": "Події",
     "PostPanel_Notices": "Примітки",
@@ -187,6 +188,8 @@
     "Status11": "Чекаємо на початок процесу відновлення...",
     "Status12": "Оновлення аудіо: {0}",
     "Status13": "Оновлення блоку: {0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "Нічого",
     "PerProgressTitle1": "Прогрес по файлу",
     "PerProgressSubtitle1": "Чекаємо...",
@@ -217,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Статус",
     "Status1": "Натисніть \"Швидка перевірка\" або \"Повна перевірка\" щоб перевірити кеш на оновлення",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "Повний прогрес",
     "CachesStatusCancelled": "Операцію скасовано!",
     "CachesStatusFetchingType": "Отримуємо тип кешу: {0}",
@@ -284,12 +288,23 @@
     "Graphics_APHO2AO": "Оклюзія",
     "Graphics_APHO2LOD": "Рівень деталі",
 
+    "Graphics_ParticleQuality": "Particle Quality",
+    "Graphics_LightingQuality": "Lighting Quality",
+    "Graphics_PostFXQuality": "Post-FX Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_WeatherQuality": "Weather Quality",
+
+    "Graphics_Legacy_Title": "Legacy Settings",
+    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+
     "SpecDisabled": "Вимкнено",
     "SpecLow": "Низька",
     "SpecMedium": "Середня",
     "SpecHigh": "Висока",
     "SpecVeryHigh": "Дуже висока",
     "SpecMaximum": "Максимальна",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "Налаштування аудіо",
     "Audio_Master": "Загальна гучність",
@@ -355,6 +370,7 @@
     "Debug_MultipleInstance": "Дозволити декілька запущених вікон Collapse",
 
     "ChangeRegionWarning_Toggle": "Показувати попередження про зміну регіону",
+    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
     "ChangeRegionWarning_Warning": "*Вам потрібно перезапустити програму, щоб зміни вступили в силу.",
 
     "Language": "Мова програми",
@@ -375,7 +391,7 @@
 
     "AppBG": "Фон програми",
     "AppBG_Checkbox": "Використовувати кастомний фон",
-    "AppBG_Note": "Примітка: Фото має бути у форматі .png, .jpg, .tiff або .bmp та розширення має бути менше ніж 4096x4096",
+    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
 
     "AppThreads": "Потоки програми",
     "AppThreads_Download": "Потоки завантаження",
@@ -387,10 +403,22 @@
     "AppThreads_Help5": "Цей потік буде обробляти процес видобутку/верифікації під час встановлення/відновлення гри.",
     "AppThreads_Help6": "Примітка: Це налаштування більше не ефективне при встановленні Honkai Impact 3rd.",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "Discord Rich Presense",
     "DiscordRPC_Toggle": "Показувати Discord Rich Presence",
     "DiscordRPC_GameStatusToggle": "Показувати поточну гру в статусі Discord",
     "DiscordRPC_IdleStatusToggle": "Показувати RPC в режимі очікування",
+
+    "VideoBackground": "Video Background Settings",
+    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "Перевірити оновлення",
     "Update_CurVer": "Поточна версія:",
@@ -420,6 +448,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "під",
     "About_Copyright4": ". Всі права захищено.",
+    
+    "LicenseType": "MIT License",
 
     "Disclaimer": "Дисклеймер",
     "Disclaimer1": "Ця програма не пов'язана з",
@@ -450,10 +480,20 @@
     "AppBehavior_PostGameLaunch_Nothing": "Робити нічого",
     "AppBehavior_MinimizeToTray": "Звернути в трей",
     "AppBehavior_LaunchOnStartup": "Автоматично відкривати Collapse при запуску комп'ютера",
-    "AppBehavior_StartupToTray": "Сховати вікно Collapse при автозапуску"
+    "AppBehavior_StartupToTray": "Сховати вікно Collapse при автозапуску",
+
+    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
+    "Waifu2X_Help2": "Only available for still images!",
+    "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
+    "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
+    "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Оновлення завершене!",
     "UpdateCompleteSubtitle": "Ваш лаунчер оновився на версію {0}! (Канал релізів: {1})",
     "FeatureUnavailableTitle": "Ця функція на даний момент недоступна",
@@ -506,9 +546,9 @@
     "IAcceptAgreement": "Я приймаю угоду",
     "IDoNotAcceptAgreement": "Я не приймаю угоду",
 
-    "LangNameENUS": "Англійська (США)",
+    "LangNameENUS": "English",
     "LangNameJP": "Японська",
-    "LangNameCN": "Китайська (спрощена)",
+    "LangNameCN": "Chinese",
     "LangNameKR": "Корейська",
 
     "Downloading": "Завантаження",
@@ -724,6 +764,7 @@
     "ShortcutCreationSuccessSubtitle2": "Локація:",
     "ShortcutCreationSuccessSubtitle3": "Примітки:",
     "ShortcutCreationSuccessSubtitle4": " • Використання цього ярлика запустить гру після завантаження регіону.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Ви впевнені, що хочете продовжити?",
     "SteamShortcutCreationConfirmSubtitle1": "Ярлик буде додано для кожного користувача Steam на цьому компʼютері.",
@@ -736,9 +777,13 @@
     "SteamShortcutCreationSuccessSubtitle4": "• Повторний запуск процесу виправить будь-які пошкоджені/відсутні зображення, які належать до ярлика.",
     "SteamShortcutCreationSuccessSubtitle5": " • Нові ярлики будуть показані лише після перезапуску Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Щоб користуватися оверлеєм Steam, Steam має бути запущеним з правами адміністратора, та Collapse має бути повністю закритим, або мати ввімкненою функцію декількох запущених вікон в налаштуваннях.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Некоректна папка з даними Steam",
-    "SteamShortcutCreationFailureSubtitle": "Неможливо знайти коректну папку даних користувача.\n\nУвійдіть в Steam хоча б раз перед використанням цієї функції."
+    "SteamShortcutCreationFailureSubtitle": "Неможливо знайти коректну папку даних користувача.\n\nУвійдіть в Steam хоча б раз перед використанням цієї функції.",
+
+    "DownloadSettingsTitle": "Download Settings",
+    "DownloadSettingsOption1": "Start game after install"
   },
 
   "_FileMigrationProcess": {
@@ -788,6 +833,8 @@
     "ConvertSuccessSubtitle": "Конвертація гри з {0} на {1} успішно завершилась!",
     "CookbookDownloadTitle": "Завантажуємо рецепт",
     "CookbookDownloadSubtitle": "Завантажуємо рецепт для конвертації з {0} до {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "Скасувати конвертацію",
     "CancelMsgTitle": "Скасовуємо конвертацію...",
@@ -857,6 +904,8 @@
     "UpdateHeader3": "Розмір завантаження:",
     "UpdateHeader4": "Швидкість:",
     "UpdateHeader5PlaceHolder": "Завантажуємо оновлення [- / -]:",
+
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
 
     "UpdateStatus1": "Отримуємо оновлення:",
     "UpdateMessage1": "Підключаємося до репозиторію оновлення:",
@@ -1151,7 +1200,11 @@
     "ChangeShortcut_Help1": "Сполучення складається з 2 частин:",
     "ChangeShortcut_Help2": "・ Модифікатор - Shift, Control або Alt/Menu",
     "ChangeShortcut_Help3": "・ Клавіша - По алфавіту (A до Z) або Tab",
-    "ChangeShortcut_Help4": "Ви можете обрати будь-яку комбінацію, що складається з одного значення з кожної категорії, на вийняток якщо вона зарезервована системою або вже використовується."
+    "ChangeShortcut_Help4": "Ви можете обрати будь-яку комбінацію, що складається з одного значення з кожної категорії, на вийняток якщо вона зарезервована системою або вже використовується.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1196,6 +1249,9 @@
     "CustomizationSettingsStyleThemeDescription": "Змініть колір вашого лаунчера.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "Кастомний фон",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Використайте кастомне зображення замість того, що за замовчуванням.",
+
+    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
+    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
 
     "LoadingInitializationTitle": "Ініціалізуємо перший запуск лаунчера",
     "LoadingCDNCheckboxCheckLatency": "(Первіряємо затримку...)",
