@@ -220,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "ステータス",
     "Status1": "キャッシュの更新を確認するには、 \"クイックチェック\"または\"フルチェック\"をクリックしてください。",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "総進行状況",
     "CachesStatusCancelled": "操作がキャンセルされました！",
     "CachesStatusFetchingType": "キャッシュタイプを読み込み中: {0}",
