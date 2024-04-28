@@ -243,47 +243,11 @@
 		</ItemGroup>
 	</Target>
 	
-	<Target Name="PostBuild" AfterTargets="Build">
+	<Target Name="PostBuild" AfterTargets="Build" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
 		<Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" />
 	</Target>
 	
-	<Target Name="PostBuild" AfterTargets="Publish">
+	<Target Name="PostBuild" AfterTargets="Publish" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
 	  <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
 	</Target>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\StreamUtility.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\ILauncherApi.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\Sophon\SophonLauncherApiLoader.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\Sophon\LauncherGameNews.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Extension\TaskExtensions.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\LauncherApiBase.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\LauncherApiLoader\HoYoPlay\HoYoPlayLauncherApiLoader.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\JsonConverter\SanitizeUrlStringConverter.cs" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\Helper\JsonConverter\EmptyStringAsNullConverter.cs" />
-	</ItemGroup>
 </Project>
