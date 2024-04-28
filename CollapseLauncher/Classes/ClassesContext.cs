@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
@@ -13,6 +14,7 @@ namespace CollapseLauncher
     [JsonSerializable(typeof(AppUpdateVersionProp))]
     [JsonSerializable(typeof(RegionResourceProp))]
     [JsonSerializable(typeof(NotificationPush))]
+    [JsonSerializable(typeof(LauncherGameNews))]
     [JsonSerializable(typeof(GeneralDataProp))]
     [JsonSerializable(typeof(MasterKeyConfig))]
     [JsonSerializable(typeof(AudioPCKType[]))]

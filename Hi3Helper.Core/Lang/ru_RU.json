@@ -38,7 +38,7 @@
     "Pg2ComboBoxRegion": "Выбрать регион",
     "Pg2NextBtn": "Завершение - Войдите в лаунчер",
     "Pg2PrevBtn": "Назад - Выбрать папку",
-    "Pg2PrevBtnNew": "Back - Launcher Configuration",
+    "Pg2PrevBtnNew": "Назад - Настройки Лаунчера",
     "Pg2Subtitle1_1": "Еще один маленький шаг, чтобы начать играть",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -54,7 +54,7 @@
     "Subtitle4_1": "Чтобы начать, нажмите на",
     "Subtitle4_2": "\"Выбрать папку\"",
     "Subtitle4_3": "ниже, чтобы выбрать, где бы Вы хотели установить Вашу игру.",
-    "Title1": "Welcome to",
+    "Title1": "Добро пожаловать",
     "Title2": "Collapse Launcher"
   },
 
@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "Настройки приложения",
     "NotifNeverAsk": "Больше не показывать",
     "NotifNoNewNotifs": "No new notifications",
+    "NotifClearAll": "Скрыть все уведомления",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Utilities"
   },
@@ -148,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "Минут",
     "GamePlaytime_Idle_ResetBtn": "Сбросить",
     "GamePlaytime_Idle_ChangeBtn": "Изменить",
-    "GamePlaytime_Idle_InvalidTimeBlock": "Введены недопустимые значения.",
     "GamePlaytime_Running_Info1": "Эта игра сейчас запущена, поэтому нельзя изменить время игры.",
     "GamePlaytime_Running_Info2": "Учтите что полное закрытие Collapse перестанет отслеживать время в игре (сохранится то, что было до запуска), будут отслеживаться только те сеансы, которые запущены с помощью Collapse.",
     "GamePlaytime_Display": "{0}ч {1}м",
+    "GamePlaytime_ToolTipDisplay": "Последнее открытие {0:00}/{1:00}/{2:0000} в {3:00}:{4:00}",
 
     "PostPanel_Events": "События",
     "PostPanel_Notices": "Примечания",
@@ -187,6 +188,8 @@
     "Status11": "Ожидание запуска процесса восстановления...",
     "Status12": "Обновление аудио: {0}",
     "Status13": "Обновление блока: {0}",
+    "Status14": "Попытка определить доступность графики: {0}",
+    "Status15": "Попытка определить доступность аудиопакетов: {0}",
     "StatusNone": "Нет",
     "PerProgressTitle1": "Пофайловый прогресс",
     "PerProgressSubtitle1": "Ожидание...",
@@ -217,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Статус",
     "Status1": "Нажмите \"Быстрая проверка\" или \"Полная проверка\" для проверки обновлений кэша",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "Общий прогресс",
     "CachesStatusCancelled": "Операция была отменена!",
     "CachesStatusFetchingType": "Получение типа кэша: {0}",
@@ -284,12 +288,23 @@
     "Graphics_APHO2AO": "Окружающая окклюзия",
     "Graphics_APHO2LOD": "Уровень детализации",
 
+    "Graphics_ParticleQuality": "Качество частиц",
+    "Graphics_LightingQuality": "Качество освещения",
+    "Graphics_PostFXQuality": "Качество постобработки",
+    "Graphics_AAMode": "Качество сглаживания",
+    "Graphics_CharacterQuality": "Качество персонажей",
+    "Graphics_WeatherQuality": "Качество погоды",
+
+    "Graphics_Legacy_Title": "Устаревшие параметры",
+    "Graphics_Legacy_Subtitle": "Эти настройки не представлены в игре и могут не иметь никакого эффекта.",
+
     "SpecDisabled": "Отключено",
     "SpecLow": "Низкий",
     "SpecMedium": "Средний",
     "SpecHigh": "Высокий",
     "SpecVeryHigh": "Очень высокий",
     "SpecMaximum": "Максимальный",
+    "SpecUltra": "Ультра",
 
     "Audio_Title": "Настройки аудио",
     "Audio_Master": "Общая громкость",
@@ -341,7 +356,7 @@
     "Advanced_GLC_WarningAdmin": "ВНИМАНИЕ: Команды будут выполнены от имени администратора!",
     "Advanced_GLC_PreLaunch_Title": "Команды перед запуском",
     "Advanced_GLC_PreLaunch_Subtitle": "Команды, которые нужно выполнить перед запуском игры",
-    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PreLaunch_Exit": "Принудительный выход из запущенного процесса при закрытии/остановке игры",
     "Advanced_GLC_PostExit_Title": "Команды после выхода",
     "Advanced_GLC_PostExit_Subtitle": "Команды, которые будут выполняться после закрытия игры"
   },
@@ -355,6 +370,7 @@
     "Debug_MultipleInstance": "Разрешить запуск нескольких лаунчеров Collapse",
 
     "ChangeRegionWarning_Toggle": "Показывать предупреждение об изменении региона",
+    "ChangeRegionInstant_Toggle": "Мгновенное изменение региона при выборе",
     "ChangeRegionWarning_Warning": "*Чтобы изменение настройки вступило в силу, необходимо перезапустить приложение.",
 
     "Language": "Язык приложения",
@@ -375,7 +391,7 @@
 
     "AppBG": "Фоновое изображение приложения",
     "AppBG_Checkbox": "Использовать пользовательский фон",
-    "AppBG_Note": "Примечание: Изображение должно быть в формате .png, .jpg, .tiff или .bmp и разрешение меньше 4096x4096",
+    "AppBG_Note": "Допустимые форматы:\r\nИзображение: {0}\r\nВидео: {1}",
 
     "AppThreads": "Потоки приложения",
     "AppThreads_Download": "Потоки загрузок",
@@ -387,10 +403,22 @@
     "AppThreads_Help5": "Этот поток будет обрабатывать процесс извлечения/верификации во время установки/ремонта игры.",
     "AppThreads_Help6": "Примечание: Эта настройка во время установки Honkai Impact 3rd больше неэффективна.",
 
+    "AppThreads_Attention": "Внимание",
+    "AppThreads_Attention1": "Перед тем как изменить",
+    "AppThreads_Attention2": "значение, пожалуйста, подумайте о том, чтобы ",
+    "AppThreads_Attention3": "НЕ РЕДАКТИРОВАТЬ",
+    "AppThreads_Attention4": "значение, если у вас есть существующая загрузка, поскольку это могло бы",
+    "AppThreads_Attention5": "ПОВТОРНОЙ ЗАГРУЗКЕ ВСЕГО ФАЙЛА",
+    "AppThreads_Attention6": "из-за несоответствия количества сеансов, необходимых для загрузки.",
+
     "DiscordRPC": "Расширенная активность в Discord",
     "DiscordRPC_Toggle": "Показывать статус в Discord",
     "DiscordRPC_GameStatusToggle": "Показывать текущую игру в статусе в Discord",
     "DiscordRPC_IdleStatusToggle": "Показывать RPC во время простоя",
+
+    "VideoBackground": "Настройки видеофона",
+    "VideoBackground_IsEnableAudio": "Включить аудио",
+    "VideoBackground_AudioVolume": "Громкость аудио",
 
     "Update": "Проверить наличие обновлений",
     "Update_CurVer": "Текущая версия:",
@@ -417,9 +445,11 @@
 
     "About": "О программе",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\nshatyuka & gablm",
     "About_Copyright3": "защищённый",
     "About_Copyright4": "Все права защищены.",
+    
+    "LicenseType": "лицензией MIT",
 
     "Disclaimer": "Дисклеймер",
     "Disclaimer1": "Это приложение не ассоциировано с",
@@ -450,10 +480,20 @@
     "AppBehavior_PostGameLaunch_Nothing": "Ничего не делать",
     "AppBehavior_MinimizeToTray": "Свернуть в меню скрытых значков",
     "AppBehavior_LaunchOnStartup": "Запустить Collapse при включении компьютера",
-    "AppBehavior_StartupToTray": "Скрыть Collapse после включения компьютера"
+    "AppBehavior_StartupToTray": "Скрыть Collapse после включения компьютера",
+
+    "Waifu2X_Toggle": "Использовать Waifu2X [Экспериментально]",
+    "Waifu2X_Help": "Использование Waifu2X для увеличения фоновых изображений.\nКогда активно, качество изображения значительно улучшается, но это потребует больше времени для первой загрузки изображения.",
+    "Waifu2X_Help2": "Доступно только для неподвижных изображений!",
+    "Waifu2X_Warning_CpuMode": "ВНИМАНИЕ: Доступное графическое устройство Vulkan не найдено, и будет использоваться режим CPU. Это значительно увеличит время обработки изображения.",
+    "Waifu2X_Warning_D3DMappingLayers": "ПРЕДУПРЕЖДЕНИЕ: В вашей системе установлен \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\". Сообщается, что он несовместим с загрузчиком Vulkan и приведет к сбою на некоторых графических процессорах. Пожалуйста, удалите этот пакет, чтобы включить режим графического процессора.",
+    "Waifu2X_Error_Loader": "ОШИБКА: Не удалось определить Загрузчик Vulkan. Удостоверьтесь, что ваша видеокарта поддерживает технологию Vulkan, и необходимый драйвер установлен.",
+    "Waifu2X_Error_Output": "ОШИБКА: Не удалось пройти самопроверку Waifu2X, получено пустое выходное изображение."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Обновление завершено!",
     "UpdateCompleteSubtitle": "Версия вашего лаунчера была обновлена до {0}! (Канал релиза: {1})",
     "FeatureUnavailableTitle": "Эта функция в данный момент недоступна",
@@ -503,12 +543,12 @@
     "NotSelected": "Не выбрано",
     "ExtractAnyway": "Распаковать в любом случае! ",
 
-    "IAcceptAgreement": "I accept the agreement",
-    "IDoNotAcceptAgreement": "I do not accept the agreement",
+    "IAcceptAgreement": "Я принимаю соглашение",
+    "IDoNotAcceptAgreement": "Я не принимаю соглашение",
 
-    "LangNameENUS": "Английский (США)",
+    "LangNameENUS": "Английский",
     "LangNameJP": "Японский",
-    "LangNameCN": "Китайский (Упрощенный)",
+    "LangNameCN": "Китайский",
     "LangNameKR": "Корейский",
 
     "Downloading": "Загрузка",
@@ -567,7 +607,7 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Название лаунчера неизвестно)",
     
-    "ImageCropperTitle": "Crop the image"
+    "ImageCropperTitle": "Обрезать изображение"
   },
 
   "_BackgroundNotification": {
@@ -588,8 +628,8 @@
     "DeltaPatchPrevFailedTitle": "Предыдущий дельта-патч был некорректно применен или не удалось закончить применение!",
     "DeltaPatchPrevFailedSubtitle": "Не удалось применить предыдущий дельта-патч. Хотите восстановить игру, для предотвращения повторной загрузки?",
     "DeltaPatchPreReqTitle": "Для установки Delta Patch требуется загрузить дополнительный файл!",
-    "DeltaPatchPreReqSubtitle1": "Additional file download is required for this game before applying delta patch. Around ",
-    "DeltaPatchPreReqSubtitle2": " is required to be downloaded and some of these files might contains audio package deltas.",
+    "DeltaPatchPreReqSubtitle1": "Перед применением delta-патча необходимо загрузить дополнительные файлы для этой игры. Примерно ",
+    "DeltaPatchPreReqSubtitle2": "необходимо загрузить, и некоторые из этих файлов могут содержать delta-аудиопакеты.",
     "DeltaPatchPreReqSubtitle3": "Вы хотите продолжить?",
     "DeltaPatchPreReqSubtitle4": "(Нажмите \"",
     "DeltaPatchPreReqSubtitle5": "\", чтобы продолжить, или \"",
@@ -724,6 +764,7 @@
     "ShortcutCreationSuccessSubtitle2": "Расположение:",
     "ShortcutCreationSuccessSubtitle3": "Примечания:",
     "ShortcutCreationSuccessSubtitle4": " • Использование этого ярлыка запустит игру после загрузки региона.",
+    "ShortcutCreationSuccessSubtitle5": " • Если игра не установлена/обновлена, Collapse попытается установить/обновить ее. Пожалуйста, обратите внимание, что диалоги, связанные с этими процессами, по-прежнему будут отображаться.",
 
     "SteamShortcutCreationConfirmTitle": "Точно хотите продолжить?",
     "SteamShortcutCreationConfirmSubtitle1": "Ярлык будет добавлен для каждого пользователя Steam на этом компьютере.",
@@ -736,9 +777,13 @@
     "SteamShortcutCreationSuccessSubtitle4": "• Повторный запуск этого процесса исправит все поврежденные/пропавшие изображения в ярлыке.",
     "SteamShortcutCreationSuccessSubtitle5": " • Новые ярлыки будут отображаться только после перезапуска Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Чтобы использовать оверлей Steam, необходимо запустить Steam от имени администратора, а Collapse должен быть полностью закрыт или в настройках должна быть включена опция \"Разрешить запуск несколько лаунчеров Collapse\".",
+    "SteamShortcutCreationSuccessSubtitle7": " • Если игра не установлена/обновлена, Collapse попытается установить/обновить ее. Пожалуйста, обратите внимание, что диалоги, связанные с этими процессами, по-прежнему будут отображаться.",
 
     "SteamShortcutCreationFailureTitle": "Неверная папка данных Steam",
-    "SteamShortcutCreationFailureSubtitle": "Не удалось найти корректную папку userdata.\n\nПожалуйста, убедитесь, что вы хотя бы раз вошли в клиент Steam, прежде чем пытаться использовать эту функцию."
+    "SteamShortcutCreationFailureSubtitle": "Не удалось найти корректную папку userdata.\n\nПожалуйста, убедитесь, что вы хотя бы раз вошли в клиент Steam, прежде чем пытаться использовать эту функцию.",
+
+    "DownloadSettingsTitle": "Настройки загрузки",
+    "DownloadSettingsOption1": "Запустить игру после установки"
   },
 
   "_FileMigrationProcess": {
@@ -788,6 +833,8 @@
     "ConvertSuccessSubtitle": "Преобразование игры с {0} на {1} успешно завершено!",
     "CookbookDownloadTitle": "Загрузка рецепта",
     "CookbookDownloadSubtitle": "Загрузка рецепта для преобразования с {0} на {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "с {0} по {1} Кулинарная книга",
 
     "CancelBtn": "Отменить преобразование",
     "CancelMsgTitle": "Отмена преобразования...",
@@ -858,6 +905,8 @@
     "UpdateHeader4": "Скорость:",
     "UpdateHeader5PlaceHolder": "Загрузка обновления [- / -]:",
 
+    "UpdateForcedHeader": "Лаунчер будет принудительно обновлен в связи со срочными изменениями, чтобы обеспечить правильную работу лаунчера.",
+
     "UpdateStatus1": "Получение обновлений:",
     "UpdateMessage1": "Соединение с репозиторием обновлений...",
     "UpdateStatus2": "Верификация:",
@@ -883,7 +932,7 @@
     "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Неизвестный",
     "ApplyUpdateUpdateStatusTitle": "Статус:",
     "ApplyUpdateMiscIdle": "В простое",
-    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateMiscNone": "Нет",
     "ApplyUpdateVersionSeparator": "к",
 
     "ApplyUpdateErrCollapseRunTitle": "Пожалуйста, закройте Collapse перед применением обновления!",
@@ -946,7 +995,7 @@
     "Graphics_ExclusiveFullscreen": "Использовать полноэкранный режим",
     "Graphics_ResSelectPlaceholder": "Выбрать",
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
-    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
+    "Graphics_ResCustomTooltip": "Пользовательское разрешение можно использовать только при включенном окне с возможностью изменения размера",
     "Graphics_ResCustomW": "Ш",
     "Graphics_ResCustomH": "В",
 
@@ -1058,8 +1107,8 @@
     "Graphics_HDR_Calibration_Help": "Настройте изображение так, чтобы оно было слабым, но заметным.",
     "Graphics_HDR_UiBrightness": "Яркость интерфейса",
     "Graphics_HDR_UiBrightness_Help": "Определяет, насколько яркими должны быть элементы интерфейса",
-    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
+    "Graphics_HDR_SceneBrightness": "Яркость пейзажа",
+    "Graphics_HDR_SceneBrightness_Help": "Определяет, насколько ярким должен быть пейзаж",
 
     "Graphics_SpecPanel": "Глобальные настройки графики",
     "SpecEnabled": "Включено",
@@ -1151,7 +1200,11 @@
     "ChangeShortcut_Help1": "Сочетание состоит из 2 частей:",
     "ChangeShortcut_Help2": "・ Модификатор - Shift, Control или Alt/Menu",
     "ChangeShortcut_Help3": "・ Клавиша - Алфавит (от А до Я) или Tab",
-    "ChangeShortcut_Help4": "Вы можете выбрать любую комбинацию, состоящую из одного значения из каждой категории, если только оно не зарезервировано системой или уже используется."
+    "ChangeShortcut_Help4": "Вы можете выбрать любую комбинацию, состоящую из одного значения из каждой категории, если только оно не зарезервировано системой или уже используется.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1172,41 +1225,44 @@
   },
 
   "_OOBEAgreementMenu": {
-    "AgreementTitle": "Agreement:"
+    "AgreementTitle": "Соглашение:"
   },
 
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Welcome", " To" ],
+      "Upper": [ "Добро пожаловать", " в" ],
       "Lower": [ "Collapse", " Launcher" ]
     },
-    "SetupNextButton": "Click Here to Continue",
-    "SetupBackButton": "Go Back",
+    "SetupNextButton": "Нажмите здесь для продолжения",
+    "SetupBackButton": "Вернуться назад",
 
-    "CustomizationTitle": "Customize Your Launcher",
-    "CustomizationSettingsLanguageHeader": "Language",
-    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
-    "CustomizationSettingsWindowSizeHeader": "Window Size",
-    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
-    "CustomizationSettingsCDNHeader": "Content Delivery Network",
-    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
-    "CustomizationSettingsStyleHeader": "Style Preference",
-    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
-    "CustomizationSettingsStyleThemeHeader": "Theme",
-    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
-    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
-    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+    "CustomizationTitle": "Настройте Свой Лаунчер",
+    "CustomizationSettingsLanguageHeader": "Язык",
+    "CustomizationSettingsLanguageDescription": "Это позволит настроить язык для отображаемой информации.",
+    "CustomizationSettingsWindowSizeHeader": "Размер окна",
+    "CustomizationSettingsWindowSizeDescription": "Изменить размер лаунчера",
+    "CustomizationSettingsCDNHeader": "Сеть доставки содержимого",
+    "CustomizationSettingsCDNDescription": "Выберите свою основную сеть доставки содержимого, которую вы будете использовать.",
+    "CustomizationSettingsStyleHeader": "Предпочтения в стиле",
+    "CustomizationSettingsStyleDescription": "Измените внешний вид лаунчера и отдайте предпочтение своему выбору.",
+    "CustomizationSettingsStyleThemeHeader": "Тема",
+    "CustomizationSettingsStyleThemeDescription": "Измените цвет, который отображается в вашем лаунчере.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Пользовательский фоновое изображение",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Использовать пользовательское фоновое изображение вместо изображения по умолчанию.",
 
-    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
-    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
-    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
-    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
-    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
-    "LoadingBackgroundImageTitle": "Loading Image",
-    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+    "VideoBackgroundPreviewUnavailableHeader": "Предварительный просмотр видеофона недоступен",
+    "VideoBackgroundPreviewUnavailableDescription": "Вы не можете просмотреть фоновое видео в первоначальной настройке, но не волнуйтесь! Ваш видеофон будет применен после её завершения.",
 
-    "CDNCheckboxItemLatencyFormat": " ({0} ms)",
-    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
-    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
+    "LoadingInitializationTitle": "Инициализация первого запуска лаунчера",
+    "LoadingCDNCheckboxCheckLatency": "(Проверка задержек...)",
+    "LoadingCDNCheckboxPlaceholder": "Проверка рекомендации CDN...",
+    "LoadingCDNCheckingSubitle": "Поиск ближайшего к вам сервера Сети доставки содержимого (CDN)...",
+    "LoadingCDNCheckingSkipButton": "Пропустить проверку CDN",
+    "LoadingBackgroundImageTitle": "Загрузка изображения",
+    "LoadingBackgroundImageSubtitle": "Обработка изображения может занять некоторое время.",
+
+    "CDNCheckboxItemLatencyFormat": " ({0} мс)",
+    "CDNCheckboxItemLatencyUnknownFormat": " (неизвестно)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Рекомендуется]"
   }
 }

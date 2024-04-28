@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Loading;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -13,7 +15,7 @@ namespace CollapseLauncher.Helper.Metadata
 {
     internal static class LauncherMetadataHelper
     {
-        private const string MetadataVersion             = "v3";
+        private const string MetadataVersion = "v3";
         private const string LauncherMetadataStampPrefix = "stamp.json";
 
         #region Metadata and Stamp path/url prefixes
@@ -29,10 +31,10 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Metadata Stamp List and Config Dictionary
 
-        internal static List<Stamp>?  LauncherMetadataStamp                         { get; private set; }
-        internal static List<Stamp>?  NewUpdateMetadataStamp                        { get; private set; }
-        internal static List<string>? LauncherGameNameCollection                    => LauncherGameNameRegionCollection?.Keys.ToList();
-        private  static Dictionary<string, Stamp>? LauncherMetadataStampDictionary  { get; set; }
+        internal static List<Stamp>? LauncherMetadataStamp { get; private set; }
+        internal static List<Stamp>? NewUpdateMetadataStamp { get; private set; }
+        internal static List<string>? LauncherGameNameCollection => LauncherGameNameRegionCollection?.Keys.ToList();
+        private static Dictionary<string, Stamp>? LauncherMetadataStampDictionary { get; set; }
 
         internal static Dictionary<string, Dictionary<string, PresetConfig>?>? LauncherMetadataConfig
         {
@@ -44,10 +46,20 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Game Name & Region Collection and Current Config
 
-        internal static PresetConfig?                       CurrentMetadataConfig;
-        internal static string?                             CurrentMetadataConfigGameName;
-        internal static string?                             CurrentMetadataConfigGameRegion;
-        internal static Dictionary<string, List<string>?>?  LauncherGameNameRegionCollection { get; private set; }
+        private static PresetConfig? _currentMetadataConfig;
+        internal static PresetConfig? CurrentMetadataConfig
+        {
+            get => _currentMetadataConfig;
+            set
+            {
+                if (value?.GameLauncherApi?.LauncherGameNews == null)
+                    Console.WriteLine();
+                _currentMetadataConfig = value;
+            }
+        }
+        internal static string? CurrentMetadataConfigGameName;
+        internal static string? CurrentMetadataConfigGameRegion;
+        internal static Dictionary<string, List<string>?>? LauncherGameNameRegionCollection { get; private set; }
 
         #endregion
 
@@ -59,7 +71,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Current Game Name and Max Region Counts
 
-        internal static int CurrentGameNameCount      { get; private set; }
+        internal static int CurrentGameNameCount { get; private set; }
         internal static int CurrentGameRegionMaxCount { get; private set; }
 
         #endregion
@@ -121,8 +133,8 @@ namespace CollapseLauncher.Helper.Metadata
             config = LauncherMetadataConfig?[gameName]?[gameRegion];
             if (config != null)
             {
-                CurrentMetadataConfig           = config;
-                CurrentMetadataConfigGameName   = gameName;
+                CurrentMetadataConfig = config;
+                CurrentMetadataConfigGameName = gameName;
                 CurrentMetadataConfigGameRegion = gameRegion;
 
                 return config;
@@ -146,7 +158,7 @@ namespace CollapseLauncher.Helper.Metadata
         private static int IsMetadataLocallyModified(string gameName, string gameRegion)
         {
             string stampKey = $"{gameName} - {gameRegion}";
-            
+
             // If the stamp key does not exist in the stamp dictionary, return -2
             if (!LauncherMetadataStampDictionary?.ContainsKey(stampKey) ?? false)
                 return -2;
@@ -197,7 +209,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         internal static async ValueTask InitializeStamp(string currentChannel, bool throwAfterRetry = false)
         {
-            string stampLocalFilePath  = Path.Combine(LauncherMetadataFolder, LauncherMetadataStampPrefix);
+            string stampLocalFilePath = Path.Combine(LauncherMetadataFolder, LauncherMetadataStampPrefix);
             string stampRemoteFilePath = LauncherStampRemoteURLPath;
 
             // Initialize and clear the stamp dictionary
@@ -274,10 +286,10 @@ namespace CollapseLauncher.Helper.Metadata
                 }
             }
         }
-        
-        
+
+
         internal static async ValueTask InitializeConfig(string currentChannel, bool isCacheUpdateModeOnly,
-                                                         bool   isShowLoadingMessage)
+                                                         bool isShowLoadingMessage)
         {
             if (LauncherMetadataStamp == null)
             {
@@ -325,7 +337,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
 
             // Save the current count of game name and game regions
-            CurrentGameNameCount      = LauncherMetadataConfig.Keys.Count;
+            CurrentGameNameCount = LauncherMetadataConfig.Keys.Count;
             CurrentGameRegionMaxCount = LauncherMetadataConfig.Max(x => x.Value?.Count ?? 0);
         }
 
@@ -336,8 +348,8 @@ namespace CollapseLauncher.Helper.Metadata
         }
 
         internal static async ValueTask LoadConfigInner(Stamp stamp, string currentChannel,
-                                                        bool  throwAfterRetry = false, bool allowDeserializeKey = false,
-                                                        bool  isCacheUpdateModeOnly = false)
+                                                        bool throwAfterRetry = false, bool allowDeserializeKey = false,
+                                                        bool isCacheUpdateModeOnly = false)
         {
             if (string.IsNullOrEmpty(stamp.MetadataPath))
             {
@@ -370,62 +382,68 @@ namespace CollapseLauncher.Helper.Metadata
                 switch (stamp.MetadataType)
                 {
                     case MetadataType.MasterKey when allowDeserializeKey:
-                    {
-                        // Deserialize the key config
-                        MasterKeyConfig? keyConfig =
-                            await configLocalStream.DeserializeAsync<MasterKeyConfig>(InternalAppJSONContext.Default);
+                        {
+                            // Deserialize the key config
+                            MasterKeyConfig? keyConfig =
+                                await configLocalStream.DeserializeAsync<MasterKeyConfig>(InternalAppJSONContext.Default);
 
-                        // Assign the key to instance property
-                        CurrentMasterKey = keyConfig ?? throw new InvalidDataException("Master key config seems to be empty!");
-                        break;
-                    }
+                            // Assign the key to instance property
+                            CurrentMasterKey = keyConfig ?? throw new InvalidDataException("Master key config seems to be empty!");
+                            break;
+                        }
                     case MetadataType.PresetConfigV2 when string.IsNullOrEmpty(stamp.GameName) || string.IsNullOrEmpty(stamp.GameRegion):
                         throw new NullReferenceException("Game name or region property inside the stamp is empty!");
                     // Deserialize the config
                     case MetadataType.PresetConfigV2:
-                    {
-                        PresetConfig? presetConfig =
-                            await configLocalStream.DeserializeAsync<PresetConfig>(InternalAppJSONContext.Default);
-                        if (presetConfig != null)
                         {
-                            if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
+                            PresetConfig? presetConfig =
+                                await configLocalStream.DeserializeAsync<PresetConfig>(InternalAppJSONContext.Default);
+                            if (presetConfig != null)
+                            {
+                                if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
 
-                            // Generate HashID and GameName
-                            string hashComposition = $"{stamp.LastUpdated} - {stamp.GameName} - {stamp.GameRegion}";
-                            int    hashID          = ConverterTool.BytesToCRC32Int(hashComposition);
-                            presetConfig.HashID   = hashID;
-                            presetConfig.GameName = stamp.GameName;
+                                // Generate HashID and GameName
+                                string hashComposition = $"{stamp.LastUpdated} - {stamp.GameName} - {stamp.GameRegion}";
+                                int hashID = ConverterTool.BytesToCRC32Int(hashComposition);
+                                presetConfig.HashID = hashID;
+                                presetConfig.GameName = stamp.GameName;
+                                presetConfig.GameLauncherApi ??= presetConfig.LauncherType switch
+                                {
+                                    LauncherType.Sophon => SophonLauncherApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
+                                    LauncherType.HoYoPlay => HoYoPlayLauncherApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
+                                    _ => throw new NotSupportedException($"Launcher type: {presetConfig.LauncherType} is not supported!")
+                                };
 
-                            // Dispose the file first
-                            await configLocalStream.DisposeAsync();
+                                // Dispose the file first
+                                await configLocalStream.DisposeAsync();
 
-                            // If the dictionary doesn't contain the dictionary of the game, then initialize it
-                            Dictionary<string, PresetConfig> presetConfigDict = [];
-                            if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
-                                // Initialize and add the game preset config dictionary
-                                LauncherMetadataConfig?.Add(stamp.GameName, presetConfigDict);
+                                // If the dictionary doesn't contain the dictionary of the game, then initialize it
+                                Dictionary<string, PresetConfig> presetConfigDict = [];
+                                if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
+                                    // Initialize and add the game preset config dictionary
+                                    LauncherMetadataConfig?.Add(stamp.GameName, presetConfigDict);
 
-                            // If the game name region collection is not exist, create a new one
-                            if (!LauncherGameNameRegionCollection?.ContainsKey(stamp.GameName) ?? false)
-                                LauncherGameNameRegionCollection?.Add(stamp.GameName, []);
+                                // If the game name region collection is not exist, create a new one
+                                if (!LauncherGameNameRegionCollection?.ContainsKey(stamp.GameName) ?? false)
+                                    LauncherGameNameRegionCollection?.Add(stamp.GameName, []);
 
-                            // Add the game region name into collection
-                            if (!LauncherGameNameRegionCollection?[stamp.GameName]?.Contains(stamp.GameRegion) ?? false)
-                                LauncherGameNameRegionCollection?[stamp.GameName]?.Add(stamp.GameRegion);
+                                // Add the game region name into collection
+                                if (!LauncherGameNameRegionCollection?[stamp.GameName]?.Contains(stamp.GameRegion) ?? false)
+                                    LauncherGameNameRegionCollection?[stamp.GameName]?.Add(stamp.GameRegion);
 
-                            // If the game preset config dictionary doesn't have the game region, then add it.
-                            if (!LauncherMetadataConfig?[stamp.GameName]?.ContainsKey(stamp.GameRegion) ?? false)
-                                LauncherMetadataConfig?[stamp.GameName]?.Add(stamp.GameRegion, presetConfig);
+                                // If the game preset config dictionary doesn't have the game region, then add it.
+                                if (!LauncherMetadataConfig?[stamp.GameName]?.ContainsKey(stamp.GameRegion) ?? false)
+                                    LauncherMetadataConfig?[stamp.GameName]?.Add(stamp.GameRegion, presetConfig);
 
-                            break;
+                                break;
+                            }
+                            else
+                            {
+                                throw new InvalidDataException("Config seems to be empty!");
+                            }
+
+                            // Ignore if the isCacheUpdateModeOnly is true and the config doesn't support cache update
                         }
-                        else
-                        {
-                            throw new InvalidDataException("Config seems to be empty!");
-                        }
-
-                        // Ignore if the isCacheUpdateModeOnly is true and the config doesn't support cache update
-                    }
                 }
             }
             catch (Exception ex)
@@ -613,7 +631,7 @@ namespace CollapseLauncher.Helper.Metadata
             return LauncherGameNameRegionCollection?.Keys.ToList();
         }
 
-        internal static List<string>? GetGameRegionCollection(string gameName)
+        internal static List<string?>? GetGameRegionCollection(string gameName)
         {
             if (!(!LauncherGameNameRegionCollection?.ContainsKey(gameName) ?? false))
             {
@@ -629,11 +647,11 @@ namespace CollapseLauncher.Helper.Metadata
         internal static int GetPreviousGameRegion(string? gameName)
         {
             // Get the config key name
-            string  iniKeyName = $"LastRegion_{gameName!.Replace(" ", string.Empty)}";
+            string iniKeyName = $"LastRegion_{gameName!.Replace(" ", string.Empty)}";
             string? gameRegion;
 
             // Get the region collection
-            List<string>? gameRegionCollection = GetGameRegionCollection(gameName);
+            List<string?>? gameRegionCollection = GetGameRegionCollection(gameName);
             gameRegionCollection ??= LauncherGameNameRegionCollection?.FirstOrDefault().Value!;
 
             // Throw if the collection is empty or null

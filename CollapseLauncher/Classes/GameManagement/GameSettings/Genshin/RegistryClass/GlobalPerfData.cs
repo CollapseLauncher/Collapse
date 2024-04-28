@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
@@ -135,10 +136,11 @@ namespace CollapseLauncher.GameSettings.Genshin
         public static readonly List<double> RenderScaleValues = DictionaryCategory.RenderResolutionOption.Keys.ToList();
         public static readonly List<int> RenderScaleIndex = DictionaryCategory.RenderResolutionOption.Values.ToList();
 
-        public List<PerfDataItem> saveItems { get; set; } = new();
-        public bool truePortedFromGraphicData { get; set; } = true;
-        public string portedVersion { get; set; } = "OSRELWin4.2.0";
-        public bool portedFromGraphicData { get; set; } = false;
+        public List<PerfDataItem> saveItems                 { get; set; } = new();
+        public bool               truePortedFromGraphicData { get; set; } = true;
+        public string             portedVersion             { get; set; } = "OSRELWin4.2.0";
+        public int                volatileUpgradeVersion    { get; set; } = 0;
+        public bool               portedFromGraphicData     { get; set; } = false;
         #endregion
 
         #region Settings

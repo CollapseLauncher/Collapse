@@ -48,7 +48,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)
         {
-            OOBEStartUpMenu.thisCurrent.OverlayFrameGoBack();
+            OOBEStartUpMenu.ThisCurrent?.OverlayFrameGoBack();
             // (m_window as MainWindow).rootFrame.GoBack();
         }
 
@@ -128,11 +128,12 @@ namespace CollapseLauncher.Pages.OOBE
             double     dur          = 0.250;
             Storyboard storyBufBack = new Storyboard();
 
-            DoubleAnimation opacityBufBack = new DoubleAnimation();
-            opacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
-
-            opacityBufBack.From = from;
-            opacityBufBack.To   = to;
+            DoubleAnimation opacityBufBack = new DoubleAnimation
+            {
+                Duration = new Duration(TimeSpan.FromSeconds(dur)),
+                From     = from,
+                To       = to
+            };
 
             Storyboard.SetTarget(opacityBufBack, BackgroundFrame);
             Storyboard.SetTargetProperty(opacityBufBack, "Opacity");
@@ -143,10 +144,10 @@ namespace CollapseLauncher.Pages.OOBE
             await Task.Delay((int)(dur * 1000));
         }
 
-        private async void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
-            GameRegionSelect.ItemsSource = await BuildGameRegionListUI(SelectedCategory);
+            GameRegionSelect.ItemsSource = BuildGameRegionListUI(SelectedCategory);
             GameRegionSelect.IsEnabled   = true;
             NextPage.IsEnabled           = false;
             NextPage.Opacity             = 0;

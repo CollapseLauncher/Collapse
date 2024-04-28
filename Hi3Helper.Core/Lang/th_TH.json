@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "การตั้งค่าแอปพลิเคชั่น",
     "NotifNeverAsk": "ไม่ต้องแสดงอีก",
     "NotifNoNewNotifs": "ไม่มีการแจ้งเตือนใหม่ในขณะนี้",
+    "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "เมนู",
     "NavigationUtilities": "ยูทิลิตี้"
   },
@@ -148,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "นาที",
     "GamePlaytime_Idle_ResetBtn": "รีเซ็ต",
     "GamePlaytime_Idle_ChangeBtn": "เปลี่ยน",
-    "GamePlaytime_Idle_InvalidTimeBlock": "ระบุค่าไม่ถูกต้อง",
     "GamePlaytime_Running_Info1": "อินสแตนซ์ของเกมนี้กำลังทำงานอยู่ ดังนั้นเวลาที่เล่นจึงไม่สามารถแก้ไขได้",
     "GamePlaytime_Running_Info2": "โปรดทราบว่าการปิด Collapse จะหยุดการติดตามเวลาที่เล่น (จะบันทึกแค่ตอนที่กำลังทำงานอยู่) และจะติดตามเฉพาะเปิดด้วย Collapse เท่านั้น",
     "GamePlaytime_Display": "{0}h {1}m",
+    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
 
     "PostPanel_Events": "กิจกรรม",
     "PostPanel_Notices": "การ​แจ้งเตือน",
@@ -187,6 +188,8 @@
     "Status11": "กำลังรอให้กระบวนการซ่อมแซมเริ่มต้นขึ้น...",
     "Status12": "กำลังอัปเดตเสียง: {0}",
     "Status13": "กำลังอัปเดต Block: {0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "ไม่มี",
     "PerProgressTitle1": "ความคืบหน้าต่อไฟล์",
     "PerProgressSubtitle1": "กำลังรอ",
@@ -217,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "สถานะ",
     "Status1": "คลิก \"เช็คด่วน\" หรือ \"ตรวจสอบเต็มรูปแบบ\" เพื่อตรวจสอบแคชสำหรับอัปเดต",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "ความคืบหน้าทั้งหมด",
     "CachesStatusCancelled": "การดำเนินการถูกยกเลิกแล้ว!",
     "CachesStatusFetchingType": "กำลังดึงข้อมูลประเภทแคช: {0}",
@@ -284,12 +288,23 @@
     "Graphics_APHO2AO": "แสงเงาระหว่างวัตถุในฉาก",
     "Graphics_APHO2LOD": "ระดับความละเอียด",
 
+    "Graphics_ParticleQuality": "Particle Quality",
+    "Graphics_LightingQuality": "Lighting Quality",
+    "Graphics_PostFXQuality": "Post-FX Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_WeatherQuality": "Weather Quality",
+
+    "Graphics_Legacy_Title": "Legacy Settings",
+    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+
     "SpecDisabled": "ปิดใช้งาน",
     "SpecLow": "ตํ่า",
     "SpecMedium": "ปานกลาง",
     "SpecHigh": "สูง",
     "SpecVeryHigh": "สูงมาก",
     "SpecMaximum": "สูงสุด",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "การตั้งค่าเสียง",
     "Audio_Master": "ระดับเสียงหลัก",
@@ -355,6 +370,7 @@
     "Debug_MultipleInstance": "อนุญาตให้เรียกใช้ Collapse หลายอินสแตนซ์",
 
     "ChangeRegionWarning_Toggle": "แสดงคำเตือนเมื่อมีการเปลี่ยนภูมิภาค",
+    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
     "ChangeRegionWarning_Warning": "*คุณต้องรีสตาร์ทแอปเพื่อให้การตั้งค่านี้มีผลใช้งาน",
 
     "Language": "ภาษาของแอป",
@@ -375,7 +391,7 @@
 
     "AppBG": "พื้นหลังของแอพ",
     "AppBG_Checkbox": "พื้นหลังแบบกำหนดเอง",
-    "AppBG_Note": "หมายเหตุ: รูปภาพต้องอยู่ในรูปแบบ .png, .jpg, .tiff หรือ .bmp และความละเอียดต้องน้อยกว่า 4096x4096",
+    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
 
     "AppThreads": "เธรดแอปพลิเคชัน",
     "AppThreads_Download": "เธรดดาวน์โหลด",
@@ -387,10 +403,22 @@
     "AppThreads_Help5": "หัวข้อนี้จะจัดการกระบวนการแยก/ตรวจสอบขณะติดตั้ง/ซ่อมแซมเกม",
     "AppThreads_Help6": "หมายเหตุ: การตั้งค่านี้จะไม่มีผลอีกต่อไปในขณะที่ติดตั้ง Honkai Impact 3rd",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "แสดงสถานะกิจกรรมในดิสคอร์ด",
     "DiscordRPC_Toggle": "แสดงสถานะดิสคอร์ด",
     "DiscordRPC_GameStatusToggle": "แสดงเกมที่เล่นอยู่ในสถานะดิสคอร์ด",
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
+
+    "VideoBackground": "Video Background Settings",
+    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "ตรวจสอบการอัปเดต",
     "Update_CurVer": "เวอร์ชันปัจจุบัน",
@@ -416,10 +444,12 @@
     "HelpLocalizeBtn": "ช่วยเราในการแปลภาษา Collapse!",
 
     "About": "เกี่ยวกับ",
-    "About_Copyright1": "© 2565-2567",
-    "About_Copyright2": "  neon-nyan, Cry0, bagusnl,\r\n shatyuka และ gablm",
+    "About_Copyright1": "© 2022-2024",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "ต่ำกว่า",
     "About_Copyright4": " สงวนลิขสิทธิ์ทั้งหมด",
+    
+    "LicenseType": "MIT License",
 
     "Disclaimer": "สงวนสิทธิ์",
     "Disclaimer1": "แอพนี้ไม่มีส่วนเกี่ยวข้องกับ",
@@ -450,10 +480,20 @@
     "AppBehavior_PostGameLaunch_Nothing": "ไม่ต้องทำอะไร",
     "AppBehavior_MinimizeToTray": "ย่อไปที่ถาด",
     "AppBehavior_LaunchOnStartup": "เริ่มต้นโดยอัตโนมัติเมื่อคอมพิวเตอร์ของคุณบูทขึ้น",
-    "AppBehavior_StartupToTray": "ซ่อนหน้าต่างเมื่อเริ่มต้นโดยอัตโนมัติ"
+    "AppBehavior_StartupToTray": "ซ่อนหน้าต่างเมื่อเริ่มต้นโดยอัตโนมัติ",
+
+    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
+    "Waifu2X_Help2": "Only available for still images!",
+    "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
+    "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
+    "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "อัพเดตเสร็จสมบูรณ์",
     "UpdateCompleteSubtitle": "เวอร์ชัน Launcher ใช้งานของคุณได้รับการอัปเดตเป็น {0}! (ช่องทางการเผยแพร่: {1})",
     "FeatureUnavailableTitle": "คุณลักษณะนี้ไม่สามารถใช้งานได้ในขณะนี้",
@@ -506,9 +546,9 @@
     "IAcceptAgreement": "I accept the agreement",
     "IDoNotAcceptAgreement": "I do not accept the agreement",
 
-    "LangNameENUS": "ภาษาอังกฤษ (สหรัฐฯ)",
+    "LangNameENUS": "English",
     "LangNameJP": "ภาษาญี่ปุ่น",
-    "LangNameCN": "ภาษาจีน (ตัวย่อ)",
+    "LangNameCN": "Chinese",
     "LangNameKR": "ภาษาเกาหลี",
 
     "Downloading": "กำลังดาวน์โหลด",
@@ -724,6 +764,7 @@
     "ShortcutCreationSuccessSubtitle2": "Location: ",
     "ShortcutCreationSuccessSubtitle3": "Notes:",
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
     "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
@@ -736,9 +777,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
-    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
+
+    "DownloadSettingsTitle": "Download Settings",
+    "DownloadSettingsOption1": "Start game after install"
   },
 
   "_FileMigrationProcess": {
@@ -788,6 +833,8 @@
     "ConvertSuccessSubtitle": "การแปลงเกมจาก {0} เป็น {1} เสร็จสมบูรณ์แล้ว!",
     "CookbookDownloadTitle": "กำลังดาวน์โหลด Recipe",
     "CookbookDownloadSubtitle": "กำลังดาวน์โหลด Recipe สำหรับการแปลงจาก {0} เป็น {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "ยกเลิกการแปลง",
     "CancelMsgTitle": "กำลังยกเลิกการแปลง",
@@ -857,6 +904,8 @@
     "UpdateHeader3": "ขนาดดาวน์โหลด:",
     "UpdateHeader4": "ความเร็ว:",
     "UpdateHeader5PlaceHolder": "กำลังดาวน์โหลดอัปเดต [- / -]:",
+
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
 
     "UpdateStatus1": "กำลังตรวจสอบการอัปเดต:",
     "UpdateMessage1": "กำลังเชื่อมต่อกับฐานข้อมูลการอัปเดต...",
@@ -1151,7 +1200,11 @@
     "ChangeShortcut_Help1": "ทางลัดประกอบด้วย 2 ส่วน:",
     "ChangeShortcut_Help2": "・ ตัวแก้ไข - Shift, Control หรือ Alt/Menu",
     "ChangeShortcut_Help3": "・ คีย์ - ตัวอักษร (A ถึง Z) หรือแท็บ",
-    "ChangeShortcut_Help4": "คุณสามารถเลือกคอมบิเนชั่นใดก็ได้ที่ประกอบด้วยค่าหนึ่งจากแต่ละหมวดหมู่ ยกเว้นกรณีที่ถูกสงวนโดยระบบหรือถูกใช้งานอยู่แล้ว."
+    "ChangeShortcut_Help4": "คุณสามารถเลือกคอมบิเนชั่นใดก็ได้ที่ประกอบด้วยค่าหนึ่งจากแต่ละหมวดหมู่ ยกเว้นกรณีที่ถูกสงวนโดยระบบหรือถูกใช้งานอยู่แล้ว.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1196,6 +1249,9 @@
     "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
+    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
 
     "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
     "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",

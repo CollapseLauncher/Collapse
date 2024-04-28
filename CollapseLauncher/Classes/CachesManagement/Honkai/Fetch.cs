@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -131,14 +132,19 @@ namespace CollapseLauncher
             string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d")!,
                                                  type == CacheAssetType.Data ? "Data" : "Resource");
 
+#if DEBUG
+            LogWriteLine($"Fetching data cache on: {assetIndexURL}", LogType.Debug, true);
+#endif
+
             // Get a direct HTTP Stream
             using HttpResponseInputStream remoteStream =
                 await HttpResponseInputStream.CreateStreamAsync(httpClient.GetHttpClient(), assetIndexURL, null, null,
                                                                 token);
-            using XORStream xorStream = new XORStream(remoteStream);
+
+            using XORStream stream = new XORStream(remoteStream);
 
             // Build the asset index and return the count and size of each type
-            (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
+            (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex);
 
             return returnValue;
         }
@@ -162,7 +168,73 @@ namespace CollapseLauncher
         }
         */
 
-        private (int, long) BuildAssetIndex(CacheAssetType   type, string baseURL, XORStream stream,
+        private IEnumerable<CacheAsset> EnumerateCacheTextAsset(CacheAssetType type, IEnumerable<string> enumerator, string baseUrl)
+        {
+            // Set isFirst flag as true if type is Data and
+            // also convert type as lowered string.
+            bool isFirst = type == CacheAssetType.Data;
+            bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
+
+            foreach (string line in enumerator)
+            {
+                // If the line is empty, then next to other line.
+                if (line.Length < 1) continue;
+
+                // If isFirst flag set to true, then get the _gameSalt.
+                if (isFirst)
+                {
+                    _gameSalt = GetAssetIndexSalt(line.ToString());
+                    isFirst = false;
+                    continue;
+                }
+
+                // Get the lucky number if it does so 👀
+                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
+                {
+                    _luckyNumber = luckyNumber;
+                    isNeedReadLuckyNumber = false;
+                    continue;
+                }
+
+                // If the line is not started with '{' and ended with '}' (JSON),
+                // then skip it.
+                if (line[0] != '{' && line[^1] != '}')
+                {
+                    LogWriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
+                    continue;
+                }
+
+                CacheAsset content = null;
+                try
+                {
+                    // Deserialize the line and set the type
+                    content = line.Deserialize<CacheAsset>(InternalAppJSONContext.Default);
+                }
+                catch (Exception ex)
+                {
+                    // If failed while parsing the file, then skip it.
+                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}",
+                                 LogType.Warning, true);
+                    continue;
+                }
+
+                // If the content is null, then continue
+                if (content == null) continue;
+
+                // Check if the asset is regional and contains only selected language.
+                if (IsValidRegionFile(content.N, _gameLang))
+                {
+                    // Set base URL and Path and add it to asset index
+                    content.BaseURL = baseUrl;
+                    content.DataType = type;
+                    content.BasePath = GetAssetBasePathByType(type);
+
+                    yield return content;
+                }
+            }
+        }
+
+        private async ValueTask<(int, long)> BuildAssetIndex(CacheAssetType   type, string baseURL, Stream stream,
                                             List<CacheAsset> assetIndex)
         {
             int  count = 0;
@@ -181,62 +253,32 @@ namespace CollapseLauncher
             byte[]    dataRaw       = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
-            // Iterate lines of the TextAsset
-            foreach (ReadOnlySpan<char> line in dataTextAsset.GetStringEnumeration())
-            {
-                // If the line is empty, then next to other line.
-                if (line.Length < 1) continue;
-
-                // If isFirst flag set to true, then get the _gameSalt.
-                if (isFirst)
+            // Iterate lines of the TextAsset in parallel
+            await Parallel.ForEachAsync(EnumerateCacheTextAsset(type, dataTextAsset.GetStringList(), baseURL),
+                new ParallelOptions
                 {
-                    _gameSalt = GetAssetIndexSalt(line.ToString());
-                    isFirst   = false;
-                    continue;
-                }
-
-                // Get the lucky number if it does so 👀
-                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
+                    CancellationToken = _token.Token,
+                    MaxDegreeOfParallelism = _threadCount
+                },
+                async (content, cancellationToken) =>
                 {
-                    _luckyNumber          = luckyNumber;
-                    isNeedReadLuckyNumber = false;
-                    continue;
-                }
-
-                // If the line is not started with '{' and ended with '}' (JSON),
-                // then skip it.
-                if (line[0] != '{' && line[^1] != '}')
-                {
-                    LogWriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
-                    continue;
-                }
-
-                try
-                {
-                    // Deserialize the line and set the type
-                    CacheAsset content = line.Deserialize<CacheAsset>(InternalAppJSONContext.Default);
-                    content.DataType = type;
-
-                    // Check if the asset is regional and contains only selected language.
-                    if (IsValidRegionFile(content.N, _gameLang))
+                    // Perform URL check if DLM is dynamic type (DLM == 2)
+                    if (content.DLM == 2)
                     {
-                        // If valid, then add the asset to assetIndex
-                        count++;
-                        size += content.CS;
+                        // Update the status
+                        _status!.ActivityStatus = string.Format(Lang._CachesPage.Status2, type, content.N);
+                        _status!.IsProgressTotalIndetermined = true;
+                        _status!.IsProgressPerFileIndetermined = true;
+                        UpdateStatus();
 
-                        // Set base URL and Path and add it to asset index
-                        content.BaseURL  = baseURL;
-                        content.BasePath = GetAssetBasePathByType(type);
-                        assetIndex.Add(content);
+                        // Check for the URL availability and is not available, then skip.
+                        using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(content.ConcatURL, cancellationToken);
+                        LogWriteLine($"The Cache {type} asset: {content.N} " + (urlStatus!.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+
+                        if (!urlStatus.IsSuccessStatusCode) return;
                     }
-                }
-                catch (Exception ex)
-                {
-                    // If failed while parsing the file, then skip it.
-                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}",
-                                 LogType.Warning, true);
-                }
-            }
+                    assetIndex.Add(content);
+                });
 
             // Return the count and the size
             return (count, size);

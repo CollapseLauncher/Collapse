@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CollapseLauncher.Helper.Image;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,8 +24,6 @@ namespace CollapseLauncher
 
     public static class RegionResourceListHelper
     {
-        public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
-        public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
         public static List<T> Copy<T>(this List<T> source)
             where T : IRegionResourceCopyable<T>
         {
@@ -249,9 +248,9 @@ namespace CollapseLauncher
         public MenuPanelProp(CancellationToken token = default) => _innerToken = token;
 
         public string URL { get; set; }
-        public string Icon { get => MainPage.GetCachedSprites(_icon, _innerToken); set => _icon = value; }
-        public string IconHover { get => MainPage.GetCachedSprites(_iconHover, _innerToken); set => _iconHover = value; }
-        public string QR { get => MainPage.GetCachedSprites(_qr, _innerToken); set => _qr = value; }
+        public string Icon { get => ImageLoaderHelper.GetCachedSprites(_icon, _innerToken); set => _icon = value; }
+        public string IconHover { get => ImageLoaderHelper.GetCachedSprites(_iconHover, _innerToken); set => _iconHover = value; }
+        public string QR { get => ImageLoaderHelper.GetCachedSprites(_qr, _innerToken); set => _qr = value; }
         public string QR_Description { get; set; }
         public bool IsQRExist => !string.IsNullOrEmpty(QR);
         public string Description { get; set; }

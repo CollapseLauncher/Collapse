@@ -10,45 +10,45 @@
         <s:AttachedDropShadow x:Key="DetailsLogoShadowController"
                               BlurRadius="32"
                               CastTo="{x:Bind GameDetailsLogoShadow}"
-                              Opacity="1"/>
+                              Opacity="1" />
     </Page.Resources>
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
         <Image VerticalAlignment="Center"
                Opacity="0.50"
                Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
-               Stretch="UniformToFill"/>
+               Stretch="UniformToFill" />
         <Grid x:Name="GameDetails">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Image x:Name="GameDetailsPoster"
                    Grid.ColumnSpan="2"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Stretch"
-                   Stretch="UniformToFill"/>
+                   Stretch="UniformToFill" />
             <StackPanel Grid.Column="1"
                         Margin="32,0,40,110"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom">
-                <Grid x:Name="GameDetailsLogoShadow"/>
+                <Grid x:Name="GameDetailsLogoShadow" />
                 <Image x:Name="GameDetailsLogo"
                        Width="220"
                        Margin="0,0,0,24"
                        HorizontalAlignment="Right"
-                       s:Effects.Shadow="{ThemeResource DetailsLogoShadowController}"/>
+                       s:Effects.Shadow="{ThemeResource DetailsLogoShadowController}" />
                 <Grid x:Name="GameDetailsDescriptionContainer"
                       CornerRadius="8,8,0,0">
                     <Grid x:Name="GameDetailsTextBackground"
-                          Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"/>
+                          Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" />
                     <ScrollViewer MaxHeight="192">
                         <TextBlock x:Name="GameDetailsDescription"
                                    Margin="16,12"
                                    FontSize="16"
                                    FontWeight="Medium"
                                    TextAlignment="Center"
-                                   TextWrapping="Wrap"/>
+                                   TextWrapping="Wrap" />
                     </ScrollViewer>
                 </Grid>
                 <Button x:Name="GameDetailsHomepage"
@@ -62,20 +62,20 @@
                         ToolTipService.ToolTip="{x:Bind GameDetailsHomepageLink}">
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="GameDetailsHomepageText"
                                    HorizontalAlignment="Left"
                                    FontWeight="SemiBold"
                                    Text="{x:Bind GameDetailsHomepageLink}"
-                                   TextTrimming="CharacterEllipsis"/>
+                                   TextTrimming="CharacterEllipsis" />
                         <FontIcon Grid.Column="1"
                                   Margin="10,0,0,-3"
                                   HorizontalAlignment="Right"
                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="&#xf0c1;"/>
+                                  Glyph="&#xf0c1;" />
                     </Grid>
                 </Button>
             </StackPanel>
@@ -86,7 +86,7 @@
               Visibility="Collapsed">
             <Image Width="400"
                    Height="400"
-                   Source="ms-appx:///Assets/Images/GameMascot/AponiaFly.png"/>
+                   Source="ms-appx:///Assets/Images/GameMascot/AponiaFly.png" />
         </Grid>
     </Grid>
 </Page>

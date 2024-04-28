@@ -1,10 +1,10 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -13,13 +13,19 @@ namespace CollapseLauncher.Pages
     {
         string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
 
-        public Visibility IsPostEventPanelVisible => (regionNewsProp.articlePanel?.Events.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostEventPanelEmpty => (regionNewsProp.articlePanel?.Events.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostNoticePanelVisible => (regionNewsProp.articlePanel?.Notices.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostNoticePanelEmpty => (regionNewsProp.articlePanel?.Notices.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostInfoPanelVisible => (regionNewsProp.articlePanel?.Info.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostInfoPanelEmpty => (regionNewsProp.articlePanel?.Info.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+#nullable enable
+        private LauncherGameNewsData? GameNewsData { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameNews?.Content; }
+        public bool IsPostPanelAvailable => (GameNewsData?.NewsPost?.Count ?? 0) > 0;
+        public bool IsCarouselPanelAvailable => (GameNewsData?.NewsCarousel?.Count ?? 0) > 0;
+
+        public Visibility IsPostEventPanelVisible => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostEventPanelEmpty => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelVisible => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelEmpty => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelVisible => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelEmpty => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
         public int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
+#nullable restore
 
         public bool IsEventsPanelShow
         {

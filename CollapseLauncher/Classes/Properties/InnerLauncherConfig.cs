@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.InvokeProp;
@@ -98,9 +97,10 @@ namespace CollapseLauncher
             return list;
         }
 
-        public static async ValueTask<List<StackPanel>> BuildGameRegionListUI(string?        gameCategory,
+        public static List<StackPanel> BuildGameRegionListUI(string?        gameCategory,
                                                                               List<string?>? gameCategoryList = null)
         {
+            ArgumentException.ThrowIfNullOrEmpty(gameCategory);
             gameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(gameCategory);
             List<StackPanel> list = [];
             if (gameCategoryList == null)
@@ -110,7 +110,10 @@ namespace CollapseLauncher
 
             foreach (string? region in gameCategoryList)
             {
-                PresetConfig? config              = await LauncherMetadataHelper.GetMetadataConfig(gameCategory, region);
+                if (region == null)
+                    throw new NullReferenceException($"Region name is empty!");
+
+                PresetConfig? config              = LauncherMetadataHelper.LauncherMetadataConfig?[gameCategory]?[region];
                 StackPanel    panel               = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock     gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock? gameRegionTranslatedTextBlock =

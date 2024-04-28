@@ -205,8 +205,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.8/CL-1.73.8-stable_Installer.exe)
 > **Note**: The version for this build is `1.73.8` (Released on: March 26th, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.8-pre/CL-1.73.8-preview_Installer.exe)
-> **Note**: The version for this build is `1.73.8` (Released on: March 26th, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.0-pre/CL-1.80-preview_Installer.exe)
+> **Note**: The version for this build is `1.80.0` (Released on: April 12th, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -273,7 +273,7 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/DeepChirp"><img src="https://avatars.githubusercontent.com/u/66902050?v=4?s=100" width="100px;" alt="DeepChirp"/><br /><sub><b>DeepChirp</b></sub></a><br /><a href="#translation-DeepChirp" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Faelayis"><img src="https://avatars.githubusercontent.com/u/48393914?v=4?s=100" width="100px;" alt="Faelayis"/><br /><sub><b>Faelayis</b></sub></a><br /><a href="#translation-Faelayis" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://twitter.com/hasukay__"><img src="https://avatars.githubusercontent.com/u/22459107?v=4?s=100" width="100px;" alt="Hasukay"/><br /><sub><b>Hasukay</b></sub></a><br /><a href="#translation-Hasukay" title="Translation">🌍</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kajitsy"><img src="https://avatars.githubusercontent.com/u/94784342?v=4?s=100" width="100px;" alt="Kajitsy"/><br /><sub><b>Kajitsy</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=Kajitsy" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kajitsy"><img src="https://avatars.githubusercontent.com/u/94784342?v=4?s=100" width="100px;" alt="Kajitsy"/><br /><sub><b>Kajitsy</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=Kajitsy" title="Documentation">📖</a> <a href="#translation-Kajitsy" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/despenser08"><img src="https://avatars.githubusercontent.com/u/50207925?v=4?s=100" width="100px;" alt="despenser08"/><br /><sub><b>despenser08</b></sub></a><br /><a href="#translation-despenser08" title="Translation">🌍</a></td>
     </tr>
     <tr>
@@ -283,6 +283,7 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/muscularcandy67"><img src="https://avatars.githubusercontent.com/u/12277635?v=4?s=100" width="100px;" alt="Iskandar Montano"/><br /><sub><b>Iskandar Montano</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=muscularcandy67" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Scighost"><img src="https://avatars.githubusercontent.com/u/61003590?v=4?s=100" width="100px;" alt="Scighost"/><br /><sub><b>Scighost</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/issues?q=author%3AScighost" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/IhoFox"><img src="https://avatars.githubusercontent.com/u/133899447?v=4?s=100" width="100px;" alt="IhoFox"/><br /><sub><b>IhoFox</b></sub></a><br /><a href="#translation-IhoFox" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kujou-kju"><img src="https://avatars.githubusercontent.com/u/23724383?v=4?s=100" width="100px;" alt="kujou"/><br /><sub><b>kujou</b></sub></a><br /><a href="#translation-kujou-kju" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>

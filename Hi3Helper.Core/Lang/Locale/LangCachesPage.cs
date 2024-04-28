@@ -17,6 +17,7 @@
                 public string ListCol6 { get; set; } = LangFallback?._CachesPage.ListCol6;
                 public string ListCol7 { get; set; } = LangFallback?._CachesPage.ListCol7;
                 public string Status1 { get; set; } = LangFallback?._CachesPage.Status1;
+                public string Status2 { get; set; } = LangFallback?._CachesPage.Status2;
                 public string CachesStatusHeader1 { get; set; } = LangFallback?._CachesPage.CachesStatusHeader1;
                 public string CachesStatusCancelled { get; set; } = LangFallback?._CachesPage.CachesStatusCancelled;
                 public string CachesStatusFetchingType { get; set; } = LangFallback?._CachesPage.CachesStatusFetchingType;
