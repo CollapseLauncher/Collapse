@@ -982,7 +982,7 @@ namespace CollapseLauncher
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();
 
-            ComboBoxGameRegion.ItemsSource = await BuildGameRegionListUI(gameName);
+            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(gameName);
 
             var indexCategory                    = gameCollection.IndexOf(gameName!);
             if (indexCategory < 0) indexCategory = 0;
@@ -1002,14 +1002,14 @@ namespace CollapseLauncher
                                                                   gameRegionLookup);
         }
         
-        private async void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
+        private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
             object? selectedItem = ((ComboBox)sender).SelectedItem;
             if (selectedItem == null) return;
             string? selectedCategoryString = GetComboBoxGameRegionValue(selectedItem);
             // REMOVED: GetConfigV2Regions(SelectedCategoryString);
             
-            ComboBoxGameRegion.ItemsSource   = await BuildGameRegionListUI(selectedCategoryString);
+            ComboBoxGameRegion.ItemsSource   = BuildGameRegionListUI(selectedCategoryString);
             ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(selectedCategoryString);
         }
         #nullable disable

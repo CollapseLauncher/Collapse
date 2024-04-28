@@ -149,22 +149,26 @@ namespace CollapseLauncher.Dialogs
             ComboBox SourceGame = new ComboBox();
             ComboBox TargetGame = new ComboBox();
 
-            SelectionChangedEventHandler SourceGameChangedArgs = new SelectionChangedEventHandler(async (object sender, SelectionChangedEventArgs e) =>
-            {
-                TargetGame.IsEnabled = true;
-                Dialog.IsSecondaryButtonEnabled = false;
-                TargetGame.ItemsSource = await InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, InstallationConvert.GetConvertibleNameList(
-                                                                                         InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox).SelectedItem)));
-            });
-            SelectionChangedEventHandler TargetGameChangedArgs = new SelectionChangedEventHandler((object sender, SelectionChangedEventArgs e) =>
-            {
-                if ((sender as ComboBox).SelectedIndex != -1)
-                    Dialog.IsSecondaryButtonEnabled = true;
-            });
+            SelectionChangedEventHandler SourceGameChangedArgs = (object sender, SelectionChangedEventArgs e) =>
+                                                                 {
+                                                                     TargetGame.IsEnabled            = true;
+                                                                     Dialog.IsSecondaryButtonEnabled = false;
+                                                                     TargetGame.ItemsSource =
+                                                                         InnerLauncherConfig
+                                                                            .BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
+                                                                                 InstallationConvert
+                                                                                    .GetConvertibleNameList(
+                                                                        InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox).SelectedItem)));
+                                                                 };
+            SelectionChangedEventHandler TargetGameChangedArgs = (object sender, SelectionChangedEventArgs e) =>
+                                                                 {
+                                                                     if ((sender as ComboBox).SelectedIndex != -1)
+                                                                         Dialog.IsSecondaryButtonEnabled = true;
+                                                                 };
             SourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = await InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, new List<string>(ConvertibleRegions.Keys)),
+                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, new List<string>(ConvertibleRegions.Keys)),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };

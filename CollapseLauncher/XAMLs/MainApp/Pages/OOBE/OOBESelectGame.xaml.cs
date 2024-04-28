@@ -144,10 +144,10 @@ namespace CollapseLauncher.Pages.OOBE
             await Task.Delay((int)(dur * 1000));
         }
 
-        private async void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedCategory = GetComboBoxGameRegionValue(((ComboBox)sender).SelectedValue);
-            GameRegionSelect.ItemsSource = await BuildGameRegionListUI(SelectedCategory);
+            GameRegionSelect.ItemsSource = BuildGameRegionListUI(SelectedCategory);
             GameRegionSelect.IsEnabled   = true;
             NextPage.IsEnabled           = false;
             NextPage.Opacity             = 0;

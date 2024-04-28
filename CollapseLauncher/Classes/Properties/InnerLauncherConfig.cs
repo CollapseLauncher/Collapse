@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.InvokeProp;
@@ -98,7 +97,7 @@ namespace CollapseLauncher
             return list;
         }
 
-        public static async ValueTask<List<StackPanel>> BuildGameRegionListUI(string?        gameCategory,
+        public static List<StackPanel> BuildGameRegionListUI(string?        gameCategory,
                                                                               List<string?>? gameCategoryList = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(gameCategory);
