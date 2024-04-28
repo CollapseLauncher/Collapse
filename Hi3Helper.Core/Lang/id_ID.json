@@ -220,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Status",
     "Status1": "Klik \"Periksa Cepat\" atau \"Periksa Penuh\" untuk memeriksa pembaruan cache",
+    "Status2": "Mencoba untuk memeriksa ketersediaan asset cache \"{0}\": {1}",
     "CachesStatusHeader1": "Total Progres",
     "CachesStatusCancelled": "Proses telah dibatalkan!",
     "CachesStatusFetchingType": "Memuat Tipe Cache: {0}",
