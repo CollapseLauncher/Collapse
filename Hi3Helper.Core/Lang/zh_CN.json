@@ -220,6 +220,7 @@
     "ListCol6": "远程CRC",
     "ListCol7": "状态",
     "Status1": "点击“快速检查”或“完整检查”以检查缓存的更新情况",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "总进度",
     "CachesStatusCancelled": "操作已被取消！",
     "CachesStatusFetchingType": "正在获取缓存类型：{0}",
