@@ -580,64 +580,6 @@ namespace CollapseLauncher
             }
         }
 
-        // ReSharper disable once UnusedParameter.Local
-        private async Task FetchXMFFileOld(HttpClient _httpClient, List<FilePropertiesRemote> assetIndex,
-                                        SenadinaFileIdentifier xmfBaseIdentifier, SenadinaFileIdentifier xmfCurrentIdentifier,
-                                        SenadinaFileIdentifier patchConfigIdentifier, string _repoURL, CancellationToken token)
-        {
-            // Set Primary XMF Path
-            string xmfPriPath = Path.Combine(_gamePath!, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
-            // Set Secondary XMF Path
-            string xmfSecPath = Path.Combine(_gamePath!, $"BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
-
-#nullable enable
-            // Initialize patch config info variable
-            BlockPatchManifest? patchConfigInfo = null;
-
-            // Initialize temporary XMF stream
-            using MemoryStream tempXMFStream = new();
-            using Stream secondaryXMFStream = _isOnlyRecoverMain ? await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token) : await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token);
-            using Stream dataXMFStream = _isOnlyRecoverMain ? xmfBaseIdentifier!.fileStream! : xmfCurrentIdentifier!.fileStream!;
-
-            // Fetch only RecoverMain is disabled
-            using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath)!, FileMode.Create, FileAccess.ReadWrite))
-            {
-                // Download the secondary XMF into MemoryStream
-                await DoCopyStreamProgress(secondaryXMFStream, fs1, token);
-
-                // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
-                if (!_isOnlyRecoverMain)
-                {
-                    using (FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write))
-                    {
-                        fs1.Position = 0;
-                        fs1.CopyTo(fs2);
-                    }
-                }
-            }
-
-            // Get the estimated size of the local xmf size
-            FileInfo xmfFileInfoLocal = new FileInfo(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
-            long? estimatedXmfSize = !xmfFileInfoLocal.Exists ? null : xmfFileInfoLocal.Length;
-
-            // Copy the source stream into temporal stream
-            await DoCopyStreamProgress(dataXMFStream, tempXMFStream, token, estimatedXmfSize);
-            tempXMFStream.Position = 0;
-
-            // Fetch for PatchConfig.xmf file (Block patch metadata)
-            if (!_isOnlyRecoverMain)
-            {
-                patchConfigInfo = await FetchPatchConfigXMFFile(tempXMFStream, patchConfigIdentifier, _httpClient, token);
-            }
-
-            // Reset the temporal stream pos.
-            tempXMFStream.Position = 0;
-
-            // After all completed, then Deserialize the XMF to build the asset index
-            BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, tempXMFStream);
-#nullable disable
-        }
-
 #nullable enable
         // ReSharper disable once UnusedParameter.Local
         private async Task FetchXMFFile(HttpClient _httpClient, List<FilePropertiesRemote> assetIndex,
@@ -721,16 +663,13 @@ namespace CollapseLauncher
             // Fetch for PatchConfig.xmf file if available (Block patch metadata)
             if (!_isOnlyRecoverMain && isPatchConfigXMFStreamExist && isPlatformXMFStreamExist)
             {
-                patchConfigInfo = await FetchPatchConfigXMFFile(tempXMFMetaStream, patchConfigIdentifier, _httpClient, token);
+                patchConfigInfo = await FetchPatchConfigXMFFile(isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, patchConfigIdentifier, _httpClient, token);
             }
 
             if (isPlatformXMFStreamExist)
             {
-                // Reset the temporal stream pos.
-                tempXMFMetaStream.Position = 0;
-
                 // After all completed, then Deserialize the XMF to build the asset index
-                BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, tempXMFMetaStream);
+                BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, !isEitherXMFExist);
             }
 #nullable restore
         }
@@ -759,10 +698,13 @@ namespace CollapseLauncher
         }
 
 #nullable enable
-        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream)
+        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream, bool isMeta)
         {
+            // Reset the temporal stream pos.
+            xmfStream.Position = 0;
+
             // Initialize and parse the XMF file
-            XMFParser xmfParser = new XMFParser(xmfPath, xmfStream, true);
+            XMFParser xmfParser = new XMFParser(xmfPath, xmfStream, isMeta);
 
             // Do loop and assign the block asset to asset index
             for (int i = 0; i < xmfParser.BlockCount; i++)
