@@ -220,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Estado",
     "Status1": "Haz clic en \"Chequeo Rápido\" o \"Chequeo Completo\" para comprobar Cachés para actualizaciones",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "Progreso Total",
     "CachesStatusCancelled": "¡La operación fue cancelada!",
     "CachesStatusFetchingType": "Obteniendo Tipo de Cachés: {0}",
