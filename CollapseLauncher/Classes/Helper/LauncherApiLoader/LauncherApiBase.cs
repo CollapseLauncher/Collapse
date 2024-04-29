@@ -188,13 +188,29 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
 
             string? localeLang  = Locale.Lang.LanguageID.ToLower();
+            // HACK! HoYo API does not respond with certain locale, force change locale.
+            switch (localeLang)
+            {
+                case "es-419":
+                    localeLang = "es-es";
+                    break;
+                case "pt-br":
+                    localeLang = "pt-pt";
+                    break;
+                //case "pl-pl":
+                //    localeLang = "en-us";
+                //    break;
+                //case "uk-ua":
+                //    localeLang = "en-us";
+                //    break;
+            }
             bool    isMultilingual = PresetConfig.LauncherSpriteURLMultiLang ?? false;
 
             LauncherGameNews? regionResourceProp =
                 await LoadLauncherNewsInner(isMultilingual, localeLang, PresetConfig, onTimeoutRoutine, token);
             int backgroundVersion = regionResourceProp?.Content?.Background?.BackgroundVersion ?? 5;
 
-            if (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai)
+            if (regionResourceProp?.Content?.Background == null || (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai))
             {
                 string? localeFallback = PresetConfig.LauncherSpriteURLMultiLangFallback ?? "en-us";
                 regionResourceProp =

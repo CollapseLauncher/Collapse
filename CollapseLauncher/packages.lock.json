@@ -123,11 +123,11 @@
       },
       "H.NotifyIcon.WinUI": {
         "type": "Direct",
-        "requested": "[2.0.129, )",
-        "resolved": "2.0.129",
-        "contentHash": "pQo5zTSDwCe0pqMaHqg2K0zQEbjECQKnjNoN/LVeBGotRPmrYVGIE7iVq1nGQaMhQ15pPmBnz4g8RL6p/CYjZQ==",
+        "requested": "[2.0.124, )",
+        "resolved": "2.0.124",
+        "contentHash": "ME3h/+AknWAq+blhKsx3le7mYnCN4T3ez89ZRymVGbC3r0iViTirnzuZCb85p+SYfYgnNOUdU0ibgg4dHVt+oQ==",
         "dependencies": {
-          "H.NotifyIcon": "2.0.129",
+          "H.NotifyIcon": "2.0.124",
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
       },
@@ -360,18 +360,18 @@
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
-        "resolved": "2.0.129",
-        "contentHash": "3yrlWN2ckNAw23uj+GgZIXTQNk9MHi/3JE6cO64soG+I2YIhhGCK+j/CHeM3Mw/SPX7uVVz63LeEabUqoFKTQA==",
+        "resolved": "2.0.124",
+        "contentHash": "HP8OdWxrujKbLlmpcnNd+B9MGygGZ4g7RbzlBUmwNvJPVUfL7H+OQoiiCKUT/pfLzX75Nt0smE1RIJ/+SLeFfg==",
         "dependencies": {
           "System.Drawing.Common": "8.0.0"
         }
       },
       "H.NotifyIcon": {
         "type": "Transitive",
-        "resolved": "2.0.129",
-        "contentHash": "xdCv9tTFBZ+vSr14ibGJmgEVA26E2of3GfujTUtWPY7RC4v3/hgJt3FjnBYM++yjvL9YkMyIs6O6KkBdBvOCqw==",
+        "resolved": "2.0.124",
+        "contentHash": "wifXuToNRNBxW0RIb2H8gLlUeDOjScuakbwFyk7y/OFPZs15PF1uSMuOORzgSDUfT+NHjeaKlNHlinzLw7Ct9Q==",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.0.129"
+          "H.GeneratedIcons.System.Drawing": "2.0.124"
         }
       },
       "Microsoft.CSharp": {
