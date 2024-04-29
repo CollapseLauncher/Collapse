@@ -220,7 +220,7 @@
     "ListCol6": "远程CRC",
     "ListCol7": "状态",
     "Status1": "点击“快速检查”或“完整检查”以检查缓存的更新情况",
-    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
+    "Status2": "正在尝试确认“{0}”缓存资源可用性：{1}",
     "CachesStatusHeader1": "总进度",
     "CachesStatusCancelled": "操作已被取消！",
     "CachesStatusFetchingType": "正在获取缓存类型：{0}",
@@ -886,8 +886,8 @@
   },
 
   "_UpdatePage": {
-    "PageTitle1": "有可用",
-    "PageTitle2": "更新！",
+    "PageTitle1": "更新",
+    "PageTitle2": "已可用！",
     "VerCurLabel": "当前版本：",
     "VerNewLabel": "最新版本：",
     "VerChannelLabel": "更新频道：",
