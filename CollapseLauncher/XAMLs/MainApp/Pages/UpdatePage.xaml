@@ -26,7 +26,7 @@
                        FontWeight="Light"
                        Style="{ThemeResource DisplayTextBlockStyle}"
                        Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" />
-            <TextBlock Margin="0,-22,0,0"
+            <TextBlock Margin="0,-18,0,0"
                        FontSize="32"
                        FontWeight="ExtraBold"
                        Style="{ThemeResource DisplayTextBlockStyle}"
