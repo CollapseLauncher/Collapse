@@ -857,10 +857,12 @@
                                     Orientation="Horizontal"
                                     Margin="0,0,0,2">
                             <TextBlock FontSize="16"
-                                       Text="😆" />
+                                       Text="😆"
+                                       Foreground="{ThemeResource TextFillColorInverse}"/>
                             <TextBlock Margin="8,2,0,0"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium">
+                                       FontWeight="Medium"
+                                       Foreground="{ThemeResource TextFillColorInverse}">
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}" />
                                 <Run x:Name="UpdateAvailableLabel"
                                      FontWeight="Bold"
@@ -885,11 +887,11 @@
                                        Text=""
                                        VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"
-                                       Foreground="{ThemeResource SystemColorCaptionTextBrush}"/>
+                                       Foreground="{ThemeResource TextFillColorInverse}"/>
                             <TextBlock Margin="8,0,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Foreground="{ThemeResource SystemColorCaptionTextBrush}"
+                                       Foreground="{ThemeResource TextFillColorInverse}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" />
                         </StackPanel>
                     </Grid>
