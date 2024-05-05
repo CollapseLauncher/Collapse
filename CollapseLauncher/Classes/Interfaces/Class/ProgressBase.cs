@@ -923,8 +923,8 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual void UpdateProgress()
         {
-            _progress!.ProgressPerFilePercentage = double.IsInfinity(_progress.ProgressPerFilePercentage) ? 0 : _progress.ProgressPerFilePercentage;
-            _progress.ProgressTotalPercentage = double.IsInfinity(_progress.ProgressTotalPercentage) ? 0 : _progress.ProgressTotalPercentage;
+            _progress!.ProgressPerFilePercentage = _progress.ProgressPerFilePercentage.UnNaNInfinity();
+            _progress.ProgressTotalPercentage = _progress.ProgressTotalPercentage.UnNaNInfinity();
             ProgressChanged?.Invoke(this, _progress);
         }
 
