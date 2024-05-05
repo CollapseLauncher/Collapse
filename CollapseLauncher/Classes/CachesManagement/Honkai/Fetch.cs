@@ -272,8 +272,8 @@ namespace CollapseLauncher
                         UpdateStatus();
 
                         // Check for the URL availability and is not available, then skip.
-                        using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(content.ConcatURL, cancellationToken);
-                        LogWriteLine($"The Cache {type} asset: {content.N} " + (urlStatus!.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
+                        var urlStatus = await client.GetURLStatusCode(content.ConcatURL, cancellationToken);
+                        LogWriteLine($"The Cache {type} asset: {content.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
                         if (!urlStatus.IsSuccessStatusCode) return;
                     }

@@ -369,7 +369,7 @@ namespace CollapseLauncher
 
             // Set the URL and try get the status
             string cgURL = CombineURLFromString(baseURL, (_audioLanguage == AudioLanguageType.Japanese ? cgInfo.CgPathHighBitrateJP : cgInfo.CgPathHighBitrateCN) + ".usm");
-            using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(cgURL, token);
+            UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode(cgURL, token);
 
             LogWriteLine($"The CG asset: {(_audioLanguage == AudioLanguageType.Japanese ? cgInfo.CgPathHighBitrateJP : cgInfo.CgPathHighBitrateCN)} " + 
                          (urlStatus!.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
@@ -496,7 +496,7 @@ namespace CollapseLauncher
 
             // Set the URL and try get the status
             string audioURL = CombineURLFromString(string.Format(_audioBaseRemotePath!, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer!.Manifest!.ManifestAudio!.ManifestAudioRevision), audioInfo.Path);
-            using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(audioURL, token);
+            UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode(audioURL, token);
 
             LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus!.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
