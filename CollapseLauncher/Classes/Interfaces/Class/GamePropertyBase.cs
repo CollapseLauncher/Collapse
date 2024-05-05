@@ -1,8 +1,8 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Extension;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Threading;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Interfaces
@@ -24,7 +24,7 @@ namespace CollapseLauncher.Interfaces
             _parentUI = parentUI;
             _gamePathField = gamePath;
             _gameRepoURL = gameRepoURL;
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
             AssetEntry = new ObservableCollection<IAssetProperty>();
 
             // If the version override is not null, then assign the override value
@@ -35,6 +35,7 @@ namespace CollapseLauncher.Interfaces
         }
 
         protected const int _bufferLength = 4 << 10;
+        protected const int _bufferMediumLength = 512 << 10;
         protected const int _bufferBigLength = 1 << 20;
         protected const int _sizeForMultiDownload = 10 << 20;
         protected const string _userAgent = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
@@ -42,7 +43,7 @@ namespace CollapseLauncher.Interfaces
         protected bool _isVersionOverride { get; init; }
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
-        protected CancellationTokenSource _token { get; set; }
+        protected CancellationTokenSourceWrapper _token { get; set; }
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }
         protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : _gameVersionManager.GetGameExistingVersion().Value; }

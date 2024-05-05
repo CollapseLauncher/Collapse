@@ -1,52 +1,27 @@
-﻿using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.LauncherApiLoader;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Win32;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public class CancellationTokenSourceWrapper : CancellationTokenSource
-    {
-        public bool IsDisposed;
-        public bool IsCancelled = false;
-
-        public new async ValueTask CancelAsync()
-        {
-            await base.CancelAsync();
-            IsCancelled = true;
-        }
-        protected override void Dispose(bool disposing)
-        {
-            IsDisposed = true;
-            base.Dispose(disposing);
-        }
-    }
-
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]

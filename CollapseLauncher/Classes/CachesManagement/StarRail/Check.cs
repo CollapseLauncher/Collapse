@@ -39,38 +39,43 @@ namespace CollapseLauncher
             string baseIFixPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\IFix\Windows");
             string baseIFixPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\IFix\Windows");
 
-            await Task.Run(() =>
+            try
             {
-                try
+                // Do check in parallelization.
+                await Parallel.ForEachAsync(assetIndex!, new ParallelOptions
                 {
-                    // Do check in parallelization.
-                    Parallel.ForEach(assetIndex!, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
+                    MaxDegreeOfParallelism = _threadCount,
+                    CancellationToken = token
+                }, async (asset, threadToken) =>
+                {
+                    switch (asset!.AssetType)
                     {
-                        switch (asset!.AssetType)
-                        {
-                            case SRAssetType.DesignData:
-                                CheckAsset(asset, returnAsset, baseDesignDataPathPersistent, baseDesignDataPathStreaming, token);
-                                break;
-                            case SRAssetType.Lua:
-                                CheckAsset(asset, returnAsset, baseLuaPathPersistent, baseLuaPathStreaming, token);
-                                break;
-                            case SRAssetType.IFix:
-                                CheckAsset(asset, returnAsset, baseIFixPathPersistent, baseIFixPathStreaming, token);
-                                break;
-                        }
-                    });
-                }
-                catch (AggregateException ex)
-                {
-                    throw ex.Flatten().InnerExceptions.First();
-                }
-            });
+                        case SRAssetType.DesignData:
+                            await CheckAsset(asset, returnAsset, baseDesignDataPathPersistent, baseDesignDataPathStreaming, threadToken);
+                            break;
+                        case SRAssetType.Lua:
+                            await CheckAsset(asset, returnAsset, baseLuaPathPersistent, baseLuaPathStreaming, threadToken);
+                            break;
+                        case SRAssetType.IFix:
+                            await CheckAsset(asset, returnAsset, baseIFixPathPersistent, baseIFixPathStreaming, threadToken);
+                            break;
+                    }
+                }).ConfigureAwait(false);
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Return the asset index
             return returnAsset;
         }
 
-        private void CheckAsset(SRAsset asset, List<SRAsset> returnAsset, string basePersistent, string baseStreaming, CancellationToken token)
+        private async ValueTask CheckAsset(SRAsset asset, List<SRAsset> returnAsset, string basePersistent, string baseStreaming, CancellationToken token)
         {
             // Increment the count and update the status
             lock (this)
@@ -106,7 +111,7 @@ namespace CollapseLauncher
             using (FileStream fs = new FileStream(asset.LocalName, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // Calculate the asset CRC (MD5)
-                byte[] hashArray = CheckHash(fs, MD5.Create(), token);
+                byte[] hashArray = await CheckHashAsync(fs, MD5.Create(), token);
 
                 // If the asset CRC doesn't match, then add the file to asset index.
                 if (!IsArrayMatch(asset.Hash, hashArray))

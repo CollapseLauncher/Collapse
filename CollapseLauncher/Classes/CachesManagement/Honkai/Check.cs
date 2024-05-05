@@ -27,31 +27,35 @@ namespace CollapseLauncher
 
             // Reset stopwatch
             RestartStopwatch();
-
-            await Task.Run(() =>
+            try
             {
-                try
+                // Create the cache directory if it doesn't exist
+                if (!Directory.Exists(_gamePath))
                 {
-                    // Create the cache directory if it doesn't exist
-                    if (!Directory.Exists(_gamePath))
-                    {
-                        Directory.CreateDirectory(_gamePath!);
-                    }
-
-                    // Check for unused files
-                    CheckUnusedAssets(assetIndex, returnAsset);
-
-                    // Do check in parallelization.
-                    Parallel.ForEach(assetIndex!, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
-                    {
-                        CheckAsset(asset, returnAsset, token);
-                    });
+                    Directory.CreateDirectory(_gamePath!);
                 }
-                catch (AggregateException ex)
+
+                // Check for unused files
+                CheckUnusedAssets(assetIndex, returnAsset);
+
+                // Do check in parallelization.
+                await Parallel.ForEachAsync(assetIndex!, new ParallelOptions
                 {
-                    throw ex.Flatten().InnerExceptions.First();
-                }
-            });
+                    MaxDegreeOfParallelism = _threadCount,
+                    CancellationToken = token
+                }, async (asset, localToken) =>
+                {
+                    await CheckAsset(asset, returnAsset, localToken);
+                }).ConfigureAwait(false);
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Return the asset index
             return returnAsset;
@@ -100,15 +104,12 @@ namespace CollapseLauncher
             }
         }
 
-        private void CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, CancellationToken token)
+        private async ValueTask CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, CancellationToken token)
         {
             // Increment the count and update the status
-            lock (this)
-            {
-                _progressTotalCountCurrent++;
-                _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
-                _status!.ActivityTotal = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressTotalCountCurrent, _progressTotalCount);
-            }
+            Interlocked.Add(ref _progressTotalCountCurrent, 1);
+            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
+            _status!.ActivityTotal = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressTotalCountCurrent, _progressTotalCount);
 
             // Assign the file info.
             FileInfo fileInfo = new FileInfo(asset.ConcatPath!);
@@ -137,7 +138,7 @@ namespace CollapseLauncher
             using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // Calculate the asset CRC (SHA1)
-                byte[] hashArray = CheckHash(fs, new HMACSHA1(_gameSalt!), token);
+                byte[] hashArray = await CheckHashAsync(fs, new HMACSHA1(_gameSalt!), token);
 
                 // If the asset CRC doesn't match, then add the file to asset index.
                 if (!IsArrayMatch(asset.CRCArray, hashArray))

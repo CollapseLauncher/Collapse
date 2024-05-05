@@ -106,7 +106,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
         */
 
-        protected void ResetToken() => _token = new CancellationTokenSource();
+        protected void ResetToken() => _token = new CancellationTokenSourceWrapper();
 
         public void Dispose()
         {
@@ -575,7 +575,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
-                hashLocal = await Task.Run(() => base.CheckHash(fs, MD5.Create(), token, true));
+                hashLocal = await base.CheckHashAsync(fs, MD5.Create(), token, true).ConfigureAwait(false);
             }
 
             // Check for the hash differences. If found, then show dialog to delete or cancel the process
@@ -1337,7 +1337,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
-#endregion
+        #endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingSteamInstallation()

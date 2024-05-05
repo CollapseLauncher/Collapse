@@ -37,22 +37,23 @@ namespace CollapseLauncher
             CheckRedundantFiles(brokenAssetIndex);
 
             // Await the task for parallel processing
-            await Task.Run(() =>
+            try
             {
-                try
+                // Await the task for parallel processing
+                // and iterate assetIndex and check it using different method for each type and run it in parallel
+                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    // Await the task for parallel processing
-                    // and iterate assetIndex and check it using different method for each type and run it in parallel
-                    Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
-                    {
-                        CheckAssetAllType(asset, brokenAssetIndex, token);
-                    });
-                }
-                catch (AggregateException ex)
-                {
-                    throw ex.Flatten().InnerExceptions.First();
-                }
-            }).ConfigureAwait(false);
+                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken).ConfigureAwait(false);
+                });
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Re-add the asset index with a broken asset index
             assetIndex.Clear();
@@ -123,7 +124,7 @@ namespace CollapseLauncher
             MoveFolderContent(videoPersistentPath, videoAsbPath);
         }
 
-        private void CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
+        private async ValueTask CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
@@ -219,7 +220,7 @@ namespace CollapseLauncher
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
+                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);

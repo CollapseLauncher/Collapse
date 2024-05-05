@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Animation;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
 #if USEFFMPEGFORVIDEOBG
 using FFmpegInteropX;

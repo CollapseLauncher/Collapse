@@ -389,7 +389,7 @@ namespace CollapseLauncher.Interfaces
         protected virtual void ResetStatusAndProgress()
         {
             // Reset the cancellation token
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
 
             // Reset RepairAssetProperty list
             AssetEntry!.Clear();
@@ -404,7 +404,7 @@ namespace CollapseLauncher.Interfaces
         protected void ResetStatusAndProgressProperty()
         {
             // Reset cancellation token
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
 
             lock (_status!)
             {
@@ -688,14 +688,14 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HashTools
-        protected virtual byte[] CheckHash(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
             // Initialize MD5 instance and assign buffer
             byte[] buffer = new byte[_bufferBigLength];
 
             // Do read activity
             int read;
-            while ((read = stream!.Read(buffer)) > 0)
+            while ((read = await stream!.ReadAsync(buffer, token)) > 0)
             {
                 // Throw Cancellation exception if detected
                 token.ThrowIfCancellationRequested();
@@ -747,8 +747,7 @@ namespace CollapseLauncher.Interfaces
                 using (FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // Verify the patch file and if it doesn't match, then redownload it
-                    byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false))
-                                                .ConfigureAwait(false);
+                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false).ConfigureAwait(false);
                     if (!IsArrayMatch(patchCRC, patchHash.Span))
                     {
                         // Revert back the total size

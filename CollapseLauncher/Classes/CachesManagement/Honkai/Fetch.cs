@@ -56,13 +56,13 @@ namespace CollapseLauncher
                     (int, long) count = await FetchByType(type, httpClient, returnAsset, token);
 
                     // Write a log about the metadata
-                    LogWriteLine($"Cache Metadata [T: {type}]:",                         LogType.Default, true);
-                    LogWriteLine($"    Cache Count = {count.Item1}",                     LogType.NoTag,   true);
-                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag,   true);
+                    LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
+                    LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
+                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
 
                     // Increment the Total Size and Count
                     _progressTotalCount += count.Item1;
-                    _progressTotalSize  += count.Item2;
+                    _progressTotalSize += count.Item2;
                 }
             }
             finally
@@ -78,8 +78,8 @@ namespace CollapseLauncher
 
         private async Task BuildGameRepoURL(CancellationToken token)
         {
-            KianaDispatch dispatch      = null;
-            Exception     lastException = null;
+            KianaDispatch dispatch = null;
+            Exception lastException = null;
 
             foreach (string baseURL in _gameVersionManager!.GamePreset!.GameDispatchArrayURL!)
             {
@@ -118,13 +118,12 @@ namespace CollapseLauncher
 
         private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
 
-        private async Task<(int, long)> FetchByType(CacheAssetType type, Http httpClient, List<CacheAsset> assetIndex,
-                                                    CancellationToken token)
+        private async Task<(int, long)> FetchByType(CacheAssetType type, Http httpClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
-            _status!.ActivityStatus             = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
+            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
             _status.IsProgressTotalIndetermined = true;
-            _status.IsIncludePerFileIndicator   = false;
+            _status.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
             // Get the asset index properties
@@ -137,14 +136,13 @@ namespace CollapseLauncher
 #endif
 
             // Get a direct HTTP Stream
-            using HttpResponseInputStream remoteStream =
-                await HttpResponseInputStream.CreateStreamAsync(httpClient.GetHttpClient(), assetIndexURL, null, null,
-                                                                token);
+            await using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(
+                httpClient.GetHttpClient(), assetIndexURL, null, null, token);
 
             using XORStream stream = new XORStream(remoteStream);
 
             // Build the asset index and return the count and size of each type
-            (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex);
+            (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex, token);
 
             return returnValue;
         }
@@ -234,30 +232,33 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask<(int, long)> BuildAssetIndex(CacheAssetType   type, string baseURL, Stream stream,
-                                            List<CacheAsset> assetIndex)
+        private async ValueTask<(int, long)> BuildAssetIndex(CacheAssetType type, string baseURL, Stream stream,
+                                            List<CacheAsset> assetIndex, CancellationToken token)
         {
-            int  count = 0;
-            long size  = 0;
+            int count = 0;
+            long size = 0;
 
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            bool isFirst               = type == CacheAssetType.Data;
+            bool isFirst = type == CacheAssetType.Data;
             bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
-            BundleFile     bundleFile    = new BundleFile(stream);
+            BundleFile bundleFile = new BundleFile(stream);
             SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 
             // Try get the asset index file as byte[] and load it as TextAsset
-            byte[]    dataRaw       = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
+            byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
+
+            // Initialize local HTTP client
+            using HttpClient client = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = _threadCount });
 
             // Iterate lines of the TextAsset in parallel
             await Parallel.ForEachAsync(EnumerateCacheTextAsset(type, dataTextAsset.GetStringList(), baseURL),
                 new ParallelOptions
                 {
-                    CancellationToken = _token.Token,
+                    CancellationToken = token,
                     MaxDegreeOfParallelism = _threadCount
                 },
                 async (content, cancellationToken) =>
@@ -277,6 +278,7 @@ namespace CollapseLauncher
 
                         if (!urlStatus.IsSuccessStatusCode) return;
                     }
+
                     assetIndex.Add(content);
                 });
 
