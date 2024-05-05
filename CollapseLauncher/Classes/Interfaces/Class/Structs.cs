@@ -8,10 +8,15 @@ namespace CollapseLauncher
 {
     internal class TotalPerfileProgress
     {
-        public double ProgressPerFilePercentage;
-        public double ProgressTotalPercentage;
-        public double ProgressTotalEntryCount;
-        public double ProgressTotalSpeed;
+        private double _progressPerFilePercentage;
+        private double _progressTotalPercentage;
+        private double _progressTotalEntryCount;
+        private double _progressTotalSpeed;
+
+        public double ProgressPerFilePercentage { get => _progressPerFilePercentage; set => _progressPerFilePercentage = value.UnNaNInfinity(); }
+        public double ProgressTotalPercentage { get => _progressTotalPercentage; set => _progressTotalPercentage = value.UnNaNInfinity(); }
+        public double ProgressTotalEntryCount { get => _progressTotalEntryCount; set => _progressTotalEntryCount = value.UnNaNInfinity(); }
+        public double ProgressTotalSpeed { get => _progressTotalSpeed; set => _progressTotalSpeed = value.UnNaNInfinity(); }
 
         // Extension for IGameInstallManager
         public long ProgressPerFileDownload { get; set; }
