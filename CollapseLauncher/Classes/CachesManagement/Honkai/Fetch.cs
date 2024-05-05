@@ -36,7 +36,7 @@ namespace CollapseLauncher
                 await BuildGameRepoURL(token);
 
                 // Iterate type and do fetch
-                foreach (CacheAssetType type in Enum.GetValues(typeof(CacheAssetType)))
+                foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
                 {
                     // Skip for unused type
                     switch (type)
