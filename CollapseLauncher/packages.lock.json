@@ -123,19 +123,19 @@
       },
       "H.NotifyIcon.WinUI": {
         "type": "Direct",
-        "requested": "[2.0.129, )",
-        "resolved": "2.0.129",
-        "contentHash": "pQo5zTSDwCe0pqMaHqg2K0zQEbjECQKnjNoN/LVeBGotRPmrYVGIE7iVq1nGQaMhQ15pPmBnz4g8RL6p/CYjZQ==",
+        "requested": "[2.0.131, )",
+        "resolved": "2.0.131",
+        "contentHash": "W+C+Nl1XhsGMbPjW0GyK311qJa8uTeqXZJ7WziPjgqTPDis8tIhWKh+/nB9Jz0XPBSQntQzmIkrSiUwmohee9g==",
         "dependencies": {
-          "H.NotifyIcon": "2.0.129",
+          "H.NotifyIcon": "2.0.131",
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.60, )",
-        "resolved": "1.11.60",
-        "contentHash": "7Uzaf1Mxeuxne33LpTZfSsuRW4sRRX6FWMolOSxXcaAwcKvFevH2E+P6tb4dMWhdyUdBfi0N0yyPZ8hqodfEYg=="
+        "requested": "[1.11.61, )",
+        "resolved": "1.11.61",
+        "contentHash": "hqZASeEFHS9quHvfZSwaULoAJLWkOYVPiQjc3P9J4pQS8vSYzrP3bxe04Vm7vYYuxwbQhq9hCSVvZVLTyRaNaQ=="
       },
       "ImageEx": {
         "type": "Direct",
@@ -181,9 +181,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240404000, )",
-        "resolved": "1.5.240404000",
-        "contentHash": "B06pJv0nH31vf4Df72Qoa8A+i12LBUQ/3LhpyWVEQ83opd2a5U49XnqqYrK/T8J6Zf4JTxfLvKBSM5fgXb1YXg==",
+        "requested": "[1.5.240428000, )",
+        "resolved": "1.5.240428000",
+        "contentHash": "gV+UHuwtbZLypWIysNlIX+WHqcm7q3I00E5n+GiDrX28fHXW4yr56d6GwP2banJLDl/JVku5zX2YUOW5X2WRZQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
@@ -314,13 +314,13 @@
       },
       "TaskScheduler": {
         "type": "Direct",
-        "requested": "[2.10.1, )",
-        "resolved": "2.10.1",
-        "contentHash": "12b19oq9SOGbBq8745jQVQ08jAjgnsGXidQfclaZ94UZCtJRPkNfM8pz0D7pj04RHcQJQdZZnAUuC93reALqNg==",
+        "requested": "[2.11.0, )",
+        "resolved": "2.11.0",
+        "contentHash": "p9wH58XSNIyUtO7PIFAEldaKUzpYmlj+YWAfnUqBKnGxIZRY51I9BrsBGJijUVwlxrgmLLPUigRIv2ZTD4uPJA==",
         "dependencies": {
           "Microsoft.Win32.Registry": "5.0.0",
-          "System.Diagnostics.EventLog": "5.0.0",
-          "System.Security.AccessControl": "5.0.0"
+          "System.Diagnostics.EventLog": "8.0.0",
+          "System.Security.AccessControl": "6.0.1"
         }
       },
       "CommunityToolkit.WinUI.Animations": {
@@ -360,18 +360,18 @@
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
-        "resolved": "2.0.129",
-        "contentHash": "3yrlWN2ckNAw23uj+GgZIXTQNk9MHi/3JE6cO64soG+I2YIhhGCK+j/CHeM3Mw/SPX7uVVz63LeEabUqoFKTQA==",
+        "resolved": "2.0.131",
+        "contentHash": "QoNGQrhxzG+dQufa4xRjSqihMy5aVVVZqQUt0fLJbwhs7rcM4hpN1qVkZpZEkHsRgrHfFBC/Ursjh8STY/sg7A==",
         "dependencies": {
           "System.Drawing.Common": "8.0.0"
         }
       },
       "H.NotifyIcon": {
         "type": "Transitive",
-        "resolved": "2.0.129",
-        "contentHash": "xdCv9tTFBZ+vSr14ibGJmgEVA26E2of3GfujTUtWPY7RC4v3/hgJt3FjnBYM++yjvL9YkMyIs6O6KkBdBvOCqw==",
+        "resolved": "2.0.131",
+        "contentHash": "mdznQAfcJFehblFoDUvtmdm1Y9+u1eMN1ffORbdYv5EwreMxkCwvdj8qQn3qnUo9EIJ6h5Xdgqey9Nj4us8w7w==",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.0.129"
+          "H.GeneratedIcons.System.Drawing": "2.0.131"
         }
       },
       "Microsoft.CSharp": {
@@ -997,9 +997,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240404000, )",
-        "resolved": "1.5.240404000",
-        "contentHash": "B06pJv0nH31vf4Df72Qoa8A+i12LBUQ/3LhpyWVEQ83opd2a5U49XnqqYrK/T8J6Zf4JTxfLvKBSM5fgXb1YXg==",
+        "requested": "[1.5.240428000, )",
+        "resolved": "1.5.240428000",
+        "contentHash": "gV+UHuwtbZLypWIysNlIX+WHqcm7q3I00E5n+GiDrX28fHXW4yr56d6GwP2banJLDl/JVku5zX2YUOW5X2WRZQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
