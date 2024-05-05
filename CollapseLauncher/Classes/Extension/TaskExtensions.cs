@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hi3Helper;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,30 +21,47 @@ namespace CollapseLauncher.Extension
 
             int retryAttemptCurrent = 1;
             int lastTaskID = 0;
+            Exception? lastException = null;
+
             while (retryAttemptCurrent < retryAttempt)
             {
                 try
                 {
                     Task<T?> taskDelegated = taskFunction();
                     lastTaskID = taskDelegated.Id;
+                    lastException = null;
+
                     Task<T?> completedTask = await Task.WhenAny(taskDelegated, ThrowExceptionAfterTimeout<T>(timeout, taskDelegated, token));
                     if (completedTask == taskDelegated)
                         return await taskDelegated;
                 }
                 catch (TaskCanceledException) { throw; }
                 catch (OperationCanceledException) { throw; }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    lastException = ex;
+
                     if (actionOnRetry != null)
                         actionOnRetry(retryAttemptCurrent, retryAttempt ?? 0, timeout ?? 0, timeoutStep ?? 0);
 
-                    string msg = $"The operation for task ID: {lastTaskID} has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
+                    if (lastException is TimeoutException)
+                    {
+                        string msg = $"The operation for task ID: {lastTaskID} has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
+                        Logger.LogWriteLine(msg, LogType.Warning, true);
+                    }
+                    else
+                    {
+                        string msg = $"The operation for task ID: {lastTaskID} has thrown an exception! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}\r\n{ex}";
+                        Logger.LogWriteLine(msg, LogType.Error, true);
+                    }
+
                     retryAttemptCurrent++;
                     timeout += timeoutStep;
-
                     continue;
                 }
             }
+
+            if (lastException != null) throw lastException;
             throw new TimeoutException($"The operation for task ID: {lastTaskID} has timed out!");
         }
 
