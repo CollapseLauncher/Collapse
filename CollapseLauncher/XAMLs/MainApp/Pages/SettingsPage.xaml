@@ -374,7 +374,7 @@
                                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
-                                                     Text="2 - 8" />
+                                                     Text="2 - 16" />
                                             </TextBlock>
                                             <TextBlock Margin="0,16,0,0"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -436,7 +436,7 @@
                                        Width="128"
                                        VerticalAlignment="Bottom"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
-                                       Maximum="8"
+                                       Maximum="16"
                                        Minimum="2"
                                        SpinButtonPlacementMode="Compact"
                                        Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
