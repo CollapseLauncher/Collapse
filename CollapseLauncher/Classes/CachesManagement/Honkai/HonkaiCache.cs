@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Microsoft.UI.Xaml;
@@ -41,6 +42,9 @@ namespace CollapseLauncher
 
         private async Task<bool> CheckRoutine()
         {
+            // Reset status and progress
+            ResetStatusAndProgress();
+
             // Initialize _updateAssetIndex
             _updateAssetIndex = new List<CacheAsset>();
 

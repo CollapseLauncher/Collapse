@@ -61,39 +61,40 @@ namespace CollapseLauncher
             _status.IsAssetEntryPanelShow = true;
 
             // Await the task for parallel processing
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    // Reset stopwatch
-                    RestartStopwatch();
+                // Reset stopwatch
+                RestartStopwatch();
 
-                    // Iterate assetIndex and check it using different method for each type and run it in parallel
-                    Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
-                    {
-                        // Assign a task depends on the asset type
-                        switch (asset.FT)
-                        {
-                            case FileType.Generic:
-                                CheckGenericAssetType(asset, brokenAssetIndex, token);
-                                break;
-                            case FileType.Blocks:
-                                CheckAssetType(asset, brokenAssetIndex, token);
-                                break;
-                            case FileType.Audio:
-                                CheckAssetType(asset, brokenAssetIndex, token);
-                                break;
-                            case FileType.Video:
-                                CheckAssetType(asset, brokenAssetIndex, token);
-                                break;
-                        }
-                    });
-                }
-                catch (AggregateException ex)
+                // Iterate assetIndex and check it using different method for each type and run it in parallel
+                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    throw ex.Flatten().InnerExceptions.First();
-                }
-            }).ConfigureAwait(false);
+                    // Assign a task depends on the asset type
+                    switch (asset.FT)
+                    {
+                        case FileType.Generic:
+                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
+                            break;
+                        case FileType.Blocks:
+                            await CheckAssetType(asset, brokenAssetIndex, threadToken);
+                            break;
+                        case FileType.Audio:
+                            await CheckAssetType(asset, brokenAssetIndex, threadToken);
+                            break;
+                        case FileType.Video:
+                            await CheckAssetType(asset, brokenAssetIndex, threadToken);
+                            break;
+                    }
+                }).ConfigureAwait(false);
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Re-add the asset index with a broken asset index
             assetIndex.Clear();
@@ -101,7 +102,7 @@ namespace CollapseLauncher
         }
 
         #region AssetTypeCheck
-        private void CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async ValueTask CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
@@ -157,7 +158,7 @@ namespace CollapseLauncher
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
+                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -185,7 +186,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async ValueTask CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
@@ -285,7 +286,7 @@ namespace CollapseLauncher
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
+                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
