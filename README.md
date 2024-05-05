@@ -1,5 +1,8 @@
 
 <p align="center">
+  <img width="512px" height="auto" src="https://cdn.discordapp.com/attachments/1116150301649543230/1234954798088982538/CollapseLauncherIdolType.png?ex=66388b88&is=66373a08&hm=d467954d1ef0c9d26ba0ac29e6bb19cff0c382a5fe252a6abd0125fca7ad38af"/><br/>
+  <i>I know, it's not a good one. But at least we made it lol</i>
+  <i>~ neon-nyan</i>
   <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/NewBannerv2_color.webp"/>
 </p>
 
