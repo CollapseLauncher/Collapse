@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Shared.Region;
+using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -124,7 +125,11 @@ namespace CollapseLauncher
 
             await Parallel.ForEachAsync(
                 inputPathInfo.EnumerateFiles("*", SearchOption.AllDirectories),
-                this.tokenSource?.Token ?? default,
+                new ParallelOptions
+                {
+                    CancellationToken = this.tokenSource?.Token ?? default,
+                    MaxDegreeOfParallelism = LauncherConfig.AppCurrentThread
+                },
                 async (inputFileInfo, cancellationToken) =>
                 {
                     int _parentInputPathLength = inputPathInfo.Parent!.FullName.Length + 1;
@@ -151,7 +156,7 @@ namespace CollapseLauncher
                         FileInfo outputFileInfo = new FileInfo(outputTargetPath);
                         await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
                     }
-                });
+                }).ConfigureAwait(false);
 
             inputPathInfo.Delete(true);
             return outputDirPath;

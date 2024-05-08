@@ -4,7 +4,6 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -21,63 +20,54 @@ namespace CollapseLauncher
             if (inputFile!.Length < bufferSize)
                 bufferSize = (int)inputFile.Length;
 
-            bool isUseArrayPool = Environment.ProcessorCount * bufferSize > 2 << 20;
-            byte[] buffer = isUseArrayPool ? ArrayPool<byte>.Shared.Rent(bufferSize) : new byte[bufferSize];
+            byte[] buffer = new byte[bufferSize];
 
-            try
+            await using (FileStream inputStream = inputFile.OpenRead())
+            await using (FileStream outputStream = outputFile!.Exists && outputFile.Length <= inputFile.Length ?
+                             outputFile.Open(FileMode.Open) : outputFile.Create())
             {
-                await using (FileStream inputStream = inputFile.OpenRead())
-                    await using (FileStream outputStream = outputFile!.Exists && outputFile.Length <= inputFile.Length ?
-                                     outputFile.Open(FileMode.Open) : outputFile.Create())
+                // Just in-case if the previous move is incomplete, then update and seek to the last position.
+                if (outputFile.Length <= inputStream.Length && outputFile.Length >= bufferSize)
+                {
+                    // Do check by comparing the first and last 128K data of the file
+                    Memory<byte> firstCompareInputBytes = new byte[bufferSize];
+                    Memory<byte> firstCompareOutputBytes = new byte[bufferSize];
+                    Memory<byte> lastCompareInputBytes = new byte[bufferSize];
+                    Memory<byte> lastCompareOutputBytes = new byte[bufferSize];
+
+                    // Seek to the first data
+                    inputStream.Position = 0;
+                    await inputStream.ReadExactlyAsync(firstCompareInputBytes);
+                    outputStream.Position = 0;
+                    await outputStream.ReadExactlyAsync(firstCompareOutputBytes);
+
+                    // Seek to the last data
+                    long lastPos = outputStream.Length - bufferSize;
+                    inputStream.Position = lastPos;
+                    await inputStream.ReadExactlyAsync(lastCompareInputBytes);
+                    outputStream.Position = lastPos;
+                    await outputStream.ReadExactlyAsync(lastCompareOutputBytes);
+
+                    bool isMatch = firstCompareInputBytes.Span.SequenceEqual(firstCompareOutputBytes.Span)
+                                   && lastCompareInputBytes.Span.SequenceEqual(lastCompareOutputBytes.Span);
+
+                    // If the buffers don't match, then start the copy from the beginning
+                    if (!isMatch)
                     {
-                        // Just in-case if the previous move is incomplete, then update and seek to the last position.
-                        if (outputFile.Length <= inputStream.Length && outputFile.Length >= bufferSize)
-                        {
-                            // Do check by comparing the first and last 128K data of the file
-                            Memory<byte> firstCompareInputBytes  = new byte[bufferSize];
-                            Memory<byte> firstCompareOutputBytes = new byte[bufferSize];
-                            Memory<byte> lastCompareInputBytes   = new byte[bufferSize];
-                            Memory<byte> lastCompareOutputBytes  = new byte[bufferSize];
-
-                            // Seek to the first data
-                            inputStream.Position = 0;
-                            await inputStream.ReadExactlyAsync(firstCompareInputBytes);
-                            outputStream.Position = 0;
-                            await outputStream.ReadExactlyAsync(firstCompareOutputBytes);
-
-                            // Seek to the last data
-                            long lastPos = outputStream.Length - bufferSize;
-                            inputStream.Position = lastPos;
-                            await inputStream.ReadExactlyAsync(lastCompareInputBytes);
-                            outputStream.Position = lastPos;
-                            await outputStream.ReadExactlyAsync(lastCompareOutputBytes);
-
-                            bool isMatch = firstCompareInputBytes.Span.SequenceEqual(firstCompareOutputBytes.Span)
-                                           && lastCompareInputBytes.Span.SequenceEqual(lastCompareOutputBytes.Span);
-
-                            // If the buffers don't match, then start the copy from the beginning
-                            if (!isMatch)
-                            {
-                                inputStream.Position  = 0;
-                                outputStream.Position = 0;
-                            }
-                            else
-                            {
-                                UpdateSizeProcessed(uiRef, outputStream.Length);
-                            }
-                        }
-
-                        await MoveWriteFileInner(uiRef, inputStream, outputStream, buffer, token);
+                        inputStream.Position = 0;
+                        outputStream.Position = 0;
                     }
+                    else
+                    {
+                        UpdateSizeProcessed(uiRef, outputStream.Length);
+                    }
+                }
 
-                inputFile.IsReadOnly = false;
-                inputFile.Delete();
+                await MoveWriteFileInner(uiRef, inputStream, outputStream, buffer, token);
             }
-            catch { throw; } // Re-throw to 
-            finally
-            {
-                if (isUseArrayPool) ArrayPool<byte>.Shared.Return(buffer);
-            }
+
+            inputFile.IsReadOnly = false;
+            inputFile.Delete();
         }
 
         private async Task MoveWriteFileInner(FileMigrationProcessUIRef uiRef, FileStream inputStream, FileStream outputStream, byte[] buffer, CancellationToken token)
@@ -85,7 +75,7 @@ namespace CollapseLauncher
             int read;
             while ((read = await inputStream!.ReadAsync(buffer!, 0, buffer!.Length, token)) > 0)
             {
-                await outputStream!.WriteAsync(buffer, 0, read, token);
+                outputStream!.Write(buffer, 0, read);
                 UpdateSizeProcessed(uiRef, read);
             }
         }
