@@ -374,7 +374,7 @@
                                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
-                                                     Text="2 - 8" />
+                                                     Text="2 - 16" />
                                             </TextBlock>
                                             <TextBlock Margin="0,16,0,0"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -436,7 +436,7 @@
                                        Width="128"
                                        VerticalAlignment="Bottom"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
-                                       Maximum="8"
+                                       Maximum="16"
                                        Minimum="2"
                                        SpinButtonPlacementMode="Compact"
                                        Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
@@ -833,28 +833,36 @@
                         </Grid>
                     </Button>
                     <Grid x:Name="UpdateLoadingStatus"
-                          Width="300"
                           Margin="0,14,0,0"
-                          HorizontalAlignment="Left"
+                          HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          Visibility="Collapsed">
+                          Visibility="Collapsed"
+                          Padding="8"
+                          Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateLoadingStatus)}">
                         <ProgressRing Width="20"
                                       Height="20"
                                       HorizontalAlignment="Center"
                                       IsIndeterminate="True" />
                     </Grid>
                     <Grid x:Name="UpdateAvailableStatus"
-                          Width="300"
                           Margin="0,12,0,0"
-                          HorizontalAlignment="Left"
+                          HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          Visibility="Collapsed">
+                          Visibility="Collapsed"
+                          Padding="16,4"
+                          Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateAvailableStatus)}">
                         <StackPanel HorizontalAlignment="Center"
-                                    Orientation="Horizontal">
-                            <TextBlock FontSize="20"
-                                       Text="😆" />
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,2">
+                            <TextBlock FontSize="16"
+                                       Text="😆"
+                                       Foreground="{ThemeResource TextFillColorInverse}"/>
                             <TextBlock Margin="8,2,0,0"
-                                       VerticalAlignment="Center">
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       Foreground="{ThemeResource TextFillColorInverse}">
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}" />
                                 <Run x:Name="UpdateAvailableLabel"
                                      FontWeight="Bold"
@@ -865,17 +873,25 @@
                         </StackPanel>
                     </Grid>
                     <Grid x:Name="UpToDateStatus"
-                          Width="300"
                           Margin="0,12,0,0"
-                          HorizontalAlignment="Left"
+                          HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          Visibility="Collapsed">
+                          Visibility="Collapsed"
+                          Padding="16,4"
+                          Background="{ThemeResource SystemFillColorSuccessBrush}"
+                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpToDateStatus)}">
                         <StackPanel HorizontalAlignment="Center"
-                                    Orientation="Horizontal">
-                            <TextBlock FontSize="20"
-                                       Text="✅" />
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,2">
+                            <TextBlock FontSize="16"
+                                       Text=""
+                                       VerticalAlignment="Center"
+                                       FontFamily="{ThemeResource FontAwesomeSolid}"
+                                       Foreground="{ThemeResource TextFillColorInverse}"/>
                             <TextBlock Margin="8,0,0,0"
                                        VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       Foreground="{ThemeResource TextFillColorInverse}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" />
                         </StackPanel>
                     </Grid>

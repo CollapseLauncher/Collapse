@@ -220,7 +220,7 @@ namespace CollapseLauncher
 
                 float elapsedMin = ((float)currentStopwatch.ElapsedMilliseconds / 1000) / 60;
                 float minLeft = (elapsedMin / counter) * (counterGoal - counter);
-                TimeLeft = TimeSpan.FromMinutes(float.IsInfinity(minLeft) || float.IsNaN(minLeft) ? 0 : minLeft);
+                TimeLeft = TimeSpan.FromMinutes(minLeft.UnNaNInfinity());
 
                 ProgressPercentage = counter;
             }

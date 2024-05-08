@@ -213,7 +213,16 @@ namespace CollapseLauncher.Interfaces
                     _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds;
 
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    double seconds = (_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed);
+                    if (seconds <= TimeSpan.MaxValue.TotalSeconds && seconds >= TimeSpan.MinValue.TotalSeconds)
+                    {
+                        _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds(seconds);
+                    }
+                    else
+                    {
+                        // Fallback mechanism when seconds are out of range
+                        _progress.ProgressTotalTimeLeft = TimeSpan.MaxValue;
+                    }
                 }
 
                 lock (_status!)
@@ -389,7 +398,7 @@ namespace CollapseLauncher.Interfaces
         protected virtual void ResetStatusAndProgress()
         {
             // Reset the cancellation token
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
 
             // Reset RepairAssetProperty list
             AssetEntry!.Clear();
@@ -404,7 +413,7 @@ namespace CollapseLauncher.Interfaces
         protected void ResetStatusAndProgressProperty()
         {
             // Reset cancellation token
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
 
             lock (_status!)
             {
@@ -688,14 +697,14 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HashTools
-        protected virtual byte[] CheckHash(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
             // Initialize MD5 instance and assign buffer
             byte[] buffer = new byte[_bufferBigLength];
 
             // Do read activity
             int read;
-            while ((read = stream!.Read(buffer)) > 0)
+            while ((read = await stream!.ReadAsync(buffer, token)) > 0)
             {
                 // Throw Cancellation exception if detected
                 token.ThrowIfCancellationRequested();
@@ -747,8 +756,7 @@ namespace CollapseLauncher.Interfaces
                 using (FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // Verify the patch file and if it doesn't match, then redownload it
-                    byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false))
-                                                .ConfigureAwait(false);
+                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false).ConfigureAwait(false);
                     if (!IsArrayMatch(patchCRC, patchHash.Span))
                     {
                         // Revert back the total size
@@ -924,8 +932,8 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual void UpdateProgress()
         {
-            _progress!.ProgressPerFilePercentage = double.IsInfinity(_progress.ProgressPerFilePercentage) ? 0 : _progress.ProgressPerFilePercentage;
-            _progress.ProgressTotalPercentage = double.IsInfinity(_progress.ProgressTotalPercentage) ? 0 : _progress.ProgressTotalPercentage;
+            _progress!.ProgressPerFilePercentage = _progress.ProgressPerFilePercentage.UnNaNInfinity();
+            _progress.ProgressTotalPercentage = _progress.ProgressTotalPercentage.UnNaNInfinity();
             ProgressChanged?.Invoke(this, _progress);
         }
 

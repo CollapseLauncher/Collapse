@@ -170,7 +170,7 @@
                             EnablePresence(AppDiscordApplicationID_GI);
                             return;
                         default:
-                            Logger.LogWriteLine("Discord Presence (Unknown Game)");
+                            Logger.LogWriteLine("Discord Presence (Unknown Game)", LogType.Error, true);
                             break;
                     }
                 }
@@ -252,17 +252,26 @@
 
             private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
             {
+                var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+                var curGameNameTranslate =
+                    InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Lang._GameClientTitles);
+                var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+                var curGameRegionTranslate =
+                    InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Lang._GameClientRegions);
+                
                 _presence = new RichPresence
                 {
                     Details =
-                        $"{activityName} {(!isGameStatusEnabled ? LauncherMetadataHelper.CurrentMetadataConfigGameName : null)}",
-                    State = $"{Lang._Misc.DiscordRP_Region} {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
+                        $"{activityName} {(!isGameStatusEnabled ? curGameName : null)}",
+                    State = $"{Lang._Misc.DiscordRP_Region} " +
+                            $"{curGameRegionTranslate}",
                     Assets = new Assets
                     {
                         LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
-                        LargeImageText = $"{LauncherMetadataHelper.CurrentMetadataConfigGameName} - {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
+                        LargeImageText = $"{curGameNameTranslate} - {curGameRegionTranslate}",
                         SmallImageKey  = "launcher-logo",
-                        SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                        SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} " +
+                                         $"{(IsPreview ? "Preview" : "Stable")}"
                     },
                     Timestamps = new Timestamps
                     {
@@ -279,16 +288,24 @@
 
             private void BuildActivityAppStatus(string activityName)
             {
+                var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+                var curGameNameTranslate =
+                    InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Lang._GameClientTitles);
+                var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+                var curGameRegionTranslate =
+                    InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Lang._GameClientRegions);
+                
                 _presence = new RichPresence
                 {
                     Details = activityName,
-                    State   = $"{Lang._Misc.DiscordRP_Region} {LauncherMetadataHelper.CurrentMetadataConfigGameRegion}",
+                    State   = $"{Lang._Misc.DiscordRP_Region} {curGameRegionTranslate}",
                     Assets  = new Assets
                     {
                         LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
-                        LargeImageText = $"{LauncherMetadataHelper.CurrentMetadataConfigGameName}",
+                        LargeImageText = $"{curGameNameTranslate}",
                         SmallImageKey  = "launcher-logo",
-                        SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                        SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} " +
+                                         $"{(IsPreview ? "Preview" : "Stable")}"
                     }
                 };
             }

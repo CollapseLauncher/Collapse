@@ -315,6 +315,13 @@
                                           TintColor="#222222"
                                           TintLuminosityOpacity="0.30"
                                           TintOpacity="0.0"/>
+                            <!-- Window Caption Button Brush -->
+                            <SolidColorBrush x:Key="WindowCaptionBackground"
+                                     Color="#00FFFFFF"/>
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled"
+                                     Color="#00000000"/>
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundClose"
+                                     Color="#00FF0000"/>
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="Light">
                             <!--  For light theme  -->
@@ -610,6 +617,13 @@
                                           TintColor="#FFFFFF"
                                           TintLuminosityOpacity="0.80"
                                           TintOpacity="0.0"/>
+                            <!-- Window Caption Button Brush -->
+                            <SolidColorBrush x:Key="WindowCaptionBackground"
+                                     Color="#00000000"/>
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled"
+                                     Color="#00000000"/>
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundClose"
+                                     Color="#00FF0000"/>
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
                     <!--  Font families  -->
@@ -618,6 +632,7 @@
                     <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid</FontFamily>
                     <!--  Navigation title-bar border thickness  -->
                     <Thickness x:Key="NavigationViewContentMargin">0,47,0,0</Thickness>
+
                     <!--  START: ToggleButton styles  -->
                     <Style x:Key="AcrylicToggleButtonStyle"
                            TargetType="ToggleButton">
@@ -2482,11 +2497,125 @@
                     <Style BasedOn="{StaticResource DefaultComboBoxStyle}"
                            TargetType="ComboBox"/>
                     <!--  WindowChrome min max close styles  -->
-                    <x:Double x:Key="WindowCaptionButtonStrokeWidth">1</x:Double>
-                    <SolidColorBrush x:Key="WindowCaptionBackground"
-                                     Color="#00000000"/>
-                    <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled"
-                                     Color="#00000000"/>
+                    <x:Double x:Key="WindowCaptionButtonStrokeWidth">2</x:Double>
+
+                    <Style x:Key="WindowCaptionButton" TargetType="Button">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="{ThemeResource WindowCaptionBackground}" />
+                        <Setter Property="IsTabStop" Value="False" />
+                        <Setter Property="VerticalAlignment" Value="Top" />
+                        <Setter Property="Width" Value="32" />
+                        <Setter Property="Height" Value="32" />
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="LayoutRoot"
+                                            Background="{TemplateBinding Background}"
+                                            BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding CornerRadius}"
+                                            Padding="{TemplateBinding Padding}">
+                                        <Border.BackgroundTransition>
+                                            <BrushTransition Duration="0:0:0.050"/>
+                                        </Border.BackgroundTransition>
+
+                                        <Path x:Name="Path"
+                                              StrokeThickness="{ThemeResource WindowCaptionButtonStrokeWidth}"
+                                              Stroke="{TemplateBinding Foreground}"
+                                              Data="{TemplateBinding Content}"
+                                              Stretch="Fill"
+                                              UseLayoutRounding="True"
+                                              Width="10"
+                                              Height="10"
+                                              StrokeEndLineCap="Round"
+                                              StrokeStartLineCap="Round">
+                                        </Path>
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal"/>
+                                                <VisualState x:Name="PointerOver">
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                                       Storyboard.TargetProperty="Background">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
+                                                                                       Storyboard.TargetProperty="Stroke">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionForeground}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
+
+                                                <VisualState x:Name="Pressed">
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                                       Storyboard.TargetProperty="Background">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPressed}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
+                                                                                       Storyboard.TargetProperty="Stroke">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionForegroundDisabled}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <!-- these 2 states are only for Close button, needed because they use fixed colors for a theme and cannot be changed by user -->
+                                                <VisualState x:Name="CloseButtonPointerOver">
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                                       Storyboard.TargetProperty="Background">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
+                                                                                       Storyboard.TargetProperty="Stroke">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionButtonStrokePointerOver}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
+
+                                                <VisualState x:Name="CloseButtonPressed">
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                                       Storyboard.TargetProperty="Background">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionButtonBackgroundPressed}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
+                                                                                       Storyboard.TargetProperty="Stroke">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource WindowCaptionButtonStrokePressed}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
+
+                                            </VisualStateGroup>
+
+                                            <VisualStateGroup x:Name="MinMaxStates">
+                                                <VisualState x:Name="WindowStateNormal">
+                                                    <VisualState.Setters>
+                                                        <Setter Target="Path.Data" Value="M 1.516 -0.001 L 7.451 0.009 C 8.751 0.019 9 1 8.981 1.477 L 9.002 7.558 M 9.002 7.547 C 8.929 8.669 8 9 7.43 9.015 L 1.464 9.005 C 0.374 8.973 0 8 -0.004 7.484 L -0.004 1.477 C 0 1 0.415 0.009 1.527 -0.001" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="WindowStateMaximized">
+                                                    <VisualState.Setters>
+                                                        <Setter Target="Path.Data" Value="M 1.516 -0.001 L 7.451 0.009 C 8.751 0.019 9 1 8.981 1.477 L 9.002 7.558 M 11 6 L 11 2 C 11 0 10 -2 8.011 -1.946 L 7.06 -1.969 L 3 -2 M 9.002 7.547 C 8.929 8.669 8 9 7.43 9.015 L 1.464 9.005 C 0.374 8.973 0 8 -0.004 7.484 L -0.004 1.477 C 0 1 0.415 0.009 1.527 -0.001" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+
+                                        </VisualStateManager.VisualStateGroups>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
                 </ResourceDictionary>
                 <!--  Custom controls styles  -->
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml"/>

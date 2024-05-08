@@ -2,12 +2,6 @@
   "version": 1,
   "dependencies": {
     "net8.0": {
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.4, )",
-        "resolved": "8.0.4",
-        "contentHash": "PZb5nfQ+U19nhnmnR9T1jw+LTmozhuG2eeuzuW5A7DqxD/UXW2ucjmNJqnqOuh8rdPzM3MQXoF8AfFCedJdCUw=="
-      },
       "System.IO.Hashing": {
         "type": "Direct",
         "requested": "[8.0.0, )",
@@ -37,7 +31,6 @@
       "hi3helper.http": {
         "type": "Project"
       }
-    },
-    "net8.0/win-x64": {}
+    }
   }
 }

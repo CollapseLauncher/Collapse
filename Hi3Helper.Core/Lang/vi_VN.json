@@ -220,7 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Tình trạng",
     "Status1": "Ấn \"Kiểm tra cập nhật\" để cập nhật cache",
-    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
+    "Status2": "Cố gắng xác định tính khả dụng của cache \"{0}\": {1}",
     "CachesStatusHeader1": "Tổng tiến trình",
     "CachesStatusCancelled": "Đã huỷ tác vụ!",
     "CachesStatusFetchingType": "Đang tìm kiếm loại cache: {0}",
@@ -370,7 +370,7 @@
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
 
     "ChangeRegionWarning_Toggle": "Hiển thị thông báo thay đổi vùng",
-    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
+    "ChangeRegionInstant_Toggle": "Thay đổi vùng được chọn ngay lập tức",
     "ChangeRegionWarning_Warning": "*Bạn cần phải khởi động lại ứng dụng để áp dụng cài đặt này.",
 
     "Language": "Ngôn ngữ",
@@ -391,7 +391,7 @@
 
     "AppBG": "Hình nền",
     "AppBG_Checkbox": "Dùng hình nền tuỳ chọn",
-    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
+    "AppBG_Note": "Định dạng được chấp nhận:\r\nẢnh: {0}\r\nVideo: {1}",
 
     "AppThreads": "Tải về",
     "AppThreads_Download": "Số lượng tải về",
@@ -416,9 +416,9 @@
     "DiscordRPC_GameStatusToggle": "Hiện trò chơi hiện tại trên trạng thái của Discord",
     "DiscordRPC_IdleStatusToggle": "Hiện RPC khi ở trạng thái chờ",
 
-    "VideoBackground": "Video Background Settings",
-    "VideoBackground_IsEnableAudio": "Enable Audio",
-    "VideoBackground_AudioVolume": "Audio Volume",
+    "VideoBackground": "Cài đặt video",
+    "VideoBackground_IsEnableAudio": "Bật âm thanh",
+    "VideoBackground_AudioVolume": "Âm lượng",
 
     "Update": "Cập nhật",
     "Update_CurVer": "Phiên bản hiện tại:",
@@ -484,7 +484,7 @@
 
     "Waifu2X_Toggle": "Dùng Waifu2X [Thử nghiệm]",
     "Waifu2X_Help": "Dùng Waifu2X để phóng lớn ảnh nền.\nKhi bật, chất lượng ảnh sẽ được cải thiện đáng kể, nhưng sẽ mất thêm một ít thời gian để tải ảnh lần đầu.",
-    "Waifu2X_Help2": "Only available for still images!",
+    "Waifu2X_Help2": "Chỉ khả dụng cho ảnh tĩnh!",
     "Waifu2X_Warning_CpuMode": "CẢNH BÁO: Không tìm thấy thiết bị GPU Vulcan có sẵn và sẽ sử dụng chế độ CPU. Điều này sẽ làm tăng đáng kể thời gian xử lý hình ảnh.",
     "Waifu2X_Warning_D3DMappingLayers": "CẢNH BÁO: Hệ thống của bạn có cài đặt \"Gói tương thích OpenCL™, OpenGL®, và Vulkan®\". Nó được cho là không tương thích với Vulkan Loader và sẽ crash trên một số GPU. Vui lòng gỡ bỏ gói này để bật chế độ GPU.",
     "Waifu2X_Error_Loader": "LỖI: Khởi tạo Vulkan Loader thất bại. Đảm bảo rằng GPU của bạn tương thích với Vulkan và đã cài đặt driver GPU cần thiết.",
@@ -905,7 +905,7 @@
     "UpdateHeader4": "Tốc độ:",
     "UpdateHeader5PlaceHolder": "Đang tải về cập nhật [- / -]:",
 
-    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
+    "UpdateForcedHeader": "Trình khởi chạy sẽ phải cập nhật bắt buộc do những thay đổi khẩn cấp để đảm bảo trình khởi chạy hoạt động bình thường.",
 
     "UpdateStatus1": "Đang đọc bản cập nhật:",
     "UpdateMessage1": "Đang kết nối với kho lưu trữ cập nhật...",
@@ -1250,8 +1250,8 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "Hình nền tùy chỉnh",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Dùng hình nền tùy chỉnh thay cho hình mặc định.",
 
-    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
-    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
+    "VideoBackgroundPreviewUnavailableHeader": "Xem trước video không khả dụng",
+    "VideoBackgroundPreviewUnavailableDescription": "Bạn không thể xem trước video trong OOBE nhưng cũng đừng lo lắng! Video của bạn sẽ được áp dụng sau khi OOBE đã hoàn thành.",
 
     "LoadingInitializationTitle": "Đang khởi tạo lần chạy đầu tiên của trình khởi chạy",
     "LoadingCDNCheckboxCheckLatency": "(Đang kiểm tra độ trễ...)",

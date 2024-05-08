@@ -68,6 +68,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected bool _canDeleteHdiffReference { get => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteHdiffReference")); }
         protected bool _canDeleteZip { get => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteZip")); }
         protected bool _canSkipVerif { get => File.Exists(Path.Combine(_gamePath!, "@NoVerification")); }
+        protected bool _canSkipAudio { get => File.Exists(Path.Combine(_gamePath!, "@NoAudioPatch")); }
         protected bool _canSkipExtract { get => File.Exists(Path.Combine(_gamePath!, "@NoExtraction")); }
         protected bool _canMergeDownloadChunks { get => LauncherConfig.GetAppConfigValue("UseDownloadChunksMerging").ToBool(); }
         protected virtual bool _canDeltaPatch { get => false; }
@@ -106,7 +107,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
         */
 
-        protected void ResetToken() => _token = new CancellationTokenSource();
+        protected void ResetToken() => _token = new CancellationTokenSourceWrapper();
 
         public void Dispose()
         {
@@ -204,7 +205,7 @@ namespace CollapseLauncher.InstallManager.Base
             return 0;
         }
 
-        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai)
+        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai, bool isSR = false)
         {
             // Initialize the state and the package
             GameInstallStateEnum gameState = _gameInstallationStatus;
@@ -222,7 +223,7 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     List<FilePropertiesRemote> localAssetIndex = repairGame!.GetAssetIndex();
-                    MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath, isHonkai);
+                    MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath, isHonkai, isSR);
 
                     // Get the sum of uncompressed size and
                     // Set progress count to beginning
@@ -575,7 +576,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
-                hashLocal = await Task.Run(() => base.CheckHash(fs, MD5.Create(), token, true));
+                hashLocal = await base.CheckHashAsync(fs, MD5.Create(), token, true).ConfigureAwait(false);
             }
 
             // Check for the hash differences. If found, then show dialog to delete or cancel the process
@@ -1337,7 +1338,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
-#endregion
+        #endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingSteamInstallation()
@@ -1656,12 +1657,20 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Private Methods - StartPackageInstallation
-        private void MoveFileToIngredientList(List<FilePropertiesRemote> assetIndex, string sourcePath, string targetPath, bool isHonkai)
+        private void MoveFileToIngredientList(List<FilePropertiesRemote> assetIndex, string sourcePath, string targetPath, bool isHonkai, bool isSR = false)
         {
             string inputPath;
             string outputPath;
             string outputFolder;
 
+            // HACK: Also move pkg_version on Star Rail delta patch application to prevent patch error
+            if (isSR)
+            {
+                FilePropertiesRemote pkgVer = new FilePropertiesRemote();
+                pkgVer.N = "pkg_version";
+                assetIndex.Add(pkgVer);
+            }
+            
             // Iterate the asset
             FileInfo fileInfo;
             foreach (FilePropertiesRemote index in assetIndex)
