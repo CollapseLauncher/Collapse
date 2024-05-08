@@ -455,7 +455,7 @@ namespace CollapseLauncher
                                                    Math.Round((StartSize / (double)EndSize) * 100, 2);
         public long ProgressSpeed => (long)(StartSize / _TimeSecond);
         public TimeSpan RemainingTime => UseCountUnit ? TimeSpan.FromSeconds(0f) :
-                                                        TimeSpan.FromSeconds((EndSize - StartSize) / Unzeroed(ProgressSpeed));
+                                                        ((EndSize - StartSize) / Unzeroed(ProgressSpeed)).ToTimeSpanNormalized();
         private double Unzeroed(double i) => i == 0 ? 1 : i;
         public string ProgressStatus => _StatusMsg;
         public string ProgressDetail => string.Format(
