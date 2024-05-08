@@ -72,7 +72,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
-            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false))
+            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false, true))
             {
                 // Update the audio package list after delta patch has been initiated
                 WriteAudioLangList(_gameDeltaPatchPreReqList);
@@ -145,36 +145,42 @@ namespace CollapseLauncher.InstallManager.StarRail
                 return true;
             }
 
-            // If the game has already installed or in preload, then try get Voice language ID from registry
-            if (_gameInstallationStatus == GameInstallStateEnum.InstalledHavePreload
-             || _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate)
+            if (!_canSkipAudio)
             {
-                // Try get the voice language ID from the registry
-                langID = _gameVoiceLanguageID;
-                // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                if (langID == 1) langID = 0; // Force to use zh-CN if zh-TW is used
-                package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                packageList.Add(package);
+                // If the game has already installed or in preload, then try get Voice language ID from registry
+                if (_gameInstallationStatus == GameInstallStateEnum.InstalledHavePreload
+                    || _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate)
+                {
+                    // Try get the voice language ID from the registry
+                    langID = _gameVoiceLanguageID;
+                    // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                    if (langID == 1) langID = 0; // Force to use zh-CN if zh-TW is used
+                    package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
+                        { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                    packageList.Add(package);
 
-                // Also try add another voice pack that already been installed
-                TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
+                    // Also try add another voice pack that already been installed
+                    TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
+                }
+                // Else, show dialog to choose the language ID to be installed
+                else
+                {
+                    langID = await Dialog_ChooseAudioLanguage(_parentUI, langStrings);
+                    // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                    langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
+
+                    package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
+                        { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                    packageList.Add(package);
+
+                    // Set the voice language ID to value given
+                    _gameVersionManager.GamePreset.SetVoiceLanguageID(langID);
+
+                    LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                                 LogType.Default, true);
+                }
             }
-            // Else, show dialog to choose the language ID to be installed
-            else
-            {
-                langID = await Dialog_ChooseAudioLanguage(_parentUI, langStrings);
-                // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
-
-                package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                packageList.Add(package);
-
-                // Set the voice language ID to value given
-                _gameVersionManager.GamePreset.SetVoiceLanguageID(langID);
-
-                LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
-            }
-
+            
             return true;
         }
 
