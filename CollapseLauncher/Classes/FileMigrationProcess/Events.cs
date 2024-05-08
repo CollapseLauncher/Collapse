@@ -8,25 +8,19 @@ namespace CollapseLauncher
 {
     internal partial class FileMigrationProcess
     {
-        private async void UpdateCountProcessed(FileMigrationProcessUIRef uiRef, string currentPathProcessed)
+        private void UpdateCountProcessed(FileMigrationProcessUIRef uiRef, string currentPathProcessed)
         {
             Interlocked.Add(ref this.CurrentFileCountMoved, 1);
 
-            if (await CheckIfNeedRefreshStopwatch())
-            {
-                string fileCountProcessedString = string.Format(Locale.Lang!._Misc!.PerFromTo!,
-                this.CurrentFileCountMoved,
-                this.TotalFileCount);
+            string fileCountProcessedString = string.Format(Locale.Lang!._Misc!.PerFromTo!,
+            this.CurrentFileCountMoved,
+            this.TotalFileCount);
 
-                lock (uiRef.fileCountIndicatorSubtitle)
-                {
-                    parentUI!.DispatcherQueue!.TryEnqueue(() =>
-                    {
-                        uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
-                        uiRef.pathActivitySubtitle.Text = currentPathProcessed;
-                    });
-                }
-            }
+            parentUI!.DispatcherQueue!.TryEnqueue(() =>
+            {
+                uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
+                uiRef.pathActivitySubtitle.Text = currentPathProcessed;
+            });
         }
 
         private async void UpdateSizeProcessed(FileMigrationProcessUIRef uiRef, long currentRead)

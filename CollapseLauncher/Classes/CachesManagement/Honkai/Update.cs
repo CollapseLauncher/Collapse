@@ -144,7 +144,7 @@ namespace CollapseLauncher
             {
                 // Update current activity status
                 _status!.IsProgressTotalIndetermined = false;
-                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, ((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)).ToTimeSpanNormalized());
                 _status.ActivityTotal = string.Format(Lang!._Misc!.Downloading + ": {0}/{1} ", _progressTotalCountCurrent, _progressTotalCount)
                                        + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(speed))
                                        + $" | {timeLeftString}";

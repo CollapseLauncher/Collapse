@@ -823,7 +823,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _progress.ProgressTotalPercentage = Math.Round(((double)_progressTotalSizeCurrent / _progressTotalSize) * 100, 2);
                     _progress.ProgressPerFilePercentage = Math.Round(((double)_progressPerFileSizeCurrent / _progressPerFileSize) * 100, 2);
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
 
                     UpdateAll();
                 }
@@ -1229,7 +1229,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _progress.ProgressTotalPercentage = Math.Round(((double)_progress.ProgressTotalDownload / _progress.ProgressTotalSizeToDownload) * 100, 2);
                     _progress.ProgressTotalSpeed = _progress.ProgressTotalDownload / _stopwatch.Elapsed.TotalSeconds;
 
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    _progress.ProgressTotalTimeLeft = ((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                     UpdateProgress();
                 }
                 finally
@@ -1262,7 +1262,7 @@ namespace CollapseLauncher.InstallManager.Base
                 _progress.ProgressTotalPercentage = Math.Round(((double)_progress.ProgressTotalDownload / _progress.ProgressTotalSizeToDownload) * 100, 2);
                 _progress.ProgressTotalSpeed = _progress.ProgressTotalDownload / _stopwatch.Elapsed.TotalSeconds;
 
-                _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                _progress.ProgressTotalTimeLeft = ((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                 UpdateProgress();
             }
         }
@@ -2149,7 +2149,7 @@ namespace CollapseLauncher.InstallManager.Base
                 _progress.ProgressTotalPercentage = Math.Round(((double)_progressTotalSizeCurrent / _progressTotalSize) * 100, 2);
                 _progress.ProgressPerFilePercentage = Math.Round(((double)_progressPerFileSizeCurrent / _progressPerFileSize) * 100, 2);
                 // Calculate the timelapse
-                _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
 
                 UpdateAll();
             }
@@ -2199,7 +2199,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _progress.ProgressTotalPercentage = Math.Round(_progressTotalSizeCurrent / (double)_progressTotalSize * 100, 2);
 
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                 }
                 else
                 {
