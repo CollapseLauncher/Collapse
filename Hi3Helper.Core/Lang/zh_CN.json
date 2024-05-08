@@ -31,7 +31,7 @@
     "OverlayPrepareFolderTitle": "正在准备程序文件夹",
     "PageTitle": "第一次启动页面",
     "Pg1LoadingSubitle1": "为您准备一份支持的游戏列表……",
-    "Pg1LoadingSubitle2": "游戏加载成功！正在进行……",
+    "Pg1LoadingSubitle2": "完成！正在前往下一个步骤……",
     "Pg1LoadingTitle1": "正在载入游戏列表……",
     "Pg1NextBtn": "下一步 - 选择游戏",
     "Pg2ComboBox": "选择游戏",
@@ -438,7 +438,7 @@
 
     "AppFiles_ClearMetadataBtn": "清除元数据并重启",
     "AppFiles_ClearMetadataDialog": "正在清除 Collapse 元数据！",
-    "AppFiles_ClearMetadataDialogHelp": "清除 Collapse 元数据会导致 Collapse 强制重启。仅当区服加载有问题时才需使用本功能。\r\n您确定吗？",
+    "AppFiles_ClearMetadataDialogHelp": "清除 Collapse 元数据会导致 Collapse 强制重启。只有在区服加载有问题时才需使用本功能。\r\n您确定吗？",
 
     "ReportIssueBtn": "报告问题",
     "ContributePRBtn": "贡献 PR",
@@ -577,9 +577,10 @@
     "BuildChannelStable": "正式版",
 
     "CDNDescription_Github": "启动器的官方（主）存储库。",
-    "CDNDescription_Cloudflare": "在 Cloudflare R2 bucket 托管的官方（主）仓库镜像。",
-    "CDNDescription_Bitbucket": "在 Bitbucket 托管的官方（主）仓库镜像。",
-    "CDNDescription_GitLab": "在 GitLab 托管的官方（主）仓库镜像。",
+    "CDNDescription_Cloudflare": "托管在 Cloudflare R2 存储桶的官方（主）仓库镜像。",
+    "CDNDescription_Bitbucket": "托管在 Bitbucket 的官方（主）仓库镜像。",
+    "CDNDescription_GitLab": "托管在 GitLab 的官方（主）仓库镜像。",
+    "CDNDescription_Coding": "托管在 Coding 的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
     "OpenDownloadPage": "打开下载界面",
@@ -719,11 +720,11 @@
     "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。我们不应对与您的游戏相关的任何数据丢失或损坏负责。",
 
     "ChangePlaytimeTitle": "是否确认更改游戏时间？",
-    "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
+    "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "ResetPlaytimeTitle": "是否确认更改游戏时间？",
     "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间设置为 0。这是一个 ",
     "ResetPlaytimeSubtitle2": "破坏性的",
-    "ResetPlaytimeSubtitle3": " 操作，一旦确认，此操作将无法撤销。\n\n是否要继续？\n\n注意：更改时间不会影响到 Collapse，您可以随时在不玩游戏时再次更改这个值。",
+    "ResetPlaytimeSubtitle3": " 操作，一旦确认，此操作将无法撤销。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "InvalidPlaytimeTitle": "保存此会话的游戏时间时出现问题",
     "InvalidPlaytimeSubtitle1": "开始时间和结束时间之差为负数。",
     "InvalidPlaytimeSubtitle2": "将使用每分钟保存的替代值：",
@@ -926,7 +927,7 @@
     "ApplyUpdateTitle2": "Collapse 启动器",
     "ApplyUpdateCDNSelectorTitle": "选择您用于更新的 CDN",
     "ApplyUpdateCDNSelectorSubtitle": "选择 CDN 选项并点击“{0}”以开始更新！",
-    "ApplyUpdateCDNSelectorSubtitleCount": "CDN 将会在 {0} 后自动选择",
+    "ApplyUpdateCDNSelectorSubtitleCount": "CDN 将会在 {0} 秒后自动选择",
     "ApplyUpdateUpdateNowBtn": "现在更新！",
 
     "ApplyUpdateUpdateVersionTitle": "更新：",
@@ -1174,7 +1175,7 @@
     "General_GoSettings": "前往设置页面",
     "General_OpenNotifTray": "打开通知托盘",
     "General_ReloadRegion": "重新加载当前页面",
-    "General_ReloadRegion_Desc": "F5 为替代快捷键。\n请注意，重新加载主页将会重新加载区服。",
+    "General_ReloadRegion_Desc": "F5 为备用快捷键。\n请注意，重新加载主页将会重新加载区服。",
 
     "Switch_Title": "快速游戏/区服切换",
     "Switch_Subtitle": "注意：此类快捷键仅可切换修饰键。",
@@ -1244,7 +1245,7 @@
     "CustomizationSettingsWindowSizeHeader": "窗口大小",
     "CustomizationSettingsWindowSizeDescription": "更改启动器的大小。",
     "CustomizationSettingsCDNHeader": "CDN",
-    "CustomizationSettingsCDNDescription": "选择您要使用的主 CDN。",
+    "CustomizationSettingsCDNDescription": "选择您要使用的首选 CDN。",
     "CustomizationSettingsStyleHeader": "样式设定",
     "CustomizationSettingsStyleDescription": "按您的偏好选择更改启动器的外观。",
     "CustomizationSettingsStyleThemeHeader": "主题",
