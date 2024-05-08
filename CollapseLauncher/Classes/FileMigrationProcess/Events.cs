@@ -1,33 +1,37 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
     internal partial class FileMigrationProcess
     {
-        private void UpdateCountProcessed(FileMigrationProcessUIRef uiRef, string currentPathProcessed)
+        private async void UpdateCountProcessed(FileMigrationProcessUIRef uiRef, string currentPathProcessed)
         {
-            lock (this) { this.CurrentFileCountMoved++; }
+            Interlocked.Add(ref this.CurrentFileCountMoved, 1);
 
-            string fileCountProcessedString = string.Format(Locale.Lang!._Misc!.PerFromTo!,
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                string fileCountProcessedString = string.Format(Locale.Lang!._Misc!.PerFromTo!,
                 this.CurrentFileCountMoved,
                 this.TotalFileCount);
 
-            lock (uiRef.fileCountIndicatorSubtitle)
-            {
-                parentUI!.DispatcherQueue!.TryEnqueue(() =>
+                lock (uiRef.fileCountIndicatorSubtitle)
                 {
-                    uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
-                    uiRef.pathActivitySubtitle.Text = currentPathProcessed;
-                });
+                    parentUI!.DispatcherQueue!.TryEnqueue(() =>
+                    {
+                        uiRef.fileCountIndicatorSubtitle.Text = fileCountProcessedString;
+                        uiRef.pathActivitySubtitle.Text = currentPathProcessed;
+                    });
+                }
             }
         }
 
         private async void UpdateSizeProcessed(FileMigrationProcessUIRef uiRef, long currentRead)
         {
-            lock (this) { this.CurrentSizeMoved += currentRead; }
+            Interlocked.Add(ref this.CurrentSizeMoved, currentRead);
 
             if (await CheckIfNeedRefreshStopwatch())
             {
