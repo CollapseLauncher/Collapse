@@ -106,8 +106,18 @@ namespace CollapseLauncher.Interfaces
                 // Calculate speed
                 long speed = (long)(_progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds);
                 _progress.ProgressTotalSpeed = speed;
-                _progress.ProgressTotalTimeLeft = 
-                    TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed));
+
+                // Calculate the timelapse
+                double seconds = (_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed);
+                if (seconds <= TimeSpan.MaxValue.TotalSeconds && seconds >= TimeSpan.MinValue.TotalSeconds)
+                {
+                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds(seconds);
+                }
+                else
+                {
+                    // Fallback mechanism when seconds are out of range
+                    _progress.ProgressTotalTimeLeft = TimeSpan.MaxValue;
+                }
 
                 // Update current progress percentages
                 _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
