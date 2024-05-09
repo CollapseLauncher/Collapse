@@ -577,7 +577,8 @@
     "CDNDescription_Github": "The official (main) repository for the launcher.",
     "CDNDescription_Cloudflare": "A mirror of the official (main) repository hosted in Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",

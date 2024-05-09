@@ -106,8 +106,8 @@ namespace CollapseLauncher.Interfaces
                 // Calculate speed
                 long speed = (long)(_progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds);
                 _progress.ProgressTotalSpeed = speed;
-                _progress.ProgressTotalTimeLeft = 
-                    TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed));
+                _progress.ProgressTotalTimeLeft = ((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed))
+                    .ToTimeSpanNormalized();
 
                 // Update current progress percentages
                 _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
@@ -213,16 +213,7 @@ namespace CollapseLauncher.Interfaces
                     _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds;
 
                     // Calculate the timelapse
-                    double seconds = (_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed);
-                    if (seconds <= TimeSpan.MaxValue.TotalSeconds && seconds >= TimeSpan.MinValue.TotalSeconds)
-                    {
-                        _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds(seconds);
-                    }
-                    else
-                    {
-                        // Fallback mechanism when seconds are out of range
-                        _progress.ProgressTotalTimeLeft = TimeSpan.MaxValue;
-                    }
+                    _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                 }
 
                 lock (_status!)
@@ -261,7 +252,7 @@ namespace CollapseLauncher.Interfaces
                     _progress.ProgressTotalSpeed = currentPosition / _stopwatch!.Elapsed.TotalSeconds;
 
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((totalReadSize - currentPosition) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    _progress.ProgressTotalTimeLeft = ((totalReadSize - currentPosition) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                 }
 
                 lock (_status!)

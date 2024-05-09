@@ -147,7 +147,7 @@ namespace Hi3Helper.Shared.Region
               },
               new CDNURLProperty
               {
-                  Name = "Bitbucket",
+                  Name = "Bitbucket-Deprecated",
                   URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
                   Description = Lang!._Misc!.CDNDescription_Bitbucket
               },
@@ -156,7 +156,13 @@ namespace Hi3Helper.Shared.Region
                   Name = "GitLab",
                   URLPrefix = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/",
                   Description = Lang!._Misc!.CDNDescription_GitLab
-              }
+              },
+              new CDNURLProperty
+              {
+                  Name = "Coding",
+                  URLPrefix = "https://ohly-generic.pkg.coding.net/collapse/release/",
+                  Description = Lang!._Misc!.CDNDescription_Coding
+              },
           };
 
         public static CDNURLProperty GetCurrentCDN() => CDNList![GetAppConfigValue("CurrentCDN").ToInt()];
