@@ -147,7 +147,7 @@ namespace Hi3Helper.Shared.Region
               },
               new CDNURLProperty
               {
-                  Name = "Bitbucket",
+                  Name = "Bitbucket-Deprecated",
                   URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
                   Description = Lang!._Misc!.CDNDescription_Bitbucket
               },
