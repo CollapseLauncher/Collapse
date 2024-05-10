@@ -16,3 +16,6 @@
 [submodule "Hi3Helper.SharpDiscordRPC"]
 	path = Hi3Helper.SharpDiscordRPC
 	url = https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC
+[submodule "Hi3Helper.Sophon"]
+	path = Hi3Helper.Sophon
+	url = https://github.com/CollapseLauncher/Hi3Helper.Sophon
