@@ -61,6 +61,11 @@ namespace CollapseLauncher
 
         private  static bool         IsChangeDragArea        = true;
         internal static List<string> PreviousTagString       = new();
+
+#nullable enable
+        internal static BackgroundMediaUtility? CurrentBackgroundHandler = null;
+        private         BackgroundMediaUtility? LocalBackgroundHandler = null;
+#nullable restore
         #endregion
 
         #region Main Routine
@@ -97,7 +102,7 @@ namespace CollapseLauncher
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            BackgroundMediaUtility.Current?.Dispose();
+            LocalBackgroundHandler?.Dispose();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -151,6 +156,10 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             RunBackgroundCheck();
+
+            // Initialize the background image utility
+            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+            LocalBackgroundHandler = CurrentBackgroundHandler;
 
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
@@ -425,8 +434,8 @@ namespace CollapseLauncher
         {
             if (IsFirstStartup) return;
 
-            if (e) BackgroundMediaUtility.Current?.Dimm();
-            else BackgroundMediaUtility.Current?.Undimm();
+            if (e) CurrentBackgroundHandler?.Dimm();
+            else CurrentBackgroundHandler?.Undimm();
         }
 
         private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
@@ -444,7 +453,7 @@ namespace CollapseLauncher
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
             }
 
-            BackgroundMediaUtility.Current?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
+            CurrentBackgroundHandler?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
             {
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
@@ -528,9 +537,6 @@ namespace CollapseLauncher
         {
             try
             {
-                // Initialize the background image utility
-                await BackgroundMediaUtility.RegisterCurrent(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
 
