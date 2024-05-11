@@ -59,7 +59,6 @@ namespace CollapseLauncher
         private int  CurrentGameCategory  = -1;
         private int  CurrentGameRegion    = -1;
 
-        private  static bool         IsChangeDragArea        = true;
         internal static List<string> PreviousTagString       = new();
 
 #nullable enable
@@ -94,10 +93,6 @@ namespace CollapseLauncher
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeEvents();
-            if (IsChangeDragArea && !App.IsAppKilled)
-            {
-                WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
-            }
 #if !DISABLEDISCORD
             AppDiscordPresence.Dispose();
 #endif
@@ -1098,7 +1093,6 @@ namespace CollapseLauncher
                     try
                     {
                         await LauncherMetadataHelper.RunMetadataUpdate();
-                        IsChangeDragArea = false;
                         MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                     }
                     catch (Exception ex)
