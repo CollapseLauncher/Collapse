@@ -1071,11 +1071,6 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Button Animator
-        private void AnimateGameRegSettingIcon_Start(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "PointerOver");
-        private void AnimateGameRegSettingIcon_End(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "Normal");
-        #endregion
-
         #region Game Install
         private async void InstallGameDialog(object sender, RoutedEventArgs e)
         {
