@@ -237,7 +237,16 @@ namespace CollapseLauncher.Pages
         //ShadowQuality
         public int ShadowQuality
         {
-            get => (int)Settings.GraphicsSettings.ShadowQuality;
+            get
+            {
+                var v = (int)Settings.GraphicsSettings.ShadowQuality;
+                
+                // clamp values
+                if (v > 4) v = 4;
+                if (v == 1) v = 2;
+
+                return v;
+            }
             set => Settings.GraphicsSettings.ShadowQuality = (Quality)value;
         }
         //LightQuality
