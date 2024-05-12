@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "No hay nuevas notificaciones",
     "NotifClearAll": "Limpiar todas las notificaciones ",
     "NavigationMenu": "Menú",
-    "NavigationUtilities": "Utilidades"
+    "NavigationUtilities": "Utilidades",
+    "Initializing": "Iniciando",
+    "LoadingLauncherMetadata": "Cargando Metadatos del Launcher",
+    "LoadingGameConfiguration": "Cargando Ajustes del Juego"
   },
 
   "_HomePage": {
@@ -435,7 +438,7 @@
     "AppFiles_ClearImgCachesBtn": "Borrar Archivos de Imagen",
 
     "AppFiles_ClearMetadataBtn": "Borrar metadatos y reiniciar",
-    "AppFiles_ClearMetadataDialog": "¡Borrando metada de Collapse!",
+    "AppFiles_ClearMetadataDialog": "¡Borrando metadatos de Collapse!",
     "AppFiles_ClearMetadataDialogHelp": "Limpiar los metadatos de Collapse causará que Collapse se reinicie de forma forzada. Solo utilízalo si tienes problemas con la carga de la región.\n¿Estás seguro?",
 
     "ReportIssueBtn": "Reportar un problema",
