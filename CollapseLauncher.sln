@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoSetupHelper", "InnoSetu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRPC", "Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj", "{2004AA88-FFC3-4186-B11A-3E4C577A3D25}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon", "Hi3Helper.Sophon\Hi3Helper.Sophon.csproj", "{61A73D72-1017-438E-9BDD-43F17E4AB271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon", "Hi3Helper.Sophon\Hi3Helper.Sophon.NoZstdDll.csproj", "{61A73D72-1017-438E-9BDD-43F17E4AB271}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon.Test", "Hi3Helper.Sophon.Test\Hi3Helper.Sophon.Test.csproj", "{5E97C5A8-EE96-4F47-8CA7-BF4455D12A34}"
 EndProject
@@ -82,6 +82,7 @@ Global
 		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Debug|x64.Build.0 = Debug|x64
 		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Publish|x64.ActiveCfg = Release|x64
 		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Release|x64.ActiveCfg = Release|x64
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Release|x64.Build.0 = Release|x64
 		{61A73D72-1017-438E-9BDD-43F17E4AB271}.Debug|x64.ActiveCfg = Debug|x64
 		{61A73D72-1017-438E-9BDD-43F17E4AB271}.Debug|x64.Build.0 = Debug|x64
 		{61A73D72-1017-438E-9BDD-43F17E4AB271}.Publish|x64.ActiveCfg = Release|x64

@@ -58,6 +58,18 @@ namespace CollapseLauncher.Helper.Metadata
         HoYoPlay
     }
 
+    public class SophonChunkUrls
+    {
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? MainUrl { get; set; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? PreloadUrl { get; set; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? SdkUrl { get; set; }
+    }
+
     internal class PresetConfig
     {
         #region Constants
@@ -134,6 +146,8 @@ namespace CollapseLauncher.Helper.Metadata
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherResourceURL { get; init; }
+
+        public SophonChunkUrls? LauncherResourceChunksURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherNewsURL { get; init; }
