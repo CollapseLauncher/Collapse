@@ -329,7 +329,7 @@
                                     <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                         <RadioButton ToolTipService.ToolTip="{x:Bind Description}"
                                                      HorizontalContentAlignment="Stretch"
-                                                     VerticalContentAlignment="Center">
+                                                     Margin="0,0,12,0">
                                             <Grid HorizontalAlignment="Stretch">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>
@@ -338,7 +338,7 @@
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                            Text="{x:Bind Name}" />
-                                                <TextBlock Margin="12,0,0,0"
+                                                <TextBlock Margin="8,0,0,0"
                                                            Grid.Column="1"
                                                            VerticalAlignment="Center"
                                                            FontFamily="{ThemeResource FontAwesomeSolid}"
