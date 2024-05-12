@@ -324,7 +324,7 @@ namespace CollapseLauncher.GameVersioning
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
             // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
-            returnList.Add(diff == null ? GameAPIProp.data.game.latest : diff);
+            returnList.Add(diff ?? GameAPIProp.data.game.latest);
             if (GameAPIProp.data.sdk != null)
             {
                 returnList.Add(GameAPIProp.data.sdk);
