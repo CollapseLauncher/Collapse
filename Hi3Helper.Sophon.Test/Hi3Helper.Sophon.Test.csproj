@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
+    <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
+  </ItemGroup>
+
+</Project>
