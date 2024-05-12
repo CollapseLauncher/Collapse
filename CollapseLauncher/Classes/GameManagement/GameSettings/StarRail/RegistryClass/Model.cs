@@ -13,9 +13,10 @@ namespace CollapseLauncher.GameSettings.StarRail
 {
 
     #region Enums
-    public enum Quality // TypeDefIndex: 11339
+    public enum Quality
     {
-        None = 0,
+        Off = 0,
+        Custom = 0,
         VeryLow = 1,
         Low = 2,
         Medium = 3,
@@ -23,7 +24,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         VeryHigh = 5
     }
 
-    public enum AntialiasingMode // TypeDefIndex: 25409
+    public enum AntialiasingMode
     {
         Off = 0,
         TAA = 1,
@@ -35,6 +36,7 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string _ValueName = "GraphicsSettings_Model_h2986158309";
+        private const string _GraphicsQuality = "GraphicsSettings_GraphicsQuality_h523255858";
         public static readonly int[] FPSIndex = new int[] { 30, 60, 120 };
         public const int FPSDefaultIndex = 1; // 60 in FPSIndex[]
         public static Dictionary<int, int> FPSIndexDict = GenerateStaticFPSIndexDict();
@@ -47,6 +49,93 @@ namespace CollapseLauncher.GameSettings.StarRail
             }
             return ret;
         }
+        #endregion
+
+        #region Presets
+        private static Model _VeryLowPreset = new()
+        {
+            FPS               = 60,
+            EnableVSync       = false,
+            RenderScale       = 0.8,
+            ResolutionQuality = Quality.VeryLow,
+            ShadowQuality     = Quality.Low,
+            LightQuality      = Quality.VeryLow,
+            CharacterQuality  = Quality.Low,
+            EnvDetailQuality  = Quality.VeryLow,
+            ReflectionQuality = Quality.VeryLow,
+            SFXQuality        = Quality.VeryLow,
+            BloomQuality      = Quality.VeryLow,
+            AAMode            = AntialiasingMode.TAA,
+            EnableMetalFXSU   = false,
+        };
+
+        private static Model _LowPreset = new()
+        {
+            FPS               = 60,
+            EnableVSync       = true,
+            RenderScale       = 1.0,
+            ResolutionQuality = Quality.Low,
+            ShadowQuality     = Quality.Low,
+            LightQuality      = Quality.Low,
+            CharacterQuality  = Quality.Low,
+            EnvDetailQuality  = Quality.Low,
+            ReflectionQuality = Quality.Low,
+            SFXQuality        = Quality.Low,
+            BloomQuality      = Quality.Low,
+            AAMode            = AntialiasingMode.TAA,
+            EnableMetalFXSU   = false,
+        };
+
+        private static Model _MediumPreset = new()
+        {
+            FPS               = 60,
+            EnableVSync       = true,
+            RenderScale       = 1.0,
+            ResolutionQuality = Quality.Medium,
+            ShadowQuality     = Quality.Medium,
+            LightQuality      = Quality.Medium,
+            CharacterQuality  = Quality.Medium,
+            EnvDetailQuality  = Quality.Medium,
+            ReflectionQuality = Quality.Medium,
+            SFXQuality        = Quality.Medium,
+            BloomQuality      = Quality.Medium,
+            AAMode            = AntialiasingMode.TAA,
+            EnableMetalFXSU   = false,
+        };
+
+        private static Model _HighPreset = new()
+        {
+            FPS               = 60,
+            EnableVSync       = true,
+            RenderScale       = 1.2,
+            ResolutionQuality = Quality.High,
+            ShadowQuality     = Quality.High,
+            LightQuality      = Quality.High,
+            CharacterQuality  = Quality.High,
+            EnvDetailQuality  = Quality.High,
+            ReflectionQuality = Quality.High,
+            SFXQuality        = Quality.High,
+            BloomQuality      = Quality.High,
+            AAMode            = AntialiasingMode.TAA,
+            EnableMetalFXSU   = false,
+        };
+
+        private static Model _VeryHighPreset = new()
+        {
+            FPS               = 60,
+            EnableVSync       = true,
+            RenderScale       = 1.4,
+            ResolutionQuality = Quality.VeryHigh,
+            ShadowQuality     = Quality.High,
+            LightQuality      = Quality.VeryHigh,
+            CharacterQuality  = Quality.High,
+            EnvDetailQuality  = Quality.VeryHigh,
+            ReflectionQuality = Quality.VeryHigh,
+            SFXQuality        = Quality.High,
+            BloomQuality      = Quality.VeryHigh,
+            AAMode            = AntialiasingMode.TAA,
+            EnableMetalFXSU   = false,
+        };
         #endregion
 
         #region Properties
@@ -74,65 +163,65 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// <summary>
         /// Deprecated for now. <br/>
         /// Options: Custom (0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
-        /// Default: Medium
+        /// Default: Custom
         /// </summary>
-        public Quality ResolutionQuality { get; set; } = Quality.Medium;
+        public Quality ResolutionQuality { get; set; } = Quality.Custom;
 
         /// <summary>
         /// This defines "<c>Shadow Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), Low (2), Medium(3), High(4)
-        /// Default: Medium
+        /// Default: Off
         /// </summary>
-        public Quality ShadowQuality { get; set; } = Quality.Medium;
+        public Quality ShadowQuality { get; set; } = Quality.Off;
 
         /// <summary>
         /// This defines "<c>Light Quality</c>" combobox In-game settings. <br/>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
-        /// Default: Medium
+        /// Default: VeryLow
         /// </summary>
-        public Quality LightQuality { get; set; } = Quality.Medium;
+        public Quality LightQuality { get; set; } = Quality.VeryLow;
 
         /// <summary>
         /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
         /// Options: Low (2), Medium(3), High(4) <br/>
-        /// Default: Medium
+        /// Default: Low
         /// </summary>
-        public Quality CharacterQuality { get; set; } = Quality.Medium;
+        public Quality CharacterQuality { get; set; } = Quality.Low;
 
         /// <summary>
         /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
-        /// Default: Medium
+        /// Default: VeryLow
         /// </summary>
-        public Quality EnvDetailQuality { get; set; } = Quality.Medium;
+        public Quality EnvDetailQuality { get; set; } = Quality.VeryLow;
 
         /// <summary>
         /// This defines "<c>Reflection Quality</c>" combobox In-game settings. <br/>>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
-        /// Default: Medium
+        /// Default: VeryLow
         /// </summary>
-        public Quality ReflectionQuality { get; set; } = Quality.Medium;
+        public Quality ReflectionQuality { get; set; } = Quality.VeryLow;
 
         /// <summary>
         /// This defines "<c>SFX Quality</c>" combobox In-game settings. <br/>>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4) <br/>
-        /// Default: Medium
+        /// Default: High (I believe it's a mistake by miHoYo)
         /// </summary>
-        public Quality SFXQuality { get; set; } = Quality.Medium;
+        public Quality SFXQuality { get; set; } = Quality.High;
 
         /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
-        /// Default: Medium
+        /// Default: Off
         /// </summary>
-        public Quality BloomQuality { get; set; } = Quality.Medium;
+        public Quality BloomQuality { get; set; } = Quality.Off;
 
         /// <summary>
         /// This defines "<c>Anti Aliasing</c>" combobox In-game settings. <br/>
         /// Options: Off (0), TAA (1), FXAA (2) <br/>
-        /// Default: TAA
+        /// Default: Off
         /// </summary>
-        public AntialiasingMode AAMode { get; set; } = AntialiasingMode.TAA;
+        public AntialiasingMode AAMode { get; set; } = AntialiasingMode.Off;
 
         /// <summary>
         /// MetalFX config for Apple devices. Should not be used under Windows. <br/>
@@ -149,9 +238,41 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             try
             {
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_GraphicsQuality} RegistryKey is unexpectedly not initialized!");
+                var graphicsQuality = (Quality)RegistryRoot.GetValue(_GraphicsQuality, Quality.Medium);
+                return graphicsQuality switch
+                {
+                    Quality.Custom => LoadCustom(),
+                    Quality.VeryLow => _VeryLowPreset,
+                    Quality.Low => _LowPreset,
+                    Quality.Medium => _MediumPreset,
+                    Quality.High => _HighPreset,
+                    Quality.VeryHigh => _VeryHighPreset,
+                    _ => new Model()
+                };
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while reading {_GraphicsQuality}" +
+                             $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
+                             $"\r\n  If the issue persist, please report it on GitHub" +
+                             $"\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception(
+                    $"Failed when reading game settings {_GraphicsQuality}\r\n" +
+                    $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
+                    $"{ex}", ex));
+            }
+
+            return new Model();
+        }
+
+        private static Model LoadCustom()
+        {
+            try
+            {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
                 object? value = RegistryRoot.GetValue(_ValueName, null);
-                
+
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
@@ -174,7 +295,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                     $"{ex}", ex));
             }
 
-            return new Model();
+            return _MediumPreset;
         }
 
         public void Save()
@@ -182,6 +303,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+
+                RegistryRoot.SetValue(_GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
 
                 string data = this.Serialize(StarRailSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
