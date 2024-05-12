@@ -111,7 +111,7 @@
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
 		<PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
 		<PackageReference Include="Roman-Numerals" Version="2.0.0" />
-		<PackageReference Include="SharpCompress" Version="0.37.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
+		<PackageReference Include="SharpCompress" Version="0.37.2" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
 		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
