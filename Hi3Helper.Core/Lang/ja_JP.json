@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "通知はありません",
     "NotifClearAll": "通知をすべてクリア",
     "NavigationMenu": "メニュー",
-    "NavigationUtilities": "機能"
+    "NavigationUtilities": "機能",
+    "Initializing": "初期化中",
+    "LoadingLauncherMetadata": "ランチャーのメタデータを読み込み中",
+    "LoadingGameConfiguration": "ゲーム設定を読み込み中"
   },
 
   "_HomePage": {
