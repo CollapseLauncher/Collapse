@@ -130,6 +130,7 @@
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+		<ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
 		<ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
 	</ItemGroup>
 
