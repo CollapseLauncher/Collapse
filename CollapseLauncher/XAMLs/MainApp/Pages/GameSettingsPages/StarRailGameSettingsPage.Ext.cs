@@ -231,7 +231,7 @@ namespace CollapseLauncher.Pages
         //ResolutionQuality
         public int ResolutionQuality
         {
-            get => (int)Settings.GraphicsSettings.ResolutionQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.ResolutionQuality, 0, 5);
             set => Settings.GraphicsSettings.ResolutionQuality = (Quality)value;
         }
         //ShadowQuality
@@ -239,12 +239,8 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                var v = (int)Settings.GraphicsSettings.ShadowQuality;
-                
-                // clamp values
-                if (v > 4) v = 4;
+                var v = Math.Clamp((int)Settings.GraphicsSettings.ShadowQuality, 0, 4);
                 if (v == 1) v = 2;
-
                 return v;
             }
             set => Settings.GraphicsSettings.ShadowQuality = (Quality)value;
@@ -252,52 +248,43 @@ namespace CollapseLauncher.Pages
         //LightQuality
         public int LightQuality
         {
-            get => (int)Settings.GraphicsSettings.LightQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.LightQuality, 1, 5);
             set => Settings.GraphicsSettings.LightQuality = (Quality)value;
         }
         //CharacterQuality
         public int CharacterQuality
         {
-            get
-            {
-                int value = (int)Settings.GraphicsSettings.CharacterQuality;
-
-                // Clamp value
-                if (value < 2) return 2; // Low
-                if (value > 4) return 4; // High
-
-                return value;
-            }
-            set => Settings.GraphicsSettings.CharacterQuality = (CharacterQualityEnum)value;
+            get => Math.Clamp((int)Settings.GraphicsSettings.CharacterQuality, 2, 4);
+            set => Settings.GraphicsSettings.CharacterQuality = (Quality)value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
         {
-            get => (int)Settings.GraphicsSettings.EnvDetailQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.EnvDetailQuality, 1, 5);
             set => Settings.GraphicsSettings.EnvDetailQuality = (Quality)value;
         }
         //ReflectionQuality
         public int ReflectionQuality
         {
-            get => (int)Settings.GraphicsSettings.ReflectionQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.ReflectionQuality, 1, 5);
             set => Settings.GraphicsSettings.ReflectionQuality = (Quality)value;
         }
         //SFXQuality
         public int SFXQuality
         {
-            get => (int)Settings.GraphicsSettings.SFXQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.SFXQuality, 1, 4);
             set => Settings.GraphicsSettings.SFXQuality = (Quality)value;
         }
         //BloomQuality
         public int BloomQuality
         {
-            get => (int)Settings.GraphicsSettings.BloomQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.BloomQuality, 0, 5);
             set => Settings.GraphicsSettings.BloomQuality = (Quality)value;
         }
         //AAMode
         public int AAMode
         {
-            get => (int)Settings.GraphicsSettings.AAMode;
+            get => Math.Clamp((int)Settings.GraphicsSettings.AAMode, 0, 2);
             set => Settings.GraphicsSettings.AAMode = (AntialiasingMode)value;
         }
         #endregion

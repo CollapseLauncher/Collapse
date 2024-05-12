@@ -29,13 +29,6 @@ namespace CollapseLauncher.GameSettings.StarRail
         TAA = 1,
         FXAA = 2
     }
-
-    public enum CharacterQualityEnum
-    {
-        Low = 2,
-        Medium = 3,
-        High = 4
-    }
     #endregion
 
     internal class Model : IGameSettingsValue<Model>
@@ -59,28 +52,28 @@ namespace CollapseLauncher.GameSettings.StarRail
         #region Properties
         /// <summary>
         /// This defines "<c>FPS</c>" combobox In-game settings. <br/>
-        /// Options: 30, 60, 120 (EXPERIMENTAL)
+        /// Options: 30, 60, 120 (EXPERIMENTAL) <br/>
         /// Default: 60 (or depends on FPSDefaultIndex and FPSIndex content)
         /// </summary>
         public int FPS { get; set; } = FPSIndex[FPSDefaultIndex];
 
         /// <summary>
         /// This defines "<c>V-Sync</c>" combobox In-game settings. <br/>
-        /// Options: true, false
+        /// Options: true, false <br/>
         /// Default: false
         /// </summary>
         public bool EnableVSync { get; set; } = false;
 
         /// <summary>
         /// This defines "<c>Render Scale</c>" combobox In-game settings. <br/>
-        /// Options: 0.6, 0.8, 1.0, 1.2, 1.4
+        /// Options: 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0 <br/>
         /// Default: 1.0
         /// </summary>
         public double RenderScale { get; set; } = 1.0;
 
         /// <summary>
-        /// No idea what this is still...
-        /// Options: 0, 1, 2, 3, 4
+        /// Deprecated for now. <br/>
+        /// Options: Custom (0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
         /// Default: Medium
         /// </summary>
         public Quality ResolutionQuality { get; set; } = Quality.Medium;
@@ -94,54 +87,58 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         /// <summary>
         /// This defines "<c>Light Quality</c>" combobox In-game settings. <br/>
-        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
         /// Default: Medium
         /// </summary>
         public Quality LightQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
-        /// Options: Low (2), Medium(3), High(4)
+        /// Options: Low (2), Medium(3), High(4) <br/>
         /// Default: Medium
         /// </summary>
-        public CharacterQualityEnum CharacterQuality { get; set; } = CharacterQualityEnum.Medium;
+        public Quality CharacterQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>
-        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
         /// Default: Medium
         /// </summary>
         public Quality EnvDetailQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Reflection Quality</c>" combobox In-game settings. <br/>>
-        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
         /// Default: Medium
         /// </summary>
         public Quality ReflectionQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>SFX Quality</c>" combobox In-game settings. <br/>>
-        /// Options: VeryLow (1), Low (2), Medium(3), High(4)
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4) <br/>
         /// Default: Medium
         /// </summary>
         public Quality SFXQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
-        /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
         /// Default: Medium
         /// </summary>
         public Quality BloomQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Anti Aliasing</c>" combobox In-game settings. <br/>
-        /// Options: Off (0), TAA (1), FXAA (2)
+        /// Options: Off (0), TAA (1), FXAA (2) <br/>
         /// Default: TAA
         /// </summary>
         public AntialiasingMode AAMode { get; set; } = AntialiasingMode.TAA;
 
-        // MetalFX config for Apple devices. Should not be used under Windows.
+        /// <summary>
+        /// MetalFX config for Apple devices. Should not be used under Windows. <br/>
+        /// Options: true, false <br/>
+        /// Default: false
+        /// </summary>
         public bool EnableMetalFXSU { get; set; }
 
         #endregion
