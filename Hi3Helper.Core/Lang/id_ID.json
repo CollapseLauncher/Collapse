@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "Tidak ada notifikasi baru",
     "NotifClearAll": "Hapus semua notifikasi",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Perkakas"
+    "NavigationUtilities": "Perkakas",
+    "Initializing": "Mempersiapkan",
+    "LoadingLauncherMetadata": "Memuat Metadata Launcher",
+    "LoadingGameConfiguration": "Memuat Konfigurasi Game"
   },
 
   "_HomePage": {
@@ -577,7 +580,8 @@
     "CDNDescription_Github": "Repositori resmi (utama) untuk launcher",
     "CDNDescription_Cloudflare": "Mirror dari repositori resmi (main) yang dihost dalam bucket Cloudflare R2.",
     "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket.",
-    "CDNDescription_GitLab": "Mirror dari repositori resmi (main) yang dihost dalam GitLab",
+    "CDNDescription_GitLab": "Mirror dari repositori resmi (main) yang dihost dalam GitLab.",
+    "CDNDescription_Coding": "Mirror dari repositori resmi (main) yang dihost dalam Coding.",
 
     "LocateExecutable": "Pilih Executable",
     "OpenDownloadPage": "Buka Halaman Download",
@@ -1230,8 +1234,8 @@
 
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Selamat", "Datang di" ],
-      "Lower": [ "Collapse", "Launcherr" ]
+      "Upper": [ "Selamat ", "Datang di" ],
+      "Lower": [ "Collapse ", "Launcher" ]
     },
     "SetupNextButton": "Klik di sini untuk melanjutkan",
     "SetupBackButton": "Kembali",
