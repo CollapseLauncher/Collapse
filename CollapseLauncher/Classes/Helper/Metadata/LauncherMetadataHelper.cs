@@ -189,7 +189,7 @@ namespace CollapseLauncher.Helper.Metadata
             if (isShowLoadingMessage)
             {
                 LoadingMessageHelper.ShowLoadingFrame();
-                LoadingMessageHelper.SetMessage("Initializing", "Loading Launcher Metadata");
+                LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing, Locale.Lang._MainPage.LoadingLauncherMetadata);
             }
 
             // Initialize the variable and create the metadata folder if it doesn't exist
@@ -329,8 +329,8 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 if (isShowLoadingMessage)
                 {
-                    LoadingMessageHelper.SetMessage("Initializing",
-                                                    $"Loading Game Configuration [{index++}/{stampList?.Count}]: {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Lang._GameClientRegions)}");
+                    LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing,
+                                                    $"{Locale.Lang._MainPage.LoadingGameConfiguration} [{index++}/{stampList?.Count}]: {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Lang._GameClientRegions)}");
                 }
 
                 await LoadConfigInner(stamp, currentChannel, false, false, isCacheUpdateModeOnly);

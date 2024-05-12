@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "No new notifications",
     "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilities"
+    "NavigationUtilities": "Utilities",
+    "Initializing": "Initializing",
+    "LoadingLauncherMetadata": "Loading Launcher Metadata",
+    "LoadingGameConfiguration": "Loading Game Configuration"
   },
 
   "_HomePage": {
