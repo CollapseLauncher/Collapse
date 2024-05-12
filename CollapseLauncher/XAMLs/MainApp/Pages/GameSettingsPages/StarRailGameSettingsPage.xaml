@@ -420,8 +420,9 @@
                                             <ComboBoxItem Content="FXAA" />
                                         </ComboBox>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1"
-                                                VerticalAlignment="Bottom">
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Bottom"
+                                                Visibility="Collapsed">
                                         <TextBlock MaxWidth="128"
                                                    Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
@@ -441,7 +442,7 @@
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2"
+                                    <StackPanel Grid.Column="1"
                                                 VerticalAlignment="Bottom">
                                         <TextBlock MaxWidth="128"
                                                    Margin="0,8,0,8"
