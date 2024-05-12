@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -11,6 +12,7 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? MetadataInclude { get; set; } = null;
         public string? GameName { get; set; } = null;
         public string? GameRegion { get; set; } = null;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public DateTime LastModifiedTimeUtc { get; set; } = default;
         public string? PresetConfigVersion { get; set; }
     }
