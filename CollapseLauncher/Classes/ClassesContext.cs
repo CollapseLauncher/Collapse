@@ -9,7 +9,12 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher
 {
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSourceGenerationOptions(
+        IncludeFields = false,
+        GenerationMode = JsonSourceGenerationMode.Metadata,
+        IgnoreReadOnlyFields = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = true)]
     [JsonSerializable(typeof(RegionResourcePluginValidate))]
     [JsonSerializable(typeof(HoYoPlayLauncherResources))]
     [JsonSerializable(typeof(CommunityToolsProperty))]
