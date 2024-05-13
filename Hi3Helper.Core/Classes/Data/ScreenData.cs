@@ -28,6 +28,12 @@ namespace Hi3Helper.Screen
 
                 i++;
             }
+
+            // Some corner case in RDP session
+            if (screenResolutions.Count == 0)
+            {
+                screenResolutions.Add(GetScreenSize());
+            }
         }
 
         public static Size GetScreenSize() => new Size
