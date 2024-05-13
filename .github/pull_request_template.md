@@ -13,6 +13,7 @@
 
 <details>
   <summary>Changelog Prefixes</summary>
+  
   ```
     **[New]**
     **[Imp]**
@@ -20,4 +21,5 @@
     **[Loc]**
     **[Doc]**
   ```
+
 </details>
