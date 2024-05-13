@@ -228,6 +228,15 @@
         "resolved": "2.0.0",
         "contentHash": "OZP9ACtcxaJeyidhulsLFAG1OLq5OOozXeORg5Ol3pUCHb0Abz6EqQI6Sz38oJESP3dtz1lTNg8DHauVhbp7BA=="
       },
+      "SharpCompress": {
+        "type": "Direct",
+        "requested": "[0.37.2, )",
+        "resolved": "0.37.2",
+        "contentHash": "cFBpTct57aubLQXkdqMmgP8GGTFRh7fnRWP53lgE/EYUpDZJ27SSvTkdjB4OYQRZ20SJFpzczUquKLbt/9xkhw==",
+        "dependencies": {
+          "ZstdSharp.Port": "0.8.0"
+        }
+      },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
         "requested": "[2.2.3, )",
@@ -972,8 +981,8 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.7.4",
-        "contentHash": "ziptnotpUJr51afwXJQ5Wc03dvDiZAdmxS08s1g7SHn/VzbyZUXdH6yORk/zaNjzUOEE6pVZ0Nqztab0rYROgQ=="
+        "resolved": "0.8.0",
+        "contentHash": "Z62eNBIu8E8YtbqlMy57tK3dV1+m2b9NhPeaYovB5exmLKvrGCqOhJTzrEUH5VyUWU6vwX3c1XHJGhW5HVs8dA=="
       },
       "colorthief": {
         "type": "Project",
@@ -1004,6 +1013,12 @@
       },
       "hi3helper.http": {
         "type": "Project"
+      },
+      "Hi3Helper.Sophon": {
+        "type": "Project",
+        "dependencies": {
+          "Google.Protobuf": "[3.26.1, )"
+        }
       },
       "innosetuphelper": {
         "type": "Project",
