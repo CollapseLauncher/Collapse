@@ -680,6 +680,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
+            InvokeProp.PreventSleep();
+            
             // Sanity Check: Check if the _gamePath is null, then throw
             if (string.IsNullOrEmpty(_gamePath)) throw new NullReferenceException("_gamePath cannot be null or empty!");
 
@@ -705,11 +707,11 @@ namespace CollapseLauncher.InstallManager.Base
             // Reset the last size counter
             _totalLastSizeCurrent = 0;
 
-            // Try unassign read-only and redundant diff files
+            // Try to unassign read-only and redundant diff files
             TryUnassignReadOnlyFiles();
             TryRemoveRedundantHDiffList();
 
-            // Enumerate the install package
+            // Enumerate the installation package
             foreach (GameInstallPackage asset in gamePackage)
             {
                 // Update the status
@@ -757,6 +759,8 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 _progressTotalCountCurrent++;
+                
+                InvokeProp.RestoreSleep();
             }
         }
 
