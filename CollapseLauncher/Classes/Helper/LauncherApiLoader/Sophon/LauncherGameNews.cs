@@ -55,7 +55,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             set => _newsPost = value?.OrderBy(x => x.PostOrder).ToList();
         }
 
-        [JsonPropertyName("icon")] public List<LauncherGameNewsSocialMedia>? SocialMedia { get; init; }
+        [JsonPropertyName("icon")] public List<LauncherGameNewsSocialMedia>? SocialMedia { get; set; }
 
         [JsonIgnore]
         public List<LauncherGameNewsPost>? NewsPostTypeInfo

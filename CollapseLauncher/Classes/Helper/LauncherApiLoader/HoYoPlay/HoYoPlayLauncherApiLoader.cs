@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         protected override async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             // TODO: HoYoPlay API reading and conversion into Sophon format
-            EnsurePresetConfigNotNull();
             EnsurePresetConfigNotNull();
 
             HoYoPlayLauncherResources? hypResourceResponse = await TaskExtensions
@@ -200,14 +200,20 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
         protected override async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
+            bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
+
+            string localeCode = isUseMultiLang ? Locale.Lang.LanguageID.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback!;
+            string launcherSpriteUrl = string.Format(PresetConfig?.LauncherSpriteURL!, localeCode);
+            string launcherNewsUrl = string.Format(PresetConfig?.LauncherNewsURL!, localeCode);
+
             HoYoPlayLauncherNews? hypLauncherBackground = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(PresetConfig?.LauncherSpriteURL, InternalAppJSONContext.Default, token),
+                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherSpriteUrl, InternalAppJSONContext.Default, token),
                                                            ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token)
                                         .ConfigureAwait(false);
 
             HoYoPlayLauncherNews? hypLauncherNews = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(PresetConfig?.LauncherNewsURL, InternalAppJSONContext.Default, token),
+                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherNewsUrl, InternalAppJSONContext.Default, token),
                                                            ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token)
                                         .ConfigureAwait(false);
@@ -220,6 +226,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             EnsureInitializeSophonLauncherNews(ref sophonLauncherNewsRoot);
             ConvertLauncherBackground(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
             ConvertLauncherNews(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+            ConvertLauncherSocialMedia(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
 
             base.LauncherGameNews = sophonLauncherNewsRoot;
             base.LauncherGameNews?.Content?.InjectDownloadableItemCancelToken(token);
@@ -242,6 +249,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
             if (sophonLauncherNewsData.Content.NewsCarousel == null)
                 sophonLauncherNewsData.Content.NewsCarousel = new List<LauncherGameNewsCarousel>();
+
+            if (sophonLauncherNewsData.Content.SocialMedia == null)
+                sophonLauncherNewsData.Content.SocialMedia = new List<LauncherGameNewsSocialMedia>();
         }
 
         private void ConvertLauncherBackground(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
@@ -285,6 +295,36 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                         CarouselImg = hypCarouselData.Image?.ImageUrl,
                         CarouselUrl = hypCarouselData.Image?.ClickLink,
                         CarouselTitle = hypCarouselData.Image?.Title
+                    });
+                }
+            }
+        }
+
+        private void ConvertLauncherSocialMedia(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        {
+            if (hypLauncherInfoData?.GameNewsContent?.SocialMediaList != null)
+            {
+                // Social Media list
+                foreach (LauncherSocialMedia hypSocMedData in hypLauncherInfoData.GameNewsContent.SocialMediaList)
+                {
+                    sophonLauncherNewsData?.Content?.SocialMedia?.Add(new LauncherGameNewsSocialMedia
+                    {
+                        IconId = hypSocMedData?.SocialMediaId,
+                        IconImg = hypSocMedData?.SocialMediaIcon?.ImageUrl,
+                        IconImgHover = string.IsNullOrEmpty(hypSocMedData?.SocialMediaIcon?.ImageHoverUrl) ? hypSocMedData?.SocialMediaIcon?.ImageUrl : hypSocMedData?.SocialMediaIcon?.ImageHoverUrl,
+                        Title = hypSocMedData?.SocialMediaIcon?.Title,
+                        SocialMediaUrl = hypSocMedData?.SocialMediaLinks?.FirstOrDefault()?.ClickLink,
+                        QrImg = hypSocMedData?.SocialMediaQrImage?.ImageUrl,
+                        QrTitle = hypSocMedData?.SocialMediaQrDescription,
+                        QrLinks = hypSocMedData?.SocialMediaLinks?.Select(x =>
+                        {
+                            LauncherGameNewsSocialMediaQrLinks qrLink = new LauncherGameNewsSocialMediaQrLinks
+                            {
+                                Title = x.Title,
+                                Url = x.ClickLink
+                            };
+                            return qrLink;
+                        }).ToList()
                     });
                 }
             }

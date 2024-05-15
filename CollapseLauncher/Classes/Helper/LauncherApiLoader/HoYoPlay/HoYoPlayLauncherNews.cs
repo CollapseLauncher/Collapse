@@ -102,6 +102,30 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? ImageHoverUrl { get; set; }
     }
 
+    public class LauncherSocialMedia
+    {
+        [JsonPropertyName("enable_red_dot")]
+        public bool NotificationDotEnabled { get; set; }
+
+        [JsonPropertyName("red_dot_content")]
+        public string? NotificationDotContent { get; set; }
+
+        [JsonPropertyName("icon")]
+        public LauncherContentData? SocialMediaIcon { get; set; }
+
+        [JsonPropertyName("id")]
+        public string? SocialMediaId { get; set; }
+
+        [JsonPropertyName("links")]
+        public List<LauncherContentData>? SocialMediaLinks { get; set; }
+
+        [JsonPropertyName("qr_desc")]
+        public string? SocialMediaQrDescription { get; set; }
+
+        [JsonPropertyName("qr_image")]
+        public LauncherContentData? SocialMediaQrImage { get; set; }
+    }
+
     public class LauncherNewsContent
     {
         [JsonPropertyName("banners")]
@@ -109,6 +133,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
         [JsonPropertyName("posts")]
         public List<LauncherContentData>? NewsPostsList { get; set; }
+
+        [JsonPropertyName("social_media_list")]
+        public List<LauncherSocialMedia>? SocialMediaList { get; set; }
     }
 
     public class LauncherNewsBanner
