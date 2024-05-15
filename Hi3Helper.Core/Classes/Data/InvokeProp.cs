@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -78,6 +80,15 @@ namespace Hi3Helper
             ForceLight,
             Max
         };
+
+        [Flags]
+        private enum ExecutionState : uint
+        {
+            EsAwaymodeRequired = 0x00000040,
+            EsContinuous = 0x80000000,
+            EsDisplayRequired = 0x00000002,
+            EsSystemRequired = 0x00000001
+        }
         #endregion
 
         #region Kernel32
@@ -136,7 +147,10 @@ namespace Hi3Helper
         
         [DllImport("kernel32.dll")]
         public static extern bool SetConsoleCtrlHandler(HandlerRoutine handlerRoutine, bool add);
-        
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern ExecutionState SetThreadExecutionState(ExecutionState esFlags);
+
         #endregion
 
         #region User32
@@ -226,7 +240,50 @@ namespace Hi3Helper
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
         #endregion
-        
+
+#nullable enable
+        public static CancellationTokenSource? _preventSleepToken;
+        private static bool _preventSleepRunning;
+
+        public static async void RestoreSleep() => await (_preventSleepToken?.CancelAsync() ?? Task.CompletedTask);
+
+        public static async void PreventSleep()
+        {
+            // Only run this loop once
+            if (_preventSleepRunning) return;
+
+            // Initialize instance if it's still null
+            _preventSleepToken ??= new CancellationTokenSource();
+
+            // If the instance cancellation has been requested, return
+            if (_preventSleepToken.IsCancellationRequested) return;
+
+            // Set flag
+            _preventSleepRunning = true;
+
+            try
+            {
+                while (!_preventSleepToken.IsCancellationRequested)
+                {
+                    // Set ES to SystemRequired every 60s
+                    SetThreadExecutionState(ExecutionState.EsContinuous | ExecutionState.EsSystemRequired);
+                    await Task.Delay(60000, _preventSleepToken.Token);
+                }
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"[InvokeProp::preventSleep()] Errors while preventing sleep!\r\n{e}",
+                             LogType.Error, true);
+            }
+            finally
+            {
+                // Reset flag and ES 
+                _preventSleepRunning = false;
+                SetThreadExecutionState(ExecutionState.EsContinuous);
+            }
+        }
+#nullable restore
+
         public static unsafe void CopyStringToClipboard(string inputString)
         {
             // Initialize the memory pointer
