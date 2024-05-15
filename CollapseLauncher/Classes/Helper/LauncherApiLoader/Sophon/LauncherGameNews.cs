@@ -212,6 +212,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
     public class LauncherGameNewsSocialMedia : ILauncherGameNewsDataTokenized
     {
         private readonly string? _qrImg;
+        private readonly List<LauncherGameNewsSocialMediaQrLinks>? _qrLinks;
         private readonly string? _iconImg;
         private readonly string? _iconImgHover;
         private readonly string? _socialMediaUrl;
@@ -252,7 +253,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonConverter(typeof(EmptyStringAsNullConverter))]
         public string? Title
         {
-            get => string.IsNullOrEmpty(_title) ? null : _title;
+            get => string.IsNullOrEmpty(_title) || (QrLinks?.Any(x => x.Title == _title) ?? false) ? null : _title;
             init => _title = value;
         }
 
@@ -268,13 +269,23 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonConverter(typeof(EmptyStringAsNullConverter))]
         public string? QrTitle { get; init; }
 
-        [JsonPropertyName("links")] public List<LauncherGameNewsSocialMediaQrLinks>? QrLinks { get; init; }
+        [JsonPropertyName("links")]
+        public List<LauncherGameNewsSocialMediaQrLinks>? QrLinks
+        {
+            get => _qrLinks;
+            init
+            {
+                _qrLinks = value?.Where(x => !(string.IsNullOrEmpty(x.Url) || string.IsNullOrEmpty(x.Title))).ToList();
+                if (_qrLinks?.Count == 0)
+                    _qrLinks = null;
+            }
+        }
 
         [JsonIgnore] public bool IsHasDescription => !string.IsNullOrEmpty(Title);
 
         [JsonIgnore]
-        public bool IsHasLinks => (QrLinks?.Count ?? 0) != 0 && !string.IsNullOrEmpty(QrLinks?[0].Url) &&
-                                  QrLinks?[0].Url != _socialMediaUrl;
+        public bool IsHasLinks => (QrLinks?.Count ?? 0) != 0 || (!string.IsNullOrEmpty(QrLinks?[0].Url) &&
+                                  QrLinks?[0].Url != _socialMediaUrl);
 
         [JsonIgnore] public bool IsHasQr => !string.IsNullOrEmpty(QrImg);
 
