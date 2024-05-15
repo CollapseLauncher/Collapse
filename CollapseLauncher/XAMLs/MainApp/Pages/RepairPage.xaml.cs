@@ -44,6 +44,8 @@
 
         private async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
+            InvokeProp.PreventSleep();
+            
             CheckFilesBtn.Flyout.Hide();
             CheckFilesBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
@@ -82,11 +84,13 @@
             finally
             {
                 RemoveEvent();
+                InvokeProp.RestoreSleep();
             }
         }
 
         private async void StartGameRepair(object sender, RoutedEventArgs e)
         {
+            InvokeProp.PreventSleep();
             RepairFilesBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
 
@@ -119,6 +123,7 @@
             finally
             {
                 RemoveEvent();
+                InvokeProp.RestoreSleep();
             }
         }
 

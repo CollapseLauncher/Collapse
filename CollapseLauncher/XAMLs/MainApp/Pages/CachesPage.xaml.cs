@@ -57,6 +57,7 @@
 
             try
             {
+                InvokeProp.PreventSleep();
                 AddEvent();
 
                 bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
@@ -84,6 +85,7 @@
             finally
             {
                 RemoveEvent();
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -94,6 +96,7 @@
 
             try
             {
+                InvokeProp.PreventSleep();
                 AddEvent();
 
                 await CurrentGameProperty._GameCache.StartUpdateRoutine();
@@ -120,6 +123,7 @@
             }
             finally
             {
+                InvokeProp.RestoreSleep();
                 RemoveEvent();
             }
         }
