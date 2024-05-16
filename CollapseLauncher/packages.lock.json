@@ -114,9 +114,9 @@
       },
       "GitInfo": {
         "type": "Direct",
-        "requested": "[3.3.4, )",
-        "resolved": "3.3.4",
-        "contentHash": "uaK+WXIrHCkjJudwMfgVkI8tTNqjcB19bHpSBe4C5pOS4cx9JsPkCcaafN2vY2snkRiCQZCpt56yLslZOyvT2g==",
+        "requested": "[3.3.5, )",
+        "resolved": "3.3.5",
+        "contentHash": "xt8tAMq42KompgmZI5fpko9IY9cuGqjvNFCc+B6iZeoCHlqcbuGZz33SFD+jTsPZTFfrxqTXvywm/s8DcFcEIg==",
         "dependencies": {
           "ThisAssembly.Constants": "1.4.1"
         }
