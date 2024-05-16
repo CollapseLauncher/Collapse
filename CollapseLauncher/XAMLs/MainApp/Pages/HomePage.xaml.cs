@@ -1506,6 +1506,10 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
+                
+                // Enable mobile mode
+                if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
+                    parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
 
                 Size screenSize = _Settings.SettingsScreen.sizeRes;
 

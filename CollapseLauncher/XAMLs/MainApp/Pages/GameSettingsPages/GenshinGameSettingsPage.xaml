@@ -44,80 +44,96 @@
                                     <TextBlock Margin="0,0,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ResolutionPanel}" />
-                                    <StackPanel x:Name="GameResolutionWindow"
-                                                Margin="0,0,0,8"
-                                                Orientation="Vertical">
-                                        <CheckBox x:Name="VSyncToggle"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind VerticalSync, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                        <CheckBox x:Name="GameResolutionFullscreen"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                        <CheckBox x:Name="GameResolutionBorderless"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <CheckBox x:Name="GameWindowResizable"
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel x:Name="GameResolutionWindow"
+                                                    Margin="0,0,0,8"
+                                                    Orientation="Vertical">
+                                            <CheckBox x:Name="VSyncToggle"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                      IsChecked="{x:Bind VerticalSync, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
-                                            <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
-                                                <Button.Content>
-                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
-                                                              Glyph="&#x3f;" />
-                                                </Button.Content>
-                                                <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
-                                                        <TextBlock MaxWidth="360"
-                                                                   FontWeight="SemiBold"
-                                                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
-                                                                   TextAlignment="Center"
-                                                                   TextWrapping="Wrap" />
-                                                    </Flyout>
-                                                </Button.Flyout>
-                                            </Button>
-                                        </Grid>
-                                        <!--
-                                            Exclusive Fullscreen option is disabled for Genshin due to the amount of bugs it caused
-                                            Ref: https://www.pcgamingwiki.com/wiki/Genshin_Impact#G-Sync_.2F_Variable_Refresh_Rate_Does_Not_Work
-                                            Delete `Visibility="Collapsed"' to revert this change
-                                        -->
-                                        <TextBlock Margin="28,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}"
-                                                   Visibility="Collapsed" />
-                                        <CheckBox x:Name="GameResolutionFullscreenExclusive"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
-                                                  IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
-                                                  Visibility="Collapsed">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                    </StackPanel>
+                                            <CheckBox x:Name="GameResolutionFullscreen"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                            <CheckBox x:Name="GameResolutionBorderless"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <CheckBox x:Name="GameWindowResizable"
+                                                          HorizontalAlignment="Left"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
+                                                          IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
+                                                <Button Grid.Column="1"
+                                                        Margin="8,-4,0,0"
+                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                    <Button.Content>
+                                                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#x3f;" />
+                                                    </Button.Content>
+                                                    <Button.Flyout>
+                                                        <Flyout AllowFocusOnInteraction="True">
+                                                            <TextBlock MaxWidth="360"
+                                                                       FontWeight="SemiBold"
+                                                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
+                                                                       TextAlignment="Center"
+                                                                       TextWrapping="Wrap" />
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                            </Grid>
+                                            <!--
+                                                Exclusive Fullscreen option is disabled for Genshin due to the amount of bugs it caused
+                                                Ref: https://www.pcgamingwiki.com/wiki/Genshin_Impact#G-Sync_.2F_Variable_Refresh_Rate_Does_Not_Work
+                                                Delete `Visibility="Collapsed"' to revert this change
+                                            -->
+                                            <TextBlock Margin="28,0,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}"
+                                                       Visibility="Collapsed" />
+                                            <CheckBox x:Name="GameResolutionFullscreenExclusive"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
+                                                      IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
+                                                      Visibility="Collapsed">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1"
+                                                    Margin="4,0,0,0">
+                                            <CheckBox x:Name="MobileModeToggle"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </Grid>
                                     <Grid Margin="0,0,0,16">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />

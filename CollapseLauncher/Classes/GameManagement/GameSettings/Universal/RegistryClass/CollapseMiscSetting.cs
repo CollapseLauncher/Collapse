@@ -6,6 +6,8 @@ using System;
 using System.Text;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace CollapseLauncher.GameSettings.Universal
 {
@@ -42,7 +44,7 @@ namespace CollapseLauncher.GameSettings.Universal
         }
 
         /// <summary>
-        /// This define if Advanced Game Settings should be shown in respective GSP and used.<br/><br/>
+        /// This defines if Advanced Game Settings should be shown in respective GSP and used.<br/><br/>
         /// Default: false
         /// </summary>
         public bool UseAdvancedGameSettings { get; set; } = false;
@@ -75,6 +77,11 @@ namespace CollapseLauncher.GameSettings.Universal
         /// Command is launched as a shell with no window.<br/><br/>
         /// </summary>
         public string GamePostExitCommand { get; set; } = "";
+
+        /// <summary>
+        /// Use mobile layout. Currently only available for Genshin Impact.
+        /// </summary>
+        public bool LaunchMobileMode { get; set; } = false;
         #endregion
 
         #region Methods
