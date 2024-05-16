@@ -499,6 +499,12 @@ namespace CollapseLauncher.Pages
             get => Settings.SettingsCollapseMisc.UseGameBoost;
             set => Settings.SettingsCollapseMisc.UseGameBoost = value;
         }
+
+        public bool IsMobileMode
+        {
+            get => Settings.SettingsCollapseMisc.LaunchMobileMode;
+            set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
+        }
         #endregion
 
         #region Advanced Settings
