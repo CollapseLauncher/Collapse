@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
@@ -102,7 +102,6 @@ namespace CollapseLauncher
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
                 ChangeRegionBtn.IsEnabled = true;
 
-                IsFirstStartup = false;
                 DisableKbShortcuts();
             }
 
@@ -117,12 +116,6 @@ namespace CollapseLauncher
 
             await preset.GameLauncherApi.LoadAsync(BeforeLoadRoutine, AfterLoadRoutine, ActionOnTimeOutRetry, OnErrorRoutine, tokenSource.Token);
 
-            if (tokenSource.IsCancelled || tokenSource.Token.IsCancellationRequested)
-            {
-                LogWriteLine($"Game: {regionToChangeName} failed to initialize!", LogType.Error, true);
-                return false;
-            }
-            
             LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
             FinalizeLoadRegion(gameName, gameRegion);
             ChangeBackgroundImageAsRegionAsync();

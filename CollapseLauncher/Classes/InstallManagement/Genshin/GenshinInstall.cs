@@ -24,7 +24,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #region Properties
         private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
-        private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
+        protected string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
         private string _gameAudioLangListPath
         {
             get
@@ -44,7 +44,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 return audioPath[0];
             }
         }
-        private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
+        protected string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
         private string _gameAudioNewPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "AudioAssets"); }
         private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
         #endregion
@@ -70,7 +70,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             ApplyDeleteFileAction();
         }
 
-        private void EnsureMoveOldToNewAudioDirectory()
+        protected void EnsureMoveOldToNewAudioDirectory()
         {
             // Return if the old path doesn't exist
             if (!Directory.Exists(_gameAudioOldPath)) return;
@@ -144,7 +144,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             WriteAudioLangList();
         }
 
-        private void WriteAudioLangList()
+        protected virtual void WriteAudioLangList()
         {
             // Create persistent directory if not exist
             if (!Directory.Exists(_gameDataPersistentPath))
@@ -236,13 +236,31 @@ namespace CollapseLauncher.InstallManager.Genshin
             return value;
         }
 
-        private string GetLanguageStringByID(int id) => id switch
+        protected string GetLanguageStringByID(int id) => id switch
         {
             0 => "Chinese",
             1 => "English(US)",
             2 => "Japanese",
             3 => "Korean",
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected string GetLanguageLocaleCodeByID(int id) => id switch
+        {
+            0 => "zh-cn",
+            1 => "en-us",
+            2 => "ja-jp",
+            3 => "ko-kr",
+            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
+        {
+            "zh-cn" => "Chinese",
+            "en-us" => "English(US)",
+            "ja-jp" => "Japanese",
+            "ko-kr" => "Korean",
+            _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
         };
 
         private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)

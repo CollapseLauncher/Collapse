@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.LauncherApiLoader;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -56,6 +56,18 @@ namespace CollapseLauncher.Helper.Metadata
     {
         Sophon,
         HoYoPlay
+    }
+
+    public class SophonChunkUrls
+    {
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? MainUrl { get; set; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? PreloadUrl { get; set; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? SdkUrl { get; set; }
     }
 
     internal class PresetConfig
@@ -135,6 +147,8 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherResourceURL { get; init; }
 
+        public SophonChunkUrls? LauncherResourceChunksURL { get; init; }
+
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherNewsURL { get; init; }
 
@@ -206,7 +220,7 @@ namespace CollapseLauncher.Helper.Metadata
         private static string? SystemDriveLetter =>
             Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
 
-        public string InstallRegistryLocation => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig);
+        public string? InstallRegistryLocation { get; set; }
 
         public string DefaultGameLocation =>
             string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter);
@@ -499,6 +513,7 @@ namespace CollapseLauncher.Helper.Metadata
         {
             try
             {
+                if (string.IsNullOrEmpty(InstallRegistryLocation)) return false;
                 string? value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
                 return TryCheckGameLocation(value);
             }
@@ -526,26 +541,43 @@ namespace CollapseLauncher.Helper.Metadata
 
         private bool CheckInnerGameConfig(in string gamePath)
         {
-            string configPath = Path.Combine(gamePath, "config.ini");
-            if (!File.Exists(configPath))
+            switch (LauncherType)
             {
-                return false;
+                case LauncherType.Sophon:
+                    // Start: Sophon Check
+                    string configPath = Path.Combine(gamePath, "config.ini");
+                    if (!File.Exists(configPath))
+                        return false;
+
+                    IniFile ini = new IniFile();
+                    ini.Load(configPath);
+                    string? path1 = ini["launcher"]!["game_install_path"].ToString();
+                    if (string.IsNullOrEmpty(path1))
+                        return false;
+
+                    ActualGameDataLocation = ConverterTool.NormalizePath(path1);
+                    return File.Exists(Path.Combine(ActualGameDataLocation!, "config.ini")) &&
+                           File.Exists(Path.Combine(ActualGameDataLocation!, GameExecutableName!));
+                    // End: Sophon Check
+                case LauncherType.HoYoPlay:
+                    // Start: HYP Check
+                    if (string.IsNullOrEmpty(GameDirectoryName)) return false;
+                    if (string.IsNullOrEmpty(GameExecutableName)) return false;
+                    string tryHypDirPath = ConverterTool.NormalizePath(Path.Combine(gamePath, GameDirectoryName));
+                    string tryHypConfigPath = Path.Combine(tryHypDirPath, "config.ini");
+                    string tryHypGameExePath = Path.Combine(tryHypDirPath, GameExecutableName);
+
+                    // If both file doesn't exist, then return false
+                    if (!(File.Exists(tryHypConfigPath) && File.Exists(tryHypGameExePath)))
+                        return false;
+
+                    // Otherwise, return true and set the ActualGameDataLocation property
+                    ActualGameDataLocation = tryHypDirPath;
+                    return true;
+                    // End: HYP Check
+                default:
+                    return false;
             }
-
-            IniFile ini = new IniFile();
-            ini.Load(configPath);
-
-            string? path1 = ini["launcher"]!["game_install_path"].ToString();
-
-            if (path1 == null)
-            {
-                return false;
-            }
-
-            ActualGameDataLocation = ConverterTool.NormalizePath(path1);
-
-            return File.Exists(Path.Combine(ActualGameDataLocation!, "config.ini")) &&
-                   File.Exists(Path.Combine(ActualGameDataLocation!, GameExecutableName!));
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -263,7 +263,6 @@ namespace Hi3Helper
 
             try
             {
-                LogWriteLine("[InvokeProp::PreventSleep()] Starting to prevent sleep!", LogType.Warning, true);
                 while (!_preventSleepToken.IsCancellationRequested)
                 {
                     // Set ES to SystemRequired every 60s
@@ -273,7 +272,7 @@ namespace Hi3Helper
             }
             catch (Exception e)
             {
-                LogWriteLine($"[InvokeProp::PreventSleep()] Errors while preventing sleep!\r\n{e}",
+                LogWriteLine($"[InvokeProp::preventSleep()] Errors while preventing sleep!\r\n{e}",
                              LogType.Error, true);
             }
             finally
@@ -281,10 +280,6 @@ namespace Hi3Helper
                 // Reset flag and ES 
                 _preventSleepRunning = false;
                 SetThreadExecutionState(ExecutionState.EsContinuous);
-                LogWriteLine("[InvokeProp::PreventSleep()] Stopped preventing sleep!", LogType.Warning, true);
-                
-                // Null the token for the next time method is called
-                _preventSleepToken = null;
             }
         }
 #nullable restore

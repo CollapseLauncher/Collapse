@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +32,10 @@ namespace CollapseLauncher.Extension
                     lastException = null;
 
                     Task<T?> completedTask = await Task.WhenAny(taskDelegated, ThrowExceptionAfterTimeout<T>(timeout, taskDelegated, token));
+
+                    if (completedTask.Exception != null)
+                        throw completedTask.Exception;
+
                     if (completedTask == taskDelegated)
                         return await taskDelegated;
                 }

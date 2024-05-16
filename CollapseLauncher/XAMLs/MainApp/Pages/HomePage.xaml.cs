@@ -236,10 +236,10 @@ namespace CollapseLauncher.Pages
         private async void TryLoadEventPanelImage()
         {
             // Get the url and article image path
-            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
-                .LauncherGameNews.Content.Background.FeaturedEventIconBtnUrl;
-            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
-                .LauncherGameNews.Content.Background.FeaturedEventIconBtnImg;
+            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
+                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
+            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
+                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
 
             // If the region event panel property is null, then return
             if (string.IsNullOrEmpty(featuredEventIconImg)) return;

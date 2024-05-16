@@ -1,4 +1,4 @@
-﻿<Page x:Class="CollapseLauncher.Pages.HomePage"
+<Page x:Class="CollapseLauncher.Pages.HomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -25,10 +25,14 @@
                               Opacity="0.3"
                               Offset="0,4,0" />
         <Style TargetType="imageex:ImageEx">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
-            <Setter Property="IsTabStop" Value="False" />
-            <Setter Property="LazyLoadingThreshold" Value="300" />
+            <Setter Property="Background"
+                    Value="Transparent" />
+            <Setter Property="Foreground"
+                    Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+            <Setter Property="IsTabStop"
+                    Value="False" />
+            <Setter Property="LazyLoadingThreshold"
+                    Value="300" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="imageex:ImageEx">
@@ -380,41 +384,80 @@
                                                     Loaded="OnLoadedSocMedFlyout"
                                                     PointerExited="HideSocMedFlyout"
                                                     Tag="{Binding ElementName=SocMedFlyout}">
-                                            <StackPanel Margin="8,8,8,0"
+                                            <StackPanel Margin="4,8,4,0"
                                                         Visibility="{Binding IsHasQr, Converter={ThemeResource BooleanToVisibilityConverter}}">
                                                 <Grid Margin="0,0,0,8"
                                                       Background="White"
+                                                      Shadow="{ThemeResource SharedShadow}"
+                                                      Translation="0,0,16"
                                                       CornerRadius="5">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
                                                     <Image Width="160"
+                                                           Margin="8"
                                                            HorizontalAlignment="Center"
                                                            Source="{Binding QrImg}" />
+                                                    <TextBlock Margin="0,0,0,8"
+                                                               HorizontalAlignment="Center"
+                                                               TextAlignment="Center"
+                                                               FontWeight="Bold"
+                                                               Text="{Binding QrTitle}"
+                                                               TextWrapping="Wrap"
+                                                               Grid.Row="1"
+                                                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                                               Visibility="{Binding IsHasQrDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
                                                 </Grid>
-                                                <TextBlock Margin="0,0,0,4"
-                                                           HorizontalAlignment="Center"
-                                                           FontWeight="Bold"
-                                                           Text="{Binding QrTitle}"
-                                                           TextWrapping="Wrap"
-                                                           Visibility="{Binding IsHasQrDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
                                             </StackPanel>
-                                            <StackPanel Visibility="{Binding IsHasLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                            <StackPanel Visibility="{Binding IsHasLinks, Converter={ThemeResource BooleanToVisibilityConverter}}"
+                                                        Margin="0,2">
                                                 <ItemsControl ItemsSource="{Binding QrLinks}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
-                                                            <Button HorizontalAlignment="Center"
-                                                                    Click="OpenSocMedLink"
-                                                                    Tag="{Binding Url}">
-                                                                <Button.Template>
-                                                                    <ControlTemplate>
-                                                                        <TextBlock Margin="2,2"
-                                                                                   Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                   Loaded="SetHandCursor"
-                                                                                   PointerEntered="HyperLink_OnPointerEntered"
-                                                                                   PointerExited="HyperLink_OnPointerExited"
-                                                                                   Text="{Binding Title}"
-                                                                                   TextDecorations="Underline"
-                                                                                   TextWrapping="Wrap" />
-                                                                    </ControlTemplate>
-                                                                </Button.Template>
+                                                            <Button Click="OpenSocMedLink"
+                                                                    Tag="{Binding Url}"
+                                                                    MinWidth="160"
+                                                                    Shadow="{ThemeResource SharedShadow}"
+                                                                    Translation="0,0,8"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    HorizontalContentAlignment="Stretch"
+                                                                    Style="{ThemeResource AcrylicSemiButtonStyle}"
+                                                                    Margin="0,2"
+                                                                    CornerRadius="5">
+                                                                <Grid Margin="0,0,0,0"
+                                                                      HorizontalAlignment="Stretch">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid HorizontalAlignment="Left">
+                                                                        <TextBlock HorizontalAlignment="Left"
+                                                                                   VerticalAlignment="Center"
+                                                                                   FontWeight="Medium"
+                                                                                   HorizontalTextAlignment="Left"
+                                                                                   Text="{Binding Title}" />
+                                                                    </Grid>
+                                                                    <Grid Grid.Column="1"
+                                                                          Margin="4,0,0,0"
+                                                                          HorizontalAlignment="Center"
+                                                                          VerticalAlignment="Center"
+                                                                          RenderTransformOrigin="0.5, 0.5">
+                                                                        <Grid.RenderTransform>
+                                                                            <RotateTransform Angle="-90" />
+                                                                        </Grid.RenderTransform>
+                                                                        <AnimatedIcon Width="14"
+                                                                                      HorizontalAlignment="Center"
+                                                                                      VerticalAlignment="Center">
+                                                                            <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                                                            <AnimatedIcon.FallbackIconSource>
+                                                                                <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                                                                Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                                                                Glyph="&#xE70D;" />
+                                                                            </AnimatedIcon.FallbackIconSource>
+                                                                        </AnimatedIcon>
+                                                                    </Grid>
+                                                                </Grid>
                                                             </Button>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -423,15 +466,21 @@
                                             <TextBlock HorizontalAlignment="Center"
                                                        Text="{Binding Title}"
                                                        TextWrapping="Wrap"
+                                                       Margin="0,4"
                                                        Visibility="{Binding IsHasDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
                                         </StackPanel>
                                         <Flyout.FlyoutPresenterStyle>
                                             <Style TargetType="FlyoutPresenter">
-                                                <Setter Property="Margin" Value="3,0,0,0" />
-                                                <Setter Property="CornerRadius" Value="5" />
-                                                <Setter Property="Padding" Value="0" />
-                                                <Setter Property="MinHeight" Value="0" />
-                                                <Setter Property="MinWidth" Value="0" />
+                                                <Setter Property="Margin"
+                                                        Value="3,0,0,0" />
+                                                <Setter Property="CornerRadius"
+                                                        Value="5" />
+                                                <Setter Property="Padding"
+                                                        Value="0" />
+                                                <Setter Property="MinHeight"
+                                                        Value="0" />
+                                                <Setter Property="MinWidth"
+                                                        Value="0" />
                                             </Style>
                                         </Flyout.FlyoutPresenterStyle>
                                     </Flyout>
@@ -994,11 +1043,16 @@
                                               ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
-                                                <Setter Property="Margin" Value="0,4,8,4" />
-                                                <Setter Property="Width" Value="200" />
-                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                                <Setter Property="MinHeight" Value="0" />
-                                                <Setter Property="Padding" Value="0,0,0,0" />
+                                                <Setter Property="Margin"
+                                                        Value="0,4,8,4" />
+                                                <Setter Property="Width"
+                                                        Value="200" />
+                                                <Setter Property="HorizontalContentAlignment"
+                                                        Value="Stretch" />
+                                                <Setter Property="MinHeight"
+                                                        Value="0" />
+                                                <Setter Property="Padding"
+                                                        Value="0,0,0,0" />
                                             </Style>
                                         </GridView.ItemContainerStyle>
                                         <GridView.ItemsPanel>
@@ -1021,11 +1075,16 @@
                                               ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
-                                                <Setter Property="Margin" Value="0,4,8,4" />
-                                                <Setter Property="Width" Value="180" />
-                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                                <Setter Property="MinHeight" Value="0" />
-                                                <Setter Property="Padding" Value="0,0,0,0" />
+                                                <Setter Property="Margin"
+                                                        Value="0,4,8,4" />
+                                                <Setter Property="Width"
+                                                        Value="180" />
+                                                <Setter Property="HorizontalContentAlignment"
+                                                        Value="Stretch" />
+                                                <Setter Property="MinHeight"
+                                                        Value="0" />
+                                                <Setter Property="Padding"
+                                                        Value="0,0,0,0" />
                                             </Style>
                                         </GridView.ItemContainerStyle>
                                         <GridView.ItemsPanel>

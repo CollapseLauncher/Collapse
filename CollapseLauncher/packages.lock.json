@@ -203,6 +203,15 @@
         "resolved": "0.14.2",
         "contentHash": "rVz7Fb3/hyTLIP6NikCnnAiIz3vl5yfOooyehVz0FFsZCSd+UFgNTOjTvI+4xhpoQs08/RjU6DQz181qxzzRVA=="
       },
+      "PhotoSauce.NativeCodecs.Libwebp": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.3.2-preview3",
+        "contentHash": "kPBYxzIOx2XW/vvt/AGWSbeOInLVnM/teCXN+ABwDXSAC2kQYAF0pKoPxyg+YQimgmAORgAnV7817X8jYHT/Ew==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.14.2]"
+        }
+      },
       "Roman-Numerals": {
         "type": "Direct",
         "requested": "[2.0.0, )",
@@ -974,6 +983,12 @@
       "hi3helper.http": {
         "type": "Project"
       },
+      "Hi3Helper.Sophon": {
+        "type": "Project",
+        "dependencies": {
+          "Google.Protobuf": "[3.26.1, )"
+        }
+      },
       "innosetuphelper": {
         "type": "Project",
         "dependencies": {
@@ -1002,6 +1017,15 @@
         "contentHash": "gV+UHuwtbZLypWIysNlIX+WHqcm7q3I00E5n+GiDrX28fHXW4yr56d6GwP2banJLDl/JVku5zX2YUOW5X2WRZQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
+        }
+      },
+      "PhotoSauce.NativeCodecs.Libwebp": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.3.2-preview3",
+        "contentHash": "kPBYxzIOx2XW/vvt/AGWSbeOInLVnM/teCXN+ABwDXSAC2kQYAF0pKoPxyg+YQimgmAORgAnV7817X8jYHT/Ew==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.14.2]"
         }
       },
       "System.Diagnostics.EventLog": {

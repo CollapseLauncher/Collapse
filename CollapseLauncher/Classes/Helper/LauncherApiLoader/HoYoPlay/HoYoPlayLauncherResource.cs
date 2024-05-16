@@ -1,0 +1,109 @@
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+#nullable enable
+namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
+{
+    public class HoYoPlayLauncherResources
+    {
+        [JsonPropertyName("data")]
+        public LauncherResourceData? Data { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? ResultMessage { get; set; }
+
+        [JsonPropertyName("retcode")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int? ReturnCode { get; set; }
+    }
+
+    public class LauncherResourceData
+    {
+        [JsonPropertyName("game_packages")]
+        public List<LauncherPackages>? LauncherPackages { get; set; }
+
+        [JsonPropertyName("plugin_releases")]
+        public List<LauncherPackages>? PluginPackages { get; set; }
+    }
+
+    public class LauncherPackages
+    {
+        [JsonPropertyName("game")]
+        public GameDetail? GameDetail { get; set; }
+
+        [JsonPropertyName("main")]
+        public PackagePartition? MainPackage { get; set; }
+
+        [JsonPropertyName("plugin")]
+        public PackagePartition? PluginPackage { get; set; }
+
+        [JsonPropertyName("pre_download")]
+        public PackagePartition? PreDownload { get; set; }
+    }
+
+    public class GameDetail
+    {
+        [JsonPropertyName("biz")]
+        public string? GameBiz { get; set; }
+
+        [JsonPropertyName("id")]
+        public string? LauncherId { get; set; }
+    }
+
+    public class PackagePartition
+    {
+        [JsonPropertyName("major")]
+        public PackageSections? CurrentVersion { get; set; }
+
+        [JsonPropertyName("patches")]
+        public List<PackageSections>? Patches { get; set; }
+    }
+
+    public class PackageSections
+    {
+        [JsonPropertyName("audio_pkgs")]
+        public List<PackageDetails>? AudioPackages { get; set; }
+
+        [JsonPropertyName("game_pkgs")]
+        public List<PackageDetails>? GamePackages { get; set; }
+
+        [JsonPropertyName("res_list_url")]
+        public string? ResourceListUrl { get; set; }
+
+        [JsonPropertyName("version")]
+        public string? Version { get; set; }
+    }
+
+    public class PackageDetails
+    {
+        [JsonPropertyName("decompressed_size")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public long PackageDecompressSize { get; init; }
+
+        [JsonPropertyName("md5")]
+        public string? PackageMD5Hash { get; init; }
+
+        [JsonPropertyName("size")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public long? PackageSize { get; init; }
+
+        [JsonPropertyName("url")]
+        public string? PackageUrl { get; init; }
+
+        [JsonPropertyName("pkg_version_file_name")]
+        public string? UnpackedPkgVersionFileName { get; init; }
+
+        [JsonPropertyName("path")]
+        public string? UnpackedBaseUrl { get; init; }
+
+        [JsonPropertyName("channel_sdk_pkg")]
+        public string? ChannelSDKPkg { get; init; }
+
+        [JsonPropertyName("command")]
+        // TODO: Figure out the property purpose
+        public string? Command { get; init; }
+
+        [JsonPropertyName("language")]
+        public string? Language { get; init; }
+    }
+}

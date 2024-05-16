@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
@@ -17,10 +17,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
     internal class LauncherApiBase
     {
-        private const int           ExecutionTimeout        = 10;
-        private const int           ExecutionTimeoutStep    = 5;
-        private const int           ExecutionTimeoutAttempt = 5;
-        private       PresetConfig? PresetConfig { get; }
+        protected const int           ExecutionTimeout        = 10;
+        protected const int           ExecutionTimeoutStep    = 5;
+        protected const int           ExecutionTimeoutAttempt = 5;
+        protected       PresetConfig? PresetConfig { get; }
 
         public bool    IsLoadingCompleted     { get; private set; }
         public string? GameBackgroundImg      { get => LauncherGameNews?.Content?.Background?.BackgroundImg; } 
@@ -34,8 +34,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public string? GameRegionTranslation =>
             InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions);
 
-        public virtual RegionResourceProp? LauncherGameResource { get; private set; }
-        public virtual LauncherGameNews?   LauncherGameNews     { get; private set; }
+        public virtual RegionResourceProp? LauncherGameResource { get; protected set; }
+        public virtual LauncherGameNews?   LauncherGameNews     { get; protected set; }
 
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion)
         {
@@ -77,15 +77,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
                                                               CancellationToken     token)
         {
-            if (PresetConfig == null)
-            {
-                throw new NullReferenceException("Preset config is null!");
-            }
-
-            if (string.IsNullOrEmpty(PresetConfig?.LauncherResourceURL))
-            {
-                throw new NullReferenceException("Launcher resource URL is null or empty!");
-            }
+            EnsurePresetConfigNotNull();
+            EnsureResourceUrlNotNull();
 
             LauncherGameResource = await TaskExtensions
                                         .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, token),
@@ -179,38 +172,35 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         #endif
         }
 
-        protected virtual async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                           CancellationToken     token)
+        protected void EnsurePresetConfigNotNull()
         {
             if (PresetConfig == null)
             {
                 throw new NullReferenceException("Preset config is null!");
             }
+        }
+
+        protected void EnsureResourceUrlNotNull()
+        {
+            if (string.IsNullOrEmpty(PresetConfig?.LauncherResourceURL))
+            {
+                throw new NullReferenceException("Launcher resource URL is null or empty!");
+            }
+        }
+
+        protected virtual async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine,
+                                                           CancellationToken     token)
+        {
+            EnsurePresetConfigNotNull();
 
             string? localeLang  = Locale.Lang.LanguageID.ToLower();
-            // HACK! HoYo API does not respond with certain locale, force change locale.
-            switch (localeLang)
-            {
-                case "es-419":
-                    localeLang = "es-es";
-                    break;
-                case "pt-br":
-                    localeLang = "pt-pt";
-                    break;
-                //case "pl-pl":
-                //    localeLang = "en-us";
-                //    break;
-                //case "uk-ua":
-                //    localeLang = "en-us";
-                //    break;
-            }
-            bool    isMultilingual = PresetConfig.LauncherSpriteURLMultiLang ?? false;
+            bool    isMultilingual = PresetConfig!.LauncherSpriteURLMultiLang ?? false;
 
             LauncherGameNews? regionResourceProp =
                 await LoadLauncherNewsInner(isMultilingual, localeLang, PresetConfig, onTimeoutRoutine, token);
             int backgroundVersion = regionResourceProp?.Content?.Background?.BackgroundVersion ?? 5;
 
-            if (regionResourceProp?.Content?.Background == null || (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai))
+            if (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai)
             {
                 string? localeFallback = PresetConfig.LauncherSpriteURLMultiLangFallback ?? "en-us";
                 regionResourceProp =
