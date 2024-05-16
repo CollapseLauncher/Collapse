@@ -105,6 +105,7 @@
                 public string Advanced_GLC_PreLaunch_Title    { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Title;
                 public string Advanced_GLC_PreLaunch_Subtitle { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle;
                 public string Advanced_GLC_PreLaunch_Exit     { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Exit;
+                public string Advanced_GLC_PreLaunch_Delay    { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Delay;
                 public string Advanced_GLC_PostExit_Title     { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PostExit_Title;
                 public string Advanced_GLC_PostExit_Subtitle  { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PostExit_Subtitle;
             }

@@ -67,6 +67,12 @@ namespace CollapseLauncher.GameSettings.Universal
         public bool GamePreLaunchExitOnGameStop { get; set; } = false;
 
         /// <summary>
+        /// Delay game launch when using pre-launch command.<br/><br/>
+        /// Value in ms.
+        /// </summary>
+        public int GameLaunchDelay { get; set; } = 0;
+
+        /// <summary>
         /// This control if GamePostLaunchCommand is going to be used. <br/><br/>
         /// Default: false
         /// </summary>
