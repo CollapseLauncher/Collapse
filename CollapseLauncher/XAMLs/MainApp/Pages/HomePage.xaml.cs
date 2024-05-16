@@ -1260,7 +1260,13 @@ namespace CollapseLauncher.Pages
 
                 if (_Settings!.SettingsCollapseMisc != null &&
                     _Settings.SettingsCollapseMisc.UseAdvancedGameSettings &&
-                    _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand) PreLaunchCommand(_Settings);
+                    _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand)
+                {
+                    var delay = _Settings.SettingsCollapseMisc.GameLaunchDelay;
+                    PreLaunchCommand(_Settings);
+                    if (delay > 0)
+                        await Task.Delay(delay);
+                }
 
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
@@ -2141,7 +2147,8 @@ namespace CollapseLauncher.Pages
                 string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
                 if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
-                LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n\t" +
+                LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
+                             $"Game launch is delayed by {_settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
                              $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                              LogType.Warning, true);
 

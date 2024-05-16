@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
 using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
@@ -378,11 +379,13 @@ namespace CollapseLauncher.Pages
                 {
                     PreLaunchCommandTextBox.IsEnabled   = true;
                     PreLaunchForceCloseToggle.IsEnabled = true;
+                    GameLaunchDelay.IsEnabled           = true;
                 }
                 else
                 {
                     PreLaunchCommandTextBox.IsEnabled   = false;
                     PreLaunchForceCloseToggle.IsEnabled = false;
+                    GameLaunchDelay.IsEnabled           = false;
                 }
 
                 Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
@@ -401,6 +404,12 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
+        public int LaunchDelay
+        {
+            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
+            set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
+        }
+        
         public bool IsUsePostExitCommand
         {
             get 
@@ -425,6 +434,13 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
+        }
+        
+        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            // clamp for negative value when clearing the number box
+            if ((int)sender.Value < 0)
+                sender.Value = 0;
         }
         #endregion
     }

@@ -1060,11 +1060,18 @@
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
-                                      Margin="0,0,0,8"
+                                      Margin="0,0,0,0"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
                                       IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <NumberBox x:Name="GameLaunchDelay"
+                                   Width="200"
+                                   Margin="0,0,0,12"
+                                   HorizontalAlignment="Left"
+                                   Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
+                                   ValueChanged="GameLaunchDelay_OnValueChanged"
+                                   Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
                         <TextBox x:Name="PreLaunchCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
