@@ -1,4 +1,4 @@
-using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using TaskExtensions = CollapseLauncher.Extension.TaskExtensions;
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
@@ -26,17 +24,18 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             // TODO: HoYoPlay API reading and conversion into Sophon format
             EnsurePresetConfigNotNull();
 
-            HoYoPlayLauncherResources? hypResourceResponse = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, token),
-                                                           ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                        .ConfigureAwait(false);
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
+                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
 
-            HoYoPlayLauncherResources? hypPluginResource = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, token),
-                                                           ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                        .ConfigureAwait(false);
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback = 
+                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
+
+            HoYoPlayLauncherResources? hypResourceResponse = await hypResourceResponseCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+            HoYoPlayLauncherResources? hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest
             {
@@ -206,17 +205,18 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             string launcherSpriteUrl = string.Format(PresetConfig?.LauncherSpriteURL!, localeCode);
             string launcherNewsUrl = string.Format(PresetConfig?.LauncherNewsURL!, localeCode);
 
-            HoYoPlayLauncherNews? hypLauncherBackground = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherSpriteUrl, InternalAppJSONContext.Default, token),
-                                                           ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                        .ConfigureAwait(false);
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
+                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherSpriteUrl, InternalAppJSONContext.Default, innerToken));
 
-            HoYoPlayLauncherNews? hypLauncherNews = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherNewsUrl, InternalAppJSONContext.Default, token),
-                                                           ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                        .ConfigureAwait(false);
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
+                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherNewsUrl, InternalAppJSONContext.Default, innerToken));
+
+            HoYoPlayLauncherNews? hypLauncherBackground = await hypLauncherBackgroundCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+            HoYoPlayLauncherNews? hypLauncherNews = await hypLauncherNewsCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             // Merge background image
             if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)

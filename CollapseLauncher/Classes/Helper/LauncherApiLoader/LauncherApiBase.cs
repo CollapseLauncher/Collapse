@@ -6,7 +6,6 @@ using Microsoft.Win32;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskExtensions = CollapseLauncher.Extension.TaskExtensions;
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -80,11 +79,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             EnsurePresetConfigNotNull();
             EnsureResourceUrlNotNull();
 
-            LauncherGameResource = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, token),
-                                                           ExecutionTimeout,        ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                        .ConfigureAwait(false);
+            ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
+                new ActionTimeoutValueTaskCallback<RegionResourceProp?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
+
+            LauncherGameResource = await launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             if (LauncherGameResource == null)
             {
@@ -93,11 +93,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             if (string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL))
             {
-                RegionResourceProp? pluginProp = await TaskExtensions
-                                                      .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp?>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, token),
-                                                                         ExecutionTimeout,        ExecutionTimeoutStep,
-                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine,
-                                                                         token).ConfigureAwait(false);
+                ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
+                    new ActionTimeoutValueTaskCallback<RegionResourceProp?>(async (innerToken) =>
+                    await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, innerToken));
+
+                RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
                 if (pluginProp != null)
                 {
@@ -220,16 +221,15 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 throw new NullReferenceException("Launcher news URL is null or empty!");
             }
 
-            Task<LauncherGameNews?> taskGameLauncherNewsSophon = isMultiLang
-                ? LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, token)
-                : LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, token);
+            ActionTimeoutValueTaskCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
+                new ActionTimeoutValueTaskCallback<LauncherGameNews?>(async (innerToken) =>
+                isMultiLang
+                ? await LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
+                : await LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, innerToken));
 
-            Task<LauncherGameNews?> taskRetryLoadSession =
-                TaskExtensions.RetryTimeoutAfter(async () => await taskGameLauncherNewsSophon,
-                                                 ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt,
+            return await taskGameLauncherNewsSophonCallback.WaitForRetryAsync(
+                ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt,
                                                  onTimeoutRoutine, token);
-
-            return await taskRetryLoadSession.ConfigureAwait(false);
         }
 
         private static async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
@@ -250,11 +250,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
         protected virtual string GetDeviceId(PresetConfig preset)
         {
+            if (string.IsNullOrEmpty(preset.InstallRegistryLocation))
+                throw new NullReferenceException("InstallRegistryLocation inside of the game metadata is null!");
+
             string? deviceId = (string?)Registry.GetValue(preset.InstallRegistryLocation, "UUID", null);
             if (deviceId != null)
-            {
                 return deviceId;
-            }
 
             const string regKeyCryptography = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography";
             string? guid = (string?)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ??
