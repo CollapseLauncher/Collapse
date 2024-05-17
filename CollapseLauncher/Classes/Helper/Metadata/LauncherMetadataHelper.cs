@@ -50,12 +50,7 @@ namespace CollapseLauncher.Helper.Metadata
         internal static PresetConfig? CurrentMetadataConfig
         {
             get => _currentMetadataConfig;
-            set
-            {
-                if (value?.GameLauncherApi?.LauncherGameNews == null)
-                    Console.WriteLine();
-                _currentMetadataConfig = value;
-            }
+            set => _currentMetadataConfig = value;
         }
         internal static string? CurrentMetadataConfigGameName;
         internal static string? CurrentMetadataConfigGameRegion;
