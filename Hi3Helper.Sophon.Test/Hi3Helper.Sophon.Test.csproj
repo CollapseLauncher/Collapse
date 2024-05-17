@@ -10,7 +10,7 @@
     
     <ItemGroup>
     <ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
-    <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.NoZstdDll.csproj" />
+    <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">

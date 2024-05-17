@@ -229,11 +229,12 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
-        "requested": "[2.2.3, )",
-        "resolved": "2.2.3",
-        "contentHash": "bPYcvsu5Plb5q9yRpA7F4JYATPzmnfVFz19/6dwdayziBeofgFbnqzP3csnrPQwAI95GxSJsHK9fcj6SQMZhAg==",
+        "requested": "[2.2.5, )",
+        "resolved": "2.2.5",
+        "contentHash": "HczGXTuH9Ex3O88Mj8fzzgwg8XKulNl68TvqGJ9nyNFf1P2+uWeJyutFmvvA8fx6uv/TPFSkcZZmMZnzk39GGw==",
         "dependencies": {
-          "ZstdSharp.Port": "0.7.4"
+          "Hi3Helper.ZstdNet": "1.5.3",
+          "ZstdSharp.Port": "0.8.1"
         }
       },
       "System.CommandLine": {
@@ -382,6 +383,11 @@
         "dependencies": {
           "H.GeneratedIcons.System.Drawing": "2.0.131"
         }
+      },
+      "Hi3Helper.ZstdNet": {
+        "type": "Transitive",
+        "resolved": "1.5.3",
+        "contentHash": "QIaWZmCvxzDng6cXrrh2uJp9BcNOQQNqnVt729vcDvSlWhhE5+QioqZupskLrW9zIuvvxayBr+Ei6KpwYBeMNw=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
@@ -561,8 +567,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.4",
-        "contentHash": "3G4xpa8mUYGzEF0HlswlBArAFywHJIzsZoB5hU4yMlnYHaabj/lg019BwbyyYBxj0aoM7Cz+jdlgUemeno9LOQ==",
+        "resolved": "8.0.5",
+        "contentHash": "n55wb6rL8YG254AG+SfQOSQencrcnpKAAcYyEcvBuO2pob7ltXuZ5skBBdvLJOLVPKd1Ya8+8ColIM5AtBo5ww==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -950,13 +956,13 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.8.0",
-        "contentHash": "Z62eNBIu8E8YtbqlMy57tK3dV1+m2b9NhPeaYovB5exmLKvrGCqOhJTzrEUH5VyUWU6vwX3c1XHJGhW5HVs8dA=="
+        "resolved": "0.8.1",
+        "contentHash": "19tNz33kn2EkyViFXuxfVn338UJaRmkwBphVqP2dVJIYQUQgFrgG5h061mxkRRg1Ax6r+6WOj1FxaFZ5qaWqqg=="
       },
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.4, )"
+          "System.Drawing.Common": "[8.0.5, )"
         }
       },
       "discordrpc": {
@@ -983,10 +989,11 @@
       "hi3helper.http": {
         "type": "Project"
       },
-      "Hi3Helper.Sophon": {
+      "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.26.1, )"
+          "Google.Protobuf": "[3.26.1, )",
+          "Hi3Helper.ZstdNet": "[*, )"
         }
       },
       "innosetuphelper": {
