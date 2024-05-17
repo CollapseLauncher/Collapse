@@ -44,7 +44,10 @@ namespace Hi3Helper
 
             // Decorate the line
             line = GetLine(line, type, true);
-            Console.WriteLine(line);
+
+            // Write using new async write line output and use .Error for error type
+            if (type == LogType.Error) await Console.Error.WriteLineAsync(line);
+            else await Console.Out.WriteLineAsync(line);
         }
 
         public override async void LogWriteLine(string line, LogType type, bool writeToLog)
