@@ -271,6 +271,10 @@ namespace Hi3Helper
                     await Task.Delay(60000, _preventSleepToken.Token);
                 }
             }
+            catch (TaskCanceledException)
+            {
+                //do nothing, its cancelled :)
+            }
             catch (Exception e)
             {
                 LogWriteLine($"[InvokeProp::PreventSleep()] Errors while preventing sleep!\r\n{e}",
