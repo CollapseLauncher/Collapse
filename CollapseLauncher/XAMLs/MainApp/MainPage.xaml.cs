@@ -11,6 +11,8 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -41,6 +43,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher
 {
@@ -1202,6 +1205,42 @@ namespace CollapseLauncher
                     break;
                 }
             }
+
+            var paneRoot = (Grid)NavigationViewControl.FindDescendant("PaneRoot");
+            if (paneRoot != null)
+            {
+                paneRoot.PointerEntered += NavView_PanePointerEntered;
+                paneRoot.PointerExited  += NavView_PanePointerExited;
+            }
+
+            // The toggle button is not a part of pane. Why Microsoft!!!
+            var paneToggleButtonGrid = (Grid)NavigationViewControl.FindDescendant("PaneToggleButtonGrid");
+            if (paneToggleButtonGrid != null)
+            {
+                paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
+                paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
+            }
+        }
+
+        private async void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (!NavigationViewControl.IsPaneOpen)
+            {
+                var duration = TimeSpan.FromSeconds(0.25);
+                var current = (float)NavViewPaneBackground.Opacity;
+                var animation = NavViewPaneBackground.GetElementCompositor()!
+                                                     .CreateScalarKeyFrameAnimation("Opacity", 1, current);
+                await NavViewPaneBackground.StartAnimation(duration, animation);
+            }
+        }
+
+        private async void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var duration = TimeSpan.FromSeconds(0.25);
+            var current = (float)NavViewPaneBackground.Opacity;
+            var animation = NavViewPaneBackground.GetElementCompositor()!
+                                                 .CreateScalarKeyFrameAnimation("Opacity", 0, current);
+            await NavViewPaneBackground.StartAnimation(duration, animation);
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
