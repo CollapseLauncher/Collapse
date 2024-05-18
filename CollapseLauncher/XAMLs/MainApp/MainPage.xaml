@@ -34,10 +34,12 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Top"
               Background="{ThemeResource BackgroundOverlayTitleBarBrush}" />
-        <Border Width="48"
+        <Border x:Name="NavViewPaneBackground"
+                Width="48"
                 Margin="0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Stretch"
+                Opacity="0"
                 Background="{ThemeResource NavigationViewUnfoldedPaneBackground}"
                 BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
                 BorderThickness="0"
