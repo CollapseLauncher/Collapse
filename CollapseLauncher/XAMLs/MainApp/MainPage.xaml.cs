@@ -1137,6 +1137,12 @@ namespace CollapseLauncher
             FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
 
+            IconLauncher.ApplyShadow();
+            IconRepair.ApplyShadow();
+            IconCaches.ApplyShadow();
+            IconGameSettings.ApplyShadow();
+            IconAppSettings.ApplyShadow();
+
             if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
                 SettingsItem.Content = Lang._SettingsPage.PageTitle;
@@ -1220,6 +1226,12 @@ namespace CollapseLauncher
                 paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
                 paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
             }
+
+            var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
+            backIcon?.ApplyShadow();
+
+            var toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
+            toggleIcon?.ApplyShadow();
         }
 
         private async void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
