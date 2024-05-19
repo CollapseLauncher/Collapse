@@ -194,7 +194,9 @@ namespace CollapseLauncher
             if (!dict.ContainsKey(origFileRelativePath))
             {
                 LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
-                return null;
+                throw new
+                    FileNotFoundException("Assets reference for repair is not found. " +
+                                          "Please contact us in GitHub issues or Discord to let us know about this issue.");
             }
 
             SenadinaFileIdentifier identifier = dict[origFileRelativePath];
