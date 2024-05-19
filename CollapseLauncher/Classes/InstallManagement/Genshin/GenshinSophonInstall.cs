@@ -4,7 +4,8 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
-using Hi3Helper.Sophon.Infos;
+using Hi3Helper.Sophon.Helper;
+using Hi3Helper.Sophon.Structs;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Logger = Hi3Helper.Logger;
-using SophonLogger = Hi3Helper.Sophon.Logger;
+using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
+using SophonManifest = Hi3Helper.Sophon.SophonManifest;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
@@ -91,8 +93,8 @@ namespace CollapseLauncher.InstallManager.Genshin
                 List<SophonChunkManifestInfoPair> sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
 
                 // Get the info pair based on info provided above (for main game file)
-                SophonChunkManifestInfoPair sophonMainInfoPair = await SophonManifest
-                    .CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
+                SophonChunkManifestInfoPair sophonMainInfoPair = await 
+                    SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
                 sophonInfoPairList.Add(sophonMainInfoPair);
 
                 // Run the audio dialog question
