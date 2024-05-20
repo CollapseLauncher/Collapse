@@ -351,6 +351,7 @@
     "CustomArgs_Footer3": "以了解更多命令行参数。",
 
     "GameBoost": "提升游戏优先级［实验性］",
+    "MobileLayout": "使用移动端布局",
 
     "Advanced_Title": "高级设置",
     "Advanced_Subtitle1": "Collapse 启动器团队对使用此设置时您的游戏、帐户或系统发生的任何情况",
@@ -360,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "启动前命令",
     "Advanced_GLC_PreLaunch_Subtitle": "在游戏启动前执行的命令",
     "Advanced_GLC_PreLaunch_Exit": "游戏关闭或停止时强制退出启动的进程",
+    "Advanced_GLC_PreLaunch_Delay": "延迟游戏启动（毫秒）",
     "Advanced_GLC_PostExit_Title": "退出后命令",
     "Advanced_GLC_PostExit_Subtitle": "在游戏关闭后执行的命令"
   },

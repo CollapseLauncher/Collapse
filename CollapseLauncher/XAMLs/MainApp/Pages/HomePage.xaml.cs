@@ -1488,6 +1488,33 @@ namespace CollapseLauncher.Pages
                     parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
                 }
+                
+                // Enable mobile mode
+                if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
+                {
+                    const string regLoc  = GameSettings.StarRail.Model._ValueName;
+                    var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
+
+                    if (regRoot != null || !string.IsNullOrEmpty(regLoc))
+                    {
+                        var regModel = (byte[])regRoot!.GetValue(regLoc, null);
+
+                        if (regModel != null)
+                        {
+                            string regB64 = Convert.ToBase64String(regModel);
+                            parameter.Append($"-is_cloud 1 -platform_type CLOUD_WEB_TOUCH -graphics_setting {regB64} ");
+                        }
+                        else
+                        {
+                            LogWriteLine("Failed enabling MobileMode for HSR: regModel is null.", LogType.Error, true);
+                        }
+                    }
+                    else
+                    {
+                        LogWriteLine("Failed enabling MobileMode for HSR: regRoot/regLoc is unexpectedly uninitialized.",
+                                     LogType.Error, true);
+                    }
+                }
 
                 Size screenSize = _Settings.SettingsScreen.sizeRes;
 
