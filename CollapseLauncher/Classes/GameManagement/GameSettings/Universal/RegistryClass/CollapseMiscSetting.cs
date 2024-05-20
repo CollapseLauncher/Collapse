@@ -85,7 +85,7 @@ namespace CollapseLauncher.GameSettings.Universal
         public string GamePostExitCommand { get; set; } = "";
 
         /// <summary>
-        /// Use mobile layout. Currently only available for Genshin Impact.
+        /// Use mobile layout. Currently only available for Genshin and StarRail.
         /// </summary>
         public bool LaunchMobileMode { get; set; } = false;
         #endregion
