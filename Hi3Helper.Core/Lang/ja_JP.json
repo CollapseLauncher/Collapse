@@ -1007,7 +1007,7 @@
 
     "Graphics_FPS": "フレームレート",
     "Graphics_FPS_Help": "120FPSは実験的な設定です！公式でサポートされていない設定のため、ご利用は自己責任でお願いします。",
-    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\nそうなった場合は、代わりにCollapseを使って画面設定を変更してください。",
+    "Graphics_FPS_Help2": "120FPS選択中にゲーム内の設定メニューでフレームレートを変更すると、120FPS化が解除されます。120FPS選択中に設定を変更する際は、Collapseのゲーム設定変更機能の使用をおすすめします。",
     "Graphics_VSync": "垂直同期",
     "Graphics_VSync_Help": "120FPS選択時は垂直同期が無効になります",
     "Graphics_RenderScale": "レンダリング精度",
