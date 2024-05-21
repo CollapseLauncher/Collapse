@@ -351,6 +351,7 @@
     "CustomArgs_Footer3": "berikut.",
 
     "GameBoost": "Boost Game Priority [Experimental]",
+    "MobileLayout": "Gunakan Layout Mobile",
 
     "Advanced_Title": "Pengaturan Tingkat Lanjut",
     "Advanced_Subtitle1": "Team Collapse Launcher",
@@ -360,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "Command Pre-Launch",
     "Advanced_GLC_PreLaunch_Subtitle": "Command yang akan dijalankan sebelum game dijalankan.",
     "Advanced_GLC_PreLaunch_Exit": "Paksa matikan process yang dijalankan saat game sudah berhenti/ditutup.",
+    "Advanced_GLC_PreLaunch_Delay": "Jeda Pemulaian Game (milidetik)",
     "Advanced_GLC_PostExit_Title": "Command Post-Exit",
     "Advanced_GLC_PostExit_Subtitle": "Command yang akan dijalankan setelah game ditutup/berhenti."
   },
@@ -1005,7 +1007,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS merupakan opsi EKSPERIMENTAL. Gunakan dengan resiko sendiri.",
-    "Graphics_FPS_Help2": "Selain itu, Setelan 120 FPS juga merusak Pengaturan Grafis dalam Game.\r\nGunakan Collapse untuk mengubah Pengaturan Grafis Game.",
+    "Graphics_FPS_Help2": "Mengatur limit FPS ke 120 tidak akan lagi menyebabkan issue pada settings menu pada game tapi nilai limit FPS dengan nilai yang lebih rendah di dalam game tidak akan bekerja.\r\nApabila kamu ingin mengubah nilai limit FPS, gunakan Collapse untuk mengubahnya.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync tidak tersedia pada mode 120 FPS",
     "Graphics_RenderScale": "Akurasi Rendering",
