@@ -1007,7 +1007,7 @@
 
     "Graphics_FPS": "帧率",
     "Graphics_FPS_Help": "120 帧解锁属于实验性功能！请谨慎使用，并自行承担风险。",
-    "Graphics_FPS_Help2": "此外，将帧率设置为 120 帧将导致游戏内的图像设置损坏。\n这种情况下，请使用 Collapse 启动器来修改游戏的图像设置。",
+    "Graphics_FPS_Help2": "将帧率设置为 120 帧不再导致游戏内的图像设置损坏，但将游戏内 FPS 设置更改为较低值将不再有效。\r\n如果使用 120 帧选项，请使用 Collapse 启动器来修改游戏的图像设置。",
     "Graphics_VSync": "垂直同步（VSync）",
     "Graphics_VSync_Help": "垂直同步（VSync）在 120 帧下不可用",
     "Graphics_RenderScale": "渲染精度",
