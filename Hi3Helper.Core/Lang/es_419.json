@@ -351,6 +351,7 @@
     "CustomArgs_Footer3": "para ver más parámetros.",
 
     "GameBoost": "Aumentar Prioridad del Juego [Experimental]",
+    "MobileLayout": "Usar Diseño de Móviles",
 
     "Advanced_Title": "Ajustes Avanzados",
     "Advanced_Subtitle1": "¡El equipo de Collapse Launcher",
@@ -360,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "Comandos de Pre-lanzamiento",
     "Advanced_GLC_PreLaunch_Subtitle": "Comandos que serán ejecutados antes de que se inicie el juego",
     "Advanced_GLC_PreLaunch_Exit": "Forzar salida del proceso cuando el juego es cerrado/detenido",
+    "Advanced_GLC_PreLaunch_Delay": "Retrasar Inicio del Juego (ms)",
     "Advanced_GLC_PostExit_Title": "Comandos de Post-salida",
     "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego"
   },
@@ -1005,7 +1007,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "¡120 FPS es EXPERIMENTAL! Usarlo con cuidado, bajo tu propio riesgo.",
-    "Graphics_FPS_Help2": "Adicionalmente, Ajustar FPS a 120 romperá la pagina de configuración grafica del juego.\nEn su lugar, usa Collapse para cambiar la configuración.",
+    "Graphics_FPS_Help2": "Ajustar los FPS a 120 ya no provoca que el menú deje de funcionar, pero cambiar los FPS en el juego a un valor inferior ya no funcionará.\nSi utilizas la opción de 120 FPS, deberás usar Collapse para cambiar la Configuración de gráficos del juego.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "Vsync no está disponible para 120 FPS",
     "Graphics_RenderScale": "Escala de Renderizado",
