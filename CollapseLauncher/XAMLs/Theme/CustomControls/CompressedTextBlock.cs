@@ -72,6 +72,18 @@ namespace CollapseLauncher.CustomControls
             get => (string)GetValue(TextProperty);
             set => SetValue(TextProperty, value);
         }
+
+        public static readonly DependencyProperty FontSizeProperty = DependencyProperty.RegisterAttached(
+            nameof(FontSize),
+            typeof(double),
+            typeof(CompressedTextBlock),
+            new PropertyMetadata(14d, OnFontSizeChanged));
+
+        public double FontSize
+        {
+            get => (double)GetValue(FontSizeProperty);
+            set => SetValue(FontSizeProperty, value);
+        }
         #endregion
 
         #region Events
@@ -92,6 +104,12 @@ namespace CollapseLauncher.CustomControls
             var compressedTextBlock = (CompressedTextBlock)sender;
             compressedTextBlock.InvalidateText();
         }
+
+        private static void OnFontSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var compressedTextBlock = (CompressedTextBlock)sender;
+            compressedTextBlock.UpdateFontSize((double)e.NewValue);
+        }
         #endregion
 
         public CompressedTextBlock()
@@ -106,6 +124,11 @@ namespace CollapseLauncher.CustomControls
             MeasureTextBlock.Text = "" + ch;
             MeasureTextBlock.Measure(new Size(float.MaxValue, float.MaxValue));
             return MeasureTextBlock.DesiredSize.Height <= MeasureTextBlock.DesiredSize.Width * 1.5;
+        }
+
+        private void UpdateFontSize(double value)
+        {
+            ContentTextBlock.FontSize = value;
         }
 
         private void InvalidateText()

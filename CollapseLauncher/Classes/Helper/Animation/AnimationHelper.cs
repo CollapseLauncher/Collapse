@@ -26,6 +26,25 @@ namespace CollapseLauncher.Helper.Animation
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class AnimationHelper
     {
+        internal static async void StartAnimationDetached(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
+        {
+            foreach (KeyFrameAnimation anim in animBase!)
+            {
+                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                {
+                    anim!.Duration = duration;
+                    element.StartAnimation(anim);
+                }
+                else
+                    element?.DispatcherQueue?.TryEnqueue(() =>
+                    {
+                        anim!.Duration = duration;
+                        element.StartAnimation(anim);
+                    });
+            }
+            await Task.Delay(duration);
+        }
+
         internal static async Task StartAnimation(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
         {
             foreach (KeyFrameAnimation anim in animBase!)
@@ -100,8 +119,7 @@ namespace CollapseLauncher.Helper.Animation
                 }
 
                 rootFrameVisual.ImplicitAnimations = animationCollection;
-
-                EnableElementVisibilityAnimation(compositor!, element!);
+                element.EnableElementVisibilityAnimation();
             }
             catch (Exception ex)
             {
@@ -168,9 +186,12 @@ namespace CollapseLauncher.Helper.Animation
             return animation;
         }
 
-        private static void EnableElementVisibilityAnimation(Compositor compositor, UIElement element)
+        public static void EnableElementVisibilityAnimation(this UIElement element)
         {
             TimeSpan animDur = TimeSpan.FromSeconds(0.25d);
+            Visual elementVisual = ElementCompositionPreview.GetElementVisual(element);
+            Compositor compositor = elementVisual.Compositor;
+
             ElementCompositionPreview.SetIsTranslationEnabled(element, true);
 
             ScalarKeyFrameAnimation HideOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();

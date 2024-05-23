@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.WinUI.Controls;
+﻿using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Controls;
+using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -9,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using Windows.UI;
 using Windows.UI.Text;
 
 namespace CollapseLauncher.Extension
@@ -598,6 +602,77 @@ namespace CollapseLauncher.Extension
                     grid.CornerRadius = cornerRadius;
                     break;
             }
+        }
+
+        internal static void ApplyDropShadow(this FrameworkElement element, Color? shadowColor = null,
+            double blurRadius = 10, double opacity = 0.25, bool isMasked = true)
+        {
+            FrameworkElement shadowPanel = null;
+
+            shadowPanel = element.FindDescendant("ShadowGrid");
+            if (shadowPanel == null)
+            {
+                shadowPanel = CreateGrid()
+                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .WithVerticalAlignment(VerticalAlignment.Stretch);
+                shadowPanel.Name = "ShadowGrid";
+            }
+
+            // If the element happened to have the parent null (in case of
+            // the element is initialized but not added to a Panel yet), then
+            // attach the shadow while the element is already loaded.
+            if (element.Parent is null) element.Loaded += (_, _) => AssignShadowAttachment(element, isMasked);
+            // However if the element has been added to a parent
+            // Panel, then assign it right away.
+            else AssignShadowAttachment(element, isMasked);
+
+            void AssignShadowAttachment(FrameworkElement thisElement, bool innerMasked)
+            {
+                switch (thisElement)
+                {
+                    case IconElement iconElement:
+                        AttachShadow(iconElement, true);
+                        break;
+                    case Image imageElement:
+                        AttachShadow(imageElement, true);
+                        break;
+                    default:
+                        AttachShadow(element, innerMasked);
+                        break;
+                }
+            }
+
+            void AttachShadow(FrameworkElement thisElement, bool innerMask)
+            {
+                FrameworkElement xamlRoot = (thisElement.Parent as FrameworkElement) ?? thisElement.FindDescendant<Grid>();
+
+                if (xamlRoot is Border borderParent)
+                    xamlRoot = borderParent.Child is Grid grid ? grid : borderParent.Child.FindAscendant<Grid>();
+
+                (xamlRoot as Panel).Children.Add(shadowPanel);
+                Canvas.SetZIndex(shadowPanel, -1);
+                if (shadowPanel is not Panel)
+                    throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
+
+                if (xamlRoot == null || xamlRoot is not Panel)
+                    throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
+
+                thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask);
+            }
+        }
+
+        internal static void ApplyDropShadow(this FrameworkElement from, FrameworkElement to, Color? shadowColor = null,
+            double blurRadius = 10, double opacity = 0.25, bool isMasked = false)
+        {
+            AttachedDropShadow shadow = new AttachedDropShadow()
+            {
+                Color = shadowColor ?? Colors.Black,
+                BlurRadius = blurRadius,
+                Opacity = opacity,
+                CastTo = to,
+                IsMasked = isMasked
+            };
+            Effects.SetShadow(from, shadow);
         }
     }
 }

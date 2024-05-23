@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- General Properties -->
 		<OutputType>WinExe</OutputType>
@@ -86,6 +86,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240328-rc" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+		<PackageReference Include="CommunityToolkit.WinUI.Lottie" Version="8.0.280225" />
 		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240328-rc" />
