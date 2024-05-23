@@ -28,11 +28,6 @@
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
           HorizontalAlignment="Stretch">
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <NavigationThemeTransition />
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
@@ -59,20 +54,22 @@
         </Grid>
         <InfoBar x:Name="PreloadDialogBox"
                  Title=""
-                 Grid.Row="3"
+                 Grid.Row="0"
                  Grid.Column="0"
                  Grid.ColumnSpan="2"
-                 Margin="0,16,0,-32"
+                 Margin="0,16,48,-32"
+                 MaxWidth="870"
                  HorizontalAlignment="Stretch"
-                 VerticalAlignment="Bottom"
+                 VerticalAlignment="Top"
                  Background="{ThemeResource InfoBarAnnouncementBrush}"
-                 CornerRadius="16,16,0,0"
                  IsClosable="True"
                  IsOpen="False"
+                 Opacity="0"
+                 CornerRadius="12"
                  Severity="Informational"
                  Shadow="{ThemeResource SharedShadow}">
             <InfoBar.Content>
-                <StackPanel Margin="0,0,38,0"
+                <StackPanel Margin="0,-4,38,0"
                             Orientation="Vertical">
                     <Grid x:Name="ProgressPreStatusGrid"
                           HorizontalAlignment="Stretch"
@@ -131,7 +128,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar x:Name="progressPrePerFileBar"
-                                             Margin="0,8,0,16"
+                                             Margin="0,4,0,16"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
                                              IsIndeterminate="True"
@@ -183,7 +180,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar x:Name="progressPreBar"
-                                             Margin="0,8,0,16"
+                                             Margin="0,4,0,16"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
                                              IsIndeterminate="True"
@@ -193,7 +190,7 @@
                         </Grid>
                     </Grid>
                     <Grid x:Name="ProgressPreButtonGrid"
-                          Margin="0,0,0,16"
+                          Margin="0,-8,0,16"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
@@ -202,40 +199,62 @@
                         </Grid.ChildrenTransitions>
                         <Button x:Name="PauseDownloadPreBtn"
                                 HorizontalAlignment="Right"
+                                HorizontalContentAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="CancelInstallationProcedure"
                                 CornerRadius="16"
-                                Style="{ThemeResource AccentButtonStyle}"
+                                Style="{ThemeResource AcrylicSemiButtonStyle}"
+                                Shadow="{ThemeResource SharedShadow}"
+                                Translation="0,0,8"
                                 Visibility="Visible">
                             <Button.Content>
-                                <StackPanel Margin="16,0"
-                                            Orientation="Horizontal">
-                                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                              FontSize="16"
-                                              Glyph=""/>
-                                    <TextBlock Margin="8,0,0,0"
+                                <Grid Margin="8,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="0,-2,16,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}"/>
-                                </StackPanel>
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}" />
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="14"
+                                              Glyph="" />
+                                </Grid>
                             </Button.Content>
                         </Button>
                         <Button x:Name="ResumeDownloadPreBtn"
                                 HorizontalAlignment="Right"
+                                HorizontalContentAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="PredownloadDialog"
                                 CornerRadius="16"
-                                Style="{ThemeResource AccentButtonStyle}"
+                                Style="{ThemeResource AcrylicSemiButtonStyle}"
+                                Shadow="{ThemeResource SharedShadow}"
+                                Translation="0,0,8"
                                 Visibility="Collapsed">
                             <Button.Content>
-                                <StackPanel Margin="16,0"
-                                            Orientation="Horizontal">
-                                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                              FontSize="16"
-                                              Glyph=""/>
-                                    <TextBlock Margin="8,0,0,0"
+                                <Grid Margin="8,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="0,-2,16,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
                                                FontWeight="Medium"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"/>
-                                </StackPanel>
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" />
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="14"
+                                              Glyph="" />
+                                </Grid>
                             </Button.Content>
                         </Button>
                     </Grid>
@@ -245,18 +264,31 @@
                 <Button x:Name="DownloadPreBtn"
                         Click="PredownloadDialog"
                         CornerRadius="16"
-                        Style="{ThemeResource AccentButtonStyle}"
+                        Margin="0,0,-16,0"
+                        HorizontalAlignment="Right"
+                        HorizontalContentAlignment="Stretch"
+                        Style="{ThemeResource AcrylicSemiButtonStyle}"
+                        Shadow="{ThemeResource SharedShadow}"
+                        Translation="0,0,8"
                         Visibility="Visible">
                     <Button.Content>
-                        <StackPanel Margin="16,0"
-                                    Orientation="Horizontal">
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="16"
-                                      Glyph=""/>
-                            <TextBlock Margin="8,0,0,0"
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="0,-2,16,0"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.DownloadBtn}"/>
-                        </StackPanel>
+                                       HorizontalTextAlignment="Left"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.DownloadBtn}" />
+                            <FontIcon Grid.Column="1"
+                                      HorizontalAlignment="Right"
+                                      FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="" />
+                        </Grid>
                     </Button.Content>
                 </Button>
             </InfoBar.ActionButton>

@@ -4,6 +4,9 @@ using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
+#if SIMULATEPRELOAD
+using System.Collections.Generic;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 

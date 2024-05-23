@@ -937,7 +937,6 @@ namespace CollapseLauncher.Pages
                 PauseDownloadPreBtn.Visibility = Visibility.Visible;
                 ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
                 PreloadDialogBox.IsClosable = false;
-                PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32);
 
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
@@ -948,12 +947,9 @@ namespace CollapseLauncher.Pages
 
                 CurrentGameProperty._GameInstall.ProgressChanged += PreloadDownloadProgress;
                 CurrentGameProperty._GameInstall.StatusChanged += PreloadDownloadStatus;
-                PreloadDialogBox.IsOpen = true;
+                SpawnPreloadDialogBox();
                 return;
             }
-
-            PreloadDialogBox.Translation += Shadow48;
-            PreloadDialogBox.Closed += PreloadDialogBox_Closed;
 
             string ver = CurrentGameProperty._GameVersion.GetGameVersionAPIPreload()?.VersionString;
 
@@ -964,7 +960,7 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
                     PreloadDialogBox.Message = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
                     DownloadPreBtn.Visibility = Visibility.Collapsed;
-                    PreloadDialogBox.IsOpen = true;
+                    SpawnPreloadDialogBox();
                     return;
                 }
 
@@ -984,7 +980,7 @@ namespace CollapseLauncher.Pages
                         textWeight: FontWeights.Medium
                     );
                 }
-                PreloadDialogBox.IsOpen = true;
+                SpawnPreloadDialogBox();
             }
             catch (Exception ex)
             {
@@ -999,7 +995,6 @@ namespace CollapseLauncher.Pages
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
-            PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32);
             // While this fixes #191, we need to find a way to move all elements above it by at least 16
 
             try
@@ -1074,12 +1069,6 @@ namespace CollapseLauncher.Pages
                 progressPreBar.IsIndeterminate = false;
                 progressPrePerFileBar.IsIndeterminate = false;
             });
-        }
-
-        private void PreloadDialogBox_Closed(InfoBar sender, InfoBarClosedEventArgs args)
-        {
-            sender.Translation -= Shadow48;
-            HideImageEventImg(false);
         }
         #endregion
 
@@ -2434,6 +2423,24 @@ namespace CollapseLauncher.Pages
                     compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
                     );
             }
+        }
+
+        private async void SpawnPreloadDialogBox()
+        {
+            PreloadDialogBox.IsOpen = true;
+            PreloadDialogBox.Translation = new Vector3(0, 0, 16);
+            Compositor compositor = this.GetElementCompositor();
+
+            PreloadDialogBox.Opacity = 0.0f;
+            float toScale = 0.98f;
+            Vector3 toTranslate = new Vector3(-((float)(PreloadDialogBox?.ActualWidth ?? 0) * (toScale - 1f) / 2),
+                -((float)(PreloadDialogBox?.ActualHeight ?? 0) * (toScale - 1f)) - 16, 0);
+
+            await PreloadDialogBox.StartAnimation(TimeSpan.FromSeconds(0.5),
+                compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f, 0.0f),
+                compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f, 1.0f, PreloadDialogBox.Translation.Z), new Vector3(toScale, toScale, PreloadDialogBox.Translation.Z)),
+                compositor.CreateVector3KeyFrameAnimation("Translation", PreloadDialogBox.Translation, toTranslate)
+                );
         }
     }
 }
