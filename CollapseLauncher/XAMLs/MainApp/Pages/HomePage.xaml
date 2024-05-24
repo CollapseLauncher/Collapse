@@ -797,10 +797,11 @@
                               Maximum="100"
                               Value="0"/>
                 <Grid x:Name="progressPerFile"
-                      Visibility="Collapsed">
+                      Visibility="Visible"
+                      Margin="12">
                     <ProgressRing x:Name="progressRingAcrBG2"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
+                                  Width="Auto"
+                                  Height="Auto"
                                   IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
                                   Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
                                   Value="{Binding Value, ElementName=progressRingPerFile}"/>
@@ -810,8 +811,9 @@
                              VerticalAlignment="Stretch"
                              Fill="{ThemeResource ProgressBackgroundAcrylicBrush}"/>
                     <ProgressRing x:Name="progressRingPerFile"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
+                                  Width="Auto"
+                                  Height="Auto"
+                                  Margin="8"
                                   IsIndeterminate="True"
                                   Maximum="100"
                                   Value="0"/>
