@@ -203,7 +203,7 @@
                                 VerticalAlignment="Stretch"
                                 Click="CancelInstallationProcedure"
                                 CornerRadius="16"
-                                Style="{ThemeResource AcrylicSemiButtonStyle}"
+                                Style="{ThemeResource AcrylicButtonStyle}"
                                 Shadow="{ThemeResource SharedShadow}"
                                 Translation="0,0,8"
                                 Visibility="Visible">
@@ -233,7 +233,7 @@
                                 VerticalAlignment="Stretch"
                                 Click="PredownloadDialog"
                                 CornerRadius="16"
-                                Style="{ThemeResource AcrylicSemiButtonStyle}"
+                                Style="{ThemeResource AcrylicButtonStyle}"
                                 Shadow="{ThemeResource SharedShadow}"
                                 Translation="0,0,8"
                                 Visibility="Collapsed">
