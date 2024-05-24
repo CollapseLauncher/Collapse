@@ -80,7 +80,15 @@ namespace CollapseLauncher.Helper.Animation
                             animGroup.Add(anim);
                         });
                 }
-                element.StartAnimation(animGroup);
+                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                {
+                    element.StartAnimation(animGroup);
+                }
+                else
+                    element?.DispatcherQueue?.TryEnqueue(() =>
+                    {
+                        element.StartAnimation(animGroup);
+                    });
                 await Task.Delay(duration);
             }
         }
