@@ -408,8 +408,8 @@
                                           TintLuminosityOpacity="0.75"
                                           TintOpacity="0.25"/>
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
-                                          FallbackColor="#CCFFFFFF"
-                                          TintColor="#FFFFFF"
+                                          FallbackColor="#CCEEEEEE"
+                                          TintColor="#EEEEEE"
                                           TintLuminosityOpacity="0.75"
                                           TintOpacity="0"/>
                             <AcrylicBrush x:Key="WebView2GridBackground"

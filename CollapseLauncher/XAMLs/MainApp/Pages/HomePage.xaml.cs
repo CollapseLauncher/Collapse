@@ -305,11 +305,6 @@ namespace CollapseLauncher.Pages
             ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
             ImageEventImg.Source = source;
             ImageEventImg.Tag = featuredEventArticleUrl;
-
-            if (IsCustomBG)
-            {
-                ImageEventImgGrid.Margin = new Thickness(0, 0, 0, 16);
-            }
         }
         #endregion
 

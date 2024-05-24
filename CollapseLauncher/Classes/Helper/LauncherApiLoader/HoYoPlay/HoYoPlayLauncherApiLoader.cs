@@ -260,6 +260,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
             if (sophonLauncherNewsData?.Content?.Background == null) return;
             sophonLauncherNewsData.Content.Background.BackgroundImg = hypLauncherInfoData?.BackgroundImageUrl;
+            sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnImg = hypLauncherInfoData?.FeaturedEventIconUrl;
+            sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnUrl = hypLauncherInfoData?.FeaturedEventIconClickLink;
         }
 
         private void ConvertLauncherNews(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)

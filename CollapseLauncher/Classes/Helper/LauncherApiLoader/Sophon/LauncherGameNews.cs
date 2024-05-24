@@ -170,12 +170,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
         [JsonPropertyName("icon")]
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
-        public string? FeaturedEventIconBtnImg { get; init; }
+        public string? FeaturedEventIconBtnImg { get; set; }
 
         [JsonPropertyName("url")]
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
 
-        public string? FeaturedEventIconBtnUrl { get; init; }
+        public string? FeaturedEventIconBtnUrl { get; set; }
     }
 
     public class LauncherGameNewsCarousel : ILauncherGameNewsDataTokenized
