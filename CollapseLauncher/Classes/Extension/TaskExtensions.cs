@@ -70,9 +70,10 @@ namespace CollapseLauncher.Extension
             }
 
             if (lastException is not null
-                && lastException is TaskCanceledException
                 && !fromToken.IsCancellationRequested)
-                throw new TimeoutException($"The operation has timed out with inner exception!", lastException);
+                throw lastException is TaskCanceledException ? 
+                    new TimeoutException($"The operation has timed out with inner exception!", lastException) :
+                    lastException;
 
             throw new TimeoutException($"The operation has timed out!");
         }

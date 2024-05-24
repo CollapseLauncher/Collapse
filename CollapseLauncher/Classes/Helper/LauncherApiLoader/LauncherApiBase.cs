@@ -46,9 +46,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             GameRegion   = gameRegion;
         }
 
-        public async Task LoadAsync(OnLoadAction?             beforeLoadRoutine, OnLoadAction? afterLoadRoutine,
-                                    ActionOnTimeOutRetry?     onTimeoutRoutine,
-                                    ErrorLoadRoutineDelegate? errorLoadRoutine, CancellationToken token)
+        public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,
+                                          ActionOnTimeOutRetry? onTimeoutRoutine,  ErrorLoadRoutineDelegate? errorLoadRoutine,
+                                          CancellationToken     token)
         {
             beforeLoadRoutine?.Invoke(token);
 
@@ -56,15 +56,17 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 IsLoadingCompleted = false;
                 await LoadAsyncInner(onTimeoutRoutine, token);
+                afterLoadRoutine?.Invoke(token);
+
+                return true;
             }
             catch (Exception ex)
             {
                 errorLoadRoutine?.Invoke(ex);
+                return false;
             }
             finally
             {
-                afterLoadRoutine?.Invoke(token);
-
                 IsLoadingCompleted = true;
             }
         }
