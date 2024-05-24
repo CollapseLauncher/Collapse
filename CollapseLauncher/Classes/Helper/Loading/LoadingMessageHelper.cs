@@ -77,7 +77,7 @@ namespace CollapseLauncher.Helper.Loading
                 AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
                 currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
                 AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
-                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(), new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), 0)),
+                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0,0,currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), currentMainWindow.LoadingStatusGrid.Translation.Z)),
                 currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0))
                 );
         }
@@ -96,7 +96,7 @@ namespace CollapseLauncher.Helper.Loading
                 AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
                 currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
                 AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
-                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), 0), new Vector3()),
+                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0,0,currentMainWindow.LoadingStatusGrid.Translation.Z)),
                 currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1))
                 );
 

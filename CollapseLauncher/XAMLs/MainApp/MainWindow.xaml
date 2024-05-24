@@ -49,10 +49,13 @@
               Grid.Row="1" />
         <Grid x:Name="LoadingStatusGrid"
               Grid.Row="2"
-              Margin="0,0,0,0"
+              Margin="32"
               Padding="16"
+              CornerRadius="8"
               VerticalAlignment="Bottom"
               x:FieldModifier="internal"
+              Shadow="{ThemeResource SharedThemeShadow}"
+              Translation="0,0,16"
               Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
               Visibility="Collapsed">
             <Grid.ColumnDefinitions>
