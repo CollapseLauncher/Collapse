@@ -2429,7 +2429,7 @@ namespace CollapseLauncher.Pages
         {
             PreloadDialogBox.IsOpen = true;
             PreloadDialogBox.Translation = new Vector3(0, 0, 16);
-            Compositor compositor = this.GetElementCompositor();
+            Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
 
             PreloadDialogBox.Opacity = 0.0f;
             float toScale = 0.98f;
