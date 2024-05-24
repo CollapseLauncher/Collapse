@@ -4,6 +4,8 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -47,21 +49,40 @@ namespace CollapseLauncher.Helper.Animation
 
         internal static async Task StartAnimation(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
         {
-            foreach (KeyFrameAnimation anim in animBase!)
+            CompositionAnimationGroup animGroup = null;
+            if (element.DispatcherQueue?.HasThreadAccess ?? false)
             {
-                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
-                {
-                    anim!.Duration = duration;
-                    element.StartAnimation(anim);
-                }
-                else
-                    element?.DispatcherQueue?.TryEnqueue(() =>
-                    {
-                        anim!.Duration = duration;
-                        element.StartAnimation(anim);
-                    });
+                animGroup = CompositionTarget.GetCompositorForCurrentThread().CreateAnimationGroup();
             }
-            await Task.Delay(duration);
+            else
+            {
+                element.DispatcherQueue.TryEnqueue(() =>
+                {
+                    animGroup = CompositionTarget.GetCompositorForCurrentThread().CreateAnimationGroup();
+                });
+            }
+
+            using (animGroup)
+            {
+                foreach (KeyFrameAnimation anim in animBase!)
+                {
+                    if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                    {
+                        anim.Duration = duration;
+                        anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
+                        animGroup.Add(anim);
+                    }
+                    else
+                        element?.DispatcherQueue?.TryEnqueue(() =>
+                        {
+                            anim.Duration = duration;
+                            anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
+                            animGroup.Add(anim);
+                        });
+                }
+                element.StartAnimation(animGroup);
+                await Task.Delay(duration);
+            }
         }
 
         internal static void EnableImplicitAnimation(bool recursiveAssignment = false,
@@ -83,7 +104,7 @@ namespace CollapseLauncher.Helper.Animation
                                                      CompositionEasingFunction easingFunction = null)
         {
             Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
-            Compositor compositor = rootFrameVisual!.Compositor;
+            Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
 
             ImplicitAnimationCollection animationCollection =
                 rootFrameVisual.ImplicitAnimations != null ?
@@ -102,7 +123,7 @@ namespace CollapseLauncher.Helper.Animation
             try
             {
                 Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
-                Compositor compositor = rootFrameVisual!.Compositor;
+                Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
 
                 ImplicitAnimationCollection animationCollection =
                     rootFrameVisual.ImplicitAnimations != null ?
@@ -186,11 +207,10 @@ namespace CollapseLauncher.Helper.Animation
             return animation;
         }
 
-        public static void EnableElementVisibilityAnimation(this UIElement element)
+        public static void EnableElementVisibilityAnimation(this UIElement element, Compositor compositor = null)
         {
             TimeSpan animDur = TimeSpan.FromSeconds(0.25d);
-            Visual elementVisual = ElementCompositionPreview.GetElementVisual(element);
-            Compositor compositor = elementVisual.Compositor;
+            compositor ??= CompositionTarget.GetCompositorForCurrentThread();
 
             ElementCompositionPreview.SetIsTranslationEnabled(element, true);
 
