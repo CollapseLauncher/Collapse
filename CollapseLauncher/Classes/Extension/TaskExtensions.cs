@@ -26,6 +26,7 @@ namespace CollapseLauncher.Extension
             retryAttempt ??= DefaultRetryAttempt;
 
             int retryAttemptCurrent = 1;
+            Exception? lastException = null;
             while (retryAttemptCurrent < retryAttempt)
             {
                 fromToken.ThrowIfCancellationRequested();
@@ -40,10 +41,10 @@ namespace CollapseLauncher.Extension
                     ActionTimeoutValueTaskCallback<TResult?> delegateCallback = funcCallback();
                     return await delegateCallback(consolidatedToken.Token);
                 }
-                catch (TaskCanceledException) { throw; }
-                catch (OperationCanceledException) { throw; }
+                catch (OperationCanceledException) when (fromToken.IsCancellationRequested) { throw; }
                 catch (Exception ex)
                 {
+                    lastException = ex;
                     actionOnRetry?.Invoke(retryAttemptCurrent, retryAttempt ?? 0, timeout ?? 0, timeoutStep ?? 0);
 
                     if (ex is TimeoutException)
@@ -67,6 +68,11 @@ namespace CollapseLauncher.Extension
                     consolidatedToken?.Dispose();
                 }
             }
+
+            if (lastException is not null
+                && lastException is TaskCanceledException
+                && !fromToken.IsCancellationRequested)
+                throw new TimeoutException($"The operation has timed out with inner exception!", lastException);
 
             throw new TimeoutException($"The operation has timed out!");
         }
