@@ -58,6 +58,7 @@ using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 using CommunityToolkit.WinUI;
 using CollapseLauncher.WindowSize;
+using Microsoft.UI.Xaml.Media;
 
 namespace CollapseLauncher.Pages
 {
@@ -2347,10 +2348,17 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsPointerInsideSidePanel = false;
+        private bool IsSidePanelCurrentlyScaledOut = false;
         private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            IsPointerInsideSidePanel = true;
             if (sender is FrameworkElement elementPanel)
             {
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                if (IsSidePanelCurrentlyScaledOut) return;
+                if (!IsPointerInsideSidePanel) return;
+
                 Compositor compositor = this.GetElementCompositor();
 
                 float toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
@@ -2365,13 +2373,16 @@ namespace CollapseLauncher.Pages
                     compositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate, TimeSpan.FromSeconds(0.05)),
                     compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale))
                     );
+                IsSidePanelCurrentlyScaledOut = true;
             }
         }
 
         private async void SidePanelScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
         {
+            IsPointerInsideSidePanel = false;
             if (sender is FrameworkElement elementPanel)
             {
+                if (!IsSidePanelCurrentlyScaledOut) return;
                 Compositor compositor = this.GetElementCompositor();
 
                 float toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
@@ -2386,6 +2397,7 @@ namespace CollapseLauncher.Pages
                     compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate, TimeSpan.FromSeconds(0.25)),
                     compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
                     );
+                IsSidePanelCurrentlyScaledOut = false;
             }
         }
 
