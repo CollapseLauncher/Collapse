@@ -1998,11 +1998,27 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
 
             // Check if the disk space is insufficient, then show the dialog.
-            if (DiskSpace < (RequiredSpace - ExistingPackageSize))
+            double requiredSpaceGb       = Convert.ToDouble(RequiredSpace / (1L << 30));
+            double existingPackageSizeGb = Convert.ToDouble(ExistingPackageSize / (1L << 30));
+            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize)), 4);
+            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace)), 4);
+        #if DEBUG
+            LogWriteLine($"Available Drive Space: {diskSpaceGb}", LogType.Debug);
+            LogWriteLine($"Existing Package Size: {ExistingPackageSize}", LogType.Debug);
+            LogWriteLine($"Required Space: {RequiredSpace}", LogType.Debug);
+            LogWriteLine($"Required Space Minus Existing Package Size: {(RequiredSpace - ExistingPackageSize)}", LogType.Debug);
+            LogWriteLine($"Existing Package Size (GB): {existingPackageSizeGb}", LogType.Debug);
+            LogWriteLine($"Required Space (GB): {requiredSpaceGb}", LogType.Debug);
+            LogWriteLine($"Required Space Minus Existing Package Size (GB): {(double)(RequiredSpace - ExistingPackageSize) / (1L << 30)}", LogType.Debug);
+            LogWriteLine($"Remaining Package Download Size (GB): {remainingDownloadSizeGb}", LogType.Debug);
+        #endif
+            if (diskSpaceGb < remainingDownloadSizeGb)
             {
-                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
+                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! " +
+                                $"(Free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(RequiredSpace)}, " +
+                                $"Existing Package Size: {existingPackageSizeGb}, Drive: {_DriveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
-                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace - ExistingPackageSize, _DriveInfo.Name);
+                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace, _DriveInfo.Name);
                 throw new TaskCanceledException(errStr);
             }
         }
