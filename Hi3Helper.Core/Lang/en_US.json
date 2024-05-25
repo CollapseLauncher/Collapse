@@ -686,7 +686,7 @@
     "InstallDataDownloadResumeTitle": "Resume Download?",
     "InstallDataDownloadResumeSubtitle": "You have downloaded {0}/{1} of the game previously.\r\n\r\nDo you want to resume the download?",
     "InsufficientDiskTitle": "Insufficient Disk Space",
-    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
+    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
     "RelocateFolderTitle": "Relocate App Data Folder",
     "RelocateFolderSubtitle": "You are currently using this folder as your App Data Folder:\r\n\r\n {0}\r\n\r\nDo you wish to change its location?",
     "UninstallGameTitle": "Uninstalling Game: {0}",
