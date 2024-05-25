@@ -5,6 +5,8 @@ using Hi3Helper.Shared.Region;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using PhotoSauce.MagicScaler;
+using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +86,12 @@ namespace CollapseLauncher
                 {
                     ImageLoaderHelper.InitWaifu2X();
                 }
+
+                // Initialize support for MagicScaler's WebP decoding
+                CodecManager.Configure(codecs =>
+                {
+                    codecs.UseLibwebp();
+                });
             }
             catch (Exception ex)
             {

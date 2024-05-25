@@ -582,11 +582,13 @@ namespace CollapseLauncher.Pages
                 {
                     PreLaunchCommandTextBox.IsEnabled   = true;
                     PreLaunchForceCloseToggle.IsEnabled = true;
+                    GameLaunchDelay.IsEnabled           = true;
                 }
                 else
                 {
                     PreLaunchCommandTextBox.IsEnabled   = false;
                     PreLaunchForceCloseToggle.IsEnabled = false;
+                    GameLaunchDelay.IsEnabled           = false;
                 }
 
                 return value;
@@ -619,6 +621,12 @@ namespace CollapseLauncher.Pages
             get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
             set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
+        
+        public int LaunchDelay
+        {
+            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
+            set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
+        }
 
         public bool IsUsePostExitCommand
         {
@@ -644,6 +652,13 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
+        }
+        
+        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            // clamp for negative value when clearing the number box
+            if ((int)sender.Value < 0)
+                sender.Value = 0;
         }
         #endregion
     }

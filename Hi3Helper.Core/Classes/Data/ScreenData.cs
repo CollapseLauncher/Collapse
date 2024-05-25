@@ -14,19 +14,18 @@ namespace Hi3Helper.Screen
             devMode = new DEVMODE();
             screenResolutions = new List<Size>();
 
-            int i = 0;
-
-            i++;
-
-            while (EnumDisplaySettings(null, i, ref devMode))
+            for (int i = 0; EnumDisplaySettings(null, i, ref devMode); i++)
             {
                 if (screenResolutions.Count == 0)
                     screenResolutions.Add(new Size { Width = (int)devMode.dmPelsWidth, Height = (int)devMode.dmPelsHeight });
-                else if (!(screenResolutions[screenResolutions.Count - 1].Width == devMode.dmPelsWidth
-                    && screenResolutions[screenResolutions.Count - 1].Height == devMode.dmPelsHeight))
+                else if (!(screenResolutions[^1].Width == devMode.dmPelsWidth && screenResolutions[^1].Height == devMode.dmPelsHeight))
                     screenResolutions.Add(new Size { Width = (int)devMode.dmPelsWidth, Height = (int)devMode.dmPelsHeight });
+            }
 
-                i++;
+            // Some corner case
+            if (screenResolutions.Count == 0)
+            {
+                screenResolutions.Add(GetScreenSize());
             }
         }
 

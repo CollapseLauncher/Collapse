@@ -38,7 +38,7 @@ namespace CollapseLauncher.InstallManager.StarRail
                 // Check if the file exist. If not, return null
                 if (!File.Exists(audioRecordPath)) return null;
 
-                // If exist, then return the path
+                // If it exists, then return the path
                 return audioRecordPath;
             }
         }
@@ -240,12 +240,12 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Override Methods - UninstallGame
-        protected override UninstallGameProperty AssignUninstallFolders() => new UninstallGameProperty()
+        protected override UninstallGameProperty AssignUninstallFolders() => new()
         {
             gameDataFolderName = "StarRail_Data",
-            foldersToDelete = new string[] { "AntiCheatExpert" },
-            filesToDelete = new string[] { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" },
-            foldersToKeepInData = new string[] { "ScreenShots" }
+            foldersToDelete = new[] { "AntiCheatExpert" },
+            filesToDelete = new[] { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" },
+            foldersToKeepInData = new[] { "ScreenShots" }
         };
         #endregion
     }

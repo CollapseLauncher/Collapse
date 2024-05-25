@@ -114,6 +114,7 @@ namespace CollapseLauncher.InstallManager.Base
             _httpClient?.Dispose();
             _gameRepairTool?.Dispose();
             _token?.Cancel();
+            InvokeProp.RestoreSleep();
             IsRunning = false;
             Flush();
         }
@@ -222,6 +223,9 @@ namespace CollapseLauncher.InstallManager.Base
 
                 try
                 {
+                    // Prevent sleep
+                    InvokeProp.PreventSleep();
+                    
                     List<FilePropertiesRemote> localAssetIndex = repairGame!.GetAssetIndex();
                     MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath, isHonkai, isSR);
 
@@ -279,6 +283,8 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     EventListener.PatchEvent -= DeltaPatchCheckProgress;
                     EventListener.LoggerEvent -= DeltaPatchCheckLogEvent;
+                    
+                    InvokeProp.RestoreSleep();
                 }
             }
 
@@ -341,6 +347,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
+                InvokeProp.PreventSleep();
+
                 // Start the download routine
                 await StartDeltaPatchPreReqDownload(gamePackage);
 
@@ -351,6 +359,10 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
+            }
+            finally
+            {
+                InvokeProp.RestoreSleep();
             }
 
             return true;
@@ -455,16 +467,17 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Set the progress bar to indetermined
-                _status!.IsIncludePerFileIndicator = _assetIndex!.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
+                _status!.IsIncludePerFileIndicator =
+                    _assetIndex!.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
                 _status!.IsProgressPerFileIndetermined = true;
-                _status!.IsProgressTotalIndetermined = true;
+                _status!.IsProgressTotalIndetermined   = true;
                 UpdateStatus();
 
                 // Start getting the size of the packages
                 await GetPackagesRemoteSize(_assetIndex, _token!.Token);
 
                 // Get the remote total size and current total size
-                _progressTotalSize = _assetIndex!.Sum(x => x!.Size);
+                _progressTotalSize        = _assetIndex!.Sum(x => x!.Size);
                 _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
 
                 // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
@@ -476,6 +489,8 @@ namespace CollapseLauncher.InstallManager.Base
                     await CheckExistingDownloadAsync(_parentUI, _assetIndex);
                 }
 
+                InvokeProp.PreventSleep();
+
                 // Start downloading process
                 await InvokePackageDownloadRoutine(_assetIndex, _token!.Token);
 
@@ -485,6 +500,10 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
+            }
+            finally
+            {
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -661,6 +680,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
+            InvokeProp.PreventSleep();
+            
             // Sanity Check: Check if the _gamePath is null, then throw
             if (string.IsNullOrEmpty(_gamePath)) throw new NullReferenceException("_gamePath cannot be null or empty!");
 
@@ -686,11 +707,11 @@ namespace CollapseLauncher.InstallManager.Base
             // Reset the last size counter
             _totalLastSizeCurrent = 0;
 
-            // Try unassign read-only and redundant diff files
+            // Try to unassign read-only and redundant diff files
             TryUnassignReadOnlyFiles();
             TryRemoveRedundantHDiffList();
 
-            // Enumerate the install package
+            // Enumerate the installation package
             foreach (GameInstallPackage asset in gamePackage)
             {
                 // Update the status
@@ -738,6 +759,8 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 _progressTotalCountCurrent++;
+                
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -919,6 +942,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         public async ValueTask<bool> MoveGameLocation()
         {
+            InvokeProp.PreventSleep();
+            
             // Get the Game folder
             string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
@@ -927,6 +952,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (migrationOptionReturn == -1) return false;
 
             // If all the operation is complete, then return true as completed
+            InvokeProp.RestoreSleep();
             return true;
         }
 
@@ -946,7 +972,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
-#nullable enable
+            #nullable enable
+                InvokeProp.PreventSleep();
                 // Assign UninstallProperty from each overrides
                 UninstallGameProperty UninstallProperty = AssignUninstallFolders();
 
@@ -960,21 +987,23 @@ namespace CollapseLauncher.InstallManager.Base
                     for (int i = 0; i < UninstallProperty.foldersToKeepInData.Length; i++)
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        foldersToKeepInDataFullPath[i] = Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
+                        foldersToKeepInDataFullPath[i] =
+                            Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
                     }
                 }
                 else foldersToKeepInDataFullPath = Array.Empty<string>();
 
-#pragma warning disable CS8604 // Possible null reference argument.
+            #pragma warning disable CS8604 // Possible null reference argument.
                 LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
-                    $"  GameFolder          : {GameFolder}\r\n" +
-                    $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
-                    $"  foldersToDelete     : {string.Join(", ", UninstallProperty.foldersToDelete)}\r\n" +
-                    $"  filesToDelete       : {string.Join(", ", UninstallProperty.filesToDelete)}\r\n" +
-                    $"  foldersToKeepInData : {string.Join(", ", UninstallProperty.foldersToKeepInData)}\r\n" +
-                    $"  _Data folder path   : {_DataFolderFullPath}\r\n" +
-                    $"  Excluded full paths : {string.Join(", ", foldersToKeepInDataFullPath)}", LogType.Warning, true);
-#pragma warning restore CS8604 // Possible null reference argument.
+                             $"  GameFolder          : {GameFolder}\r\n" +
+                             $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
+                             $"  foldersToDelete     : {string.Join(", ", UninstallProperty.foldersToDelete)}\r\n" +
+                             $"  filesToDelete       : {string.Join(", ", UninstallProperty.filesToDelete)}\r\n" +
+                             $"  foldersToKeepInData : {string.Join(", ", UninstallProperty.foldersToKeepInData)}\r\n" +
+                             $"  _Data folder path   : {_DataFolderFullPath}\r\n" +
+                             $"  Excluded full paths : {string.Join(", ", foldersToKeepInDataFullPath)}",
+                             LogType.Warning, true);
+            #pragma warning restore CS8604 // Possible null reference argument.
 
                 // Cleanup Game_Data folder while keeping whatever specified in foldersToKeepInData
                 foreach (string folderGameData in Directory.EnumerateFileSystemEntries(_DataFolderFullPath))
@@ -982,7 +1011,10 @@ namespace CollapseLauncher.InstallManager.Base
                     try
                     {
                         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                        if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0 && !foldersToKeepInDataFullPath.Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
+                        if (UninstallProperty.foldersToKeepInData != null &&
+                            UninstallProperty.foldersToKeepInData.Length != 0 &&
+                            !foldersToKeepInDataFullPath
+                               .Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
                         {
                             // Delete directories inside gameDataFolderName that is not included in foldersToKeepInData
                             if (File.GetAttributes(folderGameData).HasFlag(FileAttributes.Directory))
@@ -997,15 +1029,18 @@ namespace CollapseLauncher.InstallManager.Base
                                 TryDeleteReadOnlyFile(folderGameData);
                                 LogWriteLine($"Deleted file: {folderGameData}", LogType.Default, true);
                             }
+
                             // ReSharper disable once RedundantJumpStatement
                             continue;
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogWriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error, true);
+                        LogWriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error,
+                                     true);
                     }
                 }
+
                 // Check if _DataFolderPath folder empty after cleaning up 
                 if (!Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
                 {
@@ -1016,7 +1051,8 @@ namespace CollapseLauncher.InstallManager.Base
                 // Cleanup any folders in foldersToDelete
                 foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
                 {
-                    if (UninstallProperty.foldersToDelete.Length != 0 && UninstallProperty.foldersToDelete.Contains(Path.GetFileName(folderNames)))
+                    if (UninstallProperty.foldersToDelete.Length != 0 &&
+                        UninstallProperty.foldersToDelete.Contains(Path.GetFileName(folderNames)))
                     {
                         try
                         {
@@ -1025,8 +1061,10 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         catch (Exception ex)
                         {
-                            LogWriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}", LogType.Error, true);
+                            LogWriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}",
+                                         LogType.Error, true);
                         }
+
                         continue;
                     }
                 }
@@ -1034,10 +1072,14 @@ namespace CollapseLauncher.InstallManager.Base
                 // Cleanup any files in filesToDelete
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
-                    if (UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Contains(Path.GetFileName(fileNames)) ||
-                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern,
-                        RegexOptions.Compiled | RegexOptions.NonBacktracking
-                    )))
+                    if (UninstallProperty.filesToDelete.Length != 0 &&
+                        UninstallProperty.filesToDelete.Contains(Path.GetFileName(fileNames)) ||
+                        UninstallProperty.filesToDelete.Length != 0 &&
+                        UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames),
+                                                                     pattern,
+                                                                     RegexOptions.Compiled |
+                                                                     RegexOptions.NonBacktracking
+                                                                )))
                     {
                         TryDeleteReadOnlyFile(fileNames);
                         LogWriteLine($"Deleted {fileNames}", LogType.Default, true);
@@ -1054,7 +1096,8 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
-                    LogWriteLine($"An error occurred while deleting game AppData folder: {_gameVersionManager.GameDirAppDataPath}\r\n{ex}", LogType.Error, true);
+                    LogWriteLine($"An error occurred while deleting game AppData folder: {_gameVersionManager.GameDirAppDataPath}\r\n{ex}",
+                                 LogType.Error, true);
                 }
 
                 // Remove the entire folder if nothing is there
@@ -1067,17 +1110,24 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
-                        LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}", LogType.Error, true);
+                        LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}",
+                                     LogType.Error, true);
                     }
                 }
                 else
                 {
-                    LogWriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...", LogType.Default, true);
+                    LogWriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...",
+                                 LogType.Default, true);
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - Region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - Region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}",
+                             LogType.Error, true);
+            }
+            finally
+            {
+                InvokeProp.RestoreSleep();
             }
 
             _gameVersionManager.UpdateGamePath("", true);
@@ -1088,6 +1138,9 @@ namespace CollapseLauncher.InstallManager.Base
 
         public void CancelRoutine()
         {
+            // Always cancel PreventSleep token when cancelling any installation process
+            InvokeProp.RestoreSleep();
+            
             _gameRepairTool?.CancelRoutine();
             _token.Cancel();
             Flush();
@@ -1174,6 +1227,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async ValueTask ApplyHdiffListPatch()
         {
+            InvokeProp.PreventSleep();
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
 
             _progress.ProgressTotalSizeToDownload = hdiffEntry.Sum(x => x.fileSize);
@@ -1252,6 +1306,7 @@ namespace CollapseLauncher.InstallManager.Base
                     patchFile.Delete();
                 }
             }
+            InvokeProp.RestoreSleep();
         }
 
         private async void EventListener_PatchEvent(object sender, PatchEvent e)
@@ -1767,6 +1822,7 @@ namespace CollapseLauncher.InstallManager.Base
             _httpClient.DownloadProgress += HttpClientDownloadProgressAdapter;
             try
             {
+                InvokeProp.PreventSleep();
                 // Iterate the package list
                 foreach (GameInstallPackage package in packageList)
                 {
@@ -1790,6 +1846,8 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Unsubscribe the download progress from the event adapter
                 _httpClient.DownloadProgress -= HttpClientDownloadProgressAdapter;
+                
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -1885,7 +1943,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Get the info of the existing file
             FileInfo fileInfo = new FileInfo(FileOutput);
 
-            // If exist, then delete
+            // If existed, then delete
             if (fileInfo.Exists)
             {
                 fileInfo.IsReadOnly = false;
@@ -1940,11 +1998,27 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
 
             // Check if the disk space is insufficient, then show the dialog.
-            if (DiskSpace < (RequiredSpace - ExistingPackageSize))
+            double requiredSpaceGb       = Convert.ToDouble(RequiredSpace / (1L << 30));
+            double existingPackageSizeGb = Convert.ToDouble(ExistingPackageSize / (1L << 30));
+            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize)), 4);
+            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace)), 4);
+        #if DEBUG
+            LogWriteLine($"Available Drive Space: {diskSpaceGb}", LogType.Debug);
+            LogWriteLine($"Existing Package Size: {ExistingPackageSize}", LogType.Debug);
+            LogWriteLine($"Required Space: {RequiredSpace}", LogType.Debug);
+            LogWriteLine($"Required Space Minus Existing Package Size: {(RequiredSpace - ExistingPackageSize)}", LogType.Debug);
+            LogWriteLine($"Existing Package Size (GB): {existingPackageSizeGb}", LogType.Debug);
+            LogWriteLine($"Required Space (GB): {requiredSpaceGb}", LogType.Debug);
+            LogWriteLine($"Required Space Minus Existing Package Size (GB): {(double)(RequiredSpace - ExistingPackageSize) / (1L << 30)}", LogType.Debug);
+            LogWriteLine($"Remaining Package Download Size (GB): {remainingDownloadSizeGb}", LogType.Debug);
+        #endif
+            if (diskSpaceGb < remainingDownloadSizeGb)
             {
-                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
+                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! " +
+                                $"(Free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(RequiredSpace)}, " +
+                                $"Existing Package Size: {existingPackageSizeGb}, Drive: {_DriveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
-                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace - ExistingPackageSize, _DriveInfo.Name);
+                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace, _DriveInfo.Name);
                 throw new TaskCanceledException(errStr);
             }
         }
@@ -1965,7 +2039,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (fileInfo.Exists && fileInfo.Length == remoteSize)
                 return fileInfo.Length;
 
-            // If above not passed, then try enumerate for the chunk
+            // If above not passed, then try to enumerate for the chunk
             string[] partPaths = Directory.EnumerateFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.*").Where(x =>
             {
                 // Get the extension
@@ -1999,8 +2073,8 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
         #region Virtual Methods - StartPackageDownload
 
-        private enum CompletenessStatus { Running, Completed, Cancelled, Idle }
-        private void UpdateCompletenessStatus(CompletenessStatus status)
+        protected enum CompletenessStatus { Running, Completed, Cancelled, Idle }
+        protected void UpdateCompletenessStatus(CompletenessStatus status)
         {
             switch (status)
             {

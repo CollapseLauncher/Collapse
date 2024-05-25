@@ -9,40 +9,68 @@ namespace CollapseLauncher.WindowSize
 {
     internal static class WindowSize
     {
-        internal static readonly Dictionary<string, WindowSizeProp> WindowSizeProfiles = new Dictionary<string, WindowSizeProp>
+        internal static
+#if !DEBUG
+            readonly
+#endif
+            Dictionary<string, WindowSizeProp> WindowSizeProfiles
+#if DEBUG
+            =>
+#else
+            =
+#endif
+            new Dictionary<string, WindowSizeProp>
         {
             {
                 "Normal",
                 new WindowSizeProp()
                 {
-                    WindowBounds               = new Size(1280, 720),
-                    EventPostCarouselBounds    = new Size(399,  185),
-                    PostPanelBounds            = new Size(399,  134),
-                    PostPanelBottomMargin      = new Thickness(0, 0, 0, 52),
-                    PostPanelPaimonHeight      = 138,
-                    PostPanelPaimonMargin      = new Thickness(0, -48, -32, 0),
-                    PostPanelPaimonInnerMargin = new Thickness(0, 0,   0,   48),
-                    PostPanelPaimonTextMargin  = new Thickness(0, 0,   142, 0),
-                    BannerIconWidth            = 136,
-                    BannerIconMargin           = new Thickness(0, 0, 80, 70),
-                    SettingsPanelWidth         = 676
+                    WindowBounds                  = new Size(1280, 720),
+                    PostEventPanelScaleFactor     = 1.35f,
+                    SidePanel1Width               = new GridLength(340, GridUnitType.Pixel),
+                    EventPostCarouselBounds       = new Size(340,  158),
+                    PostPanelBounds               = new Size(340,  120),
+                    PostPanelBottomMargin         = new Thickness(0, 0, 0, 52),
+                    PostPanelPaimonHeight         = 138,
+                    PostPanelPaimonMargin         = new Thickness(0, -48, -32, 0),
+                    PostPanelPaimonInnerMargin    = new Thickness(0, 0,   0,   48),
+                    PostPanelPaimonTextMargin     = new Thickness(0, 0,   142, 0),
+                    PostPanelPaimonTextSize       = 14,
+                    BannerIconWidth               = 136,
+                    BannerIconWidthHYP            = 110,
+                    BannerIconMargin              = new Thickness(0, 0, 94, 84),
+                    BannerIconMarginHYP           = new Thickness(48, 0, 0, 28),
+                    BannerIconAlignHorizontal     = HorizontalAlignment.Right,
+                    BannerIconAlignHorizontalHYP  = HorizontalAlignment.Left,
+                    BannerIconAlignVertical       = VerticalAlignment.Bottom,
+                    BannerIconAlignVerticalHYP    = VerticalAlignment.Bottom,
+                    SettingsPanelWidth            = 676
                 }
             },
             {
                 "Small",
                 new WindowSizeProp()
                 {
-                    WindowBounds               = new Size(1024, 576),
-                    EventPostCarouselBounds    = new Size(336,  156),
-                    PostPanelBounds            = new Size(336,  118),
-                    PostPanelBottomMargin      = new Thickness(0, 0, 0, 38),
-                    PostPanelPaimonHeight      = 138,
-                    PostPanelPaimonMargin      = new Thickness(0, -48, -32, 0),
-                    PostPanelPaimonInnerMargin = new Thickness(0, 0,   0,   48),
-                    PostPanelPaimonTextMargin  = new Thickness(0, 0,   142, 0),
-                    BannerIconWidth            = 136,
-                    BannerIconMargin           = new Thickness(0, 0, 70, 38),
-                    SettingsPanelWidth         = 424
+                    WindowBounds                  = new Size(1024, 576),
+                    PostEventPanelScaleFactor     = 1.25f,
+                    SidePanel1Width               = new GridLength(280, GridUnitType.Pixel),
+                    EventPostCarouselBounds       = new Size(280,  130),
+                    PostPanelBounds               = new Size(280,  98),
+                    PostPanelBottomMargin         = new Thickness(0, 0, 0, 48),
+                    PostPanelPaimonHeight         = 128,
+                    PostPanelPaimonMargin         = new Thickness(0, -48, -32, 0),
+                    PostPanelPaimonInnerMargin    = new Thickness(0, 0,   0,   48),
+                    PostPanelPaimonTextMargin     = new Thickness(0, 0,   142, 0),
+                    PostPanelPaimonTextSize       = 11,
+                    BannerIconWidth               = 100,
+                    BannerIconWidthHYP            = 86,
+                    BannerIconMargin              = new Thickness(0, 0, 70, 52),
+                    BannerIconMarginHYP           = new Thickness(24, 0, 0, 8),
+                    BannerIconAlignHorizontal     = HorizontalAlignment.Right,
+                    BannerIconAlignHorizontalHYP  = HorizontalAlignment.Left,
+                    BannerIconAlignVertical       = VerticalAlignment.Bottom,
+                    BannerIconAlignVerticalHYP    = VerticalAlignment.Bottom,
+                    SettingsPanelWidth            = 464
                 }
             }
         };
@@ -65,21 +93,31 @@ namespace CollapseLauncher.WindowSize
                 WindowUtility.SetWindowSize(CurrentWindowSize.WindowBounds.Width, CurrentWindowSize.WindowBounds.Height);
             }
         }
-        internal static WindowSizeProp CurrentWindowSize { get => WindowSizeProfiles[CurrentWindowSizeName]; }
+
+        internal static WindowSizeProp CurrentWindowSize      { get => WindowSizeProfiles[CurrentWindowSizeName]; }
     }
 
     internal class WindowSizeProp
     {
-        public Size      WindowBounds               { get; set; }
-        public Size      EventPostCarouselBounds    { get; set; }
-        public Size      PostPanelBounds            { get; set; }
-        public Thickness PostPanelBottomMargin      { get; set; }
-        public int       PostPanelPaimonHeight      { get; set; }
-        public Thickness PostPanelPaimonMargin      { get; set; }
-        public Thickness PostPanelPaimonInnerMargin { get; set; }
-        public Thickness PostPanelPaimonTextMargin  { get; set; }
-        public int       BannerIconWidth            { get; set; }
-        public Thickness BannerIconMargin           { get; set; }
-        public int       SettingsPanelWidth         { get; set; }
+        public Size                WindowBounds                 { get; set; }
+        public GridLength          SidePanel1Width              { get; set; }
+        public float               PostEventPanelScaleFactor    { get; set; }
+        public Size                EventPostCarouselBounds      { get; set; }
+        public Size                PostPanelBounds              { get; set; }
+        public Thickness           PostPanelBottomMargin        { get; set; }
+        public double              PostPanelPaimonTextSize      { get; set; }
+        public int                 PostPanelPaimonHeight        { get; set; }
+        public Thickness           PostPanelPaimonMargin        { get; set; }
+        public Thickness           PostPanelPaimonInnerMargin   { get; set; }
+        public Thickness           PostPanelPaimonTextMargin    { get; set; }
+        public int                 BannerIconWidth              { get; set; }
+        public int                 BannerIconWidthHYP           { get; set; }
+        public Thickness           BannerIconMargin             { get; set; }
+        public Thickness           BannerIconMarginHYP          { get; set; }
+        public HorizontalAlignment BannerIconAlignHorizontal    { get; set; }
+        public HorizontalAlignment BannerIconAlignHorizontalHYP { get; set; }
+        public VerticalAlignment   BannerIconAlignVertical      { get; set; }
+        public VerticalAlignment   BannerIconAlignVerticalHYP   { get; set; }
+        public int                 SettingsPanelWidth           { get; set; }
     }
 }

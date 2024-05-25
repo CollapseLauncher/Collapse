@@ -6,13 +6,19 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
+    internal delegate ValueTask<TResult?> ActionTimeoutValueTaskCallback<TResult>(CancellationToken token);
     internal delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
     internal static class TaskExtensions
     {
         internal const int DefaultTimeoutSec = 10;
         internal const int DefaultRetryAttempt = 5;
 
-        internal static async Task<T?> RetryTimeoutAfter<T>(Func<Task<T?>> taskFunction, int? timeout = null, int? timeoutStep = null, int? retryAttempt = null, ActionOnTimeOutRetry? actionOnRetry = null, CancellationToken token = default)
+        internal static async ValueTask<TResult?> WaitForRetryAsync<TResult>(this ActionTimeoutValueTaskCallback<TResult?> funcCallback, int? timeout = null,
+            int? timeoutStep = null, int? retryAttempt = null, ActionOnTimeOutRetry? actionOnRetry = null, CancellationToken fromToken = default)
+            => await WaitForRetryAsync(() => funcCallback, timeout, timeoutStep, retryAttempt, actionOnRetry, fromToken);
+
+        internal static async ValueTask<TResult?> WaitForRetryAsync<TResult>(Func<ActionTimeoutValueTaskCallback<TResult?>> funcCallback, int? timeout = null,
+            int? timeoutStep = null, int? retryAttempt = null, ActionOnTimeOutRetry? actionOnRetry = null, CancellationToken fromToken = default)
         {
             timeout ??= DefaultTimeoutSec;
             timeoutStep ??= 0;
@@ -20,38 +26,35 @@ namespace CollapseLauncher.Extension
             retryAttempt ??= DefaultRetryAttempt;
 
             int retryAttemptCurrent = 1;
-            int lastTaskID = 0;
             Exception? lastException = null;
-
             while (retryAttemptCurrent < retryAttempt)
             {
+                fromToken.ThrowIfCancellationRequested();
+                CancellationTokenSource? innerCancellationToken = null;
+                CancellationTokenSource? consolidatedToken = null;
+
                 try
                 {
-                    Task<T?> taskDelegated = taskFunction();
-                    lastTaskID = taskDelegated.Id;
-                    lastException = null;
+                    innerCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(timeout ?? DefaultTimeoutSec));
+                    consolidatedToken = CancellationTokenSource.CreateLinkedTokenSource(innerCancellationToken.Token, fromToken);
 
-                    Task<T?> completedTask = await Task.WhenAny(taskDelegated, ThrowExceptionAfterTimeout<T>(timeout, taskDelegated, token));
-                    if (completedTask == taskDelegated)
-                        return await taskDelegated;
+                    ActionTimeoutValueTaskCallback<TResult?> delegateCallback = funcCallback();
+                    return await delegateCallback(consolidatedToken.Token);
                 }
-                catch (TaskCanceledException) { throw; }
-                catch (OperationCanceledException) { throw; }
+                catch (OperationCanceledException) when (fromToken.IsCancellationRequested) { throw; }
                 catch (Exception ex)
                 {
                     lastException = ex;
+                    actionOnRetry?.Invoke(retryAttemptCurrent, retryAttempt ?? 0, timeout ?? 0, timeoutStep ?? 0);
 
-                    if (actionOnRetry != null)
-                        actionOnRetry(retryAttemptCurrent, retryAttempt ?? 0, timeout ?? 0, timeoutStep ?? 0);
-
-                    if (lastException is TimeoutException)
+                    if (ex is TimeoutException)
                     {
-                        string msg = $"The operation for task ID: {lastTaskID} has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
+                        string msg = $"The operation has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
                         Logger.LogWriteLine(msg, LogType.Warning, true);
                     }
                     else
                     {
-                        string msg = $"The operation for task ID: {lastTaskID} has thrown an exception! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}\r\n{ex}";
+                        string msg = $"The operation has thrown an exception! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}\r\n{ex}";
                         Logger.LogWriteLine(msg, LogType.Error, true);
                     }
 
@@ -59,10 +62,20 @@ namespace CollapseLauncher.Extension
                     timeout += timeoutStep;
                     continue;
                 }
+                finally
+                {
+                    innerCancellationToken?.Dispose();
+                    consolidatedToken?.Dispose();
+                }
             }
 
-            if (lastException != null) throw lastException;
-            throw new TimeoutException($"The operation for task ID: {lastTaskID} has timed out!");
+            if (lastException is not null
+                && !fromToken.IsCancellationRequested)
+                throw lastException is TaskCanceledException ? 
+                    new TimeoutException($"The operation has timed out with inner exception!", lastException) :
+                    lastException;
+
+            throw new TimeoutException($"The operation has timed out!");
         }
 
         internal static async

@@ -96,6 +96,7 @@
                 public string CustomArgs_Footer2              { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer2;
                 public string CustomArgs_Footer3              { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer3;
                 public string GameBoost                       { get; set; } = LangFallback?._GameSettingsPage.GameBoost;
+                public string MobileLayout                    { get; set; } = LangFallback?._GameSettingsPage.MobileLayout;
                 public string Advanced_Title                  { get; set; } = LangFallback?._GameSettingsPage.Advanced_Title;
                 public string Advanced_Subtitle1              { get; set; } = LangFallback?._GameSettingsPage.Advanced_Subtitle1;
                 public string Advanced_Subtitle2              { get; set; } = LangFallback?._GameSettingsPage.Advanced_Subtitle2;
@@ -104,6 +105,7 @@
                 public string Advanced_GLC_PreLaunch_Title    { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Title;
                 public string Advanced_GLC_PreLaunch_Subtitle { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle;
                 public string Advanced_GLC_PreLaunch_Exit     { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Exit;
+                public string Advanced_GLC_PreLaunch_Delay    { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PreLaunch_Delay;
                 public string Advanced_GLC_PostExit_Title     { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PostExit_Title;
                 public string Advanced_GLC_PostExit_Subtitle  { get; set; } = LangFallback?._GameSettingsPage.Advanced_GLC_PostExit_Subtitle;
             }

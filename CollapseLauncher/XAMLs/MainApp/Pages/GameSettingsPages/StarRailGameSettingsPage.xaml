@@ -40,81 +40,98 @@
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionPanel}"
                                                TextWrapping="Wrap" />
-                                    <StackPanel x:Name="GameResolutionWindow"
-                                                Margin="0,0,0,8"
-                                                Orientation="Vertical">
-                                        <Grid>
-                                            <Border x:Name="VSyncTooltip"
-                                                    Background="Transparent"
-                                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}" />
-                                            <CheckBox x:Name="VSyncToggle"
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel x:Name="GameResolutionWindow"
+                                                    Grid.Column="0"
+                                                    Margin="0,0,0,8"
+                                                    Orientation="Vertical">
+                                            <Grid>
+                                                <Border x:Name="VSyncTooltip"
+                                                        Background="Transparent"
+                                                        ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}" />
+                                                <CheckBox x:Name="VSyncToggle"
+                                                          HorizontalAlignment="Left"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
+                                            </Grid>
+                                            <CheckBox x:Name="GameResolutionFullscreen"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
+                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
-                                        </Grid>
-                                        <CheckBox x:Name="GameResolutionFullscreen"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                        <CheckBox x:Name="GameResolutionBorderless"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <CheckBox x:Name="GameWindowResizable"
-                                                      HorizontalAlignment="Stretch"
+                                            <CheckBox x:Name="GameResolutionBorderless"
+                                                      HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                      IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
-                                            <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
-                                                <Button.Content>
-                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
-                                                              Glyph="&#x3f;" />
-                                                </Button.Content>
-                                                <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
-                                                        <TextBlock MaxWidth="360"
-                                                                   FontWeight="SemiBold"
-                                                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
-                                                                   TextAlignment="Center"
-                                                                   TextWrapping="Wrap" />
-                                                    </Flyout>
-                                                </Button.Flyout>
-                                            </Button>
-                                        </Grid>
-                                        <!--
-                                            Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
-                                            Delete `Visibility="Collapsed"' to revert this change
-                                        -->
-                                        <CheckBox x:Name="GameResolutionFullscreenExclusive"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
-                                                  IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
-                                                  Visibility="Collapsed">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ExclusiveFullscreen}"
-                                                       TextWrapping="Wrap" />
-                                        </CheckBox>
-                                    </StackPanel>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <CheckBox x:Name="GameWindowResizable"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
+                                                          IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
+                                                <Button Grid.Column="1"
+                                                        Margin="8,-4,0,0"
+                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                    <Button.Content>
+                                                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#x3f;" />
+                                                    </Button.Content>
+                                                    <Button.Flyout>
+                                                        <Flyout AllowFocusOnInteraction="True">
+                                                            <TextBlock MaxWidth="360"
+                                                                       FontWeight="SemiBold"
+                                                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
+                                                                       TextAlignment="Center"
+                                                                       TextWrapping="Wrap" />
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                            </Grid>
+                                            <!--
+                                                Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
+                                                Delete `Visibility="Collapsed"' to revert this change
+                                            -->
+                                            <CheckBox x:Name="GameResolutionFullscreenExclusive"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
+                                                      IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
+                                                      Visibility="Collapsed">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ExclusiveFullscreen}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1"
+                                                    Margin="4,0,0,0">
+                                            <CheckBox x:Name="MobileModeToggle"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </Grid>
                                     <Grid Margin="0,0,0,16">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -420,8 +437,9 @@
                                             <ComboBoxItem Content="FXAA" />
                                         </ComboBox>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1"
-                                                VerticalAlignment="Bottom">
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Bottom"
+                                                Visibility="Collapsed">
                                         <TextBlock MaxWidth="128"
                                                    Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
@@ -441,7 +459,7 @@
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2"
+                                    <StackPanel Grid.Column="1"
                                                 VerticalAlignment="Bottom">
                                         <TextBlock MaxWidth="128"
                                                    Margin="0,8,0,8"
@@ -729,11 +747,18 @@
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
-                                      Margin="0,0,0,8"
+                                      Margin="0,0,0,0"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
                                       IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <NumberBox x:Name="GameLaunchDelay"
+                                   Width="200"
+                                   Margin="0,0,0,12"
+                                   HorizontalAlignment="Left"
+                                   Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
+                                   ValueChanged="GameLaunchDelay_OnValueChanged"
+                                   Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
                         <TextBox x:Name="PreLaunchCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"

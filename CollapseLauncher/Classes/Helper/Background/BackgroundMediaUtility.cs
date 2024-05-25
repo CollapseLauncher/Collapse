@@ -21,8 +21,6 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal class BackgroundMediaUtility : IDisposable
     {
-        internal static BackgroundMediaUtility? Current { get; private set; }
-
         internal enum MediaType
         {
             Media,
@@ -82,9 +80,9 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="bgOverlayTitleBar">The title bar shadow over Background Image.</param>
         /// <param name="bgImageGridBackground">The parent <see cref="Grid" /> for Background Image.</param>
         /// <param name="bgMediaPlayerGrid">The parent <see cref="Grid" /> for Background Media Player</param>
-        internal static async Task RegisterCurrent(FrameworkElement? parentUI,          Grid bgAcrylicMask,
-                                                   Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
-                                                   Grid              bgMediaPlayerGrid)
+        internal static async Task<BackgroundMediaUtility> CreateInstanceAsync(FrameworkElement? parentUI,          Grid bgAcrylicMask,
+                                                                               Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
+                                                                               Grid              bgMediaPlayerGrid)
         {
             // Set the parent UI
             FrameworkElement? ui = parentUI;
@@ -98,9 +96,9 @@ namespace CollapseLauncher.Helper.Background
                .WithVerticalAlignment(VerticalAlignment.Center)
                .WithStretch(Stretch.UniformToFill);
 
-            Current = new BackgroundMediaUtility(ui, bgAcrylicMask, bgOverlayTitleBar,
-                                               bgImageGridBackground, bgMediaPlayerGrid, bgImageBackground,
-                                               bgImageBackgroundLast, bgMediaPlayerBackground);
+            return new BackgroundMediaUtility(ui, bgAcrylicMask, bgOverlayTitleBar,
+                                              bgImageGridBackground, bgMediaPlayerGrid, bgImageBackground,
+                                              bgImageBackgroundLast, bgMediaPlayerBackground);
         }
 
         private BackgroundMediaUtility(FrameworkElement? parentUI,              Grid bgAcrylicMask,

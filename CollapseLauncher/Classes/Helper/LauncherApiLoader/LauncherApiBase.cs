@@ -1,12 +1,14 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
+#if SIMULATEPRELOAD
+using System.Collections.Generic;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
-using TaskExtensions = CollapseLauncher.Extension.TaskExtensions;
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -17,10 +19,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
     internal class LauncherApiBase
     {
-        private const int           ExecutionTimeout        = 10;
-        private const int           ExecutionTimeoutStep    = 5;
-        private const int           ExecutionTimeoutAttempt = 5;
-        private       PresetConfig? PresetConfig { get; }
+        protected const int           ExecutionTimeout        = 10;
+        protected const int           ExecutionTimeoutStep    = 5;
+        protected const int           ExecutionTimeoutAttempt = 5;
+        protected       PresetConfig? PresetConfig { get; }
 
         public bool    IsLoadingCompleted     { get; private set; }
         public string? GameBackgroundImg      { get => LauncherGameNews?.Content?.Background?.BackgroundImg; } 
@@ -34,8 +36,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public string? GameRegionTranslation =>
             InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions);
 
-        public virtual RegionResourceProp? LauncherGameResource { get; private set; }
-        public virtual LauncherGameNews?   LauncherGameNews     { get; private set; }
+        public virtual RegionResourceProp? LauncherGameResource { get; protected set; }
+        public virtual LauncherGameNews?   LauncherGameNews     { get; protected set; }
 
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion)
         {
@@ -44,9 +46,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             GameRegion   = gameRegion;
         }
 
-        public async Task LoadAsync(OnLoadAction?             beforeLoadRoutine, OnLoadAction? afterLoadRoutine,
-                                    ActionOnTimeOutRetry?     onTimeoutRoutine,
-                                    ErrorLoadRoutineDelegate? errorLoadRoutine, CancellationToken token)
+        public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,
+                                          ActionOnTimeOutRetry? onTimeoutRoutine,  ErrorLoadRoutineDelegate? errorLoadRoutine,
+                                          CancellationToken     token)
         {
             beforeLoadRoutine?.Invoke(token);
 
@@ -54,15 +56,17 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 IsLoadingCompleted = false;
                 await LoadAsyncInner(onTimeoutRoutine, token);
+                afterLoadRoutine?.Invoke(token);
+
+                return true;
             }
             catch (Exception ex)
             {
                 errorLoadRoutine?.Invoke(ex);
+                return false;
             }
             finally
             {
-                afterLoadRoutine?.Invoke(token);
-
                 IsLoadingCompleted = true;
             }
         }
@@ -77,21 +81,15 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
                                                               CancellationToken     token)
         {
-            if (PresetConfig == null)
-            {
-                throw new NullReferenceException("Preset config is null!");
-            }
+            EnsurePresetConfigNotNull();
+            EnsureResourceUrlNotNull();
 
-            if (string.IsNullOrEmpty(PresetConfig?.LauncherResourceURL))
-            {
-                throw new NullReferenceException("Launcher resource URL is null or empty!");
-            }
+            ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
+                new ActionTimeoutValueTaskCallback<RegionResourceProp?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
 
-            LauncherGameResource = await TaskExtensions
-                                        .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, token),
-                                                           ExecutionTimeout,        ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                        .ConfigureAwait(false);
+            LauncherGameResource = await launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             if (LauncherGameResource == null)
             {
@@ -100,11 +98,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             if (string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL))
             {
-                RegionResourceProp? pluginProp = await TaskExtensions
-                                                      .RetryTimeoutAfter(async () => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp?>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, token),
-                                                                         ExecutionTimeout,        ExecutionTimeoutStep,
-                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine,
-                                                                         token).ConfigureAwait(false);
+                ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
+                    new ActionTimeoutValueTaskCallback<RegionResourceProp?>(async (innerToken) =>
+                    await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, innerToken));
+
+                RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
                 if (pluginProp != null)
                 {
@@ -179,38 +178,35 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         #endif
         }
 
-        protected virtual async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                           CancellationToken     token)
+        protected void EnsurePresetConfigNotNull()
         {
             if (PresetConfig == null)
             {
                 throw new NullReferenceException("Preset config is null!");
             }
+        }
+
+        protected void EnsureResourceUrlNotNull()
+        {
+            if (string.IsNullOrEmpty(PresetConfig?.LauncherResourceURL))
+            {
+                throw new NullReferenceException("Launcher resource URL is null or empty!");
+            }
+        }
+
+        protected virtual async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine,
+                                                           CancellationToken     token)
+        {
+            EnsurePresetConfigNotNull();
 
             string? localeLang  = Locale.Lang.LanguageID.ToLower();
-            // HACK! HoYo API does not respond with certain locale, force change locale.
-            switch (localeLang)
-            {
-                case "es-419":
-                    localeLang = "es-es";
-                    break;
-                case "pt-br":
-                    localeLang = "pt-pt";
-                    break;
-                //case "pl-pl":
-                //    localeLang = "en-us";
-                //    break;
-                //case "uk-ua":
-                //    localeLang = "en-us";
-                //    break;
-            }
-            bool    isMultilingual = PresetConfig.LauncherSpriteURLMultiLang ?? false;
+            bool    isMultilingual = PresetConfig!.LauncherSpriteURLMultiLang ?? false;
 
             LauncherGameNews? regionResourceProp =
                 await LoadLauncherNewsInner(isMultilingual, localeLang, PresetConfig, onTimeoutRoutine, token);
             int backgroundVersion = regionResourceProp?.Content?.Background?.BackgroundVersion ?? 5;
 
-            if (regionResourceProp?.Content?.Background == null || (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai))
+            if (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai)
             {
                 string? localeFallback = PresetConfig.LauncherSpriteURLMultiLangFallback ?? "en-us";
                 regionResourceProp =
@@ -230,16 +226,15 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 throw new NullReferenceException("Launcher news URL is null or empty!");
             }
 
-            Task<LauncherGameNews?> taskGameLauncherNewsSophon = isMultiLang
-                ? LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, token)
-                : LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, token);
+            ActionTimeoutValueTaskCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
+                new ActionTimeoutValueTaskCallback<LauncherGameNews?>(async (innerToken) =>
+                isMultiLang
+                ? await LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
+                : await LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, innerToken));
 
-            Task<LauncherGameNews?> taskRetryLoadSession =
-                TaskExtensions.RetryTimeoutAfter(async () => await taskGameLauncherNewsSophon,
-                                                 ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt,
+            return await taskGameLauncherNewsSophonCallback.WaitForRetryAsync(
+                ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt,
                                                  onTimeoutRoutine, token);
-
-            return await taskRetryLoadSession.ConfigureAwait(false);
         }
 
         private static async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
@@ -260,11 +255,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
         protected virtual string GetDeviceId(PresetConfig preset)
         {
+            if (string.IsNullOrEmpty(preset.InstallRegistryLocation))
+                throw new NullReferenceException("InstallRegistryLocation inside of the game metadata is null!");
+
             string? deviceId = (string?)Registry.GetValue(preset.InstallRegistryLocation, "UUID", null);
             if (deviceId != null)
-            {
                 return deviceId;
-            }
 
             const string regKeyCryptography = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography";
             string? guid = (string?)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ??

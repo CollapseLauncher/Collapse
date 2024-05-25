@@ -50,12 +50,7 @@ namespace CollapseLauncher.Helper.Metadata
         internal static PresetConfig? CurrentMetadataConfig
         {
             get => _currentMetadataConfig;
-            set
-            {
-                if (value?.GameLauncherApi?.LauncherGameNews == null)
-                    Console.WriteLine();
-                _currentMetadataConfig = value;
-            }
+            set => _currentMetadataConfig = value;
         }
         internal static string? CurrentMetadataConfigGameName;
         internal static string? CurrentMetadataConfigGameRegion;
@@ -189,7 +184,7 @@ namespace CollapseLauncher.Helper.Metadata
             if (isShowLoadingMessage)
             {
                 LoadingMessageHelper.ShowLoadingFrame();
-                LoadingMessageHelper.SetMessage("Initializing", "Loading Launcher Metadata");
+                LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing, Locale.Lang._MainPage.LoadingLauncherMetadata);
             }
 
             // Initialize the variable and create the metadata folder if it doesn't exist
@@ -329,8 +324,8 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 if (isShowLoadingMessage)
                 {
-                    LoadingMessageHelper.SetMessage("Initializing",
-                                                    $"Loading Game Configuration [{index++}/{stampList?.Count}]: {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Lang._GameClientRegions)}");
+                    LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing,
+                                                    $"{Locale.Lang._MainPage.LoadingGameConfiguration} [{index++}/{stampList?.Count}]: {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameName, Locale.Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(stamp.GameRegion, Locale.Lang._GameClientRegions)}");
                 }
 
                 await LoadConfigInner(stamp, currentChannel, false, false, isCacheUpdateModeOnly);
@@ -603,15 +598,9 @@ namespace CollapseLauncher.Helper.Metadata
                                         LogType.Default, true);
                 }
 
-                // Then remove the stamp file
+                // Then update the stamp file
                 string stampLocalFilePath = Path.Combine(LauncherMetadataFolder, LauncherMetadataStampPrefix);
-                if (File.Exists(stampLocalFilePath))
-                {
-                    File.Delete(stampLocalFilePath);
-                }
-
-                Logger.LogWriteLine($"Removed old metadata stamp file!\r\nLocation: {stampLocalFilePath}",
-                                    LogType.Default, true);
+                await UpdateStampContent(stampLocalFilePath, NewUpdateMetadataStamp);
 
                 // Then reinitialize the metadata
                 await Initialize();
@@ -623,6 +612,67 @@ namespace CollapseLauncher.Helper.Metadata
             finally
             {
                 _isUpdateRoutineRunning = false;
+            }
+        }
+
+        private static async ValueTask UpdateStampContent(string stampPath, List<Stamp> newStampList)
+        {
+            try
+            {
+                // Check the file existance
+                if (!File.Exists(stampPath))
+                    throw new FileNotFoundException($"Unable to update the stamp file because it is not exist! It should have been located here: {stampPath}");
+
+                // Read the old stamp list stream
+                List<Stamp>? oldStampList = null;
+                using (FileStream stampStream = File.OpenRead(stampPath))
+                {
+                    // Deserialize and do sanitize if the old stamp list is empty
+                    oldStampList = await stampStream.DeserializeAsync<List<Stamp>>(InternalAppJSONContext.Default);
+                    if (oldStampList == null || oldStampList?.Count == 0)
+                        throw new NullReferenceException($"The old stamp list contains an empty/null content!");
+
+                    // Try iterate the new stamp list to replace the old ones or add a new entry
+                    foreach (Stamp newStamp in newStampList)
+                    {
+                        // Find the old stamp reference from the old list
+                        Stamp? oldStampRef = oldStampList?.FirstOrDefault(x => newStamp.GameRegion ==
+                                                                          x.GameRegion
+                                                                          && newStamp.GameName ==
+                                                                          x.GameName
+                                                                          && newStamp.MetadataPath ==
+                                                                          x.MetadataPath
+                                                                          && newStamp.MetadataType ==
+                                                                          x.MetadataType);
+                        // Check if the old stamp ref is null or index of old stamp reference returns < 0, then
+                        // add it as a new entry.
+                        int indexOfOldStamp = 0;
+                        if (oldStampRef == null || (indexOfOldStamp = oldStampList?.IndexOf(oldStampRef) ?? -1) < 0)
+                            oldStampList?.Add(newStamp);
+                        // Otherwise, overwrite with the new one
+                        else
+                            oldStampList![indexOfOldStamp] = newStamp;
+                    }
+                }
+
+                // Now write the updated list to the stamp file
+                using (FileStream updatedStampStream = File.Create(stampPath))
+                {
+                    await oldStampList.SerializeAsync(updatedStampStream, InternalAppJSONContext.Default);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"An error has occurred while updating stamp file content. Removing the stamp file instead!\r\n{ex}", LogType.Error, true);
+            }
+
+            // Remove the file instead if an error occurred
+            if (File.Exists(stampPath))
+            {
+                File.Delete(stampPath);
+                Logger.LogWriteLine($"Removed old metadata stamp file!\r\nLocation: {stampPath}",
+                                    LogType.Default, true);
             }
         }
 

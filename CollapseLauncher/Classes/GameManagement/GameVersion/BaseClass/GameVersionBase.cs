@@ -156,15 +156,11 @@ namespace CollapseLauncher.GameVersioning
 
                 // If no installation installed, then return null
                 if (currentInstalled == null)
-                {
                     return null;
-                }
 
                 // Check if the pre_download_game property has value. If not, then return null
-                if (GameAPIProp.data.pre_download_game == null)
-                {
+                if (string.IsNullOrEmpty(GameAPIProp?.data?.pre_download_game?.latest?.version))
                     return null;
-                }
 
                 return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
             }
@@ -328,7 +324,7 @@ namespace CollapseLauncher.GameVersioning
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
             // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
-            returnList.Add(diff == null ? GameAPIProp.data.game.latest : diff);
+            returnList.Add(diff ?? GameAPIProp.data.game.latest);
             if (GameAPIProp.data.sdk != null)
             {
                 returnList.Add(GameAPIProp.data.sdk);
@@ -369,7 +365,10 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual bool IsGameHasPreload()
         {
-            return GameAPIProp.data.pre_download_game != null;
+            if (GamePreset.LauncherType == LauncherType.Sophon)
+                return GameAPIProp.data.pre_download_game != null;
+
+            return GameAPIProp.data.pre_download_game.latest != null || GameAPIProp.data.pre_download_game.diffs != null;
         }
 
         public virtual bool IsGameHasDeltaPatch()
@@ -638,6 +637,16 @@ namespace CollapseLauncher.GameVersioning
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
+        }
+
+        protected virtual void TryReinitializeGameVersion()
+        {
+            // Check if the GameVersionInstalled == null (version config doesn't exist),
+            // Reinitialize the version config and save the version config by assigning GameVersionInstalled.
+            if (GameVersionInstalled == null)
+            {
+                GameVersionInstalled = GameVersionAPI;
             }
         }
 

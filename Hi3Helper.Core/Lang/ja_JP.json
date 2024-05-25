@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "通知はありません",
     "NotifClearAll": "通知をすべてクリア",
     "NavigationMenu": "メニュー",
-    "NavigationUtilities": "機能"
+    "NavigationUtilities": "機能",
+    "Initializing": "初期化中",
+    "LoadingLauncherMetadata": "ランチャーのメタデータを読み込み中",
+    "LoadingGameConfiguration": "ゲーム設定を読み込み中"
   },
 
   "_HomePage": {
@@ -348,6 +351,7 @@
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
 
     "GameBoost": "ゲームの優先度をブースト [実験的機能]",
+    "MobileLayout": "スマホ版のUIを表示",
 
     "Advanced_Title": "高度な設定",
     "Advanced_Subtitle1": "Collapse Launcher開発チームはこの設定が原因であなたのゲーム・アカウント・システムに何らかの事態が発生しても",
@@ -357,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "起動前コマンド",
     "Advanced_GLC_PreLaunch_Subtitle": "ゲームの起動前にコマンドを実行する",
     "Advanced_GLC_PreLaunch_Exit": "ゲームが終了/停止した場合に実行中のプロセスを強制終了させる",
+    "Advanced_GLC_PreLaunch_Delay": "ゲームの起動を遅らせる（ミリ秒）",
     "Advanced_GLC_PostExit_Title": "終了後コマンド",
     "Advanced_GLC_PostExit_Subtitle": "ゲームの終了後にコマンドを実行する"
   },
@@ -578,6 +583,7 @@
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
+    "CDNDescription_Coding": "Codingが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",
     "OpenDownloadPage": "配布サイトを開く",
@@ -1001,7 +1007,7 @@
 
     "Graphics_FPS": "フレームレート",
     "Graphics_FPS_Help": "120FPSは実験的な設定です！公式でサポートされていない設定のため、ご利用は自己責任でお願いします。",
-    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\nそうなった場合は、代わりにCollapseを使って画面設定を変更してください。",
+    "Graphics_FPS_Help2": "120FPS選択中にゲーム内の設定メニューでフレームレートを変更すると、120FPS化が解除されます。120FPS選択中に設定を変更する際は、Collapseのゲーム設定変更機能の使用をおすすめします。",
     "Graphics_VSync": "垂直同期",
     "Graphics_VSync_Help": "120FPS選択時は垂直同期が無効になります",
     "Graphics_RenderScale": "レンダリング精度",

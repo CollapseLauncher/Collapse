@@ -24,7 +24,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #region Properties
         private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
-        private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
+        protected string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
         private string _gameAudioLangListPath
         {
             get
@@ -44,7 +44,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 return audioPath[0];
             }
         }
-        private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
+        protected string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
         private string _gameAudioNewPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "AudioAssets"); }
         private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
         #endregion
@@ -70,12 +70,12 @@ namespace CollapseLauncher.InstallManager.Genshin
             ApplyDeleteFileAction();
         }
 
-        private void EnsureMoveOldToNewAudioDirectory()
+        protected void EnsureMoveOldToNewAudioDirectory()
         {
             // Return if the old path doesn't exist
             if (!Directory.Exists(_gameAudioOldPath)) return;
 
-            // If exist, then enumerate the content of it and do move operation
+            // If it exists, then enumerate the content of it and do move operation
             int offset = _gameAudioOldPath.Length + 1;
             foreach (string oldPath in Directory.EnumerateFiles(_gameAudioOldPath, "*", SearchOption.AllDirectories))
             {
@@ -144,7 +144,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             WriteAudioLangList();
         }
 
-        private void WriteAudioLangList()
+        protected virtual void WriteAudioLangList()
         {
             // Create persistent directory if not exist
             if (!Directory.Exists(_gameDataPersistentPath))
@@ -168,7 +168,8 @@ namespace CollapseLauncher.InstallManager.Genshin
         #endregion
 
         #region Override Methods - GetInstallationPath
-        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
+        protected override async ValueTask<bool> TryAddResourceVersionList(
+            RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
         {
             // Do action from base method first
             if (!await base.TryAddResourceVersionList(asset, packageList, isSkipMainPackage)) return false;
@@ -193,7 +194,8 @@ namespace CollapseLauncher.InstallManager.Genshin
             {
                 // Try get the voice language ID from the registry
                 langID = _gameVoiceLanguageID;
-                package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
+                    { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
                 packageList.Add(package);
 
                 // Also try add another voice pack that already been installed
@@ -234,13 +236,31 @@ namespace CollapseLauncher.InstallManager.Genshin
             return value;
         }
 
-        private string GetLanguageStringByID(int id) => id switch
+        protected string GetLanguageStringByID(int id) => id switch
         {
             0 => "Chinese",
             1 => "English(US)",
             2 => "Japanese",
             3 => "Korean",
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected string GetLanguageLocaleCodeByID(int id) => id switch
+        {
+            0 => "zh-cn",
+            1 => "en-us",
+            2 => "ja-jp",
+            3 => "ko-kr",
+            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
+        {
+            "zh-cn" => "Chinese",
+            "en-us" => "English(US)",
+            "ja-jp" => "Japanese",
+            "ko-kr" => "Korean",
+            _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
         };
 
         private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
@@ -272,17 +292,20 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
         }
 
-        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID, List<GameInstallPackage> packageList, string assetVersion)
+        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID,
+                                                     List<GameInstallPackage> packageList, string assetVersion)
         {
             // Try check if the package list matches the key
             if (!packageList.Any(x => x.LanguageName == key))
             {
                 // Then add to the package list
                 value.languageID = langID;
-                GameInstallPackage package = new GameInstallPackage(value, _gamePath, assetVersion) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                GameInstallPackage package = new GameInstallPackage(value, _gamePath, assetVersion)
+                    { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
                 packageList.Add(package);
 
-                LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
+                LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                             LogType.Default, true);
             }
         }
         #endregion
@@ -297,11 +320,11 @@ namespace CollapseLauncher.InstallManager.Genshin
                 _ => throw new NotSupportedException($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}")
             };
 
-            return new UninstallGameProperty()
+            return new UninstallGameProperty
             {
-                gameDataFolderName = $"{execName}_Data",
-                foldersToDelete = new string[] { $"{execName}_Data" },
-                filesToDelete = new string[] { "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" },
+                gameDataFolderName  = $"{execName}_Data",
+                foldersToDelete     = new[] { $"{execName}_Data" },
+                filesToDelete       = new[] { "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" },
                 foldersToKeepInData = Array.Empty<string>()
             };
         }

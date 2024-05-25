@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "No new notifications",
     "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilities"
+    "NavigationUtilities": "Utilities",
+    "Initializing": "Initializing",
+    "LoadingLauncherMetadata": "Loading Launcher Metadata",
+    "LoadingGameConfiguration": "Loading Game Configuration"
   },
 
   "_HomePage": {
@@ -348,6 +351,7 @@
     "CustomArgs_Footer3": "to see more parameters.",
 
     "GameBoost": "Boost Game Priority [Experimental]",
+    "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Advanced Settings",
     "Advanced_Subtitle1": "Collapse Launcher Team",
@@ -357,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
     "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
     "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
     "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
@@ -681,7 +686,7 @@
     "InstallDataDownloadResumeTitle": "Resume Download?",
     "InstallDataDownloadResumeSubtitle": "You have downloaded {0}/{1} of the game previously.\r\n\r\nDo you want to resume the download?",
     "InsufficientDiskTitle": "Insufficient Disk Space",
-    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
+    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
     "RelocateFolderTitle": "Relocate App Data Folder",
     "RelocateFolderSubtitle": "You are currently using this folder as your App Data Folder:\r\n\r\n {0}\r\n\r\nDo you wish to change its location?",
     "UninstallGameTitle": "Uninstalling Game: {0}",
@@ -1002,7 +1007,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use with caution as Honkai: Star Rail does not officially support this!",
-    "Graphics_FPS_Help2": "Setting the FPS value to 120 will break the in-game Graphics Settings menu.\r\nIf your menu is broken in-game, use Collapse to change the Game Graphics Settings.",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "Render Scale",

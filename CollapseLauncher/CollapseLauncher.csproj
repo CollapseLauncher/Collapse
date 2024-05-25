@@ -15,7 +15,7 @@
 		<Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
 		<Copyright>Copyright 2022-2024 $(Company)</Copyright>
 		<!-- Versioning -->
-		<Version>1.80.4</Version>
+		<Version>1.80.5</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
 		<Platforms>x64</Platforms>
@@ -63,7 +63,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
 		<DebugType>portable</DebugType>
-  </PropertyGroup>
+    </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
 		<Optimize>True</Optimize>
@@ -97,7 +97,7 @@
 		-->
 		<PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
 		
-		<PackageReference Include="GitInfo" Version="3.3.4" PrivateAssets="all" />
+		<PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.131" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
 		<PackageReference Include="ImageEx" Version="2.1.1" />
@@ -109,9 +109,10 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
+		<PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
 		<PackageReference Include="Roman-Numerals" Version="2.0.0" />
 		<PackageReference Include="SharpCompress" Version="0.37.2" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
+		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.5" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
@@ -129,6 +130,7 @@
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+		<ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
 		<ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
 	</ItemGroup>
 

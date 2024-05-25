@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <EntryPointExe>Hi3Helper.Sophon.Test.Main</EntryPointExe>
+    </PropertyGroup>
+    
+    <ItemGroup>
+    <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+</Project>

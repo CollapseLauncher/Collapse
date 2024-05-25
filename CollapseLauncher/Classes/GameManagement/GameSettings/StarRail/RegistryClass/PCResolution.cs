@@ -88,7 +88,17 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// This defines "<c>Fullscreen</c>" checkbox In-game settings -> Video.<br/><br/>
         /// Default: true
         /// </summary>
-        public override bool isfullScreen { get; set; } = true;
+        public bool isFullScreen { get; set; } = true;
+
+        /// <summary>
+        /// Same as <c>isFullScreen</c><br/><br/>
+        /// </summary>
+        [JsonIgnore]
+        public override bool isfullScreen
+        {
+            get => isFullScreen;
+            set => isFullScreen = value;
+        }
         #endregion
 
         #region Methods

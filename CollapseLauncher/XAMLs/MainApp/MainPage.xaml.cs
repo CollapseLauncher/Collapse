@@ -11,9 +11,12 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -41,6 +44,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher
 {
@@ -59,8 +63,12 @@ namespace CollapseLauncher
         private int  CurrentGameCategory  = -1;
         private int  CurrentGameRegion    = -1;
 
-        private  static bool         IsChangeDragArea        = true;
         internal static List<string> PreviousTagString       = new();
+
+#nullable enable
+        internal static BackgroundMediaUtility? CurrentBackgroundHandler = null;
+        private         BackgroundMediaUtility? LocalBackgroundHandler = null;
+#nullable restore
         #endregion
 
         #region Main Routine
@@ -89,15 +97,11 @@ namespace CollapseLauncher
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeEvents();
-            if (IsChangeDragArea && !App.IsAppKilled)
-            {
-                WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
-            }
 #if !DISABLEDISCORD
             AppDiscordPresence.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            BackgroundMediaUtility.Current?.Dispose();
+            LocalBackgroundHandler?.Dispose();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -151,6 +155,10 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             RunBackgroundCheck();
+
+            // Initialize the background image utility
+            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+            LocalBackgroundHandler = CurrentBackgroundHandler;
 
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
@@ -425,8 +433,8 @@ namespace CollapseLauncher
         {
             if (IsFirstStartup) return;
 
-            if (e) BackgroundMediaUtility.Current?.Dimm();
-            else BackgroundMediaUtility.Current?.Undimm();
+            if (e) CurrentBackgroundHandler?.Dimm();
+            else CurrentBackgroundHandler?.Undimm();
         }
 
         private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
@@ -444,7 +452,7 @@ namespace CollapseLauncher
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
             }
 
-            BackgroundMediaUtility.Current?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
+            CurrentBackgroundHandler?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
             {
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
@@ -528,9 +536,6 @@ namespace CollapseLauncher
         {
             try
             {
-                // Initialize the background image utility
-                await BackgroundMediaUtility.RegisterCurrent(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
 
@@ -1092,7 +1097,6 @@ namespace CollapseLauncher
                     try
                     {
                         await LauncherMetadataHelper.RunMetadataUpdate();
-                        IsChangeDragArea = false;
                         MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                     }
                     catch (Exception ex)
@@ -1133,6 +1137,12 @@ namespace CollapseLauncher
             FontIcon IconCaches = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
+
+            IconLauncher.ApplyDropShadow(Colors.Gray, 20);
+            IconRepair.ApplyDropShadow(Colors.Gray, 20);
+            IconCaches.ApplyDropShadow(Colors.Gray, 20);
+            IconGameSettings.ApplyDropShadow(Colors.Gray, 20);
+            IconAppSettings.ApplyDropShadow(Colors.Gray, 20);
 
             if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
@@ -1202,6 +1212,48 @@ namespace CollapseLauncher
                     break;
                 }
             }
+
+            var paneRoot = (Grid)NavigationViewControl.FindDescendant("PaneRoot");
+            if (paneRoot != null)
+            {
+                paneRoot.PointerEntered += NavView_PanePointerEntered;
+                paneRoot.PointerExited  += NavView_PanePointerExited;
+            }
+
+            // The toggle button is not a part of pane. Why Microsoft!!!
+            var paneToggleButtonGrid = (Grid)NavigationViewControl.FindDescendant("PaneToggleButtonGrid");
+            if (paneToggleButtonGrid != null)
+            {
+                paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
+                paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
+            }
+
+            var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
+            backIcon?.ApplyDropShadow(Colors.Gray, 20);
+
+            var toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
+            toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
+        }
+
+        private async void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (!NavigationViewControl.IsPaneOpen)
+            {
+                var duration = TimeSpan.FromSeconds(0.25);
+                var current = (float)NavViewPaneBackground.Opacity;
+                var animation = NavViewPaneBackground.GetElementCompositor()!
+                                                     .CreateScalarKeyFrameAnimation("Opacity", 1, current);
+                await NavViewPaneBackground.StartAnimation(duration, animation);
+            }
+        }
+
+        private async void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var duration = TimeSpan.FromSeconds(0.25);
+            var current = (float)NavViewPaneBackground.Opacity;
+            var animation = NavViewPaneBackground.GetElementCompositor()!
+                                                 .CreateScalarKeyFrameAnimation("Opacity", 0, current);
+            await NavViewPaneBackground.StartAnimation(duration, animation);
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

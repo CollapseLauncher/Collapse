@@ -34,10 +34,12 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Top"
               Background="{ThemeResource BackgroundOverlayTitleBarBrush}" />
-        <Border Width="48"
+        <Border x:Name="NavViewPaneBackground"
+                Width="48"
                 Margin="0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Stretch"
+                Opacity="0"
                 Background="{ThemeResource NavigationViewUnfoldedPaneBackground}"
                 BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
                 BorderThickness="0"
@@ -125,7 +127,7 @@
                                       Canvas.ZIndex="2"
                                       CornerRadius="15,0,0,15"
                                       ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
-                                      PlaceholderText="Honkai Impact 3rd"
+                                      PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
                                       SelectionChanged="SetGameCategoryChange"
                                       Style="{ThemeResource AcrylicComboBoxStyle}" />
                             <ComboBox x:Name="ComboBoxGameRegion"
@@ -133,7 +135,7 @@
                                       MinWidth="148"
                                       Canvas.ZIndex="2"
                                       CornerRadius="0,15,15,0"
-                                      PlaceholderText="Southeast Asia"
+                                      PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
                                       SelectionChanged="EnableRegionChangeButton"
                                       Style="{ThemeResource AcrylicComboBoxStyle}" />
                         </Grid>
