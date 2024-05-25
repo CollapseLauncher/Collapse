@@ -435,7 +435,7 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Warning
                 );
 
-        public static async Task<ContentDialogResult> Dialog_InsufficientDriveSpace(UIElement Content, long DriveFreeSpace, long RequiredSpace, string DriveLetter) =>
+        public static async Task<ContentDialogResult> Dialog_InsufficientDriveSpace(UIElement Content, long DriveFreeSpace, double RequiredSpace, string DriveLetter) =>
             await SpawnDialog(
                         Lang._Dialogs.InsufficientDiskTitle,
                         string.Format(Lang._Dialogs.InsufficientDiskSubtitle,
