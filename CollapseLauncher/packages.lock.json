@@ -365,8 +365,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.26.1",
-        "contentHash": "CHZX8zXqhF/fdUtd+AYzew8T2HFkAoe5c7lbGxZY/qryAlQXckDvM5BfOJjXlMS7kyICqQTMszj4w1bX5uBJ/w=="
+        "resolved": "3.27.0",
+        "contentHash": "tEaKpc+SP7I3gYW9AHozESyKkrCg8Xe7huI3Q3iUt5t8Dn29r2k1u8jyrGrD16maj/0UsQBM0MDViWEj0iynOA=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
@@ -975,14 +975,14 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Hi3Helper.Http": "[1.0.0, )"
+          "Hi3Helper.Http": "[1.5.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.26.1, )",
-          "Hi3Helper.Http": "[1.0.0, )",
+          "Hi3Helper.Http": "[1.5.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
       },
@@ -992,7 +992,7 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.26.1, )",
+          "Google.Protobuf": "[*, )",
           "Hi3Helper.ZstdNet": "[*, )"
         }
       },
