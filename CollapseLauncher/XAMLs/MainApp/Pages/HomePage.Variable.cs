@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.WindowSize;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -68,6 +69,62 @@ namespace CollapseLauncher.Pages
                     _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
                 };
             }
+        }
+
+        internal int CurrentBannerIconWidth
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidth :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidthHYP;
+        }
+
+        internal Thickness CurrentBannerIconMargin
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
+        }
+
+        internal int CurrentBannerIconColumn
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   0;
+        }
+
+        internal int CurrentBannerIconColumnSpan
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   1;
+        }
+
+        internal int CurrentBannerIconRow
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   0;
+        }
+
+        internal int CurrentBannerIconRowSpan
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   1;
+        }
+
+        internal HorizontalAlignment CurrentBannerIconHorizontalAlign
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
+        }
+
+        internal VerticalAlignment CurrentBannerIconVerticalAlign
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
 
         public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);

@@ -47,7 +47,7 @@ namespace CollapseLauncher.Statics
                     _GameSettings = new GenshinSettings(_GameVersion);
                     _GameCache = null;
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
-                    _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
+                    _GameInstall = GamePreset.LauncherResourceChunksURL != null ? new GenshinSophonInstall(UIElementParent, _GameVersion) : new GenshinInstall(UIElementParent, _GameVersion);
                     break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");

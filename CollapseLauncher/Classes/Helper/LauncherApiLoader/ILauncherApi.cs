@@ -17,7 +17,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         string? GameRegionTranslation { get; }
         RegionResourceProp? LauncherGameResource { get; }
         LauncherGameNews? LauncherGameNews { get; }
-        Task LoadAsync(OnLoadAction? beforeLoadRoutine = null, OnLoadAction? afterLoadRoutine = null,
+        Task<bool> LoadAsync(OnLoadAction? beforeLoadRoutine = null, OnLoadAction? afterLoadRoutine = null,
             ActionOnTimeOutRetry? onTimeoutRoutine = null, ErrorLoadRoutineDelegate? errorLoadRoutine = null,
             CancellationToken token = default);
     }

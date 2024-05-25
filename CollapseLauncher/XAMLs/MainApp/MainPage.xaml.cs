@@ -16,6 +16,7 @@ using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -1137,11 +1138,11 @@ namespace CollapseLauncher
             FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
 
-            IconLauncher.ApplyShadow();
-            IconRepair.ApplyShadow();
-            IconCaches.ApplyShadow();
-            IconGameSettings.ApplyShadow();
-            IconAppSettings.ApplyShadow();
+            IconLauncher.ApplyDropShadow(Colors.Gray, 20);
+            IconRepair.ApplyDropShadow(Colors.Gray, 20);
+            IconCaches.ApplyDropShadow(Colors.Gray, 20);
+            IconGameSettings.ApplyDropShadow(Colors.Gray, 20);
+            IconAppSettings.ApplyDropShadow(Colors.Gray, 20);
 
             if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
@@ -1228,10 +1229,10 @@ namespace CollapseLauncher
             }
 
             var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
-            backIcon?.ApplyShadow();
+            backIcon?.ApplyDropShadow(Colors.Gray, 20);
 
             var toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
-            toggleIcon?.ApplyShadow();
+            toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
         }
 
         private async void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)

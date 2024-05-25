@@ -98,7 +98,7 @@ namespace CollapseLauncher
         }
 
         public static List<StackPanel> BuildGameRegionListUI(string?        gameCategory,
-                                                                              List<string?>? gameCategoryList = null)
+                                                             List<string?>? gameCategoryList = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(gameCategory);
             gameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(gameCategory);

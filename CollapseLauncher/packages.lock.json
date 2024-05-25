@@ -114,9 +114,9 @@
       },
       "GitInfo": {
         "type": "Direct",
-        "requested": "[3.3.4, )",
-        "resolved": "3.3.4",
-        "contentHash": "uaK+WXIrHCkjJudwMfgVkI8tTNqjcB19bHpSBe4C5pOS4cx9JsPkCcaafN2vY2snkRiCQZCpt56yLslZOyvT2g==",
+        "requested": "[3.3.5, )",
+        "resolved": "3.3.5",
+        "contentHash": "xt8tAMq42KompgmZI5fpko9IY9cuGqjvNFCc+B6iZeoCHlqcbuGZz33SFD+jTsPZTFfrxqTXvywm/s8DcFcEIg==",
         "dependencies": {
           "ThisAssembly.Constants": "1.4.1"
         }
@@ -203,6 +203,15 @@
         "resolved": "0.14.2",
         "contentHash": "rVz7Fb3/hyTLIP6NikCnnAiIz3vl5yfOooyehVz0FFsZCSd+UFgNTOjTvI+4xhpoQs08/RjU6DQz181qxzzRVA=="
       },
+      "PhotoSauce.NativeCodecs.Libwebp": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.3.2-preview3",
+        "contentHash": "kPBYxzIOx2XW/vvt/AGWSbeOInLVnM/teCXN+ABwDXSAC2kQYAF0pKoPxyg+YQimgmAORgAnV7817X8jYHT/Ew==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.14.2]"
+        }
+      },
       "Roman-Numerals": {
         "type": "Direct",
         "requested": "[2.0.0, )",
@@ -220,11 +229,12 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
-        "requested": "[2.2.3, )",
-        "resolved": "2.2.3",
-        "contentHash": "bPYcvsu5Plb5q9yRpA7F4JYATPzmnfVFz19/6dwdayziBeofgFbnqzP3csnrPQwAI95GxSJsHK9fcj6SQMZhAg==",
+        "requested": "[2.2.5, )",
+        "resolved": "2.2.5",
+        "contentHash": "HczGXTuH9Ex3O88Mj8fzzgwg8XKulNl68TvqGJ9nyNFf1P2+uWeJyutFmvvA8fx6uv/TPFSkcZZmMZnzk39GGw==",
         "dependencies": {
-          "ZstdSharp.Port": "0.7.4"
+          "Hi3Helper.ZstdNet": "1.5.3",
+          "ZstdSharp.Port": "0.8.1"
         }
       },
       "System.CommandLine": {
@@ -373,6 +383,11 @@
         "dependencies": {
           "H.GeneratedIcons.System.Drawing": "2.0.131"
         }
+      },
+      "Hi3Helper.ZstdNet": {
+        "type": "Transitive",
+        "resolved": "1.5.3",
+        "contentHash": "QIaWZmCvxzDng6cXrrh2uJp9BcNOQQNqnVt729vcDvSlWhhE5+QioqZupskLrW9zIuvvxayBr+Ei6KpwYBeMNw=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
@@ -552,8 +567,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.4",
-        "contentHash": "3G4xpa8mUYGzEF0HlswlBArAFywHJIzsZoB5hU4yMlnYHaabj/lg019BwbyyYBxj0aoM7Cz+jdlgUemeno9LOQ==",
+        "resolved": "8.0.5",
+        "contentHash": "n55wb6rL8YG254AG+SfQOSQencrcnpKAAcYyEcvBuO2pob7ltXuZ5skBBdvLJOLVPKd1Ya8+8ColIM5AtBo5ww==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -941,13 +956,13 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.8.0",
-        "contentHash": "Z62eNBIu8E8YtbqlMy57tK3dV1+m2b9NhPeaYovB5exmLKvrGCqOhJTzrEUH5VyUWU6vwX3c1XHJGhW5HVs8dA=="
+        "resolved": "0.8.1",
+        "contentHash": "19tNz33kn2EkyViFXuxfVn338UJaRmkwBphVqP2dVJIYQUQgFrgG5h061mxkRRg1Ax6r+6WOj1FxaFZ5qaWqqg=="
       },
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.4, )"
+          "System.Drawing.Common": "[8.0.5, )"
         }
       },
       "discordrpc": {
@@ -973,6 +988,13 @@
       },
       "hi3helper.http": {
         "type": "Project"
+      },
+      "hi3helper.sophon": {
+        "type": "Project",
+        "dependencies": {
+          "Google.Protobuf": "[3.26.1, )",
+          "Hi3Helper.ZstdNet": "[*, )"
+        }
       },
       "innosetuphelper": {
         "type": "Project",
@@ -1002,6 +1024,15 @@
         "contentHash": "gV+UHuwtbZLypWIysNlIX+WHqcm7q3I00E5n+GiDrX28fHXW4yr56d6GwP2banJLDl/JVku5zX2YUOW5X2WRZQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
+        }
+      },
+      "PhotoSauce.NativeCodecs.Libwebp": {
+        "type": "Direct",
+        "requested": "[*-*, )",
+        "resolved": "1.3.2-preview3",
+        "contentHash": "kPBYxzIOx2XW/vvt/AGWSbeOInLVnM/teCXN+ABwDXSAC2kQYAF0pKoPxyg+YQimgmAORgAnV7817X8jYHT/Ew==",
+        "dependencies": {
+          "PhotoSauce.MagicScaler": "[0.14.2]"
         }
       },
       "System.Diagnostics.EventLog": {

@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
@@ -75,12 +75,20 @@ namespace CollapseLauncher
                 LoadingMessageHelper.HideLoadingFrame();
 
                 IsLoadRegionComplete = true;
+
+                LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
+                FinalizeLoadRegion(gameName, gameRegion);
+                ChangeBackgroundImageAsRegionAsync();
             }
 
             void OnErrorRoutine(Exception ex)
             {
+                LoadingMessageHelper.HideActionButton();
+                LoadingMessageHelper.HideLoadingFrame();
+
                 LogWriteLine($"Error has occurred while loading: {regionToChangeName}!\r\n{ex}", LogType.Scheme, true);
                 ErrorSender.SendExceptionWithoutPage(ex, ErrorType.Connection);
+                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
             }
 
             async void CancelLoadEvent(object sender, RoutedEventArgs args)
@@ -102,7 +110,6 @@ namespace CollapseLauncher
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
                 ChangeRegionBtn.IsEnabled = true;
 
-                IsFirstStartup = false;
                 DisableKbShortcuts();
             }
 
@@ -115,19 +122,7 @@ namespace CollapseLauncher
                 LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelLoadEvent);
             }
 
-            await preset.GameLauncherApi.LoadAsync(BeforeLoadRoutine, AfterLoadRoutine, ActionOnTimeOutRetry, OnErrorRoutine, tokenSource.Token);
-
-            if (tokenSource.IsCancelled || tokenSource.Token.IsCancellationRequested)
-            {
-                LogWriteLine($"Game: {regionToChangeName} failed to initialize!", LogType.Error, true);
-                return false;
-            }
-            
-            LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
-            FinalizeLoadRegion(gameName, gameRegion);
-            ChangeBackgroundImageAsRegionAsync();
-
-            return true;
+            return await preset.GameLauncherApi.LoadAsync(BeforeLoadRoutine, AfterLoadRoutine, ActionOnTimeOutRetry, OnErrorRoutine, tokenSource.Token);
         }
 
         public void ClearMainPageState()

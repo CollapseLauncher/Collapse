@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
@@ -19,7 +19,7 @@ namespace CollapseLauncher.Helper.JsonConverter
             bool isBufferUsePool = data.Length <= DataPoolLimit;
 
             // Get the output data span and decode the Base64 data to raw data
-            byte[] dataBytes = isBufferUsePool ? ArrayPool<byte>.Shared.Rent(data.Length) : new byte[data.Length];
+            byte[] dataBytes = null;
 
             try
             {
@@ -29,6 +29,8 @@ namespace CollapseLauncher.Helper.JsonConverter
                     ReturnUnescapedData(data) :
                     Encoding.UTF8.GetString(data);
 
+                // Try decode the Base64 data
+                dataBytes = isBufferUsePool ? ArrayPool<byte>.Shared.Rent(data.Length) : new byte[data.Length];
                 OperationStatus opStatus = Base64.DecodeFromUtf8(data, dataBytes, out _, out int dataB64DecodedWritten, true);
                 if (opStatus != OperationStatus.Done)
                     throw new InvalidOperationException($"Data is not a valid Base64! (Status: {opStatus})");
@@ -36,7 +38,7 @@ namespace CollapseLauncher.Helper.JsonConverter
                 // Assign read-only span as per Base64 written length
                 ReadOnlySpan<byte> dataBase64Decoded = dataBytes.AsSpan(0, dataB64DecodedWritten);
 
-                // Check if the data is Base64 encoded and indeed aServeV3 data and is base64 data. If no, then return as a raw string
+                // Check if the data is Base64 encoded and also a ServeV3 data. If no, then return as a raw string
                 bool isValidServeV3Data = DataCooker.IsServeV3Data(dataBase64Decoded);
                 if (!(isValidB64Data && isValidServeV3Data)) return jsonReader.ValueIsEscaped ?
                     ReturnUnescapedData(data) :
@@ -47,7 +49,7 @@ namespace CollapseLauncher.Helper.JsonConverter
             }
             finally
             {
-                if (isBufferUsePool) ArrayPool<byte>.Shared.Return(dataBytes, true);
+                if (isBufferUsePool && dataBytes != null) ArrayPool<byte>.Shared.Return(dataBytes, true);
             }
         }
 

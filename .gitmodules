@@ -9,10 +9,13 @@
 	url = https://github.com/neon-nyan/ColorThief
 [submodule "Hi3Helper.EncTool"]
 	path = Hi3Helper.EncTool
-	url = https://github.com/neon-nyan/Hi3Helper.EncTool
+	url = https://github.com/CollapseLauncher/Hi3Helper.EncTool
 [submodule "InnoSetupHelper/InnoSetupLogParser"]
 	path = InnoSetupHelper/InnoSetupLogParser
 	url = https://github.com/CollapseLauncher/InnoSetupLogParser
 [submodule "Hi3Helper.SharpDiscordRPC"]
 	path = Hi3Helper.SharpDiscordRPC
 	url = https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC
+[submodule "Hi3Helper.Sophon"]
+	path = Hi3Helper.Sophon
+	url = https://github.com/CollapseLauncher/Hi3Helper.Sophon

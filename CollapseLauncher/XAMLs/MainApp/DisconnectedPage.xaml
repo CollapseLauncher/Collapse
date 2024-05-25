@@ -3,12 +3,17 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
+      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:uielementex="using:CollapseLauncher.Extension"
-      Background="{ThemeResource PageBackgroundAcrylicBrush}"
+      Background="Transparent"
       mc:Ignorable="d">
-    <Grid>
+    <Grid Margin="32">
         <Grid Margin="32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <StackPanel Margin="0,-32,0,0"
                         VerticalAlignment="Center">
                 <TextBlock FontSize="76"
@@ -20,10 +25,45 @@
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}" />
                 <Button x:Name="ShowErrorBtn"
                         Margin="0,16,0,0"
+                        Padding="8,8"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
                         Click="ShowError"
-                        Content="{x:Bind helper:Locale.Lang._DisconnectedPage.ShowErrorBtn}"
                         CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ShowErrorBtn)}"
-                        Style="{ThemeResource AccentButtonStyle}" />
+                        Style="{ThemeResource AcrylicButtonStyle}">
+                    <Grid Margin="8,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="0,-2,16,0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Medium"
+                                   FontSize="20"
+                                   HorizontalTextAlignment="Left"
+                                   Text="{x:Bind helper:Locale.Lang._DisconnectedPage.ShowErrorBtn}" />
+                        <Grid Grid.Column="1"
+                              Margin="4,0,0,0"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RenderTransformOrigin="0.5, 0.5">
+                            <Grid.RenderTransform>
+                                <RotateTransform Angle="-90" />
+                            </Grid.RenderTransform>
+                            <AnimatedIcon Width="24"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center">
+                                <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                <AnimatedIcon.FallbackIconSource>
+                                    <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                    Glyph="&#xE70D;" />
+                                </AnimatedIcon.FallbackIconSource>
+                            </AnimatedIcon>
+                        </Grid>
+                    </Grid>
+                </Button>
             </StackPanel>
             <TextBlock VerticalAlignment="Bottom"
                        FontSize="16"
@@ -34,13 +74,13 @@
                      Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer2}" />
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}" />
             </TextBlock>
+            <Image Margin="32,0,0,0"
+                   Grid.Column="1"
+                   MaxWidth="460"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   PointerPressed="PaimonClicked"
+                   Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
         </Grid>
-        <Image Width="467"
-               Height="496"
-               Margin="0,0,32,32"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Bottom"
-               PointerPressed="PaimonClicked"
-               Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
     </Grid>
 </Page>

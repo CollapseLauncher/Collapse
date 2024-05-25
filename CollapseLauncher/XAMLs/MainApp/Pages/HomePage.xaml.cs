@@ -7,16 +7,19 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
 using CollapseLauncher.Statics;
+using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -52,6 +55,10 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
+using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
+using CommunityToolkit.WinUI;
+using CollapseLauncher.WindowSize;
+using Microsoft.UI.Xaml.Media;
 
 namespace CollapseLauncher.Pages
 {
@@ -236,10 +243,10 @@ namespace CollapseLauncher.Pages
         private async void TryLoadEventPanelImage()
         {
             // Get the url and article image path
-            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
-                .LauncherGameNews.Content.Background.FeaturedEventIconBtnUrl;
-            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
-                .LauncherGameNews.Content.Background.FeaturedEventIconBtnImg;
+            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
+                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
+            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
+                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
 
             // If the region event panel property is null, then return
             if (string.IsNullOrEmpty(featuredEventIconImg)) return;
@@ -298,11 +305,6 @@ namespace CollapseLauncher.Pages
             ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
             ImageEventImg.Source = source;
             ImageEventImg.Tag = featuredEventArticleUrl;
-
-            if (IsCustomBG)
-            {
-                ImageEventImgGrid.Margin = new Thickness(0, 0, 0, 16);
-            }
         }
         #endregion
 
@@ -370,19 +372,21 @@ namespace CollapseLauncher.Pages
         private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
         {
             Button btn = (Button)sender;
-            if (btn.Translation != Vector3.Zero || e.OriginalSource is Image) return;
-            Storyboard sb = btn.Resources["EnterStoryboard"] as Storyboard;
-            btn.Translation += Shadow16;
-            sb.Begin();
+            btn.Translation = Shadow16;
+
+            Grid iconGrid = btn.FindDescendant<Grid>();
+            Image iconFirst = iconGrid.FindDescendant("Icon") as Image;
+            Image iconSecond = iconGrid.FindDescendant("IconHover") as Image;
+
+            TimeSpan dur = TimeSpan.FromSeconds(0.25f);
+            iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
+            iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
         }
 
         private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
         {
             Button btn = (Button)sender;
-            if (btn.Translation == Vector3.Zero || e.OriginalSource is Image) return;
-            Storyboard sb = btn.Resources["ExitStoryboard"] as Storyboard;
-            btn.Translation -= Shadow16;
-            sb.Begin();
+            btn.Translation = new Vector3(0);
 
             Flyout flyout = btn.Resources["SocMedFlyout"] as Flyout;
             Point pos = e.GetCurrentPoint(btn).Position;
@@ -390,6 +394,14 @@ namespace CollapseLauncher.Pages
             {
                 flyout.Hide();
             }
+
+            Grid iconGrid = btn.FindDescendant<Grid>();
+            Image iconFirst = iconGrid.FindDescendant("Icon") as Image;
+            Image iconSecond = iconGrid.FindDescendant("IconHover") as Image;
+
+            TimeSpan dur = TimeSpan.FromSeconds(0.25f);
+            iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+            iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
         }
 
         private async void HideSocialMediaPanel(bool hide)
@@ -708,8 +720,8 @@ namespace CollapseLauncher.Pages
         {
             if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
             {
-                FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
-                FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
+                // FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
+                // FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
                 LauncherBtn.SetValue(Grid.ColumnProperty, 0);
                 ProgressStatusGrid.SetValue(Grid.ColumnProperty, 0);
                 GameStartupSetting.SetValue(Grid.ColumnProperty, 1);
@@ -837,20 +849,14 @@ namespace CollapseLauncher.Pages
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
             FontFamily FF = FontCollections.FontAwesomeSolid;
-            VerticalAlignment TVAlign = VerticalAlignment.Center;
-            Orientation SOrient = Orientation.Horizontal;
             Thickness Margin = new Thickness(0, -2, 8, 0);
             Thickness SMargin = new Thickness(16, 0, 16, 0);
             FontWeight FW = FontWeights.Medium;
-            string Gl = "";
 
-            StackPanel BtnStartGame = UIElementExtensions.CreateStackPanel(SOrient).WithMargin(SMargin);
-            BtnStartGame.AddElementToStackPanel(new TextBlock() { FontWeight = FW, Text = Lang._HomePage.StartBtn }.WithVerticalAlignment(TVAlign).WithMargin(Margin),
-                                                new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
-
-            StackPanel BtnRunningGame = UIElementExtensions.CreateStackPanel(SOrient).WithMargin(SMargin);
-            BtnRunningGame.AddElementToStackPanel(new TextBlock() { FontWeight = FW, Text = Lang._HomePage.StartBtnRunning }.WithVerticalAlignment(TVAlign).WithMargin(Margin),
-                                                  new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
+            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid).Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon StartGameBtnIcon = (StartGameBtn.Content as Grid).Children.OfType<FontIcon>().FirstOrDefault();
+            string StartGameBtnIconGlyph = StartGameBtnIcon.Glyph;
+            string StartGameBtnRunningIconGlyph = "";
 
             try
             {
@@ -861,7 +867,8 @@ namespace CollapseLauncher.Pages
                         _cachedIsGameRunning = true;
 
                         StartGameBtn.IsEnabled = false;
-                        StartGameBtn.Content = BtnRunningGame;
+                        StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                        StartGameBtnIcon.Glyph = StartGameBtnRunningIconGlyph;
 
                         //GameStartupSetting.IsEnabled = false;
                         RepairGameButton.IsEnabled = false;
@@ -884,7 +891,8 @@ namespace CollapseLauncher.Pages
                     _cachedIsGameRunning = false;
 
                     StartGameBtn.IsEnabled = true;
-                    StartGameBtn.Content = BtnStartGame;
+                    StartGameBtnText.Text = Lang._HomePage.StartBtn;
+                    StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
 
                     //GameStartupSetting.IsEnabled = true;
                     RepairGameButton.IsEnabled = true;
@@ -925,7 +933,6 @@ namespace CollapseLauncher.Pages
                 PauseDownloadPreBtn.Visibility = Visibility.Visible;
                 ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
                 PreloadDialogBox.IsClosable = false;
-                PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32);
 
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
@@ -936,12 +943,9 @@ namespace CollapseLauncher.Pages
 
                 CurrentGameProperty._GameInstall.ProgressChanged += PreloadDownloadProgress;
                 CurrentGameProperty._GameInstall.StatusChanged += PreloadDownloadStatus;
-                PreloadDialogBox.IsOpen = true;
+                SpawnPreloadDialogBox();
                 return;
             }
-
-            PreloadDialogBox.Translation += Shadow48;
-            PreloadDialogBox.Closed += PreloadDialogBox_Closed;
 
             string ver = CurrentGameProperty._GameVersion.GetGameVersionAPIPreload()?.VersionString;
 
@@ -952,7 +956,7 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
                     PreloadDialogBox.Message = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
                     DownloadPreBtn.Visibility = Visibility.Collapsed;
-                    PreloadDialogBox.IsOpen = true;
+                    SpawnPreloadDialogBox();
                     return;
                 }
 
@@ -972,7 +976,7 @@ namespace CollapseLauncher.Pages
                         textWeight: FontWeights.Medium
                     );
                 }
-                PreloadDialogBox.IsOpen = true;
+                SpawnPreloadDialogBox();
             }
             catch (Exception ex)
             {
@@ -987,7 +991,6 @@ namespace CollapseLauncher.Pages
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
-            PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32);
             // While this fixes #191, we need to find a way to move all elements above it by at least 16
 
             try
@@ -1062,12 +1065,6 @@ namespace CollapseLauncher.Pages
                 progressPreBar.IsIndeterminate = false;
                 progressPrePerFileBar.IsIndeterminate = false;
             });
-        }
-
-        private void PreloadDialogBox_Closed(InfoBar sender, InfoBarClosedEventArgs args)
-        {
-            sender.Translation -= Shadow48;
-            HideImageEventImg(false);
         }
         #endregion
 
@@ -2322,5 +2319,135 @@ namespace CollapseLauncher.Pages
         #endregion
 
         private async void ProgressSettingsButton_OnClick(object sender, RoutedEventArgs e) => await Dialog_DownloadSettings(this, CurrentGameProperty);
+
+        private void ApplyShadowToImageElement(object sender, RoutedEventArgs e)
+        {
+            if (sender is ButtonBase button && button.Content is Panel panel)
+            {
+                bool isStart = true;
+                foreach (Image imageElement in panel.Children.OfType<Image>())
+                {
+                    imageElement.ApplyDropShadow(opacity: 0.5f);
+                    if (isStart)
+                    {
+                        imageElement.Opacity = 0.0f;
+                        imageElement.Loaded += (_, _) =>
+                        {
+                            Compositor compositor = imageElement.GetElementCompositor();
+                            imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
+                                compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+                        };
+                        isStart = false;
+                    }
+                }
+            }
+        }
+
+        private bool IsPointerInsideSidePanel = false;
+        private bool IsSidePanelCurrentlyScaledOut = false;
+        private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            IsPointerInsideSidePanel = true;
+            if (sender is FrameworkElement elementPanel)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                if (IsSidePanelCurrentlyScaledOut) return;
+                if (!IsPointerInsideSidePanel) return;
+
+                Compositor compositor = this.GetElementCompositor();
+
+                float toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
+                Vector3 toTranslate = new Vector3(0, -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -8, elementPanel.Translation.Z);
+
+                MainPage.CurrentBackgroundHandler?.Dimm();
+                HideImageEventImg(true);
+
+                await elementPanel.StartAnimation(
+                    TimeSpan.FromSeconds(0.25),
+                    compositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate, TimeSpan.FromSeconds(0.05)),
+                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale))
+                    );
+                IsSidePanelCurrentlyScaledOut = true;
+            }
+        }
+
+        private async void SidePanelScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            IsPointerInsideSidePanel = false;
+            if (sender is FrameworkElement elementPanel)
+            {
+                if (!IsSidePanelCurrentlyScaledOut) return;
+                Compositor compositor = this.GetElementCompositor();
+
+                float toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
+                Vector3 toTranslate = new Vector3(0, -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -8, elementPanel.Translation.Z);
+
+                MainPage.CurrentBackgroundHandler?.Undimm();
+                HideImageEventImg(false);
+
+                await elementPanel.StartAnimation(
+                    TimeSpan.FromSeconds(0.25),
+                    compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate, TimeSpan.FromSeconds(0.25)),
+                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
+                    );
+                IsSidePanelCurrentlyScaledOut = false;
+            }
+        }
+
+        private async void ElementScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is FrameworkElement elementPanel)
+            {
+                Compositor compositor = this.GetElementCompositor();
+
+                float toScale = 1.05f;
+                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
+                Vector3 toTranslate = new Vector3(-((float)(elementPanel?.ActualWidth ?? 0) * (toScale - 1f) / 2), -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -4, elementPanel.Translation.Z);
+
+                await elementPanel.StartAnimation(
+                    TimeSpan.FromSeconds(0.25),
+                    compositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate),
+                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale))
+                    );
+            }
+        }
+
+        private async void ElementScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is FrameworkElement elementPanel)
+            {
+                Compositor compositor = this.GetElementCompositor();
+
+                float toScale = 1.05f;
+                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
+                Vector3 toTranslate = new Vector3(-((float)(elementPanel?.ActualWidth ?? 0) * (toScale - 1f) / 2), -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -4, elementPanel.Translation.Z);
+
+                await elementPanel.StartAnimation(
+                    TimeSpan.FromSeconds(0.25),
+                    compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
+                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
+                    );
+            }
+        }
+
+        private async void SpawnPreloadDialogBox()
+        {
+            PreloadDialogBox.IsOpen = true;
+            PreloadDialogBox.Translation = new Vector3(0, 0, 16);
+            Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
+
+            PreloadDialogBox.Opacity = 0.0f;
+            float toScale = 0.98f;
+            Vector3 toTranslate = new Vector3(-((float)(PreloadDialogBox?.ActualWidth ?? 0) * (toScale - 1f) / 2),
+                -((float)(PreloadDialogBox?.ActualHeight ?? 0) * (toScale - 1f)) - 16, 0);
+
+            await PreloadDialogBox.StartAnimation(TimeSpan.FromSeconds(0.5),
+                compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f, 0.0f),
+                compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f, 1.0f, PreloadDialogBox.Translation.Z), new Vector3(toScale, toScale, PreloadDialogBox.Translation.Z)),
+                compositor.CreateVector3KeyFrameAnimation("Translation", PreloadDialogBox.Translation, toTranslate)
+                );
+        }
     }
 }
