@@ -2057,8 +2057,8 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
         #region Virtual Methods - StartPackageDownload
 
-        private enum CompletenessStatus { Running, Completed, Cancelled, Idle }
-        private void UpdateCompletenessStatus(CompletenessStatus status)
+        protected enum CompletenessStatus { Running, Completed, Cancelled, Idle }
+        protected void UpdateCompletenessStatus(CompletenessStatus status)
         {
             switch (status)
             {

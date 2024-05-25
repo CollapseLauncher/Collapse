@@ -58,6 +58,9 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             try
             {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 // Reset status and progress properties
                 ResetStatusAndProgressProperty();
 
@@ -137,7 +140,36 @@ namespace CollapseLauncher.InstallManager.Genshin
                         async (asset, threadToken) => await RunSophonAssetDownloadThread(httpClient, asset, parallelOptions));
                 }
 
+                // Rename temporary files
+                foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
+                {
+                    await Parallel.ForEachAsync(
+                        SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
+                        parallelOptions,
+                        async (asset, threadToken) =>
+                        {
+                            // If the asset is a dictionary, then return
+                            if (asset.IsDirectory) return;
+
+                            // Get the file path and start the write process
+                            string assetName = asset.AssetName;
+                            string filePath = EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) + "_tempSophon";
+                            string origFilePath = Path.Combine(_gamePath, assetName);
+
+                            if (File.Exists(filePath))
+                                File.Move(filePath, origFilePath, true);
+                        });
+                }
+
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
                 IsDownloadCompleted = true;
+            }
+            catch (Exception)
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+                throw;
             }
             finally
             {
@@ -193,7 +225,13 @@ namespace CollapseLauncher.InstallManager.Genshin
             if (asset.IsDirectory) return;
 
             // Get the file path and start the write process
-            string filePath = EnsureCreationOfDirectory(Path.Combine(_gamePath, asset.AssetName));
+            string assetName = asset.AssetName;
+            string filePath = EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName));
+
+            // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
+            if (!File.Exists(filePath) || File.Exists(filePath + "_tempSophon"))
+                filePath += "_tempSophon";
+
             await asset.WriteToStreamAsync(
                 client,
                 () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite),

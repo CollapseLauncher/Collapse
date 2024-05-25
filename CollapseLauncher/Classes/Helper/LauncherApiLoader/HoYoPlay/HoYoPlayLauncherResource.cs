@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CollapseLauncher.Helper.JsonConverter;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 #nullable enable
@@ -34,8 +35,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         [JsonPropertyName("main")]
         public PackagePartition? MainPackage { get; set; }
 
-        [JsonPropertyName("plugin")]
-        public PackagePartition? PluginPackage { get; set; }
+        [JsonPropertyName("plugins")]
+        public List<PackagePluginSections>? PluginPackageSections { get; set; }
 
         [JsonPropertyName("pre_download")]
         public PackagePartition? PreDownload { get; set; }
@@ -53,13 +54,28 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
     public class PackagePartition
     {
         [JsonPropertyName("major")]
-        public PackageSections? CurrentVersion { get; set; }
+        public PackageResourceSections? CurrentVersion { get; set; }
 
         [JsonPropertyName("patches")]
-        public List<PackageSections>? Patches { get; set; }
+        public List<PackageResourceSections>? Patches { get; set; }
     }
 
-    public class PackageSections
+    public class PackagePluginSections
+    {
+        [JsonPropertyName("plugin_id")]
+        public string? PluginId { get; set; }
+
+        [JsonPropertyName("plugin_pkg")]
+        public PackageDetails? PluginPackage { get; set; }
+
+        [JsonPropertyName("release_id")]
+        public string? ReleaseId { get; set; }
+
+        [JsonPropertyName("version")]
+        public string? Version { get; set; }
+    }
+
+    public class PackageResourceSections
     {
         [JsonPropertyName("audio_pkgs")]
         public List<PackageDetails>? AudioPackages { get; set; }
@@ -100,8 +116,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? ChannelSDKPkg { get; init; }
 
         [JsonPropertyName("command")]
-        // TODO: Figure out the property purpose
-        public string? Command { get; init; }
+        public string? PackageRunCommand { get; init; }
+
+        [JsonPropertyName("validation")]
+        [JsonConverter(typeof(RegionResourcePluginValidateConverter))]
+        public List<RegionResourcePluginValidate>? PackageAssetValidationList { get; init; }
 
         [JsonPropertyName("language")]
         public string? Language { get; init; }

@@ -28,7 +28,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
                 await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
 
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback = 
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
                 new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
                 await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
 
@@ -58,40 +58,58 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 data = sophonResourceData
             };
 
-            ConvertPluginResources(sophonResourceData, hypPluginResource);
+            ConvertPluginResources(ref sophonResourceData, hypPluginResource);
             ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
 
             base.LauncherGameResource = sophonResourcePropRoot;
         }
 
         #region Convert Plugin Resources
-        private void ConvertPluginResources(RegionResourceGame sophonResourceData, HoYoPlayLauncherResources? hypPluginResources)
+        private void ConvertPluginResources(ref RegionResourceGame sophonResourceData, HoYoPlayLauncherResources? hypPluginResources)
         {
-            List<LauncherPackages>? hypPluginResourcesList = hypPluginResources?.Data?.PluginPackages;
-            if (hypPluginResourcesList == null || hypPluginResourcesList.Count == 0) return;
+            LauncherPackages? hypPluginPackage = hypPluginResources?.Data?
+                .PluginPackages?
+                .FirstOrDefault(x => x.GameDetail?
+                    .GameBiz?
+                    .Equals(PresetConfig?.LauncherBizName, StringComparison.OrdinalIgnoreCase) ?? false);
+
+            if (hypPluginPackage == null) return;
 
             List<RegionResourcePlugin> pluginCurrentPackageList = new List<RegionResourcePlugin>();
-
-            foreach (LauncherPackages hypPluginPackage in hypPluginResourcesList)
+            RegionResourcePlugin plugin = new RegionResourcePlugin()
             {
-                RegionResourcePlugin plugin = new RegionResourcePlugin()
-                {
-                    package = new RegionResourceVersion()
-                };
-                GuessAssignPluginConversion(plugin, hypPluginPackage);
-            }
+                package = new RegionResourceVersion()
+            };
+            GuessAssignPluginConversion(pluginCurrentPackageList, hypPluginPackage);
+            sophonResourceData.plugins = pluginCurrentPackageList;
         }
 
-        private void GuessAssignPluginConversion(RegionResourcePlugin sophonPlugin, LauncherPackages hypPlugin)
+        private void GuessAssignPluginConversion(List<RegionResourcePlugin> sophonPluginList, LauncherPackages hypPlugin)
         {
-            PackagePartition? packagePartition = null;
+            List<PackagePluginSections>? pluginSectionsList = hypPlugin.PluginPackageSections;
+            if ((pluginSectionsList?.Count ?? 0) == 0) return;
+            if (pluginSectionsList == null) return;
 
-            if (hypPlugin.MainPackage != null) packagePartition = hypPlugin.MainPackage;
-            else if (hypPlugin.PluginPackage != null) packagePartition = hypPlugin.PluginPackage;
+            foreach (PackagePluginSections firstPluginSection in pluginSectionsList)
+            {
+                if (firstPluginSection == null) continue;
 
-            if (packagePartition == null) return;
+                RegionResourcePlugin sophonPlugin = new RegionResourcePlugin();
+                sophonPlugin.version = firstPluginSection.Version;
+                // sophonPlugin.plugin_id = firstPluginSection.PluginId;
+                sophonPlugin.package = new RegionResourceVersion
+                {
+                    validate = firstPluginSection.PluginPackage?.PackageAssetValidationList,
+                    // channel_id = firstPluginSection.PluginId,
+                    md5 = firstPluginSection.PluginPackage?.PackageMD5Hash,
+                    url = firstPluginSection.PluginPackage?.PackageUrl,
+                    path = firstPluginSection.PluginPackage?.PackageUrl,
+                    size = firstPluginSection.PluginPackage?.PackageDecompressSize ?? 0,
+                    package_size = firstPluginSection.PluginPackage?.PackageSize ?? 0
+                };
 
-            // TODO: Implement package conversion
+                sophonPluginList.Add(sophonPlugin);
+            }
         }
         #endregion
 
@@ -100,99 +118,140 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         {
             if (hypLauncherPackagesList == null) throw new NullReferenceException("HoYoPlay package list is null!");
 
-            foreach (LauncherPackages hypRootPackage in hypLauncherPackagesList)
+            foreach (LauncherPackages hypRootPackage in hypLauncherPackagesList
+                .Where(x => x.GameDetail?.GameBiz?
+                    .Equals(PresetConfig?.LauncherBizName, StringComparison.OrdinalIgnoreCase) ?? false))
             {
-                // Assign main game package
-                string? version = hypRootPackage?.MainPackage?.CurrentVersion?.Version;
-                List<PackageDetails>? hypMainGamePackageList = hypRootPackage?.MainPackage?.CurrentVersion?.GamePackages;
-                if (hypMainGamePackageList != null)
+                // Assign and convert main game package (latest)
+                PackageResourceSections? hypMainPackageSection = hypRootPackage?.MainPackage?.CurrentVersion;
+                RegionResourceVersion sophonMainPackageSection = new RegionResourceVersion();
+                if (hypMainPackageSection != null)
+                    ConvertHYPSectionToResourceVersion(ref hypMainPackageSection, ref sophonMainPackageSection);
+                sophonPackageResources.game.latest = sophonMainPackageSection;
+
+                // Assign and convert main game package (diff)
+                if (hypRootPackage?.MainPackage?.Patches != null)
                 {
-                    // Main game package
-                    RegionResourceVersion? sophonMainGamePackage = null;
-                    PackageDetails? hypMainGamePackage = hypMainGamePackageList?.FirstOrDefault();
-                    if (hypMainGamePackage != null)
+                    sophonPackageResources.game.diffs = new List<RegionResourceVersion>();
+                    foreach (PackageResourceSections hypMainDiffPackageSection in hypRootPackage.MainPackage.Patches)
                     {
-                        sophonMainGamePackage = new RegionResourceVersion
+                        if (hypMainDiffPackageSection != null)
                         {
-                            md5 = hypMainGamePackage.PackageMD5Hash,
-                            url = hypMainGamePackage.PackageUrl,
-                            package_size = hypMainGamePackage.PackageSize ?? 0,
-                            size = hypMainGamePackage.PackageDecompressSize,
-                            version = version,
-                            decompressed_path = hypMainGamePackage.UnpackedBaseUrl,
-                            path = hypMainGamePackage.PackageUrl // As fallback for PackageUrl
-                        };
-                        sophonPackageResources.game.latest = sophonMainGamePackage;
-
-                        // TODO: Add main diff game package download
-
-                        // Main audio package
-                        List<PackageDetails>? hypMainAudioDetailList = hypRootPackage?.MainPackage?.CurrentVersion?.AudioPackages;
-                        if (hypMainAudioDetailList != null)
-                        {
-                            sophonMainGamePackage.voice_packs = new List<RegionResourceVersion>();
-                            foreach (PackageDetails? hypAudioGamePackage in hypMainAudioDetailList)
-                            {
-                                sophonMainGamePackage.voice_packs.Add(new RegionResourceVersion
-                                {
-                                    md5 = hypAudioGamePackage.PackageMD5Hash,
-                                    url = hypAudioGamePackage.PackageUrl,
-                                    package_size = hypAudioGamePackage.PackageSize ?? 0,
-                                    size = hypAudioGamePackage.PackageDecompressSize,
-                                    version = version,
-                                    decompressed_path = hypAudioGamePackage.UnpackedBaseUrl,
-                                    path = hypAudioGamePackage.PackageUrl // As fallback for PackageUrl
-                                });
-                            }
+                            PackageResourceSections hypMainDiffPackageSectionRef = hypMainDiffPackageSection;
+                            RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
+                            ConvertHYPSectionToResourceVersion(ref hypMainDiffPackageSectionRef, ref sophonResourceVersion);
+                            sophonPackageResources.game.diffs.Add(sophonResourceVersion);
                         }
                     }
                 }
 
-                // Assign preload game package
-                string? preloadVersion = hypRootPackage?.PreDownload?.CurrentVersion?.Version;
-                List<PackageDetails>? hypPreloadGamePackageList = hypRootPackage?.PreDownload?.CurrentVersion?.GamePackages;
-                if (hypPreloadGamePackageList != null)
+                // Assign and convert preload game package (latest)
+                PackageResourceSections? hypPreloadPackageSection = hypRootPackage?.PreDownload?.CurrentVersion;
+                RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
+                if (hypPreloadPackageSection != null)
+                    ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
+                sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
+
+                // Assign and convert preload game package (diff)
+                if (hypRootPackage?.PreDownload?.Patches != null)
                 {
-                    // Preload game package
-                    RegionResourceVersion? sophonPreloadGamePackage = null;
-                    PackageDetails? hypPreloadGamePackage = hypPreloadGamePackageList?.FirstOrDefault();
-                    if (hypPreloadGamePackage != null)
+                    sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
+                    foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload.Patches)
                     {
-                        sophonPreloadGamePackage = new RegionResourceVersion
+                        if (hypPreloadDiffPackageSection != null)
                         {
-                            md5 = hypPreloadGamePackage.PackageMD5Hash,
-                            url = hypPreloadGamePackage.PackageUrl,
-                            package_size = hypPreloadGamePackage.PackageSize ?? 0,
-                            size = hypPreloadGamePackage.PackageDecompressSize,
-                            version = preloadVersion,
-                            decompressed_path = hypPreloadGamePackage.UnpackedBaseUrl,
-                            path = hypPreloadGamePackage.PackageUrl // As fallback for PackageUrl
-                        };
-                        sophonPackageResources.pre_download_game.latest = sophonPreloadGamePackage;
-
-                        // TODO: Add preload diff game package download
-
-                        // Preload audio package
-                        List<PackageDetails>? hypPreloadAudioDetailList = hypRootPackage?.PreDownload?.CurrentVersion?.AudioPackages;
-                        if (hypPreloadAudioDetailList != null)
-                        {
-                            sophonPreloadGamePackage.voice_packs = new List<RegionResourceVersion>();
-                            foreach (PackageDetails? hypAudioGamePackage in hypPreloadAudioDetailList)
-                            {
-                                sophonPreloadGamePackage.voice_packs.Add(new RegionResourceVersion
-                                {
-                                    md5 = hypAudioGamePackage.PackageMD5Hash,
-                                    url = hypAudioGamePackage.PackageUrl,
-                                    package_size = hypAudioGamePackage.PackageSize ?? 0,
-                                    size = hypAudioGamePackage.PackageDecompressSize,
-                                    version = version,
-                                    decompressed_path = hypAudioGamePackage.UnpackedBaseUrl,
-                                    path = hypAudioGamePackage.PackageUrl // As fallback for PackageUrl
-                                });
-                            }
+                            PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
+                            RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
+                            ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef, ref sophonResourceVersion);
+                            sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
                         }
                     }
                 }
+            }
+        }
+
+        private void ConvertHYPSectionToResourceVersion(ref PackageResourceSections hypPackageResourceSection, ref RegionResourceVersion sophonResourceVersion)
+        {
+            // Convert game packages
+            RegionResourceVersion packagesVersion = new RegionResourceVersion();
+            DelegatePackageResConversionMode(ref packagesVersion, hypPackageResourceSection?.GamePackages, hypPackageResourceSection?.AudioPackages, hypPackageResourceSection?.Version, hypPackageResourceSection?.ResourceListUrl);
+            sophonResourceVersion = packagesVersion;
+        }
+
+        private delegate void PackageResConversionModeDelegate(ref RegionResourceVersion sophonPackageVersion, List<PackageDetails> hypPackageList,
+            string? version, string? resourceListUrl);
+
+        private void DelegatePackageResConversionMode(ref RegionResourceVersion sophonPackageVersion, List<PackageDetails>? hypGamePackageList, List<PackageDetails>? hypAudioPackageList,
+            string? version, string? resourceListUrl)
+        {
+            // If the main package list is not null or empty, then process
+            if (hypGamePackageList != null && hypGamePackageList.Count != 0)
+            {
+                // Delegate the conversion mode for the resource, then process it
+                PackageResConversionModeDelegate conversionDelegate = hypGamePackageList.Count > 1 ? ConvertMultiPackageResource : ConvertSinglePackageResource;
+                conversionDelegate(ref sophonPackageVersion, hypGamePackageList, version, resourceListUrl);
+            }
+
+            // If the audio package list is not null or empty, then process
+            if (hypAudioPackageList != null && hypAudioPackageList.Count != 0)
+            {
+                sophonPackageVersion.voice_packs = new List<RegionResourceVersion>();
+                foreach (PackageDetails hypAudioPackage in hypAudioPackageList)
+                {
+                    sophonPackageVersion.voice_packs.Add(new RegionResourceVersion
+                    {
+                        url = hypAudioPackage.PackageUrl,
+                        path = hypAudioPackage.PackageUrl, // As fallback for PackageUrl
+                        size = hypAudioPackage.PackageDecompressSize,
+                        package_size = hypAudioPackage.PackageSize ?? 0,
+                        md5 = hypAudioPackage.PackageMD5Hash,
+                        language = hypAudioPackage.Language
+                    });
+                }
+            }
+        }
+
+        private void ConvertSinglePackageResource(ref RegionResourceVersion sophonPackageVersion, List<PackageDetails> hypPackageList,
+            string? version, string? resourceListUrl)
+        {
+            PackageDetails packageDetail = hypPackageList[0];
+            sophonPackageVersion.url = packageDetail.PackageUrl;
+            sophonPackageVersion.path = packageDetail.PackageUrl; // As fallback for PackageUrl
+            sophonPackageVersion.size = packageDetail.PackageDecompressSize;
+            sophonPackageVersion.package_size = packageDetail.PackageSize ?? 0;
+            sophonPackageVersion.md5 = packageDetail.PackageMD5Hash;
+            sophonPackageVersion.entry = PresetConfig?.GameExecutableName;
+            sophonPackageVersion.version = version;
+            sophonPackageVersion.decompressed_path = resourceListUrl;
+        }
+
+        private void ConvertMultiPackageResource(ref RegionResourceVersion sophonPackageVersion, List<PackageDetails> hypPackageList,
+            string? version, string? resourceListUrl)
+        {
+            long totalSize = hypPackageList.Sum(x => x.PackageDecompressSize);
+            long totalPackageSize = hypPackageList.Sum(x => x.PackageSize ?? 0);
+
+            sophonPackageVersion.url = string.Empty;
+            sophonPackageVersion.path = string.Empty; // As fallback for PackageUrl
+            sophonPackageVersion.md5 = string.Empty;
+            sophonPackageVersion.size = totalSize;
+            sophonPackageVersion.package_size = totalPackageSize;
+            sophonPackageVersion.entry = PresetConfig?.GameExecutableName;
+            sophonPackageVersion.version = version;
+            sophonPackageVersion.decompressed_path = resourceListUrl;
+
+            sophonPackageVersion.segments = new List<RegionResourceVersion>();
+
+            foreach (PackageDetails packageDetail in hypPackageList)
+            {
+                sophonPackageVersion.segments.Add(new RegionResourceVersion
+                {
+                    url = packageDetail.PackageUrl,
+                    path = packageDetail.PackageUrl, // As fallback for PackageUrl
+                    size = packageDetail.PackageDecompressSize,
+                    package_size = packageDetail.PackageSize ?? 0,
+                    md5 = packageDetail.PackageMD5Hash
+                });
             }
         }
         #endregion
