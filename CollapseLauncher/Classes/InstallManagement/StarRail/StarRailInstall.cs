@@ -165,19 +165,26 @@ namespace CollapseLauncher.InstallManager.StarRail
                 // Else, show dialog to choose the language ID to be installed
                 else
                 {
-                    langID = await Dialog_ChooseAudioLanguage(_parentUI, langStrings);
-                    // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                    langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
+                    (List<int> addedVO, int setAsDefaultVO) = await Dialog_ChooseAudioLanguageChoice(_parentUI, langStrings, 2);
+                    if (addedVO == null || setAsDefaultVO < 0)
+                        throw new TaskCanceledException();
 
-                    package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
+                    for (int i = 0; i < addedVO.Count; i++)
+                    {
+                        langID = addedVO[i];
+                        // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                        langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
+
+                        package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
                         { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                    packageList.Add(package);
+                        packageList.Add(package);
+
+                        LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                                     LogType.Default, true);
+                    }
 
                     // Set the voice language ID to value given
-                    _gameVersionManager.GamePreset.SetVoiceLanguageID(langID);
-
-                    LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})",
-                                 LogType.Default, true);
+                    _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
                 }
             }
             

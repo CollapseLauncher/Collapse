@@ -100,30 +100,135 @@ namespace CollapseLauncher.Dialogs
                         null
                 );
 
-        public static async Task<int> Dialog_ChooseAudioLanguage(UIElement Content, List<string> langlist)
+        public static async Task<(List<int>, int)> Dialog_ChooseAudioLanguageChoice(UIElement Content, List<string> langlist, int defaultIndex = 2)
         {
-            // Default: 2 (Japanese)
-            int index = 2;
-            StackPanel Panel = UIElementExtensions.CreateStackPanel();
-            Panel.AddElementToStackPanel(new TextBlock()
+            bool[] choices = new bool[langlist.Count];
+            int choiceAsDefault = defaultIndex;
+            StackPanel parentPanel = UIElementExtensions.CreateStackPanel();
+
+            parentPanel.AddElementToStackPanel(new TextBlock()
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 16)
             }.WithMargin(0d, 0d, 0d, 16d));
-            ComboBox LangBox = Panel.AddElementToStackPanel(new ComboBox()
+            parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+            RadioButtons defaultChoiceRadioButton = new RadioButtons()
+                .WithHorizontalAlignment(HorizontalAlignment.Center);
+            defaultChoiceRadioButton.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+
+            parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
+
+            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
-                PlaceholderText = Lang._Dialogs.ChooseAudioLangSelectPlaceholder,
-                Width = 256,
-                ItemsSource = langlist,
-                SelectedIndex = index,
-                HorizontalAlignment = HorizontalAlignment.Center,
-            }.WithHorizontalAlignment(HorizontalAlignment.Center));
+                Title = Lang._Dialogs.ChooseAudioLangTitle,
+                Content = parentPanel,
+                CloseButtonText = Lang._Misc.Cancel,
+                PrimaryButtonText = Lang._Misc.Next,
+                SecondaryButtonText = null,
+                DefaultButton = ContentDialogButton.Primary,
+                Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
+            };
 
-            await SpawnDialog(Lang._Dialogs.ChooseAudioLangTitle, Panel, Content, null, Lang._Misc.Next, null, ContentDialogButton.Primary, ContentDialogTheme.Informational);
-            index = LangBox.SelectedIndex;
+            for (int i = 0; i < langlist.Count; i++)
+            {
+                Grid checkBoxGrid = UIElementExtensions.CreateGrid()
+                    .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Auto))
+                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .WithMargin(0, 0, 0, 8);
 
-            return index;
+                CheckBox checkBox = new CheckBox() { Content = checkBoxGrid };
+                checkBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+                checkBox.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+                checkBox.VerticalAlignment = VerticalAlignment.Center;
+                checkBox.VerticalContentAlignment = VerticalAlignment.Center;
+
+                TextBlock useAsDefaultText = new TextBlock
+                {
+                    Text = "Use as Default",
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    HorizontalTextAlignment = TextAlignment.Right,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+                Grid iconTextGrid = UIElementExtensions.CreateIconTextGrid(langlist[i], "\uf1ab", iconSize: 14, textSize: 14, iconFontFamily: "FontAwesomeSolid");
+                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
+                checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
+                iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
+
+                RadioButton radioButton = new RadioButton { Content = checkBox, Style = UIElementExtensions.GetApplicationResource<Style>("AudioLanguageSelectionRadioButtonStyle") }
+                .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                .WithVerticalAlignment(VerticalAlignment.Center);
+
+                defaultChoiceRadioButton.Items.Add(radioButton);
+
+                radioButton.Tag = i;
+                checkBox.Tag = i;
+
+                radioButton.Checked += (sender, _) =>
+                {
+                    choiceAsDefault = (int)(sender as RadioButton).Tag;
+                    checkBox.IsChecked = true;
+                };
+
+                if (i == defaultIndex)
+                {
+                    choices[i] = true;
+                    checkBox.IsChecked = true;
+                    defaultChoiceRadioButton.SelectedIndex = i;
+                }
+
+                checkBox.Checked += (sender, _) =>
+                {
+                    int thisIndex = (int)(sender as FrameworkElement).Tag;
+                    choices[thisIndex] = true;
+                    radioButton.IsEnabled = true;
+
+                    bool isHasAnyChoices = choices.Any(x => x);
+                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                    if (defaultChoiceRadioButton.SelectedIndex < 0)
+                        defaultChoiceRadioButton.SelectedIndex = thisIndex;
+                };
+                checkBox.Unchecked += (sender, _) =>
+                {
+                    int thisIndex = (int)(sender as FrameworkElement).Tag;
+                    choices[thisIndex] = false;
+                    radioButton.IsChecked = false;
+
+                    bool isHasAnyChoices = choices.Any(x => x);
+                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+
+                    // TODO: Find a better way rather than this SPAGHEETTTTT CODE
+                    if (defaultChoiceRadioButton.SelectedIndex < 0 && isHasAnyChoices)
+                    {
+                        if (isHasAnyChoices)
+                        {
+                            for (int i = 0; i < choices.Length; i++)
+                            {
+                                if (choices[i])
+                                {
+                                    defaultChoiceRadioButton.SelectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+
+            ContentDialogResult dialogResult = await dialog.ShowAsync();
+            if (dialogResult == ContentDialogResult.None)
+                return (null, -1);
+
+            List<int> returnList = new List<int>();
+            for (int i = 0; i < choices.Length; i++)
+            {
+                if (choices[i])
+                    returnList.Add(i);
+            }
+
+            return (returnList, choiceAsDefault);
         }
 
         public static async Task<ContentDialogResult> Dialog_GraphicsVeryHighWarning(UIElement Content) =>

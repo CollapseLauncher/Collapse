@@ -104,15 +104,26 @@ internal class GenshinSophonInstall : GenshinInstall
                 SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
             sophonInfoPairList.Add(sophonMainInfoPair);
 
-            // Run the audio dialog question
-            var voLanguageList   = GetAudioLanguageStringList(sophonMainInfoPair.OtherSophonData);
-            var voLangIndex      = await SimpleDialogs.Dialog_ChooseAudioLanguage(_parentUI, voLanguageList);
-            var voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-            SophonVOLanguageList.Add(voLangLocaleCode);
+            List<string> voLanguageList = GetAudioLanguageStringList(sophonMainInfoPair.OtherSophonData);
 
-            // Get the info pair based on info provided above (for the selected VO audio file)
-            var sophonSelectedVoLang = sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
-            sophonInfoPairList.Add(sophonSelectedVoLang);
+            // Run the audio dialog question
+            (List<int> addedVO, int setAsDefaultVO) = await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList, 2);
+            if (addedVO == null || setAsDefaultVO < 0)
+                throw new TaskCanceledException();
+            
+            for (int i = 0; i < addedVO.Count; i++)
+            {
+                int voLangIndex = addedVO[i];
+                string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                SophonVOLanguageList.Add(voLangLocaleCode);
+            
+                // Get the info pair based on info provided above (for the selected VO audio file)
+                SophonChunkManifestInfoPair sophonSelectedVoLang = sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                sophonInfoPairList.Add(sophonSelectedVoLang);
+            }
+            
+            // Set the voice language ID to value given
+            _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
 
             // Get the remote total size and current total size
             _progressTotalCount       = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
