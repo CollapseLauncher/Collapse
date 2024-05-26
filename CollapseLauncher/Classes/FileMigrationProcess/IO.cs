@@ -26,8 +26,12 @@ namespace CollapseLauncher
             await using (FileStream outputStream = outputFile!.Exists && outputFile.Length <= inputFile.Length ?
                              outputFile.Open(FileMode.Open) : outputFile.Create())
             {
+                // Set the output file size to inputStream's if the length is more than inputStream
+                if (outputStream.Length > inputStream.Length)
+                    outputStream.SetLength(inputStream.Length);
+
                 // Just in-case if the previous move is incomplete, then update and seek to the last position.
-                if (outputFile.Length <= inputStream.Length && outputFile.Length >= bufferSize)
+                if (outputStream.Length <= inputStream.Length && outputStream.Length >= bufferSize)
                 {
                     // Do check by comparing the first and last 128K data of the file
                     Memory<byte> firstCompareInputBytes = new byte[bufferSize];
