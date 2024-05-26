@@ -2354,20 +2354,41 @@ namespace CollapseLauncher.Pages
                 if (IsSidePanelCurrentlyScaledOut) return;
                 if (!IsPointerInsideSidePanel) return;
 
-                Compositor compositor = this.GetElementCompositor();
-
-                float toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
-                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
-                Vector3 toTranslate = new Vector3(0, -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -8, elementPanel.Translation.Z);
-
                 MainPage.CurrentBackgroundHandler?.Dimm();
                 HideImageEventImg(true);
 
-                await elementPanel.StartAnimation(
-                    TimeSpan.FromSeconds(0.25),
-                    compositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate, TimeSpan.FromSeconds(0.05)),
-                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale))
-                    );
+                var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+                var storyboard = new Storyboard();
+                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                transform.CenterY = elementPanel.ActualHeight + 8;
+                var cubicEaseOut = new CubicEase()
+                {
+                    EasingMode = EasingMode.EaseOut
+                };
+
+                var scaleXAnim = new DoubleAnimation
+                {
+                    From           = transform.ScaleX,
+                    To             = toScale,
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    EasingFunction = cubicEaseOut
+                };
+                Storyboard.SetTarget(scaleXAnim, transform);
+                Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
+                storyboard.Children.Add(scaleXAnim);
+
+                var scaleYAnim = new DoubleAnimation
+                {
+                    From           = transform.ScaleY,
+                    To             = toScale,
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    EasingFunction = cubicEaseOut
+                };
+                Storyboard.SetTarget(scaleYAnim, transform);
+                Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
+                storyboard.Children.Add(scaleYAnim);
+
+                await storyboard.BeginAsync();
                 IsSidePanelCurrentlyScaledOut = true;
             }
         }
@@ -2378,20 +2399,41 @@ namespace CollapseLauncher.Pages
             if (sender is FrameworkElement elementPanel)
             {
                 if (!IsSidePanelCurrentlyScaledOut) return;
-                Compositor compositor = this.GetElementCompositor();
-
-                float toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
-                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
-                Vector3 toTranslate = new Vector3(0, -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -8, elementPanel.Translation.Z);
 
                 MainPage.CurrentBackgroundHandler?.Undimm();
                 HideImageEventImg(false);
 
-                await elementPanel.StartAnimation(
-                    TimeSpan.FromSeconds(0.25),
-                    compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate, TimeSpan.FromSeconds(0.25)),
-                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
-                    );
+                var storyboard = new Storyboard();
+                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                transform.CenterY = elementPanel.ActualHeight + 8;
+                var cubicEaseOut = new CubicEase()
+                {
+                    EasingMode = EasingMode.EaseOut
+                };
+
+                var scaleXAnim = new DoubleAnimation
+                {
+                    From           = transform.ScaleX,
+                    To             = 1,
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    EasingFunction = cubicEaseOut
+                };
+                Storyboard.SetTarget(scaleXAnim, transform);
+                Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
+                storyboard.Children.Add(scaleXAnim);
+
+                var scaleYAnim = new DoubleAnimation
+                {
+                    From           = transform.ScaleY,
+                    To             = 1,
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    EasingFunction = cubicEaseOut
+                };
+                Storyboard.SetTarget(scaleYAnim, transform);
+                Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
+                storyboard.Children.Add(scaleYAnim);
+
+                await storyboard.BeginAsync();
                 IsSidePanelCurrentlyScaledOut = false;
             }
         }
