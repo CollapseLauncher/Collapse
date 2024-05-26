@@ -100,7 +100,7 @@ namespace CollapseLauncher
             if (this.IsSameOutputDrive)
             {
                 Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file in the same drive from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
-                inputPathInfo.MoveTo(outputPathInfo.FullName);
+                inputPathInfo.MoveTo(outputPathInfo.FullName, true);
                 UpdateSizeProcessed(uiRef, inputPathInfo.Length);
             }
             else
@@ -148,7 +148,7 @@ namespace CollapseLauncher
                     if (this.IsSameOutputDrive)
                     {
                         Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
-                        inputFileInfo.MoveTo(outputTargetPath);
+                        inputFileInfo.MoveTo(outputTargetPath, true);
                         UpdateSizeProcessed(uiRef, inputFileInfo.Length);
                     }
                     else
