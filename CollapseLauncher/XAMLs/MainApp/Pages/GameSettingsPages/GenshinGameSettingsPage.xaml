@@ -651,14 +651,18 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock MaxWidth="128"
-                                                   Margin="0,0,0,8"
+                                        <TextBlock Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                    Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
                                                    TextWrapping="Wrap" />
-                                        <StackPanel Orientation="Horizontal">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="16" />
+                                            </Grid.ColumnDefinitions>
                                             <ComboBox x:Name="GlobalIlluminationSelector"
+                                                      Grid.Column="0"
                                                       Margin="0,0,0,8"
                                                       HorizontalAlignment="Stretch"
                                                       CornerRadius="14"
@@ -668,7 +672,8 @@
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecHigh}" />
                                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecExtreme}" />
                                             </ComboBox>
-                                            <Button Width="16"
+                                            <Button Grid.Column="1"
+                                                    Width="16"
                                                     Height="24"
                                                     Margin="4,-10,0,0"
                                                     Padding="0"
@@ -694,7 +699,7 @@
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
-                                        </StackPanel>
+                                        </Grid>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
