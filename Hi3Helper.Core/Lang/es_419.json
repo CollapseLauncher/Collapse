@@ -686,7 +686,7 @@
     "InstallDataDownloadResumeTitle": "Reanudar la Descarga?",
     "InstallDataDownloadResumeSubtitle": "Has descargado {0}/{1} del juego anteriormente.\n\n¿Deseas continuar la descarga?",
     "InsufficientDiskTitle": "Espacio de Almacenamiento Insuficiente",
-    "InsufficientDiskSubtitle": "No tienes suficiente espacio libre para instalar este juego en el disco duro{2}!\n\nEspacio libre: {0}\nEspacio necesario: {1}.\n\nPor favor, asegúrese de tener suficiente espacio en eldisco duro antes de proceder con la instalación.",
+    "InsufficientDiskSubtitle": "¡No tienes suficiente espacio libre para instalar este juego en tu Unidad {2}!\n\nEspacio Disponible: {0}\nEspacio Requerido: {1}\n\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
     "RelocateFolderTitle": "Reubicar Carpeta de Datos de la Aplicación",
     "RelocateFolderSubtitle": "Actualmente estás usando esta carpeta como la Carpeta de Datos de la Aplicación:\n\n {0}\n\n¿Deseas cambiar su ubicación?",
     "UninstallGameTitle": "Desinstalando juego: {0}",
@@ -749,7 +749,7 @@
     "ResetKbShortcutsSubtitle": "Esto significa que cada acceso directo se cambiará a su combinación de teclas predeterminada. \n\n¿Desea continuar?\n\nNota: Esto no afecta cómo funciona Collapse y aún puede cambiar la combinación de accesos directos accediendo al menú de Accesos directos del teclado.",
 
     "OperationErrorDiskSpaceInsufficientTitle": "¡El Espacio Disponible en Disco: {0} es insuficiente!",
-    "OperationErrorDiskSpaceInsufficientMsg": "¡No tienes suficiente espacio libre para hacer el proceso en tu Disco {2}!\r\n\r\nEspacio Disponible: {0}\r\nEspacio Requerido: {1}\r\n\r\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
+    "OperationErrorDiskSpaceInsufficientMsg": "¡No tienes suficiente espacio libre para hacer el proceso en tu Unidad {2}!\r\n\r\nEspacio Disponible: {0}\r\nEspacio Requerido: {1}\r\n\r\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
 
     "OperationWarningNotCancellableTitle": "¡Precaución: Esta operación NO SE PUEDE CANCELAR!",
     "OperationWarningNotCancellableMsg1": "Deberías verificar que no tienes tareas pesadas corriendo en tu PC para evitar posibles problemas mientras el proceso se esté ejecutando. Recuerda que ",
