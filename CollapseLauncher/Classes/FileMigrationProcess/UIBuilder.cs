@@ -9,11 +9,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Media;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.UI;
-using Windows.UI.Text;
 
 namespace CollapseLauncher
 {
@@ -38,7 +36,7 @@ namespace CollapseLauncher
             // ReSharper disable once UnusedVariable
             TextBlock locateFolderSubtitle = mainGrid.AddElementToGridColumn(new TextBlock
             {
-                FontSize = 16d,
+                FontSize = 14d,
                 TextWrapping = TextWrapping.Wrap,
                 Text = Locale.Lang._FileMigrationProcess!.LocateFolderSubtitle
             }, 0, 2).WithHorizontalAlignment(HorizontalAlignment.Stretch);
@@ -49,22 +47,21 @@ namespace CollapseLauncher
                 IsRightTapEnabled = false,
                 PlaceholderText = Locale.Lang._FileMigrationProcess.ChoosePathTextBoxPlaceholder,
                 Text = string.IsNullOrEmpty(outputPath) ? null : outputPath
-            }, 1).WithWidth(500d).WithMargin(0d, 12d, 0d, 0d);
+            }, 1).WithMargin(0d, 12d, 0d, 0d)
+            .WithMinWidth(256d)
+            .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+            .WithHorizontalContentAlignment(HorizontalAlignment.Stretch);
 
             Button choosePathButton = mainGrid
                 .AddElementToGridRowColumn(UIElementExtensions
                     .CreateButtonWithIcon<Button>(Locale.Lang._FileMigrationProcess.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
                     1, 1).WithMargin(8d, 12d, 0d, 0d);
 
-            TextBlock warningText = mainGrid.AddElementToGridRowColumn(new TextBlock
+            InfoBar warningTextInfoBar = mainGrid.AddElementToGridRowColumn(new InfoBar()
             {
-                FontStyle = FontStyle.Italic,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
-                Visibility = Visibility.Collapsed,
-                TextWrapping = TextWrapping.Wrap,
-                Text = ""
-            }, 2, 0, 0, 2).WithMargin(0d, 12d, 0d, 0d);
+                IsClosable = true,
+                IsOpen = false
+            }, 2, 0, 0, 2).WithMargin(0, 16, 0, 0);
 
             mainDialogWindow.Content = mainGrid;
 
@@ -90,12 +87,17 @@ namespace CollapseLauncher
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathUnselected);
                     return;
                 }
+                if (parentPath.StartsWith(inputPath, StringComparison.OrdinalIgnoreCase) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
+                {
+                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathIdentical);
+                    return;
+                }
                 if (!(File.Exists(parentPath) || Directory.Exists(parentPath)))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNotExist);
                     return;
                 }
-                if (!ConverterTool.IsUserHasPermission(parentPath) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
+                if (!ConverterTool.IsUserHasPermission(parentPath))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNoPermission);
                     return;
@@ -106,9 +108,12 @@ namespace CollapseLauncher
             void ToggleWarningText(string text = null)
             {
                 bool canContinue = string.IsNullOrEmpty(text);
-                warningText!.Visibility = canContinue ? Visibility.Collapsed : Visibility.Visible;
-                warningText!.Text = text;
                 mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang!._Misc!.Next : null;
+
+                warningTextInfoBar.Title = Locale.Lang!._FileMigrationProcess!.ChoosePathErrorTitle;
+                warningTextInfoBar.Severity = canContinue ? InfoBarSeverity.Success : InfoBarSeverity.Error;
+                warningTextInfoBar.IsOpen = !canContinue;
+                warningTextInfoBar.Message = text;
             }
 
             ContentDialogResult mainDialogWindowResult = await mainDialogWindow.QueueAndSpawnDialog();
@@ -144,7 +149,8 @@ namespace CollapseLauncher
                     Text = Locale.Lang!._FileMigrationProcess!.PathActivityPanelTitle
                 });
             TextBlock pathActivitySubtitle = pathActivityPanel.AddElementToStackPanel(
-                new TextBlock {
+                new TextBlock
+                {
                     Text = Locale.Lang._Misc!.Idle,
                     FontSize = 18d,
                     TextTrimming = TextTrimming.CharacterEllipsis

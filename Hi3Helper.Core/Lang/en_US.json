@@ -799,6 +799,8 @@
     "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
     "ChoosePathTextBoxPlaceholder": "Choose the target path...",
     "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorTitle": "Error has Occured!",
+    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
     "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
     "ChoosePathErrorPathNotExist": "Path does not exist!",
     "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"

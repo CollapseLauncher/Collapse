@@ -106,7 +106,7 @@ namespace CollapseLauncher
                 return returnSize;
             });
 
-            if (IsSameOutputDrive == (inputDriveInfo.Name == outputDriveInfo.Name))
+            if (IsSameOutputDrive = (inputDriveInfo.Name == outputDriveInfo.Name))
                 return true;
 
             bool isSpaceSufficient = outputDriveInfo.TotalFreeSpace > TotalFileSize;
