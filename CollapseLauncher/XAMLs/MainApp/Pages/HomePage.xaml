@@ -471,11 +471,10 @@
               VerticalAlignment="Bottom"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited">
+            <Grid.RenderTransform>
+                <CompositeTransform/>
+            </Grid.RenderTransform>
             <StackPanel x:Name="ImageCarouselAndPostPanel"
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
                         Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"
