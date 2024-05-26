@@ -199,16 +199,36 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         {
             EnsurePresetConfigNotNull();
 
-            string? localeLang  = Locale.Lang.LanguageID.ToLower();
-            bool    isMultilingual = PresetConfig!.LauncherSpriteURLMultiLang ?? false;
+            string localeLang     = Locale.Lang.LanguageID.ToLower();
+            bool   isMultilingual = PresetConfig!.LauncherSpriteURLMultiLang ?? false;
+            
+            // WORKAROUND: Certain language is not supported by the API and will return null/empty response.
+            // Use other locale to prevent crashes/empty background image
+            switch (localeLang)
+            {
+                case "es-419":
+                    localeLang = "es-es";
+                    break;
+                case "pt-br":
+                    localeLang = "pt-pt";
+                    break;
+                // case "pl-pl":
+                //     localeLang = "en-us";
+                //     break;
+                // case "uk-ua":
+                //     localeLang = "en-us";
+                //     break;
+            }
 
             LauncherGameNews? regionResourceProp =
                 await LoadLauncherNewsInner(isMultilingual, localeLang, PresetConfig, onTimeoutRoutine, token);
             int backgroundVersion = regionResourceProp?.Content?.Background?.BackgroundVersion ?? 5;
 
-            if (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai)
+            // NOTE: Check if background is null (not supported by API), if it is then reload the news with fallback language (en-us).
+            if (regionResourceProp?.Content?.Background == null || (backgroundVersion <= 4 && PresetConfig.GameType == GameNameType.Honkai))
             {
-                string? localeFallback = PresetConfig.LauncherSpriteURLMultiLangFallback ?? "en-us";
+                Logger.LogWriteLine("[LauncherApiBase::LoadLauncherNews()] Using en-us fallback for game news!", LogType.Warning, true);
+                string localeFallback = PresetConfig.LauncherSpriteURLMultiLangFallback ?? "en-us";
                 regionResourceProp =
                     await LoadLauncherNewsInner(true, localeFallback, PresetConfig, onTimeoutRoutine, token);
             }
@@ -263,7 +283,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 return deviceId;
 
             const string regKeyCryptography = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography";
-            string? guid = (string?)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ??
+            string guid = (string?)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ??
                            Guid.NewGuid().ToString();
             deviceId = guid.Replace("-", "") + (long)DateTime.Now.Subtract(DateTime.UnixEpoch).TotalMilliseconds;
             Registry.SetValue(preset.InstallRegistryLocation, "UUID", deviceId);
