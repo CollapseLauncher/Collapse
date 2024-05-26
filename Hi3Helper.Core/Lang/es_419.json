@@ -799,6 +799,8 @@
     "LocateFolderSubtitle": "Selecciona la ubicación deseada para mover el archivo/carpeta.",
     "ChoosePathTextBoxPlaceholder": "Elija la carpeta de destino...",
     "ChoosePathButton": "Seleccionar Carpeta",
+    "ChoosePathErrorTitle": "¡Se ha producido un Error!",
+    "ChoosePathErrorPathIdentical": "¡La carpeta de destino está dentro o es idéntica a la ubicación actual!\r\nPor favor, elija otra carpeta.",
     "ChoosePathErrorPathUnselected": "¡Por favor, Selecciona una carpeta antes de continuar!",
     "ChoosePathErrorPathNotExist": "¡Esta ubicación no existe!",
     "ChoosePathErrorPathNoPermission": "¡No tienes los permisos para acceder a esta carpeta! Por favor, selecciona otra ubicación."
@@ -892,7 +894,7 @@
   },
 
   "_UpdatePage": {
-    "PageTitle1": "¡NUEVA",
+    "PageTitle1": "NUEVA",
     "PageTitle2": "ACTUALIZACIÓN DISPONIBLE!",
     "VerCurLabel": "Versión Actual:",
     "VerNewLabel": "Nueva Versión:",
