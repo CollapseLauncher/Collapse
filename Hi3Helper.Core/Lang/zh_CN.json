@@ -686,7 +686,7 @@
     "InstallDataDownloadResumeTitle": "修复下载？",
     "InstallDataDownloadResumeSubtitle": "您以前已经下载了游戏的 {0}/{1}。\n\n您想要继续下载吗？",
     "InsufficientDiskTitle": "磁盘空间不足",
-    "InsufficientDiskSubtitle": "您没有足够的可用空间在 {2} 驱动器上安装此游戏！\r\n\r\n可用空间：{0}\r\n所需空间：{1}。\r\n\r\n在继续安装前，请确保您有足够的磁盘空间。",
+    "InsufficientDiskSubtitle": "你没有足够的可用空间在 {2} 驱动器上安装此游戏！\r\n\r\n剩余空间： {0}\r\n所需空间： {1}\r\n\r\n在继续安装之前，请确保硬盘有足够的空间。",
     "RelocateFolderTitle": "重新选择程序数据文件夹",
     "RelocateFolderSubtitle": "您目前正在使用此文件夹作为您的应用程序数据文件夹：\n\n {0}\n\n您想要迁移它吗？",
     "UninstallGameTitle": "卸载游戏：{0}",
@@ -799,6 +799,8 @@
     "LocateFolderSubtitle": "选择将文件/文件夹移动到目标路径的位置。",
     "ChoosePathTextBoxPlaceholder": "选择目标路径……",
     "ChoosePathButton": "选择目标",
+    "ChoosePathErrorTitle": "发生错误！",
+    "ChoosePathErrorPathIdentical": "您选择的输出路径位于当前位置内或与当前位置相同！\r\n请移动到其他位置！",
     "ChoosePathErrorPathUnselected": "请在继续之前选择您的路径！",
     "ChoosePathErrorPathNotExist": "路径不存在！",
     "ChoosePathErrorPathNoPermission": "您没有访问此位置的权限！请选择其他位置！"
