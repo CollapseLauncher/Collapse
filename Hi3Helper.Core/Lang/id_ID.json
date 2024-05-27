@@ -686,7 +686,7 @@
     "InstallDataDownloadResumeTitle": "Lanjutkan Unduhan?",
     "InstallDataDownloadResumeSubtitle": "Kamu telah mengunduh {0} dari total ukuran game sebesar {1} sebelumnya.\r\n\r\nMau lanjut?",
     "InsufficientDiskTitle": "Ruang Penyimpanan Tidak Cukup",
-    "InsufficientDiskSubtitle": "Kamu tidak memiliki ruang yang cukup untuk memasang game ini pada disk drive {2}-mu!\r\n\r\nSisa Ruang: {0}\r\nRuang yang Dibutuhkan: {1}.\r\n\r\nPastikan kamu punya cukup ruang untuk memasang game ini.",
+    "InsufficientDiskSubtitle": "Kamu tidak memiliki ruang yang cukup pada drive {2}-mu!\r\n\r\nRuang tersedia: {0}\r\nRuang yang dibutuhkan: {1}\r\n\r\nPastikan bahwa kamu memiliki ruang yang cukup pada penyimpanan yang digunakan sebelum melanjutkan proses instalasi.",
     "RelocateFolderTitle": "Pindahkan Folder Data Aplikasi",
     "RelocateFolderSubtitle": "Kamu sedang menggunakan folder ini untuk lokasi data aplikasi:\n\n {0}\n\nApakah kamu ingin ganti ke lokasi lain?",
     "UninstallGameTitle": "Hapus Game: {0}",
@@ -799,6 +799,8 @@
     "LocateFolderSubtitle": "Pilih lokasi untuk memindahkan file/folder ke dalam lokasi target.",
     "ChoosePathTextBoxPlaceholder": "Pilih lokasi target...",
     "ChoosePathButton": "Pilih Lokasi",
+    "ChoosePathErrorTitle": "Error Terjadi!",
+    "ChoosePathErrorPathIdentical": "Output path yang kamu pilih identik atau masih sama di dalam lokasi saat ini!\r\nSilahkan pilih lokasi lainnya!",
     "ChoosePathErrorPathUnselected": "Pilih lokasi sebelum melanjutkan!",
     "ChoosePathErrorPathNotExist": "Lokasi tidak ditemukan!",
     "ChoosePathErrorPathNoPermission": "Kamu tidak memiliki izin untuk mengakses lokasi ini! Silahkan pilih lokasi lain!"
