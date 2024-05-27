@@ -194,6 +194,7 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringListConverter))]
         public List<string>? GameDispatchArrayURL { get; init; }
 
+        public bool? IsPluginUpdateEnabled      { get; init; } = false;
         public bool? IsCacheUpdateEnabled       { get; init; }
         public bool? IsConvertible              { get; init; }
         public bool? IsExperimental             { get; init; }

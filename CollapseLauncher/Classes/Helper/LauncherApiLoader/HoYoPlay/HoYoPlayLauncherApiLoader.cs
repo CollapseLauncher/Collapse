@@ -28,14 +28,19 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
                 await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
 
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
-                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
-
             HoYoPlayLauncherResources? hypResourceResponse = await hypResourceResponseCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
-            HoYoPlayLauncherResources? hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+
+            HoYoPlayLauncherResources? hypPluginResource = null;
+            if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsCacheUpdateEnabled ?? false))
+            {
+                ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
+                    new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
+
+                hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                  ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+            }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest
             {
