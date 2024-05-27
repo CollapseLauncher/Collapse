@@ -243,9 +243,18 @@ internal class GenshinSophonInstall : GenshinInstall
         var assetName = asset.AssetName;
         var filePath  = EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName));
 
+        // Get the target and temp file info
+        FileInfo existingFileInfo = new FileInfo(filePath);
+        FileInfo sophonFileInfo   = new FileInfo(filePath + "_tempSophon");
+
         // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
-        if (!File.Exists(filePath) || File.Exists(filePath + "_tempSophon"))
-            filePath += "_tempSophon";
+        if (!existingFileInfo.Exists || sophonFileInfo.Exists
+         || (existingFileInfo.Exists && sophonFileInfo.Exists))
+            filePath += sophonFileInfo.FullName;
+        // However if the file has already been existed and completely downloaded while _tempSophon is exist,
+        // delete the _tempSophon one to avoid uncompleted files being applied instead.
+        else if (existingFileInfo.Exists && existingFileInfo.Length == asset.AssetSize && sophonFileInfo.Exists)
+            sophonFileInfo.Delete();
 
         await asset.WriteToStreamAsync(
                                        client,
