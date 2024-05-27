@@ -686,7 +686,7 @@
     "InstallDataDownloadResumeTitle": "ダウンロードを再開しますか？",
     "InstallDataDownloadResumeSubtitle": "既にゲームの {0}/{1}がダウンロードされています。\n\n引き続きダウンロードしますか？",
     "InsufficientDiskTitle": "ディスク容量不足",
-    "InsufficientDiskSubtitle": "空き容量不足のため、{2} ドライブにこのゲームをインストールできません！\r\n\r\n利用可能なスペース: {0}\r\n必要なスペース: {1}.\r\n\r\nインストールする前に十分なディスク容量があることを確認してください。",
+    "InsufficientDiskSubtitle": "空き容量不足のため、{2} ドライブにこのゲームをインストールできません！\r\n\r\n利用可能なスペース: {0}\r\n必要なスペース: {1}\r\n\r\nインストールする前に十分なディスク容量があることを確認してください。",
     "RelocateFolderTitle": "データフォルダーの場所を変更する",
     "RelocateFolderSubtitle": "現在、このフォルダーをランチャーのアプリデータフォルダーに使用しています:\n\n {0}\n\n場所を変更しますか？",
     "UninstallGameTitle": "ゲームのアンインストール: {0}",
@@ -799,6 +799,8 @@
     "LocateFolderSubtitle": "ファイル/フォルダーの移動先を選択してください。",
     "ChoosePathTextBoxPlaceholder": "移動先を選択してください…",
     "ChoosePathButton": "移動先を選ぶ",
+    "ChoosePathErrorTitle": "エラーが発生しました！",
+    "ChoosePathErrorPathIdentical": "選択した移動先のパスが現在のパスと同じか、現在のパスの内側です！\r\n別の場所を選択してください！",
     "ChoosePathErrorPathUnselected": "パスを選択してから続行してください！",
     "ChoosePathErrorPathNotExist": "存在しないパスです！",
     "ChoosePathErrorPathNoPermission": "その場所にアクセスする権限がありません！別の場所を選択してください！"
