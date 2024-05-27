@@ -250,7 +250,7 @@ internal class GenshinSophonInstall : GenshinInstall
         // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
         if (!existingFileInfo.Exists || sophonFileInfo.Exists
          || (existingFileInfo.Exists && sophonFileInfo.Exists))
-            filePath += sophonFileInfo.FullName;
+            filePath = sophonFileInfo.FullName;
         // However if the file has already been existed and completely downloaded while _tempSophon is exist,
         // delete the _tempSophon one to avoid uncompleted files being applied instead.
         else if (existingFileInfo.Exists && existingFileInfo.Length == asset.AssetSize && sophonFileInfo.Exists)
