@@ -39,11 +39,11 @@
                 Margin="0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Stretch"
-                Opacity="0"
                 Background="{ThemeResource NavigationViewUnfoldedPaneBackground}"
                 BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
                 BorderThickness="0"
                 CornerRadius="0,8,8,0"
+                Opacity="0"
                 Shadow="{ThemeResource SharedShadow}"
                 Translation="0,0,16" />
         <NavigationView x:Name="NavigationViewControl"

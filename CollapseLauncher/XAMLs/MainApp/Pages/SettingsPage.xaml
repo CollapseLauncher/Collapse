@@ -327,19 +327,19 @@
                                           SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}">
                                 <RadioButtons.ItemTemplate>
                                     <DataTemplate x:DataType="innerConfig:CDNURLProperty">
-                                        <RadioButton ToolTipService.ToolTip="{x:Bind Description}"
+                                        <RadioButton Margin="0,0,12,0"
                                                      HorizontalContentAlignment="Stretch"
-                                                     Margin="0,0,12,0">
+                                                     ToolTipService.ToolTip="{x:Bind Description}">
                                             <Grid HorizontalAlignment="Stretch">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                            Text="{x:Bind Name}" />
-                                                <TextBlock Margin="8,0,0,0"
-                                                           Grid.Column="1"
+                                                <TextBlock Grid.Column="1"
+                                                           Margin="8,0,0,0"
                                                            VerticalAlignment="Center"
                                                            FontFamily="{ThemeResource FontAwesomeSolid}"
                                                            FontSize="16"
@@ -564,14 +564,15 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-                <TextBlock TextWrapping="Wrap" Margin="0,16,0,0">
+                <TextBlock Margin="0,16,0,0"
+                           TextWrapping="Wrap">
                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}" />
                     <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
                                UnderlineStyle="None">
                         <Run FontWeight="Bold"
                              Text="MIT License" />
                     </Hyperlink>
-                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" />
                 </TextBlock>
                 <TextBlock IsTextSelectionEnabled="True"
                            Style="{ThemeResource BodyTextBlockStyle}"
@@ -841,12 +842,12 @@
                     </Button>
                     <Grid x:Name="UpdateLoadingStatus"
                           Margin="0,14,0,0"
+                          Padding="8"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          Visibility="Collapsed"
-                          Padding="8"
                           Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
-                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateLoadingStatus)}">
+                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateLoadingStatus)}"
+                          Visibility="Collapsed">
                         <ProgressRing Width="20"
                                       Height="20"
                                       HorizontalAlignment="Center"
@@ -854,18 +855,18 @@
                     </Grid>
                     <Grid x:Name="UpdateAvailableStatus"
                           Margin="0,12,0,0"
+                          Padding="16,4"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          Visibility="Collapsed"
-                          Padding="16,4"
                           Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
-                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateAvailableStatus)}">
-                        <StackPanel HorizontalAlignment="Center"
-                                    Orientation="Horizontal"
-                                    Margin="0,0,0,2">
+                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateAvailableStatus)}"
+                          Visibility="Collapsed">
+                        <StackPanel Margin="0,0,0,2"
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal">
                             <TextBlock FontSize="16"
-                                       Text="😆"
-                                       Foreground="{ThemeResource TextFillColorInverse}"/>
+                                       Foreground="{ThemeResource TextFillColorInverse}"
+                                       Text="😆" />
                             <TextBlock Margin="8,2,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
@@ -881,20 +882,20 @@
                     </Grid>
                     <Grid x:Name="UpToDateStatus"
                           Margin="0,12,0,0"
+                          Padding="16,4"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          Visibility="Collapsed"
-                          Padding="16,4"
                           Background="{ThemeResource SystemFillColorSuccessBrush}"
-                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpToDateStatus)}">
-                        <StackPanel HorizontalAlignment="Center"
-                                    Orientation="Horizontal"
-                                    Margin="0,0,0,2">
-                            <TextBlock FontSize="16"
-                                       Text=""
-                                       VerticalAlignment="Center"
+                          CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(UpToDateStatus)}"
+                          Visibility="Collapsed">
+                        <StackPanel Margin="0,0,0,2"
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"
-                                       Foreground="{ThemeResource TextFillColorInverse}"/>
+                                       FontSize="16"
+                                       Foreground="{ThemeResource TextFillColorInverse}"
+                                       Text="" />
                             <TextBlock Margin="8,0,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"

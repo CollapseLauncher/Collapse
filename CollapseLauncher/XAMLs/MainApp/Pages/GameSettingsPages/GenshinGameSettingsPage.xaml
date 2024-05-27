@@ -656,7 +656,7 @@
                                                 <ColumnDefinition />
                                                 <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Margin="0,0,0,8" 
+                                            <TextBlock Margin="0,0,0,8"
                                                        HorizontalAlignment="Left"
                                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
