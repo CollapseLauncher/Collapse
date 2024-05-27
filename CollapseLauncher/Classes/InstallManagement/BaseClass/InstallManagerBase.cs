@@ -2000,10 +2000,10 @@ namespace CollapseLauncher.InstallManager.Base
             // Check if the disk space is insufficient, then show the dialog.
             double requiredSpaceGb       = Convert.ToDouble(RequiredSpace / (1L << 30));
             double existingPackageSizeGb = Convert.ToDouble(ExistingPackageSize / (1L << 30));
-            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize)), 4);
-            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace)), 4);
+            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize), 3), 4);
+            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace), 3), 4);
         #if DEBUG
-            LogWriteLine($"Available Drive Space: {diskSpaceGb}", LogType.Debug);
+            LogWriteLine($"Available Drive Space (GB): {diskSpaceGb}", LogType.Debug);
             LogWriteLine($"Existing Package Size: {ExistingPackageSize}", LogType.Debug);
             LogWriteLine($"Required Space: {RequiredSpace}", LogType.Debug);
             LogWriteLine($"Required Space Minus Existing Package Size: {(RequiredSpace - ExistingPackageSize)}", LogType.Debug);
