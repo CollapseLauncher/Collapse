@@ -348,6 +348,12 @@ namespace CollapseLauncher.GameVersioning
             RegionResourceVersion diff = GameAPIProp.data.pre_download_game?.diffs?
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
+            // If the single entry of the diff is null, then return null
+            if (diff == null)
+            {
+                return null;
+            }
+
             // Return if the diff is null, then get the latest. If found, then return the diff one.
             returnList.Add(diff ?? GameAPIProp.data.pre_download_game?.latest);
             if (GameAPIProp.data.sdk != null)
@@ -368,7 +374,7 @@ namespace CollapseLauncher.GameVersioning
             if (GamePreset.LauncherType == LauncherType.Sophon)
                 return GameAPIProp.data.pre_download_game != null;
 
-            return GameAPIProp.data.pre_download_game.latest != null || GameAPIProp.data.pre_download_game.diffs != null;
+            return GameAPIProp.data.pre_download_game?.latest != null || GameAPIProp.data.pre_download_game?.diffs != null;
         }
 
         public virtual bool IsGameHasDeltaPatch()

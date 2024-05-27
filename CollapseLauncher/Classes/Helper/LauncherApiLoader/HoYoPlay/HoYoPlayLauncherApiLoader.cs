@@ -42,14 +42,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
             };
 
-            RegionResourceLatest sophonResourcePreDownload = new RegionResourceLatest
-            {
-
-            };
-
             RegionResourceGame sophonResourceData = new RegionResourceGame
             {
-                pre_download_game = sophonResourcePreDownload,
                 game = sophonResourceCurrentPackage
             };
 
@@ -144,26 +138,34 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                         }
                     }
                 }
+                sophonPackageResources.pre_download_game = new RegionResourceLatest();
 
-                // Assign and convert preload game package (latest)
-                PackageResourceSections? hypPreloadPackageSection = hypRootPackage?.PreDownload?.CurrentVersion;
-                RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
-                if (hypPreloadPackageSection != null)
-                    ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
-                sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
-
-                // Assign and convert preload game package (diff)
-                if (hypRootPackage?.PreDownload?.Patches != null)
+                // Convert if preload entry is not empty or null
+                if (hypRootPackage?.PreDownload?.CurrentVersion != null || (hypRootPackage?.PreDownload?.Patches?.Count ?? 0) != 0)
                 {
-                    sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
-                    foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload.Patches)
+
+                    // Assign and convert preload game package (latest)
+                    PackageResourceSections? hypPreloadPackageSection = hypRootPackage?.PreDownload?.CurrentVersion;
+                    if (hypPreloadPackageSection != null)
                     {
-                        if (hypPreloadDiffPackageSection != null)
+                        RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
+                        ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
+                        sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
+                    }
+
+                    // Assign and convert preload game package (diff)
+                    if (hypRootPackage?.PreDownload?.Patches != null && hypRootPackage.PreDownload.Patches.Count != 0)
+                    {
+                        sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
+                        foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload.Patches)
                         {
-                            PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
-                            RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
-                            ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef, ref sophonResourceVersion);
-                            sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
+                            if (hypPreloadDiffPackageSection != null)
+                            {
+                                PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
+                                RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
+                                ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef, ref sophonResourceVersion);
+                                sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
+                            }
                         }
                     }
                 }
