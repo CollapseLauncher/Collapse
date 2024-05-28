@@ -543,7 +543,7 @@
                            Source="ms-appx:///Assets/CollapseLauncherLogo.png" />
                     <StackPanel Grid.Column="1"
                                 Margin="16,0,0,0">
-                        <StackPanel Grid.Column="0">
+                        <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="Collapse Launcher"
