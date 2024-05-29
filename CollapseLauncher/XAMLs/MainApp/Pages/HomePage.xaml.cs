@@ -332,6 +332,10 @@ namespace CollapseLauncher.Pages
                         }
                 }
             }
+            catch (TaskCanceledException)
+            {
+                // Ignore
+            }
             catch (Exception e)
             {
                 LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{e}", LogType.Error, true);
@@ -914,6 +918,10 @@ namespace CollapseLauncher.Pages
 
                     await Task.Delay(RefreshRate, Token);
                 }
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore
             }
             catch (Exception e)
             { 
@@ -2102,7 +2110,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = false;
-                    collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
+                    collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
                                  $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
@@ -2113,10 +2121,11 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = true;
-                    collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
+                    collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
                                  $"PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
+
                 CarouselRestartScroll();
             }
             catch (Exception ex)
