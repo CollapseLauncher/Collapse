@@ -754,7 +754,7 @@ namespace CollapseLauncher.Dialogs
             StackPanel mainStack        = CollapseUIExt.CreateStackPanel();
             StackPanel mainStackContent = CollapseUIExt.CreateStackPanel();
 
-            CheckBox enableBG     = CollapseUIExt.CreateCheckBox();
+            CheckBox enableBG     = new CheckBox();
             Button   selectBGPath = new Button();
             
             enableBG.Content     = Lang._SettingsPage.AppBG_Checkbox;
@@ -762,10 +762,22 @@ namespace CollapseLauncher.Dialogs
             selectBGPath.Content = Lang._Misc.Select;
 
             selectBGPath.Visibility = Visibility.Collapsed;
-            if (enableBG.IsChecked == false)
-            {
-                selectBGPath.Visibility = Visibility.Visible;
-            }
+
+            enableBG.Checked += (sender, _) =>
+              {
+                  if (sender is CheckBox enableBgCheckBox)
+                  {
+                      selectBGPath.Visibility = Visibility.Visible;
+                  }
+              };
+
+            enableBG.Unchecked += (sender, _) =>
+              {
+                  if (sender is CheckBox enableBgCheckBox)
+                  {
+                      selectBGPath.Visibility = Visibility.Collapsed;
+                  }
+              };
 
             mainStack.AddElementToStackPanel(mainStackContent);
             mainStackContent.AddElementToStackPanel(enableBG, selectBGPath);
