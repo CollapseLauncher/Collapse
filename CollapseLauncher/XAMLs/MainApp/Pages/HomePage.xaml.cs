@@ -9,6 +9,7 @@ using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
@@ -46,6 +47,8 @@ using Windows.Foundation;
 using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -1792,6 +1795,27 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
             StopGame(CurrentGameProperty._GameVersion.GamePreset);
+        }
+
+        private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
+        {
+            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            if (!string.IsNullOrEmpty(file))
+            {
+                var currentMediaType = GetMediaType(file);
+
+                if (currentMediaType == MediaType.StillImage)
+                {
+                    FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+
+                    if (croppedImage == null) return;
+                    SetAlternativeFileStream(croppedImage);
+                }
+
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
+                SetAndSaveConfigValue("CustomBGPath", file);
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, true);
+            }
         }
 
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)

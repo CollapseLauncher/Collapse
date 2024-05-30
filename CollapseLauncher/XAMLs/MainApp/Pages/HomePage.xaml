@@ -1359,6 +1359,28 @@
                                         </Grid>
                                     </Button.Content>
                                 </Button>
+                                <Button x:Name="ChangeGameBGButton"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="ChangeGameBGButton_Click"
+                                        CornerRadius="14">
+                                    <Button.Content>
+                                        <Grid Margin="4,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="18" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                      FontSize="16"
+                                                      Glyph="" />
+                                            <TextBlock Grid.Column="1"
+                                                       Margin="8,-1,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ChangeGameBG}"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Button.Content>
+                                </Button>
                                 <Button x:Name="StopGameButton"
                                         Margin="0,8"
                                         HorizontalAlignment="Stretch"
