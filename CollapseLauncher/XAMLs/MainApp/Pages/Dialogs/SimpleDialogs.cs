@@ -17,6 +17,7 @@ using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -746,6 +747,36 @@ namespace CollapseLauncher.Dialogs
                 ContentDialogButton.Primary,
                 ContentDialogTheme.Warning
                 );
+        }
+        
+        public static async Task<ContentDialogResult> Dialog_QuickSettingsChangeBG(UIElement Content)
+        {
+            StackPanel mainStack        = CollapseUIExt.CreateStackPanel();
+            StackPanel mainStackContent = CollapseUIExt.CreateStackPanel();
+
+            CheckBox enableBG     = CollapseUIExt.CreateCheckBox();
+            Button   selectBGPath = new Button();
+            
+            enableBG.Content     = Lang._SettingsPage.AppBG_Checkbox;
+            enableBG.IsChecked   = false;
+            selectBGPath.Content = Lang._Misc.Select;
+
+            selectBGPath.Visibility = Visibility.Collapsed;
+            if (enableBG.IsChecked == false)
+            {
+                selectBGPath.Visibility = Visibility.Visible;
+            }
+
+            mainStack.AddElementToStackPanel(mainStackContent);
+            mainStackContent.AddElementToStackPanel(enableBG, selectBGPath);
+            
+            return await SpawnDialog(
+                                     Lang._Dialogs.QuickSettingsChangeBGTitle,
+                                     mainStack,
+                                     Content,
+                                     Lang._Misc.NoCancel,
+                                     Lang._Misc.OkayHappy
+                                    );
         }
 
         public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
