@@ -575,6 +575,7 @@
     "ApplyingPatch": "应用补丁",
     "Disabled": "关闭",
     "Enabled": "开启",
+    "UseAsDefault": "设为默认",
 
     "BuildChannelPreview": "预览版",
     "BuildChannelStable": "正式版",
@@ -612,7 +613,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(启动器名称未知)",
-    
+
     "ImageCropperTitle": "裁剪图像"
   },
 
