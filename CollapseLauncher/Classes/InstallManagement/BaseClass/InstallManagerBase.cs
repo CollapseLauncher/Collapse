@@ -690,7 +690,7 @@ namespace CollapseLauncher.InstallManager.Base
                     SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
                 sophonInfoPairList.Add(sophonMainInfoPair);
 
-                List<string> voLanguageList = GetAudioLanguageStringList(sophonMainInfoPair.OtherSophonData);
+                List<string> voLanguageList = GetAudioLanguageSophonStringList(sophonMainInfoPair.OtherSophonData);
 
                 // Run the audio dialog question
                 (List<int> addedVO, int setAsDefaultVO) = await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList, 2);
@@ -1136,11 +1136,11 @@ namespace CollapseLauncher.InstallManager.Base
             // Write the audio lang list file
             if (_isUseSophon)
             {
-                WriteAudioLangListSophon();
+                WriteAudioLangListSophon(_sophonVOLanguageList);
             }
             else
             {
-                WriteAudioLangList();
+                WriteAudioLangList(_assetIndex);
             }
         }
 
@@ -1643,7 +1643,7 @@ namespace CollapseLauncher.InstallManager.Base
             return _out;
         }
 
-        protected string GetLanguageStringByID(int id) => id switch
+        protected virtual string GetLanguageStringByID(int id) => id switch
         {
             0 => "Chinese",
             1 => "English(US)",
@@ -1652,7 +1652,7 @@ namespace CollapseLauncher.InstallManager.Base
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
         };
 
-        protected string GetLanguageLocaleCodeByID(int id) => id switch
+        protected virtual string GetLanguageLocaleCodeByID(int id) => id switch
         {
             0 => "zh-cn",
             1 => "en-us",
@@ -1661,7 +1661,7 @@ namespace CollapseLauncher.InstallManager.Base
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
         };
 
-        protected string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
+        protected virtual string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
         {
             "zh-cn" => "Chinese",
             "en-us" => "English(US)",
@@ -1670,7 +1670,18 @@ namespace CollapseLauncher.InstallManager.Base
             _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
         };
 
-        protected List<string> GetAudioLanguageStringList(SophonData sophonData)
+        protected virtual List<string> GetAudioLanguageStringList()
+        {
+            return new List<string>
+            {
+                Lang._Misc.LangNameCN,
+                Lang._Misc.LangNameENUS,
+                Lang._Misc.LangNameJP,
+                Lang._Misc.LangNameKR
+            };
+        }
+
+        protected virtual List<string> GetAudioLanguageSophonStringList(SophonData sophonData)
         {
             var value = new List<string>();
             foreach (var Entry in sophonData.ManifestIdentityList)
@@ -1694,7 +1705,7 @@ namespace CollapseLauncher.InstallManager.Base
             return value;
         }
 
-        protected virtual void WriteAudioLangList()
+        protected virtual void WriteAudioLangList(List<GameInstallPackage> gamePackage)
         {
             // Create persistent directory if not exist
             if (!Directory.Exists(_gameDataPersistentPath))
@@ -1715,7 +1726,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual void WriteAudioLangListSophon()
+        protected virtual void WriteAudioLangListSophon(List<string> sophonVOList)
         {
             // Create persistent directory if not exist
             if (!Directory.Exists(_gameDataPersistentPath)) Directory.CreateDirectory(_gameDataPersistentPath);
@@ -1725,7 +1736,7 @@ namespace CollapseLauncher.InstallManager.Base
                                              new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
             {
                 // Iterate the package list
-                foreach (var voIds in _sophonVOLanguageList)
+                foreach (var voIds in sophonVOList)
                     // Write the language string as per ID
                     sw.WriteLine(GetLanguageStringByLocaleCode(voIds));
             }

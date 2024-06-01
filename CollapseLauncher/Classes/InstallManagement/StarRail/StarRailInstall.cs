@@ -90,31 +90,8 @@ namespace CollapseLauncher.InstallManager.StarRail
             if (!isOnlyInstallPackage)
                 WriteAudioLangList(_assetIndex);
         }
-        #endregion
 
-        #region Override Methods - StartDeltaPatch
-        private void WriteAudioLangList(List<GameInstallPackage> gamePackage)
-        {
-            // Create persistent directory if not exist
-            if (!Directory.Exists(_gameDataPersistentPath))
-            {
-                Directory.CreateDirectory(_gameDataPersistentPath);
-            }
-
-            // Create the audio lang list file
-            using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
-                new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
-            {
-                // Iterate the package list
-                foreach (GameInstallPackage package in gamePackage.Where(x => x.PackageType == GameInstallPackageType.Audio))
-                {
-                    // Write the language string as per ID
-                    sw.WriteLine(GetLanguageStringByID(package.LanguageID));
-                }
-            }
-        }
-
-        private string GetLanguageStringByID(int id) => id switch
+        protected override string GetLanguageStringByID(int id) => id switch
         {
             0 => "Chinese",
             1 => "Chinese",
@@ -135,7 +112,7 @@ namespace CollapseLauncher.InstallManager.StarRail
             int langID;
 
             // Get available language names
-            List<string> langStrings = EnumerateAudioLanguageString();
+            List<string> langStrings = GetAudioLanguageStringList();
             GameInstallPackage package;
 
             // Skip if the asset doesn't have voice packs
@@ -232,17 +209,6 @@ namespace CollapseLauncher.InstallManager.StarRail
 
                 LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }
-        }
-
-        private List<string> EnumerateAudioLanguageString()
-        {
-            return new List<string>
-            {
-                Lang._Misc.LangNameCN,
-                Lang._Misc.LangNameENUS,
-                Lang._Misc.LangNameJP,
-                Lang._Misc.LangNameKR
-            };
         }
         #endregion
 
