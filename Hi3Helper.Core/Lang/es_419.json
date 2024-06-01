@@ -575,6 +575,7 @@
     "ApplyingPatch": "Aplicando Parche",
     "Disabled": "Deshabilitado",
     "Enabled": "Habilitado",
+    "UseAsDefault": "Usar como Predeterminado",
 
     "BuildChannelPreview": "Version Preview",
     "BuildChannelStable": "Estable",
@@ -612,7 +613,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
-    
+
     "ImageCropperTitle": "Recortar Imagen"
   },
 
