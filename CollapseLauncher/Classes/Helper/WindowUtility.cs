@@ -297,7 +297,7 @@
                 const uint WM_NCHITTEST     = 0x0084;
                 const uint WM_NCCALCSIZE    = 0x0083;
                 const uint WM_SETTINGCHANGE = 0x001A;
-                const uint WM_ACTIVATE      = 0x0006;
+                // const uint WM_ACTIVATE      = 0x0006;
 
                 switch (msg)
                 {
@@ -401,6 +401,7 @@
 
                         break;
                     }
+                    /*
                     case WM_ACTIVATE:
                         // TODO: Find the exact root-cause of this.
                         // ????? IDK WHAT'S HAPPENING... MICROSOFT!!!!!!!
@@ -434,6 +435,7 @@
                             return 0; // Return 0 as the message gets processed
                         }
                         break;
+                    */
                     case WM_SETTINGCHANGE:
                     {
                         var setting = Marshal.PtrToStringAnsi(lParam);
