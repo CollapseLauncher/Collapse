@@ -1,6 +1,6 @@
 # Privacy Policy for Collapse Launcher
 
-_Last Updated: January 7, 2024_
+_Last Updated: June 1st, 2024_
 
 Thank you for using Collapse Launcher! This Privacy Policy outlines the information practices of Collapse Launcher and how any third-party services utilized may collect, use, and disclose data.
 
@@ -20,19 +20,13 @@ While Collapse itself does not collect the information outlined above, we utiliz
 - Privacy policies:
   https://docs.github.com/en/site-policy/privacy-policies
 
-#### Service Provider: BitBucket; Courtesy of Atlassian Corp.
-- Purpose: Secondary Data Provider
-- Information collected: Features used, accessed URLs, file names, file sizes and file types accessed, device information, IP address, operating system information, URLs of referring/exit pages, geolocation data, cookies.
-- Privacy policies:
-  https://www.atlassian.com/legal/privacy-policy
-
 #### Service Provider: Cloudflare, Inc.
 - Purpose: Main Content Delivery Network (CDN) Provider
 - Information collected: IP address, country, city, and internet service provider (ISP) used to access the service.
 - Privacy policies: 
   https://www.cloudflare.com/privacypolicy/; https://www.cloudflare.com/trust-hub/gdpr/; 
 
-### Service Provider: CODING; Tencent Cloud Computing (Beijing) Co., Ltd.
+#### Service Provider: CODING; Tencent Cloud Computing (Beijing) Co., Ltd.
 - Purpose: Content Delivery Network (CDN) Provider
 - Information collected: Monitoring Log (URL access path, IP address, user agent of the browser (OS type and version, CPU type, browser type and version, browser rendering engine, browser language and plug-in))
 - Privacy policies:
