@@ -16,7 +16,7 @@
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.26.1, )",
-          "Hi3Helper.Http": "[1.0.0, )",
+          "Hi3Helper.Http": "[1.5.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
       },
