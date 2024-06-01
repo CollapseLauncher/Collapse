@@ -23,9 +23,7 @@ namespace CollapseLauncher.InstallManager.Genshin
         #endregion
 
         #region Properties
-        private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
-        protected string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
-        private string _gameAudioLangListPath
+        protected override string _gameAudioLangListPath
         {
             get
             {
@@ -44,7 +42,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 return audioPath[0];
             }
         }
-        protected string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
+        protected override string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
         private string _gameAudioNewPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "AudioAssets"); }
         private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
         #endregion
@@ -56,6 +54,36 @@ namespace CollapseLauncher.InstallManager.Genshin
         }
 
         #region Public Methods
+        public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
+        {
+            // Get the primary file first check
+            List<RegionResourceVersion> resource = _gameVersionManager.GetGamePreloadZip();
+
+            // Sanity Check: throw if resource returns null
+            if (resource == null) throw new InvalidOperationException($"You're trying to check this method while preload is not available!");
+
+            bool primaryAsset = resource.All(x =>
+            {
+                string name = Path.GetFileName(x.path);
+                string path = Path.Combine(_gamePath, name);
+
+                return File.Exists(path);
+            });
+
+            // Get the second voice pack check
+            List<GameInstallPackage> voicePackList = new List<GameInstallPackage>();
+
+            // Add another voice pack that already been installed
+            TryAddOtherInstalledVoicePacks(resource.FirstOrDefault().voice_packs, voicePackList, resource.FirstOrDefault().version);
+
+            // Get the secondary file check
+            bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
+
+            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted(token);
+        }
+        #endregion
+
+        #region Override Methods - StartPackageInstallationInner
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             if (!isOnlyInstallPackage)
@@ -106,65 +134,6 @@ namespace CollapseLauncher.InstallManager.Genshin
                 LogWriteLine($"Failed while deleting old audio folder: {_gameAudioOldPath}\r\n{ex}", LogType.Error, true);
             }
         }
-
-        public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
-        {
-            // Get the primary file first check
-            List<RegionResourceVersion> resource = _gameVersionManager.GetGamePreloadZip();
-
-            // Sanity Check: throw if resource returns null
-            if (resource == null) throw new InvalidOperationException($"You're trying to check this method while preload is not available!");
-
-            bool primaryAsset = resource.All(x =>
-            {
-                string name = Path.GetFileName(x.path);
-                string path = Path.Combine(_gamePath, name);
-
-                return File.Exists(path);
-            });
-
-            // Get the second voice pack check
-            List<GameInstallPackage> voicePackList = new List<GameInstallPackage>();
-
-            // Add another voice pack that already been installed
-            TryAddOtherInstalledVoicePacks(resource.FirstOrDefault().voice_packs, voicePackList, resource.FirstOrDefault().version);
-
-            // Get the secondary file check
-            bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
-
-            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted(token);
-        }
-
-        public override void ApplyGameConfig(bool forceUpdateToLatest = false)
-        {
-            // Apply base game config
-            base.ApplyGameConfig(forceUpdateToLatest);
-
-            // Write the audio lang list file
-            WriteAudioLangList();
-        }
-
-        protected virtual void WriteAudioLangList()
-        {
-            // Create persistent directory if not exist
-            if (!Directory.Exists(_gameDataPersistentPath))
-            {
-                Directory.CreateDirectory(_gameDataPersistentPath);
-            }
-
-            // Create the audio lang list file
-            using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
-                new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
-            {
-                // Iterate the package list
-                foreach (GameInstallPackage package in _assetIndex.Where(x => x.PackageType == GameInstallPackageType.Audio))
-                {
-                    // Write the language string as per ID
-                    sw.WriteLine(GetLanguageStringByID(package.LanguageID));
-                }
-            }
-        }
-
         #endregion
 
         #region Override Methods - GetInstallationPath
@@ -242,33 +211,6 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
             return value;
         }
-
-        protected string GetLanguageStringByID(int id) => id switch
-        {
-            0 => "Chinese",
-            1 => "English(US)",
-            2 => "Japanese",
-            3 => "Korean",
-            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
-        };
-
-        protected string GetLanguageLocaleCodeByID(int id) => id switch
-        {
-            0 => "zh-cn",
-            1 => "en-us",
-            2 => "ja-jp",
-            3 => "ko-kr",
-            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
-        };
-
-        protected string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
-        {
-            "zh-cn" => "Chinese",
-            "en-us" => "English(US)",
-            "ja-jp" => "Japanese",
-            "ko-kr" => "Korean",
-            _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
-        };
 
         private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
         {
