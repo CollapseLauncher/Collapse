@@ -575,6 +575,7 @@
     "ApplyingPatch": "パッチ適用中",
     "Disabled": "無効",
     "Enabled": "有効",
+    "UseAsDefault": "デフォルトとして使用",
 
     "BuildChannelPreview": "プレビュー版",
     "BuildChannelStable": "安定版",
@@ -612,7 +613,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "（ランチャー不明）",
-    
+
     "ImageCropperTitle": "画像の表示範囲を選択"
   },
 
