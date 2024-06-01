@@ -14,6 +14,7 @@
       xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:localStatic="using:CollapseLauncher.Statics"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
+      xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="using:CommunityToolkit.WinUI"
       x:Name="HomePage_Page"
@@ -1506,11 +1507,17 @@
                                        HorizontalTextAlignment="Left"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"
                                        TextTrimming="CharacterEllipsis" />
-                            <FontIcon Grid.Column="1"
-                                      HorizontalAlignment="Right"
-                                      FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="" />
+                            <Grid x:Name="InstallGameBtnAnimBackground"
+                                  Margin="-20,-12"
+                                  Grid.Column="1"
+                                  Padding="8,0"
+                                  Width="64"
+                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
+                                <AnimatedVisualPlayer HorizontalAlignment="Right"
+                                                      Height="28">
+                                    <lottie:DownloadIcon/>
+                                </AnimatedVisualPlayer>
+                            </Grid>
                         </Grid>
                     </Button.Content>
                 </Button>
@@ -1563,6 +1570,17 @@
                                    HorizontalTextAlignment="Left"
                                    Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"
                                    TextTrimming="CharacterEllipsis" />
+                        <Grid x:Name="StartGameBtnAnimBackground"
+                              Margin="-20,-12"
+                              Grid.Column="1"
+                              Padding="12,0"
+                              Width="64"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
+                            <AnimatedVisualPlayer HorizontalAlignment="Right"
+                                                  Height="28">
+                                <lottie:StartGameIcon/>
+                            </AnimatedVisualPlayer>
+                        </Grid>
                         <FontIcon Grid.Column="1"
                                   HorizontalAlignment="Right"
                                   FontFamily="{ThemeResource FontAwesomeSolid}"

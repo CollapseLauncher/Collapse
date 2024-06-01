@@ -860,10 +860,15 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
-            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon  StartGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            string    StartGameBtnIconGlyph = StartGameBtnIcon!.Glyph;
-            string    StartGameBtnRunningIconGlyph = "";
+            TextBlock               StartGameBtnText              = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon                StartGameBtnIcon              = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+            Grid                    StartGameBtnAnimatedIconGrid  = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+            // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
+            string                  StartGameBtnIconGlyph         = StartGameBtnIcon!.Glyph;
+            string                  StartGameBtnRunningIconGlyph  = "";
+
+            StartGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+            StartGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
 
             try
             {
@@ -873,9 +878,11 @@ namespace CollapseLauncher.Pages
                     {
                         _cachedIsGameRunning = true;
 
-                        StartGameBtn.IsEnabled = false;
-                        StartGameBtnText!.Text = Lang._HomePage.StartBtnRunning;
-                        StartGameBtnIcon.Glyph = StartGameBtnRunningIconGlyph;
+                        StartGameBtn.IsEnabled                  = false;
+                        StartGameBtnText!.Text                  = Lang._HomePage.StartBtnRunning;
+                        StartGameBtnIcon.Glyph                  = StartGameBtnRunningIconGlyph;
+                        StartGameBtnAnimatedIconGrid.Opacity    = 0;
+                        StartGameBtnIcon.Opacity                = 1;
 
                         //GameStartupSetting.IsEnabled = false;
                         RepairGameButton.IsEnabled       = false;
@@ -897,11 +904,13 @@ namespace CollapseLauncher.Pages
 
                     _cachedIsGameRunning = false;
 
-                    StartGameBtn.IsEnabled = true;
-                    StartGameBtnText!.Text = Lang._HomePage.StartBtn;
-                    StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
+                    StartGameBtn.IsEnabled                  = true;
+                    StartGameBtnText!.Text                  = Lang._HomePage.StartBtn;
+                    StartGameBtnIcon.Glyph                  = StartGameBtnIconGlyph;
+                    StartGameBtnAnimatedIconGrid.Opacity    = 1;
+                    StartGameBtnIcon.Opacity                = 0;
 
-                    //GameStartupSetting.IsEnabled = true;
+                    GameStartupSetting.IsEnabled     = true;
                     RepairGameButton.IsEnabled       = true;
                     MoveGameLocationButton.IsEnabled = true;
                     UninstallGameButton.IsEnabled    = true;
