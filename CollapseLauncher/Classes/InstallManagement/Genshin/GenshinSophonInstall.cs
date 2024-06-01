@@ -41,8 +41,8 @@ internal class GenshinSophonInstall : GenshinInstall
         IsDownloadCompleted = false;
 
         // Set the max thread and httpHandler based on settings
-        int maxThread      = Math.Max((int)(_threadCount / 1.3), 2);
-        int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 256);
+        int maxThread      = Math.Max((int)_threadCount, 2);
+        int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
         maxHttpHandler     = Math.Max(maxHttpHandler, maxThread);
 
         Logger.LogWriteLine($"Initializing Sophon Chunk download method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
@@ -222,11 +222,13 @@ internal class GenshinSophonInstall : GenshinInstall
 
     private void SophonLogger_LogHandler(object sender, LogStruct e)
     {
+#if !DEBUG
         if (e.LogLevel == LogLevel.Debug) return;
+#endif
         (bool isNeedWriteLog, LogType logType) logPair = e.LogLevel switch
                                                          {
                                                              LogLevel.Warning => (true, LogType.Warning),
-                                                             LogLevel.Debug => (false, LogType.Debug),
+                                                             LogLevel.Debug => (true, LogType.Debug),
                                                              LogLevel.Error => (true, LogType.Error),
                                                              _ => (true, LogType.Default)
                                                          };
