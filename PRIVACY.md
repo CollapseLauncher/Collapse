@@ -32,6 +32,12 @@ While Collapse itself does not collect the information outlined above, we utiliz
 - Privacy policies: 
   https://www.cloudflare.com/privacypolicy/; https://www.cloudflare.com/trust-hub/gdpr/; 
 
+### Service Provider: CODING; Tencent Cloud Computing (Beijing) Co., Ltd.
+- Purpose: Content Delivery Network (CDN) Provider
+- Information collected: Monitoring Log (URL access path, IP address, user agent of the browser (OS type and version, CPU type, browser type and version, browser rendering engine, browser language and plug-in))
+- Privacy policies:
+  https://www.tencentcloud.com/document/product/1133/45791
+
 ## 3. Cookies
 
 We do not collect or store any web cookies. All cookies used in Collapse Launcher's internal browser are locally stored. While that is the case, we have no control over websites collecting cookies when accessed.
