@@ -795,6 +795,12 @@ namespace CollapseLauncher.InstallManager.Base
             FileInfo existingFileInfo = new FileInfo(filePath);
             FileInfo sophonFileInfo = new FileInfo(filePath + "_tempSophon");
 
+            // Remove read-only attribute
+            if (existingFileInfo.Exists && existingFileInfo.IsReadOnly)
+                existingFileInfo.IsReadOnly = false;
+            if (sophonFileInfo.Exists && sophonFileInfo.IsReadOnly)
+                sophonFileInfo.IsReadOnly = false;
+
             // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
             if (!existingFileInfo.Exists || sophonFileInfo.Exists
              || (existingFileInfo.Exists && sophonFileInfo.Exists))
