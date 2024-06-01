@@ -2386,12 +2386,9 @@ namespace CollapseLauncher.Pages
             IsPointerInsideSidePanel = true;
             if (sender is FrameworkElement elementPanel)
             {
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                await Task.Delay(TimeSpan.FromSeconds(0.2));
                 if (IsSidePanelCurrentlyScaledOut) return;
                 if (!IsPointerInsideSidePanel) return;
-
-                MainPage.CurrentBackgroundHandler?.Dimm();
-                HideImageEventImg(true);
 
                 var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
                 var storyboard = new Storyboard();
@@ -2406,7 +2403,7 @@ namespace CollapseLauncher.Pages
                 {
                     From           = transform.ScaleX,
                     To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -2417,15 +2414,18 @@ namespace CollapseLauncher.Pages
                 {
                     From           = transform.ScaleY,
                     To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);
                 Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
                 storyboard.Children.Add(scaleYAnim);
 
-                await storyboard.BeginAsync();
+                MainPage.CurrentBackgroundHandler?.Dimm();
+                HideImageEventImg(true);
+
                 IsSidePanelCurrentlyScaledOut = true;
+                await storyboard.BeginAsync();
             }
         }
 
