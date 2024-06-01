@@ -82,7 +82,8 @@ namespace Hi3Helper
                 public string BuildChannelStable   { get; set; } = LangFallback?._Misc.BuildChannelStable;
                 public string LocateExecutable     { get; set; } = LangFallback?._Misc.LocateExecutable;
                 public string OpenDownloadPage     { get; set; } = LangFallback?._Misc.OpenDownloadPage;
-                
+                public string UseAsDefault         { get; set; } = LangFallback?._Misc.UseAsDefault;
+
                 public string CDNDescription_Github          { get; set; } = LangFallback?._Misc.CDNDescription_Github;
                 public string CDNDescription_Cloudflare      { get; set; } = LangFallback?._Misc.CDNDescription_Cloudflare;
                 public string CDNDescription_Bitbucket       { get; set; } = LangFallback?._Misc.CDNDescription_Bitbucket;

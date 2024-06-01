@@ -97,6 +97,8 @@
                              Color="#CCFFFFFF" />
             <SolidColorBrush x:Key="RadioButtonBorderThemeBrush"
                              Color="#CCFFFFFF" />
+            <SolidColorBrush x:Key="RadioButtonGridBorderThemeBrush"
+                             Color="#11FFFFFF" />
             <SolidColorBrush x:Key="RadioButtonContentDisabledForegroundThemeBrush"
                              Color="#66FFFFFF" />
             <SolidColorBrush x:Key="RadioButtonContentForegroundThemeBrush"
@@ -337,6 +339,8 @@
                              Color="#CCFFFFFF" />
             <SolidColorBrush x:Key="RadioButtonBorderThemeBrush"
                              Color="#45000000" />
+            <SolidColorBrush x:Key="RadioButtonGridBorderThemeBrush"
+                             Color="#11000000" />
             <SolidColorBrush x:Key="RadioButtonContentDisabledForegroundThemeBrush"
                              Color="#66000000" />
             <SolidColorBrush x:Key="RadioButtonContentForegroundThemeBrush"
@@ -757,11 +761,13 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Grid x:Name="RootGrid"
-                          MinWidth="580"
+                          MinWidth="560"
                           Background="{TemplateBinding Background}"
-                          BorderBrush="{TemplateBinding BorderBrush}"
-                          BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="{TemplateBinding CornerRadius}">
+                          BorderThickness="1"
+                          BorderBrush="{ThemeResource RadioButtonGridBorderThemeBrush}"
+                          CornerRadius="8"
+                          Padding="8,8,16,8"
+                          Margin="0, -1">
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -810,11 +816,6 @@
                                                                        Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource RadioButtonForegroundPointerOver}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource RadioButtonBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
                                                                        Storyboard.TargetProperty="BorderBrush">
@@ -873,11 +874,6 @@
                                                                        Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource RadioButtonForegroundPressed}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource RadioButtonBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
                                                                        Storyboard.TargetProperty="BorderBrush">
@@ -955,11 +951,6 @@
                                                                        Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource RadioButtonForegroundDisabled}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource RadioButtonBackgroundDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
                                                                        Storyboard.TargetProperty="BorderBrush">

@@ -575,6 +575,7 @@
     "ApplyingPatch": "Applying Patch",
     "Disabled": "Disabled",
     "Enabled": "Enabled",
+    "UseAsDefault": "Use as Default",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -612,7 +613,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Launcher Name is Unknown)",
-    
+
     "ImageCropperTitle": "Crop the image"
   },
 

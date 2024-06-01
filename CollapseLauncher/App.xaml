@@ -107,6 +107,11 @@
                                           TintLuminosityOpacity="0.75"
                                           TintOpacity="0.75"/>
                             <!--  Controls element brush  -->
+                            <AcrylicBrush x:Key="AudioLanguageSelectionRadioButtonBrush"
+                                          FallbackColor="#EE303030"
+                                          TintColor="#222222"
+                                          TintLuminosityOpacity="0.75"
+                                          TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#AA222222"
                                           TintColor="#000000"
@@ -418,6 +423,11 @@
                                           TintLuminosityOpacity="0.5"
                                           TintOpacity="0"/>
                             <!--  Controls element brush  -->
+                            <AcrylicBrush x:Key="AudioLanguageSelectionRadioButtonBrush"
+                                          FallbackColor="#EEEEEEEE"
+                                          TintColor="#EEEEEE"
+                                          TintLuminosityOpacity="0.75"
+                                          TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#CCFFFFFF"
                                           TintColor="#FFFFFF"

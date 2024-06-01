@@ -1,8 +1,10 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -17,6 +19,8 @@ using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
+using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -104,13 +108,15 @@ namespace CollapseLauncher.Dialogs
         {
             bool[] choices = new bool[langlist.Count];
             int choiceAsDefault = defaultIndex;
-            StackPanel parentPanel = UIElementExtensions.CreateStackPanel();
+            StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
 
             parentPanel.AddElementToStackPanel(new TextBlock()
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(0, 0, 0, 16)
+                FontWeight = FontWeights.Medium,
+                Margin = new Thickness(0, 0, 0, 16),
+                HorizontalAlignment = HorizontalAlignment.Center,
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -120,7 +126,7 @@ namespace CollapseLauncher.Dialogs
 
             parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
 
-            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
+            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
             {
                 Title = Lang._Dialogs.ChooseAudioLangTitle,
                 Content = parentPanel,
@@ -128,13 +134,13 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = Lang._Misc.Next,
                 SecondaryButtonText = null,
                 DefaultButton = ContentDialogButton.Primary,
-                Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
                 XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
             for (int i = 0; i < langlist.Count; i++)
             {
-                Grid checkBoxGrid = UIElementExtensions.CreateGrid()
+                Grid checkBoxGrid = CollapseUIExt.CreateGrid()
                     .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Auto))
                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                     .WithMargin(0, 0, 0, 8);
@@ -147,17 +153,34 @@ namespace CollapseLauncher.Dialogs
 
                 TextBlock useAsDefaultText = new TextBlock
                 {
-                    Text = "Use as Default",
+                    Text = Lang._Misc.UseAsDefault,
                     HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Top
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Opacity = 0.25,
+                    Name = "UseAsDefaultLabel"
                 };
-                Grid iconTextGrid = UIElementExtensions.CreateIconTextGrid(langlist[i], "\uf1ab", iconSize: 14, textSize: 14, iconFontFamily: "FontAwesomeSolid");
-                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
-                checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
+                useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+                Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(
+                    langlist[i],
+                    "\uf1ab",
+                    iconSize: 14,
+                    textSize: 14,
+                    iconFontFamily: "FontAwesomeSolid")
+                    .WithOpacity(0.25);
+                iconTextGrid.Name = "IconText";
+                iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
 
-                RadioButton radioButton = new RadioButton { Content = checkBox, Style = UIElementExtensions.GetApplicationResource<Style>("AudioLanguageSelectionRadioButtonStyle") }
+                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
+                checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
+
+                RadioButton radioButton = new RadioButton
+                {
+                    Content = checkBox,
+                    Style = CollapseUIExt.GetApplicationResource<Style>("AudioLanguageSelectionRadioButtonStyle"),
+                    Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
+                }
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                 .WithVerticalAlignment(VerticalAlignment.Center);
 
@@ -168,8 +191,21 @@ namespace CollapseLauncher.Dialogs
 
                 radioButton.Checked += (sender, _) =>
                 {
-                    choiceAsDefault = (int)(sender as RadioButton).Tag;
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    choiceAsDefault = (int)radioButtonLocal.Tag;
                     checkBox.IsChecked = true;
+
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    if (textBlockLocal != null)
+                        textBlockLocal.Opacity = 1;
+                };
+
+                radioButton.Unchecked += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    if (textBlockLocal != null)
+                        textBlockLocal.Opacity = 0.25;
                 };
 
                 if (i == defaultIndex)
@@ -177,11 +213,13 @@ namespace CollapseLauncher.Dialogs
                     choices[i] = true;
                     checkBox.IsChecked = true;
                     defaultChoiceRadioButton.SelectedIndex = i;
+                    iconTextGrid.Opacity = 1;
                 }
 
                 checkBox.Checked += (sender, _) =>
                 {
-                    int thisIndex = (int)(sender as FrameworkElement).Tag;
+                    CheckBox thisCheckBox = sender as CheckBox;
+                    int thisIndex = (int)thisCheckBox.Tag;
                     choices[thisIndex] = true;
                     radioButton.IsEnabled = true;
 
@@ -189,12 +227,21 @@ namespace CollapseLauncher.Dialogs
                     dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
                     if (defaultChoiceRadioButton.SelectedIndex < 0)
                         defaultChoiceRadioButton.SelectedIndex = thisIndex;
+
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (thisIconText != null)
+                        thisIconText.Opacity = 1;
                 };
                 checkBox.Unchecked += (sender, _) =>
                 {
-                    int thisIndex = (int)(sender as FrameworkElement).Tag;
+                    CheckBox thisCheckBox = sender as CheckBox;
+                    int thisIndex = (int)thisCheckBox.Tag;
                     choices[thisIndex] = false;
                     radioButton.IsChecked = false;
+
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (thisIconText != null)
+                        thisIconText.Opacity = 0.25;
 
                     bool isHasAnyChoices = choices.Any(x => x);
                     dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
@@ -202,15 +249,12 @@ namespace CollapseLauncher.Dialogs
                     // TODO: Find a better way rather than this SPAGHEETTTTT CODE
                     if (defaultChoiceRadioButton.SelectedIndex < 0 && isHasAnyChoices)
                     {
-                        if (isHasAnyChoices)
+                        for (int i = 0; i < choices.Length; i++)
                         {
-                            for (int i = 0; i < choices.Length; i++)
+                            if (choices[i])
                             {
-                                if (choices[i])
-                                {
-                                    defaultChoiceRadioButton.SelectedIndex = i;
-                                    break;
-                                }
+                                defaultChoiceRadioButton.SelectedIndex = i;
+                                break;
                             }
                         }
                     }
@@ -287,8 +331,8 @@ namespace CollapseLauncher.Dialogs
             };
             TargetGame.SelectionChanged += TargetGameChangedArgs;
 
-            StackPanel DialogContainer = UIElementExtensions.CreateStackPanel();
-            StackPanel ComboBoxContainer = UIElementExtensions.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
+            StackPanel DialogContainer = CollapseUIExt.CreateStackPanel();
+            StackPanel ComboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
             ComboBoxContainer.AddElementToStackPanel(
                 SourceGame,
                 new FontIcon()
@@ -315,8 +359,8 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = Lang._Misc.Next,
                 IsSecondaryButtonEnabled = false,
                 DefaultButton = ContentDialogButton.Secondary,
-                Background = UIElementExtensions.GetApplicationResource<Brush>("DialogAcrylicBrush"),
-                Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                Background = CollapseUIExt.GetApplicationResource<Brush>("DialogAcrylicBrush"),
+                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
                 XamlRoot = Content.XamlRoot
             };
             return (await Dialog.QueueAndSpawnDialog(), SourceGame, TargetGame);
@@ -328,7 +372,7 @@ namespace CollapseLauncher.Dialogs
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 });
             texts.Inlines.Add(new Hyperlink()
             {
-                Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = UIElementExtensions.GetApplicationResource<Brush>("AccentColor") } },
+                Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor") } },
                 NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
             });
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 });
@@ -698,7 +742,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async void Dialog_InvalidPlaytime(UIElement Content, int elapsedSeconds = 0)
         {
-            StackPanel stack = UIElementExtensions.CreateStackPanel();
+            StackPanel stack = CollapseUIExt.CreateStackPanel();
 
             stack.AddElementToStackPanel(
                 new TextBlock() { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
@@ -798,7 +842,7 @@ namespace CollapseLauncher.Dialogs
 
                 bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
 
-                Grid rootGrid = UIElementExtensions.CreateGrid()
+                Grid rootGrid = CollapseUIExt.CreateGrid()
                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                     .WithVerticalAlignment(VerticalAlignment.Stretch)
                     .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
@@ -821,7 +865,7 @@ namespace CollapseLauncher.Dialogs
                      .WithVerticalAlignment(VerticalAlignment.Stretch);
 
                 copyButton = rootGrid.AddElementToGridRow(
-                    UIElementExtensions.CreateButtonWithIcon<Button>(
+                    CollapseUIExt.CreateButtonWithIcon<Button>(
                         text:           Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
                         iconGlyph:      "",
                         iconFontFamily: "FontAwesomeSolid",
@@ -851,7 +895,7 @@ namespace CollapseLauncher.Dialogs
         #region Shortcut Creator Dialogs
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement Content, string path)
         {
-            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
             panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1 }.WithMargin(0d, 2d, 0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
             
@@ -881,7 +925,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement Content, string path, bool play = false)
         {
 
-            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
             panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1 }.WithMargin(0d, 2d, 0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
 
@@ -909,7 +953,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement Content)
         {
-            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
 
             panel.AddElementToStackPanel(
@@ -935,7 +979,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement Content, bool play = false)
         {
-            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
 
             panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d),
@@ -959,7 +1003,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure(UIElement Content)
         {
-            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 350d;
             panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 2d, 0d, 4d));
 
@@ -983,7 +1027,7 @@ namespace CollapseLauncher.Dialogs
             };
             startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = startAfterInstall.IsOn;
 
-            StackPanel panel = UIElementExtensions.CreateStackPanel();
+            StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(
                 new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1 }.WithMargin(0d, 0d, 0d, 4d),
                 startAfterInstall
@@ -1014,7 +1058,7 @@ namespace CollapseLauncher.Dialogs
                 PrimaryButtonText = primaryText,
                 SecondaryButtonText = secondaryText,
                 DefaultButton = defaultButton,
-                Style = UIElementExtensions.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
                 XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
