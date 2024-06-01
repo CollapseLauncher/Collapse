@@ -68,7 +68,7 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
-        public static int RefreshRateDefault { get; } = 200;
+        public static int RefreshRateDefault { get; } = 500;
         public static int RefreshRateSlow { get; } = 1000;
 
         private static int _refreshRate;

@@ -61,14 +61,30 @@ namespace CollapseLauncher.Statics
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
         internal IGameInstallManager _GameInstall { get; set; }
-        internal bool IsGameRunning
+
+        private string _gameExecutableName;
+        private string _gameExecutableNameWithoutExtension;
+        internal string _GameExecutableName
         {
             get
             {
-                string name = Path.GetFileNameWithoutExtension(_GamePreset!.GameExecutableName);
-                Process[] processes = Process.GetProcessesByName(name);
-                return processes.Length > 0;
+                if (string.IsNullOrEmpty(_gameExecutableName))
+                    _gameExecutableName = _GamePreset!.GameExecutableName;
+                return _gameExecutableName;
             }
+        }
+        internal string _GameExecutableNameWithoutExtension
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_gameExecutableNameWithoutExtension))
+                    _gameExecutableNameWithoutExtension = Path.GetFileNameWithoutExtension(_GameExecutableName);
+                return _gameExecutableNameWithoutExtension;
+            }
+        }
+        internal bool IsGameRunning
+        {
+            get => InvokeProp.IsProcessExist(_GameExecutableName);
         }
 
 #nullable enable

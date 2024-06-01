@@ -241,6 +241,74 @@ namespace Hi3Helper
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
         #endregion
 
+        #region Ntdll
+        // https://github.com/dotnet/runtime/blob/f4d39134b8daefb5ab0db6750a203f980eecb4f0/src/libraries/System.Diagnostics.Process/src/System/Diagnostics/ProcessManager.Win32.cs#L299
+        // https://github.com/dotnet/runtime/blob/f4d39134b8daefb5ab0db6750a203f980eecb4f0/src/libraries/System.Diagnostics.Process/src/System/Diagnostics/ProcessManager.Win32.cs#L346
+        // https://github.com/dotnet/runtime/blob/main/src/libraries/Common/src/Interop/Windows/NtDll/Interop.NtQuerySystemInformation.cs#L11
+
+        private const int SystemProcessInformation = 5;
+
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/aa380518.aspx
+        // https://msdn.microsoft.com/en-us/library/windows/hardware/ff564879.aspx
+        [StructLayout(LayoutKind.Sequential)]
+        private unsafe struct UNICODE_STRING
+        {
+            /// <summary>
+            /// Length in bytes, not including the null terminator, if any.
+            /// </summary>
+            internal ushort Length;
+
+            /// <summary>
+            /// Max size of the buffer in bytes
+            /// </summary>
+            internal ushort MaximumLength;
+            internal void* Buffer;
+        }
+
+        [DllImport("ntdll.dll")]
+        private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
+
+        private static byte[] NtQueryCachedBuffer = new byte[4 << 20];
+        public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
+        {
+            // Get the pointer of the buffer
+            fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
+            {
+                // Get the query of the current running process and store it to the buffer
+                NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out uint length);
+
+                // If the required length of the data is exceeded, return false
+                if (length > NtQueryCachedBuffer.Length) return false;
+
+                // Start reading data from the buffer
+                int currentOffset = 0;
+            ReadQueryData:
+                // Get the current position of the pointer based on its offset
+                byte* curPosPtr = dataBufferPtr + currentOffset;
+
+                // Get the increment of the next entry offset
+                // and get the struct from the given pointer offset + 56 bytes ahead
+                // to obtain the process name.
+                int nextEntryOffset = *(int*)curPosPtr;
+                UNICODE_STRING* unicodeString = (UNICODE_STRING*)(curPosPtr + 56);
+
+                // Use the struct buffer into the ReadOnlySpan<char> to be compared with
+                // the input from "processName" argument.
+                ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
+                if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
+                    return true; // If equals, then return true
+
+                // Otherwise, if the next entry offset is not 0 (not ended), then read
+                // the next data and move forward based on the given offset.
+                currentOffset += nextEntryOffset;
+                if (nextEntryOffset != 0)
+                    goto ReadQueryData;
+            }
+
+            return false;
+        }
+        #endregion
+
 #nullable enable
         public static CancellationTokenSource? _preventSleepToken;
         private static bool _preventSleepRunning;
