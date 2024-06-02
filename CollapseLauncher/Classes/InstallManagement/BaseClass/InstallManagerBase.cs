@@ -543,7 +543,8 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Skip routine if sophon is use
             GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
-            if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+            if ((_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+              || _isSophonDownloadCompleted)
             {
                 // We are going to override the verification method from base class. So in order to bypass the loop,
                 // we need to ensure if the IsDownloadCompleted is true. If so, set it to false and return 1 as successful.
@@ -937,7 +938,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalSize = GetAssetIndexTotalUncompressSize(gamePackage);
 
             // Sanity Check: Check if the package list is empty or not
-            if (gamePackage == null || gamePackage.Count == 0) throw new InvalidOperationException("Package list is empty. Make sure you have ran StartPackageDownload() first.");
+            if (gamePackage == null || gamePackage.Count == 0) return;
 
             // If _canSkipExtract flag is true, then return (skip) the extraction
             if (_canSkipExtract) return;
