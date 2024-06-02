@@ -561,6 +561,7 @@
     "Idle": "Idle",
     "Change": "Change",
     "Cancelled": "Canceled",
+    "FinishingUp": "Finishing Up",
     "Extracting": "Extracting",
     "Converting": "Converting",
     "Patching": "Patching",

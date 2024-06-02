@@ -68,12 +68,13 @@ namespace CollapseLauncher
 
     public class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
     {
-        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
-        public int plugin_id { get; set; }
+        public string release_id { get; set; }
+        public string plugin_id { get; set; }
         public string version { get; set; }
         public RegionResourceVersion package { get; set; }
         public RegionResourcePlugin Copy() => new RegionResourcePlugin()
         {
+            release_id = release_id,
             plugin_id = plugin_id,
             version = version,
             package = package?.Copy()
@@ -104,6 +105,7 @@ namespace CollapseLauncher
 
     public class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
     {
+        public string run_command { get; set; }
         public string version { get; set; }
         public string url { get; set; }
         public string path { get; set; }

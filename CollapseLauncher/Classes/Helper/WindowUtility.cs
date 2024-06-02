@@ -1,7 +1,6 @@
 ﻿#nullable enable
     using CollapseLauncher.Extension;
     using CollapseLauncher.FileDialogCOM;
-    using CollapseLauncher.Helper.Background;
     using Hi3Helper;
     using Hi3Helper.Screen;
     using Hi3Helper.Shared.Region;

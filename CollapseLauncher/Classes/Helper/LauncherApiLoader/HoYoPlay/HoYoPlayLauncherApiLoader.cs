@@ -32,7 +32,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             HoYoPlayLauncherResources? hypPluginResource = null;
-            if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsCacheUpdateEnabled ?? false))
+            if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
                     new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
@@ -95,16 +95,18 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
                 RegionResourcePlugin sophonPlugin = new RegionResourcePlugin();
                 sophonPlugin.version = firstPluginSection.Version;
-                // sophonPlugin.plugin_id = firstPluginSection.PluginId;
+                sophonPlugin.plugin_id = firstPluginSection.PluginId;
+                sophonPlugin.release_id = firstPluginSection.ReleaseId;
                 sophonPlugin.package = new RegionResourceVersion
                 {
                     validate = firstPluginSection.PluginPackage?.PackageAssetValidationList,
-                    // channel_id = firstPluginSection.PluginId,
                     md5 = firstPluginSection.PluginPackage?.PackageMD5Hash,
                     url = firstPluginSection.PluginPackage?.PackageUrl,
                     path = firstPluginSection.PluginPackage?.PackageUrl,
                     size = firstPluginSection.PluginPackage?.PackageDecompressSize ?? 0,
-                    package_size = firstPluginSection.PluginPackage?.PackageSize ?? 0
+                    package_size = firstPluginSection.PluginPackage?.PackageSize ?? 0,
+                    run_command = firstPluginSection.PluginPackage?.PackageRunCommand,
+                    version = firstPluginSection.Version
                 };
 
                 sophonPluginList.Add(sophonPlugin);

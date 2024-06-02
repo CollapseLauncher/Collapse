@@ -63,6 +63,7 @@ namespace Hi3Helper
                 public string Idle                 { get; set; } = LangFallback?._Misc.Idle;
                 public string Change               { get; set; } = LangFallback?._Misc.Change;
                 public string Cancelled            { get; set; } = LangFallback?._Misc.Cancelled;
+                public string FinishingUp          { get; set; } = LangFallback?._Misc.FinishingUp;
                 public string Extracting           { get; set; } = LangFallback?._Misc.Extracting;
                 public string Converting           { get; set; } = LangFallback?._Misc.Converting;
                 public string Patching             { get; set; } = LangFallback?._Misc.Patching;

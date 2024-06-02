@@ -15,6 +15,7 @@ namespace CollapseLauncher
         IgnoreReadOnlyFields = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull,
         WriteIndented = true)]
+    [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>))]
     [JsonSerializable(typeof(RegionResourcePluginValidate))]
     [JsonSerializable(typeof(HoYoPlayLauncherResources))]
     [JsonSerializable(typeof(CommunityToolsProperty))]

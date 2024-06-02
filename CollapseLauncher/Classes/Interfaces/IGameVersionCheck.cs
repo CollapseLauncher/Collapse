@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper.Metadata;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 
@@ -18,8 +19,27 @@ namespace CollapseLauncher.Interfaces
 
     internal interface IGameVersionCheck
     {
+        /// <summary>
+        /// Get the game name
+        /// </summary>
         string GameName { get; }
+
+        /// <summary>
+        /// Get the region name of the game
+        /// </summary>
         string GameRegion { get; }
+
+#nullable enable
+        /// <summary>
+        /// Get the version section of the game INI's configuration
+        /// </summary>
+        IniSection? GameIniVersionSection { get; }
+
+        /// <summary>
+        /// Get the profile section of the game INI's configuration
+        /// </summary>
+        IniSection? GameIniProfileSection { get; }
+#nullable restore
 
         /// <summary>
         /// Get the base of the instance
@@ -87,6 +107,11 @@ namespace CollapseLauncher.Interfaces
         bool IsGameVersionMatch();
 
         /// <summary>
+        /// Checks if the plugin version is installed or matches the version provided from miHoYo's API.
+        /// </summary>
+        bool IsPluginVersionsMatch();
+
+        /// <summary>
         /// Check if the game version is installed.
         /// </summary>
         bool IsGameInstalled();
@@ -127,11 +152,16 @@ namespace CollapseLauncher.Interfaces
 
 #nullable enable
         /// <summary>
+        /// Returns the <c>List</c> of the Resource Version for the Plugins
+        /// </summary>
+        List<RegionResourcePlugin>? GetGamePluginZip();
+
+        /// <summary>
         /// Try find game installation path from the given path.
         /// If it returns null, then there's no game installation found.
         /// </summary>
         string? FindGameInstallationPath(string path);
-#nullable disable
+#nullable restore
 
         /// <summary>
         /// Update the location of the game folder and also save it to the Game Profile's Ini file.
@@ -152,6 +182,18 @@ namespace CollapseLauncher.Interfaces
         /// <param name="version">The version to change</param>
         /// <param name="saveValue">Save the config file</param>
         void UpdateGameVersion(GameVersion version, bool saveValue = true);
+
+        /// <summary>
+        /// Update the game channel and save it to the config.
+        /// </summary>
+        /// <param name="saveValue">Save the config file</param>
+        void UpdateGameChannels(bool saveValue = true);
+
+        /// <summary>
+        /// Update the game plugin versions and save it to the config.
+        /// </summary>
+        /// <param name="saveValue">Save the config file</param>
+        void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue = true);
 
         /// <summary>
         /// Reinitialize the game version configs, including the INIs.

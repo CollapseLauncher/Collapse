@@ -21,6 +21,7 @@ using SevenZipExtractor;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -367,6 +368,10 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 InvokeProp.PreventSleep();
 
+                // Skip installation if sophon is used and not in update state
+                if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+                    return true;
+
                 // Start the download routine
                 await StartDeltaPatchPreReqDownload(gamePackage);
 
@@ -462,18 +467,18 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async Task StartPackageDownload(bool skipDialog)
         {
-            if (_isUseSophon)
-            {
-                await StartPackageDownloadSophon();
-                return;
-            }
-
             UpdateCompletenessStatus(CompletenessStatus.Running);
             ResetToken();
 
             // Get the game state and run the action for each of them
             GameInstallStateEnum gameState = _gameVersionManager!.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
+
+            if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+            {
+                await StartPackageDownloadSophon();
+                gameState = GameInstallStateEnum.InstalledHavePlugin;
+            }
 
             try
             {
@@ -537,8 +542,9 @@ namespace CollapseLauncher.InstallManager.Base
         //       -1      -> Cancel the operation
         public virtual async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
         {
-            // Skip routine if sophon is used
-            if (_isUseSophon)
+            // Skip routine if sophon is use
+            GameInstallStateEnum gameState = _gameVersionManager!.GetGameState();
+            if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
             {
                 // We are going to override the verification method from base class. So in order to bypass the loop,
                 // we need to ensure if the IsDownloadCompleted is true. If so, set it to false and return 1 as successful.
@@ -919,12 +925,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
-            // Skip installation if sophon is used
-            if (_isUseSophon)
-            {
-                return;
-            }
-
             InvokeProp.PreventSleep();
             
             // Sanity Check: Check if the _gamePath is null, then throw
@@ -995,6 +995,58 @@ namespace CollapseLauncher.InstallManager.Base
                 if (deleteList.Exists)
                 {
                     deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset!.PathOutput)}.txt"), true);
+                }
+
+                // If the asset is a plugin and it has running command statement, then
+                // try run the command.
+                if (!string.IsNullOrEmpty(asset.RunCommand))
+                {
+                    // Update the status
+                    _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.FinishingUp, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
+                    _status!.IsProgressPerFileIndetermined = true;
+                    _status!.IsProgressTotalIndetermined = true;
+                    UpdateStatus();
+
+                    try
+                    {
+                        string argument = "";
+                        string executableName = "";
+                        int indexOfArgument = asset.RunCommand.IndexOf(".exe ") + 5;
+                        if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
+                        {
+                            indexOfArgument = asset.RunCommand.IndexOf(' ');
+                        }
+
+                        if (indexOfArgument >= 0)
+                        {
+                            argument = asset.RunCommand.Substring(indexOfArgument);
+                            executableName = ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument).TrimEnd(' '));
+                        }
+                        else
+                        {
+                            executableName = asset.RunCommand;
+                        }
+
+                        string executablePath = Path.Combine(_gamePath, executableName);
+                        Process commandProcess = new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = executablePath,
+                                Arguments = argument,
+                                UseShellExecute = true,
+                            }
+                        };
+
+                        if (!commandProcess.Start())
+                            LogWriteLine($"Run command for the plugin cannot be started! Exit code: {commandProcess.ExitCode}", LogType.Warning, true);
+                        else
+                            await commandProcess.WaitForExitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}", LogType.Error, true);
+                    }
                 }
 
                 // If the _canDeleteZip flag is true and not in doNotDeleteZipExplicit mode, then delete the zip
@@ -1136,11 +1188,24 @@ namespace CollapseLauncher.InstallManager.Base
             if (forceUpdateToLatest)
             {
                 _gameVersionManager.UpdateGameVersionToLatest(true);
+#nullable enable
+                List<RegionResourcePlugin>? gamePluginList = _gameVersionManager.GetGamePluginZip();
+                if (gamePluginList != null && (gamePluginList?.Count ?? 0) != 0)
+                {
+                    Dictionary<string, GameVersion>? gamePluginVersionDictionary = new Dictionary<string, GameVersion>();
+                    foreach (RegionResourcePlugin plugins in gamePluginList!)
+                    {
+                        gamePluginVersionDictionary.Add(plugins.plugin_id, new GameVersion(plugins.version));
+                    }
+                    _gameVersionManager.UpdatePluginVersions(gamePluginVersionDictionary);
+                }
+#nullable restore
             }
+
             _gameVersionManager.Reinitialize();
 
             // Write the audio lang list file
-            if (_isUseSophon)
+            if (_isUseSophon && _sophonVOLanguageList.Count != 0)
             {
                 WriteAudioLangListSophon(_sophonVOLanguageList);
             }
@@ -2004,15 +2069,84 @@ namespace CollapseLauncher.InstallManager.Base
             // Clean the package list
             packageList.Clear();
 
-            // Iterate the package resource version and add it into packageList
-            foreach (RegionResourceVersion asset in usePreload ?
-                _gameVersionManager.GetGamePreloadZip() :
-                _gameVersionManager.GetGameLatestZip(gameState))
+            // If the package is not in plugin update state, then skip adding the package
+            if (gameState != GameInstallStateEnum.InstalledHavePlugin)
             {
-                if (asset == null) continue;
-                await TryAddResourceVersionList(asset, packageList);
+                // Iterate the package resource version and add it into packageList
+                foreach (RegionResourceVersion asset in usePreload ?
+                    _gameVersionManager.GetGamePreloadZip() :
+                    _gameVersionManager.GetGameLatestZip(gameState))
+                {
+                    if (asset == null) continue;
+                    await TryAddResourceVersionList(asset, packageList);
+                }
+            }
+
+            // Try get the plugin package
+            TryAddPluginPackage(packageList);
+        }
+
+#nullable enable
+        protected virtual void TryAddPluginPackage(List<GameInstallPackage> assetList)
+        {
+            const string pluginKeyStart = "plugin_";
+            const string pluginKeyEnd = "_version";
+
+            // Get the plugin resource list and if it's empty, return
+            List<RegionResourcePlugin>? pluginResourceList = _gameVersionManager.GetGamePluginZip();
+            if (pluginResourceList == null)
+                return;
+
+            // Parse game version INI configuration and search for the installed plugin.
+            // Matching it if the latest version is found, then remove the corresponding
+            Dictionary<string, RegionResourcePlugin> pluginResourceDictionary = pluginResourceList
+                .ToDictionary(asset => asset.plugin_id, StringComparer.OrdinalIgnoreCase);
+            
+            // If the game ini section is not null, then try eliminate the version section
+            if (_gameVersionManager.GameIniVersionSection != null)
+            {
+                foreach (KeyValuePair<string, IniValue> iniProperty in _gameVersionManager.GameIniVersionSection
+                    .Where(x => x.Key.StartsWith(pluginKeyStart) && x.Key.EndsWith(pluginKeyEnd)))
+                {
+                    // Get the plugin id from the ini property's key
+                    string iniKey = iniProperty.Key;
+                    int startIniKeyOffset = pluginKeyStart.Length;
+                    int startIniKeyLength = pluginKeyStart.LastIndexOf(pluginKeyEnd) - startIniKeyOffset;
+                    string iniPluginId = iniKey.AsSpan(startIniKeyOffset, startIniKeyLength).ToString();
+
+                    // Try remove the plugin resource from dictionary if found
+                    if (pluginResourceDictionary.ContainsKey(iniPluginId))
+                    {
+                        // Try to get the plugin version from both installed and api's one
+                        RegionResourcePlugin pluginResource = pluginResourceDictionary[iniPluginId];
+                        string pluginResourceVersion = pluginResource.version;
+                        if (GameVersion.TryParse(pluginResourceVersion, out GameVersion? pluginResourceVersionResult)
+                         && GameVersion.TryParse(iniProperty.ToString(), out GameVersion? installedPluginVersionResult))
+                        {
+                            // If the both plugin versions from API and INI is equal, then remove the package
+                            // from the dictionary.
+                            if (pluginResourceVersionResult?.ToVersion() == installedPluginVersionResult?.ToVersion())
+                            {
+                                // Remove the plugin resource
+                                pluginResourceDictionary.Remove(iniPluginId);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add the plugin resources to asset list
+            foreach (KeyValuePair<string, RegionResourcePlugin> pluginResource in pluginResourceDictionary)
+            {
+                if (!GameVersion.TryParse(pluginResource.Value.version, out GameVersion? pluginVersion))
+                {
+                    LogWriteLine($"Failed to parse plugin version: {pluginResource.Value.version} with id: {pluginResource.Key}", LogType.Error, true);
+                    continue;
+                }
+                assetList.Add(new GameInstallPackage(pluginResource.Value, _gamePath));
             }
         }
+#nullable restore
 
         private async ValueTask<int> CheckExistingOrAskFolderDialog()
         {
