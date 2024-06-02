@@ -575,6 +575,7 @@
     "ApplyingPatch": "Menerapkan Patch",
     "Disabled": "Mati",
     "Enabled": "Nyala",
+    "UseAsDefault": "Gunakan sebagai Bawaan",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -612,7 +613,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nama launcher tidak diketahui)",
-    
+
     "ImageCropperTitle": "Memotong Gambar"
   },
 
