@@ -1784,6 +1784,9 @@ namespace CollapseLauncher.InstallManager.Base
                 Directory.CreateDirectory(_gameDataPersistentPath);
             }
 
+            // If the game does not have audio lang list, then return
+            if (string.IsNullOrEmpty(_gameAudioLangListPathStatic)) return;
+
             // Create the audio lang list file
             using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
                 new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
@@ -1801,6 +1804,9 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Create persistent directory if not exist
             if (!Directory.Exists(_gameDataPersistentPath)) Directory.CreateDirectory(_gameDataPersistentPath);
+
+            // If the game does not have audio lang list, then return
+            if (string.IsNullOrEmpty(_gameAudioLangListPathStatic)) return;
 
             // Create the audio lang list file
             using (var sw = new StreamWriter(_gameAudioLangListPathStatic,

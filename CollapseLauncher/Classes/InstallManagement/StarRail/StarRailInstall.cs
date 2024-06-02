@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.StarRail
@@ -23,9 +22,9 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Properties
-        private string _execName { get; set; }
-        private string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
-        private string _gameAudioLangListPath
+        private string _execName { get => Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName); }
+        protected override string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
+        protected override string _gameAudioLangListPath
         {
             get
             {
@@ -42,15 +41,12 @@ namespace CollapseLauncher.InstallManager.StarRail
                 return audioRecordPath;
             }
         }
-        private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt"); }
+        protected override string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt"); }
         private StarRailRepair _gameRepairManager { get; set; }
         #endregion
 
         public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
-            : base(parentUI, GameVersionManager)
-        {
-            _execName = Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
-        }
+            : base(parentUI, GameVersionManager) { }
 
         #region Public Methods
         public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
