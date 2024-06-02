@@ -2118,7 +2118,7 @@ namespace CollapseLauncher.InstallManager.Base
                     // Get the plugin id from the ini property's key
                     string iniKey = iniProperty.Key;
                     int startIniKeyOffset = pluginKeyStart.Length;
-                    int startIniKeyLength = pluginKeyStart.LastIndexOf(pluginKeyEnd) - startIniKeyOffset;
+                    int startIniKeyLength = iniProperty.Key.LastIndexOf(pluginKeyEnd) - startIniKeyOffset;
                     string iniPluginId = iniKey.AsSpan(startIniKeyOffset, startIniKeyLength).ToString();
 
                     // Try remove the plugin resource from dictionary if found
@@ -2128,7 +2128,7 @@ namespace CollapseLauncher.InstallManager.Base
                         RegionResourcePlugin pluginResource = pluginResourceDictionary[iniPluginId];
                         string pluginResourceVersion = pluginResource.version;
                         if (GameVersion.TryParse(pluginResourceVersion, out GameVersion? pluginResourceVersionResult)
-                         && GameVersion.TryParse(iniProperty.ToString(), out GameVersion? installedPluginVersionResult))
+                         && GameVersion.TryParse(iniProperty.Value.ToString(), out GameVersion? installedPluginVersionResult))
                         {
                             // If the both plugin versions from API and INI is equal, then remove the package
                             // from the dictionary.
