@@ -460,30 +460,28 @@ namespace CollapseLauncher.GameVersioning
             }
 
             MismatchPlugin = null;
-
             foreach (var pluginVersion in pluginVersions)
             {
                 if (!installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion) ||
                     !pluginVersion.Value.IsMatch(installedPluginVersion))
                 {
                     // Uh-oh, we need to calculate the file hash.
-                    MismatchPlugin = await CheckPluginUpdate();
-                    if (MismatchPlugin.Count == 0)
+                    MismatchPlugin = await CheckPluginUpdate(pluginVersion.Key);
+                    if (MismatchPlugin.Count != 0)
                     {
-                        // Update cached plugin versions
-                        PluginVersionsInstalled = PluginVersionsAPI;
-                        return true;
+                        return false;
                     }
-
-                    return false;
                 }
             }
+
+            // Update cached plugin versions
+            PluginVersionsInstalled = PluginVersionsAPI;
 
             return true;
         #endif
         }
 
-        public virtual async ValueTask<List<RegionResourcePlugin>> CheckPluginUpdate()
+        public virtual async ValueTask<List<RegionResourcePlugin>> CheckPluginUpdate(string pluginKey)
         {
             List<RegionResourcePlugin> result = [];
             if (GameAPIProp.data?.plugins == null)
@@ -491,25 +489,35 @@ namespace CollapseLauncher.GameVersioning
                 return result;
             }
 
-            foreach (var plugin in GameAPIProp.data?.plugins!)
+            RegionResourcePlugin plugin = GameAPIProp.data?.plugins?
+                .FirstOrDefault(x => x.plugin_id.Equals(pluginKey, StringComparison.OrdinalIgnoreCase));
+            if (plugin == null)
             {
-                foreach (var validate in plugin.package.validate)
+                return result;
+            }
+
+            foreach (var validate in plugin.package.validate)
+            {
+                var path = Path.Combine(GameDirPath, validate.path);
+                try
                 {
-                    var path = Path.Combine(GameDirPath, validate.path);
-                    try
-                    {
-                        using var fs  = new FileStream(path, FileMode.Open, FileAccess.Read);
-                        var       md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
-                        if (md5 != validate.md5)
-                        {
-                            result.Add(plugin);
-                            break;
-                        }
-                    }
-                    catch (FileNotFoundException)
+                    if (!File.Exists(path))
                     {
                         result.Add(plugin);
+                        break;
                     }
+
+                    using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    var md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
+                    if (md5 != validate.md5)
+                    {
+                        result.Add(plugin);
+                        break;
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    result.Add(plugin);
                 }
             }
 
