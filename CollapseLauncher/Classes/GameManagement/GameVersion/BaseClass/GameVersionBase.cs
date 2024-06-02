@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -296,7 +297,7 @@ namespace CollapseLauncher.GameVersioning
             return GameVersionAPIPreload;
         }
 
-        public GameInstallStateEnum GetGameState()
+        public async ValueTask<GameInstallStateEnum> GetGameState()
         {
             // Check if the game installed first
             // If the game is installed, then move to another step.
@@ -308,14 +309,14 @@ namespace CollapseLauncher.GameVersioning
                     return GameInstallStateEnum.NeedsUpdate;
                 }
 
-                if (!IsPluginVersionsMatch())
-                {
-                    return GameInstallStateEnum.InstalledHavePlugin;
-                }
-
                 if (IsGameHasPreload())
                 {
                     return GameInstallStateEnum.InstalledHavePreload;
+                }
+
+                if (!await IsPluginVersionsMatch())
+                {
+                    return GameInstallStateEnum.InstalledHavePlugin;
                 }
 
                 // If passes, then return as Installed.
@@ -443,7 +444,7 @@ namespace CollapseLauncher.GameVersioning
             return GameVersionInstalled.Value.IsMatch(GameVersionAPI);
         }
 
-        public virtual bool IsPluginVersionsMatch()
+        public virtual async ValueTask<bool> IsPluginVersionsMatch()
         {
         #if !MHYPLUGINSUPPORT
             return true;
@@ -466,7 +467,7 @@ namespace CollapseLauncher.GameVersioning
                     !pluginVersion.Value.IsMatch(installedPluginVersion))
                 {
                     // Uh-oh, we need to calculate the file hash.
-                    MismatchPlugin = CheckPluginUpdate();
+                    MismatchPlugin = await CheckPluginUpdate();
                     if (MismatchPlugin.Count == 0)
                     {
                         // Update cached plugin versions
@@ -482,7 +483,7 @@ namespace CollapseLauncher.GameVersioning
         #endif
         }
 
-        public virtual List<RegionResourcePlugin> CheckPluginUpdate()
+        public virtual async ValueTask<List<RegionResourcePlugin>> CheckPluginUpdate()
         {
             List<RegionResourcePlugin> result = [];
             if (GameAPIProp.data?.plugins == null)
@@ -498,7 +499,7 @@ namespace CollapseLauncher.GameVersioning
                     try
                     {
                         using var fs  = new FileStream(path, FileMode.Open, FileAccess.Read);
-                        var       md5 = HexTool.BytesToHexUnsafe(MD5.HashData(fs));
+                        var       md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
                         if (md5 != validate.md5)
                         {
                             result.Add(plugin);

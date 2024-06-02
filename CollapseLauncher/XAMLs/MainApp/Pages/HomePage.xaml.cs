@@ -151,7 +151,7 @@ namespace CollapseLauncher.Pages
 
                 BackgroundImgChanger.ToggleBackground(false);
                 CheckIfRightSideProgress();
-                GetCurrentGameState();
+                await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                 {
@@ -203,7 +203,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                switch (CurrentGameProperty._GameVersion.GetGameState())
+                switch (await CurrentGameProperty._GameVersion.GetGameState())
                 {
                     case GameInstallStateEnum.InstalledHavePreload:
                     case GameInstallStateEnum.Installed:
@@ -743,7 +743,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game State
-        private void GetCurrentGameState()
+        private async ValueTask GetCurrentGameState()
         {
             Visibility RepairGameButtonVisible = (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
@@ -783,7 +783,7 @@ namespace CollapseLauncher.Pages
 
             if (CurrentGameProperty._GameVersion.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
 
-            GameInstallationState = CurrentGameProperty._GameVersion.GetGameState();
+            GameInstallationState = await CurrentGameProperty._GameVersion.GetGameState();
             switch (GameInstallationState)
             {
                 case GameInstallStateEnum.Installed:

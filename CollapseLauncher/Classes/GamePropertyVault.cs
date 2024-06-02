@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Statics
 {
@@ -183,19 +184,19 @@ namespace CollapseLauncher.Statics
             }
         }
 
-        public static void AttachNotifForCurrentGame(int hashID = int.MinValue)
+        public static async ValueTask AttachNotifForCurrentGame(int hashID = int.MinValue)
         {
             if (hashID < 0) hashID = CurrentGameHashID;
-            if (Vault!.ContainsKey(hashID)) AttachNotifForCurrentGame_Inner(hashID);
+            if (Vault!.ContainsKey(hashID)) await AttachNotifForCurrentGame_Inner(hashID);
         }
 
-        private static void AttachNotifForCurrentGame_Inner(int HashID)
+        private static async ValueTask AttachNotifForCurrentGame_Inner(int HashID)
         {
             GamePresetProperty GameProperty = Vault![HashID];
             if (GameProperty!._GameInstall!.IsRunning)
             {
                 var bgNotification = Locale.Lang!._BackgroundNotification!;
-                string actTitle = string.Format((GameProperty._GameVersion!.GetGameState() switch
+                string actTitle = string.Format((await GameProperty._GameVersion!.GetGameState() switch
                 {
                     GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
                     GameInstallStateEnum.NeedsUpdate          => bgNotification.CategoryTitle_Updating,

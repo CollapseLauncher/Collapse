@@ -158,8 +158,9 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
 
             // If the game has already installed or in preload, then try get Voice language ID from registry
-            if (_gameInstallationStatus == GameInstallStateEnum.InstalledHavePreload
-             || _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate)
+            GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
+            if (gameState == GameInstallStateEnum.InstalledHavePreload
+             || gameState == GameInstallStateEnum.NeedsUpdate)
             {
                 // Try get the voice language ID from the registry
                 langID = _gameVoiceLanguageID;

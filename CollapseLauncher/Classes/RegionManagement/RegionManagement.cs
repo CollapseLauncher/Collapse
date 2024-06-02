@@ -69,7 +69,7 @@ namespace CollapseLauncher
                 IsLoadRegionComplete = false;
             }
 
-            void AfterLoadRoutine(CancellationToken token)
+            async void AfterLoadRoutine(CancellationToken token)
             {
                 LoadingMessageHelper.HideActionButton();
                 LoadingMessageHelper.HideLoadingFrame();
@@ -77,7 +77,7 @@ namespace CollapseLauncher
                 IsLoadRegionComplete = true;
 
                 LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
-                FinalizeLoadRegion(gameName, gameRegion);
+                await FinalizeLoadRegion(gameName, gameRegion);
                 ChangeBackgroundImageAsRegionAsync();
             }
 
@@ -153,7 +153,7 @@ namespace CollapseLauncher
             await ImageLoaderHelper.DownloadAndEnsureCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg, LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, Token);
         }
 
-        private void FinalizeLoadRegion(string gameName, string gameRegion)
+        private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
@@ -161,15 +161,15 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
-            LoadGameStaticsByGameType(preset, gameName, gameRegion);
+            await LoadGameStaticsByGameType(preset, gameName, gameRegion);
 
             // Init NavigationPanel Items
             InitializeNavigationItems();
         }
 
-        private void LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
+        private async ValueTask LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
         {
-            GamePropertyVault.AttachNotifForCurrentGame();
+            await GamePropertyVault.AttachNotifForCurrentGame();
             DisposeAllPageStatics();
 
             GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);

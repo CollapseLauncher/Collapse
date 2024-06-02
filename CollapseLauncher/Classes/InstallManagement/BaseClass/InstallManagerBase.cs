@@ -70,7 +70,6 @@ namespace CollapseLauncher.InstallManager.Base
         protected GameVersion _gameLatestVersion { get => _gameVersionManager!.GetGameVersionAPI(); }
         protected GameVersion? _gameLatestPreloadVersion { get => _gameVersionManager!.GetGameVersionAPIPreload(); }
         protected GameVersion? _gameInstalledVersion { get => _gameVersionManager!.GetGameExistingVersion(); }
-        protected GameInstallStateEnum _gameInstallationStatus { get => _gameVersionManager!.GetGameState(); }
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
         protected virtual int _gameVoiceLanguageID { get => int.MinValue; }
         protected virtual string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
@@ -157,7 +156,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Initialize the game state and game package list
             if (_gameDeltaPatchPreReqList != null) _gameDeltaPatchPreReqList.Clear();
-            GameInstallStateEnum gameState = _gameInstallationStatus;
+            GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
             // proceed with the delta patch update
@@ -228,7 +227,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai, bool isSR = false)
         {
             // Initialize the state and the package
-            GameInstallStateEnum gameState = _gameInstallationStatus;
+            GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
 
             // ReSharper disable once UnusedVariable
             List<GameInstallPackage> gamePackage = new();
@@ -471,7 +470,7 @@ namespace CollapseLauncher.InstallManager.Base
             ResetToken();
 
             // Get the game state and run the action for each of them
-            GameInstallStateEnum gameState = _gameVersionManager!.GetGameState();
+            GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
 
             if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
@@ -543,7 +542,7 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
         {
             // Skip routine if sophon is use
-            GameInstallStateEnum gameState = _gameVersionManager!.GetGameState();
+            GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
             if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
             {
                 // We are going to override the verification method from base class. So in order to bypass the loop,
@@ -665,7 +664,7 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonLogger.LogHandler += UpdateSophonLogHandler;
 
                 // Get the requested URL and version based on current state.
-                var gameState = _gameVersionManager!.GetGameState();
+                var gameState = await _gameVersionManager!.GetGameState();
                 var requestedUrl = gameState switch
                 {
                     GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
@@ -2080,6 +2079,14 @@ namespace CollapseLauncher.InstallManager.Base
                     if (asset == null) continue;
                     await TryAddResourceVersionList(asset, packageList);
                 }
+
+                // Check if the existing installation has the plugin installed or not
+                if (!await _gameVersionManager.IsPluginVersionsMatch())
+                {
+                    // Try get the plugin package
+                    TryAddPluginPackage(packageList);
+                }
+                return;
             }
 
             // Try get the plugin package

@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
 {
@@ -109,7 +110,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Checks if the plugin version is installed or matches the version provided from miHoYo's API.
         /// </summary>
-        bool IsPluginVersionsMatch();
+        ValueTask<bool> IsPluginVersionsMatch();
 
         /// <summary>
         /// Check if the game version is installed.
@@ -129,7 +130,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns the state of the game.
         /// </summary>
-        GameInstallStateEnum GetGameState();
+        ValueTask<GameInstallStateEnum> GetGameState();
 
         /// <summary>
         /// Returns the Delta-patch file property.
