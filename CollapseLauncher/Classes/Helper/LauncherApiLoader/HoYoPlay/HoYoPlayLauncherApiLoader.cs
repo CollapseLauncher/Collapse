@@ -383,7 +383,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                         IconImg = hypSocMedData?.SocialMediaIcon?.ImageUrl,
                         IconImgHover = string.IsNullOrEmpty(hypSocMedData?.SocialMediaIcon?.ImageHoverUrl) ? hypSocMedData?.SocialMediaIcon?.ImageUrl : hypSocMedData?.SocialMediaIcon?.ImageHoverUrl,
                         Title = hypSocMedData?.SocialMediaIcon?.Title,
-                        SocialMediaUrl = hypSocMedData?.SocialMediaLinks?.FirstOrDefault()?.ClickLink,
+                        SocialMediaUrl = (hypSocMedData?.SocialMediaLinks?.Count ?? 0) != 0 ?
+                            hypSocMedData?.SocialMediaLinks?.FirstOrDefault()?.ClickLink :
+                            hypSocMedData?.SocialMediaIcon?.ClickLink,
                         QrImg = hypSocMedData?.SocialMediaQrImage?.ImageUrl,
                         QrTitle = hypSocMedData?.SocialMediaQrDescription,
                         QrLinks = hypSocMedData?.SocialMediaLinks?.Select(x =>
