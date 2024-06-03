@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img width="512px" height="auto" src="https://cdn.discordapp.com/attachments/1116150301649543230/1234954798088982538/CollapseLauncherIdolType.png?ex=66388b88&is=66373a08&hm=d467954d1ef0c9d26ba0ac29e6bb19cff0c382a5fe252a6abd0125fca7ad38af"/><br/>
+  <img width="512px" height="auto" src="https://raw.githubusercontent.com/CollapseLauncher/Collapse/main/Docs/Imgs/CollapseLauncherIdolType.png"/><br/>
   <i>I know, it's not a good one. But at least we made it lol</i>
   <i>~ neon-nyan</i>
   <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/NewBannerv2_color.webp"/>
@@ -232,15 +232,27 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - Also read our [**Third Party Notices**](THIRD_PARTY_NOTICES.md) for license used by third party libraries that we use.
 
 # Third-party repositories and libraries used in this project
-- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
-- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft
-- [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
-- [**Color Thief .NET**](https://github.com/neon-nyan/ColorThief) by KSemenenko
-- [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection
-- [**Hi3Helper.Http**](https://github.com/neon-nyan/Hi3Helper.Http) by neon-nyan
-- [**Hi3Helper.EncTool**](https://github.com/neon-nyan/Hi3Helper.EncTool) by neon-nyan
-- [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) by force-net
-- [**UABT**](https://github.com/neon-nyan/UABT) by _unknown_
+- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft under [**MIT License**](https://github.com/microsoft/microsoft-ui-xaml/blob/main/LICENSE)
+- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft under [**MIT License**](https://github.com/microsoft/WindowsAppSDK/blob/main/LICENSE)
+- [**SharpHDiffPatch**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core) by neon-nyan (original port of [**HPatchZ** by **housisong**](https://github.com/sisong/HDiffPatch)) under [**MIT License**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core/blob/main/LICENSE)
+- [**Color Thief .NET**](https://github.com/CollapseLauncher/ColorThief) by KSemenenko and forked by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/ColorThief/blob/master/LICENSE)
+- [**SevenZipExtractor**](https://github.com/CollapseLauncher/SevenZipExtractor) by Alexander Selishchev (adoconnection) and forked by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/SevenZipExtractor/blob/master/LICENSE)
+- [**Hi3Helper.Http**](https://github.com/CollapseLauncher/Hi3Helper.Http) by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/Hi3Helper.Http/blob/master/LICENSE)
+- [**Hi3Helper.EncTool**](https://github.com/CollapseLauncher/Hi3Helper.EncTool) by neon-nyan
+- [**Hi3Helper.SharpDiscordRPC**](https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC) from [**discord-rpc-csharp** by Lachee](https://github.com/Lachee/discord-rpc-csharp) and forked by Collapse Project Team under [**MIT License**](https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC/blob/master/LICENSE)
+- [**Hi3Helper.Sophon**](https://github.com/CollapseLauncher/Hi3Helper.Sophon) by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/Hi3Helper.Sophon/blob/master/LICENSE)
+- [**Hi3Helper.ZstdNet**](https://github.com/CollapseLauncher/Hi3Helper.ZetdNet) by skbkontur and forked by neon-nyan under [**BSD-3-Clause License**](https://github.com/CollapseLauncher/Hi3Helper.ZetdNet/blob/master/LICENSE)
+- [**InnoSetupLogParser**](https://github.com/CollapseLauncher/InnoSetupLogParser) from [**isulr** by preseverence](https://github.com/preseverence/isulr) and forked by neon-nyan under [**WTFPL License**](https://github.com/CollapseLauncher/InnoSetupLogParser/blob/master/LICENSE)
+- [**Google Protobuf**](https://github.com/protocolbuffers/protobuf) by Google LLC under [**BSD-3-Clause License**](https://github.com/protocolbuffers/protobuf/blob/main/LICENSE)
+- [**Clowd.Squirrel**](https://github.com/clowd/Clowd.Squirrel/tree/1c7eb5e1f40629cfdbe201f9d56b802ec41fea63) by clowd under [**MIT License**](https://github.com/clowd/Clowd.Squirrel/blob/1c7eb5e1f40629cfdbe201f9d56b802ec41fea63/LICENSE)
+- [**Windows Community Toolkit**](https://github.com/CommunityToolkit/Windows) by Microsoft under [**MIT License**](https://github.com/CommunityToolkit/Windows/blob/main/License.md)
+- [**GitInfo**](https://github.com/devlooped/GitInfo) by Daniel Cazzulino (devlooped) under [**MIT License**](https://github.com/devlooped/GitInfo/blob/main/license.txt)
+- [**H.NotifyIcon**](https://github.com/HavenDV/H.NotifyIcon) by Konstantin S. (HavenDV) under [**MIT License**](https://github.com/HavenDV/H.NotifyIcon/blob/master/LICENSE.md)
+- [**HTML Agility Pack**](https://github.com/zzzprojects/html-agility-pack) by zzzproject under [**MIT License**](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
+- [**RomanNumerals**](https://github.com/picrap/RomanNumerals) by Pascal Craponne (picrap) under [**MIT License**](https://github.com/picrap/RomanNumerals/blob/master/LICENSE)
+- [**TaskScheduler**](https://github.com/dahall/taskscheduler) by David Hall (dahall) under [**MIT License**](https://github.com/dahall/TaskScheduler/blob/master/license.md)
+- [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by Adam Hathcock (adamhathcock) under [**MIT License**](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
+- [**UABT**](https://github.com/CollapseLauncher/UABT) by _unknown_
 
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
 

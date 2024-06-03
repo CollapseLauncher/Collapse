@@ -198,14 +198,14 @@ namespace Hi3Helper
         /// <exception cref="ArgumentException"></exception>
         private string GetLabelString(LogType type) => type switch
         {
-            LogType.Default => "[Info]",
-            LogType.Error => "[Erro]",
-            LogType.Warning => "[Warn]",
-            LogType.Scheme => "[Schm]",
-            LogType.Game => "[Game]",
-            LogType.Debug => "[DBG]",
-            LogType.GLC => "[GLC]",
-            LogType.NoTag => "      ",
+            LogType.Default => "[Info]  ",
+            LogType.Error   => "[Erro]  ",
+            LogType.Warning => "[Warn]  ",
+            LogType.Scheme  => "[Schm]  ",
+            LogType.Game    => "[Game]  ",
+            LogType.Debug   => "[DBG]   ",
+            LogType.GLC     => "[GLC]   ",
+            LogType.NoTag   => "      ",
             _ => throw ThrowInvalidType()
         };
 #endregion

@@ -28,28 +28,27 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
                 await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
 
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
-                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
-
             HoYoPlayLauncherResources? hypResourceResponse = await hypResourceResponseCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
-            HoYoPlayLauncherResources? hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+
+            HoYoPlayLauncherResources? hypPluginResource = null;
+            if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
+            {
+                ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
+                    new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
+
+                hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                  ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+            }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest
             {
 
             };
 
-            RegionResourceLatest sophonResourcePreDownload = new RegionResourceLatest
-            {
-
-            };
-
             RegionResourceGame sophonResourceData = new RegionResourceGame
             {
-                pre_download_game = sophonResourcePreDownload,
                 game = sophonResourceCurrentPackage
             };
 
@@ -96,16 +95,18 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
                 RegionResourcePlugin sophonPlugin = new RegionResourcePlugin();
                 sophonPlugin.version = firstPluginSection.Version;
-                // sophonPlugin.plugin_id = firstPluginSection.PluginId;
+                sophonPlugin.plugin_id = firstPluginSection.PluginId;
+                sophonPlugin.release_id = firstPluginSection.ReleaseId;
                 sophonPlugin.package = new RegionResourceVersion
                 {
                     validate = firstPluginSection.PluginPackage?.PackageAssetValidationList,
-                    // channel_id = firstPluginSection.PluginId,
                     md5 = firstPluginSection.PluginPackage?.PackageMD5Hash,
                     url = firstPluginSection.PluginPackage?.PackageUrl,
                     path = firstPluginSection.PluginPackage?.PackageUrl,
                     size = firstPluginSection.PluginPackage?.PackageDecompressSize ?? 0,
-                    package_size = firstPluginSection.PluginPackage?.PackageSize ?? 0
+                    package_size = firstPluginSection.PluginPackage?.PackageSize ?? 0,
+                    run_command = firstPluginSection.PluginPackage?.PackageRunCommand,
+                    version = firstPluginSection.Version
                 };
 
                 sophonPluginList.Add(sophonPlugin);
@@ -144,26 +145,34 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                         }
                     }
                 }
+                sophonPackageResources.pre_download_game = new RegionResourceLatest();
 
-                // Assign and convert preload game package (latest)
-                PackageResourceSections? hypPreloadPackageSection = hypRootPackage?.PreDownload?.CurrentVersion;
-                RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
-                if (hypPreloadPackageSection != null)
-                    ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
-                sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
-
-                // Assign and convert preload game package (diff)
-                if (hypRootPackage?.PreDownload?.Patches != null)
+                // Convert if preload entry is not empty or null
+                if (hypRootPackage?.PreDownload?.CurrentVersion != null || (hypRootPackage?.PreDownload?.Patches?.Count ?? 0) != 0)
                 {
-                    sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
-                    foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload.Patches)
+
+                    // Assign and convert preload game package (latest)
+                    PackageResourceSections? hypPreloadPackageSection = hypRootPackage?.PreDownload?.CurrentVersion;
+                    if (hypPreloadPackageSection != null)
                     {
-                        if (hypPreloadDiffPackageSection != null)
+                        RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
+                        ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
+                        sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
+                    }
+
+                    // Assign and convert preload game package (diff)
+                    if (hypRootPackage?.PreDownload?.Patches != null && hypRootPackage.PreDownload.Patches.Count != 0)
+                    {
+                        sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
+                        foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload.Patches)
                         {
-                            PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
-                            RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
-                            ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef, ref sophonResourceVersion);
-                            sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
+                            if (hypPreloadDiffPackageSection != null)
+                            {
+                                PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
+                                RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
+                                ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef, ref sophonResourceVersion);
+                                sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
+                            }
                         }
                     }
                 }

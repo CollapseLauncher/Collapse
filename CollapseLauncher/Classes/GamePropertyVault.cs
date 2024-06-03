@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Statics
 {
@@ -47,7 +48,7 @@ namespace CollapseLauncher.Statics
                     _GameSettings = new GenshinSettings(_GameVersion);
                     _GameCache = null;
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
-                    _GameInstall = GamePreset.LauncherResourceChunksURL != null ? new GenshinSophonInstall(UIElementParent, _GameVersion) : new GenshinInstall(UIElementParent, _GameVersion);
+                    _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
                     break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
@@ -61,14 +62,30 @@ namespace CollapseLauncher.Statics
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
         internal IGameInstallManager _GameInstall { get; set; }
-        internal bool IsGameRunning
+
+        private string _gameExecutableName;
+        private string _gameExecutableNameWithoutExtension;
+        internal string _GameExecutableName
         {
             get
             {
-                string name = Path.GetFileNameWithoutExtension(_GamePreset!.GameExecutableName);
-                Process[] processes = Process.GetProcessesByName(name);
-                return processes.Length > 0;
+                if (string.IsNullOrEmpty(_gameExecutableName))
+                    _gameExecutableName = _GamePreset!.GameExecutableName;
+                return _gameExecutableName;
             }
+        }
+        internal string _GameExecutableNameWithoutExtension
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_gameExecutableNameWithoutExtension))
+                    _gameExecutableNameWithoutExtension = Path.GetFileNameWithoutExtension(_GameExecutableName);
+                return _gameExecutableNameWithoutExtension;
+            }
+        }
+        internal bool IsGameRunning
+        {
+            get => InvokeProp.IsProcessExist(_GameExecutableName);
         }
 
 #nullable enable
@@ -167,19 +184,19 @@ namespace CollapseLauncher.Statics
             }
         }
 
-        public static void AttachNotifForCurrentGame(int hashID = int.MinValue)
+        public static async ValueTask AttachNotifForCurrentGame(int hashID = int.MinValue)
         {
             if (hashID < 0) hashID = CurrentGameHashID;
-            if (Vault!.ContainsKey(hashID)) AttachNotifForCurrentGame_Inner(hashID);
+            if (Vault!.ContainsKey(hashID)) await AttachNotifForCurrentGame_Inner(hashID);
         }
 
-        private static void AttachNotifForCurrentGame_Inner(int HashID)
+        private static async ValueTask AttachNotifForCurrentGame_Inner(int HashID)
         {
             GamePresetProperty GameProperty = Vault![HashID];
             if (GameProperty!._GameInstall!.IsRunning)
             {
                 var bgNotification = Locale.Lang!._BackgroundNotification!;
-                string actTitle = string.Format((GameProperty._GameVersion!.GetGameState() switch
+                string actTitle = string.Format((await GameProperty._GameVersion!.GetGameState() switch
                 {
                     GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
                     GameInstallStateEnum.NeedsUpdate          => bgNotification.CategoryTitle_Updating,

@@ -6,6 +6,8 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Sophon;
+using Hi3Helper.Sophon.Helper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -270,6 +272,58 @@ namespace CollapseLauncher.Interfaces
                 // Trigger update
                 UpdateAll();
             }
+        }
+        #endregion
+
+        #region ProgressEventHandlers - SophonInstaller
+        protected async void UpdateSophonDownloadProgress(long read)
+        {
+            Interlocked.Add(ref _progressTotalSizeCurrent, read);
+            _progressTotalReadCurrent += read;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Assign local sizes to progress
+                _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
+                _progress.ProgressTotalSizeToDownload = _progressTotalSize;
+
+                // Calculate the speed
+                _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+
+                // Calculate percentage
+                _progress.ProgressTotalPercentage =
+                    Math.Round((double)_progressTotalSizeCurrent / _progressTotalSize * 100, 2);
+                // Calculate the timelapse
+                _progress.ProgressTotalTimeLeft =
+                    ((_progressTotalSize - _progressTotalSizeCurrent) /
+                     ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+
+                UpdateProgress();
+            }
+        }
+
+        protected void UpdateSophonDownloadStatus(SophonAsset asset)
+        {
+            Interlocked.Add(ref _progressTotalCountCurrent, 1);
+            _status.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Downloading,
+                                     string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent,
+                                        _progressTotalCount));
+            UpdateStatus();
+        }
+
+        protected void UpdateSophonLogHandler(object sender, LogStruct e)
+        {
+#if !DEBUG
+            if (e.LogLevel == LogLevel.Debug) return;
+#endif
+            (bool isNeedWriteLog, LogType logType) logPair = e.LogLevel switch
+            {
+                LogLevel.Warning => (true, LogType.Warning),
+                LogLevel.Debug => (true, LogType.Debug),
+                LogLevel.Error => (true, LogType.Error),
+                _ => (true, LogType.Default)
+            };
+            LogWriteLine(e.Message, logPair.logType, logPair.isNeedWriteLog);
         }
         #endregion
 

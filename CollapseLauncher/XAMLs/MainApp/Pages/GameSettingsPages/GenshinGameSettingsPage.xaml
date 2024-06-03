@@ -651,28 +651,22 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock MaxWidth="128"
-                                                   Margin="0,0,0,8"
-                                                   HorizontalAlignment="Left"
-                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
-                                                   TextWrapping="Wrap" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <ComboBox x:Name="GlobalIlluminationSelector"
-                                                      Margin="0,0,0,8"
-                                                      HorizontalAlignment="Stretch"
-                                                      CornerRadius="14"
-                                                      SelectedIndex="{x:Bind GlobalIllumination, Mode=TwoWay}">
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecDisabled}" />
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecMedium}" />
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecHigh}" />
-                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecExtreme}" />
-                                            </ComboBox>
-                                            <Button Width="16"
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Margin="0,0,0,8"
+                                                       HorizontalAlignment="Left"
+                                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
+                                                       TextWrapping="WrapWholeWords" />
+                                            <Button Grid.Column="1"
+                                                    Width="24"
                                                     Height="24"
-                                                    Margin="4,-10,0,0"
+                                                    Margin="0,0,8,0"
                                                     Padding="0"
-                                                    HorizontalAlignment="Center"
+                                                    HorizontalAlignment="Right"
                                                     CornerRadius="4">
                                                 <Button.Content>
                                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
@@ -694,7 +688,17 @@
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
-                                        </StackPanel>
+                                        </Grid>
+                                        <ComboBox x:Name="GlobalIlluminationSelector"
+                                                  Margin="0,0,8,8"
+                                                  HorizontalAlignment="Stretch"
+                                                  CornerRadius="14"
+                                                  SelectedIndex="{x:Bind GlobalIllumination, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecExtreme}" />
+                                        </ComboBox>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>

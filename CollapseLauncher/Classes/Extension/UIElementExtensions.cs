@@ -263,16 +263,35 @@ namespace CollapseLauncher.Extension
             SetHeight(element, uniform);
             return ref Unsafe.AsRef(ref element);
         }
+        internal static ref TElement WithMinWidthAndMinHeight<TElement>(this TElement element, double uniform)
+            where TElement : FrameworkElement
+        {
+            SetMinWidth(element, uniform);
+            SetMinHeight(element, uniform);
+            return ref Unsafe.AsRef(ref element);
+        }
         internal static ref TElement WithWidth<TElement>(this TElement element, double width)
             where TElement : FrameworkElement
         {
             SetWidth(element, width);
             return ref Unsafe.AsRef(ref element);
         }
+        internal static ref TElement WithMinWidth<TElement>(this TElement element, double width)
+            where TElement : FrameworkElement
+        {
+            SetMinWidth(element, width);
+            return ref Unsafe.AsRef(ref element);
+        }
         internal static ref TElement WithHeight<TElement>(this TElement element, double height)
             where TElement : FrameworkElement
         {
             SetHeight(element, height);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithMinHeight<TElement>(this TElement element, double height)
+            where TElement : FrameworkElement
+        {
+            SetMinHeight(element, height);
             return ref Unsafe.AsRef(ref element);
         }
 
@@ -431,10 +450,22 @@ namespace CollapseLauncher.Extension
             SetHorizontalAlignment(element, alignment);
             return ref Unsafe.AsRef(ref element);
         }
+        internal static ref TElement WithHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
+            where TElement : Control
+        {
+            SetHorizontalContentAlignment(element, alignment);
+            return ref Unsafe.AsRef(ref element);
+        }
         internal static ref TElement WithVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : FrameworkElement
         {
             SetVerticalAlignment(element, alignment);
+            return ref Unsafe.AsRef(ref element);
+        }
+        internal static ref TElement WithVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
+            where TElement : Control
+        {
+            SetVerticalContentAlignment(element, alignment);
             return ref Unsafe.AsRef(ref element);
         }
 
@@ -477,6 +508,10 @@ namespace CollapseLauncher.Extension
         internal static void SetColumnSpacing<TGrid>(this TGrid element, double columnSpacing)
             where TGrid : Grid => element.ColumnSpacing = columnSpacing;
 
+        internal static void SetMinWidth<TElement>(this TElement element, double width)
+            where TElement : FrameworkElement => element.MinWidth = width;
+        internal static void SetMinHeight<TElement>(this TElement element, double height)
+            where TElement : FrameworkElement => element.MinHeight = height;
         internal static void SetWidth<TElement>(this TElement element, double width)
             where TElement : FrameworkElement => element.Width = width;
         internal static void SetHeight<TElement>(this TElement element, double height)
@@ -579,6 +614,11 @@ namespace CollapseLauncher.Extension
 
         internal static void SetButtonFlyout<TButton>(this TButton button, FlyoutBase flyout)
             where TButton : Button => button.Flyout = flyout;
+
+        internal static void SetHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
+            where TElement : Control => element.HorizontalContentAlignment = alignment;
+        internal static void SetVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
+            where TElement : Control => element.VerticalContentAlignment = alignment;
 
         internal static void SetHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
             where TElement : FrameworkElement => element.HorizontalAlignment = alignment;

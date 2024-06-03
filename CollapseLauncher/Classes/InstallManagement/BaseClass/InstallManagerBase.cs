@@ -1,4 +1,5 @@
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper.Metadata;
@@ -10,6 +11,8 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Sophon.Structs;
+using Hi3Helper.Sophon;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,9 +21,11 @@ using SevenZipExtractor;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,11 +35,16 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
+using System.Net;
+
 
 #if USENEWZIPDECOMPRESS
 using ZipArchive = SharpCompress.Archives.Zip.ZipArchive;
 using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 #endif
+
+using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
+using SophonManifest = Hi3Helper.Sophon.SophonManifest;
 
 namespace CollapseLauncher.InstallManager.Base
 {
@@ -60,9 +70,12 @@ namespace CollapseLauncher.InstallManager.Base
         protected GameVersion _gameLatestVersion { get => _gameVersionManager!.GetGameVersionAPI(); }
         protected GameVersion? _gameLatestPreloadVersion { get => _gameVersionManager!.GetGameVersionAPIPreload(); }
         protected GameVersion? _gameInstalledVersion { get => _gameVersionManager!.GetGameExistingVersion(); }
-        protected GameInstallStateEnum _gameInstallationStatus { get => _gameVersionManager!.GetGameState(); }
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
         protected virtual int _gameVoiceLanguageID { get => int.MinValue; }
+        protected virtual string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
+        protected virtual string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
+        protected virtual string _gameAudioLangListPath { get => null; }
+        protected virtual string _gameAudioLangListPathStatic { get => null; }
         protected IRepair _gameRepairTool { get; set; }
         protected Http _httpClient { get; private set; }
         protected bool _canDeleteHdiffReference { get => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteHdiffReference")); }
@@ -77,6 +90,11 @@ namespace CollapseLauncher.InstallManager.Base
         protected List<GameInstallPackage> _gameDeltaPatchPreReqList = new();
         protected bool _forceIgnoreDeltaPatch;
         private long _totalLastSizeCurrent;
+
+        protected bool _isUseSophon { get => base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null; }
+        protected bool _isSophonDownloadCompleted { get; set; }
+        protected List<string> _sophonVOLanguageList { get; set; } = new();
+
         #endregion
 
         #region Public Properties
@@ -138,7 +156,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Initialize the game state and game package list
             if (_gameDeltaPatchPreReqList != null) _gameDeltaPatchPreReqList.Clear();
-            GameInstallStateEnum gameState = _gameInstallationStatus;
+            GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
             // proceed with the delta patch update
@@ -209,7 +227,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai, bool isSR = false)
         {
             // Initialize the state and the package
-            GameInstallStateEnum gameState = _gameInstallationStatus;
+            GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
 
             // ReSharper disable once UnusedVariable
             List<GameInstallPackage> gamePackage = new();
@@ -349,6 +367,10 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 InvokeProp.PreventSleep();
 
+                // Skip installation if sophon is used and not in update state
+                if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+                    return true;
+
                 // Start the download routine
                 await StartDeltaPatchPreReqDownload(gamePackage);
 
@@ -448,8 +470,14 @@ namespace CollapseLauncher.InstallManager.Base
             ResetToken();
 
             // Get the game state and run the action for each of them
-            GameInstallStateEnum gameState = _gameVersionManager!.GetGameState();
+            GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
+
+            if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+            {
+                await StartPackageDownloadSophon();
+                gameState = GameInstallStateEnum.InstalledHavePlugin;
+            }
 
             try
             {
@@ -513,6 +541,23 @@ namespace CollapseLauncher.InstallManager.Base
         //       -1      -> Cancel the operation
         public virtual async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
         {
+            // Skip routine if sophon is use
+            GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
+            if ((_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+              || _isSophonDownloadCompleted)
+            {
+                // We are going to override the verification method from base class. So in order to bypass the loop,
+                // we need to ensure if the IsDownloadCompleted is true. If so, set it to false and return 1 as successful.
+                // Otherwise, return 0 as continue the installation.
+                if (_isSophonDownloadCompleted)
+                {
+                    _isSophonDownloadCompleted = false;
+                    return 1;
+                }
+
+                return 0;
+            }
+
             try
             {
                 gamePackage ??= _assetIndex;
@@ -579,6 +624,206 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             return 1;
+        }
+
+        public virtual async Task StartPackageDownloadSophon()
+        {
+            // Set the flag to false
+            _isSophonDownloadCompleted = false;
+
+            // Set the max thread and httpHandler based on settings
+            int maxThread = Math.Max((int)_threadCount, 2);
+            int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
+            maxHttpHandler = Math.Max(maxHttpHandler, maxThread);
+
+            LogWriteLine($"Initializing Sophon Chunk download method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
+                                LogType.Default, true);
+
+            // Initialize the HTTP client
+            HttpClientHandler httpClientHandler = new HttpClientHandler
+            {
+                MaxConnectionsPerServer = maxHttpHandler
+            };
+            HttpClient httpClient = new HttpClient(httpClientHandler)
+            {
+                DefaultRequestVersion = HttpVersion.Version30,
+                DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower
+            };
+
+            try
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Running);
+
+                // Reset status and progress properties
+                ResetStatusAndProgressProperty();
+
+                // Clear the VO language list
+                _sophonVOLanguageList?.Clear();
+
+                // Subscribe the logger event
+                SophonLogger.LogHandler += UpdateSophonLogHandler;
+
+                // Get the requested URL and version based on current state.
+                var gameState = await _gameVersionManager!.GetGameState();
+                var requestedUrl = gameState switch
+                {
+                    GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                       .LauncherResourceChunksURL.PreloadUrl,
+                    _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                };
+                var requestedVersion = gameState switch
+                {
+                    GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                       .GetGameVersionAPIPreload(),
+                    _ => _gameVersionManager!.GetGameVersionAPI()
+                } ?? _gameVersionManager!.GetGameVersionAPI();
+
+                // Add the tag query to the Url
+                requestedUrl += $"&tag={requestedVersion.ToString()}";
+
+                // Set the progress bar to indetermined
+                _status!.IsIncludePerFileIndicator = false;
+                _status!.IsProgressPerFileIndetermined = false;
+                _status!.IsProgressTotalIndetermined = true;
+                UpdateStatus();
+
+                // Initialize the info pair list
+                var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
+
+                // Get the info pair based on info provided above (for main game file)
+                var sophonMainInfoPair = await
+                    SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
+                sophonInfoPairList.Add(sophonMainInfoPair);
+
+                List<string> voLanguageList = GetAudioLanguageSophonStringList(sophonMainInfoPair.OtherSophonData);
+
+                // Run the audio dialog question
+                (List<int> addedVO, int setAsDefaultVO) = await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList, 2);
+                if (addedVO == null || setAsDefaultVO < 0)
+                    throw new TaskCanceledException();
+
+                for (int i = 0; i < addedVO.Count; i++)
+                {
+                    int voLangIndex = addedVO[i];
+                    string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                    _sophonVOLanguageList.Add(voLangLocaleCode);
+
+                    // Get the info pair based on info provided above (for the selected VO audio file)
+                    SophonChunkManifestInfoPair sophonSelectedVoLang = sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                    sophonInfoPairList.Add(sophonSelectedVoLang);
+                }
+
+                // Set the voice language ID to value given
+                _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+
+                // Get the remote total size and current total size
+                _progressTotalCount = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                _progressTotalSize = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                _progressTotalSizeCurrent = 0;
+
+                // Get the parallel options
+                var parallelOptions = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = maxThread,
+                    CancellationToken = _token.Token
+                };
+
+                // Start over the stopwatch
+                RestartStopwatch();
+
+                // Set the progress bar to indetermined
+                _status!.IsIncludePerFileIndicator = false;
+                _status!.IsProgressPerFileIndetermined = false;
+                _status!.IsProgressTotalIndetermined = false;
+                UpdateStatus();
+
+                // Enumerate the asset in parallel and start the download process
+                foreach (var sophonDownloadInfoPair in sophonInfoPairList)
+                    await Parallel.ForEachAsync(
+                                                SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
+                                                parallelOptions,
+                                                async (asset, threadToken) =>
+                                                    await RunSophonAssetDownloadThread(httpClient, asset, parallelOptions));
+
+                // Rename temporary files
+                foreach (var sophonDownloadInfoPair in sophonInfoPairList)
+                    await Parallel.ForEachAsync(
+                                                SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
+                                                parallelOptions,
+                                                async (asset, threadToken) =>
+                                                {
+                                                    // If the asset is a dictionary, then return
+                                                    if (asset.IsDirectory) return;
+
+                                                    // Get the file path and start the write process
+                                                    var assetName = asset.AssetName;
+                                                    var filePath =
+                                                        EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
+                                                        "_tempSophon";
+                                                    var origFilePath = Path.Combine(_gamePath, assetName);
+
+                                                    if (File.Exists(filePath))
+                                                        File.Move(filePath, origFilePath, true);
+                                                });
+
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
+                _isSophonDownloadCompleted = true;
+            }
+            catch (Exception)
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+                throw;
+            }
+            finally
+            {
+                // Unsubscribe the logger event
+                SophonLogger.LogHandler -= UpdateSophonLogHandler;
+
+                httpClientHandler.Dispose();
+                httpClient.Dispose();
+            }
+        }
+
+        private async ValueTask RunSophonAssetDownloadThread(HttpClient client, SophonAsset asset,
+                                                             ParallelOptions parallelOptions)
+        {
+            // If the asset is a dictionary, then return
+            if (asset.IsDirectory) return;
+
+            // Get the file path and start the write process
+            var assetName = asset.AssetName;
+            var filePath = EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName));
+
+            // Get the target and temp file info
+            FileInfo existingFileInfo = new FileInfo(filePath);
+            FileInfo sophonFileInfo = new FileInfo(filePath + "_tempSophon");
+
+            // Remove read-only attribute
+            if (existingFileInfo.Exists && existingFileInfo.IsReadOnly)
+                existingFileInfo.IsReadOnly = false;
+            if (sophonFileInfo.Exists && sophonFileInfo.IsReadOnly)
+                sophonFileInfo.IsReadOnly = false;
+
+            // Use "_tempSophon" if file is new or if "_tempSophon" file exist. Otherwise use original file if exist
+            if (!existingFileInfo.Exists || sophonFileInfo.Exists
+             || (existingFileInfo.Exists && sophonFileInfo.Exists))
+                filePath = sophonFileInfo.FullName;
+            // However if the file has already been existed and completely downloaded while _tempSophon is exist,
+            // delete the _tempSophon one to avoid uncompleted files being applied instead.
+            else if (existingFileInfo.Exists && existingFileInfo.Length == asset.AssetSize && sophonFileInfo.Exists)
+                sophonFileInfo.Delete();
+
+            await asset.WriteToStreamAsync(
+                                           client,
+                                           () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                                                                FileShare.ReadWrite),
+                                           parallelOptions,
+                                           UpdateSophonDownloadProgress,
+                                           UpdateSophonDownloadStatus
+                                          );
         }
 
         private async ValueTask<int> RunPackageVerificationRoutine(GameInstallPackage asset, CancellationToken token)
@@ -693,7 +938,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalSize = GetAssetIndexTotalUncompressSize(gamePackage);
 
             // Sanity Check: Check if the package list is empty or not
-            if (gamePackage == null || gamePackage.Count == 0) throw new InvalidOperationException("Package list is empty. Make sure you have ran StartPackageDownload() first.");
+            if (gamePackage == null || gamePackage.Count == 0) return;
 
             // If _canSkipExtract flag is true, then return (skip) the extraction
             if (_canSkipExtract) return;
@@ -750,6 +995,58 @@ namespace CollapseLauncher.InstallManager.Base
                 if (deleteList.Exists)
                 {
                     deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset!.PathOutput)}.txt"), true);
+                }
+
+                // If the asset is a plugin and it has running command statement, then
+                // try run the command.
+                if (!string.IsNullOrEmpty(asset.RunCommand))
+                {
+                    // Update the status
+                    _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.FinishingUp, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
+                    _status!.IsProgressPerFileIndetermined = true;
+                    _status!.IsProgressTotalIndetermined = true;
+                    UpdateStatus();
+
+                    try
+                    {
+                        string argument = "";
+                        string executableName = "";
+                        int indexOfArgument = asset.RunCommand.IndexOf(".exe ") + 5;
+                        if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
+                        {
+                            indexOfArgument = asset.RunCommand.IndexOf(' ');
+                        }
+
+                        if (indexOfArgument >= 0)
+                        {
+                            argument = asset.RunCommand.Substring(indexOfArgument);
+                            executableName = ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument).TrimEnd(' '));
+                        }
+                        else
+                        {
+                            executableName = asset.RunCommand;
+                        }
+
+                        string executablePath = Path.Combine(_gamePath, executableName);
+                        Process commandProcess = new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = executablePath,
+                                Arguments = argument,
+                                UseShellExecute = true,
+                            }
+                        };
+
+                        if (!commandProcess.Start())
+                            LogWriteLine($"Run command for the plugin cannot be started! Exit code: {commandProcess.ExitCode}", LogType.Warning, true);
+                        else
+                            await commandProcess.WaitForExitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}", LogType.Error, true);
+                    }
                 }
 
                 // If the _canDeleteZip flag is true and not in doNotDeleteZipExplicit mode, then delete the zip
@@ -891,8 +1188,31 @@ namespace CollapseLauncher.InstallManager.Base
             if (forceUpdateToLatest)
             {
                 _gameVersionManager.UpdateGameVersionToLatest(true);
+#nullable enable
+                List<RegionResourcePlugin>? gamePluginList = _gameVersionManager.GetGamePluginZip();
+                if (gamePluginList != null && (gamePluginList?.Count ?? 0) != 0)
+                {
+                    Dictionary<string, GameVersion>? gamePluginVersionDictionary = new Dictionary<string, GameVersion>();
+                    foreach (RegionResourcePlugin plugins in gamePluginList!)
+                    {
+                        gamePluginVersionDictionary.Add(plugins.plugin_id, new GameVersion(plugins.version));
+                    }
+                    _gameVersionManager.UpdatePluginVersions(gamePluginVersionDictionary);
+                }
+#nullable restore
             }
+
             _gameVersionManager.Reinitialize();
+
+            // Write the audio lang list file
+            if (_isUseSophon && _sophonVOLanguageList.Count != 0)
+            {
+                WriteAudioLangListSophon(_sophonVOLanguageList);
+            }
+            else
+            {
+                WriteAudioLangList(_assetIndex);
+            }
         }
 
 
@@ -1393,6 +1713,111 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
+
+        protected virtual string GetLanguageStringByID(int id) => id switch
+        {
+            0 => "Chinese",
+            1 => "English(US)",
+            2 => "Japanese",
+            3 => "Korean",
+            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected virtual string GetLanguageLocaleCodeByID(int id) => id switch
+        {
+            0 => "zh-cn",
+            1 => "en-us",
+            2 => "ja-jp",
+            3 => "ko-kr",
+            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected virtual string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
+        {
+            "zh-cn" => "Chinese",
+            "en-us" => "English(US)",
+            "ja-jp" => "Japanese",
+            "ko-kr" => "Korean",
+            _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
+        };
+
+        protected virtual List<string> GetAudioLanguageStringList()
+        {
+            return new List<string>
+            {
+                Lang._Misc.LangNameCN,
+                Lang._Misc.LangNameENUS,
+                Lang._Misc.LangNameJP,
+                Lang._Misc.LangNameKR
+            };
+        }
+
+        protected virtual List<string> GetAudioLanguageSophonStringList(SophonData sophonData)
+        {
+            var value = new List<string>();
+            foreach (var Entry in sophonData.ManifestIdentityList)
+                // Check the lang ID and add the translation of the language to the list
+                switch (Entry.MatchingField.ToLower())
+                {
+                    case "en-us":
+                        value.Add(Lang._Misc.LangNameENUS);
+                        break;
+                    case "ja-jp":
+                        value.Add(Lang._Misc.LangNameJP);
+                        break;
+                    case "zh-cn":
+                        value.Add(Lang._Misc.LangNameCN);
+                        break;
+                    case "ko-kr":
+                        value.Add(Lang._Misc.LangNameKR);
+                        break;
+                }
+
+            return value;
+        }
+
+        protected virtual void WriteAudioLangList(List<GameInstallPackage> gamePackage)
+        {
+            // Create persistent directory if not exist
+            if (!Directory.Exists(_gameDataPersistentPath))
+            {
+                Directory.CreateDirectory(_gameDataPersistentPath);
+            }
+
+            // If the game does not have audio lang list, then return
+            if (string.IsNullOrEmpty(_gameAudioLangListPathStatic)) return;
+
+            // Create the audio lang list file
+            using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
+                new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
+            {
+                // Iterate the package list
+                foreach (GameInstallPackage package in _assetIndex.Where(x => x.PackageType == GameInstallPackageType.Audio))
+                {
+                    // Write the language string as per ID
+                    sw.WriteLine(GetLanguageStringByID(package.LanguageID));
+                }
+            }
+        }
+
+        protected virtual void WriteAudioLangListSophon(List<string> sophonVOList)
+        {
+            // Create persistent directory if not exist
+            if (!Directory.Exists(_gameDataPersistentPath)) Directory.CreateDirectory(_gameDataPersistentPath);
+
+            // If the game does not have audio lang list, then return
+            if (string.IsNullOrEmpty(_gameAudioLangListPathStatic)) return;
+
+            // Create the audio lang list file
+            using (var sw = new StreamWriter(_gameAudioLangListPathStatic,
+                                             new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
+            {
+                // Iterate the package list
+                foreach (var voIds in sophonVOList)
+                    // Write the language string as per ID
+                    sw.WriteLine(GetLanguageStringByLocaleCode(voIds));
+            }
+        }
         #endregion
 
         #region Private Methods - GetInstallationPath
@@ -1650,15 +2075,92 @@ namespace CollapseLauncher.InstallManager.Base
             // Clean the package list
             packageList.Clear();
 
-            // Iterate the package resource version and add it into packageList
-            foreach (RegionResourceVersion asset in usePreload ?
-                _gameVersionManager.GetGamePreloadZip() :
-                _gameVersionManager.GetGameLatestZip(gameState))
+            // If the package is not in plugin update state, then skip adding the package
+            if (gameState != GameInstallStateEnum.InstalledHavePlugin)
             {
-                if (asset == null) continue;
-                await TryAddResourceVersionList(asset, packageList);
+                // Iterate the package resource version and add it into packageList
+                foreach (RegionResourceVersion asset in usePreload ?
+                    _gameVersionManager.GetGamePreloadZip() :
+                    _gameVersionManager.GetGameLatestZip(gameState))
+                {
+                    if (asset == null) continue;
+                    await TryAddResourceVersionList(asset, packageList);
+                }
+
+                // Check if the existing installation has the plugin installed or not
+                if (!await _gameVersionManager.IsPluginVersionsMatch())
+                {
+                    // Try get the plugin package
+                    TryAddPluginPackage(packageList);
+                }
+                return;
+            }
+
+            // Try get the plugin package
+            TryAddPluginPackage(packageList);
+        }
+
+#nullable enable
+        protected virtual void TryAddPluginPackage(List<GameInstallPackage> assetList)
+        {
+            const string pluginKeyStart = "plugin_";
+            const string pluginKeyEnd = "_version";
+
+            // Get the plugin resource list and if it's empty, return
+            List<RegionResourcePlugin>? pluginResourceList = _gameVersionManager.GetGamePluginZip();
+            if (pluginResourceList == null)
+                return;
+
+            // Parse game version INI configuration and search for the installed plugin.
+            // Matching it if the latest version is found, then remove the corresponding
+            Dictionary<string, RegionResourcePlugin> pluginResourceDictionary = pluginResourceList
+                .ToDictionary(asset => asset.plugin_id, StringComparer.OrdinalIgnoreCase);
+            
+            // If the game ini section is not null, then try eliminate the version section
+            if (_gameVersionManager.GameIniVersionSection != null)
+            {
+                foreach (KeyValuePair<string, IniValue> iniProperty in _gameVersionManager.GameIniVersionSection
+                    .Where(x => x.Key.StartsWith(pluginKeyStart) && x.Key.EndsWith(pluginKeyEnd)))
+                {
+                    // Get the plugin id from the ini property's key
+                    string iniKey = iniProperty.Key;
+                    int startIniKeyOffset = pluginKeyStart.Length;
+                    int startIniKeyLength = iniProperty.Key.LastIndexOf(pluginKeyEnd) - startIniKeyOffset;
+                    string iniPluginId = iniKey.AsSpan(startIniKeyOffset, startIniKeyLength).ToString();
+
+                    // Try remove the plugin resource from dictionary if found
+                    if (pluginResourceDictionary.ContainsKey(iniPluginId))
+                    {
+                        // Try to get the plugin version from both installed and api's one
+                        RegionResourcePlugin pluginResource = pluginResourceDictionary[iniPluginId];
+                        string pluginResourceVersion = pluginResource.version;
+                        if (GameVersion.TryParse(pluginResourceVersion, out GameVersion? pluginResourceVersionResult)
+                         && GameVersion.TryParse(iniProperty.Value.ToString(), out GameVersion? installedPluginVersionResult))
+                        {
+                            // If the both plugin versions from API and INI is equal, then remove the package
+                            // from the dictionary.
+                            if (pluginResourceVersionResult?.ToVersion() == installedPluginVersionResult?.ToVersion())
+                            {
+                                // Remove the plugin resource
+                                pluginResourceDictionary.Remove(iniPluginId);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add the plugin resources to asset list
+            foreach (KeyValuePair<string, RegionResourcePlugin> pluginResource in pluginResourceDictionary)
+            {
+                if (!GameVersion.TryParse(pluginResource.Value.version, out GameVersion? pluginVersion))
+                {
+                    LogWriteLine($"Failed to parse plugin version: {pluginResource.Value.version} with id: {pluginResource.Key}", LogType.Error, true);
+                    continue;
+                }
+                assetList.Add(new GameInstallPackage(pluginResource.Value, _gamePath));
             }
         }
+#nullable restore
 
         private async ValueTask<int> CheckExistingOrAskFolderDialog()
         {
@@ -2000,10 +2502,10 @@ namespace CollapseLauncher.InstallManager.Base
             // Check if the disk space is insufficient, then show the dialog.
             double requiredSpaceGb       = Convert.ToDouble(RequiredSpace / (1L << 30));
             double existingPackageSizeGb = Convert.ToDouble(ExistingPackageSize / (1L << 30));
-            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize)), 4);
-            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace)), 4);
+            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize), 3), 4);
+            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace), 3), 4);
         #if DEBUG
-            LogWriteLine($"Available Drive Space: {diskSpaceGb}", LogType.Debug);
+            LogWriteLine($"Available Drive Space (GB): {diskSpaceGb}", LogType.Debug);
             LogWriteLine($"Existing Package Size: {ExistingPackageSize}", LogType.Debug);
             LogWriteLine($"Required Space: {RequiredSpace}", LogType.Debug);
             LogWriteLine($"Required Space Minus Existing Package Size: {(RequiredSpace - ExistingPackageSize)}", LogType.Debug);

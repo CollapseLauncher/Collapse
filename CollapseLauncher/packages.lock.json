@@ -161,6 +161,12 @@
           "Microsoft.WindowsAppSDK": "1.5.240227000"
         }
       },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.5, )",
+        "resolved": "8.0.5",
+        "contentHash": "4ISW1Ndgz86FkIbu5rVlMqhhtojdy5rUlxC/N+9kPh9qbYcvHiCvYbHKzAPVIx9OPYIjT9trXt7JI42Y5Ukq6A=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
         "requested": "[8.0.0-preview.7.23375.6, )",
@@ -217,15 +223,6 @@
         "requested": "[2.0.0, )",
         "resolved": "2.0.0",
         "contentHash": "OZP9ACtcxaJeyidhulsLFAG1OLq5OOozXeORg5Ol3pUCHb0Abz6EqQI6Sz38oJESP3dtz1lTNg8DHauVhbp7BA=="
-      },
-      "SharpCompress": {
-        "type": "Direct",
-        "requested": "[0.37.2, )",
-        "resolved": "0.37.2",
-        "contentHash": "cFBpTct57aubLQXkdqMmgP8GGTFRh7fnRWP53lgE/EYUpDZJ27SSvTkdjB4OYQRZ20SJFpzczUquKLbt/9xkhw==",
-        "dependencies": {
-          "ZstdSharp.Port": "0.8.0"
-        }
       },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
@@ -365,8 +362,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.26.1",
-        "contentHash": "CHZX8zXqhF/fdUtd+AYzew8T2HFkAoe5c7lbGxZY/qryAlQXckDvM5BfOJjXlMS7kyICqQTMszj4w1bX5uBJ/w=="
+        "resolved": "3.27.0",
+        "contentHash": "tEaKpc+SP7I3gYW9AHozESyKkrCg8Xe7huI3Q3iUt5t8Dn29r2k1u8jyrGrD16maj/0UsQBM0MDViWEj0iynOA=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
@@ -975,14 +972,14 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Hi3Helper.Http": "[1.0.0, )"
+          "Hi3Helper.Http": "[1.5.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.26.1, )",
-          "Hi3Helper.Http": "[1.0.0, )",
+          "Hi3Helper.Http": "[1.5.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
       },
@@ -992,7 +989,7 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.26.1, )",
+          "Google.Protobuf": "[*, )",
           "Hi3Helper.ZstdNet": "[*, )"
         }
       },
