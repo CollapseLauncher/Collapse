@@ -332,14 +332,6 @@ namespace CollapseLauncher.GameVersioning
             // Initialize the return list
             List<RegionResourceVersion> returnList = new();
 
-            // Update the plugins only
-            if (gameState == GameInstallStateEnum.InstalledHavePlugin)
-            {
-                // Add the plugins to the return list
-                MismatchPlugin?.ForEach(plugin => returnList.Add(plugin.package));
-                return returnList;
-            }
-
             // If the GameVersion is not installed, then return the latest one
             if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
             {
@@ -385,18 +377,17 @@ namespace CollapseLauncher.GameVersioning
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
             // If the single entry of the diff is null, then return null
-            if (diff == null)
-            {
-                return null;
-            }
-
-            // Return if the diff is null, then get the latest. If found, then return the diff one.
+            // If the diff is null, then get the latest.
+            // If diff is found, then add the diff one.
             returnList.Add(diff ?? GameAPIProp.data.pre_download_game?.latest);
+
+            // If the SDK is not null, then add the SDK
             if (GameAPIProp.data.sdk != null)
             {
                 returnList.Add(GameAPIProp.data.sdk);
             }
 
+            // Return the list
             return returnList;
         }
 
