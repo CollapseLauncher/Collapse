@@ -20,6 +20,8 @@
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
 [![Sync to Bitbucket](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-bitbucket.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-bitbucket.yml)
 [![Upload to R2](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=security)
 
 
 [![Localization](https://img.shields.io/badge/Localization-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
@@ -232,6 +234,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - Also read our [**Third Party Notices**](THIRD_PARTY_NOTICES.md) for license used by third party libraries that we use.
 
 # Third-party repositories and libraries used in this project
+**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft under [**MIT License**](https://github.com/microsoft/microsoft-ui-xaml/blob/main/LICENSE)
 - [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft under [**MIT License**](https://github.com/microsoft/WindowsAppSDK/blob/main/LICENSE)
 - [**SharpHDiffPatch**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core) by neon-nyan (original port of [**HPatchZ** by **housisong**](https://github.com/sisong/HDiffPatch)) under [**MIT License**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core/blob/main/LICENSE)
@@ -254,7 +257,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by Adam Hathcock (adamhathcock) under [**MIT License**](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
 - [**UABT**](https://github.com/CollapseLauncher/UABT) by _unknown_
 
-**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_large&issueType=license)
 
 # UI Design Overview
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
