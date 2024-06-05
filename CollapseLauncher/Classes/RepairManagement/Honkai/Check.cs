@@ -308,15 +308,30 @@ namespace CollapseLauncher
             if (_isOnlyRecoverMain) return;
 
             List<FilePropertiesRemote> removableAssets = new List<FilePropertiesRemote>();
+            Span<Range> ranges = stackalloc Range[2];
 
             // Iterate the skippable asset and do LINQ check
             foreach (string skippableAsset in _skippableAssets)
             {
-                // Try get the IEnumerable to iterate the asset
-                foreach (FilePropertiesRemote asset in assetIndex.Where(x => x.N.Contains(skippableAsset)))
+                // Try get the filename and the enum type
+                ReadOnlySpan<char> skippableNameSpan = skippableAsset.AsSpan();
+                _ = skippableNameSpan.Split(ranges, '$');
+                ReadOnlySpan<char> skippableName = skippableNameSpan[ranges[0]];
+                ReadOnlySpan<char> skippableType = skippableNameSpan[ranges[1]];
+
+                if (Enum.TryParse(skippableType, true, out FileType skippableFt))
                 {
-                    // If there's any, then add it to removable assets list
-                    removableAssets.Add(asset);
+                    // Try get the IEnumerable to iterate the asset
+                    foreach (FilePropertiesRemote asset in assetIndex)
+                    {
+                        // If the asset name and type is equal, then add as removable
+                        if (asset.N.AsSpan().EndsWith(skippableName, StringComparison.OrdinalIgnoreCase)
+                            && skippableFt == asset.FT)
+                        {
+                            // If there's any, then add it to removable assets list
+                            removableAssets.Add(asset);
+                        }
+                    }
                 }
             }
 

@@ -20,6 +20,8 @@
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
 [![Sync to Bitbucket](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-bitbucket.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-bitbucket.yml)
 [![Upload to R2](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=security)
 
 
 [![Localization](https://img.shields.io/badge/Localization-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
@@ -208,8 +210,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.8/CL-1.73.8-stable_Installer.exe)
 > **Note**: The version for this build is `1.73.8` (Released on: March 26th, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.1-pre/CL-1.80.1-preview_Installer.exe)
-> **Note**: The version for this build is `1.80.1` (Released on: April 28th, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.7-pre/CL-1.80.7-preview_Installer.exe)
+> **Note**: The version for this build is `1.80.7` (Released on: June 3rd, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -232,6 +234,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - Also read our [**Third Party Notices**](THIRD_PARTY_NOTICES.md) for license used by third party libraries that we use.
 
 # Third-party repositories and libraries used in this project
+**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft under [**MIT License**](https://github.com/microsoft/microsoft-ui-xaml/blob/main/LICENSE)
 - [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft under [**MIT License**](https://github.com/microsoft/WindowsAppSDK/blob/main/LICENSE)
 - [**SharpHDiffPatch**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core) by neon-nyan (original port of [**HPatchZ** by **housisong**](https://github.com/sisong/HDiffPatch)) under [**MIT License**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core/blob/main/LICENSE)
@@ -254,7 +257,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by Adam Hathcock (adamhathcock) under [**MIT License**](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
 - [**UABT**](https://github.com/CollapseLauncher/UABT) by _unknown_
 
-**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_large&issueType=license)
 
 # UI Design Overview
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)

@@ -17,7 +17,7 @@ namespace CollapseLauncher
         #region Properties
         private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
-        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
+        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic" };
         private HonkaiCache _cacheUtil { get; init; }
         private string _assetBaseURL { get; set; }
         private string _blockBaseURL { get => ConverterTool.CombineURLFromString(_assetBaseURL, $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }

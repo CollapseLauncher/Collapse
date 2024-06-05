@@ -296,7 +296,7 @@ namespace Hi3Helper.Shared.Region
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
             { "CurrentCDN", 0 },
-            { "ShowRegionChangeWarning", true },
+            { "ShowRegionChangeWarning", false },
             #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
             { "EnableDiscordGameStatus", true },

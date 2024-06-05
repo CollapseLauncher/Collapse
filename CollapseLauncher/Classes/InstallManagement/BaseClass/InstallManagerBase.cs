@@ -2255,27 +2255,6 @@ namespace CollapseLauncher.InstallManager.Base
                 fileInfo.MoveTo(outputPath, true);
                 LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
             }
-
-            // If it's not honkai, then return
-            if (!isHonkai) return;
-
-            // TODO: Make it automatic
-            // Move block file to ingredient path
-            string baseBlockPath = @"BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf";
-            inputPath = Path.Combine(sourcePath, baseBlockPath);
-            outputPath = Path.Combine(targetPath, baseBlockPath);
-
-            // Sanity Check: If the block manifest (xmf) is still missing even after the process, then throw
-            fileInfo = new FileInfo(inputPath);
-            if (!fileInfo.Exists)
-            {
-                throw new AccessViolationException($"Block file: {inputPath} isn't found!");
-            }
-
-            // Move the block manifest (xmf) to the target directory
-            fileInfo.IsReadOnly = false;
-            fileInfo.MoveTo(outputPath, true);
-            LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
         }
 
         private void TryUnassignReadOnlyFiles()
