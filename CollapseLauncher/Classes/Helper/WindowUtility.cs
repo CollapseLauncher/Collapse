@@ -379,7 +379,9 @@
                         const int HTCLIENT    = 1;
                         const int HTCAPTION   = 2;
                         const int HTMINBUTTON = 8;
+                        const int HTRIGHT     = 11;
                         const int HTTOP       = 12;
+                        const int HTTOPRIGHT  = 14;
 
                         var result = InvokeProp.CallWindowProc(OldWindowWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
@@ -387,7 +389,9 @@
                                    // Fix "Ghost Minimize Button" issue
                                    HTMINBUTTON => HTCLIENT,
                                    // Fix "Caption Resize" issue
+                                   HTRIGHT => HTCAPTION,
                                    HTTOP => HTCAPTION,
+                                   HTTOPRIGHT => HTCAPTION,
                                    _ => result
                                };
                     }
