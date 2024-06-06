@@ -182,7 +182,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            await using (FileStream filefs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do MD5 Hash calculation
                 localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
@@ -278,7 +278,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            await using (FileStream filefs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
                 byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
@@ -395,7 +395,7 @@ namespace CollapseLauncher
             if ((fileOld?.Exists ?? false) && !file.Exists)
             {
                 // Open and read fileInfo as FileStream 
-                using (FileStream fileOldfs = new FileStream(filePathOld, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, _bufferBigLength))
+                await using (FileStream fileOldfs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     // If pass the check above, then do CRC calculation
                     byte[] localOldCRC = await CheckHashAsync(fileOldfs, MD5.Create(), token, false);
@@ -478,7 +478,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, _bufferBigLength))
+            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this

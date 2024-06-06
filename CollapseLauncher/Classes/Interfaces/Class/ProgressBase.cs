@@ -739,6 +739,33 @@ namespace CollapseLauncher.Interfaces
                 await _httpClient!.Download(assetURL, assetPath, true, null, null, token);
             }
         }
+
+        /// <summary>
+        /// IDK what Microsoft is smoking but for some reason, the file were throwing IO_SharingViolation_File error,
+        /// or sometimes "File is being used by another process" error even though the file HAS NEVER BEEN OPENED LIKE, WTFFF????!>!!!!!!
+        /// </summary>
+        internal static async ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+        {
+            const int MaxTry = 10;
+            int currentTry = 1;
+            while (true)
+            {
+                try
+                {
+                    return info.Open(fileMode, fileAccess, fileShare);
+                }
+                catch
+                {
+                    if (currentTry <= MaxTry)
+                    {
+                        LogWriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {MaxTry}", LogType.Warning, true);
+                        await Task.Delay(50); // Adding 50ms delay
+                        continue;
+                    }
+                    throw; // Throw this MFs
+                }
+            }
+        }
         #endregion
 
         #region HashTools
