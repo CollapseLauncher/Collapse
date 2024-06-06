@@ -42,6 +42,12 @@ namespace CollapseLauncher
                 // Iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
+                    if (asset.IsUsed)
+                    {
+                        return;
+                    }
+                    asset.IsUsed = true;
+
                     // Assign a task depends on the asset type
                     switch (asset.FT)
                     {
@@ -58,7 +64,7 @@ namespace CollapseLauncher
                             await CheckAssetTypeGeneric(asset, brokenAssetIndex, threadToken);
                             break;
                     }
-                }).ConfigureAwait(false);
+                });
             }
             catch (AggregateException ex)
             {
@@ -176,7 +182,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+            await using (FileStream filefs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do MD5 Hash calculation
                 localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
@@ -272,7 +278,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+            await using (FileStream filefs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
                 byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
