@@ -153,16 +153,38 @@
                         return;
                     }
 
-                    CurrentAppWindow.ResizeClient(new SizeInt32
+                    if (InnerLauncherConfig.m_isWindows11)
                     {
-                        Width  = (int)value.Width,
-                        Height = (int)value.Height
-                    });
-                    CurrentAppWindow.Move(new PointInt32
+                        // We have no title bar
+                        const int SM_CYCAPTION      = 4;
+                        const int SM_CYSIZEFRAME    = 33;
+                        const int SM_CXPADDEDBORDER = 92;
+                        var titleBarHeight = InvokeProp.GetSystemMetrics(SM_CYSIZEFRAME) +
+                                             InvokeProp.GetSystemMetrics(SM_CYCAPTION) +
+                                             InvokeProp.GetSystemMetrics(SM_CXPADDEDBORDER);
+                        value.Height -= titleBarHeight;
+
+                        CurrentAppWindow.ResizeClient(new SizeInt32
+                        {
+                            Width  = (int) value.Width,
+                            Height = (int) value.Height
+                        });
+                        CurrentAppWindow.Move(new PointInt32
+                        {
+                            X = (int) value.X,
+                            Y = (int) value.Y
+                        });
+                    }
+                    else
                     {
-                        X = (int)value.X,
-                        Y = (int)value.Y
-                    });
+                        CurrentAppWindow.MoveAndResize(new RectInt32()
+                        {
+                            Width  = (int) value.Width,
+                            Height = (int) value.Height,
+                            X      = (int) value.X,
+                            Y      = (int) value.Y
+                        });
+                    }
                 }
             }
 
@@ -248,7 +270,7 @@
                 // Apply fix for mouse event
                 ApplyWindowTitlebarContextFix();
 
-                // Apply fix for Window border on Windows 11
+                // Apply fix for Window border on Windows 10
                 ApplyWindowBorderFix();
 
                 // Initialize FileDialogHandler
@@ -397,7 +419,7 @@
                     }
                     case WM_NCCALCSIZE:
                     {
-                        if (!InnerLauncherConfig.m_isWindows11 && wParam == 1)
+                        if (!InnerLauncherConfig.m_isWindows11 && wParam != 0)
                         {
                             return 0;
                         }
@@ -564,14 +586,6 @@
                     return;
                 }
 
-                // We have no title bar
-                const int SM_CYCAPTION      = 4;
-                const int SM_CYSIZEFRAME    = 33;
-                const int SM_CXPADDEDBORDER = 92;
-                var titleBarHeight = InvokeProp.GetSystemMetrics(SM_CYSIZEFRAME) +
-                                     InvokeProp.GetSystemMetrics(SM_CYCAPTION) +
-                                     InvokeProp.GetSystemMetrics(SM_CXPADDEDBORDER);
-
                 // Get the scale factor and calculate the size and offset
                 double scaleFactor      = CurrentWindowMonitorScaleFactor;
                 int    lastWindowWidth  = (int)(width * scaleFactor);
@@ -583,7 +597,7 @@
 
                 // Use CurrentWindowPosition to change the size and position
                 CurrentWindowPosition = new Rect
-                    { Height = lastWindowHeight - titleBarHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
+                    { Height = lastWindowHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
             }
 
             internal static void WindowMinimize()
