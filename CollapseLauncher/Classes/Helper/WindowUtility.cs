@@ -33,7 +33,9 @@
         internal static class WindowUtility
         {
             private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
-            private static nint                             OldWindowWndProcPtr;
+
+            private static nint OldMainWndProcPtr;
+            private static nint OldDesktopSiteBridgeWndProcPtr;
 
             private delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
@@ -262,7 +264,7 @@
                 CurrentOverlappedPresenter = CurrentAppWindow.Presenter as OverlappedPresenter;
 
                 // Install WndProc callback
-                InstallWndProcCallback();
+                OldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
 
                 // Install Drag Area Change monitor
                 InstallDragAreaChangeMonitor();
@@ -301,16 +303,16 @@
 
             #region WndProc Handler
 
-            private static void InstallWndProcCallback()
+            private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
             {
                 // Install WndProc hook
-                const int       GWLP_WNDPROC         = -4;
-                WndProcDelegate mNewWndProcDelegate = WndProc;
-                IntPtr          pWndProc             = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
-                OldWindowWndProcPtr = InvokeProp.SetWindowLongPtr(CurrentWindowPtr, GWLP_WNDPROC, pWndProc);
+                const int       GWLP_WNDPROC        = -4;
+                WndProcDelegate mNewWndProcDelegate = wndProc;
+                IntPtr          pWndProc            = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
+                return InvokeProp.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
             }
 
-            private static IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+            private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
             {
                 const uint WM_SYSCOMMAND    = 0x0112;
                 const uint WM_SHOWWINDOW    = 0x0018;
@@ -405,7 +407,7 @@
                         const int HTTOP       = 12;
                         const int HTTOPRIGHT  = 14;
 
-                        var result = InvokeProp.CallWindowProc(OldWindowWndProcPtr, hwnd, msg, wParam, lParam);
+                        var result = InvokeProp.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                                {
                                    // Fix "Ghost Minimize Button" issue
@@ -475,7 +477,7 @@
                     }
                 }
 
-                return InvokeProp.CallWindowProc(OldWindowWndProcPtr, hwnd, msg, wParam, lParam);
+                return InvokeProp.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
             }
 
             #endregion
@@ -576,7 +578,39 @@
                                 | InvokeProp.SetWindowPosFlags.SWP_NOZORDER
                                 | InvokeProp.SetWindowPosFlags.SWP_FRAMECHANGED;
                     InvokeProp.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
+
+                    var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+                    OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
                 }
+            }
+
+            private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+            {
+                const uint WM_WINDOWPOSCHANGING = 0x0046;
+
+                switch (msg)
+                {
+                    case WM_WINDOWPOSCHANGING:
+                    {
+                        // Fix the weird 1px offset
+                        if (!InnerLauncherConfig.m_isWindows11)
+                        {
+                            var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
+                            if (windowPos.x == 0 && windowPos.y == 1 &&
+                                windowPos.cx == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width &&
+                                windowPos.cy == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height - 1)
+                            {
+                                windowPos.y  =  0;
+                                windowPos.cy += 1;
+                                Marshal.StructureToPtr(windowPos, lParam, false);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                return InvokeProp.CallWindowProc(OldDesktopSiteBridgeWndProcPtr, hwnd, msg, wParam, lParam);
             }
 
             internal static void SetWindowSize(int width, int height)

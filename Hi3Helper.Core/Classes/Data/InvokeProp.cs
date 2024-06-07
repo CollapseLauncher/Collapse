@@ -154,6 +154,16 @@ namespace Hi3Helper
         #endregion
 
         #region User32
+        public struct WINDOWPOS
+        {
+            public IntPtr hwnd;
+            public IntPtr hwndInsertAfter;
+            public int    x;
+            public int    y;
+            public int    cx;
+            public int    cy;
+            public uint   flags;
+        }
 
         [DllImport("user32.dll")]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
