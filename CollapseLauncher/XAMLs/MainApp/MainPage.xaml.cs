@@ -1228,8 +1228,8 @@ namespace CollapseLauncher
                 paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
             }
 
-            var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
-            backIcon?.ApplyDropShadow(Colors.Gray, 20);
+            // var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
+            // backIcon?.ApplyDropShadow(Colors.Gray, 20);
 
             var toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
             toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
