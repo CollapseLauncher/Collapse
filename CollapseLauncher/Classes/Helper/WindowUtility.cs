@@ -158,12 +158,9 @@
                     if (InnerLauncherConfig.m_isWindows11)
                     {
                         // We have no title bar
-                        const int SM_CYCAPTION      = 4;
-                        const int SM_CYSIZEFRAME    = 33;
-                        const int SM_CXPADDEDBORDER = 92;
-                        var titleBarHeight = InvokeProp.GetSystemMetrics(SM_CYSIZEFRAME) +
-                                             InvokeProp.GetSystemMetrics(SM_CYCAPTION) +
-                                             InvokeProp.GetSystemMetrics(SM_CXPADDEDBORDER);
+                        var titleBarHeight = InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CYSIZEFRAME) +
+                                             InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CYCAPTION) +
+                                             InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CXPADDEDBORDER);
                         value.Height -= titleBarHeight;
 
                         CurrentAppWindow.ResizeClient(new SizeInt32
