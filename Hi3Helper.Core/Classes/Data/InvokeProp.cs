@@ -48,8 +48,6 @@ namespace Hi3Helper
             GPTR = 0x00000040,
         }
 
-        public static IntPtr m_consoleHandle;
-
         public enum HandleEnum
         {
             SW_HIDE = 0,
