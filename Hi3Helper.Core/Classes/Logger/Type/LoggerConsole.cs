@@ -46,7 +46,7 @@ namespace Hi3Helper
             }
 
             // Decorate the line
-            line = GetLine(line, type, _virtualTerminal);
+            line = GetLine(line, type, _virtualTerminal, false);
 
             // Write using new async write line output and use .Error for error type
             if (type == LogType.Error) await Console.Error.WriteLineAsync(line);
@@ -72,7 +72,7 @@ namespace Hi3Helper
                 return;
             }
 
-            line = GetLine(line, type, true);
+            line = GetLine(line, type, _virtualTerminal, false);
             Console.Write(line);
 
             if (writeToLog) WriteLog(line, type);
