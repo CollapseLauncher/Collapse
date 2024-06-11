@@ -45,6 +45,8 @@ using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 using SophonManifest = Hi3Helper.Sophon.SophonManifest;
+using SharpCompress.Common;
+using Windows.Media.Protection.PlayReady;
 
 namespace CollapseLauncher.InstallManager.Base
 {
@@ -473,10 +475,22 @@ namespace CollapseLauncher.InstallManager.Base
             GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
 
-            if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+            if (_isUseSophon)
             {
-                await StartPackageDownloadSophon();
-                gameState = GameInstallStateEnum.InstalledHavePlugin;
+                switch (gameState)
+                {
+                    case GameInstallStateEnum.NotInstalled:
+                        await StartPackageInstallSophon(gameState);
+                        gameState = GameInstallStateEnum.InstalledHavePlugin;
+                        break;
+                    case GameInstallStateEnum.NeedsUpdate:
+                        await StartPackageUpdateSophon(gameState);
+                        gameState = GameInstallStateEnum.InstalledHavePlugin;
+                        break;
+                    case GameInstallStateEnum.InstalledHavePreload:
+                        await StartPackagePreloadSophon(gameState);
+                        return;
+                }
             }
 
             try
@@ -626,7 +640,7 @@ namespace CollapseLauncher.InstallManager.Base
             return 1;
         }
 
-        public virtual async Task StartPackageDownloadSophon()
+        public virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState)
         {
             // Set the flag to false
             _isSophonDownloadCompleted = false;
@@ -665,7 +679,6 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonLogger.LogHandler += UpdateSophonLogHandler;
 
                 // Get the requested URL and version based on current state.
-                var gameState = await _gameVersionManager!.GetGameState();
                 var requestedUrl = gameState switch
                 {
                     GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
@@ -786,6 +799,272 @@ namespace CollapseLauncher.InstallManager.Base
                 httpClient.Dispose();
             }
         }
+
+        public virtual async Task StartPackagePreloadSophon(GameInstallStateEnum gameState)
+        {
+            // Set the flag to false
+            _isSophonDownloadCompleted = false;
+
+            // Set the max thread and httpHandler based on settings
+            int maxThread = Math.Max((int)_threadCount, 2);
+            int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
+            maxHttpHandler = Math.Max(maxHttpHandler, maxThread);
+
+            LogWriteLine($"Initializing Sophon Chunk download method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
+                                LogType.Default, true);
+
+            // Initialize the HTTP client
+            HttpClientHandler httpClientHandler = new HttpClientHandler
+            {
+                MaxConnectionsPerServer = maxHttpHandler
+            };
+            HttpClient httpClient = new HttpClient(httpClientHandler)
+            {
+                DefaultRequestVersion = HttpVersion.Version30,
+                DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower
+            };
+
+            try
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Running);
+
+                // Reset status and progress properties
+                ResetStatusAndProgressProperty();
+
+                // Clear the VO language list
+                _sophonVOLanguageList?.Clear();
+
+                // Subscribe the logger event
+                SophonLogger.LogHandler += UpdateSophonLogHandler;
+
+                // Init asset list
+                List<SophonAsset> sophonPreloadAssetList = new List<SophonAsset>();
+
+                // Get the previous version details of the preload.
+                GameVersion? requestedVersionFrom = _gameVersionManager!.GetGameVersionAPI();
+                string requestedBaseUrlFrom = _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl;
+                string requestedBaseUrlTo = requestedBaseUrlFrom;
+                // Add the tag query to the previous version's Url
+                requestedBaseUrlFrom += $"&tag={requestedVersionFrom.ToString()}";
+
+                // Add base game diff data
+                await AddSophonDiffAssetsToList(httpClient, requestedBaseUrlFrom, requestedBaseUrlTo, sophonPreloadAssetList, "game");
+
+                // If the game has lang list path, then add it
+                if (_gameAudioLangListPath != null)
+                {
+                    // Add existing voice-over diff data
+                    await AddAdditionalVODiffAssetsToList(httpClient, requestedBaseUrlFrom, requestedBaseUrlTo, sophonPreloadAssetList);
+                }
+
+                // Set the progress bar to indetermined
+                _status!.IsIncludePerFileIndicator = false;
+                _status!.IsProgressPerFileIndetermined = false;
+                _status!.IsProgressTotalIndetermined = true;
+                UpdateStatus();
+
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
+                _isSophonDownloadCompleted = true;
+            }
+            catch (Exception)
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+                throw;
+            }
+            finally
+            {
+                // Unsubscribe the logger event
+                SophonLogger.LogHandler -= UpdateSophonLogHandler;
+
+                httpClientHandler.Dispose();
+                httpClient.Dispose();
+            }
+        }
+
+        public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState)
+        {
+            // Set the flag to false
+            _isSophonDownloadCompleted = false;
+
+            // Set the max thread and httpHandler based on settings
+            int maxThread = _threadCount;
+            int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
+            maxHttpHandler = Math.Max(maxHttpHandler, maxThread);
+
+            LogWriteLine($"Initializing Sophon Chunk update method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
+                                LogType.Default, true);
+
+            // Initialize the HTTP client
+            HttpClientHandler httpClientHandler = new HttpClientHandler
+            {
+                MaxConnectionsPerServer = maxHttpHandler
+            };
+            HttpClient httpClient = new HttpClient(httpClientHandler)
+            {
+                DefaultRequestVersion = HttpVersion.Version30,
+                DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower
+            };
+
+            try
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Running);
+
+                // Reset status and progress properties
+                ResetStatusAndProgressProperty();
+
+                // Clear the VO language list
+                _sophonVOLanguageList?.Clear();
+
+                // Subscribe the logger event
+                SophonLogger.LogHandler += UpdateSophonLogHandler;
+
+                // Init asset list
+                List<SophonAsset> sophonUpdateAssetList = new List<SophonAsset>();
+
+                // Get the previous version details of the preload.
+                GameVersion? requestedVersionFrom = _gameVersionManager!.GetGameExistingVersion();
+                string requestedBaseUrlFrom = _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl;
+                string requestedBaseUrlTo = requestedBaseUrlFrom;
+                // Add the tag query to the previous version's Url
+                requestedBaseUrlFrom += $"&tag={requestedVersionFrom.ToString()}";
+
+                // Add base game diff data
+                await AddSophonDiffAssetsToList(httpClient, requestedBaseUrlFrom, requestedBaseUrlTo, sophonUpdateAssetList, "game");
+
+                // If the game has lang list path, then add it
+                if (_gameAudioLangListPath != null)
+                {
+                    // Add existing voice-over diff data
+                    await AddAdditionalVODiffAssetsToList(httpClient, requestedBaseUrlFrom, requestedBaseUrlTo, sophonUpdateAssetList);
+                }
+
+                // Get the remote total size and current total size
+                _progressTotalCount = sophonUpdateAssetList.Count(x => !x.IsDirectory);
+                _progressTotalSize = sophonUpdateAssetList.Sum(x => x.AssetSize);
+                _progressTotalSizeCurrent = 0;
+
+                // Get the parallel options
+                var parallelOptions = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = maxThread,
+                    CancellationToken = _token.Token
+                };
+
+                // Start over the stopwatch
+                RestartStopwatch();
+
+                // Set the progress bar to indetermined
+                _status!.IsIncludePerFileIndicator = false;
+                _status!.IsProgressPerFileIndetermined = false;
+                _status!.IsProgressTotalIndetermined = false;
+                UpdateStatus();
+
+                // Get the update source and destination, also where the staging chunk files will be stored
+                string sourcePath = _gamePath;
+                string targetPath = sourcePath;
+                string chunkPath = Path.Combine(sourcePath, "chunk_collapse");
+
+                // Enumerate in parallel and start the patching process
+                await Parallel.ForEachAsync(sophonUpdateAssetList.Where(x => !x.IsDirectory),
+                    parallelOptions,
+                    async (asset, threadToken) =>
+                    {
+                        await asset.WriteUpdateAsync(httpClient, sourcePath, targetPath, chunkPath,
+                            false, parallelOptions, UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
+                    });
+
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
+                _isSophonDownloadCompleted = true;
+            }
+            catch (Exception)
+            {
+                // Set background status
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+                throw;
+            }
+            finally
+            {
+                // Unsubscribe the logger event
+                SophonLogger.LogHandler -= UpdateSophonLogHandler;
+
+                httpClientHandler.Dispose();
+                httpClient.Dispose();
+            }
+        }
+
+        private async Task AddSophonDiffAssetsToList(HttpClient httpClient,
+            string requestedUrlFrom, string requestedUrlTo, List<SophonAsset> sophonPreloadAssetList,
+            string matchingField)
+        {
+            // Get the manifest pair for both previous (from) and next (to) version
+            SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
+                .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token);
+            SophonChunkManifestInfoPair requestPairTo = await SophonManifest
+                .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token);
+
+            // Add asset to the list
+            await foreach (SophonAsset sophonAsset in SophonUpdate.EnumerateUpdateAsync(httpClient, requestPairFrom, requestPairTo, false)
+                .WithCancellation(_token.Token))
+            {
+                sophonPreloadAssetList.Add(sophonAsset);
+            }
+        }
+
+        private async Task AddAdditionalVODiffAssetsToList(HttpClient httpClient,
+            string requestedUrlFrom, string requestedUrlTo, List<SophonAsset> sophonPreloadAssetList)
+        {
+            // Get the main VO language name from Id
+            string mainLangId = GetLangIdToSophonVOLangName(_gameVoiceLanguageID);
+            // Get the manifest pair for both previous (from) and next (to) version for the main VO
+            await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo, sophonPreloadAssetList, mainLangId);
+
+            // Check if the audio lang list file is exist, then try add others
+            if (File.Exists(_gameAudioLangListPath))
+            {
+                // Use stream reader to read the list one-by-one
+                using (StreamReader reader = new StreamReader(_gameAudioLangListPath))
+                {
+                    // Read until EOF
+                    while (!reader.EndOfStream)
+                    {
+                        // Read line and if the line is equal, then skip
+                        string line = reader.ReadLine();
+                        if (line.Equals(mainLangId, StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        // Get other lang Id, pass it and try add to the list
+                        string otherLangId = GetGameAudioListNameToSophonVOLangName(line);
+                        // Get the manifest pair for both previous (from) and next (to) version for other VOs
+                        await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo, sophonPreloadAssetList, otherLangId);
+                    }
+                }
+            }
+        }
+
+        protected virtual string GetLangIdToSophonVOLangName(int id)
+            => id switch
+            {
+                0 => "zh-cn",
+                1 => "en-us",
+                3 => "ko-kr",
+                2 => "ja-jp",
+                _ => throw new NotSupportedException($"This lang id: {id} is not supported")
+            };
+
+        protected virtual string GetGameAudioListNameToSophonVOLangName(string name)
+            => name switch
+            {
+                "Chinese" => "zh-cn",
+                "English(US)" => "en-us",
+                "Korean" => "ko-kr",
+                "Japanese" => "ja-jp",
+                _ => throw new NotSupportedException($"This lang name: {name} is not supported")
+            };
 
         private async ValueTask RunSophonAssetDownloadThread(HttpClient client, SophonAsset asset,
                                                              ParallelOptions parallelOptions)

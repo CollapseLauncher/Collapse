@@ -4,6 +4,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -217,6 +218,19 @@ namespace CollapseLauncher.InstallManager.StarRail
             filesToDelete = new[] { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" },
             foldersToKeepInData = new[] { "ScreenShots" }
         };
+        #endregion
+
+        #region Override Methods - Sophon
+        protected override string GetLangIdToSophonVOLangName(int id)
+            => id switch
+            {
+                0 => "zh-cn",
+                1 => "zh-cn",
+                2 => "en-us",
+                3 => "ja-jp",
+                4 => "ko-kr",
+                _ => throw new NotSupportedException($"This lang id: {id} is not supported")
+            };
         #endregion
     }
 }
