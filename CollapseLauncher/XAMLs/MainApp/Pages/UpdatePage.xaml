@@ -163,12 +163,14 @@
                                   Foreground="{ThemeResource TextFillColorInverse}"
                                   Glyph="&#xf071;" />
                         <TextBlock Grid.Column="1"
+                                   Margin="32,0"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Center"
                                    FontWeight="SemiBold"
                                    Foreground="{ThemeResource TextFillColorInverse}"
                                    HorizontalTextAlignment="Center"
-                                   Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateForcedHeader}" />
+                                   Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateForcedHeader}"
+                                   TextWrapping="Wrap" />
                         <FontIcon Grid.Column="2"
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center"

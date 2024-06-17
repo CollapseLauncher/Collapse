@@ -112,14 +112,9 @@ namespace CollapseLauncher.Pages.OOBE
             TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
             CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
 
-            await WelcomeVLogo.StartAnimation(logoAnimAppearanceDuration,
-                                              currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
-                                              currentCompositor.CreateVector3KeyFrameAnimation(
-                                               "Translation",
-                                               new Vector3(0, 0,  0),
-                                               new Vector3(0, 32, 0)));
-
-            await SpawnWelcomeText();
+            await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
 
             // Adding delay and make sure the CDN recommendation has already been loaded
             // before hiding the intro sequence
@@ -127,20 +122,29 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 await Task.Delay(250);
             }
+            await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
+            await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                  currentCompositor.CreateVector3KeyFrameAnimation(
+                                                    "Translation",
+                                                    new Vector3(0, -138, 0),
+                                                    WelcomeLogoIntro.Translation
+                                                  ));
+            await SpawnWelcomeText();
 
             await Task.Delay(1000);
 
             await SpawnWelcomeText(true);
-            await WelcomeVLogo.StartAnimation(logoAnimAppearanceDuration,
-                                              currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
-                                              currentCompositor.CreateVector3KeyFrameAnimation(
-                                               "Translation",
-                                               new Vector3(0, 32, 0),
-                                               new Vector3(0, 0,  0)));
+            await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                  currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
+                                                  currentCompositor.CreateVector3KeyFrameAnimation(
+                                                    "Translation",
+                                                    new Vector3(0, -32, 0),
+                                                    WelcomeLogoIntro.Translation
+                                                  ));
 
             OOBEAgreementMenuExtensions.oobeStartParentUI = this;
             OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
-            WelcomeVLogo.Visibility         = Visibility.Collapsed;
+            WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
             WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
         }
 
@@ -610,7 +614,7 @@ namespace CollapseLauncher.Pages.OOBE
                 new Vector3(isInSmallMode ? (float)SmallWindowFactor - 0.2f : (float)SmallWindowFactor - 0.1f);
 
             TimeSpan animDuration     = TimeSpan.FromMilliseconds(500);
-            int      titleTextXOffset = isInSmallMode ? 70 : 88;
+            int      titleTextXOffset = isInSmallMode ? 90 : 100;
 
             if (IsLastLogoShrinkMode == shrink)
             {
@@ -646,7 +650,7 @@ namespace CollapseLauncher.Pages.OOBE
                                                   LastTitleTextInitialScale),
                                                  currentCompositor.CreateVector3KeyFrameAnimation(
                                                   "Translation",
-                                                  new Vector3(titleTextXOffset, -128, 0),
+                                                  new Vector3(titleTextXOffset, -168, 0),
                                                   new Vector3(0,                0,    0))),
                     CollapseLogoContainer.StartAnimation(animDuration,
                                                          currentCompositor

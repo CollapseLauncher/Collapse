@@ -108,6 +108,11 @@
                                        Visibility="Collapsed" />
                         </StackPanel>
                         <ToggleSwitch Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.IntroSequenceToggle}"
+                                      IsOn="{x:Bind IsIntroEnabled, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableAcrylicEffect}"
                                       IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"

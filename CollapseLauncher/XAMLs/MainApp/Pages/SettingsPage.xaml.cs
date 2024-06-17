@@ -549,6 +549,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsIntroEnabled
+        {
+            get => LauncherConfig.IsIntroEnabled;
+            set => LauncherConfig.IsIntroEnabled = value;
+        }
+
         private bool IsMultipleInstanceEnabled
         {
             get => LauncherConfig.IsMultipleInstanceEnabled;
