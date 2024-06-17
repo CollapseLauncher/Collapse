@@ -388,6 +388,8 @@
     "AppThemes_Dark": "Gelap",
     "AppThemes_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan tema ini.",
 
+    "IntroSequenceToggle": "Gunakan Animasi Intro",
+
     "AppWindowSize": "Ukuran Window",
     "AppWindowSize_Normal": "Biasa",
     "AppWindowSize_Small": "Kecil",
