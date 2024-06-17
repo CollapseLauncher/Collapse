@@ -4,11 +4,16 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
+using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
+using Hi3Helper.Shared.Region;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Numerics;
+using System.Threading.Tasks;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
@@ -19,6 +24,8 @@ namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
+        internal static bool IsForceDisableIntro = false;
+
         public MainWindow() { }
 
         public void InitializeWindowProperties(bool startOOBE = false)
@@ -32,6 +39,7 @@ namespace CollapseLauncher
 
                 if (IsFirstInstall || startOOBE)
                 {
+                    IsForceDisableIntro = true;
                     WindowUtility.CurrentWindowTitlebarExtendContent = true;
                     WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
@@ -52,10 +60,29 @@ namespace CollapseLauncher
             }
         }
 
-        public void StartMainPage()
+        public async void StartMainPage()
         {
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
+            bool isIntroEnabled = IsIntroEnabled && !IsForceDisableIntro;
+
+            if (isIntroEnabled)
+            {
+                WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
+                IntroSequenceToggle.Visibility = Visibility.Visible;
+                IntroAnimation.Visibility = Visibility.Visible;
+                IntroAnimation.PlaybackRate = 2.2d;
+                await IntroAnimation.PlayAsync(0, 0.0001d, false);
+                await Task.Delay(500);
+                await IntroAnimation.PlayAsync(0.0001d, 260d / 600d, false);
+                IntroAnimation.PlaybackRate = 1.5d;
+                await IntroAnimation.PlayAsync(260d / 600d, 600d / 600d, false);
+                IntroAnimation.Visibility = Visibility.Collapsed;
+            }
+            
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+
+            if (isIntroEnabled) await Task.Delay(250);
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
         }
 
         private void InitializeAppWindowAndIntPtr()
@@ -181,6 +208,30 @@ namespace CollapseLauncher
         {
             // Recalculate non-client area size
             WindowUtility.EnableWindowNonClientArea();
+        }
+
+        private bool IsIntroEnabled
+        {
+            get => LauncherConfig.IsIntroEnabled;
+            set => LauncherConfig.IsIntroEnabled = value;
+        }
+
+        private void IntroSequenceToggle_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            Compositor curCompositor = this.Compositor;
+            UIElement element = sender as UIElement;
+            element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
+                    curCompositor.CreateScalarKeyFrameAnimation("Opacity", 1f)
+                );
+        }
+
+        private void IntroSequenceToggle_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            Compositor curCompositor = this.Compositor;
+            UIElement element = sender as UIElement;
+            element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
+                    curCompositor.CreateScalarKeyFrameAnimation("Opacity", 0.25f)
+                );
         }
     }
 }

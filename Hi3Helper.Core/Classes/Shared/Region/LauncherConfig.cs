@@ -257,6 +257,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
         }
 
+        public static bool IsIntroEnabled
+        {
+            get => GetAppConfigValue("IsIntroEnabled").ToBoolNullable() ?? true;
+            set => SetAndSaveConfigValue("IsIntroEnabled", value);
+        }
+
         private static bool? _cachedIsInstantRegionChange = null;
         public static bool IsInstantRegionChange
         {
@@ -315,7 +321,8 @@ namespace Hi3Helper.Shared.Region
             { "EnableWaifu2X", false },
             { "BackgroundAudioVolume", 0.5d },
             { "BackgroundAudioIsMute", true },
-            { "UseInstantRegionChange", true }
+            { "UseInstantRegionChange", true },
+            { "IsIntroEnabled", true }
         };
         #endregion
     }
