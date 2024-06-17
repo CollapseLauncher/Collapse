@@ -374,7 +374,7 @@
     "Debug_IncludeGameLogs": "保存游戏日志到 Collapse（可能含有敏感数据）",
     "Debug_MultipleInstance": "允许开启多个 Collapse",
 
-    "ChangeRegionWarning_Toggle": "显示区域更改警告",
+    "ChangeRegionWarning_Toggle": "显示区服更改警告",
     "ChangeRegionInstant_Toggle": "选择后立即更改区服",
     "ChangeRegionWarning_Warning": "*您需要重新启动应用程序以使此设置生效。",
 
@@ -561,6 +561,7 @@
     "Idle": "闲置",
     "Change": "更改",
     "Cancelled": "已取消",
+    "FinishingUp": "即将完成",
     "Extracting": "提取中",
     "Converting": "转换中",
     "Patching": "修补中",

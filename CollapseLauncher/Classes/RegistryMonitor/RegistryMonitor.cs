@@ -24,16 +24,19 @@ namespace RegistryUtils
     {
         #region P/Invoke
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", EntryPoint = "RegOpenKeyExW", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern int RegOpenKeyEx(IntPtr hKey, string subKey, uint options, int samDesired,
                                                out IntPtr phkResult);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern int RegNotifyChangeKeyValue(IntPtr hKey, bool bWatchSubtree,
                                                           RegChangeNotifyFilter dwNotifyFilter, IntPtr hEvent,
                                                           bool fAsynchronous);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern int RegCloseKey(IntPtr hKey);
 
         private const int KEY_QUERY_VALUE = 0x0001;

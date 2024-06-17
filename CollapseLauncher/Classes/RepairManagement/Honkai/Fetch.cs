@@ -107,15 +107,15 @@ namespace CollapseLauncher
                     // Get the Senadina File Identifier Dictionary and its file references
                     senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(httpClient, _mainMetaRepoUrl, token);
                     audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
-                                                                                          SenadinaKind.chiptunesCurrent, versionArray, _mainMetaRepoUrl, token);
+                                                                                          SenadinaKind.chiptunesCurrent, versionArray, _mainMetaRepoUrl, false, token);
                     blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
-                                                                                               SenadinaKind.platformBase, versionArray, _mainMetaRepoUrl, token);
+                                                                                               SenadinaKind.platformBase, versionArray, _mainMetaRepoUrl, false, token);
                     blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
-                                                                                               SenadinaKind.bricksBase, versionArray, _mainMetaRepoUrl, token);
+                                                                                               SenadinaKind.bricksBase, versionArray, _mainMetaRepoUrl, false, token);
                     blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
-                                                                                                  SenadinaKind.bricksCurrent, versionArray, _mainMetaRepoUrl, token);
+                                                                                                  SenadinaKind.bricksCurrent, versionArray, _mainMetaRepoUrl, false, token);
                     patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
-                                                                                                SenadinaKind.wandCurrent, versionArray, _mainMetaRepoUrl, token);
+                                                                                                SenadinaKind.wandCurrent, versionArray, _mainMetaRepoUrl, true, token);
                 }
 
                 if (!_isOnlyRecoverMain)
@@ -183,7 +183,7 @@ namespace CollapseLauncher
 #endif
         }
 
-        private async Task<SenadinaFileIdentifier?> GetSenadinaIdentifierKind(HttpClient client, Dictionary<string, SenadinaFileIdentifier>? dict, SenadinaKind kind, int[] gameVersion, string mainUrl, CancellationToken token)
+        private async Task<SenadinaFileIdentifier?> GetSenadinaIdentifierKind(HttpClient client, Dictionary<string, SenadinaFileIdentifier>? dict, SenadinaKind kind, int[] gameVersion, string mainUrl, bool skipThrow, CancellationToken token)
         {
             ArgumentNullException.ThrowIfNull(dict);
             
@@ -194,6 +194,7 @@ namespace CollapseLauncher
             if (!dict.ContainsKey(origFileRelativePath))
             {
                 LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
+                if (skipThrow) return null;
                 throw new
                     FileNotFoundException("Assets reference for repair is not found. " +
                                           "Please contact us in GitHub issues or Discord to let us know about this issue.");

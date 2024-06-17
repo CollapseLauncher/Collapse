@@ -31,8 +31,8 @@ namespace Hi3Helper.Screen
 
         public static Size GetScreenSize() => new Size
         {
-            Width = GetSystemMetrics((int)SystemMetric.SM_CXSCREEN),
-            Height = GetSystemMetrics((int)SystemMetric.SM_CYSCREEN)
+            Width = GetSystemMetrics(SystemMetric.SM_CXSCREEN),
+            Height = GetSystemMetrics(SystemMetric.SM_CYSCREEN)
         };
     }
 }

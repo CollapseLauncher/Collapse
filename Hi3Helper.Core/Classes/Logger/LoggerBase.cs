@@ -78,7 +78,7 @@ namespace Hi3Helper
         {
             // Always seek to the end of the file.
             _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
-            _logWriter?.WriteLine(GetLine(line, type, false));
+            _logWriter?.WriteLine(GetLine(line, type, false, true));
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 #endregion
@@ -89,26 +89,29 @@ namespace Hi3Helper
         /// </summary>
         /// <param name="line">Line for the log you want to return</param>
         /// <param name="type">Type of the log. The type will be added in the return</param>
-        /// <param name="isForDisplaying">To indicate if the return will be used for writing into log or just displaying</param>
-        /// <returns>Decorated line with timestamp if isForDisplaying is false or colored if isForDisplaying is true</returns>
-        protected string GetLine(string line, LogType type, bool isForDisplaying)
+        /// <param name="coloredType">Whether to colorize the type string, typically used for displaying</param>
+        /// <param name="withTimeStamp">Whether to append a timestamp after log type</param>
+        /// <returns>Decorated line with colored type or timestamp according to the parameters</returns>
+        protected string GetLine(string line, LogType type, bool coloredType, bool withTimeStamp)
         {
             lock (_stringBuilder)
             {
                 // Clear the _stringBuilder
                 _stringBuilder.Clear();
 
-                // If it's used for display only, then append color string + label.
-                // Else, append label + timestamp
-                if (isForDisplaying)
+                // Colorize the log type
+                if (coloredType)
                 {
                     _stringBuilder.Append(GetColorizedString(type) + GetLabelString(type) + "\u001b[0m");
                 }
                 else
                 {
                     _stringBuilder.Append(GetLabelString(type));
+                }
 
-                    // Append timestamp for write log
+                // Append timestamp
+                if (withTimeStamp)
+                {
                     if (type != LogType.NoTag)
                     {
                         _stringBuilder.Append($" [{GetCurrentTime("HH:mm:ss.fff")}]");

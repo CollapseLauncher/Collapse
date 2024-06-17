@@ -19,8 +19,11 @@ namespace Hi3Helper
         // https://pinvoke.net/default.aspx/Enums.SystemMetric
         public enum SystemMetric
         {
-            SM_CXSCREEN = 0,
-            SM_CYSCREEN = 1
+            SM_CXSCREEN       = 0,
+            SM_CYSCREEN       = 1,
+            SM_CYCAPTION      = 4,
+            SM_CYSIZEFRAME    = 33,
+            SM_CXPADDEDBORDER = 92,
         }
 
         // Reference:
@@ -35,14 +38,6 @@ namespace Hi3Helper
             SWP_SHOWWINDOW   = 0x40,
         }
 
-        public enum SpecialWindowHandles
-        {
-            HWND_TOP = 0,
-            HWND_BOTTOM = 1,
-            HWND_TOPMOST = -1,
-            HWND_NOTOPMOST = -2
-        }
-
         [Flags]
         public enum GLOBAL_ALLOC_FLAGS : uint
         {
@@ -52,8 +47,6 @@ namespace Hi3Helper
             GMEM_ZEROINIT = 0x00000040,
             GPTR = 0x00000040,
         }
-
-        public static IntPtr m_consoleHandle;
 
         public enum HandleEnum
         {
@@ -92,151 +85,135 @@ namespace Hi3Helper
         #endregion
 
         #region Kernel32
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GetConsoleWindow();
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GetStdHandle(int nStdHandle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetStdHandle(int nStdHandle, IntPtr hHandle);
 
-        [DllImport("kernel32.dll")]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern uint GetLastError();
-
-        [DllImport("Kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool AllocConsole();
 
-        [DllImport("Kernel32.dll")]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern bool FreeConsole();
-
-        [DllImport("Kernel32.dll")]
+        [DllImport("kernel32.dll", EntryPoint = "CreateFileW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
         
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GlobalAlloc(GLOBAL_ALLOC_FLAGS uFlags, nuint uBytes);
         
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GlobalFree(IntPtr hMem);
 
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GlobalLock(IntPtr hMem);
 
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalUnlock(IntPtr hMem);
         
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetConsoleCtrlHandler(HandlerRoutine handlerRoutine, bool add);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern ExecutionState SetThreadExecutionState(ExecutionState esFlags);
 
         #endregion
 
         #region User32
+        public struct WINDOWPOS
+        {
+            public IntPtr hwnd;
+            public IntPtr hwndInsertAfter;
+            public int    x;
+            public int    y;
+            public int    cx;
+            public int    cy;
+            public uint   flags;
+        }
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern int GetSystemMetrics(int nIndex);
+        public static extern int GetSystemMetrics(SystemMetric nIndex);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
-        [DllImport("user32.dll")]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern int GetDpiForWindow(IntPtr hWnd);
-        
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GetActiveWindow();
-
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool OpenClipboard(IntPtr hWndNewOwner);
 
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseClipboard();
 
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SetClipboardData(uint uFormat, IntPtr data);
 
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EmptyClipboard();
         
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool IsWindowVisible(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
-        
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref WindowRect rectangle);
 
-        [DllImport("user32.dll")]
-        public static extern uint GetWindowLong(IntPtr hwnd, int index);
-
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32.dll")]
-        public static extern uint SetWindowLong(IntPtr hwnd, int index, uint value);
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowLongPtr(IntPtr hwnd, int index, IntPtr value);
-
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", EntryPoint = "FindWindowExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool DestroyWindow(IntPtr hwnd);
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll", EntryPoint = "CallWindowProcW", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, UIntPtr wParam, IntPtr lParam);
         #endregion
 
         #region Shcore
-        [DllImport("Shcore.dll", SetLastError = true)]
+        [DllImport("Shcore.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
         #endregion
@@ -265,7 +242,8 @@ namespace Hi3Helper
             internal void* Buffer;
         }
 
-        [DllImport("ntdll.dll")]
+        [DllImport("ntdll.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
 
         private static byte[] NtQueryCachedBuffer = new byte[4 << 20];
@@ -422,16 +400,6 @@ namespace Hi3Helper
             }
         }
 
-        public struct WindowRect
-        {
-            // ReSharper disable UnusedAutoPropertyAccessor.Global
-            public int Left { get; set; }
-            public int Top { get; set; }
-            public int Right { get; set; }
-            public int Bottom { get; set; }
-            // ReSharper restore UnusedAutoPropertyAccessor.Global
-        }
-        
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 
         public class InvokePresence
@@ -448,7 +416,8 @@ namespace Hi3Helper
         }
 
         #region shell32
-        [DllImport("shell32.dll", SetLastError = true)]
+        [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
 
         public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
@@ -525,17 +494,20 @@ namespace Hi3Helper
             public int cyBottomHeight;
         }
 
-        [DllImport("dwmapi.dll")]
+        [DllImport("dwmapi.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
         #endregion
 
         #region uxtheme
-        [DllImport("uxtheme.dll", EntryPoint = "#132")]
+        [DllImport("uxtheme.dll", EntryPoint = "#132", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         [return:MarshalAs(UnmanagedType.I1)]
         public static extern bool ShouldAppsUseDarkMode();
 
         // Note: Can only use "Default" and "AllowDark" to support Windows 10 1809
-        [DllImport("uxtheme.dll", EntryPoint = "#135")]
+        [DllImport("uxtheme.dll", EntryPoint = "#135", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern PreferredAppMode SetPreferredAppMode(PreferredAppMode preferredAppMode);
         #endregion
     }
