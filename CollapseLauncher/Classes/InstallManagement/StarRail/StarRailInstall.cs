@@ -1,18 +1,11 @@
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
-using System.Reflection.Metadata;
 
 namespace CollapseLauncher.InstallManager.StarRail
 {
