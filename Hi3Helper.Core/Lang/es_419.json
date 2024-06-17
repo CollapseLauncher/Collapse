@@ -388,6 +388,8 @@
     "AppThemes_Dark": "Oscuro",
     "AppThemes_ApplyNeedRestart": "*Necesitas reiniciar la aplicación para que los cambios del tema surtan efecto.",
 
+    "IntroSequenceToggle": "Usar Animación de Inicio",
+
     "AppWindowSize": "Tamaño de la Ventana",
     "AppWindowSize_Normal": "Normal",
     "AppWindowSize_Small": "Pequeño",
