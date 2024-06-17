@@ -388,6 +388,8 @@
     "AppThemes_Dark": "Dark",
     "AppThemes_ApplyNeedRestart": "*You need to restart the app for theme changes to take effect.",
 
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
+
     "AppWindowSize": "Window Size",
     "AppWindowSize_Normal": "Normal",
     "AppWindowSize_Small": "Small",

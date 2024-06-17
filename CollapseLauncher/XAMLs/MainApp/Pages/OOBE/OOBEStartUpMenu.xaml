@@ -11,9 +11,16 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:ui="using:CommunityToolkit.WinUI"
+      xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid>
+        <AnimatedVisualPlayer x:Name="WelcomeLogoIntro"
+                              Width="Auto"
+                              AutoPlay="False"
+                              HorizontalAlignment="Stretch">
+            <lottie:NewLogoTitleIntro/>
+        </AnimatedVisualPlayer>
         <Grid x:Name="MainUI"
               Visibility="Collapsed">
             <Grid.ChildrenTransitions>
@@ -26,7 +33,7 @@
                    Source="ms-appx:///Assets/Images/PageBackground/StartupBackground2.png"
                    Stretch="UniformToFill" />
             <Grid x:Name="ContainerGrid"
-                  Margin="64"
+                  Margin="48"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -42,7 +49,7 @@
                             HorizontalAlignment="Left"
                             Orientation="Horizontal">
                     <Image x:Name="GridBG_IconImg"
-                           Width="128"
+                           Width="160"
                            Margin="0,0,0,0"
                            Opacity="0.8"
                            PointerEntered="GridBG_Icon_PointerEntered"
@@ -170,7 +177,7 @@
                               Grid.Row="1"
                               Grid.Column="0"
                               Grid.ColumnSpan="2"
-                              Margin="0,0,0,24"
+                              Margin="0,-48,0,24"
                               Visibility="Collapsed">
                     <StackPanel x:Name="SettingsCardContainer">
                         <TextBlock Margin="0,0,0,16"
@@ -303,7 +310,7 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
-                        Margin="0,0,0,-32"
+                        Margin="0,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Click="NextPageButton_Click"
@@ -348,12 +355,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Image x:Name="WelcomeVLogo"
-                   Height="128"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center"
-                   Opacity="0"
-                   Source="ms-appx:///Assets/CollapseLauncherLogo.png" />
             <StackPanel x:Name="WelcomeVCarouselGrid"
                         Grid.Row="1"
                         Grid.Column="0"
