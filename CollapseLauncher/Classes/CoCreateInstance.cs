@@ -2,7 +2,6 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #pragma warning disable IL2050
@@ -146,6 +145,7 @@ namespace CollapseLauncher
         }
 
         [DllImport("OLE32.dll", EntryPoint = "CoCreateInstance", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static unsafe extern HRESULT CoCreateInstanceInvoke(ref Guid rclsid, [MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter, CLSCTX dwClsContext, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppObj);
     }
 }

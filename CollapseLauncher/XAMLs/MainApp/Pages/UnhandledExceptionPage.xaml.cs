@@ -1,7 +1,7 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Helper;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.Pages
@@ -16,11 +16,11 @@ namespace CollapseLauncher.Pages
             Title.Text = ErrorSender.ExceptionTitle;
             Subtitle.Text = ErrorSender.ExceptionSubtitle;
 
-            if ((ErrorSender.ExceptionType == ErrorType.Connection) && (m_window as MainWindow).rootFrame.CanGoBack)
+            if ((ErrorSender.ExceptionType == ErrorType.Connection) && (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack)
                 BackToPreviousPage.Visibility = Visibility.Visible;
         }
 
-        private void GoBackPreviousPage(object sender, RoutedEventArgs e) => (m_window as MainWindow).rootFrame.GoBack();
+        private void GoBackPreviousPage(object sender, RoutedEventArgs e) => (WindowUtility.CurrentWindow as MainWindow).rootFrame.GoBack();
 
         private void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {

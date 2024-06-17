@@ -36,7 +36,7 @@ namespace CollapseLauncher
                     throw new InvalidDataException("The dispatcher response is invalid! Please open an issue to our GitHub page to report this issue.");
 
                 // Iterate type and do fetch
-                foreach (SRAssetType type in Enum.GetValues(typeof(SRAssetType)))
+                foreach (SRAssetType type in Enum.GetValues<SRAssetType>())
                 {
                     // Skip for unused type
                     switch (type)

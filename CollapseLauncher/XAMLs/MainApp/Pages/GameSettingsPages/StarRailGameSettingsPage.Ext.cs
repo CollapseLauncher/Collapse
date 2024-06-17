@@ -1,13 +1,16 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
+using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class StarRailGameSettingsPage : INotifyPropertyChanged
     {
         #region Methods
@@ -87,7 +90,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                Size size = ScreenProp.GetScreenSize();
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -174,7 +177,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                    Size size = ScreenProp.GetScreenSize();
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;
@@ -229,64 +232,60 @@ namespace CollapseLauncher.Pages
         //ResolutionQuality
         public int ResolutionQuality
         {
-            get => (int)Settings.GraphicsSettings.ResolutionQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.ResolutionQuality, 0, 5);
             set => Settings.GraphicsSettings.ResolutionQuality = (Quality)value;
         }
         //ShadowQuality
         public int ShadowQuality
         {
-            get => (int)Settings.GraphicsSettings.ShadowQuality;
+            get
+            {
+                var v = Math.Clamp((int)Settings.GraphicsSettings.ShadowQuality, 0, 4);
+                if (v == 1) v = 2;
+                return v;
+            }
             set => Settings.GraphicsSettings.ShadowQuality = (Quality)value;
         }
         //LightQuality
         public int LightQuality
         {
-            get => (int)Settings.GraphicsSettings.LightQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.LightQuality, 1, 5);
             set => Settings.GraphicsSettings.LightQuality = (Quality)value;
         }
         //CharacterQuality
         public int CharacterQuality
         {
-            get
-            {
-                int value = (int)Settings.GraphicsSettings.CharacterQuality;
-
-                // Clamp value
-                if (value < 2) return 2; // Low
-                if (value > 4) return 4; // High
-
-                return value;
-            }
-            set => Settings.GraphicsSettings.CharacterQuality = (CharacterQualityEnum)value;
+            get => Math.Clamp((int)Settings.GraphicsSettings.CharacterQuality, 2, 4);
+            set => Settings.GraphicsSettings.CharacterQuality = (Quality)value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
         {
-            get => (int)Settings.GraphicsSettings.EnvDetailQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.EnvDetailQuality, 1, 5);
             set => Settings.GraphicsSettings.EnvDetailQuality = (Quality)value;
         }
         //ReflectionQuality
         public int ReflectionQuality
         {
-            get => (int)Settings.GraphicsSettings.ReflectionQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.ReflectionQuality, 1, 5);
             set => Settings.GraphicsSettings.ReflectionQuality = (Quality)value;
         }
         //SFXQuality
         public int SFXQuality
         {
-            get => (int)Settings.GraphicsSettings.SFXQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.SFXQuality, 1, 4);
             set => Settings.GraphicsSettings.SFXQuality = (Quality)value;
         }
         //BloomQuality
         public int BloomQuality
         {
-            get => (int)Settings.GraphicsSettings.BloomQuality;
+            get => Math.Clamp((int)Settings.GraphicsSettings.BloomQuality, 0, 5);
             set => Settings.GraphicsSettings.BloomQuality = (Quality)value;
         }
         //AAMode
         public int AAMode
         {
-            get => (int)Settings.GraphicsSettings.AAMode;
+            get => Math.Clamp((int)Settings.GraphicsSettings.AAMode, 0, 2);
             set => Settings.GraphicsSettings.AAMode = (AntialiasingMode)value;
         }
         #endregion
@@ -335,6 +334,12 @@ namespace CollapseLauncher.Pages
             get => Settings.SettingsCollapseMisc.UseGameBoost;
             set => Settings.SettingsCollapseMisc.UseGameBoost = value;
         }
+        
+        public bool IsMobileMode
+        {
+            get => Settings.SettingsCollapseMisc.LaunchMobileMode;
+            set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
+        }
         #endregion
 
         #region Advanced Settings
@@ -380,11 +385,13 @@ namespace CollapseLauncher.Pages
                 {
                     PreLaunchCommandTextBox.IsEnabled   = true;
                     PreLaunchForceCloseToggle.IsEnabled = true;
+                    GameLaunchDelay.IsEnabled           = true;
                 }
                 else
                 {
                     PreLaunchCommandTextBox.IsEnabled   = false;
                     PreLaunchForceCloseToggle.IsEnabled = false;
+                    GameLaunchDelay.IsEnabled           = false;
                 }
 
                 Settings.SettingsCollapseMisc.UseGamePreLaunchCommand = value;
@@ -403,6 +410,12 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
+        public int LaunchDelay
+        {
+            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
+            set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
+        }
+        
         public bool IsUsePostExitCommand
         {
             get 
@@ -427,6 +440,13 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
+        }
+        
+        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            // clamp for negative value when clearing the number box
+            if ((int)sender.Value < 0)
+                sender.Value = 0;
         }
         #endregion
     }

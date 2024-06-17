@@ -5,12 +5,13 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
 namespace CollapseLauncher.InstallManager
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     internal class GameInstallPackage : IAssetIndexSummary
     {
         #region Properties
@@ -28,11 +29,26 @@ namespace CollapseLauncher.InstallManager
         public int                      LanguageID      { get; set; } = int.MinValue;
         public string                   LanguageName    { get; set; }
         public List<GameInstallPackage> Segments        { get; set; }
+        public string                   RunCommand      { get; set; }
+        public string                   PluginId        { get; set; }
         #endregion
+
+        public GameInstallPackage(RegionResourcePlugin packageProperty, string pathOutput)
+            : this(packageProperty.package, pathOutput)
+        {
+            PluginId = packageProperty.plugin_id;
+            RunCommand = packageProperty.package.run_command;
+
+            if (packageProperty.version != null)
+            {
+                Version = new GameVersion(packageProperty.version);
+            }
+            PackageType = GameInstallPackageType.Plugin;
+        }
 
         public GameInstallPackage(RegionResourceVersion packageProperty, string pathOutput, string overrideVersion = null)
         {
-            if (packageProperty == null || pathOutput == null) throw new ArgumentNullException();
+            if (packageProperty == null || pathOutput == null) throw new NullReferenceException();
             
             if (packageProperty.path != null)
             {

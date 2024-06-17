@@ -1,6 +1,6 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Media;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -29,46 +29,39 @@ namespace CollapseLauncher
                 XamlRoot = parentUI!.XamlRoot
             };
 
-            Grid mainGrid = new Grid();
-            mainGrid.AddGridRows(3);
-            mainGrid.AddGridColumns(1, new GridLength(1.0, GridUnitType.Star));
-            mainGrid.AddGridColumns(1);
+            Grid mainGrid = UIElementExtensions.CreateGrid()
+                .WithRows(new(1.0, GridUnitType.Star), new(1.0, GridUnitType.Star), new(1.0, GridUnitType.Star))
+                .WithColumns(new(1.0, GridUnitType.Star), GridLength.Auto);
 
             // ReSharper disable once UnusedVariable
             TextBlock locateFolderSubtitle = mainGrid.AddElementToGridColumn(new TextBlock
             {
-                FontSize = 16d,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
+                FontSize = 14d,
                 TextWrapping = TextWrapping.Wrap,
                 Text = Locale.Lang._FileMigrationProcess!.LocateFolderSubtitle
-            }, 0, 2);
+            }, 0, 2).WithHorizontalAlignment(HorizontalAlignment.Stretch);
 
             TextBox choosePathTextBox = mainGrid.AddElementToGridRow(new TextBox
             {
-                Margin = new Thickness(0d, 12d, 0d, 0d),
                 IsSpellCheckEnabled = false,
                 IsRightTapEnabled = false,
-                Width = 500,
                 PlaceholderText = Locale.Lang._FileMigrationProcess.ChoosePathTextBoxPlaceholder,
                 Text = string.IsNullOrEmpty(outputPath) ? null : outputPath
-            }, 1);
+            }, 1).WithMargin(0d, 12d, 0d, 0d)
+            .WithMinWidth(256d)
+            .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+            .WithHorizontalContentAlignment(HorizontalAlignment.Stretch);
 
             Button choosePathButton = mainGrid
                 .AddElementToGridRowColumn(UIElementExtensions
                     .CreateButtonWithIcon<Button>(Locale.Lang._FileMigrationProcess.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
-                    1, 1);
-            choosePathButton!.Margin = new Thickness(8d, 12d, 0d, 0d);
+                    1, 1).WithMargin(8d, 12d, 0d, 0d);
 
-            TextBlock warningText = mainGrid.AddElementToGridRowColumn(new TextBlock
+            InfoBar warningTextInfoBar = mainGrid.AddElementToGridRowColumn(new InfoBar()
             {
-                FontStyle = Windows.UI.Text.FontStyle.Italic,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 0, 0)),
-                Margin = new Thickness(0d, 12d, 0d, 0d),
-                Visibility = Visibility.Collapsed,
-                TextWrapping = TextWrapping.Wrap,
-                Text = ""
-            }, 2, 0, 0, 2);
+                IsClosable = true,
+                IsOpen = false
+            }, 2, 0, 0, 2).WithMargin(0, 16, 0, 0);
 
             mainDialogWindow.Content = mainGrid;
 
@@ -94,12 +87,17 @@ namespace CollapseLauncher
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathUnselected);
                     return;
                 }
+                if (parentPath.StartsWith(inputPath, StringComparison.OrdinalIgnoreCase) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
+                {
+                    ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathIdentical);
+                    return;
+                }
                 if (!(File.Exists(parentPath) || Directory.Exists(parentPath)))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNotExist);
                     return;
                 }
-                if (!ConverterTool.IsUserHasPermission(parentPath) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
+                if (!ConverterTool.IsUserHasPermission(parentPath))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNoPermission);
                     return;
@@ -110,9 +108,12 @@ namespace CollapseLauncher
             void ToggleWarningText(string text = null)
             {
                 bool canContinue = string.IsNullOrEmpty(text);
-                warningText!.Visibility = canContinue ? Visibility.Collapsed : Visibility.Visible;
-                warningText!.Text = text;
                 mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang!._Misc!.Next : null;
+
+                warningTextInfoBar.Title = Locale.Lang!._FileMigrationProcess!.ChoosePathErrorTitle;
+                warningTextInfoBar.Severity = canContinue ? InfoBarSeverity.Success : InfoBarSeverity.Error;
+                warningTextInfoBar.IsOpen = !canContinue;
+                warningTextInfoBar.Message = text;
             }
 
             ContentDialogResult mainDialogWindowResult = await mainDialogWindow.QueueAndSpawnDialog();
@@ -131,14 +132,14 @@ namespace CollapseLauncher
                 XamlRoot = parentUI!.XamlRoot
             };
 
-            Grid mainGrid = new Grid { Width = 500d };
-            mainGrid.AddGridColumns(2, new GridLength(1.0d, GridUnitType.Star));
-            mainGrid.AddGridRows(1, new GridLength(1.0d, GridUnitType.Auto));
-            mainGrid.AddGridRows(3, new GridLength(20d, GridUnitType.Pixel));
+            Grid mainGrid = UIElementExtensions.CreateGrid()
+                .WithWidth(500d)
+                .WithColumns(new(1.0d, GridUnitType.Star), new(1.0d, GridUnitType.Star))
+                .WithRows(new(1.0d, GridUnitType.Auto), new(20d, GridUnitType.Pixel), new(20d, GridUnitType.Pixel), new(20d, GridUnitType.Pixel));
 
             // Build path indicator
             StackPanel pathActivityPanel = mainGrid.AddElementToGridRowColumn(
-                new StackPanel { Margin = new Thickness(0, 0, 0, 8d) },
+                UIElementExtensions.CreateStackPanel().WithMargin(0d, 0d, 0d, 8d),
                 0, 0, 0, 2
                 );
             _ = pathActivityPanel.AddElementToStackPanel(
@@ -148,7 +149,8 @@ namespace CollapseLauncher
                     Text = Locale.Lang!._FileMigrationProcess!.PathActivityPanelTitle
                 });
             TextBlock pathActivitySubtitle = pathActivityPanel.AddElementToStackPanel(
-                new TextBlock {
+                new TextBlock
+                {
                     Text = Locale.Lang._Misc!.Idle,
                     FontSize = 18d,
                     TextTrimming = TextTrimming.CharacterEllipsis
@@ -177,20 +179,15 @@ namespace CollapseLauncher
                 new TextBlock
                 {
                     FontWeight = FontWeights.Bold,
-                    HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right
                 },
-                1, 1);
+                1, 1).WithHorizontalAlignment(HorizontalAlignment.Right);
             Run fileSizeIndicatorSubtitle = new Run { Text = Locale.Lang._Misc.PerFromToPlaceholder };
             fileSizeIndicator!.Inlines!.Add(fileSizeIndicatorSubtitle);
 
             // Build progress percentage indicator
             StackPanel progressTextIndicator = mainGrid.AddElementToGridRowColumn(
-                new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    HorizontalAlignment = HorizontalAlignment.Right
-                },
+                UIElementExtensions.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Right),
                 2, 1);
             TextBlock progressTextIndicatorSubtitle = progressTextIndicator.AddElementToStackPanel(
                 new TextBlock { Text = "0", FontWeight = FontWeights.Bold });
@@ -201,12 +198,11 @@ namespace CollapseLauncher
             ProgressBar progressBarIndicator = mainGrid.AddElementToGridRowColumn(
                 new ProgressBar
                 {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Bottom,
                     Value = 0d,
                     Maximum = 100d,
                     IsIndeterminate = true
-                },
+                }.WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                .WithVerticalAlignment(VerticalAlignment.Bottom),
                 3, 0, 0, 2);
 
             // Set progress percentage indicator subtitle with progress bar value

@@ -1,8 +1,11 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable MemberCanBePrivate.Global
@@ -16,24 +19,23 @@ namespace Hi3Helper
         // https://pinvoke.net/default.aspx/Enums.SystemMetric
         public enum SystemMetric
         {
-            SM_CXSCREEN = 0,
-            SM_CYSCREEN = 1
+            SM_CXSCREEN       = 0,
+            SM_CYSCREEN       = 1,
+            SM_CYCAPTION      = 4,
+            SM_CYSIZEFRAME    = 33,
+            SM_CXPADDEDBORDER = 92,
         }
 
         // Reference:
         // https://pinvoke.net/default.aspx/Enums/SetWindowPosFlags.html
+        [Flags]
         public enum SetWindowPosFlags : uint
         {
-            SWP_NOMOVE = 2,
-            SWP_SHOWWINDOW = 0x40,
-        }
-
-        public enum SpecialWindowHandles
-        {
-            HWND_TOP = 0,
-            HWND_BOTTOM = 1,
-            HWND_TOPMOST = -1,
-            HWND_NOTOPMOST = -2
+            SWP_NOSIZE       = 1,
+            SWP_NOMOVE       = 2,
+            SWP_NOZORDER     = 4,
+            SWP_FRAMECHANGED = 0x20,
+            SWP_SHOWWINDOW   = 0x40,
         }
 
         [Flags]
@@ -45,8 +47,6 @@ namespace Hi3Helper
             GMEM_ZEROINIT = 0x00000040,
             GPTR = 0x00000040,
         }
-
-        public static IntPtr m_consoleHandle;
 
         public enum HandleEnum
         {
@@ -64,152 +64,281 @@ namespace Hi3Helper
             MDT_Raw_DPI = 2,
             MDT_Default = MDT_Effective_DPI
         }
+
+        public enum PreferredAppMode
+        {
+            Default,
+            AllowDark,
+            ForceDark,
+            ForceLight,
+            Max
+        };
+
+        [Flags]
+        private enum ExecutionState : uint
+        {
+            EsAwaymodeRequired = 0x00000040,
+            EsContinuous = 0x80000000,
+            EsDisplayRequired = 0x00000002,
+            EsSystemRequired = 0x00000001
+        }
         #endregion
 
         #region Kernel32
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GetConsoleWindow();
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GetStdHandle(int nStdHandle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetStdHandle(int nStdHandle, IntPtr hHandle);
 
-        [DllImport("kernel32.dll")]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern uint GetLastError();
-
-        [DllImport("Kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool AllocConsole();
 
-        [DllImport("Kernel32.dll")]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern bool FreeConsole();
-
-        [DllImport("Kernel32.dll")]
+        [DllImport("kernel32.dll", EntryPoint = "CreateFileW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
         
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GlobalAlloc(GLOBAL_ALLOC_FLAGS uFlags, nuint uBytes);
         
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GlobalFree(IntPtr hMem);
 
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr GlobalLock(IntPtr hMem);
 
-        [DllImport("KERNEL32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalUnlock(IntPtr hMem);
         
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetConsoleCtrlHandler(HandlerRoutine handlerRoutine, bool add);
-        
+
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        private static extern ExecutionState SetThreadExecutionState(ExecutionState esFlags);
+
         #endregion
 
         #region User32
+        public struct WINDOWPOS
+        {
+            public IntPtr hwnd;
+            public IntPtr hwndInsertAfter;
+            public int    x;
+            public int    y;
+            public int    cx;
+            public int    cy;
+            public uint   flags;
+        }
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern int GetSystemMetrics(int nIndex);
+        public static extern int GetSystemMetrics(SystemMetric nIndex);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
-        [DllImport("user32.dll")]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern int GetDpiForWindow(IntPtr hWnd);
-        
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern IntPtr GetActiveWindow();
-
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool OpenClipboard(IntPtr hWndNewOwner);
 
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseClipboard();
 
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SetClipboardData(uint uFormat, IntPtr data);
 
-        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EmptyClipboard();
         
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool IsWindowVisible(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
-        
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref WindowRect rectangle);
 
-        [DllImport("user32.dll")]
-        public static extern uint GetWindowLong(IntPtr hwnd, int index);
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32.dll")]
-        public static extern uint SetWindowLong(IntPtr hwnd, int index, uint value);
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowLongPtr(IntPtr hwnd, int index, IntPtr value);
-
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", EntryPoint = "FindWindowExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern bool DestroyWindow(IntPtr hwnd);
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll", EntryPoint = "CallWindowProcW", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, UIntPtr wParam, IntPtr lParam);
         #endregion
 
         #region Shcore
-        [DllImport("Shcore.dll", SetLastError = true)]
+        [DllImport("Shcore.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
         #endregion
-        
+
+        #region Ntdll
+        // https://github.com/dotnet/runtime/blob/f4d39134b8daefb5ab0db6750a203f980eecb4f0/src/libraries/System.Diagnostics.Process/src/System/Diagnostics/ProcessManager.Win32.cs#L299
+        // https://github.com/dotnet/runtime/blob/f4d39134b8daefb5ab0db6750a203f980eecb4f0/src/libraries/System.Diagnostics.Process/src/System/Diagnostics/ProcessManager.Win32.cs#L346
+        // https://github.com/dotnet/runtime/blob/main/src/libraries/Common/src/Interop/Windows/NtDll/Interop.NtQuerySystemInformation.cs#L11
+
+        private const int SystemProcessInformation = 5;
+
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/aa380518.aspx
+        // https://msdn.microsoft.com/en-us/library/windows/hardware/ff564879.aspx
+        [StructLayout(LayoutKind.Sequential)]
+        private unsafe struct UNICODE_STRING
+        {
+            /// <summary>
+            /// Length in bytes, not including the null terminator, if any.
+            /// </summary>
+            internal ushort Length;
+
+            /// <summary>
+            /// Max size of the buffer in bytes
+            /// </summary>
+            internal ushort MaximumLength;
+            internal void* Buffer;
+        }
+
+        [DllImport("ntdll.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
+
+        private static byte[] NtQueryCachedBuffer = new byte[4 << 20];
+        public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
+        {
+            // Get the pointer of the buffer
+            fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
+            {
+                // Get the query of the current running process and store it to the buffer
+                NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out uint length);
+
+                // If the required length of the data is exceeded, return false
+                if (length > NtQueryCachedBuffer.Length) return false;
+
+                // Start reading data from the buffer
+                int currentOffset = 0;
+            ReadQueryData:
+                // Get the current position of the pointer based on its offset
+                byte* curPosPtr = dataBufferPtr + currentOffset;
+
+                // Get the increment of the next entry offset
+                // and get the struct from the given pointer offset + 56 bytes ahead
+                // to obtain the process name.
+                int nextEntryOffset = *(int*)curPosPtr;
+                UNICODE_STRING* unicodeString = (UNICODE_STRING*)(curPosPtr + 56);
+
+                // Use the struct buffer into the ReadOnlySpan<char> to be compared with
+                // the input from "processName" argument.
+                ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
+                if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
+                    return true; // If equals, then return true
+
+                // Otherwise, if the next entry offset is not 0 (not ended), then read
+                // the next data and move forward based on the given offset.
+                currentOffset += nextEntryOffset;
+                if (nextEntryOffset != 0)
+                    goto ReadQueryData;
+            }
+
+            return false;
+        }
+        #endregion
+
+#nullable enable
+        public static CancellationTokenSource? _preventSleepToken;
+        private static bool _preventSleepRunning;
+
+        public static async void RestoreSleep() => await (_preventSleepToken?.CancelAsync() ?? Task.CompletedTask);
+
+        public static async void PreventSleep()
+        {
+            // Only run this loop once
+            if (_preventSleepRunning) return;
+
+            // Initialize instance if it's still null
+            _preventSleepToken ??= new CancellationTokenSource();
+
+            // If the instance cancellation has been requested, return
+            if (_preventSleepToken.IsCancellationRequested) return;
+
+            // Set flag
+            _preventSleepRunning = true;
+
+            try
+            {
+                LogWriteLine("[InvokeProp::PreventSleep()] Starting to prevent sleep!", LogType.Warning, true);
+                while (!_preventSleepToken.IsCancellationRequested)
+                {
+                    // Set ES to SystemRequired every 60s
+                    SetThreadExecutionState(ExecutionState.EsContinuous | ExecutionState.EsSystemRequired);
+                    await Task.Delay(60000, _preventSleepToken.Token);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                //do nothing, its cancelled :)
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"[InvokeProp::PreventSleep()] Errors while preventing sleep!\r\n{e}",
+                             LogType.Error, true);
+            }
+            finally
+            {
+                // Reset flag and ES 
+                _preventSleepRunning = false;
+                SetThreadExecutionState(ExecutionState.EsContinuous);
+                LogWriteLine("[InvokeProp::PreventSleep()] Stopped preventing sleep!", LogType.Warning, true);
+                
+                // Null the token for the next time method is called
+                _preventSleepToken = null;
+            }
+        }
+#nullable restore
+
         public static unsafe void CopyStringToClipboard(string inputString)
         {
             // Initialize the memory pointer
@@ -226,13 +355,13 @@ namespace Hi3Helper
                 // If inputString is null or empty, then return
                 if (string.IsNullOrEmpty(inputString))
                 {
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] inputString cannot be empty! Clipboard will not be set!", LogType.Warning, true);
                     return;
                 }
 
                 // Try open the Clipboard
                 if (!(isOpenClipboardSuccess = OpenClipboard(IntPtr.Zero)))
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while opening clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
 
                 // Set the bufferSize + 1, the additional 1 byte will be used to interpret the null byte
                 int bufferSize = (inputString.Length + 1);
@@ -243,7 +372,7 @@ namespace Hi3Helper
 
                 // Write the inputString as a UTF-8 bytes into the string buffer
                 if (!Encoding.UTF8.TryGetBytes(inputString, new Span<byte>((byte*)stringBufferPtr, inputString.Length), out int bufferWritten))
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Loading inputString into buffer has failed! Clipboard will not be set!", LogType.Error, true);
 
                 // Always set the null byte at the end of the buffer
                 ((byte*)stringBufferPtr!)![bufferWritten] = 0x00; // Write the null (terminator) byte
@@ -255,11 +384,11 @@ namespace Hi3Helper
                 // the clearance is failed, then clear the buffer at "finally" block
                 if (!EmptyClipboard() || SetClipboardData(1, hMem) == IntPtr.Zero)
                 {
-                    Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
+                    LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Error has occurred while clearing and set clipboard buffer! Error: {Marshal.GetLastPInvokeErrorMessage()}", LogType.Error, true);
                     return;
                 }
 
-                Logger.LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Content has been set to Clipboard buffer with size: {bufferSize} bytes", LogType.Debug, true);
+                LogWriteLine($"[InvokeProp::CopyStringToClipboard()] Content has been set to Clipboard buffer with size: {bufferSize} bytes", LogType.Debug, true);
             }
             finally
             {
@@ -271,16 +400,6 @@ namespace Hi3Helper
             }
         }
 
-        public struct WindowRect
-        {
-            // ReSharper disable UnusedAutoPropertyAccessor.Global
-            public int Left { get; set; }
-            public int Top { get; set; }
-            public int Right { get; set; }
-            public int Bottom { get; set; }
-            // ReSharper restore UnusedAutoPropertyAccessor.Global
-        }
-        
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 
         public class InvokePresence
@@ -296,7 +415,9 @@ namespace Hi3Helper
             public void HideWindow() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMINIMIZED);
         }
 
-        [DllImport("shell32.dll", SetLastError = true)]
+        #region shell32
+        [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
 
         public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
@@ -307,14 +428,87 @@ namespace Hi3Helper
             SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
             SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
         }
+        #endregion
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
-        
-        public static int GetInstanceCount()
+
+        public static Process[] GetInstanceProcesses()
         {
             var currentProcess = Process.GetCurrentProcess();
-            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
-            return processes.Length;
+            var processes      = Process.GetProcessesByName(currentProcess.ProcessName);
+            
+            return processes;
         }
+
+        public static int EnumerateInstances()
+        {
+            var instanceProc  = GetInstanceProcesses();
+            var instanceCount = instanceProc.Length;
+
+            var finalInstanceCount = 0;
+            
+            if (instanceCount > 1)
+            {
+                var curPId = Process.GetCurrentProcess().Id;
+                LogWriteLine($"Detected {instanceCount} instances! Current PID: {curPId}", LogType.Default, true);
+                LogWriteLine($"Enumerating instances...");
+                foreach (Process p in instanceProc)
+                {
+                    if (p == null) continue;
+                    try
+                    {
+                        if (p.MainWindowHandle == IntPtr.Zero)
+                        {
+                            LogWriteLine("Process does not have window, skipping...", LogType.NoTag, true);
+                            continue;
+                        }
+                            
+                        LogWriteLine($"Name: {p.ProcessName}",                LogType.NoTag, true);
+                        LogWriteLine($"MainModule: {p.MainModule?.FileName}", LogType.NoTag, true);
+                        LogWriteLine($"PID: {p.Id}",                          LogType.NoTag, true);
+                            
+                        finalInstanceCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed when trying to fetch an instance information! " +
+                                     $"InstanceCount is not incremented.\r\n{ex}",
+                                     LogType.Error, true);
+                    }
+                }
+
+                LogWriteLine($"Multiple instances found! This is instance #{finalInstanceCount}",
+                             LogType.Scheme, true);
+            }
+            else finalInstanceCount = 1;
+
+            return finalInstanceCount;
+        }
+
+        #region dwmapi
+        public struct MARGINS
+        {
+            public int cxLeftWidth;
+            public int cxRightWidth;
+            public int cyTopHeight;
+            public int cyBottomHeight;
+        }
+
+        [DllImport("dwmapi.dll", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+        #endregion
+
+        #region uxtheme
+        [DllImport("uxtheme.dll", EntryPoint = "#132", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return:MarshalAs(UnmanagedType.I1)]
+        public static extern bool ShouldAppsUseDarkMode();
+
+        // Note: Can only use "Default" and "AllowDark" to support Windows 10 1809
+        [DllImport("uxtheme.dll", EntryPoint = "#135", ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern PreferredAppMode SetPreferredAppMode(PreferredAppMode preferredAppMode);
+        #endregion
     }
 }

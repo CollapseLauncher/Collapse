@@ -1,16 +1,20 @@
-﻿using CollapseLauncher.GameSettings;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.Honkai.Enums;
+using Hi3Helper.Screen;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "PossibleNullReferenceException")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "ExplicitCallerInfoArgument")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument")]
     public partial class HonkaiGameSettingsPage : INotifyPropertyChanged
     {
         #region Fields
@@ -154,7 +158,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                Size size = ScreenProp.GetScreenSize();
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -224,7 +228,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                    Size size = ScreenProp.GetScreenSize();
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;
@@ -284,7 +288,7 @@ namespace CollapseLauncher.Pages
             if (!BypassChallenge)
             {
                 prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
-                var result = await Dialogs.SimpleDialogs.Dialog_GraphicsVeryHighWarning(Content);
+                var result = await SimpleDialogs.Dialog_GraphicsVeryHighWarning(Content);
 
                 switch (result)
                 {
@@ -556,15 +560,15 @@ namespace CollapseLauncher.Pages
             get
             {
                 bool value                                  = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
-                if (value){AdvancedSettingsPanel.Visibility = Microsoft.UI.Xaml.Visibility.Visible;}
-                else AdvancedSettingsPanel.Visibility       = Microsoft.UI.Xaml.Visibility.Collapsed;
+                if (value){AdvancedSettingsPanel.Visibility = Visibility.Visible;}
+                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
                 return value;
             }
             set
             { 
                 Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
-                if (value) AdvancedSettingsPanel.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                else AdvancedSettingsPanel.Visibility       = Microsoft.UI.Xaml.Visibility.Collapsed;
+                if (value) AdvancedSettingsPanel.Visibility = Visibility.Visible;
+                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
             } 
         }
 
@@ -578,11 +582,13 @@ namespace CollapseLauncher.Pages
                 {
                     PreLaunchCommandTextBox.IsEnabled   = true;
                     PreLaunchForceCloseToggle.IsEnabled = true;
+                    GameLaunchDelay.IsEnabled           = true;
                 }
                 else
                 {
                     PreLaunchCommandTextBox.IsEnabled   = false;
                     PreLaunchForceCloseToggle.IsEnabled = false;
+                    GameLaunchDelay.IsEnabled           = false;
                 }
 
                 return value;
@@ -615,6 +621,12 @@ namespace CollapseLauncher.Pages
             get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
             set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
+        
+        public int LaunchDelay
+        {
+            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
+            set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
+        }
 
         public bool IsUsePostExitCommand
         {
@@ -640,6 +652,13 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.SettingsCollapseMisc.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
+        }
+        
+        private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            // clamp for negative value when clearing the number box
+            if ((int)sender.Value < 0)
+                sender.Value = 0;
         }
         #endregion
     }

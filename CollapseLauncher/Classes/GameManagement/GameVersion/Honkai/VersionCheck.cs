@@ -1,5 +1,4 @@
 using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using System;
 
@@ -17,8 +16,8 @@ namespace CollapseLauncher.GameVersioning
         public bool IsPreloadSenadinaVersion { get => GameVersionAPIPreload.HasValue ? GameVersionAPIPreload.Value.ToVersion() >= senadinaVersion : false; }
         #endregion
 
-        public GameTypeHonkaiVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
-            : base(parentUIElement, gameRegionProp, gamePreset)
+        public GameTypeHonkaiVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, string gameName, string gameRegion)
+            : base(parentUIElement, gameRegionProp, gameName, gameRegion)
         {
             // Try check for reinitializing game version from XMF file.
             TryReinitializeGameVersion();
@@ -35,17 +34,6 @@ namespace CollapseLauncher.GameVersioning
 
             // Then try Reinitialize game version provided by XMF
             TryReinitializeGameVersion();
-        }
-
-        private void TryReinitializeGameVersion()
-        {
-            // Check if the GameVersionInstalled == null (version config doesn't exist)
-            // and if the XMF file version matches the version from GameVersionAPI, then reinitialize the version config
-            // and save the version config by assigning GameVersionInstalled.
-            if (GameVersionInstalled == null)
-            {
-                GameVersionInstalled = GameVersionAPI;
-            }
         }
     }
 }

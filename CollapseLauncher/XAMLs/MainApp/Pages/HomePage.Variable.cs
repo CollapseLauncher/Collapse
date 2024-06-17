@@ -1,10 +1,11 @@
-﻿using Hi3Helper;
-using Hi3Helper.Preset;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.WindowSize;
+using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -13,13 +14,19 @@ namespace CollapseLauncher.Pages
     {
         string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
 
-        public Visibility IsPostEventPanelVisible => (regionNewsProp.articlePanel?.Events.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostEventPanelEmpty => (regionNewsProp.articlePanel?.Events.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostNoticePanelVisible => (regionNewsProp.articlePanel?.Notices.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostNoticePanelEmpty => (regionNewsProp.articlePanel?.Notices.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostInfoPanelVisible => (regionNewsProp.articlePanel?.Info.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility IsPostInfoPanelEmpty => (regionNewsProp.articlePanel?.Info.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+#nullable enable
+        private LauncherGameNewsData? GameNewsData { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameNews?.Content; }
+        public bool IsPostPanelAvailable => (GameNewsData?.NewsPost?.Count ?? 0) > 0;
+        public bool IsCarouselPanelAvailable => (GameNewsData?.NewsCarousel?.Count ?? 0) > 0;
+
+        public Visibility IsPostEventPanelVisible => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostEventPanelEmpty => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelVisible => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelEmpty => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelVisible => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelEmpty => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
         public int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
+#nullable restore
 
         public bool IsEventsPanelShow
         {
@@ -53,15 +60,71 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                GameType gameType = CurrentGameProperty._GamePreset.GameType;
+                GameNameType gameType = CurrentGameProperty._GamePreset.GameType;
                 return gameType switch
                 {
-                    GameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
-                    GameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
-                    GameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
+                    GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
+                    GameNameType.StarRail => "ms-appx:///Assets/Images/GameMascot/PomPomWhat.png",
+                    GameNameType.Zenless => "ms-appx:///Assets/Images/GameMascot/BangbooShocked.png",
                     _ => "ms-appx:///Assets/Images/GameMascot/PaimonWhat.png"
                 };
             }
+        }
+
+        internal int CurrentBannerIconWidth
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidth :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidthHYP;
+        }
+
+        internal Thickness CurrentBannerIconMargin
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
+        }
+
+        internal int CurrentBannerIconColumn
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   0;
+        }
+
+        internal int CurrentBannerIconColumnSpan
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   1;
+        }
+
+        internal int CurrentBannerIconRow
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   0;
+        }
+
+        internal int CurrentBannerIconRowSpan
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   1 :
+                   1;
+        }
+
+        internal HorizontalAlignment CurrentBannerIconHorizontalAlign
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
+        }
+
+        internal VerticalAlignment CurrentBannerIconVerticalAlign
+        {
+            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
 
         public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);

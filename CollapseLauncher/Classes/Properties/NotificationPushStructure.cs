@@ -1,7 +1,6 @@
-﻿using Microsoft.UI.Text;
+﻿using CollapseLauncher.Extension;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,12 +44,12 @@ namespace Hi3Helper.Shared.ClassStruct
         public NotificationActionTypeDesc? ActionType { get; set; }
         public Type BaseClassType { get; set; }
 
-        public virtual UIElement GetUIElement()
+        public virtual FrameworkElement GetFrameworkElement()
         {
             return null;
         }
 
-        protected virtual void BuildUIElement(ref Utf8JsonReader reader)
+        public virtual void BuildFrameworkElement(ref Utf8JsonReader reader)
         {
             return;
         }
@@ -109,7 +108,9 @@ namespace Hi3Helper.Shared.ClassStruct
                             switch (returnValue.ActionType)
                             {
                                 case NotificationActionTypeDesc.ClickLink:
-                                    returnValue = new NotificationActionClickLink(ref reader);
+                                    // Build the UI element
+                                    returnValue = new NotificationActionClickLink();
+                                    returnValue.BuildFrameworkElement(ref reader);
                                     break;
                                 default:
                                     reader.Skip();
@@ -144,16 +145,13 @@ namespace Hi3Helper.Shared.ClassStruct
         public string? GlyphFont { get; set; }
 #nullable disable
 
-        public NotificationActionClickLink(ref Utf8JsonReader reader)
+        public NotificationActionClickLink()
         {
             // Assign the class type
             BaseClassType = typeof(NotificationActionClickLink);
-
-            // Build the UI element
-            BuildUIElement(ref reader);
         }
 
-        public override UIElement GetUIElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (s, e) =>
+        public override FrameworkElement GetFrameworkElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (s, e) =>
         {
             new Process
             {
@@ -165,7 +163,7 @@ namespace Hi3Helper.Shared.ClassStruct
             }.Start();
         }, GlyphFont);
 
-        protected override void BuildUIElement(ref Utf8JsonReader reader)
+        public override void BuildFrameworkElement(ref Utf8JsonReader reader)
         {
             // Do loop while the reader == true
             while (reader.Read())
@@ -268,44 +266,16 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public static Button GenerateNotificationButton(string IconGlyph, string Text, RoutedEventHandler ButtonAction = null, string FontIconName = "FontAwesomeSolid", string ButtonStyle = "AccentButtonStyle")
         {
-            StackPanel BtnStack = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
+            Button Btn =
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Text,
+                    IconGlyph,
+                    FontIconName,
+                    ButtonStyle
+                )
+                .WithMargin(0d, 0d, 0d, 8d);
 
-            if (IconGlyph != null)
-            {
-                BtnStack.Children.Add(
-                    new FontIcon
-                    {
-                        Glyph = IconGlyph,
-                        FontFamily = (FontFamily)Application.Current.Resources[FontIconName],
-                        Margin = new Thickness(0, 0, Text == null ? 0 : 8, 0),
-                        FontSize = 16
-                    });
-            }
-
-            if (Text != null)
-            {
-                BtnStack.Children.Add(
-                    new TextBlock
-                    {
-                        Text = Text,
-                        FontWeight = FontWeights.Medium,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-            }
-
-            Button Btn = new Button
-            {
-                Content = BtnStack,
-                Margin = new Thickness(0, 0, 0, 8),
-                Style = (Style)Application.Current.Resources[ButtonStyle],
-                CornerRadius = new CornerRadius(16)
-            };
-
-            if (ButtonAction != null)
-            {
-                Btn.Click += ButtonAction;
-            }
-
+            if (ButtonAction != null) Btn.Click += ButtonAction;
             return Btn;
         }
     }

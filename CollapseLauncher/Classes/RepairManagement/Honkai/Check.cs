@@ -31,42 +31,49 @@ namespace CollapseLauncher
             CheckUnusedAsset(assetIndex, brokenAssetIndex);
 
             // Await the task for parallel processing
-            await Task.Run(() =>
+            try
             {
-                try
+                // Check for skippable assets to skip the check
+                RemoveSkippableAssets(assetIndex);
+
+                // Reset stopwatch
+                RestartStopwatch();
+
+                // Iterate assetIndex and check it using different method for each type and run it in parallel
+                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    // Check for skippable assets to skip the check
-                    RemoveSkippableAssets(assetIndex);
-
-                    // Reset stopwatch
-                    RestartStopwatch();
-
-                    // Iterate assetIndex and check it using different method for each type and run it in parallel
-                    Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
+                    if (asset.IsUsed)
                     {
-                        // Assign a task depends on the asset type
-                        switch (asset.FT)
-                        {
-                            case FileType.Blocks:
-                                CheckAssetTypeBlocks(asset, brokenAssetIndex, token);
-                                break;
-                            case FileType.Audio:
-                                CheckAssetTypeAudio(asset, brokenAssetIndex, token);
-                                break;
-                            case FileType.Video:
-                                CheckAssetTypeVideo(asset, brokenAssetIndex, token);
-                                break;
-                            default:
-                                CheckAssetTypeGeneric(asset, brokenAssetIndex, token);
-                                break;
-                        }
-                    });
-                }
-                catch (AggregateException ex)
-                {
-                    throw ex.Flatten().InnerExceptions.First();
-                }
-            }).ConfigureAwait(false);
+                        return;
+                    }
+                    asset.IsUsed = true;
+
+                    // Assign a task depends on the asset type
+                    switch (asset.FT)
+                    {
+                        case FileType.Blocks:
+                            await CheckAssetTypeBlocks(asset, brokenAssetIndex, threadToken);
+                            break;
+                        case FileType.Audio:
+                            await CheckAssetTypeAudio(asset, brokenAssetIndex, threadToken);
+                            break;
+                        case FileType.Video:
+                            CheckAssetTypeVideo(asset, brokenAssetIndex);
+                            break;
+                        default:
+                            await CheckAssetTypeGeneric(asset, brokenAssetIndex, threadToken);
+                            break;
+                    }
+                });
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Re-add the asset index with a broken asset index
             assetIndex.Clear();
@@ -74,7 +81,7 @@ namespace CollapseLauncher
         }
 
         #region VideoCheck
-        private void CheckAssetTypeVideo(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private void CheckAssetTypeVideo(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
         {
             // Increment current total count
             // _progressTotalCountCurrent++;
@@ -113,7 +120,7 @@ namespace CollapseLauncher
         #endregion
 
         #region AudioCheck
-        private void CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async ValueTask CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
@@ -175,10 +182,10 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do MD5 Hash calculation
-                localCRC = CheckHash(filefs, MD5.Create(), token);
+                localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
                 // Get size difference for summarize the _progressTotalSizeCurrent
                 long sizeDifference = asset.S - file.Length;
@@ -221,7 +228,7 @@ namespace CollapseLauncher
         #endregion
 
         #region GenericCheck
-        private void CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async ValueTask CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
@@ -271,10 +278,10 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
-                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
+                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -307,15 +314,30 @@ namespace CollapseLauncher
             if (_isOnlyRecoverMain) return;
 
             List<FilePropertiesRemote> removableAssets = new List<FilePropertiesRemote>();
+            Span<Range> ranges = stackalloc Range[2];
 
             // Iterate the skippable asset and do LINQ check
             foreach (string skippableAsset in _skippableAssets)
             {
-                // Try get the IEnumerable to iterate the asset
-                foreach (FilePropertiesRemote asset in assetIndex.Where(x => x.N.Contains(skippableAsset)))
+                // Try get the filename and the enum type
+                ReadOnlySpan<char> skippableNameSpan = skippableAsset.AsSpan();
+                _ = skippableNameSpan.Split(ranges, '$');
+                ReadOnlySpan<char> skippableName = skippableNameSpan[ranges[0]];
+                ReadOnlySpan<char> skippableType = skippableNameSpan[ranges[1]];
+
+                if (Enum.TryParse(skippableType, true, out FileType skippableFt))
                 {
-                    // If there's any, then add it to removable assets list
-                    removableAssets.Add(asset);
+                    // Try get the IEnumerable to iterate the asset
+                    foreach (FilePropertiesRemote asset in assetIndex)
+                    {
+                        // If the asset name and type is equal, then add as removable
+                        if (asset.N.AsSpan().EndsWith(skippableName, StringComparison.OrdinalIgnoreCase)
+                            && skippableFt == asset.FT)
+                        {
+                            // If there's any, then add it to removable assets list
+                            removableAssets.Add(asset);
+                        }
+                    }
                 }
             }
 
@@ -348,7 +370,7 @@ namespace CollapseLauncher
             return block.BlockPatchInfo;
         }
 
-        private void CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async ValueTask CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
@@ -373,10 +395,10 @@ namespace CollapseLauncher
             if ((fileOld?.Exists ?? false) && !file.Exists)
             {
                 // Open and read fileInfo as FileStream 
-                using (FileStream fileOldfs = new FileStream(filePathOld, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, _bufferBigLength))
+                await using (FileStream fileOldfs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     // If pass the check above, then do CRC calculation
-                    byte[] localOldCRC = CheckHash(fileOldfs, MD5.Create(), token, false);
+                    byte[] localOldCRC = await CheckHashAsync(fileOldfs, MD5.Create(), token, false);
 
                     // If the hash matches, then add the patch
                     if (IsArrayMatch(localOldCRC, patchInfo?.PatchPairs[0].OldHash))
@@ -456,11 +478,11 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, _bufferBigLength))
+            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
+                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))

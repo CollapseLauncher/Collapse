@@ -1,15 +1,18 @@
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
-using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using PhotoSauce.MagicScaler;
+using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
@@ -27,36 +30,39 @@ namespace CollapseLauncher
                 UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true); };
                 
                 ThemeChangerInvoker.ThemeEvent += (_, _) => {
-                    MainWindow.SetLegacyTitleBarColor();
+                    WindowUtility.ApplyWindowTitlebarLegacyColor();
                     bool isThemeLight = IsAppThemeLight;
                     Color color = isThemeLight ? Colors.Black : Colors.White;
                     Current!.Resources!["WindowCaptionForeground"] = color;
-                    m_appWindow!.TitleBar!.ButtonForegroundColor = color;
-                    m_appWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
 
-                    if (m_window!.Content is not null and FrameworkElement frameworkElement)
+                    WindowUtility.CurrentAppWindow!.TitleBar!.ButtonForegroundColor = color;
+                    WindowUtility.CurrentAppWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
+
+                    if (WindowUtility.CurrentWindow!.Content is not null and FrameworkElement frameworkElement)
                         frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark; };
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
-                
+                SetPreferredAppMode(ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+
+                Window toInitializeWindow = null;
                 switch (m_appMode)
                 {
                     case AppMode.Updater:
-                        m_window = new UpdaterWindow();
+                        toInitializeWindow = new UpdaterWindow();
                         break;
                     case AppMode.Hi3CacheUpdater:
                     case AppMode.Launcher:
-                        m_window = new MainWindow();
-                        ((MainWindow)m_window).InitializeWindowProperties();
+                        toInitializeWindow = new MainWindow();
+                        ((MainWindow)toInitializeWindow).InitializeWindowProperties();
                         break;
                     case AppMode.OOBEState:
-                        m_window = new MainWindow();
-                        ((MainWindow)m_window).InitializeWindowProperties(true);
+                        toInitializeWindow = new MainWindow();
+                        ((MainWindow)toInitializeWindow).InitializeWindowProperties(true);
                         break;
                     case AppMode.StartOnTray:
-                        m_window = new MainWindow();
-                        ((MainWindow)m_window).InitializeWindowProperties();
+                        toInitializeWindow = new MainWindow();
+                        ((MainWindow)toInitializeWindow).InitializeWindowProperties();
                         LogWriteLine("Running Collapse in Tray Mode!", LogType.Scheme);
                         break;
                 }
@@ -66,20 +72,26 @@ namespace CollapseLauncher
                 //int setAUMIDResult = SetCurrentProcessExplicitAppUserModelID(appUserModelId);
                 //if (setAUMIDResult != 0) LogWriteLine($"Error when setting AppUserModelId to {appUserModelId}. Error code: {setAUMIDResult}", LogType.Error, true);
                 //else LogWriteLine($"Successfully set AppUserModelId to {appUserModelId}", LogType.Default, true);
-                
-                m_window!.Activate();
+
+                toInitializeWindow!.Activate();
                 
                 bool isAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
                 if (!isAcrylicEnabled) ToggleBlurBackdrop(false);
                 if (m_appMode == AppMode.StartOnTray)
                 {
-                    (m_window as MainWindow)?.ToggleToTray_AllWindow();
+                    WindowUtility.ToggleToTray_AllWindow();
                 }
 
                 if (m_appMode != AppMode.Updater && LauncherConfig.GetAppConfigValue("EnableWaifu2X").ToBool())
                 {
                     ImageLoaderHelper.InitWaifu2X();
                 }
+
+                // Initialize support for MagicScaler's WebP decoding
+                CodecManager.Configure(codecs =>
+                {
+                    codecs.UseLibwebp();
+                });
             }
             catch (Exception ex)
             {

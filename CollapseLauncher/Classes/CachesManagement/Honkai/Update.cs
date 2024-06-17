@@ -102,6 +102,10 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(assetDir!);
                 }
 
+#if DEBUG
+                LogWriteLine($"Downloading cache [T: {asset.DataType}]: {asset.N} at URL: {asset.ConcatURL}", LogType.Debug, true);
+#endif
+
                 // Do multi-session download for asset that has applicable size
                 if (asset.CS >= _sizeForMultiDownload)
                 {
@@ -114,7 +118,9 @@ namespace CollapseLauncher
                     await httpClient!.Download(asset.ConcatURL, asset.ConcatPath, true, null, null, token);
                 }
 
+#if !DEBUG
                 LogWriteLine($"Downloaded cache [T: {asset.DataType}]: {asset.N}", LogType.Default, true);
+#endif
             }
 
             // Remove Asset Entry display
@@ -138,7 +144,7 @@ namespace CollapseLauncher
             {
                 // Update current activity status
                 _status!.IsProgressTotalIndetermined = false;
-                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, ((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)).ToTimeSpanNormalized());
                 _status.ActivityTotal = string.Format(Lang!._Misc!.Downloading + ": {0}/{1} ", _progressTotalCountCurrent, _progressTotalCount)
                                        + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(speed))
                                        + $" | {timeLeftString}";

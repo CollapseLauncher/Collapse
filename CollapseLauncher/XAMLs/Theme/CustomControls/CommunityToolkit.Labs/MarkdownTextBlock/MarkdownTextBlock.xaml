@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:labs="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock">
     <Style BasedOn="{StaticResource DefaultMarkdownTextBlockStyle}"
-           TargetType="labs:MarkdownTextBlock"/>
+           TargetType="labs:MarkdownTextBlock" />
     <Style x:Key="DefaultMarkdownTextBlockStyle"
            TargetType="labs:MarkdownTextBlock">
         <Setter Property="Template">
@@ -15,7 +15,7 @@
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="{TemplateBinding CornerRadius}"/>
+                          CornerRadius="{TemplateBinding CornerRadius}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -1,19 +1,16 @@
-﻿using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -21,11 +18,16 @@ namespace CollapseLauncher
     #region LauncherUpdateRegion
     internal static class LauncherUpdateWatcher
     {
-        public static string UpdateChannelName;
+        
+    #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
+        public static string               UpdateChannelName = "stable";
         public static AppUpdateVersionProp UpdateProperty;
-        private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
+        public static bool                 isUpdateCooldownActive;
+    #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
+        
+        private static LauncherUpdateInvoker invoker = new();
         public static void GetStatus(LauncherUpdateProperty e) => invoker!.GetStatus(e);
-        public static bool isUpdateCooldownActive;
+        
         public static bool isMetered
         {
             get
@@ -34,87 +36,46 @@ namespace CollapseLauncher
                 return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);
             }
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "FunctionNeverReturns")]
-        public static async void StartCheckUpdate(bool forceUpdate)
-        {
-            UpdateChannelName = IsPreview ? "preview" : "stable";
-            while (true)
-            {
-                if ((!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate) && !IsSkippingUpdateCheck)
-                {
-                    try
-                    {
-                        // Force disable cooldown when its being forcefully updated
-                        if (forceUpdate)
-                            isUpdateCooldownActive = false;
-                        // Stopping auto update when it was recently called. Workaround for update being called twice on metadata update.
-                        if (!isUpdateCooldownActive)
-                        {
-                            if (!isMetered || forceUpdate)
-                            {
-                                isUpdateCooldownActive = true;
-                                using (Updater updater = new Updater(UpdateChannelName))
-                                {
-                                    UpdateInfo info = await updater.StartCheck();
-                                    GameVersion RemoteVersion = new GameVersion(info!.FutureReleaseEntry!.Version!.Version);
-
-                                    AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
-                                    UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata!.time };
-
-                                    if (CompareVersion(AppCurrentVersion, RemoteVersion))
-                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
-                                    else
-                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
-                                }
-                                ForceInvokeUpdate = false;
-                            }
-                            else
-                            {
-                                LogWriteLine($"Current network state is metered or disconnected! Auto update is skipped.\r\n\tPlease check your connection or use `Check for Update` button in Settings menu to update.", LogType.Warning, true);
-                            }
-                            isUpdateCooldownActive = true;
-                        }
-                        else LogWriteLine("Update was recently invoked! Stopping auto update until it resets in 15 minutes", LogType.Error, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriteLine($"Update check has failed! Will retry in 15 mins.\r\n{ex}", LogType.Error, true);
-                    }
-                }
-                // Delay for 15 to 60 minutes depending on metered
-                await Task.Delay((isMetered ? 3600 : 900) * 1000);
-                // Reset isUpdateRecentlyInvoked to release the lock
-                isUpdateCooldownActive = false;
-            }
-        }
-
-        private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
-        {
-            string relativePath = ConverterTool.CombineURLFromString(UpdateChannelName, "fileindex.json");
-            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
-            return await ms!.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
-        }
-
-        public static bool CompareVersion(GameVersion? CurrentVer, GameVersion? ComparedVer)
-        {
-            if (CurrentVer == null || ComparedVer == null) return false;
-            return CurrentVer.Value.ToVersion() < ComparedVer.Value.ToVersion();
-        }
     }
 
     public class AppUpdateVersionProp
     {
-        public string ver { get; set; }
-        public long time { get; set; }
-        public List<AppUpdateVersionFileProp> f { get; set; }
+        [JsonPropertyName("f")]
+        public List<AppUpdateVersionFileProp> FileList { get; set; }
+
+        [JsonPropertyName("forceUpdate")]
+        public bool IsForceUpdate { get; set; }
+
+        [JsonIgnore]
+        public DateTime? TimeLocalTime
+        {
+            get => DateTimeOffset.FromUnixTimeSeconds(UnixTime).DateTime.ToLocalTime();
+        }
+
+        [JsonPropertyName("time")]
+        public long UnixTime { get; set; }
+
+        [JsonIgnore]
+        public GameVersion? Version
+        {
+            get
+            {
+                if (!GameVersion.TryParse(VersionString, out GameVersion? result))
+                    return null;
+
+                return result;
+            }
+        }
+
+        [JsonPropertyName("ver")]
+        public string VersionString { get; set; }
     }
 
     public class AppUpdateVersionFileProp
     {
-        public string p { get; set; }
-        public string crc { get; set; }
-        public long s { get; set; }
+        [JsonPropertyName("p")] public string FilePath { get; set; }
+        [JsonPropertyName("crc")] public string FileMD5Hash { get; set; }
+        [JsonPropertyName("s")] public long FileSize { get; set; }
     }
 
     internal class LauncherUpdateInvoker
@@ -304,7 +265,7 @@ namespace CollapseLauncher
     public class NotificationInvokerProp
     {
         public TypedEventHandler<InfoBar, object> CloseAction { get; set; }
-        public UIElement OtherContent { get; set; }
+        public FrameworkElement OtherContent { get; set; }
         public NotificationProp Notification { get; set; }
         public bool IsAppNotif { get; set; } = true;
         public bool IsCustomNotif { get; set; }
@@ -315,9 +276,9 @@ namespace CollapseLauncher
     #region BackgroundRegion
     internal static class BackgroundImgChanger
     {
-        static BackgroundImgChangerInvoker invoker = new BackgroundImgChangerInvoker();
+        static BackgroundImgChangerInvoker invoker = new();
         public static async Task WaitForBackgroundToLoad() => await invoker!.WaitForBackgroundToLoad();
-        public static void ChangeBackground(string ImgPath, bool IsCustom = true) => invoker!.ChangeBackground(ImgPath, IsCustom);
+        public static void ChangeBackground(string ImgPath, bool IsCustom = true, bool IsForceRecreateCache = false, bool IsRequestInit = false) => invoker!.ChangeBackground(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit);
         public static void ToggleBackground(bool Hide) => invoker!.ToggleBackground(Hide);
     }
 
@@ -327,18 +288,22 @@ namespace CollapseLauncher
         public static event EventHandler<bool> IsImageHide;
         BackgroundImgProperty property;
         public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property!.IsImageLoaded) { } });
-        public void ChangeBackground(string ImgPath, bool IsCustom) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom));
+        public void ChangeBackground(string ImgPath, bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit));
         public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);
     }
 
     internal class BackgroundImgProperty
     {
-        internal BackgroundImgProperty(string ImgPath, bool IsCustom)
+        internal BackgroundImgProperty(string ImgPath, bool IsCustom, bool IsForceRecreateCache, bool IsRequestInit)
         {
-            this.ImgPath = ImgPath;
-            this.IsCustom = IsCustom;
+            this.ImgPath              = ImgPath;
+            this.IsCustom             = IsCustom;
+            this.IsForceRecreateCache = IsForceRecreateCache;
+            this.IsRequestInit        = IsRequestInit;
         }
 
+        public bool IsRequestInit { get; set; }
+        public bool IsForceRecreateCache { get; set; }
         public bool IsImageLoaded { get; set; }
         public string ImgPath { get; private set; }
         public bool IsCustom { get; private set; }

@@ -1,10 +1,13 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Sophon;
+using Hi3Helper.Sophon.Helper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -105,8 +108,8 @@ namespace CollapseLauncher.Interfaces
                 // Calculate speed
                 long speed = (long)(_progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds);
                 _progress.ProgressTotalSpeed = speed;
-                _progress.ProgressTotalTimeLeft = 
-                    TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed));
+                _progress.ProgressTotalTimeLeft = ((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed))
+                    .ToTimeSpanNormalized();
 
                 // Update current progress percentages
                 _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
@@ -212,7 +215,7 @@ namespace CollapseLauncher.Interfaces
                     _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds;
 
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                 }
 
                 lock (_status!)
@@ -251,7 +254,7 @@ namespace CollapseLauncher.Interfaces
                     _progress.ProgressTotalSpeed = currentPosition / _stopwatch!.Elapsed.TotalSeconds;
 
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((totalReadSize - currentPosition) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+                    _progress.ProgressTotalTimeLeft = ((totalReadSize - currentPosition) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
                 }
 
                 lock (_status!)
@@ -269,6 +272,58 @@ namespace CollapseLauncher.Interfaces
                 // Trigger update
                 UpdateAll();
             }
+        }
+        #endregion
+
+        #region ProgressEventHandlers - SophonInstaller
+        protected async void UpdateSophonDownloadProgress(long read)
+        {
+            Interlocked.Add(ref _progressTotalSizeCurrent, read);
+            _progressTotalReadCurrent += read;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Assign local sizes to progress
+                _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
+                _progress.ProgressTotalSizeToDownload = _progressTotalSize;
+
+                // Calculate the speed
+                _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+
+                // Calculate percentage
+                _progress.ProgressTotalPercentage =
+                    Math.Round((double)_progressTotalSizeCurrent / _progressTotalSize * 100, 2);
+                // Calculate the timelapse
+                _progress.ProgressTotalTimeLeft =
+                    ((_progressTotalSize - _progressTotalSizeCurrent) /
+                     ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+
+                UpdateProgress();
+            }
+        }
+
+        protected void UpdateSophonDownloadStatus(SophonAsset asset)
+        {
+            Interlocked.Add(ref _progressTotalCountCurrent, 1);
+            _status.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Downloading,
+                                     string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent,
+                                        _progressTotalCount));
+            UpdateStatus();
+        }
+
+        protected void UpdateSophonLogHandler(object sender, LogStruct e)
+        {
+#if !DEBUG
+            if (e.LogLevel == LogLevel.Debug) return;
+#endif
+            (bool isNeedWriteLog, LogType logType) logPair = e.LogLevel switch
+            {
+                LogLevel.Warning => (true, LogType.Warning),
+                LogLevel.Debug => (true, LogType.Debug),
+                LogLevel.Error => (true, LogType.Error),
+                _ => (true, LogType.Default)
+            };
+            LogWriteLine(e.Message, logPair.logType, logPair.isNeedWriteLog);
         }
         #endregion
 
@@ -388,7 +443,7 @@ namespace CollapseLauncher.Interfaces
         protected virtual void ResetStatusAndProgress()
         {
             // Reset the cancellation token
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
 
             // Reset RepairAssetProperty list
             AssetEntry!.Clear();
@@ -403,7 +458,7 @@ namespace CollapseLauncher.Interfaces
         protected void ResetStatusAndProgressProperty()
         {
             // Reset cancellation token
-            _token = new CancellationTokenSource();
+            _token = new CancellationTokenSourceWrapper();
 
             lock (_status!)
             {
@@ -684,17 +739,44 @@ namespace CollapseLauncher.Interfaces
                 await _httpClient!.Download(assetURL, assetPath, true, null, null, token);
             }
         }
+
+        /// <summary>
+        /// IDK what Microsoft is smoking but for some reason, the file were throwing IO_SharingViolation_File error,
+        /// or sometimes "File is being used by another process" error even though the file HAS NEVER BEEN OPENED LIKE, WTFFF????!>!!!!!!
+        /// </summary>
+        internal static async ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+        {
+            const int MaxTry = 10;
+            int currentTry = 1;
+            while (true)
+            {
+                try
+                {
+                    return info.Open(fileMode, fileAccess, fileShare);
+                }
+                catch
+                {
+                    if (currentTry <= MaxTry)
+                    {
+                        LogWriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {MaxTry}", LogType.Warning, true);
+                        await Task.Delay(50); // Adding 50ms delay
+                        continue;
+                    }
+                    throw; // Throw this MFs
+                }
+            }
+        }
         #endregion
 
         #region HashTools
-        protected virtual byte[] CheckHash(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
             // Initialize MD5 instance and assign buffer
             byte[] buffer = new byte[_bufferBigLength];
 
             // Do read activity
             int read;
-            while ((read = stream!.Read(buffer)) > 0)
+            while ((read = await stream!.ReadAsync(buffer, token)) > 0)
             {
                 // Throw Cancellation exception if detected
                 token.ThrowIfCancellationRequested();
@@ -746,8 +828,7 @@ namespace CollapseLauncher.Interfaces
                 using (FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // Verify the patch file and if it doesn't match, then redownload it
-                    byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false))
-                                                .ConfigureAwait(false);
+                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false).ConfigureAwait(false);
                     if (!IsArrayMatch(patchCRC, patchHash.Span))
                     {
                         // Revert back the total size
@@ -800,14 +881,23 @@ namespace CollapseLauncher.Interfaces
         {
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x!.GetAssetSize());
-            StackPanel Content = new StackPanel();
-            Button ShowBrokenFilesButton = new Button()
+            StackPanel Content = UIElementExtensions.CreateStackPanel();
+
+            Content.AddElementToStackPanel(new TextBlock()
             {
-                Content = Lang!._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
-                Style = Application.Current!.Resources!["AccentButtonStyle"] as Style,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                CornerRadius = new CornerRadius(14)
-            };
+                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle!, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
+                Margin = new Thickness(0, 0, 0, 16),
+                TextWrapping = TextWrapping.Wrap
+            });
+            Button ShowBrokenFilesButton = Content.AddElementToStackPanel(
+                UIElementExtensions.CreateButtonWithIcon<Button>(
+                    Lang._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
+                    "\uf550",
+                    "FontAwesomeSolid",
+                    "AccentButtonStyle"
+                )
+                .WithHorizontalAlignment(HorizontalAlignment.Center));
+
             ShowBrokenFilesButton.Click += async (_, _) =>
             {
                 string tempPath = Path.GetTempFileName() + ".log";
@@ -847,14 +937,6 @@ namespace CollapseLauncher.Interfaces
                     // piped to parent
                 }
             };
-
-            Content.Children!.Add(new TextBlock()
-            {
-                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle!, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
-                Margin = new Thickness(0, 0, 0, 16),
-                TextWrapping = TextWrapping.Wrap
-            });
-            Content.Children.Add(ShowBrokenFilesButton);
 
             if (totalSize == 0) return;
 
@@ -922,8 +1004,8 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual void UpdateProgress()
         {
-            _progress!.ProgressPerFilePercentage = double.IsInfinity(_progress.ProgressPerFilePercentage) ? 0 : _progress.ProgressPerFilePercentage;
-            _progress.ProgressTotalPercentage = double.IsInfinity(_progress.ProgressTotalPercentage) ? 0 : _progress.ProgressTotalPercentage;
+            _progress!.ProgressPerFilePercentage = _progress.ProgressPerFilePercentage.UnNaNInfinity();
+            _progress.ProgressTotalPercentage = _progress.ProgressTotalPercentage.UnNaNInfinity();
             ProgressChanged?.Invoke(this, _progress);
         }
 

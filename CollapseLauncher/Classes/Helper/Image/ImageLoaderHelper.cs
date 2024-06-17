@@ -1,33 +1,43 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Background;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
+using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
 namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
         internal static Dictionary<string, string> SupportedImageFormats =
-            new() { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } };
+            new() {
+                { "All supported formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) + ';' + string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) },
+                { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) },
+                { "Video formats", string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) }
+            };
 
         #region Waifu2X
         private static Waifu2X _waifu2X;
@@ -90,9 +100,9 @@ namespace CollapseLauncher.Helper.Image
             if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
             double aspectRatioX = InnerLauncherConfig.m_actualMainFrameSize.Width;
             double aspectRatioY = InnerLauncherConfig.m_actualMainFrameSize.Height;
-            double dpiScale = InnerLauncherConfig.m_appDPIScale;
-            uint targetSourceImageWidth = (uint)(aspectRatioX * dpiScale);
-            uint targetSourceImageHeight = (uint)(aspectRatioY * dpiScale);
+            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+            uint targetSourceImageWidth = (uint)(aspectRatioX * scaleFactor);
+            uint targetSourceImageHeight = (uint)(aspectRatioY * scaleFactor);
             bool isError = false;
 
             if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder!);
@@ -105,7 +115,7 @@ namespace CollapseLauncher.Helper.Image
                 FileInfo resizedFileInfo = GetCacheFileInfo(inputFileInfo.FullName + inputFileInfo.Length);
                 if (resizedFileInfo!.Exists && resizedFileInfo.Length > 1 << 15 && !overwriteCachedImage)
                 {
-                    resizedImageFileStream = resizedFileInfo.OpenRead();
+                    resizedImageFileStream = resizedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
                     return resizedImageFileStream;
                 }
 
@@ -118,7 +128,7 @@ namespace CollapseLauncher.Helper.Image
                 }
 
                 resizedImageFileStream = await GenerateCachedStream(inputFileInfo, targetSourceImageWidth,
-                                                                    targetSourceImageHeight, false);
+                                                                    targetSourceImageHeight);
             }
             catch
             {
@@ -148,12 +158,22 @@ namespace CollapseLauncher.Helper.Image
             };
 
             ImageCropper imageCropper = new ImageCropper();
-            imageCropper.AspectRatio = 113d / 66d;
+            imageCropper.AspectRatio = 16d / 9d;
             imageCropper.CropShape = CropShape.Rectangular;
             imageCropper.ThumbPlacement = ThumbPlacement.Corners;
             imageCropper.HorizontalAlignment = HorizontalAlignment.Stretch;
             imageCropper.VerticalAlignment = VerticalAlignment.Stretch;
             imageCropper.Opacity = 0;
+            // Why not use ImageBrush?
+            // https://github.com/microsoft/microsoft-ui-xaml/issues/7809
+            imageCropper.Overlay = new ImageBlendBrush()
+            {
+                Source = new BitmapImage(new Uri(Path.Combine(AppFolder!, @"Assets\Images\ImageCropperOverlay",
+                                                              GetAppConfigValue("WindowSizeProfile").ToString() == "Small" ? "small.png" : "normal.png"))),
+                Opacity = 0.5,
+                Stretch = Stretch.Fill,
+                Mode = ImageBlendMode.Multiply,
+            };
 
             ContentDialogOverlay dialogOverlay = new ContentDialogOverlay(ContentDialogTheme.Informational)
             {
@@ -163,7 +183,7 @@ namespace CollapseLauncher.Helper.Image
                 PrimaryButtonText = Locale.Lang._Misc.OkayHappy,
                 DefaultButton = ContentDialogButton.Primary,
                 IsPrimaryButtonEnabled = false,
-                XamlRoot = (InnerLauncherConfig.m_window as MainWindow)?.Content!.XamlRoot
+                XamlRoot = (WindowUtility.CurrentWindow as MainWindow)?.Content!.XamlRoot
             };
 
             LoadImageCropperDetached(filePath, imageCropper, parentGrid, dialogOverlay);
@@ -171,11 +191,11 @@ namespace CollapseLauncher.Helper.Image
             ContentDialogResult dialogResult = await dialogOverlay.QueueAndSpawnDialog();
             if (dialogResult == ContentDialogResult.Secondary) return null;
 
-            await using (FileStream cachedFileStream = new FileStream(cachedFilePath!, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+            await using (FileStream cachedFileStream = new FileStream(cachedFilePath!, StreamUtility.FileStreamCreateReadWriteOpt))
             {
                 dialogOverlay.IsPrimaryButtonEnabled = false;
                 dialogOverlay.IsSecondaryButtonEnabled = false;
-                await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream()!, BitmapFileFormat.Png, false);
+                await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream()!, BitmapFileFormat.Png);
             }
 
             GC.WaitForPendingFinalizers();
@@ -210,8 +230,8 @@ namespace CollapseLauncher.Helper.Image
                 FontWeight = FontWeights.SemiBold
             });
 
-            parentGrid.AddElementToGridRowColumn(imageCropper, 0, 0);
-            parentGrid.AddElementToGridRowColumn(loadingMsgPanel, 0, 0);
+            parentGrid.AddElementToGridRowColumn(imageCropper);
+            parentGrid.AddElementToGridRowColumn(loadingMsgPanel);
 
             StorageFile file = await StorageFile.GetFileFromPathAsync(filePath);
             await imageCropper!.LoadImageFromFile(file!);
@@ -241,23 +261,23 @@ namespace CollapseLauncher.Helper.Image
                 InputFileInfo.MoveTo(InputFileInfo.FullName + "_old", true);
                 FileInfo newCachedFileInfo = new FileInfo(InputFileName);
 
-                await using (FileStream newCachedFileStream = newCachedFileInfo.Create())
-                    await using (FileStream oldInputFileStream = InputFileInfo.OpenRead())
-                        await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
+                await using (FileStream newCachedFileStream = newCachedFileInfo.Open(StreamUtility.FileStreamCreateWriteOpt))
+                await using (FileStream oldInputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                    await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
 
                 InputFileInfo.Delete();
-                return newCachedFileInfo.OpenRead();
+                return newCachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
             }
 
             FileInfo cachedFileInfo = GetCacheFileInfo(InputFileInfo!.FullName + InputFileInfo.Length);
             bool isCachedFileExist = cachedFileInfo!.Exists && cachedFileInfo.Length > 1 << 15;
-            if (isCachedFileExist) return cachedFileInfo.OpenRead();
+            if (isCachedFileExist) return cachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
 
             await using (FileStream cachedFileStream = cachedFileInfo.Create())
-                await using (FileStream inputFileStream = InputFileInfo.OpenRead())
-                    await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
+            await using (FileStream inputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
 
-            return cachedFileInfo.OpenRead();
+            return cachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
         }
 
         internal static FileInfo GetCacheFileInfo(string filePath)
@@ -276,7 +296,8 @@ namespace CollapseLauncher.Helper.Image
                 Width = (int)ToWidth,
                 Height = (int)ToHeight,
                 HybridMode = HybridScaleMode.Off,
-                Interpolation = InterpolationSettings.CubicSmoother
+                Interpolation = InterpolationSettings.CubicSmoother,
+                Anchor = CropAnchor.Bottom | CropAnchor.Center
             };
 
             await Task.Run(() =>
@@ -298,12 +319,12 @@ namespace CollapseLauncher.Helper.Image
             });
         }
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string FilePath)
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string filePath)
         {
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            FileStream cachedFileStream = await LoadImage(FilePath, false, false);
+            FileStream cachedFileStream = await LoadImage(filePath);
             if (cachedFileStream == null) return (null, null);
             await using (cachedFileStream)
             {
@@ -326,6 +347,129 @@ namespace CollapseLauncher.Helper.Image
         {
             image!.Seek(0);
             return new Bitmap(image.AsStream()!);
+        }
+
+        public static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, CancellationToken token)
+        {
+            // Initialize the FileInfo and check if the file exist
+            FileInfo fI = new FileInfo(outputPath);
+            bool isFileExist = IsFileCompletelyDownloaded(fI);
+
+            // If the file and the file assumed to exist, then return
+            if (isFileExist) return;
+
+            // If not, then try download the file
+            await TryDownloadToCompleteness(url, fI, token);
+        }
+
+        public static bool IsFileCompletelyDownloaded(FileInfo fileInfo)
+        {
+            // Get the parent path and file name
+            string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+            string outputFileName = Path.GetFileName(fileInfo.FullName);
+
+            // Try to get the prop file which includes the filename + the suggested size provided
+            // by the network stream if it has been downloaded before
+            string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+            // Check if the file is found (not null), then try parse the information
+            if (string.IsNullOrEmpty(propFilePath))
+            {
+                return false;
+            }
+
+            // Try split the filename into a segment by # char
+            string[] propSegment = Path.GetFileName(propFilePath).Split('#');
+            // Assign the check if the condition met and set the file existence status
+            return propSegment.Length >= 2
+                   && long.TryParse(propSegment[1], null, out long suggestedSize)
+                   && fileInfo.Exists && fileInfo.Length == suggestedSize;
+
+            // If the prop doesn't exist, then return false to assume that the file doesn't exist
+        }
+
+        public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
+            => await TryDownloadToCompleteness(url, fileInfo, token);
+
+        public static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
+        {
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+            try
+            {
+                Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
+
+                // Try to get the remote stream and download the file
+                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                await using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                {
+                    Access = FileAccess.Write,
+                    Mode = FileMode.Create,
+                    Share = FileShare.ReadWrite,
+                    Options = FileOptions.Asynchronous
+                });
+
+                // Get the file length
+                long fileLength = netStream.Length;
+
+                // Create the prop file for download completeness checking
+                string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+                string outputFilename = Path.GetFileName(fileInfo.FullName);
+                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                await File.Create(propFilePath).DisposeAsync();
+
+                // Copy (and download) the remote streams to local
+                int read;
+                while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                    await outStream.WriteAsync(buffer, 0, read, token);
+
+                Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
+                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+            }
+#if !DEBUG
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.Connection);
+            }
+#endif
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        public static string GetCachedSprites(string URL, CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(URL)) return URL;
+            if (token.IsCancellationRequested) return URL;
+
+            string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(AppGameImgCachedFolder))
+                Directory.CreateDirectory(AppGameImgCachedFolder);
+
+            FileInfo fInfo = new FileInfo(cachePath);
+            if (IsFileCompletelyDownloaded(fInfo))
+            {
+                return cachePath;
+            }
+
+            TryDownloadToCompletenessAsync(URL, fInfo, token);
+            return URL;
+
+        }
+
+        public static async ValueTask<string> GetCachedSpritesAsync(string URL, CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(URL)) return URL;
+
+            string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(AppGameImgCachedFolder))
+                Directory.CreateDirectory(AppGameImgCachedFolder);
+
+            FileInfo fInfo = new FileInfo(cachePath);
+            if (!IsFileCompletelyDownloaded(fInfo))
+            {
+                await TryDownloadToCompleteness(URL, fInfo, token);
+            }
+            return cachePath;
         }
     }
 }

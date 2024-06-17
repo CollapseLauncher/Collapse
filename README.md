@@ -1,6 +1,9 @@
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/NewBannerv2_color.webp"/>
+  <img width="512px" height="auto" src="https://raw.githubusercontent.com/CollapseLauncher/Collapse/main/Docs/Imgs/CollapseLauncherIdolType.png"/><br/>
+  <i>I know, it's not a good one. But at least we made it lol</i>
+  <i>~ neon-nyan</i>
+  <img src="https://raw.githubusercontent.com/CollapseLauncher/.github/main/profile/NewBannerv2_Banner_color_20240615.webp"/>
 </p>
 
 ##### GI Nahida Background Credit: [Rafa on Pixiv](https://www.pixiv.net/en/users/3970196)
@@ -17,6 +20,8 @@
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
 [![Sync to Bitbucket](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-bitbucket.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-bitbucket.yml)
 [![Upload to R2](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=security)
 
 
 [![Localization](https://img.shields.io/badge/Localization-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
@@ -202,11 +207,11 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.7/CL-1.73.7-stable_Installer.exe)
-> **Note**: The version for this build is `1.73.7` (Released on: March 21st, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.8/CL-1.73.8-stable_Installer.exe)
+> **Note**: The version for this build is `1.73.8` (Released on: March 26th, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.73.7-pre/CL-1.73.7-preview_Installer.exe)
-> **Note**: The version for this build is `1.73.7` (Released on: March 21st, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.7-pre/CL-1.80.7-preview_Installer.exe)
+> **Note**: The version for this build is `1.80.7` (Released on: June 3rd, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -229,17 +234,30 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - Also read our [**Third Party Notices**](THIRD_PARTY_NOTICES.md) for license used by third party libraries that we use.
 
 # Third-party repositories and libraries used in this project
-- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
-- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft
-- [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
-- [**Color Thief .NET**](https://github.com/neon-nyan/ColorThief) by KSemenenko
-- [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection
-- [**Hi3Helper.Http**](https://github.com/neon-nyan/Hi3Helper.Http) by neon-nyan
-- [**Hi3Helper.EncTool**](https://github.com/neon-nyan/Hi3Helper.EncTool) by neon-nyan
-- [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) by force-net
-- [**UABT**](https://github.com/neon-nyan/UABT) by _unknown_
-
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
+- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft under [**MIT License**](https://github.com/microsoft/microsoft-ui-xaml/blob/main/LICENSE)
+- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft under [**MIT License**](https://github.com/microsoft/WindowsAppSDK/blob/main/LICENSE)
+- [**SharpHDiffPatch**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core) by neon-nyan (original port of [**HPatchZ** by **housisong**](https://github.com/sisong/HDiffPatch)) under [**MIT License**](https://github.com/CollapseLauncher/SharpHDiffPatch.Core/blob/main/LICENSE)
+- [**Color Thief .NET**](https://github.com/CollapseLauncher/ColorThief) by KSemenenko and forked by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/ColorThief/blob/master/LICENSE)
+- [**SevenZipExtractor**](https://github.com/CollapseLauncher/SevenZipExtractor) by Alexander Selishchev (adoconnection) and forked by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/SevenZipExtractor/blob/master/LICENSE)
+- [**Hi3Helper.Http**](https://github.com/CollapseLauncher/Hi3Helper.Http) by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/Hi3Helper.Http/blob/master/LICENSE)
+- [**Hi3Helper.EncTool**](https://github.com/CollapseLauncher/Hi3Helper.EncTool) by neon-nyan
+- [**Hi3Helper.SharpDiscordRPC**](https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC) from [**discord-rpc-csharp** by Lachee](https://github.com/Lachee/discord-rpc-csharp) and forked by Collapse Project Team under [**MIT License**](https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC/blob/master/LICENSE)
+- [**Hi3Helper.Sophon**](https://github.com/CollapseLauncher/Hi3Helper.Sophon) by neon-nyan under [**MIT License**](https://github.com/CollapseLauncher/Hi3Helper.Sophon/blob/master/LICENSE)
+- [**Hi3Helper.ZstdNet**](https://github.com/CollapseLauncher/Hi3Helper.ZetdNet) by skbkontur and forked by neon-nyan under [**BSD-3-Clause License**](https://github.com/CollapseLauncher/Hi3Helper.ZetdNet/blob/master/LICENSE)
+- [**InnoSetupLogParser**](https://github.com/CollapseLauncher/InnoSetupLogParser) from [**isulr** by preseverence](https://github.com/preseverence/isulr) and forked by neon-nyan under [**WTFPL License**](https://github.com/CollapseLauncher/InnoSetupLogParser/blob/master/LICENSE)
+- [**Google Protobuf**](https://github.com/protocolbuffers/protobuf) by Google LLC under [**BSD-3-Clause License**](https://github.com/protocolbuffers/protobuf/blob/main/LICENSE)
+- [**Clowd.Squirrel**](https://github.com/clowd/Clowd.Squirrel/tree/1c7eb5e1f40629cfdbe201f9d56b802ec41fea63) by clowd under [**MIT License**](https://github.com/clowd/Clowd.Squirrel/blob/1c7eb5e1f40629cfdbe201f9d56b802ec41fea63/LICENSE)
+- [**Windows Community Toolkit**](https://github.com/CommunityToolkit/Windows) by Microsoft under [**MIT License**](https://github.com/CommunityToolkit/Windows/blob/main/License.md)
+- [**GitInfo**](https://github.com/devlooped/GitInfo) by Daniel Cazzulino (devlooped) under [**MIT License**](https://github.com/devlooped/GitInfo/blob/main/license.txt)
+- [**H.NotifyIcon**](https://github.com/HavenDV/H.NotifyIcon) by Konstantin S. (HavenDV) under [**MIT License**](https://github.com/HavenDV/H.NotifyIcon/blob/master/LICENSE.md)
+- [**HTML Agility Pack**](https://github.com/zzzprojects/html-agility-pack) by zzzproject under [**MIT License**](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
+- [**RomanNumerals**](https://github.com/picrap/RomanNumerals) by Pascal Craponne (picrap) under [**MIT License**](https://github.com/picrap/RomanNumerals/blob/master/LICENSE)
+- [**TaskScheduler**](https://github.com/dahall/taskscheduler) by David Hall (dahall) under [**MIT License**](https://github.com/dahall/TaskScheduler/blob/master/license.md)
+- [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by Adam Hathcock (adamhathcock) under [**MIT License**](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
+- [**UABT**](https://github.com/CollapseLauncher/UABT) by _unknown_
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_large&issueType=license)
 
 # UI Design Overview
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
@@ -259,10 +277,31 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://prophost.ironmaid.xyz"><img src="https://avatars.githubusercontent.com/u/30566970?v=4?s=100" width="100px;" alt="Kemal Setya Adhi"/><br /><sub><b>Kemal Setya Adhi</b></sub></a><br /><a href="#code-neon-nyan" title="Code">💻</a> <a href="#design-neon-nyan" title="Design">🎨</a> <a href="#mentoring-neon-nyan" title="Mentoring">🧑‍🏫</a> <a href="#maintenance-neon-nyan" title="Maintenance">🚧</a> <a href="#review-neon-nyan" title="Reviewed Pull Requests">👀</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://ronfriedman.dev"><img src="https://avatars.githubusercontent.com/u/9833218?v=4?s=100" width="100px;" alt="Ron Friedman"/><br /><sub><b>Ron Friedman</b></sub></a><br /><a href="#code-Cryotechnic" title="Code">💻</a> <a href="#maintenance-Cryotechnic" title="Maintenance">🚧</a> <a href="#review-Cryotechnic" title="Reviewed Pull Requests">👀</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/gablm"><img src="https://avatars.githubusercontent.com/u/44784408?v=4?s=100" width="100px;" alt="Gabriel Lima"/><br /><sub><b>Gabriel Lima</b></sub></a><br /><a href="#code-gablm" title="Code">💻</a> <a href="#translation-gablm" title="Translation">🌍</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/shatyuka"><img src="https://avatars.githubusercontent.com/u/31368738?v=4?s=100" width="100px;" alt="Shatyuka"/><br /><sub><b>Shatyuka</b></sub></a><br /><a href="#code-shatyuka" title="Code">💻</a> <a href="#translation-shatyuka" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://prophost.ironmaid.xyz"><img src="https://avatars.githubusercontent.com/u/30566970?v=4?s=100" width="100px;" alt="Kemal Setya Adhi"/><br /><sub><b>Kemal Setya Adhi</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=neon-nyan" title="Code">💻</a> <a href="#design-neon-nyan" title="Design">🎨</a> <a href="#mentoring-neon-nyan" title="Mentoring">🧑‍🏫</a> <a href="#maintenance-neon-nyan" title="Maintenance">🚧</a> <a href="https://github.com/CollapseLauncher/Collapse/pulls?q=is%3Apr+reviewed-by%3Aneon-nyan" title="Reviewed Pull Requests">👀</a> <a href="#projectManagement-neon-nyan" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://ronfriedman.dev"><img src="https://avatars.githubusercontent.com/u/9833218?v=4?s=100" width="100px;" alt="Ron Friedman"/><br /><sub><b>Ron Friedman</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=Cryotechnic" title="Code">💻</a> <a href="#maintenance-Cryotechnic" title="Maintenance">🚧</a> <a href="https://github.com/CollapseLauncher/Collapse/pulls?q=is%3Apr+reviewed-by%3ACryotechnic" title="Reviewed Pull Requests">👀</a> <a href="#projectManagement-Cryotechnic" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bagusnl"><img src="https://avatars.githubusercontent.com/u/28079733?v=4?s=100" width="100px;" alt="Bagus Nur Listiyono"/><br /><sub><b>Bagus Nur Listiyono</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=bagusnl" title="Code">💻</a> <a href="#maintenance-bagusnl" title="Maintenance">🚧</a> <a href="https://github.com/CollapseLauncher/Collapse/pulls?q=is%3Apr+reviewed-by%3Abagusnl" title="Reviewed Pull Requests">👀</a> <a href="#promotion-bagusnl" title="Promotion">📣</a> <a href="#infra-bagusnl" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#projectManagement-bagusnl" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/gablm"><img src="https://avatars.githubusercontent.com/u/44784408?v=4?s=100" width="100px;" alt="Gabriel Lima"/><br /><sub><b>Gabriel Lima</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=gablm" title="Code">💻</a> <a href="#translation-gablm" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/shatyuka"><img src="https://avatars.githubusercontent.com/u/31368738?v=4?s=100" width="100px;" alt="Shatyuka"/><br /><sub><b>Shatyuka</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=shatyuka" title="Code">💻</a> <a href="#translation-shatyuka" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kiki79250CoC"><img src="https://avatars.githubusercontent.com/u/54137141?v=4?s=100" width="100px;" alt="Kylian Nicouleaud"/><br /><sub><b>Kylian Nicouleaud</b></sub></a><br /><a href="#translation-Kiki79250CoC" title="Translation">🌍</a> <a href="https://github.com/CollapseLauncher/Collapse/issues?q=author%3AKiki79250CoC" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://misaka.sakurakoi.top/"><img src="https://avatars.githubusercontent.com/u/69132853?v=4?s=100" width="100px;" alt="misaka10843"/><br /><sub><b>misaka10843</b></sub></a><br /><a href="#translation-misaka10843" title="Translation">🌍</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Vermilion-Sinsha"><img src="https://avatars.githubusercontent.com/u/131636335?v=4?s=100" width="100px;" alt="Vermilion-Sinsha"/><br /><sub><b>Vermilion-Sinsha</b></sub></a><br /><a href="#translation-Vermilion-Sinsha" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kleqing"><img src="https://avatars.githubusercontent.com/u/78801337?v=4?s=100" width="100px;" alt="Pham Khanh Nhan"/><br /><sub><b>Pham Khanh Nhan</b></sub></a><br /><a href="#translation-kleqing" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/DeepChirp"><img src="https://avatars.githubusercontent.com/u/66902050?v=4?s=100" width="100px;" alt="DeepChirp"/><br /><sub><b>DeepChirp</b></sub></a><br /><a href="#translation-DeepChirp" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Faelayis"><img src="https://avatars.githubusercontent.com/u/48393914?v=4?s=100" width="100px;" alt="Faelayis"/><br /><sub><b>Faelayis</b></sub></a><br /><a href="#translation-Faelayis" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://twitter.com/hasukay__"><img src="https://avatars.githubusercontent.com/u/22459107?v=4?s=100" width="100px;" alt="Hasukay"/><br /><sub><b>Hasukay</b></sub></a><br /><a href="#translation-Hasukay" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kajitsy"><img src="https://avatars.githubusercontent.com/u/94784342?v=4?s=100" width="100px;" alt="Kajitsy"/><br /><sub><b>Kajitsy</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=Kajitsy" title="Documentation">📖</a> <a href="#translation-Kajitsy" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/despenser08"><img src="https://avatars.githubusercontent.com/u/50207925?v=4?s=100" width="100px;" alt="despenser08"/><br /><sub><b>despenser08</b></sub></a><br /><a href="#translation-despenser08" title="Translation">🌍</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://seria.is-a.dev/"><img src="https://avatars.githubusercontent.com/u/61446626?v=4?s=100" width="100px;" alt="seria"/><br /><sub><b>seria</b></sub></a><br /><a href="#translation-seriaati" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/xTaiwanPingLord"><img src="https://avatars.githubusercontent.com/u/52948923?v=4?s=100" width="100px;" alt="xTaiwanPingLord"/><br /><sub><b>xTaiwanPingLord</b></sub></a><br /><a href="#translation-xTaiwanPingLord" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Arikatsu"><img src="https://avatars.githubusercontent.com/u/104459145?v=4?s=100" width="100px;" alt="Scald"/><br /><sub><b>Scald</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=Arikatsu" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/muscularcandy67"><img src="https://avatars.githubusercontent.com/u/12277635?v=4?s=100" width="100px;" alt="Iskandar Montano"/><br /><sub><b>Iskandar Montano</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/commits?author=muscularcandy67" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Scighost"><img src="https://avatars.githubusercontent.com/u/61003590?v=4?s=100" width="100px;" alt="Scighost"/><br /><sub><b>Scighost</b></sub></a><br /><a href="https://github.com/CollapseLauncher/Collapse/issues?q=author%3AScighost" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/IhoFox"><img src="https://avatars.githubusercontent.com/u/133899447?v=4?s=100" width="100px;" alt="IhoFox"/><br /><sub><b>IhoFox</b></sub></a><br /><a href="#translation-IhoFox" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kujou-kju"><img src="https://avatars.githubusercontent.com/u/23724383?v=4?s=100" width="100px;" alt="kujou"/><br /><sub><b>kujou</b></sub></a><br /><a href="#translation-kujou-kju" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>

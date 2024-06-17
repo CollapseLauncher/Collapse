@@ -1,20 +1,20 @@
-﻿using CollapseLauncher.Statics;
-using Hi3Helper;
-#if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
+﻿#if !DISABLEDISCORD
+    using CollapseLauncher.DiscordPresence;
 #endif
-using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using System;
-using System.Threading.Tasks;
-using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+    using CollapseLauncher.Statics;
+    using Hi3Helper;
+    using Hi3Helper.Shared.ClassStruct;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
+    using System;
+    using System.Threading.Tasks;
+    using static CollapseLauncher.InnerLauncherConfig;
+    using static Hi3Helper.Locale;
+    using static Hi3Helper.Logger;
+    using static Hi3Helper.Shared.Region.LauncherConfig;
 
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
     public sealed partial class CachesPage : Page
     {
@@ -57,6 +57,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                InvokeProp.PreventSleep();
                 AddEvent();
 
                 bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
@@ -84,6 +85,7 @@ namespace CollapseLauncher.Pages
             finally
             {
                 RemoveEvent();
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -94,6 +96,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                InvokeProp.PreventSleep();
                 AddEvent();
 
                 await CurrentGameProperty._GameCache.StartUpdateRoutine();
@@ -120,6 +123,7 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                InvokeProp.RestoreSleep();
                 RemoveEvent();
             }
         }
@@ -153,7 +157,7 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_StatusChanged(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 CachesDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
                 CachesStatus.Text = e.ActivityStatus;
@@ -165,7 +169,7 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_ProgressChanged(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 CachesTotalProgressBar.Value = e.ProgressTotalPercentage;
             });

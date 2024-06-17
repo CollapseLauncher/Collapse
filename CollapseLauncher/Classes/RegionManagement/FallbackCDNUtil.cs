@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -80,6 +79,21 @@ namespace CollapseLauncher
         private CDNUtilHTTPStatus(bool isInitializationError) => IsInitializationError = isInitializationError;
 
         internal static CDNUtilHTTPStatus CreateInitializationError() => new CDNUtilHTTPStatus(true);
+    }
+
+    internal readonly struct UrlStatus
+    {
+        internal readonly HttpStatusCode StatusCode;
+        internal readonly bool IsSuccessStatusCode;
+
+        internal UrlStatus(HttpResponseMessage message)
+            : this(message.StatusCode, message.IsSuccessStatusCode) { }
+
+        internal UrlStatus(HttpStatusCode statusCode, bool isSuccessStatusCode)
+        {
+            StatusCode = statusCode;
+            IsSuccessStatusCode = isSuccessStatusCode;
+        }
     }
 
     internal static class FallbackCDNUtil
@@ -362,16 +376,27 @@ namespace CollapseLauncher
 
         public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
         {
-            using HttpRequestMessage requestMsg = new HttpRequestMessage()
-            {
-                RequestUri = new Uri(URL),
-                Method = HttpMethod.Get
-            };
-            requestMsg.Headers.Range = new RangeHeaderValue(0, null);
-
-            return isForceUncompressRequest ? await _clientNoCompression.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token)
-                                            : await _client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
+            return isForceUncompressRequest ? await _clientNoCompression.GetURLHttpResponse(URL, HttpMethod.Get, token)
+                                            : await _client.GetURLHttpResponse(URL, HttpMethod.Get, token);
         }
+
+#nullable enable
+        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(this HttpClient client, string url, HttpMethod? httpMethod = null, CancellationToken token = default)
+        {
+            httpMethod ??= HttpMethod.Get;
+            using HttpRequestMessage requestMsg = new HttpRequestMessage(httpMethod, url);
+            return await client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
+        }
+
+        public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
+             => await _client.GetURLStatusCode(URL, token);
+
+        public static async ValueTask<UrlStatus> GetURLStatusCode(this HttpClient client, string url, CancellationToken token = default)
+        {
+            using HttpResponseMessage message = await client.GetURLHttpResponse(url, HttpMethod.Get, token);
+            return new UrlStatus(message);
+        }
+#nullable restore
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {

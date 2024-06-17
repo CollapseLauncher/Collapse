@@ -63,6 +63,7 @@ namespace Hi3Helper
                 public string Idle                 { get; set; } = LangFallback?._Misc.Idle;
                 public string Change               { get; set; } = LangFallback?._Misc.Change;
                 public string Cancelled            { get; set; } = LangFallback?._Misc.Cancelled;
+                public string FinishingUp          { get; set; } = LangFallback?._Misc.FinishingUp;
                 public string Extracting           { get; set; } = LangFallback?._Misc.Extracting;
                 public string Converting           { get; set; } = LangFallback?._Misc.Converting;
                 public string Patching             { get; set; } = LangFallback?._Misc.Patching;
@@ -82,13 +83,15 @@ namespace Hi3Helper
                 public string BuildChannelStable   { get; set; } = LangFallback?._Misc.BuildChannelStable;
                 public string LocateExecutable     { get; set; } = LangFallback?._Misc.LocateExecutable;
                 public string OpenDownloadPage     { get; set; } = LangFallback?._Misc.OpenDownloadPage;
-                
+                public string UseAsDefault         { get; set; } = LangFallback?._Misc.UseAsDefault;
+
                 public string CDNDescription_Github          { get; set; } = LangFallback?._Misc.CDNDescription_Github;
                 public string CDNDescription_Cloudflare      { get; set; } = LangFallback?._Misc.CDNDescription_Cloudflare;
                 public string CDNDescription_Bitbucket       { get; set; } = LangFallback?._Misc.CDNDescription_Bitbucket;
                 public string CDNDescription_Statically      { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
                 public string CDNDescription_jsDelivr        { get; set; } = LangFallback?._Misc.CDNDescription_jsDelivr;
                 public string CDNDescription_GitLab          { get; set; } = LangFallback?._Misc.CDNDescription_GitLab;
+                public string CDNDescription_Coding          { get; set; } = LangFallback?._Misc.CDNDescription_Coding;
 
                 public string DiscordRP_Play         { get; set; } = LangFallback?._Misc.DiscordRP_Play;
                 public string DiscordRP_InGame       { get; set; } = LangFallback?._Misc.DiscordRP_InGame;

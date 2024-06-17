@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.JsonConverter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 
@@ -23,8 +23,6 @@ namespace CollapseLauncher
 
     public static class RegionResourceListHelper
     {
-        public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
-        public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
         public static List<T> Copy<T>(this List<T> source)
             where T : IRegionResourceCopyable<T>
         {
@@ -70,12 +68,13 @@ namespace CollapseLauncher
 
     public class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
     {
-        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
-        public int plugin_id { get; set; }
+        public string release_id { get; set; }
+        public string plugin_id { get; set; }
         public string version { get; set; }
         public RegionResourceVersion package { get; set; }
         public RegionResourcePlugin Copy() => new RegionResourcePlugin()
         {
+            release_id = release_id,
             plugin_id = plugin_id,
             version = version,
             package = package?.Copy()
@@ -106,6 +105,7 @@ namespace CollapseLauncher
 
     public class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
     {
+        public string run_command { get; set; }
         public string version { get; set; }
         public string url { get; set; }
         public string path { get; set; }
@@ -146,58 +146,6 @@ namespace CollapseLauncher
             segments = segments?.Copy(),
             validate = validate?.Copy()
         };
-    }
-
-    public class RegionResourcePluginValidateConverter : JsonConverter<List<RegionResourcePluginValidate>>
-    {
-        public override bool CanConvert(Type type)
-        {
-            return true;
-        }
-
-        public override List<RegionResourcePluginValidate> Read(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options)
-        {
-            string valueString = EmptiedBackslash(reader.ValueSpan);
-            List<RegionResourcePluginValidate> returnList = valueString.Deserialize<List<RegionResourcePluginValidate>>(InternalAppJSONContext.Default);
-
-            return returnList;
-        }
-
-        private unsafe string EmptiedBackslash(ReadOnlySpan<byte> span)
-        {
-            Span<byte> buffer = new byte[span.Length];
-            int indexIn = 0;
-            int indexOut = 0;
-            while (indexIn < span.Length)
-            {
-                if (span[indexIn] == '\\')
-                {
-                    ++indexIn;
-                    continue;
-                }
-
-                buffer[indexOut] = span[indexIn];
-                ++indexIn;
-                ++indexOut;
-            }
-
-            fixed (byte* bufferPtr = buffer)
-            {
-                return Encoding.UTF8.GetString(bufferPtr, indexOut);
-            }
-        }
-
-        public override void Write(
-                Utf8JsonWriter writer,
-                List<RegionResourcePluginValidate> baseType,
-                JsonSerializerOptions options)
-        {
-
-            throw new JsonException($"Serializing is not supported!");
-        }
     }
 
     public class HomeMenuPanel : IRegionResourceCopyable<HomeMenuPanel>
@@ -249,9 +197,9 @@ namespace CollapseLauncher
         public MenuPanelProp(CancellationToken token = default) => _innerToken = token;
 
         public string URL { get; set; }
-        public string Icon { get => MainPage.GetCachedSprites(_icon, _innerToken); set => _icon = value; }
-        public string IconHover { get => MainPage.GetCachedSprites(_iconHover, _innerToken); set => _iconHover = value; }
-        public string QR { get => MainPage.GetCachedSprites(_qr, _innerToken); set => _qr = value; }
+        public string Icon { get => ImageLoaderHelper.GetCachedSprites(_icon, _innerToken); set => _icon = value; }
+        public string IconHover { get => ImageLoaderHelper.GetCachedSprites(_iconHover, _innerToken); set => _iconHover = value; }
+        public string QR { get => ImageLoaderHelper.GetCachedSprites(_qr, _innerToken); set => _qr = value; }
         public string QR_Description { get; set; }
         public bool IsQRExist => !string.IsNullOrEmpty(QR);
         public string Description { get; set; }

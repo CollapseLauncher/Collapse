@@ -86,6 +86,7 @@ namespace CollapseLauncher
                 // Initialize local audio manifest, blocks and patchConfig stream.
                 SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier = null;
                 SenadinaFileIdentifier? blocksBaseManifestSenadinaFileIdentifier = null;
+                SenadinaFileIdentifier? blocksPlatformManifestSenadinaFileIdentifier = null;
                 SenadinaFileIdentifier? blocksCurrentManifestSenadinaFileIdentifier = null;
                 SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier = null;
                 _mainMetaRepoUrl = null;
@@ -105,14 +106,16 @@ namespace CollapseLauncher
 
                     // Get the Senadina File Identifier Dictionary and its file references
                     senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(httpClient, _mainMetaRepoUrl, token);
-                    audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier, 
-                                                                                          SenadinaKind.chiptunesCurrent, versionArray, _mainMetaRepoUrl, token);
-                    blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier, 
-                                                                                               SenadinaKind.bricksBase, versionArray, _mainMetaRepoUrl, token);
-                    blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier, 
-                                                                                                  SenadinaKind.bricksCurrent, versionArray, _mainMetaRepoUrl, token);
-                    patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier, 
-                                                                                                SenadinaKind.wandCurrent, versionArray, _mainMetaRepoUrl, token);
+                    audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                                                                                          SenadinaKind.chiptunesCurrent, versionArray, _mainMetaRepoUrl, false, token);
+                    blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                                                                                               SenadinaKind.platformBase, versionArray, _mainMetaRepoUrl, false, token);
+                    blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                                                                                               SenadinaKind.bricksBase, versionArray, _mainMetaRepoUrl, false, token);
+                    blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                                                                                                  SenadinaKind.bricksCurrent, versionArray, _mainMetaRepoUrl, false, token);
+                    patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                                                                                                SenadinaKind.wandCurrent, versionArray, _mainMetaRepoUrl, true, token);
                 }
 
                 if (!_isOnlyRecoverMain)
@@ -143,7 +146,7 @@ namespace CollapseLauncher
                 {
                     // Region: XMFAndAssetIndex
                     // Try check XMF file and fetch it if it doesn't exist
-                    await FetchXMFFile(httpClient, assetIndex,
+                    await FetchXMFFile(httpClient, assetIndex, blocksPlatformManifestSenadinaFileIdentifier,
                         blocksBaseManifestSenadinaFileIdentifier!, blocksCurrentManifestSenadinaFileIdentifier!,
                         patchConfigManifestSenadinaFileIdentifier!, manifestDict[_gameVersion.VersionString!], token);
 
@@ -180,7 +183,7 @@ namespace CollapseLauncher
 #endif
         }
 
-        private async Task<SenadinaFileIdentifier?> GetSenadinaIdentifierKind(HttpClient client, Dictionary<string, SenadinaFileIdentifier>? dict, SenadinaKind kind, int[] gameVersion, string mainUrl, CancellationToken token)
+        private async Task<SenadinaFileIdentifier?> GetSenadinaIdentifierKind(HttpClient client, Dictionary<string, SenadinaFileIdentifier>? dict, SenadinaKind kind, int[] gameVersion, string mainUrl, bool skipThrow, CancellationToken token)
         {
             ArgumentNullException.ThrowIfNull(dict);
             
@@ -189,7 +192,13 @@ namespace CollapseLauncher
 
             string fileUrl = CombineURLFromString(mainUrl, hashedRelativePath)!;
             if (!dict.ContainsKey(origFileRelativePath))
-                throw new KeyNotFoundException($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.");
+            {
+                LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
+                if (skipThrow) return null;
+                throw new
+                    FileNotFoundException("Assets reference for repair is not found. " +
+                                          "Please contact us in GitHub issues or Discord to let us know about this issue.");
+            }
 
             SenadinaFileIdentifier identifier = dict[origFileRelativePath];
             Stream networkStream = await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, 0, null, token);
@@ -363,7 +372,7 @@ namespace CollapseLauncher
 
             // Set the URL and try get the status
             string cgURL = CombineURLFromString(baseURL, (_audioLanguage == AudioLanguageType.Japanese ? cgInfo.CgPathHighBitrateJP : cgInfo.CgPathHighBitrateCN) + ".usm");
-            using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(cgURL, token);
+            UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode(cgURL, token);
 
             LogWriteLine($"The CG asset: {(_audioLanguage == AudioLanguageType.Japanese ? cgInfo.CgPathHighBitrateJP : cgInfo.CgPathHighBitrateCN)} " + 
                          (urlStatus!.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
@@ -490,7 +499,7 @@ namespace CollapseLauncher
 
             // Set the URL and try get the status
             string audioURL = CombineURLFromString(string.Format(_audioBaseRemotePath!, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer!.Manifest!.ManifestAudio!.ManifestAudioRevision), audioInfo.Path);
-            using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(audioURL, token);
+            UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode(audioURL, token);
 
             LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus!.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
@@ -574,62 +583,98 @@ namespace CollapseLauncher
             }
         }
 
+#nullable enable
         // ReSharper disable once UnusedParameter.Local
         private async Task FetchXMFFile(HttpClient _httpClient, List<FilePropertiesRemote> assetIndex,
-                                        SenadinaFileIdentifier xmfBaseIdentifier, SenadinaFileIdentifier xmfCurrentIdentifier,
-                                        SenadinaFileIdentifier patchConfigIdentifier, string _repoURL, CancellationToken token)
+                                        SenadinaFileIdentifier? xmfPlatformIdentifier,
+                                        SenadinaFileIdentifier? xmfBaseIdentifier, SenadinaFileIdentifier? xmfCurrentIdentifier,
+                                        SenadinaFileIdentifier? patchConfigIdentifier, string _repoURL, CancellationToken token)
         {
             // Set Primary XMF Path
             string xmfPriPath = Path.Combine(_gamePath!, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
             // Set Secondary XMF Path
             string xmfSecPath = Path.Combine(_gamePath!, $"BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
 
-#nullable enable
+            // Set Manifest Platform XMF Path
+            string xmfPlatformPath = Path.Combine(_gamePath!, $"BH3_Data\\StreamingAssets\\Asb\\pc\\BlockMeta.xmf");
+
             // Initialize patch config info variable
             BlockPatchManifest? patchConfigInfo = null;
 
+            bool isPlatformXMFStreamExist = xmfPlatformIdentifier != null;
+            bool isSecondaryXMFStreamExist = xmfCurrentIdentifier != null;
+            bool isPatchConfigXMFStreamExist = patchConfigIdentifier != null;
+
             // Initialize temporary XMF stream
-            using MemoryStream tempXMFStream = new();
-            using Stream secondaryXMFStream = _isOnlyRecoverMain ? await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token) : await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token);
-            using Stream dataXMFStream = _isOnlyRecoverMain ? xmfBaseIdentifier!.fileStream! : xmfCurrentIdentifier!.fileStream!;
+            using MemoryStream? tempXMFStream = new();
+            using MemoryStream? tempXMFMetaStream = new();
+            
+            using Stream? metaBaseXMFStream = !_isOnlyRecoverMain && isPlatformXMFStreamExist ?
+                await xmfPlatformIdentifier!.GetOriginalFileStream(_httpClient, token) :
+                null;
+            using Stream? metaDataXMFStream = !_isOnlyRecoverMain && isPlatformXMFStreamExist ? xmfPlatformIdentifier?.fileStream : null;
 
-            // Fetch only RecoverMain is disabled
-            using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath)!, FileMode.Create, FileAccess.ReadWrite))
+            bool isEitherXMFExist = !(xmfBaseIdentifier == null && xmfCurrentIdentifier == null);
+
+            if (isEitherXMFExist)
             {
-                // Download the secondary XMF into MemoryStream
-                await DoCopyStreamProgress(secondaryXMFStream, fs1, token);
+                using Stream? baseXMFStream = !_isOnlyRecoverMain && isSecondaryXMFStreamExist ?
+                    await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token) :
+                    await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token);
+                using Stream? dataXMFStream = !_isOnlyRecoverMain && isSecondaryXMFStreamExist ? xmfCurrentIdentifier?.fileStream : xmfBaseIdentifier?.fileStream;
 
-                // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
-                if (!_isOnlyRecoverMain)
+                // Fetch only RecoverMain is disabled
+                using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(!_isOnlyRecoverMain && isSecondaryXMFStreamExist ? xmfSecPath : xmfPriPath)!, FileMode.Create, FileAccess.ReadWrite))
                 {
-                    using (FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write))
+                    // Download the secondary XMF into MemoryStream
+                    await DoCopyStreamProgress(baseXMFStream, fs1, token);
+
+                    // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
+                    if (!_isOnlyRecoverMain)
                     {
-                        fs1.Position = 0;
-                        fs1.CopyTo(fs2);
+                        using (FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write))
+                        {
+                            fs1.Position = 0;
+                            await fs1.CopyToAsync(fs2);
+                        }
                     }
                 }
+
+                // Get the estimated size of the local xmf size
+                FileInfo xmfFileInfoLocal = new FileInfo(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
+                long? estimatedXmfSize = !xmfFileInfoLocal.Exists ? null : xmfFileInfoLocal.Length;
+
+                // Copy the source stream into temporal stream
+                await DoCopyStreamProgress(dataXMFStream, tempXMFStream, token, estimatedXmfSize);
+                tempXMFStream.Position = 0;
             }
 
-            // Get the estimated size of the local xmf size
-            FileInfo xmfFileInfoLocal = new FileInfo(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
-            long? estimatedXmfSize = !xmfFileInfoLocal.Exists ? null : xmfFileInfoLocal.Length;
-
-            // Copy the source stream into temporal stream
-            await DoCopyStreamProgress(dataXMFStream, tempXMFStream, token, estimatedXmfSize);
-            tempXMFStream.Position = 0;
-
-            // Fetch for PatchConfig.xmf file (Block patch metadata)
-            if (!_isOnlyRecoverMain)
+            // Download the platform XMF file if exist
+            if (!_isOnlyRecoverMain && isPlatformXMFStreamExist)
             {
-                patchConfigInfo = await FetchPatchConfigXMFFile(tempXMFStream, patchConfigIdentifier, _httpClient, token);
+                // Create the filestream
+                using FileStream fsMeta = new FileStream(EnsureCreationOfDirectory(xmfPlatformPath), FileMode.Create, FileAccess.Write);
+
+                // Download the platform XMF (RAW) into FileStream
+                await DoCopyStreamProgress(metaBaseXMFStream, fsMeta, token);
+
+                // Download the platform XMF (Data) into FileStream
+                await (metaDataXMFStream?.CopyToAsync(tempXMFMetaStream, token) ?? Task.CompletedTask);
+                tempXMFMetaStream.Position = 0;
             }
 
-            // Reset the temporal stream pos.
-            tempXMFStream.Position = 0;
+            // Fetch for PatchConfig.xmf file if available (Block patch metadata)
+            if (!_isOnlyRecoverMain && isPatchConfigXMFStreamExist && isPlatformXMFStreamExist)
+            {
+                patchConfigInfo = await FetchPatchConfigXMFFile(isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, patchConfigIdentifier, _httpClient, token);
+            }
 
-            // After all completed, then Deserialize the XMF to build the asset index
-            BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, tempXMFStream);
-#nullable disable
+            if (isPlatformXMFStreamExist)
+            {
+                // After all completed, then Deserialize the XMF to build the asset index
+                BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, !isEitherXMFExist);
+            }
+#nullable restore
         }
 
         // ReSharper disable once UnusedParameter.Local
@@ -656,10 +701,13 @@ namespace CollapseLauncher
         }
 
 #nullable enable
-        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream)
+        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream, bool isMeta)
         {
+            // Reset the temporal stream pos.
+            xmfStream.Position = 0;
+
             // Initialize and parse the XMF file
-            XMFParser xmfParser = new XMFParser(xmfPath, xmfStream);
+            XMFParser xmfParser = new XMFParser(xmfPath, xmfStream, isMeta);
 
             // Do loop and assign the block asset to asset index
             for (int i = 0; i < xmfParser.BlockCount; i++)

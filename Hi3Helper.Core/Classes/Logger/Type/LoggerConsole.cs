@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Hi3Helper.InvokeProp;
@@ -6,9 +7,12 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "MethodOverloadWithOptionalParameter")]
+    [SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
     public class LoggerConsole : LoggerBase, ILog
     {
+        public static IntPtr ConsoleHandle;
+        private static bool _virtualTerminal;
+
         public LoggerConsole(string folderPath, Encoding encoding) : base(folderPath, encoding)
 #if !APPLYUPDATE
             => AllocateConsole();
@@ -42,8 +46,11 @@ namespace Hi3Helper
             }
 
             // Decorate the line
-            line = GetLine(line, type, true);
-            Console.WriteLine(line);
+            line = GetLine(line, type, _virtualTerminal, false);
+
+            // Write using new async write line output and use .Error for error type
+            if (type == LogType.Error) await Console.Error.WriteLineAsync(line);
+            else await Console.Out.WriteLineAsync(line);
         }
 
         public override async void LogWriteLine(string line, LogType type, bool writeToLog)
@@ -65,7 +72,7 @@ namespace Hi3Helper
                 return;
             }
 
-            line = GetLine(line, type, true);
+            line = GetLine(line, type, _virtualTerminal, false);
             Console.Write(line);
 
             if (writeToLog) WriteLog(line, type);
@@ -76,7 +83,7 @@ namespace Hi3Helper
         #region StaticMethods
         public static void DisposeConsole()
         {
-            if (m_consoleHandle != IntPtr.Zero)
+            if (ConsoleHandle != IntPtr.Zero)
             {
                 IntPtr consoleWindow = GetConsoleWindow();
                 ShowWindow(consoleWindow, 0);
@@ -85,7 +92,7 @@ namespace Hi3Helper
 
         public static void AllocateConsole()
         {
-            if (m_consoleHandle != IntPtr.Zero)
+            if (ConsoleHandle != IntPtr.Zero)
             {
                 IntPtr consoleWindow = GetConsoleWindow();
                 ShowWindow(consoleWindow, 5);
@@ -101,29 +108,29 @@ namespace Hi3Helper
             const uint GENERIC_WRITE = 0x40000000;
             const uint FILE_SHARE_WRITE = 2;
             const uint OPEN_EXISTING = 3;
-            m_consoleHandle = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+            ConsoleHandle = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 
             const int STD_OUTPUT_HANDLE = -11;
-            SetStdHandle(STD_OUTPUT_HANDLE, m_consoleHandle);
+            SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
 
             Console.OutputEncoding = Encoding.UTF8;
 
             var instanceIndicator = "";
-            var instanceCount = InvokeProp.GetInstanceCount();
+            var instanceCount = EnumerateInstances();
 
             if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
             Console.Title = $"Collapse Console{instanceIndicator}";
 
-            if (!GetConsoleMode(m_consoleHandle, out uint mode))
+            if (GetConsoleMode(ConsoleHandle, out uint mode))
             {
-                throw new ContextMarshalException($"Failed to get console mode with error code: {Marshal.GetLastPInvokeError()}");
-            }
-
-            const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
-            const uint DISABLE_NEWLINE_AUTO_RETURN = 8;
-            if (!SetConsoleMode(m_consoleHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN))
-            {
-                throw new ContextMarshalException($"Failed to set console mode with error code: {Marshal.GetLastPInvokeError()}");
+                const uint ENABLE_PROCESSED_OUTPUT            = 1;
+                const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
+                const uint DISABLE_NEWLINE_AUTO_RETURN        = 8;
+                mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+                if (SetConsoleMode(ConsoleHandle, mode))
+                {
+                    _virtualTerminal = true;
+                }
             }
 
             SetWindowIcon(GetConsoleWindow(), AppIconLarge, AppIconSmall);

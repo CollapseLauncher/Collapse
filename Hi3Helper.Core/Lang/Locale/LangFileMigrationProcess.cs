@@ -14,6 +14,8 @@ namespace Hi3Helper
                 public string LocateFolderSubtitle { get; set; } = LangFallback?._FileMigrationProcess.LocateFolderSubtitle;
                 public string ChoosePathTextBoxPlaceholder { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathTextBoxPlaceholder;
                 public string ChoosePathButton { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathButton;
+                public string ChoosePathErrorTitle { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathErrorTitle;
+                public string ChoosePathErrorPathIdentical { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathErrorPathIdentical;
                 public string ChoosePathErrorPathUnselected { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathErrorPathUnselected;
                 public string ChoosePathErrorPathNotExist { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathErrorPathNotExist;
                 public string ChoosePathErrorPathNoPermission { get; set; } = LangFallback?._FileMigrationProcess.ChoosePathErrorPathNoPermission;

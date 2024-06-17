@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper;
+using Hi3Helper.Shared.Region;
+using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -17,12 +19,12 @@ namespace CollapseLauncher
         private bool isFileTransfer { get; set; }
         private UIElement parentUI { get; set; }
         private CancellationTokenSource tokenSource { get; set; }
+        private bool IsSameOutputDrive { get; set; }
 
         private long CurrentSizeMoved;
         private long CurrentFileCountMoved;
         private long TotalFileSize;
         private long TotalFileCount;
-        private bool IsSameOutputDrive = false;
         private Stopwatch ProcessStopwatch;
         private Stopwatch EventsStopwatch;
 
@@ -97,13 +99,13 @@ namespace CollapseLauncher
 
             if (this.IsSameOutputDrive)
             {
-                // Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file in the same drive from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
-                inputPathInfo.MoveTo(outputPathInfo.FullName);
+                Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file in the same drive from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
+                inputPathInfo.MoveTo(outputPathInfo.FullName, true);
                 UpdateSizeProcessed(uiRef, inputPathInfo.Length);
             }
             else
             {
-                // Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file across different drives from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
+                Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file across different drives from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
                 await MoveWriteFile(uiRef, inputPathInfo, outputPathInfo, this.tokenSource == null ? default : this.tokenSource.Token);
             }
 
@@ -124,7 +126,11 @@ namespace CollapseLauncher
 
             await Parallel.ForEachAsync(
                 inputPathInfo.EnumerateFiles("*", SearchOption.AllDirectories),
-                this.tokenSource?.Token ?? default,
+                new ParallelOptions
+                {
+                    CancellationToken = this.tokenSource?.Token ?? default,
+                    MaxDegreeOfParallelism = LauncherConfig.AppCurrentThread
+                },
                 async (inputFileInfo, cancellationToken) =>
                 {
                     int _parentInputPathLength = inputPathInfo.Parent!.FullName.Length + 1;
@@ -141,17 +147,17 @@ namespace CollapseLauncher
 
                     if (this.IsSameOutputDrive)
                     {
-                        // Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
-                        inputFileInfo.MoveTo(outputTargetPath);
+                        Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
+                        inputFileInfo.MoveTo(outputTargetPath, true);
                         UpdateSizeProcessed(uiRef, inputFileInfo.Length);
                     }
                     else
                     {
-                        // Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
+                        Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
                         FileInfo outputFileInfo = new FileInfo(outputTargetPath);
                         await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
                     }
-                });
+                }).ConfigureAwait(false);
 
             inputPathInfo.Delete(true);
             return outputDirPath;

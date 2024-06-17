@@ -54,7 +54,7 @@
     "Subtitle4_1": "Para começar, clica no botão",
     "Subtitle4_2": "\"Localizar pasta\"",
     "Subtitle4_3": "abaixo para escolheres onde queres instalar os jogos.",
-    "Title1": "Welcome to",
+    "Title1": "Bem-vindo ao",
     "Title2": "Collapse Launcher"
   },
 
@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "Definições da aplicação",
     "NotifNeverAsk": "Não mostrar novamente",
     "NotifNoNewNotifs": "Sem novas notificações",
+    "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Utilitários"
   },
@@ -151,7 +152,7 @@
     "GamePlaytime_Running_Info1": "Uma instância deste jogo está aberta, deste modo o tempo de jogo não pode ser editado.",
     "GamePlaytime_Running_Info2": "Tem em consideração que o tempo de jogo deixará de ser contado se fechares totalmente o Collapse (salvando o tempo decorrido até este ponto) & apenas sessões iniciadas pelo Collapse irão ser contadas.",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Aberto pela última vez em {0:00}/{1:00}/{2:0000} às {3:00}:{4:00}",
+    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
 
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Notícias",
@@ -187,6 +188,8 @@
     "Status11": "A aguardar pelo início do processo de reparação...",
     "Status12": "A atualizar áudio: {0}",
     "Status13": "A atualizar bloco: {0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "Nada",
     "PerProgressTitle1": "Progresso por ficheiro",
     "PerProgressSubtitle1": "A aguardar...",
@@ -217,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Estado",
     "Status1": "Clica em \"Procura rápida\" ou \"Procura lenta\" para pesquisar a existência de atualizações de caches",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "Progresso total",
     "CachesStatusCancelled": "Operação cancelada!",
     "CachesStatusFetchingType": "A reunir tipos de caches: {0}",
@@ -284,12 +288,23 @@
     "Graphics_APHO2AO": "Oclusão de ambiente",
     "Graphics_APHO2LOD": "Nível do detalhe",
 
+    "Graphics_ParticleQuality": "Particle Quality",
+    "Graphics_LightingQuality": "Lighting Quality",
+    "Graphics_PostFXQuality": "Post-FX Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_WeatherQuality": "Weather Quality",
+
+    "Graphics_Legacy_Title": "Legacy Settings",
+    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+
     "SpecDisabled": "Desativado",
     "SpecLow": "Baixo",
     "SpecMedium": "Médio",
     "SpecHigh": "Alto",
     "SpecVeryHigh": "Muito alto",
     "SpecMaximum": "Máximo",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "Definições de áudio",
     "Audio_Master": "Volume principal",
@@ -355,6 +370,7 @@
     "Debug_MultipleInstance": "Permitir várias instâncias do Collapse",
 
     "ChangeRegionWarning_Toggle": "Mostrar aviso de mudança de região",
+    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
     "ChangeRegionWarning_Warning": "*Tens de reiniciar a aplicação para esta definição entrar em efeito.",
 
     "Language": "Idioma",
@@ -375,7 +391,7 @@
 
     "AppBG": "Papel de fundo",
     "AppBG_Checkbox": "Usar papel de fundo customizado",
-    "AppBG_Note": "Nota: A imagem precisa de estar em formato .png, .jpg, .tiff ou .bmp e ter uma dimensão menor que 4096x4096",
+    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
 
     "AppThreads": "Threads/Linhas de execução da aplicação",
     "AppThreads_Download": "Threads de descarregamento",
@@ -387,10 +403,22 @@
     "AppThreads_Help5": "Este thread é responsável pelo processo de extração/verificação durante a instalação/reparação do jogo.",
     "AppThreads_Help6": "Nota: Esta opção já não é efetiva ao instalar Honkai Impact 3rd.",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "Estado de atividade do Discord",
     "DiscordRPC_Toggle": "Mostrar presença no Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar o jogo atual como estado no Discord",
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
+
+    "VideoBackground": "Video Background Settings",
+    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "Atualizações",
     "Update_CurVer": "Versão atual:",
@@ -420,6 +448,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Sobre licença:",
     "About_Copyright4": ". Todos os direitos reservados.",
+    
+    "LicenseType": "MIT License",
 
     "Disclaimer": "Declaração",
     "Disclaimer1": "Esta aplicação não está associada com a",
@@ -450,10 +480,20 @@
     "AppBehavior_PostGameLaunch_Nothing": "Não fazer nada",
     "AppBehavior_MinimizeToTray": "Minimizar para a gaveta de aplicações",
     "AppBehavior_LaunchOnStartup": "Iniciar o Collapse automaticamente quando o computador ligar",
-    "AppBehavior_StartupToTray": "Esconder a janela do Collapse quando inicia automaticamente"
+    "AppBehavior_StartupToTray": "Esconder a janela do Collapse quando inicia automaticamente",
+
+    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
+    "Waifu2X_Help2": "Only available for still images!",
+    "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
+    "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
+    "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Atualização Concluída!",
     "UpdateCompleteSubtitle": "A versão foi atualizada para {0}! (Canal de lançamento: {1})",
     "FeatureUnavailableTitle": "Esta funcionalidade está indisponível no momento",
@@ -506,9 +546,9 @@
     "IAcceptAgreement": "I accept the agreement",
     "IDoNotAcceptAgreement": "I do not accept the agreement",
 
-    "LangNameENUS": "Inglês (EUA)",
+    "LangNameENUS": "English",
     "LangNameJP": "Japonês",
-    "LangNameCN": "Chinês (Simplificado)",
+    "LangNameCN": "Chinese",
     "LangNameKR": "Coreano",
 
     "Downloading": "A descarregar",
@@ -724,6 +764,7 @@
     "ShortcutCreationSuccessSubtitle2": "Localização:",
     "ShortcutCreationSuccessSubtitle3": "Notas:",
     "ShortcutCreationSuccessSubtitle4": " • Usar este atalho irá iniciar o jogo após carregar a região.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Tens a certeza que queres continuar?",
     "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
@@ -736,9 +777,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Pasta de dados da Steam inválida",
-    "SteamShortcutCreationFailureSubtitle": "Não foi possível encontrar uma pasta userdata válida.\n\nTem a certeza que iniciaste sessão pelo menos uma vez no cliente da Steam antes de tentares usar esta funcionalidade."
+    "SteamShortcutCreationFailureSubtitle": "Não foi possível encontrar uma pasta userdata válida.\n\nTem a certeza que iniciaste sessão pelo menos uma vez no cliente da Steam antes de tentares usar esta funcionalidade.",
+
+    "DownloadSettingsTitle": "Download Settings",
+    "DownloadSettingsOption1": "Start game after install"
   },
 
   "_FileMigrationProcess": {
@@ -788,6 +833,8 @@
     "ConvertSuccessSubtitle": "A conversão de jogo de {0} para {1} terminada com sucesso!",
     "CookbookDownloadTitle": "Descarregar a receita",
     "CookbookDownloadSubtitle": "A descarregar a receita para a conversão de {0} para {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "Cancelar conversão",
     "CancelMsgTitle": "A cancelar conversão...",
@@ -857,6 +904,8 @@
     "UpdateHeader3": "Tamanho do arquivo:",
     "UpdateHeader4": "Velocidade:",
     "UpdateHeader5PlaceHolder": "A descarregar atualização [- / -]:",
+
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
 
     "UpdateStatus1": "A obter atualização:",
     "UpdateMessage1": "A conectar ao repositório de atualizações...",
@@ -1151,7 +1200,11 @@
     "ChangeShortcut_Help1": "Um atalho é composto por 2 partes:",
     "ChangeShortcut_Help2": "・ Modificador - Shift, Control ou Alt/Menu",
     "ChangeShortcut_Help3": "・ Tecla - Alfabética (A a Z) ou Tab",
-    "ChangeShortcut_Help4": "Podes escolher qualquer combinação que consista de um valor de cada uma das categorias, a não ser que esteja reservada para o sistema ou já estiver a ser usada."
+    "ChangeShortcut_Help4": "Podes escolher qualquer combinação que consista de um valor de cada uma das categorias, a não ser que esteja reservada para o sistema ou já estiver a ser usada.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1177,36 +1230,39 @@
 
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Welcome", " To" ],
+      "Upper": [ "Bem-vindo", "ao" ],
       "Lower": [ "Collapse", " Launcher" ]
     },
-    "SetupNextButton": "Click Here to Continue",
-    "SetupBackButton": "Go Back",
+    "SetupNextButton": "Clica aqui para continuar",
+    "SetupBackButton": "Voltar",
 
     "CustomizationTitle": "Customize Your Launcher",
-    "CustomizationSettingsLanguageHeader": "Language",
+    "CustomizationSettingsLanguageHeader": "Idioma",
     "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
-    "CustomizationSettingsWindowSizeHeader": "Window Size",
+    "CustomizationSettingsWindowSizeHeader": "Tamanho da janela",
     "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
     "CustomizationSettingsCDNHeader": "Content Delivery Network",
     "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
     "CustomizationSettingsStyleHeader": "Style Preference",
     "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
-    "CustomizationSettingsStyleThemeHeader": "Theme",
+    "CustomizationSettingsStyleThemeHeader": "Tema",
     "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+
+    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
+    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
 
     "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
     "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
     "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
     "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
     "LoadingCDNCheckingSkipButton": "Skip CDN Check",
-    "LoadingBackgroundImageTitle": "Loading Image",
+    "LoadingBackgroundImageTitle": "A carregar imagem",
     "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
 
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
-    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
-    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
+    "CDNCheckboxItemLatencyUnknownFormat": " (desconhecido)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Recomendado]"
   }
 }

@@ -1,23 +1,25 @@
-﻿<Page x:Class="CollapseLauncher.WebView2FramePage"
+﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
+<Page x:Class="CollapseLauncher.WebView2FramePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="using:CollapseLauncher"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="{ThemeResource WebView2GridBackground}"
       Unloaded="WebView2Unload"
       mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow"/>
+        <ThemeShadow x:Name="SharedShadow" />
     </Page.Resources>
     <Grid x:Name="WebView2Panel"
           Canvas.ZIndex="8"
           Shadow="{ThemeResource SharedShadow}"
           Visibility="Collapsed">
         <Grid.RowDefinitions>
-            <RowDefinition Height="36"/>
-            <RowDefinition Height="64"/>
-            <RowDefinition/>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="64" />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock x:Name="WebViewWindowTitle"
                    Grid.Row="0"
@@ -26,17 +28,17 @@
                    HorizontalAlignment="Center"
                    FontSize="13"
                    FontWeight="Bold"
-                   TextTrimming="CharacterEllipsis"/>
+                   TextTrimming="CharacterEllipsis" />
         <Grid x:Name="WebViewNavPanel"
               Grid.Row="1"
               Margin="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="72"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="64"/>
-                <ColumnDefinition Width="44"/>
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="72" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="64" />
+                <ColumnDefinition Width="44" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0"
                         Grid.ColumnSpan="3"
@@ -51,7 +53,7 @@
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="&#xf104;"/>
+                                  Glyph="&#xf104;" />
                     </Button.Content>
                 </Button>
                 <Button x:Name="WebView2ForwardBtn"
@@ -64,7 +66,7 @@
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="&#xf105;"/>
+                                  Glyph="&#xf105;" />
                     </Button.Content>
                 </Button>
                 <Button x:Name="WebView2ReloadBtn"
@@ -78,7 +80,7 @@
                     <Button.Content>
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="&#xf01e;"/>
+                                  Glyph="&#xf01e;" />
                     </Button.Content>
                 </Button>
             </StackPanel>
@@ -86,10 +88,10 @@
                   Margin="8,0"
                   CornerRadius="5">
                 <TextBox x:Name="WebView2URLBox"
-                         IsReadOnly="True"/>
+                         IsReadOnly="True" />
                 <ProgressBar x:Name="WebView2LoadingStatus"
                              HorizontalAlignment="Stretch"
-                             VerticalAlignment="Bottom"/>
+                             VerticalAlignment="Bottom" />
             </Grid>
             <Button x:Name="WebView2OpenExternalBtn"
                     Grid.Column="4"
@@ -101,7 +103,7 @@
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"
-                              Glyph="&#xf08e;"/>
+                              Glyph="&#xf08e;" />
                 </Button.Content>
             </Button>
             <Button x:Name="WebView2CloseBtn"
@@ -114,13 +116,13 @@
                 <Button.Content>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="14"
-                              Glyph="&#xf00d;"/>
+                              Glyph="&#xf00d;" />
                 </Button.Content>
             </Button>
         </Grid>
         <Grid x:Name="WebView2WindowContainer"
               Grid.Row="2"
               HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"/>
+              VerticalAlignment="Stretch" />
     </Grid>
 </Page>

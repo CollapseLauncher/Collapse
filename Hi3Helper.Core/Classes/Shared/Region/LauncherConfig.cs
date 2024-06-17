@@ -1,12 +1,10 @@
 using Hi3Helper.Data;
-#if !DISABLEDISCORD
-using Hi3Helper.DiscordPresence;
-#endif
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -25,8 +23,8 @@ namespace Hi3Helper.Shared.Region
     }
     #endregion
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "InconsistentNaming")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "RedundantDefaultMemberInitializer")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
@@ -86,7 +84,9 @@ namespace Hi3Helper.Shared.Region
         {
             SetAppConfigValue(key, value);
             SaveAppConfig();
+            #if DEBUG
             Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
+            #endif
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
 
@@ -147,16 +147,16 @@ namespace Hi3Helper.Shared.Region
               },
               new CDNURLProperty
               {
-                  Name = "Bitbucket",
-                  URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
-                  Description = Lang!._Misc!.CDNDescription_Bitbucket
-              },
-              new CDNURLProperty
-              {
                   Name = "GitLab",
                   URLPrefix = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/",
                   Description = Lang!._Misc!.CDNDescription_GitLab
-              }
+              },
+              new CDNURLProperty
+              {
+                  Name = "Coding",
+                  URLPrefix = "https://ohly-generic.pkg.coding.net/collapse/release/",
+                  Description = Lang!._Misc!.CDNDescription_Coding
+              },
           };
 
         public static CDNURLProperty GetCurrentCDN() => CDNList![GetAppConfigValue("CurrentCDN").ToInt()];
@@ -221,7 +221,6 @@ namespace Hi3Helper.Shared.Region
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder!, "config.ini");
         public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder,  "ignore_notif_ids.json");
         
-        public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
         public static long   AppGameConfigLastUpdate;
         public static int AppCurrentThread
@@ -233,20 +232,14 @@ namespace Hi3Helper.Shared.Region
             }
         }
         public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread").ToInt();
-        public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadata"); }
-        public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder!, "stampv2.json"); }
-        public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder!, "metadatav2.json"); }
+        public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadatav3"); }
 
-#if !DISABLEDISCORD
-#pragma warning disable CA2211
-public static DiscordPresenceManager AppDiscordPresence;
-#pragma warning restore CA2211
-#endif
-        public static readonly bool IsAppLangNeedRestart             = false;
+        public static readonly bool IsAppLangNeedRestart    = false;
 
         public static bool IsPreview                        = false;
         public static bool IsAppThemeNeedRestart            = false;
         public static bool IsChangeRegionWarningNeedRestart = false;
+        public static bool IsInstantRegionNeedRestart       = false;
         public static bool IsFirstInstall                   = false;
         public static bool IsConsoleEnabled
         {
@@ -262,6 +255,17 @@ public static DiscordPresenceManager AppDiscordPresence;
         {
             get => GetAppConfigValue("ShowRegionChangeWarning").ToBool();
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
+        }
+
+        private static bool? _cachedIsInstantRegionChange = null;
+        public static bool IsInstantRegionChange
+        {
+            get
+            {
+                _cachedIsInstantRegionChange ??= GetAppConfigValue("UseInstantRegionChange").ToBool();
+                return (bool)_cachedIsInstantRegionChange;
+            }
+            set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
         public static bool                 ForceInvokeUpdate     = false;
@@ -292,7 +296,7 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
             { "CurrentCDN", 0 },
-            { "ShowRegionChangeWarning", true },
+            { "ShowRegionChangeWarning", false },
             #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
             { "EnableDiscordGameStatus", true },
@@ -309,6 +313,9 @@ public static DiscordPresenceManager AppDiscordPresence;
             { "MinimizeToTray", false },
             { "UseExternalBrowser", false },
             { "EnableWaifu2X", false },
+            { "BackgroundAudioVolume", 0.5d },
+            { "BackgroundAudioIsMute", true },
+            { "UseInstantRegionChange", true }
         };
         #endregion
     }

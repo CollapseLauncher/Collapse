@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+
 // ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.FileDialogCOM

@@ -184,7 +184,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Falling back to the miHoYo provided pkg_version as the asset index!", LogType.Warning, true);
 
                 // Get the latest game property from the API
-                GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
+                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
                 RegionResourceVersion gameVersion = _gameVersionManager.GetGameLatestZip(gameState).FirstOrDefault();
 
                 // If the gameVersion is null, then return

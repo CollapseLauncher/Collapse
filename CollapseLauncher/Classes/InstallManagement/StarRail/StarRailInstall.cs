@@ -4,12 +4,12 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.StarRail
@@ -23,9 +23,9 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Properties
-        private string _execName { get; set; }
-        private string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
-        private string _gameAudioLangListPath
+        private string _execName { get => Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName); }
+        protected override string _gameDataPersistentPath { get => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent"); }
+        protected override string _gameAudioLangListPath
         {
             get
             {
@@ -38,19 +38,16 @@ namespace CollapseLauncher.InstallManager.StarRail
                 // Check if the file exist. If not, return null
                 if (!File.Exists(audioRecordPath)) return null;
 
-                // If exist, then return the path
+                // If it exists, then return the path
                 return audioRecordPath;
             }
         }
-        private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt"); }
+        protected override string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "AudioLaucherRecord.txt"); }
         private StarRailRepair _gameRepairManager { get; set; }
         #endregion
 
         public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
-            : base(parentUI, GameVersionManager)
-        {
-            _execName = Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
-        }
+            : base(parentUI, GameVersionManager) { }
 
         #region Public Methods
         public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
@@ -72,7 +69,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
             // If the delta patch is performed, then return
-            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false))
+            if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false, true))
             {
                 // Update the audio package list after delta patch has been initiated
                 WriteAudioLangList(_gameDeltaPatchPreReqList);
@@ -90,31 +87,8 @@ namespace CollapseLauncher.InstallManager.StarRail
             if (!isOnlyInstallPackage)
                 WriteAudioLangList(_assetIndex);
         }
-        #endregion
 
-        #region Override Methods - StartDeltaPatch
-        private void WriteAudioLangList(List<GameInstallPackage> gamePackage)
-        {
-            // Create persistent directory if not exist
-            if (!Directory.Exists(_gameDataPersistentPath))
-            {
-                Directory.CreateDirectory(_gameDataPersistentPath);
-            }
-
-            // Create the audio lang list file
-            using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
-                new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
-            {
-                // Iterate the package list
-                foreach (GameInstallPackage package in gamePackage.Where(x => x.PackageType == GameInstallPackageType.Audio))
-                {
-                    // Write the language string as per ID
-                    sw.WriteLine(GetLanguageStringByID(package.LanguageID));
-                }
-            }
-        }
-
-        private string GetLanguageStringByID(int id) => id switch
+        protected override string GetLanguageStringByID(int id) => id switch
         {
             0 => "Chinese",
             1 => "Chinese",
@@ -135,7 +109,7 @@ namespace CollapseLauncher.InstallManager.StarRail
             int langID;
 
             // Get available language names
-            List<string> langStrings = EnumerateAudioLanguageString();
+            List<string> langStrings = GetAudioLanguageStringList();
             GameInstallPackage package;
 
             // Skip if the asset doesn't have voice packs
@@ -145,36 +119,50 @@ namespace CollapseLauncher.InstallManager.StarRail
                 return true;
             }
 
-            // If the game has already installed or in preload, then try get Voice language ID from registry
-            if (_gameInstallationStatus == GameInstallStateEnum.InstalledHavePreload
-             || _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate)
+            if (!_canSkipAudio)
             {
-                // Try get the voice language ID from the registry
-                langID = _gameVoiceLanguageID;
-                // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                if (langID == 1) langID = 0; // Force to use zh-CN if zh-TW is used
-                package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                packageList.Add(package);
+                // If the game has already installed or in preload, then try get Voice language ID from registry
+                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
+                if (gameState == GameInstallStateEnum.InstalledHavePreload
+                    || gameState == GameInstallStateEnum.NeedsUpdate)
+                {
+                    // Try get the voice language ID from the registry
+                    langID = _gameVoiceLanguageID;
+                    // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                    if (langID == 1) langID = 0; // Force to use zh-CN if zh-TW is used
+                    package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
+                        { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                    packageList.Add(package);
 
-                // Also try add another voice pack that already been installed
-                TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
+                    // Also try add another voice pack that already been installed
+                    TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
+                }
+                // Else, show dialog to choose the language ID to be installed
+                else
+                {
+                    (List<int> addedVO, int setAsDefaultVO) = await Dialog_ChooseAudioLanguageChoice(_parentUI, langStrings, 2);
+                    if (addedVO == null || setAsDefaultVO < 0)
+                        throw new TaskCanceledException();
+
+                    for (int i = 0; i < addedVO.Count; i++)
+                    {
+                        langID = addedVO[i];
+                        // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                        langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
+
+                        package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
+                        { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                        packageList.Add(package);
+
+                        LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                                     LogType.Default, true);
+                    }
+
+                    // Set the voice language ID to value given
+                    _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+                }
             }
-            // Else, show dialog to choose the language ID to be installed
-            else
-            {
-                langID = await Dialog_ChooseAudioLanguage(_parentUI, langStrings);
-                // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
-
-                package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                packageList.Add(package);
-
-                // Set the voice language ID to value given
-                _gameVersionManager.GamePreset.SetVoiceLanguageID(langID);
-
-                LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
-            }
-
+            
             return true;
         }
 
@@ -220,27 +208,29 @@ namespace CollapseLauncher.InstallManager.StarRail
                 LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }
         }
-
-        private List<string> EnumerateAudioLanguageString()
-        {
-            return new List<string>
-            {
-                Lang._Misc.LangNameCN,
-                Lang._Misc.LangNameENUS,
-                Lang._Misc.LangNameJP,
-                Lang._Misc.LangNameKR
-            };
-        }
         #endregion
 
         #region Override Methods - UninstallGame
-        protected override UninstallGameProperty AssignUninstallFolders() => new UninstallGameProperty()
+        protected override UninstallGameProperty AssignUninstallFolders() => new()
         {
             gameDataFolderName = "StarRail_Data",
-            foldersToDelete = new string[] { "AntiCheatExpert" },
-            filesToDelete = new string[] { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" },
-            foldersToKeepInData = new string[] { "ScreenShots" }
+            foldersToDelete = new[] { "AntiCheatExpert" },
+            filesToDelete = new[] { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" },
+            foldersToKeepInData = new[] { "ScreenShots" }
         };
+        #endregion
+
+        #region Override Methods - Sophon
+        protected override string GetLangIdToSophonVOLangName(int id)
+            => id switch
+            {
+                0 => "zh-cn",
+                1 => "zh-cn",
+                2 => "en-us",
+                3 => "ja-jp",
+                4 => "ko-kr",
+                _ => throw new NotSupportedException($"This lang id: {id} is not supported")
+            };
         #endregion
     }
 }

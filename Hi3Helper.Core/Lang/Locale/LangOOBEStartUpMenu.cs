@@ -28,6 +28,9 @@ namespace Hi3Helper
                 public string CustomizationSettingsStyleCustomBackgroundHeader { get; set; } = LangFallback?._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundHeader;
                 public string CustomizationSettingsStyleCustomBackgroundDescription { get; set; } = LangFallback?._OOBEStartUpMenu.CustomizationSettingsStyleCustomBackgroundDescription;
 
+                public string VideoBackgroundPreviewUnavailableHeader { get; set; } = LangFallback?._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableHeader;
+                public string VideoBackgroundPreviewUnavailableDescription { get; set; } = LangFallback?._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableDescription;
+
                 public string LoadingInitializationTitle { get; set; } = LangFallback?._OOBEStartUpMenu.LoadingInitializationTitle;
                 public string LoadingCDNCheckboxCheckLatency { get; set; } = LangFallback?._OOBEStartUpMenu.LoadingCDNCheckboxCheckLatency;
                 public string LoadingCDNCheckboxPlaceholder { get; set; } = LangFallback?._OOBEStartUpMenu.LoadingCDNCheckboxPlaceholder;

@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
-      xmlns:local="using:CollapseLauncher"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       x:Name="ConvertPage"
       x:FieldModifier="public"
@@ -13,20 +12,20 @@
     <Grid Margin="32"
           VerticalAlignment="Stretch">
         <TextBlock Style="{ThemeResource TitleLargeTextBlockStyle}"
-                   Text="{x:Bind helper:Locale.Lang._InstallConvert.PageTitle}"/>
+                   Text="{x:Bind helper:Locale.Lang._InstallConvert.PageTitle}" />
         <Grid Margin="0,48,0,32"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="32*"/>
-                <ColumnDefinition Width="681*"/>
+                <ColumnDefinition Width="32*" />
+                <ColumnDefinition Width="681*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Slider x:Name="ProgressSlider"
                     Grid.RowSpan="5"
@@ -42,13 +41,13 @@
                     TickPlacement="TopLeft"
                     Value="0">
                 <Slider.RenderTransform>
-                    <CompositeTransform Rotation="180"/>
+                    <CompositeTransform Rotation="180" />
                 </Slider.RenderTransform>
             </Slider>
             <Rectangle Grid.RowSpan="5"
                        Grid.Column="0"
                        Grid.ColumnSpan="2"
-                       Fill="Transparent"/>
+                       Fill="Transparent" />
             <StackPanel x:Name="Step1"
                         Grid.Row="0"
                         Grid.Column="1"
@@ -61,16 +60,16 @@
                               Height="32"
                               Margin="0,0,16,0"
                               IsIndeterminate="True"
-                              Value="100"/>
+                              Value="100" />
                 <StackPanel Orientation="Vertical">
                     <TextBlock x:Name="Step1ProgressTitle"
                                VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step1Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step1Title}" />
                     <TextBlock x:Name="Step1ProgressStatus"
                                VerticalAlignment="Center"
                                Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step2"
@@ -85,16 +84,16 @@
                               Height="32"
                               Margin="0,0,16,0"
                               IsIndeterminate="false"
-                              Value="100"/>
+                              Value="100" />
                 <StackPanel Orientation="Vertical">
                     <TextBlock x:Name="Step2ProgressTitle"
                                VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step2Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step2Title}" />
                     <TextBlock x:Name="Step2ProgressStatus"
                                VerticalAlignment="Center"
                                Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step3"
@@ -109,16 +108,16 @@
                               Height="32"
                               Margin="0,0,16,0"
                               IsIndeterminate="False"
-                              Value="100"/>
+                              Value="100" />
                 <StackPanel Orientation="Vertical">
                     <TextBlock x:Name="Step3ProgressTitle"
                                VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step3Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step3Title}" />
                     <TextBlock x:Name="Step3ProgressStatus"
                                VerticalAlignment="Center"
                                Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step4"
@@ -133,16 +132,16 @@
                               Height="32"
                               Margin="0,0,16,0"
                               IsIndeterminate="false"
-                              Value="100"/>
+                              Value="100" />
                 <StackPanel Orientation="Vertical">
                     <TextBlock x:Name="Step4ProgressTitle"
                                VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step4Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step4Title}" />
                     <TextBlock x:Name="Step4ProgressStatus"
                                VerticalAlignment="Center"
                                Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step5"
@@ -157,16 +156,16 @@
                               Height="32"
                               Margin="0,0,16,0"
                               IsIndeterminate="false"
-                              Value="100"/>
+                              Value="100" />
                 <StackPanel Orientation="Vertical">
                     <TextBlock x:Name="Step5ProgressTitle"
                                VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step5Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.Step5Title}" />
                     <TextBlock x:Name="Step5ProgressStatus"
                                VerticalAlignment="Center"
                                Style="{ThemeResource BodyTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" />
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -181,10 +180,10 @@
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="16"
-                              Glyph="&#xf00d;"/>
+                              Glyph="&#xf00d;" />
                     <TextBlock Margin="8,0,0,0"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._InstallConvert.CancelBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._InstallConvert.CancelBtn}" />
                 </StackPanel>
             </Button>
             <TextBlock x:Name="MigrationSubtextStatus"
@@ -192,10 +191,10 @@
                        VerticalAlignment="Bottom"
                        Style="{ThemeResource BodyTextBlockStyle}">
                 <Span>
-                    <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter1}"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter1}" />
                     <Run FontWeight="Black"
-                         Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter2}"/>
-                    <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter3}"/>
+                         Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter2}" />
+                    <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter3}" />
                 </Span>
             </TextBlock>
         </Grid>

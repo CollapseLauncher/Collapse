@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "Aucune nouvelle notification",
     "NotifClearAll": "Supprimer toutes les notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilitaires"
+    "NavigationUtilities": "Utilitaires",
+    "Initializing": "Initialisation",
+    "LoadingLauncherMetadata": "Chargement des métadonnées du launcher",
+    "LoadingGameConfiguration": "Chargement de la configuration du jeu"
   },
 
   "_HomePage": {
@@ -220,6 +223,7 @@
     "ListCol6": "CRC D.",
     "ListCol7": "Statut",
     "Status1": "Cliquez sur « Vérification rapide » ou « Vérification complète » pour vérifier les mises à jour des caches.",
+    "Status2": "Tentative de détermination de la disponibilité de l'actif de cache « {0} » : {1}",
     "CachesStatusHeader1": "État d'avancement",
     "CachesStatusCancelled": "L'opération a été annulée !",
     "CachesStatusFetchingType": "Récupération du type de Caches : {0}",
@@ -347,6 +351,7 @@
     "CustomArgs_Footer3": "pour afficher d'autres paramètres.",
 
     "GameBoost": "Augmenter la priorité du jeu [Expérimental]",
+    "MobileLayout": "Utiliser l'interface mobile",
 
     "Advanced_Title": "Paramètres avancés",
     "Advanced_Subtitle1": "L'équipe Collapse Launcher",
@@ -356,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "Commandes pré-lancement",
     "Advanced_GLC_PreLaunch_Subtitle": "Commandes à exécuter avant le lancement du jeu",
     "Advanced_GLC_PreLaunch_Exit": "Forcer l'arrêt du processus lancé lorsque le jeu est fermé/arrêté",
+    "Advanced_GLC_PreLaunch_Delay": "Retarder le lancement du jeu (ms)",
     "Advanced_GLC_PostExit_Title": "Commandes post-sortie",
     "Advanced_GLC_PostExit_Subtitle": "Commandes à exécuter après la fermeture du jeu"
   },
@@ -369,6 +375,7 @@
     "Debug_MultipleInstance": "Permettre l'exécution de plusieurs instances de Collapse",
 
     "ChangeRegionWarning_Toggle": "Afficher un avertissement lors d'un changement de région",
+    "ChangeRegionInstant_Toggle": "Basculement de région instantané lors de la sélection",
     "ChangeRegionWarning_Warning": "*Vous devez redémarrer Collapse afin que les changements prennent effet.",
 
     "Language": "Langue",
@@ -389,7 +396,7 @@
 
     "AppBG": "Arrière-plan",
     "AppBG_Checkbox": "Utiliser une image d'arrière-plan personnalisée",
-    "AppBG_Note": "Note: L'image doit être en format .png, .jpg, .tiff ou .bmp et la résolution doit être inférieure à 4096x4096.",
+    "AppBG_Note": "Formats acceptés :\r\nImage : {0}\r\nVidéo : {1}",
 
     "AppThreads": "Threads d'application",
     "AppThreads_Download": "Threads de téléchargement",
@@ -413,6 +420,10 @@
     "DiscordRPC_Toggle": "Afficher le statut enrichi sur Discord",
     "DiscordRPC_GameStatusToggle": "Afficher le jeu en cours sur Discord",
     "DiscordRPC_IdleStatusToggle": "Afficher le statut enrichi lorsque vous êtes inactif",
+
+    "VideoBackground": "Paramètres de l'arrière-plan vidéo",
+    "VideoBackground_IsEnableAudio": "Activer l'audio",
+    "VideoBackground_AudioVolume": "Volume de l'audio",
 
     "Update": "État des mises à jour",
     "Update_CurVer": "Version actuelle :",
@@ -442,6 +453,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka et gablm",
     "About_Copyright3": "Sous",
     "About_Copyright4": ". Tous droits réservés.",
+    
+    "LicenseType": "Licence MIT",
 
     "Disclaimer": "Clause de non-responsabilité",
     "Disclaimer1": "Cette application n'est pas affiliée à",
@@ -476,6 +489,7 @@
 
     "Waifu2X_Toggle": "Utiliser Waifu2X [Expérimental]",
     "Waifu2X_Help": "Utiliser Waifu2X pour agrandir les images d'arrière-plan.\r\nLorsque cette option est activée, la qualité de l'image sera significativement améliorée, mais cela peut causer un temps de chargement accru de l'image lors du chargement initial.",
+    "Waifu2X_Help2": "Uniquement disponible pour les images fixes !",
     "Waifu2X_Warning_CpuMode": "AVERTISSEMENT : Aucun GPU compatible Vulkan disponible n'a été trouvé et le mode CPU sera utilisé. Cela augmentera considérablement le temps de traitement de l’image.",
     "Waifu2X_Warning_D3DMappingLayers": "AVERTISSEMENT : Votre système a le « Pack de compatibilité OpenCL™, OpenGL® et Vulkan® » d'installé. Il a été rapporté que ce package est incompatible avec le chargeur Vulkan et entraînera un plantage sur certains GPUs. Veuillez supprimer ce package afin d'activer le mode GPU.",
     "Waifu2X_Error_Loader": "ERREUR : Échec de l'initialisation de Vulkan Loader. Assurez-vous d'avoir un GPU compatible Vulkan avec des pilotes GPU appropriés installé.",
@@ -537,9 +551,9 @@
     "IAcceptAgreement": "J'accepte",
     "IDoNotAcceptAgreement": "Je refuse",
 
-    "LangNameENUS": "Anglais (États-Unis)",
+    "LangNameENUS": "Anglais",
     "LangNameJP": "Japonais",
-    "LangNameCN": "Chinois (simplifié)",
+    "LangNameCN": "Chinois",
     "LangNameKR": "Coréen",
 
     "Downloading": "Téléchargement",
@@ -547,6 +561,7 @@
     "Idle": "Inactif",
     "Change": "Changer",
     "Cancelled": "Annulé",
+    "FinishingUp": "Finalisation",
     "Extracting": "Extraction",
     "Converting": "Conversion",
     "Patching": "Mise à jour",
@@ -561,6 +576,7 @@
     "ApplyingPatch": "Application du correctif",
     "Disabled": "Désactivé",
     "Enabled": "Activé",
+    "UseAsDefault": "Utiliser par défaut",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -569,6 +585,7 @@
     "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) hébergé dans le seau R2 de Cloudflare",
     "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) hébergé sur Bitbucket",
     "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) hébergé sur GitLab",
+    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) hébergé sur Coding",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -597,7 +614,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nom du launcher inconnu)",
-    
+
     "ImageCropperTitle": "Rogner l'image"
   },
 
@@ -784,6 +801,8 @@
     "LocateFolderSubtitle": "Choisissez l'emplacement pour déplacer le fichier/dossier vers le chemin cible.",
     "ChoosePathTextBoxPlaceholder": "Choisir le chemin cible…",
     "ChoosePathButton": "Choisir la cible",
+    "ChoosePathErrorTitle": "Une erreur est survenue !",
+    "ChoosePathErrorPathIdentical": "Le chemin de sortie choisi est situé à l’intérieur ou identique à l’emplacement actuel !\r\nVeuillez choisir un autre emplacement !",
     "ChoosePathErrorPathUnselected": "Veuillez choisir la destination avant de continuer !",
     "ChoosePathErrorPathNotExist": "Le chemin n'existe pas !",
     "ChoosePathErrorPathNoPermission": "Vous n'avez pas la permission d'accéder à cet emplacement ! Veuillez choisir un autre emplacement !"
@@ -896,6 +915,8 @@
     "UpdateHeader4": "Vitesse :",
     "UpdateHeader5PlaceHolder": "Téléchargement de la mise à jour  [- / -] :",
 
+    "UpdateForcedHeader": "Le launcher va se mettre à jour de force en raison de changements urgents afin de garantir son bon fonctionnement.",
+
     "UpdateStatus1": "Obtention de la mise à jour",
     "UpdateMessage1": "Connexion au dépôt de mise à jour…",
     "UpdateStatus2": "Vérification :",
@@ -990,7 +1011,7 @@
 
     "Graphics_FPS": "Taux d'IPS",
     "Graphics_FPS_Help": "Le mode 120 IPS est EXPÉRIMENTAL ! Veuillez faire preuve de prudence, car Honkai : Star Rail ne le prend pas officiellement en charge !",
-    "Graphics_FPS_Help2": "Définir la valeur de taux d'IPS sur 120 rendra le menu « Paramètres graphiques » du jeu inopérant.\r\nSi votre menu ne fonctionne plus dans le jeu, utilisez Collapse pour modifier les paramètres graphiques du jeu.",
+    "Graphics_FPS_Help2": "Définir la valeur de taux d'IPS à 120 n'entraîne plus le dysfonctionnement du menu en jeu, en revanche modifier la valeur de taux d'IPS à une valeur plus faible ne fonctionnera pas.\r\nSi vous utilisez l'option 120 IPS, utilisez Collapse pour modifier les paramètres graphiques du jeu.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "La VSync n'est pas disponible en mode 120 IPS",
     "Graphics_RenderScale": "Échelle de rendu",
@@ -1238,6 +1259,9 @@
     "CustomizationSettingsStyleThemeDescription": "Le jeu de couleurs dans lequel votre launcher apparaîtra.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "Image d'arrière-plan personnalisée",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Utiliser une image d'arrière-plan personnalisée à la place de celle par défaut.",
+
+    "VideoBackgroundPreviewUnavailableHeader": "Aperçu de l'arrière-plan vidéo indisponible",
+    "VideoBackgroundPreviewUnavailableDescription": "Vous ne pouvez prévisualiser votre arrière-plan vidéo durant l'OOBE mais ne vous inquiétez pas ! Votre arrière-plan vidéo sera appliqué une fois l'OOBE terminé.",
 
     "LoadingInitializationTitle": "Initialisation du premier démarrage du launcher",
     "LoadingCDNCheckboxCheckLatency": "(Vérification des latences…)",

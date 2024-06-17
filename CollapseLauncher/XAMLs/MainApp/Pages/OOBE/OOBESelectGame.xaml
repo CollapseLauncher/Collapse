@@ -1,17 +1,19 @@
-﻿<Page x:Class="CollapseLauncher.Pages.OOBE.OOBESelectGame"
+﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
+<Page x:Class="CollapseLauncher.Pages.OOBE.OOBESelectGame"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
-      xmlns:local="using:CollapseLauncher.Pages.OOBE"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid>
         <Frame x:Name="BackgroundFrame"
                HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch"/>
+               VerticalAlignment="Stretch" />
         <Button x:Name="NextPage"
                 Margin="32"
                 HorizontalAlignment="Center"
@@ -21,24 +23,24 @@
                 Opacity="0"
                 Style="{ThemeResource TransparentDefaultButtonStyle}">
             <Button.OpacityTransition>
-                <ScalarTransition/>
+                <ScalarTransition />
             </Button.OpacityTransition>
             <Button.Content>
                 <StackPanel>
                     <TextBlock FontSize="16"
                                FontStretch="UltraExpanded"
                                FontWeight="SemiBold"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}"/>
+                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" />
                     <AnimatedIcon Width="24"
                                   MinHeight="{ThemeResource ComboBoxMinHeight}"
                                   Margin="0,-4,0,-8"
                                   HorizontalAlignment="Center">
-                        <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"/>
+                        <animatedvisuals:AnimatedChevronDownSmallVisualSource />
                         <AnimatedIcon.FallbackIconSource>
                             <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                             FontSize="12"
                                             Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                            Glyph="&#xE70D;"/>
+                                            Glyph="&#xE70D;" />
                         </AnimatedIcon.FallbackIconSource>
                     </AnimatedIcon>
                 </StackPanel>
@@ -52,7 +54,7 @@
                 IsEnabled="True"
                 Style="{ThemeResource TransparentDefaultButtonStyle}">
             <Button.OpacityTransition>
-                <ScalarTransition/>
+                <ScalarTransition />
             </Button.OpacityTransition>
             <Button.Content>
                 <StackPanel>
@@ -60,33 +62,33 @@
                           VerticalAlignment="Center"
                           RenderTransformOrigin="0.5, 0.5">
                         <Grid.RenderTransform>
-                            <RotateTransform Angle="180"/>
+                            <RotateTransform Angle="180" />
                         </Grid.RenderTransform>
                         <AnimatedIcon Width="24"
                                       MinHeight="{ThemeResource ComboBoxMinHeight}"
                                       Margin="0,-8,0,-4"
                                       HorizontalAlignment="Center">
-                            <animatedvisuals:AnimatedChevronDownSmallVisualSource xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"/>
+                            <animatedvisuals:AnimatedChevronDownSmallVisualSource />
                             <AnimatedIcon.FallbackIconSource>
                                 <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                                 FontSize="12"
                                                 Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                                Glyph="&#xE70D;"/>
+                                                Glyph="&#xE70D;" />
                             </AnimatedIcon.FallbackIconSource>
                         </AnimatedIcon>
                     </Grid>
                     <TextBlock FontSize="16"
                                FontStretch="UltraExpanded"
                                FontWeight="SemiBold"
-                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtnNew}"/>
+                               Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtnNew}" />
                 </StackPanel>
             </Button.Content>
         </Button>
         <Grid x:Name="Bg"
               Margin="32">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="RightPanel"
                         Grid.Column="0"
@@ -99,43 +101,43 @@
                 <TextBlock Margin="0,0,0,32"
                            Foreground="{ThemeResource SystemAccentColor}"
                            Style="{ThemeResource TitleLargeTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}"/>
+                           Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" />
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" />
                     <Run FontWeight="Bold"
                          Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_3}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_3}" />
                 </TextBlock>
                 <TextBlock Margin="0,16,0,24"
                            Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}" />
                     <Run Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" />
                     <Run FontWeight="Bold"
                          Foreground="{ThemeResource SystemAccentColor}"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" />
                     <Run FontWeight="Normal"
-                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_5}"/>
+                         Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_5}" />
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox x:Name="GameCategorySelect"
                               Width="192"
                               CornerRadius="16"
                               PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}"
-                              SelectionChanged="GameCategorySelect_SelectionChanged"/>
+                              SelectionChanged="GameCategorySelect_SelectionChanged" />
                     <ComboBox x:Name="GameRegionSelect"
                               Width="192"
                               Margin="16,0,0,0"
                               CornerRadius="16"
                               IsEnabled="False"
                               PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBoxRegion}"
-                              SelectionChanged="GameSelect_SelectionChanged"/>
+                              SelectionChanged="GameSelect_SelectionChanged" />
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -152,23 +154,23 @@
                               IsActive="True"
                               IsIndeterminate="false"
                               Maximum="100"
-                              Value="100"/>
+                              Value="100" />
                 <TextBlock x:Name="OverlayTitle"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="Title"/>
+                           Text="Title" />
                 <TextBlock x:Name="OverlaySubtitle"
                            Margin="0,8,0,192"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                           Text="Subtitle"/>
+                           Text="Subtitle" />
             </StackPanel>
         </Grid>
         <ProgressBar x:Name="BarBGLoading"
                      VerticalAlignment="Bottom"
                      IsIndeterminate="true"
-                     Visibility="Collapsed"/>
+                     Visibility="Collapsed" />
     </Grid>
 </Page>

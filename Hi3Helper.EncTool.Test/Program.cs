@@ -1,13 +1,5 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.EncTool.Parser.Senadina;
-using Hi3Helper.Http;
-using System.Buffers;
+﻿using Hi3Helper.EncTool.Parser.AssetMetadata;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
 
 namespace Hi3Helper.EncTool.Test
 {

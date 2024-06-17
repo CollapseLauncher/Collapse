@@ -46,7 +46,7 @@
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "のゲームをサポートしています。ランチャーを開始するには、",
     "Pg2Subtitle2_4": "Collapse Launcher",
-    "Pg2Subtitle2_5": "を使いたいゲームを選択してください。",
+    "Pg2Subtitle2_5": "に登録したいゲームを選択してください。",
     "Pg2Title": "風だ～！",
     "Subtitle1": "こんにちは！",
     "Subtitle2": "Collapseを初めて起動したようですね。",
@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "通知はありません",
     "NotifClearAll": "通知をすべてクリア",
     "NavigationMenu": "メニュー",
-    "NavigationUtilities": "機能"
+    "NavigationUtilities": "機能",
+    "Initializing": "初期化中",
+    "LoadingLauncherMetadata": "ランチャーのメタデータを読み込み中",
+    "LoadingGameConfiguration": "ゲーム設定を読み込み中"
   },
 
   "_HomePage": {
@@ -112,7 +115,7 @@
     "PreloadNotifCompleteSubtitle": "バージョン{0}のアップデートパッケージを事前ダウンロードしました！",
     "PreloadNotifIntegrityCheckBtn": "パッケージの整合性チェック",
     "StartBtn": "ゲーム開始",
-    "StartBtnRunning": "ゲームが実行中です！",
+    "StartBtnRunning": "ゲーム実行中！",
     "VerifyingPkgTitle": "パッケージの検証中",
     "PreloadDownloadNotifbarTitle": "事前ダウンロードパッケージのダウンロード中",
     "PreloadDownloadNotifbarVerifyTitle": "事前ダウンロードパッケージの検証中",
@@ -220,6 +223,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "ステータス",
     "Status1": "キャッシュの更新を確認するには、 \"クイックチェック\"または\"フルチェック\"をクリックしてください。",
+    "Status2": "{0} 件のキャッシュファイルの可用性を検証中: {1}",
     "CachesStatusHeader1": "総進行状況",
     "CachesStatusCancelled": "操作がキャンセルされました！",
     "CachesStatusFetchingType": "キャッシュタイプを読み込み中: {0}",
@@ -347,6 +351,7 @@
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
 
     "GameBoost": "ゲームの優先度をブースト [実験的機能]",
+    "MobileLayout": "スマホ版のUIを表示",
 
     "Advanced_Title": "高度な設定",
     "Advanced_Subtitle1": "Collapse Launcher開発チームはこの設定が原因であなたのゲーム・アカウント・システムに何らかの事態が発生しても",
@@ -356,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "起動前コマンド",
     "Advanced_GLC_PreLaunch_Subtitle": "ゲームの起動前にコマンドを実行する",
     "Advanced_GLC_PreLaunch_Exit": "ゲームが終了/停止した場合に実行中のプロセスを強制終了させる",
+    "Advanced_GLC_PreLaunch_Delay": "ゲームの起動を遅らせる（ミリ秒）",
     "Advanced_GLC_PostExit_Title": "終了後コマンド",
     "Advanced_GLC_PostExit_Subtitle": "ゲームの終了後にコマンドを実行する"
   },
@@ -368,7 +374,8 @@
     "Debug_IncludeGameLogs": "コンソールログにゲームのログも保存（アカウント情報も含まれる可能性有り）",
     "Debug_MultipleInstance": "Collapseの多重起動を許可する",
 
-    "ChangeRegionWarning_Toggle": "サーバー変更時に確認する",
+    "ChangeRegionWarning_Toggle": "ゲームの変更時に確認ダイアログを表示",
+    "ChangeRegionInstant_Toggle": "上部タブでゲームをクイック切り替え",
     "ChangeRegionWarning_Warning": "*設定の変更を適用するには、ランチャーを再起動してください。",
 
     "Language": "言語",
@@ -389,7 +396,7 @@
 
     "AppBG": "背景",
     "AppBG_Checkbox": "カスタム背景を使用する",
-    "AppBG_Note": "注: 拡張子は.png、.jpg、.tiff、.bmp。解像度は4096x4096以内。",
+    "AppBG_Note": "使用可能なフォーマット:\r\n画像: {0}\r\n動画: {1}",
 
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
@@ -414,6 +421,10 @@
     "DiscordRPC_GameStatusToggle": "今遊んでいるゲームをステータスに表示",
     "DiscordRPC_IdleStatusToggle": "待機中もステータスに表示",
 
+    "VideoBackground": "カスタム動画背景の設定",
+    "VideoBackground_IsEnableAudio": "音を出す",
+    "VideoBackground_AudioVolume": "音量",
+
     "Update": "アップデートの確認",
     "Update_CurVer": "現在のバージョン:",
     "Update_CheckBtn": "アップデートをチェック",
@@ -426,7 +437,7 @@
     "AppFiles_OpenDataFolderBtn": "ランチャーのデータフォルダーを開く",
     "AppFiles_RelocateDataFolderBtn": "ランチャーのデータフォルダーの場所を変更",
     "AppFiles_ClearLogBtn": "ログファイルの削除",
-    "AppFiles_ClearImgCachesBtn": "画像ファイルの削除",
+    "AppFiles_ClearImgCachesBtn": "画像キャッシュファイルの削除",
 
     "AppFiles_ClearMetadataBtn": "メタデータを消去して再起動",
     "AppFiles_ClearMetadataDialog": "Collapseのメタデータを消去します！",
@@ -456,7 +467,7 @@
 
     "AppChangeReleaseChannel": "{0} リリースチャンネルに変更",
 
-    "EnableAcrylicEffect": "背景をぼかす",
+    "EnableAcrylicEffect": "ランチャーUIに透明効果を付ける",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
     "UseExternalBrowser": "リンクを常に外部ブラウザで開く",
 
@@ -478,6 +489,7 @@
 
     "Waifu2X_Toggle": "Waifu2Xを使う [実験的機能]",
     "Waifu2X_Help": "背景画像の拡大処理にWaifu2Xを使用します。\n有効にすると画質が大幅に向上しますが、画像の初回読み込みにかかる時間が少し長くなります。",
+    "Waifu2X_Help2": "画像にのみ有効です！",
     "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",
     "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
@@ -549,6 +561,7 @@
     "Idle": "待機",
     "Change": "変更",
     "Cancelled": "キャンセルされました",
+    "FinishingUp": "まもなく完了",
     "Extracting": "展開中",
     "Converting": "変換中",
     "Patching": "パッチ中",
@@ -563,6 +576,7 @@
     "ApplyingPatch": "パッチ適用中",
     "Disabled": "無効",
     "Enabled": "有効",
+    "UseAsDefault": "デフォルトとして使用",
 
     "BuildChannelPreview": "プレビュー版",
     "BuildChannelStable": "安定版",
@@ -571,6 +585,7 @@
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
+    "CDNDescription_Coding": "Codingが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",
     "OpenDownloadPage": "配布サイトを開く",
@@ -599,7 +614,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "（ランチャー不明）",
-    
+
     "ImageCropperTitle": "画像の表示範囲を選択"
   },
 
@@ -673,7 +688,7 @@
     "InstallDataDownloadResumeTitle": "ダウンロードを再開しますか？",
     "InstallDataDownloadResumeSubtitle": "既にゲームの {0}/{1}がダウンロードされています。\n\n引き続きダウンロードしますか？",
     "InsufficientDiskTitle": "ディスク容量不足",
-    "InsufficientDiskSubtitle": "空き容量不足のため、{2} ドライブにこのゲームをインストールできません！\r\n\r\n利用可能なスペース: {0}\r\n必要なスペース: {1}.\r\n\r\nインストールする前に十分なディスク容量があることを確認してください。",
+    "InsufficientDiskSubtitle": "空き容量不足のため、{2} ドライブにこのゲームをインストールできません！\r\n\r\n利用可能なスペース: {0}\r\n必要なスペース: {1}\r\n\r\nインストールする前に十分なディスク容量があることを確認してください。",
     "RelocateFolderTitle": "データフォルダーの場所を変更する",
     "RelocateFolderSubtitle": "現在、このフォルダーをランチャーのアプリデータフォルダーに使用しています:\n\n {0}\n\n場所を変更しますか？",
     "UninstallGameTitle": "ゲームのアンインストール: {0}",
@@ -770,7 +785,7 @@
     "SteamShortcutCreationSuccessSubtitle4": " • この操作を再度実行することで、ショートカットアイコンの破損や欠落が修正できます。",
     "SteamShortcutCreationSuccessSubtitle5": " • 作成したショートカットはSteamの再起動後に表示されます。",
     "SteamShortcutCreationSuccessSubtitle6": " • Steamオーバーレイを使用するには、Steamを管理者として実行した上でCollapseを完全に閉じるか、ランチャー設定の「多重起動を許可する」を有効にする必要があります。",
-    "SteamShortcutCreationSuccessSubtitle7": "• ゲームがインストール/更新されていない場合、Collapseはゲームのインストール/更新を試みます。これらのプロセスに関するダイアログが引き続き表示されることにご留意ください。",
+    "SteamShortcutCreationSuccessSubtitle7": " • ゲームがインストール/更新されていない場合、Collapseはゲームのインストール/更新を試みます。これらのプロセスに関するダイアログが引き続き表示されることにご留意ください。",
 
     "SteamShortcutCreationFailureTitle": "Steamデータフォルダーが無効です",
     "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。",
@@ -786,6 +801,8 @@
     "LocateFolderSubtitle": "ファイル/フォルダーの移動先を選択してください。",
     "ChoosePathTextBoxPlaceholder": "移動先を選択してください…",
     "ChoosePathButton": "移動先を選ぶ",
+    "ChoosePathErrorTitle": "エラーが発生しました！",
+    "ChoosePathErrorPathIdentical": "選択した移動先のパスが現在のパスと同じか、現在のパスの内側です！\r\n別の場所を選択してください！",
     "ChoosePathErrorPathUnselected": "パスを選択してから続行してください！",
     "ChoosePathErrorPathNotExist": "存在しないパスです！",
     "ChoosePathErrorPathNoPermission": "その場所にアクセスする権限がありません！別の場所を選択してください！"
@@ -898,6 +915,8 @@
     "UpdateHeader4": "速度:",
     "UpdateHeader5PlaceHolder": "アップデートをダウンロードしています [- / -]:",
 
+    "UpdateForcedHeader": "重大な変更が行われたため、適切な動作を保証するためにランチャーを強制更新します。",
+
     "UpdateStatus1": "アップデートを取得中:",
     "UpdateMessage1": "アップデートリポジトリに接続しています...",
     "UpdateStatus2": "検証中:",
@@ -992,7 +1011,7 @@
 
     "Graphics_FPS": "フレームレート",
     "Graphics_FPS_Help": "120FPSは実験的な設定です！公式でサポートされていない設定のため、ご利用は自己責任でお願いします。",
-    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\nそうなった場合は、代わりにCollapseを使って画面設定を変更してください。",
+    "Graphics_FPS_Help2": "120FPS選択中にゲーム内の設定メニューでフレームレートを変更すると、120FPS化が解除されます。120FPS選択中に設定を変更する際は、Collapseのゲーム設定変更機能の使用をおすすめします。",
     "Graphics_VSync": "垂直同期",
     "Graphics_VSync_Help": "120FPS選択時は垂直同期が無効になります",
     "Graphics_RenderScale": "レンダリング精度",
@@ -1235,11 +1254,14 @@
     "CustomizationSettingsCDNHeader": "CDN",
     "CustomizationSettingsCDNDescription": "優先的に接続するCDNを選択します",
     "CustomizationSettingsStyleHeader": "外観設定",
-    "CustomizationSettingsStyleDescription": "ランチャーの見た目をあなた色に染めます",
+    "CustomizationSettingsStyleDescription": "ランチャーの見た目を君の色に染めます",
     "CustomizationSettingsStyleThemeHeader": "テーマ",
     "CustomizationSettingsStyleThemeDescription": "ランチャーのカラーテーマを変更します",
     "CustomizationSettingsStyleCustomBackgroundHeader": "カスタム背景",
     "CustomizationSettingsStyleCustomBackgroundDescription": "デフォルトの画像の代わりに好きな画像を背景に表示します",
+
+    "VideoBackgroundPreviewUnavailableHeader": "カスタム動画背景はプレビューできません",
+    "VideoBackgroundPreviewUnavailableDescription": "現在の画面ではカスタム動画背景がプレビューされていませんが、ご安心ください！選択したカスタム動画背景は、初期設定の完了後に適用されます。",
 
     "LoadingInitializationTitle": "ランチャー初回起動時の初期化を行っています",
     "LoadingCDNCheckboxCheckLatency": "（接続速度をテスト中…）",

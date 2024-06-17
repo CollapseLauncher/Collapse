@@ -7,18 +7,18 @@
     "SelectLang": "請選擇您的語言",
     "SelectLangDesc": "這是您第一次使用啟動器，請選擇您的語言！",
     "SelectWindowSize": "請選擇您喜好的視窗大小",
-    "SelectCDN": "Select your preferred CDN",
-    "CDNHelpTitle_1": "What is a CDN?",
-    "CDNHelpTitle_2": "short for ",
-    "CDNHelpTitle_3": "Content Delivery Network",
+    "SelectCDN": "請選擇您偏好的 CDN 伺服器",
+    "CDNHelpTitle_1": "什麼是 CDN 伺服器？",
+    "CDNHelpTitle_2": "簡稱為",
+    "CDNHelpTitle_3": "內容傳遞網路",
     "CDNHelpTitle_4": "\u200b",
     "CDNHelpDetail_1": "\u200b",
     "CDNHelpDetail_2": "CDN",
-    "CDNHelpDetail_3": " is a system used to make launcher files available to a larger audience, quickly and efficiently.",
+    "CDNHelpDetail_3": "是一種內容傳遞系統。好讓啟動器的下載資料，能夠更快速、更有效率的傳遞給大量的使用者。",
     "CDNHelpDetail_4": "Collapse selects GitHub as the default provider.",
-    "CDNsAvailable": "CDNs available:",
+    "CDNsAvailable": "可選擇的 CDN 有：",
     "SplashArt_1": "The splash art is a property of",
-    "SplashArt_2": "miHoYo / HoYoverse",
+    "SplashArt_2": "米哈遊 / HoYoverse",
     "ChooseFolderBtn": "選擇資料夾",
     "ChooseFolderDialogCancel": "取消",
     "ChooseFolderDialogPrimary": "是的！",
@@ -38,7 +38,7 @@
     "Pg2ComboBoxRegion": "選擇區域",
     "Pg2NextBtn": "完成 - 進入啟動器",
     "Pg2PrevBtn": "返回 - 選擇資料夾",
-    "Pg2PrevBtnNew": "Back - Launcher Configuration",
+    "Pg2PrevBtnNew": "返回 - 啟動器設置",
     "Pg2Subtitle1_1": "只差一步即可在",
     "Pg2Subtitle1_2": "Collapse 啟動器上遊玩。",
     "Pg2Subtitle1_3": "",
@@ -54,7 +54,7 @@
     "Subtitle4_1": "如需開始，請點擊下方的",
     "Subtitle4_2": "「選擇資料夾」",
     "Subtitle4_3": "按鈕來選擇遊戲欲安裝的位置。",
-    "Title1": "Welcome to",
+    "Title1": "歡迎來到",
     "Title2": "Collapse 啟動器"
   },
 
@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "應用程式設定",
     "NotifNeverAsk": "不再顯示",
     "NotifNoNewNotifs": "沒有新的通知",
+    "NotifClearAll": "Clear all notifications",
     "NavigationMenu": "目錄",
     "NavigationUtilities": "工具箱"
   },
@@ -148,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "分鐘",
     "GamePlaytime_Idle_ResetBtn": "重置",
     "GamePlaytime_Idle_ChangeBtn": "更改",
-    "GamePlaytime_Idle_InvalidTimeBlock": "提供了無效的值。",
     "GamePlaytime_Running_Info1": "此遊戲的一個實例正在執行中，因此無法更改遊玩時數。",
     "GamePlaytime_Running_Info2": "請注意，完全關閉 Collapse 將停止遊玩時數追蹤（先前的時數將會儲存），且只有由 Collapse 啟動的遊戲實例會被追蹤。",
     "GamePlaytime_Display": "{0}時 {1}分",
+    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
 
     "PostPanel_Events": "活動",
     "PostPanel_Notices": "公告",
@@ -187,6 +188,8 @@
     "Status11": "正在等待修復程序開始…",
     "Status12": "正在更新音檔：{0}",
     "Status13": "正在更新 Block：{0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "無",
     "PerProgressTitle1": "每個檔案進度",
     "PerProgressSubtitle1": "正在等待…",
@@ -217,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "狀態",
     "Status1": "點擊「快速檢查」或「完整檢查」以檢查快取的更新情況",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "總進度",
     "CachesStatusCancelled": "操作已被取消！",
     "CachesStatusFetchingType": "正在獲取快取類型：{0}",
@@ -284,12 +288,23 @@
     "Graphics_APHO2AO": "環境光遮蔽",
     "Graphics_APHO2LOD": "細節等級",
 
+    "Graphics_ParticleQuality": "Particle Quality",
+    "Graphics_LightingQuality": "Lighting Quality",
+    "Graphics_PostFXQuality": "Post-FX Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_WeatherQuality": "Weather Quality",
+
+    "Graphics_Legacy_Title": "Legacy Settings",
+    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+
     "SpecDisabled": "已停用",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
     "SpecVeryHigh": "非常高",
     "SpecMaximum": "最高",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "音量設定",
     "Audio_Master": "主音量",
@@ -349,12 +364,13 @@
   "_SettingsPage": {
     "PageTitle": "應用設定",
 
-    "Debug": "Additional Settings",
+    "Debug": "額外設定",
     "Debug_Console": "顯示控制台",
     "Debug_IncludeGameLogs": "儲存遊戲日誌至 Collapse （可能包含敏感資料）",
     "Debug_MultipleInstance": "允許同時執行多個 Collapse",
 
     "ChangeRegionWarning_Toggle": "顯示區域更改警告",
+    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
     "ChangeRegionWarning_Warning": "*您必須重新啟動啟動器才能使這個設定生效。",
 
     "Language": "語言",
@@ -375,7 +391,7 @@
 
     "AppBG": "應用背景",
     "AppBG_Checkbox": "使用自定義背景",
-    "AppBG_Note": "注：圖片需為 PNG、JPG、TIFF、或 BMP 格式，並且解析度需低於 4096x4096",
+    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
 
     "AppThreads": "執行緒設定",
     "AppThreads_Download": "下載執行緒",
@@ -387,10 +403,22 @@
     "AppThreads_Help5": "解壓縮執行緒數量決定安裝/修復遊戲的過程中，程式分成多少執行緒以解壓縮/驗證檔案。",
     "AppThreads_Help6": "注：此設定在安裝崩壞三時無效",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "Discord 遊戲狀態",
     "DiscordRPC_Toggle": "顯示 Discord 狀態",
     "DiscordRPC_GameStatusToggle": "在 Discord 遊戲狀態上顯示當前的遊戲名稱",
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
+
+    "VideoBackground": "Video Background Settings",
+    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "檢查更新",
     "Update_CurVer": "目前版本：",
@@ -420,6 +448,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": "。版權所有。",
+    
+    "LicenseType": "MIT License",
 
     "Disclaimer": "免責聲明",
     "Disclaimer1": "此應用不以任何方式與",
@@ -450,10 +480,20 @@
     "AppBehavior_PostGameLaunch_Nothing": "什麼也不做",
     "AppBehavior_MinimizeToTray": "最小化至系統工具列",
     "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
-    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically",
+
+    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
+    "Waifu2X_Help2": "Only available for still images!",
+    "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
+    "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
+    "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "更新完成！",
     "UpdateCompleteSubtitle": "你的啟動器已更新至 {0}！（發布渠道：{1}）",
     "FeatureUnavailableTitle": "此功能目前不可用",
@@ -477,7 +517,7 @@
     "OkaySad": "好 ;-;)",
     "OkayHappy": "好 (≧▽≦)ﾉ",
     "OkayBackToMenu": "好，回到主頁面",
-    "Skip": "Skip, never show again",
+    "Skip": "跳過，且不再顯示",
     "Next": "下一頁",
     "Prev": "上一頁",
     "Uninstall": "解除安裝",
@@ -506,9 +546,9 @@
     "IAcceptAgreement": "I accept the agreement",
     "IDoNotAcceptAgreement": "I do not accept the agreement",
 
-    "LangNameENUS": "英文（美國）",
+    "LangNameENUS": "English",
     "LangNameJP": "日文",
-    "LangNameCN": "中文（簡體）",
+    "LangNameCN": "Chinese",
     "LangNameKR": "韓文",
 
     "Downloading": "正在下載",
@@ -562,12 +602,12 @@
     "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
     "Taskbar_ExitApp": "Exit Collapse Launcher",
 
-    "LauncherNameOfficial": "Official Launcher",
+    "LauncherNameOfficial": "官方啟動器",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Launcher Name is Unknown)",
     
-    "ImageCropperTitle": "Crop the image"
+    "ImageCropperTitle": "裁切圖片"
   },
 
   "_BackgroundNotification": {
@@ -724,6 +764,7 @@
     "ShortcutCreationSuccessSubtitle2": "Location: ",
     "ShortcutCreationSuccessSubtitle3": "Notes:",
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
     "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
@@ -736,9 +777,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
-    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
+
+    "DownloadSettingsTitle": "Download Settings",
+    "DownloadSettingsOption1": "Start game after install"
   },
 
   "_FileMigrationProcess": {
@@ -788,6 +833,8 @@
     "ConvertSuccessSubtitle": "已完成 {0} 到 {1} 的遊戲轉換！",
     "CookbookDownloadTitle": "正在下載配方",
     "CookbookDownloadSubtitle": "正在下載從 {0} 轉換至 {1} 的配方",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "取消轉換",
     "CancelMsgTitle": "正在取消轉換…",
@@ -858,6 +905,8 @@
     "UpdateHeader4": "速度：",
     "UpdateHeader5PlaceHolder": "正在下載更新 [- / -]：",
 
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
+
     "UpdateStatus1": "正在獲取更新：",
     "UpdateMessage1": "正在連線到更新儲存庫…",
     "UpdateStatus2": "正在驗證：",
@@ -881,8 +930,8 @@
     "ApplyUpdateUpdateVersionTitle": "Update:",
     "ApplyUpdateUpdateChannelTitle": "Channel:",
     "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
-    "ApplyUpdateUpdateStatusTitle": "Status:",
-    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateUpdateStatusTitle": "目前狀態:",
+    "ApplyUpdateMiscIdle": "閒置中",
     "ApplyUpdateMiscNone": "None",
     "ApplyUpdateVersionSeparator": "to",
 
@@ -904,7 +953,7 @@
     "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
     "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
     "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
-    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "正在刪除中: {0}...",
 
     "ApplyUpdateTaskDownloadingPkgTitle": "正在下載封包中",
     "ApplyUpdateTaskExtractingPkgTitle": "正在解壓縮封包中",
@@ -932,7 +981,7 @@
     "NotifPreviewBuildUsedSubtitle": "您目前正在使用 [PREVIEW] 版本，它仍然在測試階段。如果您遇到任何問題，請點擊下方的「{0}」按鈕來回報。謝謝！",
     "NotifPreviewBuildUsedBtn": "回報問題",
 
-    "NotifKbShortcutTitle": "A new feature has arrived!",
+    "NotifKbShortcutTitle": "新的功能來囉！",
     "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
     "NotifKbShortcutBtn": "Show all shortcuts"
   },
@@ -1052,7 +1101,7 @@
     "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
     "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
     "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
-    "Graphics_HDR_Help_Link": "More information",
+    "Graphics_HDR_Help_Link": "更多資訊 (英文)",
     "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
     "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
     "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
@@ -1151,7 +1200,11 @@
     "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used.",
+
+    "Keyboard_Control": "Ctrl",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1180,30 +1233,33 @@
       "Upper": [ "Welcome", " To" ],
       "Lower": [ "Collapse", " Launcher" ]
     },
-    "SetupNextButton": "Click Here to Continue",
-    "SetupBackButton": "Go Back",
+    "SetupNextButton": "點擊此處繼續",
+    "SetupBackButton": "返回",
 
-    "CustomizationTitle": "Customize Your Launcher",
-    "CustomizationSettingsLanguageHeader": "Language",
-    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
-    "CustomizationSettingsWindowSizeHeader": "Window Size",
-    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
-    "CustomizationSettingsCDNHeader": "Content Delivery Network",
-    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
-    "CustomizationSettingsStyleHeader": "Style Preference",
-    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationTitle": "自訂您的啟動器",
+    "CustomizationSettingsLanguageHeader": "語言",
+    "CustomizationSettingsLanguageDescription": "這將調整所顯示資訊的語言。",
+    "CustomizationSettingsWindowSizeHeader": "視窗大小",
+    "CustomizationSettingsWindowSizeDescription": "更改啟動器的視窗大小。",
+    "CustomizationSettingsCDNHeader": "內容傳遞網路",
+    "CustomizationSettingsCDNDescription": "選擇您主要使用的 CDN。",
+    "CustomizationSettingsStyleHeader": "主題設定",
+    "CustomizationSettingsStyleDescription": "按您的偏好選擇更改啟動器的外觀。",
     "CustomizationSettingsStyleThemeHeader": "主題",
-    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
+    "CustomizationSettingsStyleThemeDescription": "更改啟動器中顯示的顏色。",
     "CustomizationSettingsStyleCustomBackgroundHeader": "自訂背景圖片",
-    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "使用自訂的背景圖片取代預設圖像",
+
+    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
+    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
 
     "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
-    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
-    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
-    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
-    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
-    "LoadingBackgroundImageTitle": "Loading Image",
-    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+    "LoadingCDNCheckboxCheckLatency": "(正在檢查您的網路延遲...)",
+    "LoadingCDNCheckboxPlaceholder": "正在檢查最適合您的CDN設定...",
+    "LoadingCDNCheckingSubitle": "正在搜尋最靠近您的 CDN 伺服器中...",
+    "LoadingCDNCheckingSkipButton": "跳過 CDN 檢查步驟",
+    "LoadingBackgroundImageTitle": "圖片讀取中",
+    "LoadingBackgroundImageSubtitle": "圖片需要一點時間處理，請耐心等候。",
 
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",

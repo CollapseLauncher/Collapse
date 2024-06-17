@@ -2,6 +2,8 @@
 // https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/src/bsdiff/BinaryPatchUtility.cs
 
 // using SharpCompress.Compressors.BZip2;
+
+using Hi3Helper.Data;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -406,7 +408,7 @@ namespace CollapseLauncher
 
         public void UpdatePatchEvent(long SizePatched, long SizeToBePatched, long Read, double TotalSecond)
         {
-            this.Speed = (long)(SizePatched / TotalSecond);
+            this.Speed = (SizePatched / TotalSecond);
             this.SizePatched = SizePatched;
             this.SizeToBePatched = SizeToBePatched;
             this.Read = Read;
@@ -416,8 +418,7 @@ namespace CollapseLauncher
         public long SizeToBePatched { get; private set; }
         public double ProgressPercentage => Math.Round((SizePatched / (double)SizeToBePatched) * 100, 2);
         public long Read { get; private set; }
-        public long Speed { get; private set; }
-        public TimeSpan TimeLeft => checked(TimeSpan.FromSeconds((SizeToBePatched - SizePatched) / UnZeroed(Speed)));
-        private long UnZeroed(long Input) => Math.Max(Input, 1);
+        public double Speed { get; private set; }
+        public TimeSpan TimeLeft => checked(((SizeToBePatched - SizePatched) / Speed.Unzeroed()).ToTimeSpanNormalized());
     }
 }

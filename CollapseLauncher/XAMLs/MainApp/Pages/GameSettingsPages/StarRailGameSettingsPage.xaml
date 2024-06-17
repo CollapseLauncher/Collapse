@@ -1,4 +1,4 @@
-<!--  ReSharper disable IdentifierTypo  -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.StarRailGameSettingsPage"
@@ -13,23 +13,23 @@
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow"/>
-        <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
+        <ThemeShadow x:Name="SharedShadow" />
+        <conv:InverseBooleanConverter x:Key="BooleanInverse" />
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                          x:Name="SettingsScrollViewer">
+            <ScrollViewer x:Name="SettingsScrollViewer"
+                          VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="32,40,32,32"
                             Padding="0,0,0,74">
                     <TextBlock Margin="0,0,0,16"
-                               TextWrapping="Wrap"
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Title}"
+                               TextWrapping="Wrap" />
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0"
                                     Margin="0,0,32,0">
@@ -38,101 +38,118 @@
                                 <StackPanel>
                                     <TextBlock Margin="0,0,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               TextWrapping="Wrap"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionPanel}"/>
-                                    <StackPanel x:Name="GameResolutionWindow"
-                                                Margin="0,0,0,8"
-                                                Orientation="Vertical">
-                                        <Grid>
-                                            <Border x:Name="VSyncTooltip"
-                                                    Background="Transparent"
-                                                    ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}"/>
-                                            <CheckBox x:Name="VSyncToggle"
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionPanel}"
+                                               TextWrapping="Wrap" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel x:Name="GameResolutionWindow"
+                                                    Grid.Column="0"
+                                                    Margin="0,0,0,8"
+                                                    Orientation="Vertical">
+                                            <Grid>
+                                                <Border x:Name="VSyncTooltip"
+                                                        Background="Transparent"
+                                                        ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync_Help}" />
+                                                <CheckBox x:Name="VSyncToggle"
+                                                          HorizontalAlignment="Left"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
+                                            </Grid>
+                                            <CheckBox x:Name="GameResolutionFullscreen"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}"
-                                                           TextWrapping="Wrap"/>
+                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
+                                                           TextWrapping="Wrap" />
                                             </CheckBox>
-                                        </Grid>
-                                        <CheckBox x:Name="GameResolutionFullscreen"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
-                                                       TextWrapping="Wrap"/>
-                                        </CheckBox>
-                                        <CheckBox x:Name="GameResolutionBorderless"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
-                                                       TextWrapping="Wrap"/>
-                                        </CheckBox>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <CheckBox x:Name="GameWindowResizable"
-                                                      HorizontalAlignment="Stretch"
+                                            <CheckBox x:Name="GameResolutionBorderless"
+                                                      HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
-                                                           TextWrapping="Wrap"/>
+                                                      IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
+                                                           TextWrapping="Wrap" />
                                             </CheckBox>
-                                            <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
-                                                <Button.Content>
-                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
-                                                              Glyph="&#x3f;"/>
-                                                </Button.Content>
-                                                <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
-                                                        <TextBlock MaxWidth="360"
-                                                                   FontWeight="SemiBold"
-                                                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
-                                                                   TextAlignment="Center"
-                                                                   TextWrapping="Wrap"/>
-                                                    </Flyout>
-                                                </Button.Flyout>
-                                            </Button>
-                                        </Grid>
-                                        <!--
-                                            Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
-                                            Delete `Visibility="Collapsed"' to revert this change
-                                        -->
-                                        <CheckBox x:Name="GameResolutionFullscreenExclusive"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
-                                                  IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
-                                                  Visibility="Collapsed">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ExclusiveFullscreen}"
-                                                       TextWrapping="Wrap"/>
-                                        </CheckBox>
-                                    </StackPanel>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <CheckBox x:Name="GameWindowResizable"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind IsResizableWindow, Mode=TwoWay}"
+                                                          IsEnabled="{x:Bind IsCanResizableWindow, Mode=OneWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindow}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
+                                                <Button Grid.Column="1"
+                                                        Margin="8,-4,0,0"
+                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                    <Button.Content>
+                                                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#x3f;" />
+                                                    </Button.Content>
+                                                    <Button.Flyout>
+                                                        <Flyout AllowFocusOnInteraction="True">
+                                                            <TextBlock MaxWidth="360"
+                                                                       FontWeight="SemiBold"
+                                                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
+                                                                       TextAlignment="Center"
+                                                                       TextWrapping="Wrap" />
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                            </Grid>
+                                            <!--
+                                                Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
+                                                Delete `Visibility="Collapsed"' to revert this change
+                                            -->
+                                            <CheckBox x:Name="GameResolutionFullscreenExclusive"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"
+                                                      IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
+                                                      Visibility="Collapsed">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ExclusiveFullscreen}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1"
+                                                    Margin="4,0,0,0">
+                                            <CheckBox x:Name="MobileModeToggle"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
+                                                           TextWrapping="Wrap" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </Grid>
                                     <Grid Margin="0,0,0,16">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         <ComboBox x:Name="GameResolutionSelector"
                                                   MinWidth="128"
-                                                  CornerRadius="14"
                                                   VerticalAlignment="Center"
+                                                  CornerRadius="14"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   PlaceholderText="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResSelectPlaceholder}"
-                                                  SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}"/>
-                                        <Grid VerticalAlignment="Center"
-                                              Grid.Column="1"
-                                              HorizontalAlignment="Stretch">
+                                                  SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}" />
+                                        <Grid Grid.Column="1"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Center">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <CheckBox x:Name="GameCustomResolutionCheckbox"
                                                       Margin="16,0,0,0"
@@ -140,7 +157,7 @@
                                                       IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustom}"
-                                                           TextWrapping="Wrap"/>
+                                                           TextWrapping="Wrap" />
                                             </CheckBox>
                                             <Button Grid.Column="1"
                                                     Margin="8,-4,0,0"
@@ -148,7 +165,7 @@
                                                 <Button.Content>
                                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                                               FontSize="12"
-                                                              Glyph="&#x3f;"/>
+                                                              Glyph="&#x3f;" />
                                                 </Button.Content>
                                                 <Button.Flyout>
                                                     <Flyout AllowFocusOnInteraction="True">
@@ -156,7 +173,7 @@
                                                                    FontWeight="SemiBold"
                                                                    Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"
                                                                    TextAlignment="Center"
-                                                                   TextWrapping="Wrap"/>
+                                                                   TextWrapping="Wrap" />
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
@@ -167,41 +184,41 @@
                                             Orientation="Horizontal">
                                     <TextBlock Margin="0,0,8,0"
                                                VerticalAlignment="Center"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomW}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomW}" />
                                     <NumberBox x:Name="GameCustomResolutionWidth"
                                                Width="100"
                                                HorizontalAlignment="Left"
                                                CornerRadius="8,8,0,0"
                                                IsEnabled="{x:Bind IsCanResolutionWH, Mode=OneWay}"
-                                               Value="{x:Bind ResolutionW, Mode=TwoWay}"/>
+                                               Value="{x:Bind ResolutionW, Mode=TwoWay}" />
                                     <TextBlock Margin="16,0,8,0"
                                                VerticalAlignment="Center"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomH}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomH}" />
                                     <NumberBox x:Name="GameCustomResolutionHeight"
                                                Width="100"
                                                HorizontalAlignment="Left"
                                                CornerRadius="8,8,0,0"
                                                IsEnabled="{x:Bind IsCanResolutionWH, Mode=OneWay}"
-                                               Value="{x:Bind ResolutionH, Mode=TwoWay}"/>
+                                               Value="{x:Bind ResolutionH, Mode=TwoWay}" />
                                 </StackPanel>
                                 <TextBlock Margin="0,16,8,0"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           TextWrapping="Wrap"
-                                           Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS}"/>
+                                           Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS}"
+                                           TextWrapping="Wrap" />
                                 <TextBlock Margin="0,4,0,0"
                                            Style="{ThemeResource CaptionTextBlockStyle}"
-                                           TextWrapping="Wrap"
-                                           Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help}"/>
+                                           Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help}"
+                                           TextWrapping="Wrap" />
                                 <TextBlock Margin="0,4,0,8"
                                            Style="{ThemeResource CaptionTextBlockStyle}"
-                                           TextWrapping="Wrap"
-                                           Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help2}"/>
+                                           Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help2}"
+                                           TextWrapping="Wrap" />
                                 <ComboBox x:Name="FPSSelector"
                                           MinWidth="128"
                                           Margin="0,8,0,0"
                                           CornerRadius="14"
                                           ItemsSource="{x:Bind static:Model.FPSIndex}"
-                                          SelectedIndex="{x:Bind FPS, Mode=TwoWay}"/>
+                                          SelectedIndex="{x:Bind FPS, Mode=TwoWay}" />
                             </StackPanel>
                             <StackPanel x:Name="GameBoostPanel"
                                         Orientation="Horizontal">
@@ -209,7 +226,7 @@
                                               Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}"
                                               IsOn="{x:Bind IsGameBoost, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel x:Name="StarRailGameGraphicsPanel"
@@ -217,18 +234,18 @@
                                     Margin="0,16">
                             <TextBlock Margin="0,0,0,16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       TextWrapping="Wrap"
-                                       Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SpecPanel}"/>
+                                       Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SpecPanel}"
+                                       TextWrapping="Wrap" />
                             <StackPanel>
                                 <StackPanel Margin="0,0,56,8">
                                     <Grid x:Name="RenderScaleGrid">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   TextWrapping="Wrap"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}"
+                                                   TextWrapping="Wrap" />
                                         <TextBlock HorizontalAlignment="Right"
-                                                   TextWrapping="Wrap"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{Binding Value, ElementName=RenderScaleSlider}"/>
+                                                   Text="{Binding Value, ElementName=RenderScaleSlider}"
+                                                   TextWrapping="Wrap" />
                                     </Grid>
                                     <Slider x:Name="RenderScaleSlider"
                                             Maximum="2.0"
@@ -236,85 +253,85 @@
                                             StepFrequency="0.2"
                                             TickFrequency="0.2"
                                             TickPlacement="Outside"
-                                            Value="{x:Bind RenderScale, Mode=TwoWay}"/>
+                                            Value="{x:Bind RenderScale, Mode=TwoWay}" />
                                 </StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,0,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ShadowQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ShadowQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="ShadowQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind ShadowQuality, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
+                                                          Visibility="Collapsed" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
+                                                          Visibility="Collapsed" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,0,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_LightQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_LightQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="LightQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind LightQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
+                                                          Visibility="Collapsed" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,0,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_CharacterQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_CharacterQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="CharacterQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
                                             <!--  dum workaround for the dum enum  -->
                                             <ComboBoxItem Content="0"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
+                                                          Visibility="Collapsed" />
                                             <ComboBoxItem Content="1"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
+                                                          Visibility="Collapsed" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
@@ -322,75 +339,75 @@
                             <StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,8,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_EnvDetailQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_EnvDetailQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="EnvDetailQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind EnvDetailQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
+                                                          Visibility="Collapsed" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,8,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ReflectionQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ReflectionQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="ReflectionQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind ReflectionQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
+                                                          Visibility="Collapsed" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,8,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_BloomQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_BloomQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="BloomQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind BloomQuality, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
@@ -398,136 +415,137 @@
                             <StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,8,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_AAMode}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_AAMode}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="AAModeSelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind AAMode, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
-                                            <ComboBoxItem Content="TAA"/>
-                                            <ComboBoxItem Content="FXAA"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="TAA" />
+                                            <ComboBoxItem Content="FXAA" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Bottom"
+                                                Visibility="Collapsed">
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
+                                                   HorizontalAlignment="Left"
+                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionQuality}"
+                                                   TextWrapping="Wrap" />
+                                        <ComboBox x:Name="ResolutionQualitySelector"
+                                                  Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
+                                                  CornerRadius="14"
+                                                  SelectedIndex="{x:Bind ResolutionQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"
                                                 VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,8,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionQuality}"/>
-                                        <ComboBox x:Name="ResolutionQualitySelector"
-                                                  HorizontalAlignment="Stretch"
-                                                  Margin="0,0,16,8"
-                                                  CornerRadius="14"
-                                                  SelectedIndex="{x:Bind ResolutionQuality, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2"
-                                                VerticalAlignment="Bottom">
-                                        <TextBlock Margin="0,8,0,8"
-                                                   MaxWidth="128"
-                                                   TextWrapping="Wrap"
-                                                   HorizontalAlignment="Left"
-                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SFXQuality}"/>
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SFXQuality}"
+                                                   TextWrapping="Wrap" />
                                         <ComboBox x:Name="SFXQualitySelector"
-                                                  HorizontalAlignment="Stretch"
                                                   Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind SFXQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
+                                                          Visibility="Collapsed" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"
                                                           IsEnabled="False"
-                                                          Visibility="Collapsed"/>
+                                                          Visibility="Collapsed" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <TextBlock Margin="0,0,0,16"
-                               TextWrapping="Wrap"
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Title}"
+                               TextWrapping="Wrap" />
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <StackPanel x:Name="AudioSettingsPanelLeft"
                                         Margin="0,16,64,16">
                                 <StackPanel>
                                     <TextBlock Margin="0,0,0,16"
-                                               TextWrapping="Wrap"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Master}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Master}"
+                                               TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="40px" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock VerticalAlignment="Center"
-                                                       TextWrapping="Wrap"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioMasterVolumeSlider}"/>
+                                                       Text="{Binding Value, ElementName=AudioMasterVolumeSlider}"
+                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioMasterVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
-                                                    Value="{x:Bind AudioMasterVolume, Mode=TwoWay}"/>
+                                                    Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
-                                               TextWrapping="Wrap"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_SFX}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_SFX}"
+                                               TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="40px" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock VerticalAlignment="Center"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       TextWrapping="Wrap"
-                                                       Text="{Binding Value, ElementName=AudioSFXVolumeSlider}"/>
+                                                       Text="{Binding Value, ElementName=AudioSFXVolumeSlider}"
+                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioSFXVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
-                                                    Value="{x:Bind AudioSFXVolume, Mode=TwoWay}"/>
+                                                    Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
                                 </StackPanel>
@@ -538,82 +556,82 @@
                                         Margin="0,16,64,16">
                                 <StackPanel>
                                     <TextBlock Margin="0,0,0,16"
-                                               TextWrapping="Wrap"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_BGM}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_BGM}"
+                                               TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="40px" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock VerticalAlignment="Center"
-                                                       TextWrapping="Wrap"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioBGMVolumeSlider}"/>
+                                                       Text="{Binding Value, ElementName=AudioBGMVolumeSlider}"
+                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioBGMVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
-                                                    Value="{x:Bind AudioBGMVolume, Mode=TwoWay}"/>
+                                                    Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               TextWrapping="Wrap"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_VO}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_VO}"
+                                               TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="40px" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock VerticalAlignment="Center"
                                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       TextWrapping="Wrap"
-                                                       Text="{Binding Value, ElementName=AudioVOVolumeSlider}"/>
+                                                       Text="{Binding Value, ElementName=AudioVOVolumeSlider}"
+                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioVOVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
-                                                    Value="{x:Bind AudioVOVolume, Mode=TwoWay}"/>
+                                                    Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <StackPanel>
                         <TextBlock Margin="0,0,0,16"
-                                   TextWrapping="Wrap"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language}"/>
+                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language}"
+                                   TextWrapping="Wrap" />
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0"
                                        Margin="0,0,0,16"
                                        TextWrapping="Wrap">
-                                <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help1}"/>
-                                <LineBreak/>
-                                <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help2}"/>
+                                <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help1}" />
+                                <LineBreak />
+                                <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help2}" />
                             </TextBlock>
                             <Grid Grid.Row="1"
                                   Grid.Column="0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="200" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel x:Name="LangSettingLeft"
                                             Grid.Column="0"
@@ -621,16 +639,16 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageAudio}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageAudio}" />
                                     <ComboBox x:Name="AudioLangSelector"
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}"/>
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}"/>
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_cn}"/>
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_kr}"/>
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_cn}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_kr}" />
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel x:Name="LangSettingRight"
@@ -639,68 +657,68 @@
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageText}"/>
+                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageText}" />
                                     <ComboBox x:Name="TextLangSelector"
                                               Margin="-4,0,0,16"
                                               HorizontalAlignment="Stretch"
                                               CornerRadius="14"
                                               MaxDropDownHeight="200"
                                               SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
-                                        <ComboBoxItem Content="English"/>
-                                        <ComboBoxItem Content="日本語"/>
-                                        <ComboBoxItem Content="简体中文"/>
-                                        <ComboBoxItem Content="繁體中文"/>
-                                        <ComboBoxItem Content="한국어"/>
-                                        <ComboBoxItem Content="Español"/>
-                                        <ComboBoxItem Content="Русский"/>
-                                        <ComboBoxItem Content="ภาษาไทย"/>
-                                        <ComboBoxItem Content="Tiếng Việt"/>
-                                        <ComboBoxItem Content="Bahasa Indonesia"/>
-                                        <ComboBoxItem Content="Français"/>
-                                        <ComboBoxItem Content="Deutsch"/>
-                                        <ComboBoxItem Content="Português"/>
+                                        <ComboBoxItem Content="English" />
+                                        <ComboBoxItem Content="日本語" />
+                                        <ComboBoxItem Content="简体中文" />
+                                        <ComboBoxItem Content="繁體中文" />
+                                        <ComboBoxItem Content="한국어" />
+                                        <ComboBoxItem Content="Español" />
+                                        <ComboBoxItem Content="Русский" />
+                                        <ComboBoxItem Content="ภาษาไทย" />
+                                        <ComboBoxItem Content="Tiếng Việt" />
+                                        <ComboBoxItem Content="Bahasa Indonesia" />
+                                        <ComboBoxItem Content="Français" />
+                                        <ComboBoxItem Content="Deutsch" />
+                                        <ComboBoxItem Content="Português" />
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
                         </Grid>
                     </StackPanel>
-                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <TextBlock Margin="0,0,0,16"
                                Style="{ThemeResource TitleLargeTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}"/>
+                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}" />
                     <TextBlock Margin="0,0,0,0"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}"/>
+                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" />
                     <ToggleSwitch Margin="0,0,0,16"
                                   IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     <TextBox x:Name="CustomArgsTextBox"
                              Margin="0,0,0,16"
                              HorizontalAlignment="Stretch"
                              CornerRadius="8,8,0,0"
-                             Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
+                             Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
                     <TextBlock Height="Auto"
                                TextWrapping="WrapWholeWords">
-                        <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer1}"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer1}" />
                         <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
                                    UnderlineStyle="None">
                             <Run FontWeight="Bold"
-                                 Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer2}"/>
+                                 Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer2}" />
                         </Hyperlink>
-                        <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer3}"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer3}" />
                     </TextBlock>
-                    <MenuFlyoutSeparator Margin="0,16,0,16"/>
+                    <MenuFlyoutSeparator Margin="0,16,0,16" />
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
                                    Margin="0,0,8,0"
                                    VerticalAlignment="Stretch"
                                    Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}"/>
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
                         <ToggleSwitch Grid.Column="1"
                                       Margin="8,12,0,8"
                                       VerticalAlignment="Stretch"
@@ -709,57 +727,64 @@
                                       FontWeight="SemiBold"
                                       IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </Grid>
                     <StackPanel x:Name="AdvancedSettingsPanel"
                                 Visibility="Collapsed">
                         <TextBlock Margin="0,0,0,8"
                                    TextWrapping="WrapWholeWords">
-                            <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle1}"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle1}" />
                             <Run FontWeight="Bold"
-                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle2}"/>
-                            <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle3}"/>
+                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle2}" />
+                            <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle3}" />
                         </TextBlock>
                         <TextBlock Margin="0,0,8,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}"/>
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}" />
                         <ToggleSwitch Margin="0,0,0,0"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
                                       IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
-                                      Margin="0,0,0,8"
+                                      Margin="0,0,0,0"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
                                       IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <NumberBox x:Name="GameLaunchDelay"
+                                   Width="200"
+                                   Margin="0,0,0,12"
+                                   HorizontalAlignment="Left"
+                                   Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
+                                   ValueChanged="GameLaunchDelay_OnValueChanged"
+                                   Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
                         <TextBox x:Name="PreLaunchCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
                                  CornerRadius="8,8,0,0"
-                                 Text="{x:Bind PreLaunchCommand, Mode=TwoWay}"
-                                 IsSpellCheckEnabled="False"/>
+                                 IsSpellCheckEnabled="False"
+                                 Text="{x:Bind PreLaunchCommand, Mode=TwoWay}" />
                         <TextBlock Margin="0,0,0,8"
                                    FontWeight="Semibold"
-                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}"/>
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
                         <TextBlock Margin="0,0,8,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}"/>
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}" />
                         <ToggleSwitch Margin="0,0,0,8"
                                       Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
                                       IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBox x:Name="PostExitCommandTextBox"
                                  Margin="0,0,0,4"
                                  HorizontalAlignment="Stretch"
                                  CornerRadius="8,8,0,0"
-                                 Text="{x:Bind PostExitCommand, Mode=TwoWay}"
-                                 IsSpellCheckEnabled="False"/>
+                                 IsSpellCheckEnabled="False"
+                                 Text="{x:Bind PostExitCommand, Mode=TwoWay}" />
                         <TextBlock Margin="0,0,0,16"
                                    FontWeight="Semibold"
-                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}"/>
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
@@ -772,9 +797,9 @@
                   CornerRadius="8"
                   Shadow="{ThemeResource SharedShadow}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Button x:Name="ApplyButton"
                         HorizontalAlignment="Left"
@@ -788,10 +813,10 @@
                                 Orientation="Horizontal">
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="&#xf00c;"/>
+                                  Glyph="&#xf00c;" />
                         <TextBlock Margin="8,0,0,0"
                                    FontWeight="Medium"
-                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}"/>
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}" />
                     </StackPanel>
                 </Button>
                 <TextBlock x:Name="ApplyText"
@@ -802,14 +827,14 @@
                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}"
                            TextWrapping="Wrap"
-                           Visibility="Collapsed"/>
+                           Visibility="Collapsed" />
                 <StackPanel Grid.Column="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
                     <TextBlock Margin="16,-4,16,0"
                                VerticalAlignment="Center"
                                FontWeight="Medium"
-                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}"/>
+                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}" />
                     <Button x:Name="RegistryExport"
                             Height="32"
                             Click="RegistryExportClick"
@@ -821,10 +846,10 @@
                                     Orientation="Horizontal">
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="14"
-                                      Glyph="&#xf56e;"/>
+                                      Glyph="&#xf56e;" />
                             <TextBlock Margin="8,0,0,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTitle}"/>
+                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTitle}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="RegistryImport"
@@ -838,10 +863,10 @@
                                     Orientation="Horizontal">
                             <TextBlock Margin="0,0,8,0"
                                        FontWeight="Medium"
-                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTitle}"/>
+                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTitle}" />
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                       FontSize="14"
-                                      Glyph="&#xf56f;"/>
+                                      Glyph="&#xf56f;" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -860,18 +885,18 @@
                               IsActive="True"
                               IsIndeterminate="false"
                               Maximum="100"
-                              Value="100"/>
+                              Value="100" />
                 <TextBlock x:Name="OverlayTitle"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="Title"/>
+                           Text="Title" />
                 <TextBlock x:Name="OverlaySubtitle"
                            Margin="0,8,0,192"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                           Text="Subtitle"/>
+                           Text="Subtitle" />
             </StackPanel>
         </Grid>
     </Grid>

@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,8 +20,8 @@ namespace Hi3Helper.Data
         {
             int res;
             if (int.TryParse(text,
-                System.Globalization.NumberStyles.Integer,
-                System.Globalization.CultureInfo.InvariantCulture,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
                 out res))
             {
                 value = res;
@@ -33,8 +35,8 @@ namespace Hi3Helper.Data
         {
             uint res;
             if (uint.TryParse(text,
-                System.Globalization.NumberStyles.Integer,
-                System.Globalization.CultureInfo.InvariantCulture,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
                 out res))
             {
                 value = res;
@@ -48,8 +50,8 @@ namespace Hi3Helper.Data
         {
             double res;
             if (double.TryParse(text,
-                System.Globalization.NumberStyles.Float,
-                System.Globalization.CultureInfo.InvariantCulture,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
                 out res))
             {
                 value = res;
@@ -63,8 +65,8 @@ namespace Hi3Helper.Data
         {
             float res;
             if (float.TryParse(text,
-                System.Globalization.NumberStyles.Float,
-                System.Globalization.CultureInfo.InvariantCulture,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
                 out res))
             {
                 value = res;
@@ -81,7 +83,7 @@ namespace Hi3Helper.Data
             var formattable = value as IFormattable;
             if (formattable != null)
             {
-                Value = formattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                Value = formattable.ToString(null, CultureInfo.InvariantCulture);
             }
             else
             {
@@ -310,7 +312,7 @@ namespace Hi3Helper.Data
         public static IniValue Default => _default;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("ReSharper", "RedundantStringFormatCall")]
+    [SuppressMessage("ReSharper", "RedundantStringFormatCall")]
     public class IniFile : IDictionary<string, IniSection>
     {
         public IEqualityComparer<string> StringComparer;

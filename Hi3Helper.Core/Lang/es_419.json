@@ -98,7 +98,10 @@
     "NotifNoNewNotifs": "No hay nuevas notificaciones",
     "NotifClearAll": "Limpiar todas las notificaciones ",
     "NavigationMenu": "Menú",
-    "NavigationUtilities": "Utilidades"
+    "NavigationUtilities": "Utilidades",
+    "Initializing": "Iniciando",
+    "LoadingLauncherMetadata": "Cargando Metadatos del Launcher",
+    "LoadingGameConfiguration": "Cargando Ajustes del Juego"
   },
 
   "_HomePage": {
@@ -220,6 +223,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Estado",
     "Status1": "Haz clic en \"Chequeo Rápido\" o \"Chequeo Completo\" para comprobar Cachés para actualizaciones",
+    "Status2": "Determinando disponibilidad de archivos de \"{0}\": {1}",
     "CachesStatusHeader1": "Progreso Total",
     "CachesStatusCancelled": "¡La operación fue cancelada!",
     "CachesStatusFetchingType": "Obteniendo Tipo de Cachés: {0}",
@@ -347,6 +351,7 @@
     "CustomArgs_Footer3": "para ver más parámetros.",
 
     "GameBoost": "Aumentar Prioridad del Juego [Experimental]",
+    "MobileLayout": "Usar Diseño de Móviles",
 
     "Advanced_Title": "Ajustes Avanzados",
     "Advanced_Subtitle1": "¡El equipo de Collapse Launcher",
@@ -356,6 +361,7 @@
     "Advanced_GLC_PreLaunch_Title": "Comandos de Pre-lanzamiento",
     "Advanced_GLC_PreLaunch_Subtitle": "Comandos que serán ejecutados antes de que se inicie el juego",
     "Advanced_GLC_PreLaunch_Exit": "Forzar salida del proceso cuando el juego es cerrado/detenido",
+    "Advanced_GLC_PreLaunch_Delay": "Retrasar Inicio del Juego (ms)",
     "Advanced_GLC_PostExit_Title": "Comandos de Post-salida",
     "Advanced_GLC_PostExit_Subtitle": "Comandos que serán ejecutados después de que se cierre el juego"
   },
@@ -369,6 +375,7 @@
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
 
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
+    "ChangeRegionInstant_Toggle": "Cambio de región instantánea ",
     "ChangeRegionWarning_Warning": "*Necesitas reiniciar la aplicación para que los cambios del tema surtan efecto.",
 
     "Language": "Idioma de la Aplicación",
@@ -389,7 +396,7 @@
 
     "AppBG": "Fondo de la Aplicación",
     "AppBG_Checkbox": "Usar Fondo Personalizado",
-    "AppBG_Note": "Aviso: La imagen debe estar en formato .png, .jpg, .tiff o .bmp y la resolución debe ser menor que 4096x4096",
+    "AppBG_Note": "Formatos admitidos:\r\nImagen: {0}\r\nVideo: {1}",
 
     "AppThreads": "Hilos de Aplicación",
     "AppThreads_Download": "Hilos de Descarga",
@@ -414,6 +421,10 @@
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
     "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
 
+    "VideoBackground": "Ajustes Video de Fondo",
+    "VideoBackground_IsEnableAudio": "Permitir Audio",
+    "VideoBackground_AudioVolume": "Volumen de Audio",
+
     "Update": "Buscar Actualizaciones",
     "Update_CurVer": "Versión Actual:",
     "Update_CheckBtn": "Buscar Actualización",
@@ -429,7 +440,7 @@
     "AppFiles_ClearImgCachesBtn": "Borrar Archivos de Imagen",
 
     "AppFiles_ClearMetadataBtn": "Borrar metadatos y reiniciar",
-    "AppFiles_ClearMetadataDialog": "¡Borrando metada de Collapse!",
+    "AppFiles_ClearMetadataDialog": "¡Borrando metadatos de Collapse!",
     "AppFiles_ClearMetadataDialogHelp": "Limpiar los metadatos de Collapse causará que Collapse se reinicie de forma forzada. Solo utilízalo si tienes problemas con la carga de la región.\n¿Estás seguro?",
 
     "ReportIssueBtn": "Reportar un problema",
@@ -478,6 +489,7 @@
 
     "Waifu2X_Toggle": "Usar Waifu2X [Experimental]",
     "Waifu2X_Help": "Usa Waifu2X para escalar imágenes de fondo.\nCuando está activado, la calidad de la imagen mejora significativamente, pero tardará en cargar la imagen la primera vez.",
+    "Waifu2X_Help2": "¡Solo disponible para imágenes fijas!",
     "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
     "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
@@ -549,6 +561,7 @@
     "Idle": "Inactivo",
     "Change": "Cambiar",
     "Cancelled": "Cancelado",
+    "FinishingUp": "Finalizando",
     "Extracting": "Extrayendo",
     "Converting": "Convirtiendo",
     "Patching": "Parcheando",
@@ -563,6 +576,7 @@
     "ApplyingPatch": "Aplicando Parche",
     "Disabled": "Deshabilitado",
     "Enabled": "Habilitado",
+    "UseAsDefault": "Usar como Predeterminado",
 
     "BuildChannelPreview": "Version Preview",
     "BuildChannelStable": "Estable",
@@ -571,6 +585,7 @@
     "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado en Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado en Bitbucket.",
     "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado en GitLab.",
+    "CDNDescription_Coding": "Mirror del repositorio oficial (principal) alojado en Coding.",
 
     "LocateExecutable": "Localizar el Ejecutable",
     "OpenDownloadPage": "Abrir página de descarga",
@@ -599,7 +614,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
-    
+
     "ImageCropperTitle": "Recortar Imagen"
   },
 
@@ -673,7 +688,7 @@
     "InstallDataDownloadResumeTitle": "Reanudar la Descarga?",
     "InstallDataDownloadResumeSubtitle": "Has descargado {0}/{1} del juego anteriormente.\n\n¿Deseas continuar la descarga?",
     "InsufficientDiskTitle": "Espacio de Almacenamiento Insuficiente",
-    "InsufficientDiskSubtitle": "No tienes suficiente espacio libre para instalar este juego en el disco duro{2}!\n\nEspacio libre: {0}\nEspacio necesario: {1}.\n\nPor favor, asegúrese de tener suficiente espacio en eldisco duro antes de proceder con la instalación.",
+    "InsufficientDiskSubtitle": "¡No tienes suficiente espacio libre para instalar este juego en tu Unidad {2}!\n\nEspacio Disponible: {0}\nEspacio Requerido: {1}\n\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
     "RelocateFolderTitle": "Reubicar Carpeta de Datos de la Aplicación",
     "RelocateFolderSubtitle": "Actualmente estás usando esta carpeta como la Carpeta de Datos de la Aplicación:\n\n {0}\n\n¿Deseas cambiar su ubicación?",
     "UninstallGameTitle": "Desinstalando juego: {0}",
@@ -736,7 +751,7 @@
     "ResetKbShortcutsSubtitle": "Esto significa que cada acceso directo se cambiará a su combinación de teclas predeterminada. \n\n¿Desea continuar?\n\nNota: Esto no afecta cómo funciona Collapse y aún puede cambiar la combinación de accesos directos accediendo al menú de Accesos directos del teclado.",
 
     "OperationErrorDiskSpaceInsufficientTitle": "¡El Espacio Disponible en Disco: {0} es insuficiente!",
-    "OperationErrorDiskSpaceInsufficientMsg": "¡No tienes suficiente espacio libre para hacer el proceso en tu Disco {2}!\r\n\r\nEspacio Disponible: {0}\r\nEspacio Requerido: {1}\r\n\r\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
+    "OperationErrorDiskSpaceInsufficientMsg": "¡No tienes suficiente espacio libre para hacer el proceso en tu Unidad {2}!\r\n\r\nEspacio Disponible: {0}\r\nEspacio Requerido: {1}\r\n\r\nPor favor, asegúrate que tienes suficiente espacio libre antes de seguir.",
 
     "OperationWarningNotCancellableTitle": "¡Precaución: Esta operación NO SE PUEDE CANCELAR!",
     "OperationWarningNotCancellableMsg1": "Deberías verificar que no tienes tareas pesadas corriendo en tu PC para evitar posibles problemas mientras el proceso se esté ejecutando. Recuerda que ",
@@ -786,6 +801,8 @@
     "LocateFolderSubtitle": "Selecciona la ubicación deseada para mover el archivo/carpeta.",
     "ChoosePathTextBoxPlaceholder": "Elija la carpeta de destino...",
     "ChoosePathButton": "Seleccionar Carpeta",
+    "ChoosePathErrorTitle": "¡Se ha producido un Error!",
+    "ChoosePathErrorPathIdentical": "¡La carpeta de destino está dentro o es idéntica a la ubicación actual!\r\nPor favor, elija otra carpeta.",
     "ChoosePathErrorPathUnselected": "¡Por favor, Selecciona una carpeta antes de continuar!",
     "ChoosePathErrorPathNotExist": "¡Esta ubicación no existe!",
     "ChoosePathErrorPathNoPermission": "¡No tienes los permisos para acceder a esta carpeta! Por favor, selecciona otra ubicación."
@@ -879,8 +896,8 @@
   },
 
   "_UpdatePage": {
-    "PageTitle1": "¡UNA ACTUALIZACIÓN",
-    "PageTitle2": "ESTÁ DISPONIBLE!",
+    "PageTitle1": "NUEVA",
+    "PageTitle2": "ACTUALIZACIÓN DISPONIBLE!",
     "VerCurLabel": "Versión Actual:",
     "VerNewLabel": "Nueva Versión:",
     "VerChannelLabel": "Canal de Actualización:",
@@ -897,6 +914,8 @@
     "UpdateHeader3": "Tamaño de la Descarga:",
     "UpdateHeader4": "Velocidad:",
     "UpdateHeader5PlaceHolder": "Descargando Actualización [- / -]:",
+
+    "UpdateForcedHeader": "El launcher será actualizado forzosamente debido a cambios urgentes para asegurar el funcionamiento correcto ",
 
     "UpdateStatus1": "Obteniendo Actualización:",
     "UpdateMessage1": "Conectándose al Repositorio de Actualizaciones...",
@@ -992,7 +1011,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "¡120 FPS es EXPERIMENTAL! Usarlo con cuidado, bajo tu propio riesgo.",
-    "Graphics_FPS_Help2": "Adicionalmente, Ajustar FPS a 120 romperá la pagina de configuración grafica del juego.\nEn su lugar, usa Collapse para cambiar la configuración.",
+    "Graphics_FPS_Help2": "Ajustar los FPS a 120 ya no provoca que el menú deje de funcionar, pero cambiar los FPS en el juego a un valor inferior ya no funcionará.\nSi utilizas la opción de 120 FPS, deberás usar Collapse para cambiar la Configuración de gráficos del juego.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "Vsync no está disponible para 120 FPS",
     "Graphics_RenderScale": "Escala de Renderizado",
@@ -1240,6 +1259,9 @@
     "CustomizationSettingsStyleThemeDescription": "Cambia el color que aparecerá en el Launcher.",
     "CustomizationSettingsStyleCustomBackgroundHeader": "Imagen Personalizada de Fondo",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Usar una Imagen personalizada en lugar de la predeterminada.",
+
+    "VideoBackgroundPreviewUnavailableHeader": "La vista previa del video no está disponible",
+    "VideoBackgroundPreviewUnavailableDescription": "No es posible previsualizar el video en la pantalla de ajustes del primer inicio (OOBE), ¡Pero no te preocupes!, igual será aplicado una vez termines la configuración. ",
 
     "LoadingInitializationTitle": "Preparando primer inicio del Launcher",
     "LoadingCDNCheckboxCheckLatency": "(Comprobando latencia...)",

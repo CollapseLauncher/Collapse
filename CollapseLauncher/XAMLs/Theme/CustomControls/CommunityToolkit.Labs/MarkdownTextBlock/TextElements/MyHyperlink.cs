@@ -8,6 +8,7 @@ using HtmlAgilityPack;
 using Markdig.Syntax.Inlines;
 using Microsoft.UI.Xaml.Documents;
 using System;
+using Inline = Microsoft.UI.Xaml.Documents.Inline;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -40,7 +41,7 @@ internal class MyHyperlink : IAddChild
 
     public void AddChild(IAddChild child)
     {
-        if (child.TextElement is Microsoft.UI.Xaml.Documents.Inline inlineChild)
+        if (child.TextElement is Inline inlineChild)
         {
             try
             {

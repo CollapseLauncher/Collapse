@@ -96,6 +96,7 @@
     "NavCtrlTitleSettings": "App Einstellungen",
     "NotifNeverAsk": "Nicht mehr anzeigen",
     "NotifNoNewNotifs": "Keine neuen Benachrichtigungen",
+    "NotifClearAll": "Alle Benachrichtigungen entfernen",
     "NavigationMenu": "Menü",
     "NavigationUtilities": "Werkzeuge"
   },
@@ -148,10 +149,10 @@
     "GamePlaytime_Idle_Panel1Minutes": "Minuten",
     "GamePlaytime_Idle_ResetBtn": "Zurücksetzten",
     "GamePlaytime_Idle_ChangeBtn": "Ändern",
-    "GamePlaytime_Idle_InvalidTimeBlock": "Ungültiger Wert angegeben.",
     "GamePlaytime_Running_Info1": "Eine Instanz des Spiels wird derzeit ausgeführt, daher kann die Spielzeit nicht bearbeitet werden.",
     "GamePlaytime_Running_Info2": "Bitte beachte, dass das vollständige Schließen von Collapse die Aufzeichnung der Spielzeit beendet (und die bis dahin gespielte Zeit speichert) und nur die mit Collapse begonnenen Sitzungen aufgezeichnet werden.",
     "GamePlaytime_Display": "{0}h {1}m",
+    "GamePlaytime_ToolTipDisplay": "Zuletzt geöffnet am {0:00}.{1:00}.{2:0000} um {3:00}:{4:00}",
 
     "PostPanel_Events": "Aktionen",
     "PostPanel_Notices": "Ankündigungen",
@@ -187,6 +188,8 @@
     "Status11": "Warte bis der Reparaturprozess beginnt...",
     "Status12": "Aktualisiere Audio: {0}",
     "Status13": "Aktualisiere Block: {0}",
+    "Status14": "Trying to determine CG asset availability: {0}",
+    "Status15": "Trying to determine audio asset availability: {0}",
     "StatusNone": "Nichts",
     "PerProgressTitle1": "Fortschritt pro Datei",
     "PerProgressSubtitle1": "Warte...",
@@ -217,6 +220,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Status",
     "Status1": "Klicke auf \"Schnellüberprüfung\" oder \"Vollständige Überprüfung\" um den Cache auf Updates zu überprüfen",
+    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
     "CachesStatusHeader1": "Insgesamter Fortschritt",
     "CachesStatusCancelled": "Der Vorgang wurde abgebrochen!",
     "CachesStatusFetchingType": "Caches werden abgerufen: {0}",
@@ -284,12 +288,23 @@
     "Graphics_APHO2AO": "Umgebungsverdeckung",
     "Graphics_APHO2LOD": "Detailstufe",
 
+    "Graphics_ParticleQuality": "Qualität der Partikel",
+    "Graphics_LightingQuality": "Qualität der Lichter",
+    "Graphics_PostFXQuality": "Post-FX-Qualität",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_CharacterQuality": "Qualität des Charakters",
+    "Graphics_WeatherQuality": "Qualität des Wetters",
+
+    "Graphics_Legacy_Title": "Ältere Einstellungen",
+    "Graphics_Legacy_Subtitle": "Diese Optionen sind im Spiel nicht vorhanden und haben möglicherweise keine Auswirkungen.",
+
     "SpecDisabled": "Deaktiviert",
     "SpecLow": "Niedrig",
     "SpecMedium": "Mittel",
     "SpecHigh": "Hoch",
     "SpecVeryHigh": "Sehr Hoch",
     "SpecMaximum": "Maximal",
+    "SpecUltra": "Ultra",
 
     "Audio_Title": "Audio-Einstellungen",
     "Audio_Master": "Gesamtlautstärke",
@@ -341,7 +356,7 @@
     "Advanced_GLC_WarningAdmin": "WARNUNG: Die angegebenen Befehle werden als Administrator ausgeführt!",
     "Advanced_GLC_PreLaunch_Title": "Pre-Launch-Befehle",
     "Advanced_GLC_PreLaunch_Subtitle": "Befehle, die vor dem Start des Spiels ausgeführt werden",
-    "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PreLaunch_Exit": "Beenden des gestarteten Prozesses erzwingen, wenn das Spiel geschlossen/gestoppt wird",
     "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
     "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
@@ -349,12 +364,13 @@
   "_SettingsPage": {
     "PageTitle": "App Einstellungen",
 
-    "Debug": "Additional Settings",
+    "Debug": "Weitere Einstellungen",
     "Debug_Console": "Konsole anzeigen",
     "Debug_IncludeGameLogs": "Speichern von Spielprotokollen in Collapse's (könnte sensible Daten enthalten)",
     "Debug_MultipleInstance": "Ausführen von mehr als einer Instanz von Collapse erlauben",
 
     "ChangeRegionWarning_Toggle": "Region Änderungswarnung angzeigen",
+    "ChangeRegionInstant_Toggle": "Sofortiger Wechsel der Region bei Auswahl",
     "ChangeRegionWarning_Warning": "*Du musst die Anwendung neu starten, damit diese Einstellung wirksam wird.",
 
     "Language": "App-Sprache",
@@ -375,7 +391,7 @@
 
     "AppBG": "App Hintergrund",
     "AppBG_Checkbox": "Benutzerdefinierten Hintergrund verwenden",
-    "AppBG_Note": "Hinweis: Das Bild muss im Format .png, .jpg, .tiff oder .bmp vorliegen und die Auflösung muss kleiner als 4096x4096 sein",
+    "AppBG_Note": "Akzeptierte Formate:\r\nBild: {0}\r\nVideo: {1}",
 
     "AppThreads": "Anwendungs-Threads",
     "AppThreads_Download": "Download-Threads",
@@ -387,10 +403,22 @@
     "AppThreads_Help5": "Dieser Thread wird den Extraktions-/Verifizierungsprozess während der Installation/Reparatur des Spiels durchführen.",
     "AppThreads_Help6": "Hinweis: Diese Einstellung ist bei der Installation von Honkai Impact 3rd nicht mehr wirksam.",
 
+    "AppThreads_Attention": "Attention",
+    "AppThreads_Attention1": "Before you change the",
+    "AppThreads_Attention2": "value, please consider to",
+    "AppThreads_Attention3": "NOT MODIFYING",
+    "AppThreads_Attention4": "the value if you have an existing download as it might",
+    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
+    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Discord Präsenz anzeigen",
     "DiscordRPC_GameStatusToggle": "Zeige aktuelles Spiel im Discord-Status",
-    "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
+    "DiscordRPC_IdleStatusToggle": "RPC bei Inaktivität anzeigen",
+
+    "VideoBackground": "Video-Hintergrundeinstellungen",
+    "VideoBackground_IsEnableAudio": "Audio einschalten",
+    "VideoBackground_AudioVolume": "Lautstärke",
 
     "Update": "Nach Updates suchen",
     "Update_CurVer": "Aktuelle Version:",
@@ -420,6 +448,8 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Unter der",
     "About_Copyright4": ". Alle Rechte vorbehalten.",
+    
+    "LicenseType": "MIT-Lizenz",
 
     "Disclaimer": "Haftungsausschluss",
     "Disclaimer1": "Diese App ist in keinster Weise mit",
@@ -436,24 +466,34 @@
     "EnableDownloadChunksMerging": "Heruntergeladene Paketstücke zusammenführen",
     "UseExternalBrowser": "Immer externen Browser verwenden",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "Ressourcenverbrauch des Collapse-Prozesses beim Starten eines Spiels senken",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Deaktiviert das Karussell auf der Hauptseite und setzt die Priorität von Collapse auf \"Niedriger als normal\"",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
-    "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default",
+    "KbShortcuts_Title": "Tastenkombinationen",
+    "KbShortcuts_ShowBtn": "Tastenkürzel anzeigen",
+    "KbShortcuts_ResetBtn": "Zurücksetzen",
 
     "AppBehavior_Title": "Verhalten des Launchers",
-    "AppBehavior_PostGameLaunch": "After Launching Game",
-    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
-    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
-    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_PostGameLaunch": "Nach Start eines Spiels",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimieren",
+    "AppBehavior_PostGameLaunch_ToTray": "In Infobereich minimieren",
+    "AppBehavior_PostGameLaunch_Nothing": "Nichts unternehmen",
     "AppBehavior_MinimizeToTray": "In Infobereich minimieren",
-    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
-    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
+    "AppBehavior_LaunchOnStartup": "Collapse automatisch starten, wenn der Computer hochfährt",
+    "AppBehavior_StartupToTray": "Collapse-Fenster beim automatischen Starten ausblenden",
+
+    "Waifu2X_Toggle": "Waifu2X verwenden [Experimentell]",
+    "Waifu2X_Help": "Verwende Waifu2X, um Hintergrundbilder zu vergrößern.\nWenn diese Funktion aktiviert ist, wird die Bildqualität erheblich verbessert, aber es dauert etwas länger, bis das Bild zum ersten Mal geladen wird.",
+    "Waifu2X_Help2": "Nur für unbewegliche Bilder verfügbar!",
+    "Waifu2X_Warning_CpuMode": "WARNUNG: Es wurde keine verfügbare Vulkan-GPU gefunden und der CPU-Modus wird verwendet. Dies wird die Bildverarbeitungszeit stark erhöhen.",
+    "Waifu2X_Warning_D3DMappingLayers": "WARNUNG: Auf dem System ist das \"OpenCL™, OpenGL® und Vulkan® Kompatibilitätspaket\" installiert. Es ist Berichten zufolge nicht mit dem Vulkan Loader kompatibel und führt bei einigen GPUs zu Abstürzen. Bitte entferne dieses Paket, um den GPU-Modus zu aktivieren.",
+    "Waifu2X_Error_Loader": "FEHLER: Vulkan Loader konnte nicht initialisiert werden. Stelle sicher, dass du einen Vulkan-kompatiblen Grafikprozessor mit einem geeigneten GPU-Treiber installiert hast.",
+    "Waifu2X_Error_Output": "FEHLER: Waifu2X-Selbsttest nicht bestanden, leeres Ausgabebild erhalten."
   },
 
   "_Misc": {
+    "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
+
     "UpdateCompleteTitle": "Update abgeschlossen!",
     "UpdateCompleteSubtitle": "Deine Launcher version wurde auf {0} aktualisiert! (Release Channel: {1})",
     "FeatureUnavailableTitle": "Diese Funktion ist im Moment nicht verfügbar",
@@ -471,13 +511,13 @@
     "Close": "Schließen",
     "UseCurrentDir": "Aktuelles Verzeichnis verwenden",
     "UseDefaultDir": "Standardverzeichnis verwenden",
-    "MoveToDifferentDir": "Move to different directory",
+    "MoveToDifferentDir": "Zu anderem Verzeichnis verschieben",
     "LocateDir": "Verzeichnis auswählen",
     "Okay": "Okay",
     "OkaySad": "Okay ;-;)",
     "OkayHappy": "Okay (≧▽≦)ﾉ",
     "OkayBackToMenu": "Okay, zurück zum Menü",
-    "Skip": "Skip, never show again",
+    "Skip": "Überspringen, nie wieder zeigen",
     "Next": "Weiter",
     "Prev": "Zurück",
     "Uninstall": "Deinstallieren",
@@ -489,10 +529,10 @@
     "YesRelocate": "Ja, fortsetzen",
     "YesMigrateIt": "Ja, migriere es",
     "YesConvertIt": "Ja, konvertiere es",
-    "YesImReallySure": "Yes, I'm really sure!",
+    "YesImReallySure": "Ja, ich bin mir ganz sicher!",
     "YesIHaveBeefyPC": "Ja, ich habe einen Starken Computer! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Ja, Ort ändern",
-    "YesContinue": "Yes, Continue",
+    "YesContinue": "Ja, Fortfahren",
 
     "No": "Nein",
     "NoStartFromBeginning": "Nein, neu starten",
@@ -501,14 +541,14 @@
     "NoIgnoreIt": "Ignoriere es",
     "NoOtherLocation": "Weiter installieren",
     "NotSelected": "Nicht ausgewählt",
-    "ExtractAnyway": "Extract Anyway!",
+    "ExtractAnyway": "Dennoch extrahieren!",
 
-    "IAcceptAgreement": "I accept the agreement",
-    "IDoNotAcceptAgreement": "I do not accept the agreement",
+    "IAcceptAgreement": "Ich akzeptiere die Vereinbarung",
+    "IDoNotAcceptAgreement": "Ich akzeptiere die Vereinbarung nicht",
 
-    "LangNameENUS": "Englisch (US)",
+    "LangNameENUS": "Englisch",
     "LangNameJP": "Japanisch",
-    "LangNameCN": "Chinesisch (Vereinfacht)",
+    "LangNameCN": "Chinesisch",
     "LangNameKR": "Koreanisch",
 
     "Downloading": "Herunterladen",
@@ -537,7 +577,7 @@
     "CDNDescription_Github": "Die offizielle (Haupt-)Repository des Launchers.",
     "CDNDescription_Cloudflare": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in Cloudflare R2 Bucket.",
     "CDNDescription_Bitbucket": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
+    "CDNDescription_GitLab": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in GitLab",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Downloadseite öffnen",
@@ -554,8 +594,8 @@
     "DiscordRP_Ad": "- mit Collapse Launcher",
     "DiscordRP_Region": "Region:",
 
-    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
-    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
+    "Taskbar_PopupHelp1": "Klicken, um Collapse in den Vordergrund zu bringen",
+    "Taskbar_PopupHelp2": "Doppelklick zum Umschalten der Fenstersichtbarkeit",
     "Taskbar_ShowApp": "Collapse-Fenster einblenden",
     "Taskbar_HideApp": "Collapse-Fenster ausblenden",
     "Taskbar_ShowConsole": "Collapse-Konsole anzeigen",
@@ -567,19 +607,19 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Launcher Name is Unknown)",
     
-    "ImageCropperTitle": "Crop the image"
+    "ImageCropperTitle": "Bild zuschneiden"
   },
 
   "_BackgroundNotification": {
-    "LoadingTitle": "Loading activity...",
+    "LoadingTitle": "Aktivität wird geladen...",
     "Placeholder": "-",
 
-    "CategoryTitle_Downloading": "Downloading game: {0}",
-    "CategoryTitle_DownloadingPreload": "Downloading preload: {0}",
-    "CategoryTitle_Updating": "Updating game: {0}",
+    "CategoryTitle_Downloading": "Spiel wird heruntergeladen: {0}",
+    "CategoryTitle_DownloadingPreload": "Herunterladen der Vorabpakets: {0}",
+    "CategoryTitle_Updating": "Aktualisierung des Spiels: {0}",
 
-    "NotifBadge_Completed": "[Completed] {0}",
-    "NotifBadge_Error": "[Error/Canceled] {0}"
+    "NotifBadge_Completed": "[Abgeschlossen] {0}",
+    "NotifBadge_Error": "[Fehler/Abgebrochen] {0}"
   },
 
   "_Dialogs": {
@@ -724,6 +764,7 @@
     "ShortcutCreationSuccessSubtitle2": "Location: ",
     "ShortcutCreationSuccessSubtitle3": "Notes:",
     "ShortcutCreationSuccessSubtitle4": " • Using this shortcut will start the game after loading the region.",
+    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationConfirmTitle": "Are you sure you want to continue?",
     "SteamShortcutCreationConfirmSubtitle1": "A shortcut will be added to every Steam user in this computer.",
@@ -736,9 +777,13 @@
     "SteamShortcutCreationSuccessSubtitle4": " • Running this process again will fix any corrupted/missing images belonging to the shortcut.",
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
+    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
 
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
-    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality."
+    "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
+
+    "DownloadSettingsTitle": "Download Settings",
+    "DownloadSettingsOption1": "Start game after install"
   },
 
   "_FileMigrationProcess": {
@@ -788,6 +833,8 @@
     "ConvertSuccessSubtitle": "Die Spielumwandlung von {0} nach {1} wurde erfolgreich abgeschlossen!",
     "CookbookDownloadTitle": "Herunterladen des Rezepts",
     "CookbookDownloadSubtitle": "Herunterladen des Rezepts für die Umwandlung von {0} in {1}",
+
+    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
 
     "CancelBtn": "Konvertierung abbrechen",
     "CancelMsgTitle": "Konvertierung wird abgebrochen...",
@@ -857,6 +904,8 @@
     "UpdateHeader3": "Downloadgröße:",
     "UpdateHeader4": "Geschwindigkeit:",
     "UpdateHeader5PlaceHolder": "Herunterladen von Updates [- / -]:",
+
+    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
 
     "UpdateStatus1": "Update abrufen:",
     "UpdateMessage1": "Verbinde zum Update Repository...",
@@ -1110,48 +1159,52 @@
   },
 
   "_KbShortcuts": {
-    "DialogTitle": "Keyboard Shortcuts",
-    "GeneralTab": "General",
-    "SwitchTab": "Quick Switch",
-    "GameFolderTab": "Folder Access",
-    "GameManagementTab": "Game Management",
+    "DialogTitle": "Tastaturkurzbefehle",
+    "GeneralTab": "Allgemein",
+    "SwitchTab": "Schnellwechsel",
+    "GameFolderTab": "Ordnerzugriff",
+    "GameManagementTab": "Spielverwaltung",
 
-    "General_Title": "General",
-    "General_OpenMenu": "Open this menu",
-    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
-    "General_GoHome": "Go to the Home page",
-    "General_GoSettings": "Go to the Settings page",
-    "General_OpenNotifTray": "Open the Notification Tray",
-    "General_ReloadRegion": "Reload current page",
-    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
+    "General_Title": "Allgemein",
+    "General_OpenMenu": "Öffnet dieses Menü",
+    "General_OpenMenu_Desc": "Dies ist auch über die Programmeinstellungen möglich.",
+    "General_GoHome": "Zur Startseite gehen",
+    "General_GoSettings": "Zur Einstellungsseite gehen",
+    "General_OpenNotifTray": "Die Benachrichtigungsleiste öffnen",
+    "General_ReloadRegion": "Aktuelle Seite neu laden",
+    "General_ReloadRegion_Desc": "Alternativ zu diesem Tastenkürzel kann auch F5 gedrückt werden.\nBitte beachte, dass durch das erneute Laden der Startseite die Region neu geladen wird.",
 
-    "Switch_Title": "Quick Game/Region change",
-    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
-    "Switch_SwapBtn": "Swap {0} and {1}",
-    "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
-    "Switch_ChangeRegion": "Change region",
-    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+    "Switch_Title": "Schneller Spiel/Regionswechsel",
+    "Switch_Subtitle": "Hinweis: Die Tastenkombinationen folgen der Auswahlreihenfolge.",
+    "Switch_SwapBtn": "Tausche {0} und {1}",
+    "Switch_ChangeGame": "Spiel ändern",
+    "Switch_ChangeGame_Desc": "Für diesen Shortcut kann auch der Nummernblock verwendet werden!\nZ.B. {0}+1 oder NumPad1 (ohne den {0} Modifikator) führt zu der Seite von Honkai Impact 3rd (zuletzt benutzte Region).",
+    "Switch_ChangeRegion": "Region ändern",
+    "Switch_ChangeRegion_Desc": "z. B. Bei Genshin Impact führt {0}+1 zur globalen Region.",
 
-    "GameFolder_Title": "Game Folder Access",
-    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
-    "GameFolder_MainFolder": "Open the Game folder",
-    "GameFolder_CacheFolder": "Open the Cache folder",
+    "GameFolder_Title": "Zugriff auf Spieleordner",
+    "GameFolder_ScreenshotFolder": "Öffne den Screenshot-Ordner",
+    "GameFolder_MainFolder": "Öffne das Spieleverzeichnis",
+    "GameFolder_CacheFolder": "Öffne den Cache-Ordner",
 
-    "GameManagement_Title": "Game Management",
-    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
-    "GameManagement_ForceCloseGame": "Close the game forcefully",
-    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
-    "GameManagement_GoRepair": "Go to the Game Repair page",
-    "GameManagement_GoSettings": "Go to the Game Settings page",
-    "GameManagement_GoCaches": "Go to the Caches Repair page",
+    "GameManagement_Title": "Spielverwaltung",
+    "GameManagement_Subtitle": "Hinweis: Diese Tastenkombinationen funktionieren nur, wenn diese in der Region unterstützt wird.",
+    "GameManagement_ForceCloseGame": "Schließen des Spiels erzwingen",
+    "GameManagement_ForceCloseGame_Desc": "WARNUNG: Bei Verwendung dieser Tastenkombination wird das Spiel ohne irgendeine Art von Bestätigung geschlossen.",
+    "GameManagement_GoRepair": "Zur Seite Spielreparatur gehen",
+    "GameManagement_GoSettings": "Zur Seite Spieleinstellungen gehen",
+    "GameManagement_GoCaches": "Zur Seite Caches Updaten gehen",
 
-    "ChangeShortcut_Title": "Change Shortcut",
+    "ChangeShortcut_Title": "Tastenkürzel ändern",
     "ChangeShortcut_Text": "Type the new combination for this shortcut!",
     "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Help4": "Du kannst jede Kombination wählen, die aus einem Wert aus jeder Kategorie besteht, es sei denn, sie ist vom System reserviert oder wird bereits verwendet.",
+
+    "Keyboard_Control": "Strg",
+    "Keyboard_Menu": "Alt",
+    "Keyboard_Shift": "Shift"
   },
 
   "_GameClientTitles": {
@@ -1162,9 +1215,9 @@
   },
 
   "_GameClientRegions": {
-    "Southeast Asia": "Southeast Asia",
+    "Southeast Asia": "Südostasien",
     "Global": "Global",
-    "Mainland China": "Mainland China",
+    "Mainland China": "Festlandchina",
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Korea",
     "Japan": "Japan",
@@ -1172,41 +1225,44 @@
   },
 
   "_OOBEAgreementMenu": {
-    "AgreementTitle": "Agreement:"
+    "AgreementTitle": "Vereinbarung:"
   },
 
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
-      "Upper": [ "Welcome", " To" ],
+      "Upper": [ "Willkommen", " bei" ],
       "Lower": [ "Collapse", " Launcher" ]
     },
-    "SetupNextButton": "Click Here to Continue",
-    "SetupBackButton": "Go Back",
+    "SetupNextButton": "Zum Fortfahren hier klicken",
+    "SetupBackButton": "Zurück",
 
-    "CustomizationTitle": "Customize Your Launcher",
-    "CustomizationSettingsLanguageHeader": "Language",
-    "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
-    "CustomizationSettingsWindowSizeHeader": "Window Size",
-    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationTitle": "Anpassen des Launchers",
+    "CustomizationSettingsLanguageHeader": "Sprache",
+    "CustomizationSettingsLanguageDescription": "Hierdurch wird die Sprache für die angezeigten Informationen angepasst.",
+    "CustomizationSettingsWindowSizeHeader": "Fenstergröße",
+    "CustomizationSettingsWindowSizeDescription": "Ändert die Größe des Launchers",
     "CustomizationSettingsCDNHeader": "Content Delivery Network",
-    "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
-    "CustomizationSettingsStyleHeader": "Style Preference",
-    "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
+    "CustomizationSettingsCDNDescription": "Wähle das primäre Content-Delivery-Network, das verwendet werden soll.",
+    "CustomizationSettingsStyleHeader": "Einstellung des Stils",
+    "CustomizationSettingsStyleDescription": "Ändere das Aussehen des Launcher und entscheide selbst.",
     "CustomizationSettingsStyleThemeHeader": "Theme",
-    "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
-    "CustomizationSettingsStyleCustomBackgroundHeader": "Custom Background Image",
-    "CustomizationSettingsStyleCustomBackgroundDescription": "Use custom background image instead of default one.",
+    "CustomizationSettingsStyleThemeDescription": "Ändere die Farbe, die in deinem Launcher erscheint.",
+    "CustomizationSettingsStyleCustomBackgroundHeader": "Benutzerdefiniertes Hintergrundbild",
+    "CustomizationSettingsStyleCustomBackgroundDescription": "Verwende ein eigenes Hintergrundbild anstelle des Standardbildes.",
 
-    "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
-    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
-    "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
-    "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
-    "LoadingCDNCheckingSkipButton": "Skip CDN Check",
-    "LoadingBackgroundImageTitle": "Loading Image",
-    "LoadingBackgroundImageSubtitle": "The image might take a while to get processed.",
+    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
+    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
+
+    "LoadingInitializationTitle": "Erststart des Launcher wird initialisiert",
+    "LoadingCDNCheckboxCheckLatency": "(Überprüfung der Latenz...)",
+    "LoadingCDNCheckboxPlaceholder": "Überprüfung der CDN-Empfehlung...",
+    "LoadingCDNCheckingSubitle": "Finde den nächstgelegenen Content Delivery Network (CDN)-Server für dich...",
+    "LoadingCDNCheckingSkipButton": "CDN-Check überspringen",
+    "LoadingBackgroundImageTitle": "Bild wird geladen",
+    "LoadingBackgroundImageSubtitle": "Es kann eine Weile dauern, bis das Bild verarbeitet ist.",
 
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
-    "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
-    "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
+    "CDNCheckboxItemLatencyUnknownFormat": "(unbekannt)",
+    "CDNCheckboxItemLatencyRecommendedFormat": " [Empfohlen]"
   }
 }

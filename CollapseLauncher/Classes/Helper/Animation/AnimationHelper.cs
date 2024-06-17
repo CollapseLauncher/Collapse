@@ -4,31 +4,93 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-
 
 namespace CollapseLauncher.Helper.Animation
 {
+    [Flags]
+    public enum VisualPropertyType
+    {
+        None = 0,
+        Opacity = 1 << 0,
+        Offset = 1 << 1,
+        Scale = 1 << 2,
+        Size = 1 << 3,
+        RotationAngleInDegrees = 1 << 4,
+        All = ~0
+    }
+
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class AnimationHelper
     {
-        internal static async Task StartAnimation(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
+        internal static async void StartAnimationDetached(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
         {
             foreach (KeyFrameAnimation anim in animBase!)
             {
-                if (element!.DispatcherQueue!.HasThreadAccess)
+                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
                 {
                     anim!.Duration = duration;
                     element.StartAnimation(anim);
                 }
                 else
-                    element.DispatcherQueue.TryEnqueue(() =>
+                    element?.DispatcherQueue?.TryEnqueue(() =>
                     {
                         anim!.Duration = duration;
                         element.StartAnimation(anim);
                     });
             }
             await Task.Delay(duration);
+        }
+
+        internal static async Task StartAnimation(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
+        {
+            CompositionAnimationGroup animGroup = null;
+            if (element.DispatcherQueue?.HasThreadAccess ?? false)
+            {
+                animGroup = CompositionTarget.GetCompositorForCurrentThread().CreateAnimationGroup();
+            }
+            else
+            {
+                element.DispatcherQueue.TryEnqueue(() =>
+                {
+                    animGroup = CompositionTarget.GetCompositorForCurrentThread().CreateAnimationGroup();
+                });
+            }
+
+            using (animGroup)
+            {
+                foreach (KeyFrameAnimation anim in animBase!)
+                {
+                    if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                    {
+                        anim.Duration = duration;
+                        anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
+                        animGroup.Add(anim);
+                    }
+                    else
+                        element?.DispatcherQueue?.TryEnqueue(() =>
+                        {
+                            anim.Duration = duration;
+                            anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
+                            animGroup.Add(anim);
+                        });
+                }
+                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                {
+                    element.StartAnimation(animGroup);
+                }
+                else
+                    element?.DispatcherQueue?.TryEnqueue(() =>
+                    {
+                        element.StartAnimation(animGroup);
+                    });
+                await Task.Delay(duration);
+            }
         }
 
         internal static void EnableImplicitAnimation(bool recursiveAssignment = false,
@@ -45,6 +107,23 @@ namespace CollapseLauncher.Helper.Animation
             EnableImplicitAnimation(page.Content, recursiveAssignment, easingFunction);
         }
 
+        internal static void EnableSingleImplicitAnimation(this UIElement element,
+                                                     VisualPropertyType type,
+                                                     CompositionEasingFunction easingFunction = null)
+        {
+            Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
+            Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
+
+            ImplicitAnimationCollection animationCollection =
+                rootFrameVisual.ImplicitAnimations != null ?
+                    rootFrameVisual.ImplicitAnimations : compositor!.CreateImplicitAnimationCollection();
+
+            KeyFrameAnimation animation = CreateAnimationByType(compositor, type, 250, 0, easingFunction);
+            animationCollection[type.ToString()] = animation;
+
+            rootFrameVisual.ImplicitAnimations = animationCollection;
+        }
+
         internal static void EnableImplicitAnimation(this UIElement element,
                                                      bool recursiveAssignment = false,
                                                      CompositionEasingFunction easingFunction = null)
@@ -52,35 +131,24 @@ namespace CollapseLauncher.Helper.Animation
             try
             {
                 Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
-                Compositor compositor = rootFrameVisual!.Compositor;
+                Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
 
                 ImplicitAnimationCollection animationCollection =
                     rootFrameVisual.ImplicitAnimations != null ?
                         rootFrameVisual.ImplicitAnimations : compositor!.CreateImplicitAnimationCollection();
 
-                Vector2KeyFrameAnimation sizeKeyframeAnimation = compositor!.CreateVector2KeyFrameAnimation();
-                Vector3KeyFrameAnimation offsetKeyframeAnimation = compositor!.CreateVector3KeyFrameAnimation();
-                Vector3KeyFrameAnimation scaleKeyframeAnimation = compositor!.CreateVector3KeyFrameAnimation();
+                foreach (VisualPropertyType type in Enum.GetValues<VisualPropertyType>())
+                {
+                    KeyFrameAnimation animation = CreateAnimationByType(compositor, type, 250, 0, easingFunction);
 
-                sizeKeyframeAnimation!.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easingFunction);
-                sizeKeyframeAnimation!.Duration = TimeSpan.FromMilliseconds(250);
-                sizeKeyframeAnimation!.Target = "Size";
-
-                offsetKeyframeAnimation!.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easingFunction);
-                offsetKeyframeAnimation!.Duration = TimeSpan.FromMilliseconds(250);
-                offsetKeyframeAnimation!.Target = "Offset";
-
-                scaleKeyframeAnimation!.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easingFunction);
-                scaleKeyframeAnimation!.Duration = TimeSpan.FromMilliseconds(250);
-                scaleKeyframeAnimation!.Target = "Scale";
-
-                animationCollection.TryAddImplicitCollectionAnimation("Size", sizeKeyframeAnimation);
-                animationCollection.TryAddImplicitCollectionAnimation("Offset", offsetKeyframeAnimation);
-                animationCollection.TryAddImplicitCollectionAnimation("Scale", scaleKeyframeAnimation);
+                    if (animation != null)
+                    {
+                        animationCollection[type.ToString()] = animation;
+                    }
+                }
 
                 rootFrameVisual.ImplicitAnimations = animationCollection;
-
-                EnableElementVisibilityAnimation(compositor!, rootFrameVisual!, element!);
+                element.EnableElementVisibilityAnimation();
             }
             catch (Exception ex)
             {
@@ -88,6 +156,15 @@ namespace CollapseLauncher.Helper.Animation
             }
 
             if (!recursiveAssignment) return;
+
+            if (element is Button button && button.Content is UIElement buttonContent)
+                buttonContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
+
+            if (element is Page page && page.Content is UIElement pageContent)
+                pageContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
+
+            if (element is NavigationView navigationView && navigationView.Content is UIElement navigationViewContent)
+                navigationViewContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
 
             if (element is Panel panel)
                 foreach (UIElement childrenElement in panel.Children!)
@@ -108,9 +185,42 @@ namespace CollapseLauncher.Helper.Animation
                 infoBarInner.EnableImplicitAnimation(true, easingFunction);
         }
 
-        private static void EnableElementVisibilityAnimation(Compositor compositor, Visual elementVisual, UIElement element)
+        private static KeyFrameAnimation CreateAnimationByType(Compositor compositor, VisualPropertyType type,
+            double duration = 800, double delay = 0, CompositionEasingFunction easing = null)
+        {
+            KeyFrameAnimation animation;
+
+            switch (type)
+            {
+                case VisualPropertyType.Offset:
+                case VisualPropertyType.Scale:
+                    animation = compositor.CreateVector3KeyFrameAnimation();
+                    break;
+                case VisualPropertyType.Size:
+                    animation = compositor.CreateVector2KeyFrameAnimation();
+                    break;
+                case VisualPropertyType.Opacity:
+                case VisualPropertyType.RotationAngleInDegrees:
+                    animation = compositor.CreateScalarKeyFrameAnimation();
+                    break;
+                default:
+                    return null;
+            }
+
+            animation.InsertExpressionKeyFrame(1.0f, "this.FinalValue", easing);
+            animation.Duration = TimeSpan.FromMilliseconds(duration);
+            animation.DelayTime = TimeSpan.FromMilliseconds(delay);
+            animation.Target = type.ToString();
+
+            return animation;
+        }
+
+        public static void EnableElementVisibilityAnimation(this UIElement element, Compositor compositor = null)
         {
             TimeSpan animDur = TimeSpan.FromSeconds(0.25d);
+            compositor ??= CompositionTarget.GetCompositorForCurrentThread();
+
+            ElementCompositionPreview.SetIsTranslationEnabled(element, true);
 
             ScalarKeyFrameAnimation HideOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
             ScalarKeyFrameAnimation ShowOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
@@ -138,15 +248,6 @@ namespace CollapseLauncher.Helper.Animation
             Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
             Compositor compositor = rootFrameVisual!.Compositor;
             return compositor;
-        }
-
-        private static void TryAddImplicitCollectionAnimation(this ImplicitAnimationCollection collection,
-                                                              string key, ICompositionAnimationBase animation)
-        {
-            if (!collection!.ContainsKey(key!))
-            {
-                collection[key] = animation;
-            }
         }
     }
 }

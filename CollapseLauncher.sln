@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoSetupHelper", "InnoSetu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRPC", "Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj", "{2004AA88-FFC3-4186-B11A-3E4C577A3D25}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon", "Hi3Helper.Sophon\Hi3Helper.Sophon.csproj", "{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -74,12 +76,18 @@ Global
 		{21691306-8D30-4993-98A2-A5AE0712D81A}.Publish|x64.Build.0 = Release|x64
 		{21691306-8D30-4993-98A2-A5AE0712D81A}.Release|x64.ActiveCfg = Release|x64
 		{21691306-8D30-4993-98A2-A5AE0712D81A}.Release|x64.Build.0 = Release|x64
-		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Debug|x64.Build.0 = Debug|Any CPU
-		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Publish|x64.ActiveCfg = Debug|Any CPU
-		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Publish|x64.Build.0 = Debug|Any CPU
-		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Release|x64.ActiveCfg = Release|Any CPU
-		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Release|x64.Build.0 = Release|Any CPU
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Debug|x64.ActiveCfg = Debug|x64
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Debug|x64.Build.0 = Debug|x64
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Publish|x64.ActiveCfg = Release|x64
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Publish|x64.Build.0 = Release|x64
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Release|x64.ActiveCfg = Release|x64
+		{2004AA88-FFC3-4186-B11A-3E4C577A3D25}.Release|x64.Build.0 = Release|x64
+		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Debug|x64.ActiveCfg = Debug|x64
+		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Debug|x64.Build.0 = Debug|x64
+		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Publish|x64.ActiveCfg = Release|x64
+		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Publish|x64.Build.0 = Release|x64
+		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.ActiveCfg = Release|x64
+		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
-﻿using Hi3Helper.Data;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using System;
 using System.IO;
 
@@ -8,10 +8,15 @@ namespace CollapseLauncher
 {
     internal class TotalPerfileProgress
     {
-        public double ProgressPerFilePercentage;
-        public double ProgressTotalPercentage;
-        public double ProgressTotalEntryCount;
-        public double ProgressTotalSpeed;
+        private double _progressPerFilePercentage;
+        private double _progressTotalPercentage;
+        private double _progressTotalEntryCount;
+        private double _progressTotalSpeed;
+
+        public double ProgressPerFilePercentage { get => _progressPerFilePercentage; set => _progressPerFilePercentage = value.UnNaNInfinity(); }
+        public double ProgressTotalPercentage { get => _progressTotalPercentage; set => _progressTotalPercentage = value.UnNaNInfinity(); }
+        public double ProgressTotalEntryCount { get => _progressTotalEntryCount; set => _progressTotalEntryCount = value.UnNaNInfinity(); }
+        public double ProgressTotalSpeed { get => _progressTotalSpeed; set => _progressTotalSpeed = value.UnNaNInfinity(); }
 
         // Extension for IGameInstallManager
         public long ProgressPerFileDownload { get; set; }
@@ -70,6 +75,15 @@ namespace CollapseLauncher
 #nullable disable
     }
 
+    public static class GameVersionExt
+    {
+        public static bool Compare(this GameVersion? fromVersion, GameVersion? toVersion)
+        {
+            if (!fromVersion.HasValue || !toVersion.HasValue) return false;
+            return fromVersion.Value.ToVersion() < toVersion.Value.ToVersion();
+        }
+    }
+
     public struct GameVersion
     {
         public GameVersion(int major, int minor, int build, int revision = 0)
@@ -80,7 +94,7 @@ namespace CollapseLauncher
             Revision = revision;
         }
 
-        public GameVersion(int[] ver)
+        public GameVersion(ReadOnlySpan<int> ver)
         {
             if (!(ver.Length == 3 || ver.Length == 4))
             {
@@ -118,6 +132,28 @@ namespace CollapseLauncher
             {
                 if (!int.TryParse(ver[3], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[3]}");
             }
+        }
+
+        public static bool TryParse(string version, out GameVersion? result)
+        {
+            result = null;
+            Span<Range> ranges = stackalloc Range[8];
+            ReadOnlySpan<char> versionSpan = version.AsSpan();
+            int splitRanges = versionSpan.Split(ranges, '.', StringSplitOptions.TrimEntries);
+
+            if (!(splitRanges == 3 || splitRanges == 4)) return false;
+
+            Span<int> versionSplits = stackalloc int[4];
+            for (int i = 0; i < splitRanges; i++)
+            {
+                if (!int.TryParse(versionSpan[ranges[i]], null, out int versionParsed))
+                    return false;
+
+                versionSplits[i] = versionParsed;
+            }
+
+            result = new GameVersion(versionSplits);
+            return true;
         }
 
         public bool IsMatch(string versionToCompare)

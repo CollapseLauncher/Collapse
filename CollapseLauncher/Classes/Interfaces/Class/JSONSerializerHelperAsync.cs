@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +22,24 @@ namespace CollapseLauncher
         !data.CanRead ? throw new NotSupportedException("Stream is not readable! Cannot deserialize the stream to JSON!") :
         // Try deserialize. If it returns a null, then return the default value
             (T?)await JsonSerializer.DeserializeAsync(data, typeof(T), context, token) ?? defaultType;
-#nullable disable
+
+        internal static async ValueTask SerializeAsync<T>(this T? value, Stream targetStream, JsonSerializerContext context, CancellationToken token = default)
+            where T : class => await InnerSerializeStreamAsync(value, targetStream, context, token);
+
+        internal static async ValueTask SerializeAsync<T>(this T? value, Stream targetStream, JsonSerializerContext context, CancellationToken token = default)
+            where T : struct => await InnerSerializeStreamAsync(value, targetStream, context, token);
+
+        private static async ValueTask InnerSerializeStreamAsync<T>(this T? value, Stream targetStream, JsonSerializerContext context, CancellationToken token)
+        {
+            if (!targetStream.CanWrite)
+                throw new NotSupportedException("Stream is not writeable! Cannot serialize the object into Stream!");
+
+            JsonTypeInfo<T?>? typeInfo = (JsonTypeInfo<T?>?)context.GetTypeInfo(typeof(T));
+            if (typeInfo == null)
+                throw new NotSupportedException($"Context does not contain a type info of type {typeof(T).Name}!");
+
+            await JsonSerializer.SerializeAsync(targetStream, value, typeInfo, token);
+        }
+#nullable restore
     }
 }
