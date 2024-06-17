@@ -388,6 +388,8 @@
     "AppThemes_Dark": "ダーク",
     "AppThemes_ApplyNeedRestart": "*テーマの変更を適用するには、ランチャーを再起動してください。",
 
+    "IntroSequenceToggle": "起動時にアニメーションを表示",
+
     "AppWindowSize": "ウィンドウサイズ",
     "AppWindowSize_Normal": "通常",
     "AppWindowSize_Small": "小さめ",
