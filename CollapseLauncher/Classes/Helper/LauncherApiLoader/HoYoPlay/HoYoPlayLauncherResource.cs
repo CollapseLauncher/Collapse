@@ -25,6 +25,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
         [JsonPropertyName("plugin_releases")]
         public List<LauncherPackages>? PluginPackages { get; set; }
+
+        [JsonPropertyName("game_channel_sdks")]
+        public List<LauncherPackages>? ChannelSdks { get; set; }
     }
 
     public class LauncherPackages
