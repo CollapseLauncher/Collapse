@@ -944,7 +944,7 @@ namespace CollapseLauncher.InstallManager.Base
             string requestedUrlFrom, string requestedUrlTo, List<SophonAsset> sophonPreloadAssetList)
         {
             // Get the main VO language name from Id
-            string mainLangId = GetLangIdToSophonVOLangName(_gameVoiceLanguageID);
+            string mainLangId = GetLanguageLocaleCodeByID(_gameVoiceLanguageID);
             // Get the manifest pair for both previous (from) and next (to) version for the main VO
             await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo, sophonPreloadAssetList, mainLangId);
 
@@ -963,33 +963,13 @@ namespace CollapseLauncher.InstallManager.Base
                             continue;
 
                         // Get other lang Id, pass it and try add to the list
-                        string otherLangId = GetGameAudioListNameToSophonVOLangName(line);
+                        string otherLangId = GetLanguageStringByLocaleCode(line);
                         // Get the manifest pair for both previous (from) and next (to) version for other VOs
                         await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo, sophonPreloadAssetList, otherLangId);
                     }
                 }
             }
         }
-
-        protected virtual string GetLangIdToSophonVOLangName(int id)
-            => id switch
-            {
-                0 => "zh-cn",
-                1 => "en-us",
-                3 => "ko-kr",
-                2 => "ja-jp",
-                _ => throw new NotSupportedException($"This lang id: {id} is not supported")
-            };
-
-        protected virtual string GetGameAudioListNameToSophonVOLangName(string name)
-            => name switch
-            {
-                "Chinese" => "zh-cn",
-                "English(US)" => "en-us",
-                "Korean" => "ko-kr",
-                "Japanese" => "ja-jp",
-                _ => throw new NotSupportedException($"This lang name: {name} is not supported")
-            };
 
         private async ValueTask RunSophonAssetDownloadThread(HttpClient client, SophonAsset asset,
                                                              ParallelOptions parallelOptions)
@@ -1918,15 +1898,6 @@ namespace CollapseLauncher.InstallManager.Base
             return _out;
         }
 
-        protected virtual string GetLanguageStringByID(int id) => id switch
-        {
-            0 => "Chinese",
-            1 => "English(US)",
-            2 => "Japanese",
-            3 => "Korean",
-            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
-        };
-
         protected virtual string GetLanguageLocaleCodeByID(int id) => id switch
         {
             0 => "zh-cn",
@@ -1934,6 +1905,15 @@ namespace CollapseLauncher.InstallManager.Base
             2 => "ja-jp",
             3 => "ko-kr",
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected virtual int GetIDByLanguageLocaleCode(string localeCode) => localeCode switch
+        {
+            "zh-cn" => 0,
+            "en-us" => 1,
+            "ja-jp" => 2,
+            "ko-kr" => 3,
+            _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
         };
 
         protected virtual string GetLanguageStringByLocaleCode(string localeCode) => localeCode switch
@@ -1945,39 +1925,123 @@ namespace CollapseLauncher.InstallManager.Base
             _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
         };
 
-        protected virtual List<string> GetAudioLanguageStringList()
+        protected virtual string GetLanguageStringByID(int id) => id switch
         {
-            return new List<string>
+            0 => "Chinese",
+            1 => "English(US)",
+            2 => "Japanese",
+            3 => "Korean",
+            _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
+        };
+
+        protected virtual string GetLanguageLocaleCodeByLanguageString(string langString) => langString switch
+        {
+            "Chinese" => "zh-cn",
+            "English(US)" => "en-us",
+            "Korean" => "ko-kr",
+            "Japanese" => "ja-jp",
+            _ => throw new NotSupportedException($"This language string: {langString} is not supported")
+        };
+
+        protected virtual string GetLanguageDisplayByLocaleCode(string localeCode) => localeCode switch
+        {
+            "zh-cn" => Lang._Misc.LangNameCN,
+            "en-us" => Lang._Misc.LangNameENUS,
+            "ko-kr" => Lang._Misc.LangNameKR,
+            "ja-jp" => Lang._Misc.LangNameJP,
+            _ => throw new NotSupportedException($"Locale code: {localeCode} is not supported!")
+        };
+
+        protected virtual List<string> GetLanguageDisplayListFromVoicePackList(List<RegionResourceVersion> voicePacks)
+        {
+            List<string> value = new List<string>();
+            foreach (RegionResourceVersion Entry in voicePacks)
             {
-                Lang._Misc.LangNameCN,
-                Lang._Misc.LangNameENUS,
-                Lang._Misc.LangNameJP,
-                Lang._Misc.LangNameKR
-            };
+                // Check the lang ID and add the translation of the language to the list
+                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language);
+                if (languageDisplay == null) continue;
+                value.Add(languageDisplay);
+            }
+            return value;
+        }
+
+        protected virtual Dictionary<string, string> GetLanguageDisplayDictFromVoicePackList(List<RegionResourceVersion> voicePacks)
+        {
+            Dictionary<string, string> returnDict = new Dictionary<string, string>();
+            foreach (RegionResourceVersion Entry in voicePacks)
+            {
+                // Check the lang ID and add the translation of the language to the list
+                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language);
+                if (languageDisplay == null) continue;
+
+                returnDict.Add(Entry.language, languageDisplay);
+            }
+            return returnDict;
         }
 
         protected virtual List<string> GetAudioLanguageSophonStringList(SophonData sophonData)
         {
             var value = new List<string>();
-            foreach (var Entry in sophonData.ManifestIdentityList)
+            foreach (SophonManifestIdentity identity in sophonData.ManifestIdentityList)
+            {
                 // Check the lang ID and add the translation of the language to the list
-                switch (Entry.MatchingField.ToLower())
-                {
-                    case "en-us":
-                        value.Add(Lang._Misc.LangNameENUS);
-                        break;
-                    case "ja-jp":
-                        value.Add(Lang._Misc.LangNameJP);
-                        break;
-                    case "zh-cn":
-                        value.Add(Lang._Misc.LangNameCN);
-                        break;
-                    case "ko-kr":
-                        value.Add(Lang._Misc.LangNameKR);
-                        break;
-                }
+                string localeCode = identity.MatchingField.ToLower();
+                string languageDisplay = GetLanguageDisplayByLocaleCode(localeCode);
+                if (languageDisplay == null) continue;
+
+                value.Add(languageDisplay);
+            }
 
             return value;
+        }
+
+        protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList, string localeCode, out RegionResourceVersion outRes)
+        {
+            outRes = null;
+            // Sanitation check: Check if the localeId argument is null or have no content
+            if (verResList == null || verResList.Count == 0) return false;
+
+            // Sanitation check: Check if the localeCode argument is a valid locale code format
+            if (!IsValidLocaleCode(localeCode)) return false;
+
+            // Try find the asset and if it's null, return false
+            outRes = verResList.FirstOrDefault(x => x.language.Equals(localeCode, StringComparison.OrdinalIgnoreCase));
+            if (outRes == null) return false;
+
+            // Otherwise, return true
+            return true;
+        }
+
+        protected virtual bool IsValidLocaleCode(ReadOnlySpan<char> localeCode)
+        {
+            // If it's empty or null, return false
+            if (localeCode == null) return false;
+            if (localeCode.IsEmpty) return false;
+
+            // Alloc to stack and try start to split
+            Span<Range> rangeSpan = stackalloc Range[2];
+            int rangeLen = localeCode.Split(rangeSpan, '-', StringSplitOptions.RemoveEmptyEntries);
+
+            // Try split it again with '_'
+            if (rangeLen != 2)
+                rangeLen = localeCode.Split(rangeSpan, '_', StringSplitOptions.RemoveEmptyEntries);
+
+            // If the split still have no result, then return false
+            if (rangeLen != 2)
+                return false;
+
+            // Do check on the locale identifier
+            int index = 0;
+        GoCheck:
+            {
+                if (rangeSpan[index].End.Value - rangeSpan[index].Start.Value != 2)
+                    return false;
+                ++index;
+                if (index < rangeLen) goto GoCheck;
+            }
+
+            // If all passed, return true
+            return true;
         }
 
         protected virtual void WriteAudioLangList(List<GameInstallPackage> gamePackage)
@@ -1999,7 +2063,7 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (GameInstallPackage package in _assetIndex.Where(x => x.PackageType == GameInstallPackageType.Audio))
                 {
                     // Write the language string as per ID
-                    sw.WriteLine(GetLanguageStringByID(package.LanguageID));
+                    sw.WriteLine(GetLanguageStringByLocaleCode(package.LanguageID));
                 }
             }
         }
@@ -2388,7 +2452,91 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
         #region Virtual Methods - GetInstallationPath
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
+        protected virtual async ValueTask TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
+        {
+            // Try add the main resource version list first
+            await AddMainResourceVersionList(asset, packageList, isSkipMainPackage);
+            await AddVoiceOverResourceVersionList(asset, packageList);
+        }
+
+        protected virtual async ValueTask AddVoiceOverResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
+        {
+            // Initialize langID
+            int langID;
+
+            // Get available language names
+            Dictionary<string, string> langStringsDict = GetLanguageDisplayDictFromVoicePackList(asset.voice_packs);
+            GameInstallPackage package;
+
+            // Skip if the asset doesn't have voice packs
+            if (asset.voice_packs == null || asset.voice_packs.Count == 0) return;
+
+            if (!_canSkipAudio)
+            {
+                // If the game has already installed or in preload, then try get Voice language ID from registry
+                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
+                if (gameState == GameInstallStateEnum.InstalledHavePreload
+                    || gameState == GameInstallStateEnum.NeedsUpdate)
+                {
+                    // Try get the voice language ID from the registry
+                    langID = _gameVoiceLanguageID;
+                    string localeCode = GetLanguageLocaleCodeByID(langID);
+
+                    // Try find the VO resource by locale code
+                    if (TryGetVoiceOverResourceByLocaleCode(asset.voice_packs, localeCode, out RegionResourceVersion voRes))
+                    {
+                        package = new GameInstallPackage(voRes, _gamePath, asset.version)
+                        {
+                            LanguageID = localeCode,
+                            PackageType = GameInstallPackageType.Audio
+                        };
+                        packageList.Add(package);
+                        LogWriteLine($"Adding primary {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                                     LogType.Default, true);
+                    }
+
+                    // Also try add another voice pack that already been installed
+                    await TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
+                }
+                // Else, show dialog to choose the language ID to be installed
+                else
+                {
+                    // Get the dialog and go for the selection
+                    (Dictionary<string, string> addedVO, string setAsDefaultVOLocalecode) = await Dialog_ChooseAudioLanguageChoice(_parentUI, langStringsDict, "ja-jp");
+                    if (addedVO == null && string.IsNullOrEmpty(setAsDefaultVOLocalecode))
+                        throw new TaskCanceledException();
+
+                    // Get the game default VO index
+                    int setAsDefaultVO = GetIDByLanguageLocaleCode(setAsDefaultVOLocalecode);
+
+                    // Sanitize check for invalid values
+                    if (addedVO == null || string.IsNullOrEmpty(setAsDefaultVOLocalecode))
+                        throw new InvalidOperationException("The addedVO variable or setAsDefaultVO should neither be null!");
+
+                    // Lookup for the package
+                    foreach (KeyValuePair<string, string> voChoice in addedVO)
+                    {
+                        // Try find the VO resource by locale code
+                        if (TryGetVoiceOverResourceByLocaleCode(asset.voice_packs, voChoice.Key, out RegionResourceVersion voRes))
+                        {
+                            package = new GameInstallPackage(voRes, _gamePath, asset.version)
+                            {
+                                LanguageID = voChoice.Key,
+                                PackageType = GameInstallPackageType.Audio
+                            };
+                            packageList.Add(package);
+                            LogWriteLine($"Adding primary {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
+                                         LogType.Default, true);
+                        }
+                    }
+
+                    // Set the voice language ID to value given
+                    _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+                }
+            }
+        }
+
+        protected virtual async ValueTask AddMainResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
         {
             // Try add the package into the list
             GameInstallPackage package = new GameInstallPackage(asset, _gamePath) { PackageType = GameInstallPackageType.General };
@@ -2396,25 +2544,55 @@ namespace CollapseLauncher.InstallManager.Base
             // If the main package is not skipped, then add it.
             // Otherwise, ignore it.
             if (!isSkipMainPackage)
-                packageList.Add(package);
-
-            if (package.Segments != null)
             {
-                foreach (GameInstallPackage segment in package.Segments)
+                // Add the main package
+                packageList.Add(package);
+                LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
+
+                // Write to log if the package has segments (Example: Genshin Impact)
+                if (package.Segments != null)
                 {
-                    LogWriteLine($"Adding segmented package: {segment.Name} to the list (Hash: {segment.HashString})", LogType.Default, true);
+                    foreach (GameInstallPackage segment in package.Segments)
+                    {
+                        LogWriteLine($"Adding segmented package: {segment.Name} to the list (Hash: {segment.HashString})", LogType.Default, true);
+                    }
                 }
-                return true;
             }
-            LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
-
-            // If the voice packs don't exist, then skip it
-            if (asset.voice_packs == null) return false;
-
-            // Otherwise, return true
-            return true;
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+        protected virtual async ValueTask TryAddOtherInstalledVoicePacks(List<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
+        {
+            // If not found (null), then return
+            if (_gameAudioLangListPath == null) return;
+
+            // Start read the file
+            using (StreamReader sw = new StreamReader(_gameAudioLangListPath))
+            {
+                while (!sw.EndOfStream)
+                {
+                    // Get the line and get the language locale code by language string
+                    string langStr = await sw.ReadLineAsync();
+                    string localeCode = GetLanguageLocaleCodeByLanguageString(langStr);
+
+                    // Try get the voice over resource
+                    if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
+                    {
+                        // Check if the existing package is already exist or not.
+                        RegionResourceVersion outResDup = packs.FirstOrDefault(x => x.language.Equals(outRes.language, StringComparison.OrdinalIgnoreCase));
+                        if (outResDup != null) continue;
+
+                        GameInstallPackage package = new GameInstallPackage(outRes, _gamePath, assetVersion) { LanguageID = localeCode, PackageType = GameInstallPackageType.Audio };
+                        packageList.Add(package);
+                        LogWriteLine($"Adding additional {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
+                        continue;
+                    }
+
+                    // Throw if the language string is not supported
+                    throw new KeyNotFoundException($"Value: {langStr} in {_gameAudioLangListPath} file is not a supported language string!\r\nPlease remove the line from the file manually.");
+                }
+            }
+        }
         #endregion
 
         #region Private Methods - StartPackageInstallation

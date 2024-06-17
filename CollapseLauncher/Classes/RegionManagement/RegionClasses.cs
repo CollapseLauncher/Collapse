@@ -116,8 +116,6 @@ namespace CollapseLauncher
         public long package_size { get; set; }
         public string md5 { get; set; }
         public string language { get; set; }
-        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
-        public int? languageID { get; set; }
         public bool is_recommended_update { get; set; }
         public string entry { get; set; }
         public string pkg_version { get; set; }
@@ -139,7 +137,6 @@ namespace CollapseLauncher
             package_size = package_size,
             md5 = md5,
             language = language,
-            languageID = languageID,
             is_recommended_update = is_recommended_update,
             entry = entry,
             voice_packs = voice_packs?.Copy(),
