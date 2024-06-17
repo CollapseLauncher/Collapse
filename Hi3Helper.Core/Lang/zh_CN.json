@@ -388,6 +388,8 @@
     "AppThemes_Dark": "深色",
     "AppThemes_ApplyNeedRestart": "*您需要重新启动应用程序以使主题修改生效。",
 
+    "IntroSequenceToggle": "启动时显示动画",
+
     "AppWindowSize": "窗口大小",
     "AppWindowSize_Normal": "标准",
     "AppWindowSize_Small": "小",
