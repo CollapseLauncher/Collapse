@@ -57,19 +57,16 @@
 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
-        <DebugType>portable</DebugType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>True</Optimize>
         <GitSkipCache>true</GitSkipCache>
-        <DebugType>portable</DebugType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;USENEWZIPDECOMPRESS;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
-        <DebugType>portable</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
