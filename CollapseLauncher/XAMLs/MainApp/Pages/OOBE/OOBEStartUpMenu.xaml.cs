@@ -221,7 +221,7 @@ namespace CollapseLauncher.Pages.OOBE
         private async void GetRecommendedCDN()
         {
             // Initialize the token source
-            _checkRecommendedCDNToken = new CancellationTokenSource();
+            _checkRecommendedCDNToken = new();
 
             // Set the selected CDN to -1
             SelectCDN.SelectedIndex   = -1;
@@ -237,7 +237,7 @@ namespace CollapseLauncher.Pages.OOBE
             LoadingMessageHelper.ShowActionButton(Lang._OOBEStartUpMenu.LoadingCDNCheckingSkipButton, "",
                                                   (_, _) =>
                                                   {
-                                                      _checkRecommendedCDNToken.Cancel();
+                                                      if (!_checkRecommendedCDNToken.IsDisposed) _checkRecommendedCDNToken.Cancel();
                                                       LoadingMessageHelper.HideLoadingFrame();
                                                   });
 
@@ -781,8 +781,8 @@ namespace CollapseLauncher.Pages.OOBE
 
         #region CDNStuffs
 
-        private CancellationTokenSource _checkRecommendedCDNToken = new();
-        private bool                    _recommendedCDNSelected;
+        private CancellationTokenSourceWrapper _checkRecommendedCDNToken = new();
+        private bool                           _recommendedCDNSelected;
 
         private int SelectedCDN
         {
