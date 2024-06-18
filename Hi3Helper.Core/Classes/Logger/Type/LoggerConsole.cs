@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Hi3Helper.InvokeProp;
+#if !APPLYUPDATE
 using static Hi3Helper.Shared.Region.LauncherConfig;
+#endif
 
 namespace Hi3Helper
 {
@@ -133,8 +135,10 @@ namespace Hi3Helper
                 }
             }
 
+#if !APPLYUPDATE
             SetWindowIcon(GetConsoleWindow(), AppIconLarge, AppIconSmall);
+#endif
         }
-        #endregion
+#endregion
     }
 }
