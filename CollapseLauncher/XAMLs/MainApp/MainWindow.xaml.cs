@@ -54,7 +54,6 @@ namespace CollapseLauncher
 
                 TitleBarFrameGrid.EnableImplicitAnimation(true);
                 LoadingStatusUIContainer.EnableImplicitAnimation(true);
-                LoadingStatusGrid.ApplyDropShadow(Colors.Black, 24, 0.5, true, new Vector3(0,8,0));
             }
             catch (Exception ex)
             {
