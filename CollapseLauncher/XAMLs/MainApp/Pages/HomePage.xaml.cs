@@ -150,7 +150,6 @@ namespace CollapseLauncher.Pages
                 this.InitializeComponent();
 
                 BackgroundImgChanger.ToggleBackground(false);
-                CheckIfRightSideProgress();
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
@@ -727,21 +726,6 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Right Side Progress
-        private void CheckIfRightSideProgress()
-        {
-            if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-            {
-                // FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
-                // FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
-                LauncherBtn.SetValue(Grid.ColumnProperty, 0);
-                ProgressStatusGrid.SetValue(Grid.ColumnProperty, 0);
-                GameStartupSetting.SetValue(Grid.ColumnProperty, 1);
-                GameStartupSetting.HorizontalAlignment = HorizontalAlignment.Right;
-            }
-        }
-        #endregion
-
         #region Game State
         private async ValueTask GetCurrentGameState()
         {
@@ -842,8 +826,7 @@ namespace CollapseLauncher.Pages
              || GameInstallationState == GameInstallStateEnum.GameBroken
              || GameInstallationState == GameInstallStateEnum.NotInstalled)
             {
-                if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                    HideImageCarousel(true);
+                HideImageCarousel(true);
 
                 progressRing.Value = 0;
                 progressRing.IsIndeterminate = true;
@@ -1099,8 +1082,7 @@ namespace CollapseLauncher.Pages
             {
                 IsSkippingUpdateCheck = true;
 
-                if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                    HideImageCarousel(true);
+                HideImageCarousel(true);
 
                 progressRing.Value = 0;
                 progressRing.IsIndeterminate = true;
@@ -1242,18 +1224,22 @@ namespace CollapseLauncher.Pages
         {
             CurrentGameProperty._GameInstall.CancelRoutine();
 
+            /*
             ProgressStatusGrid.Visibility = Visibility.Collapsed;
             UpdateGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
+            */
         }
 
         private void CancelInstallationDownload()
         {
             CurrentGameProperty._GameInstall.CancelRoutine();
 
+            /*
             ProgressStatusGrid.Visibility = Visibility.Collapsed;
             InstallGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
+            */
         }
         #endregion
 
@@ -1997,8 +1983,7 @@ namespace CollapseLauncher.Pages
             CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
             CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
 
-            if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                HideImageCarousel(true);
+            HideImageCarousel(true);
 
             try
             {

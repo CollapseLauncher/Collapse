@@ -764,9 +764,9 @@
         </Grid>
         <Grid x:Name="ProgressStatusGrid"
               Grid.Row="1"
-              Grid.Column="1"
-              MaxWidth="280"
+              Grid.Column="0"
               Margin="0,0,0,48"
+              MaxWidth="300"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
@@ -778,28 +778,33 @@
                 <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
                 </Grid.ChildrenTransitions>
-                <ProgressRing x:Name="progressRingAcrBG"
+                <Grid x:Name="progressRingShadow"
+                      Shadow="{ThemeResource SharedShadow}"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
+                      Translation="1,1,48"/>
+                <ProgressRing Width="Auto"
+                              Height="Auto"
                               HorizontalAlignment="Stretch"
                               IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}"
                               Maximum="{Binding Maximum, ElementName=progressRing}"
                               Value="{Binding Value, ElementName=progressRing}" />
                 <Ellipse x:Name="progressRingBG"
-                         Margin="4"
                          HorizontalAlignment="Stretch"
                          Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
                 <ProgressRing x:Name="progressRing"
                               Width="Auto"
                               Height="Auto"
+                              Margin="-6"
                               HorizontalAlignment="Stretch"
                               IsIndeterminate="True"
                               Maximum="100"
                               Value="0" />
                 <Grid x:Name="progressPerFile"
-                      Margin="12"
+                      Margin="16"
                       Visibility="Visible">
-                    <ProgressRing x:Name="progressRingAcrBG2"
-                                  Width="Auto"
+                    <ProgressRing Width="Auto"
                                   Height="Auto"
+                                  HorizontalAlignment="Stretch"
                                   IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
                                   Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
                                   Value="{Binding Value, ElementName=progressRingPerFile}" />
@@ -809,9 +814,10 @@
                              VerticalAlignment="Stretch"
                              Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
                     <ProgressRing x:Name="progressRingPerFile"
+                                  Margin="8"
                                   Width="Auto"
                                   Height="Auto"
-                                  Margin="8"
+                                  HorizontalAlignment="Stretch"
                                   IsIndeterminate="True"
                                   Maximum="100"
                                   Value="0" />
