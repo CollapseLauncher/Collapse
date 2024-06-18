@@ -65,7 +65,11 @@
     "Footer1": "Por favor revisa tu conexion a internet y haz clic en",
     "Footer2": "Paimon",
     "Footer3": "para Intentarlo de Nuevo.",
-    "ShowErrorBtn": "Mostrar Mensaje de Error"
+    "ShowErrorBtn": "Mostrar Mensaje de Error",
+    "GoToAppSettingsBtn": "Ir a Ajustes de la Aplicación",
+    "GoBackOverlayFrameBtn": "Ir Atrás",
+    "RegionChangerTitle": "Cambiar la Región del Juego",
+    "RegionChangerSubtitle": "En caso de que estés atascado en esta página"
   },
 
   "_UnhandledExceptionPage": {
