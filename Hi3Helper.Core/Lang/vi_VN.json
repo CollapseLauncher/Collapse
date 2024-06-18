@@ -65,7 +65,11 @@
     "Footer1": "Vui lòng kiểm tra lại mạng của bạn và ấn",
     "Footer2": "Paimon",
     "Footer3": "để thử lại.",
-    "ShowErrorBtn": "Hiển thị thông báo lỗi"
+    "ShowErrorBtn": "Hiển thị thông báo lỗi",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {
@@ -98,7 +102,10 @@
     "NotifNoNewNotifs": "Không có thông báo mới",
     "NotifClearAll": "Xoá mọi thông báo",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Tiện ích"
+    "NavigationUtilities": "Tiện ích",
+    "Initializing": "Initializing",
+    "LoadingLauncherMetadata": "Loading Launcher Metadata",
+    "LoadingGameConfiguration": "Loading Game Configuration"
   },
 
   "_HomePage": {
@@ -348,6 +355,7 @@
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
     "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
+    "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Cài đặt Nâng cao",
     "Advanced_Subtitle1": "Collapse Launcher Team",
@@ -357,6 +365,7 @@
     "Advanced_GLC_PreLaunch_Title": "Lệnh trước khi khởi động",
     "Advanced_GLC_PreLaunch_Subtitle": "Các lệnh được chạy trước khi trò chơi khởi động",
     "Advanced_GLC_PreLaunch_Exit": "Buộc đóng tiến trình đã chạy khi trò chơi bị đóng/dừng lại",
+    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "Lệnh sau khi thoát",
     "Advanced_GLC_PostExit_Subtitle": "Các lệnh được chạy sau khi trò chơi bị đóng"
   },
@@ -382,6 +391,8 @@
     "AppThemes_Light": "Sáng",
     "AppThemes_Dark": "Tối",
     "AppThemes_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi giao diện.",
+
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
 
     "AppWindowSize": "Kích thước cửa sổ",
     "AppWindowSize_Normal": "Bình thường",
@@ -556,6 +567,7 @@
     "Idle": "Chờ",
     "Change": "Thay đổi",
     "Cancelled": "Đã huỷ",
+    "FinishingUp": "Finishing Up",
     "Extracting": "Đang giải nén",
     "Converting": "Đang chuyển đổi",
     "Patching": "Đang vá",
@@ -570,6 +582,7 @@
     "ApplyingPatch": "Đang áp dụng bản vá",
     "Disabled": "Tắt",
     "Enabled": "Bật",
+    "UseAsDefault": "Use as Default",
 
     "BuildChannelPreview": "Xem trước",
     "BuildChannelStable": "Ổn định",
@@ -577,7 +590,8 @@
     "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
     "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Bitbucket.",
-    "CDNDescription_GitLab": "Bản sao của kho lưu trữ chính thức (main) được lưu GitLab",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Vị trí thực thi",
     "OpenDownloadPage": "Mở trang Tải xuống",
@@ -606,7 +620,7 @@
     "LauncherNameBHI3L": "BetterHI3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Tên Launcher không rõ)",
-    
+
     "ImageCropperTitle": "Cắt ảnh"
   },
 
@@ -680,7 +694,7 @@
     "InstallDataDownloadResumeTitle": "Tiếp tục tải?",
     "InstallDataDownloadResumeSubtitle": "Bạn đã tải {0}/{1} trước đó.\r\n\r\nBạn có muốn tiếp tục tải?",
     "InsufficientDiskTitle": "Dung lượng ổ cứng không đủ",
-    "InsufficientDiskSubtitle": "Bạn không có đủ dung lượng để cài trò chơi này trên ổ {2}r\n\r\nDung lượng trống: {0}\r\nYêu cầu còn trống: {1}.\r\n\r\nHãy bảo đảm rằng bạn còn không gian trống trước khi tải.",
+    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
     "RelocateFolderTitle": "Chọn lại vị trí lưu dữ liệu thư mục",
     "RelocateFolderSubtitle": "Bạn đang sử dụng thư mục này làm nơi lưu dữ liệu thư mục:\r\n\r\n {0}\r\n\r\nBạn có muốn thay đổi không?",
     "UninstallGameTitle": "Gỡ cài đặt trò chơi: {0}",
@@ -793,6 +807,8 @@
     "LocateFolderSubtitle": "Chọn vị trí để di chuyển tệp/thư mục tới.",
     "ChoosePathTextBoxPlaceholder": "Chọn đường đẫn đích:",
     "ChoosePathButton": "Chọn đích",
+    "ChoosePathErrorTitle": "Error has Occured!",
+    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
     "ChoosePathErrorPathUnselected": "Vui lòng chọn đường dẫn trước khi tiếp tục!",
     "ChoosePathErrorPathNotExist": "Đường đẫn không tồn tại!",
     "ChoosePathErrorPathNoPermission": "Bạn không có quyền truy cập vào vị trí này. Vui lòng chọn vị trí khác!"
@@ -1001,7 +1017,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS vẫn đang được THỬ NGHIỆM! Vui lòng sử dụng cẩn thận và hãy tự chịu trách nhiệm (DWYOR).",
-    "Graphics_FPS_Help2": "Theo lý thuyết, cài đặt FPS lên 120 sẽ làm hỏng cài đặt trong trò chơi.\nSử dụng Collapse để thay đổi cài đặt đồ hoạ trò chơi.",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync không khả dụng ở 120 FPS",
     "Graphics_RenderScale": "Kết xuất đồ hoạ",
