@@ -71,7 +71,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             List<GameInstallPackage> voicePackList = new List<GameInstallPackage>();
 
             // Add another voice pack that already been installed
-            TryAddOtherInstalledVoicePacks(resource.FirstOrDefault().voice_packs, voicePackList, resource.FirstOrDefault().version);
+            await TryAddOtherInstalledVoicePacks(resource.FirstOrDefault().voice_packs, voicePackList, resource.FirstOrDefault().version);
 
             // Get the secondary file check
             bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));

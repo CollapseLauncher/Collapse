@@ -125,14 +125,14 @@ namespace CollapseLauncher.InstallManager.StarRail
             _ => base.GetIDByLanguageLocaleCode(localeCode)
         };
 
-        protected override string GetLanguageDisplayByLocaleCode(string localeCode) => localeCode switch
+        protected override string GetLanguageDisplayByLocaleCode(string localeCode, bool throwIfInvalid = true) => localeCode switch
         {
             "zh-cn" => Lang._Misc.LangNameCN,
             "zh-tw" => null, // ^-> use the same one as per referred by the API
             "en-us" => Lang._Misc.LangNameENUS,
             "ko-kr" => Lang._Misc.LangNameKR,
             "ja-jp" => Lang._Misc.LangNameJP,
-            _ => base.GetLanguageDisplayByLocaleCode(localeCode)
+            _ => base.GetLanguageDisplayByLocaleCode(localeCode, throwIfInvalid)
         };
         #endregion
     }

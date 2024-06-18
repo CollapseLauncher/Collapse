@@ -705,7 +705,7 @@ namespace CollapseLauncher.InstallManager.Base
                     SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
                 sophonInfoPairList.Add(sophonMainInfoPair);
 
-                List<string> voLanguageList = GetAudioLanguageSophonStringList(sophonMainInfoPair.OtherSophonData);
+                List<string> voLanguageList = GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
 
                 // Run the audio dialog question
                 (List<int> addedVO, int setAsDefaultVO) = await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList, 2);
@@ -760,7 +760,7 @@ namespace CollapseLauncher.InstallManager.Base
                     await Parallel.ForEachAsync(
                                                 SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
                                                 parallelOptions,
-                                                async (asset, threadToken) =>
+                                                async (asset, threadToken) => await Task.Run(() =>
                                                 {
                                                     // If the asset is a dictionary, then return
                                                     if (asset.IsDirectory) return;
@@ -774,7 +774,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                                                     if (File.Exists(filePath))
                                                         File.Move(filePath, origFilePath, true);
-                                                });
+                                                }));
 
                 // Set background status
                 UpdateCompletenessStatus(CompletenessStatus.Completed);
@@ -995,6 +995,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (!existingFileInfo.Exists || sophonFileInfo.Exists
              || (existingFileInfo.Exists && sophonFileInfo.Exists))
                 filePath = sophonFileInfo.FullName;
+
             // However if the file has already been existed and completely downloaded while _tempSophon is exist,
             // delete the _tempSophon one to avoid uncompleted files being applied instead.
             else if (existingFileInfo.Exists && existingFileInfo.Length == asset.AssetSize && sophonFileInfo.Exists)
@@ -1943,13 +1944,13 @@ namespace CollapseLauncher.InstallManager.Base
             _ => throw new NotSupportedException($"This language string: {langString} is not supported")
         };
 
-        protected virtual string GetLanguageDisplayByLocaleCode(string localeCode) => localeCode switch
+        protected virtual string GetLanguageDisplayByLocaleCode(string localeCode, bool throwIfInvalid = true) => localeCode switch
         {
             "zh-cn" => Lang._Misc.LangNameCN,
             "en-us" => Lang._Misc.LangNameENUS,
             "ko-kr" => Lang._Misc.LangNameKR,
             "ja-jp" => Lang._Misc.LangNameJP,
-            _ => throw new NotSupportedException($"Locale code: {localeCode} is not supported!")
+            _ => throwIfInvalid ? throw new NotSupportedException($"Locale code: {localeCode} is not supported!") : null
         };
 
         protected virtual List<string> GetLanguageDisplayListFromVoicePackList(List<RegionResourceVersion> voicePacks)
@@ -1958,8 +1959,9 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (RegionResourceVersion Entry in voicePacks)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language);
-                if (languageDisplay == null) continue;
+                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
+                if (string.IsNullOrEmpty(languageDisplay)) continue;
+
                 value.Add(languageDisplay);
             }
             return value;
@@ -1971,25 +1973,29 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (RegionResourceVersion Entry in voicePacks)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language);
-                if (languageDisplay == null) continue;
+                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
+                if (string.IsNullOrEmpty(languageDisplay)) continue;
 
                 returnDict.Add(Entry.language, languageDisplay);
             }
             return returnDict;
         }
 
-        protected virtual List<string> GetAudioLanguageSophonStringList(SophonData sophonData)
+        protected virtual List<string> GetSophonLanguageDisplayDictFromVoicePackList(SophonData sophonData)
         {
             var value = new List<string>();
             foreach (SophonManifestIdentity identity in sophonData.ManifestIdentityList)
             {
                 // Check the lang ID and add the translation of the language to the list
                 string localeCode = identity.MatchingField.ToLower();
-                string languageDisplay = GetLanguageDisplayByLocaleCode(localeCode);
-                if (languageDisplay == null) continue;
+                if (IsValidLocaleCode(localeCode))
+                {
+                    string languageDisplay = GetLanguageDisplayByLocaleCode(localeCode, false);
+                    if (string.IsNullOrEmpty(languageDisplay))
+                        continue;
 
-                value.Add(languageDisplay);
+                    value.Add(languageDisplay);
+                }
             }
 
             return value;
