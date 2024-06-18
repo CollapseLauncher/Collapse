@@ -176,6 +176,7 @@ namespace CollapseLauncher
 
             // Spawn Region Notification
             SpawnRegionNotification(preset.ProfileName);
+            GamePropertyVault.DetachNotifForCurrentGame();
         }
 
         private void DisposeAllPageStatics()
