@@ -76,6 +76,13 @@ namespace CollapseLauncher
             return textBlock?.Text;
         }
 
+        public static int GetIndexOfRegionStringOrDefault(string? category)
+        {
+            int? index = LauncherMetadataHelper.GetPreviousGameRegion(category);
+
+            return index == -1 || index == null ? 0 : index ?? 0;
+        }
+
         public static List<StackPanel> BuildGameTitleListUI()
         {
             List<StackPanel> list = [];

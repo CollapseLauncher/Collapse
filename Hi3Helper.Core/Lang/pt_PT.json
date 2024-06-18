@@ -38,7 +38,7 @@
     "Pg2ComboBoxRegion": "Seleciona a região",
     "Pg2NextBtn": "Finalizar - Entrar no launcher",
     "Pg2PrevBtn": "Voltar - Selecionar pasta",
-    "Pg2PrevBtnNew": "Back - Launcher Configuration",
+    "Pg2PrevBtnNew": "Voltar - Configuração do Launcher",
     "Pg2Subtitle1_1": "Apenas mais um passo para começares a jogar a partir do",
     "Pg2Subtitle1_2": "Collapse Launcher.",
     "Pg2Subtitle1_3": "",
@@ -65,7 +65,11 @@
     "Footer1": "Verifica a tua conexão à Internet e clica na",
     "Footer2": "Paimon",
     "Footer3": "para tentar novamente.",
-    "ShowErrorBtn": "Mostrar mensagem de erro"
+    "ShowErrorBtn": "Mostrar mensagem de erro",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {
@@ -96,9 +100,12 @@
     "NavCtrlTitleSettings": "Definições da aplicação",
     "NotifNeverAsk": "Não mostrar novamente",
     "NotifNoNewNotifs": "Sem novas notificações",
-    "NotifClearAll": "Clear all notifications",
+    "NotifClearAll": "Limpar todas as notificações",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilitários"
+    "NavigationUtilities": "Utilitários",
+    "Initializing": "Initializing",
+    "LoadingLauncherMetadata": "Loading Launcher Metadata",
+    "LoadingGameConfiguration": "Loading Game Configuration"
   },
 
   "_HomePage": {
@@ -152,7 +159,7 @@
     "GamePlaytime_Running_Info1": "Uma instância deste jogo está aberta, deste modo o tempo de jogo não pode ser editado.",
     "GamePlaytime_Running_Info2": "Tem em consideração que o tempo de jogo deixará de ser contado se fechares totalmente o Collapse (salvando o tempo decorrido até este ponto) & apenas sessões iniciadas pelo Collapse irão ser contadas.",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
+    "GamePlaytime_ToolTipDisplay": "Aberto pela última vez em {0:00}/{1:00}/{2:0000} às {3:00}:{4:00}",
 
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Notícias",
@@ -348,6 +355,7 @@
     "CustomArgs_Footer3": "para ver mais parâmetros.",
 
     "GameBoost": "Aumentar a prioridade do jogo [Experimental]",
+    "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Definições avançadas",
     "Advanced_Subtitle1": "A equipa do Collapse Launcher",
@@ -357,6 +365,7 @@
     "Advanced_GLC_PreLaunch_Title": "Pre-Launch Commands",
     "Advanced_GLC_PreLaunch_Subtitle": "Commands to be executed before the game is launched",
     "Advanced_GLC_PreLaunch_Exit": "Force exit launched process when Game is closed/stopped",
+    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
     "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
@@ -382,6 +391,8 @@
     "AppThemes_Light": "Claro",
     "AppThemes_Dark": "Escuro",
     "AppThemes_ApplyNeedRestart": "*Tens de reiniciar a aplicação para a mudança de tema entrar em efeito.",
+
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
 
     "AppWindowSize": "Tamanho da janela",
     "AppWindowSize_Normal": "Normal",
@@ -417,7 +428,7 @@
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
     "VideoBackground": "Video Background Settings",
-    "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_IsEnableAudio": "Ativar áudio",
     "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "Atualizações",
@@ -445,11 +456,11 @@
 
     "About": "Sobre",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
-    "About_Copyright3": "Sobre licença:",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\nshatyuka & gablm",
+    "About_Copyright3": "Sobre",
     "About_Copyright4": ". Todos os direitos reservados.",
     
-    "LicenseType": "MIT License",
+    "LicenseType": "licença MIT",
 
     "Disclaimer": "Declaração",
     "Disclaimer1": "Esta aplicação não está associada com a",
@@ -482,9 +493,9 @@
     "AppBehavior_LaunchOnStartup": "Iniciar o Collapse automaticamente quando o computador ligar",
     "AppBehavior_StartupToTray": "Esconder a janela do Collapse quando inicia automaticamente",
 
-    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Toggle": "Usar Waifu2X [Experimental]",
     "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
-    "Waifu2X_Help2": "Only available for still images!",
+    "Waifu2X_Help2": "Apenas disponível para imagens estáticas!",
     "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
     "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
     "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
@@ -543,12 +554,12 @@
     "NotSelected": "Não selecionado",
     "ExtractAnyway": "Extrair de qualquer das maneiras!",
 
-    "IAcceptAgreement": "I accept the agreement",
-    "IDoNotAcceptAgreement": "I do not accept the agreement",
+    "IAcceptAgreement": "Eu aceito o acordo",
+    "IDoNotAcceptAgreement": "Eu não aceito o acordo",
 
-    "LangNameENUS": "English",
+    "LangNameENUS": "Inglês",
     "LangNameJP": "Japonês",
-    "LangNameCN": "Chinese",
+    "LangNameCN": "Chinês",
     "LangNameKR": "Coreano",
 
     "Downloading": "A descarregar",
@@ -556,6 +567,7 @@
     "Idle": "Em pausa",
     "Change": "Mudar",
     "Cancelled": "Cancelado",
+    "FinishingUp": "Finishing Up",
     "Extracting": "A extrair",
     "Converting": "A converter",
     "Patching": "A atualizar",
@@ -570,6 +582,7 @@
     "ApplyingPatch": "A aplicar atualização",
     "Disabled": "Desativado",
     "Enabled": "Ativado",
+    "UseAsDefault": "Use as Default",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -577,7 +590,8 @@
     "CDNDescription_Github": "O repositório oficial (principal) do launcher.",
     "CDNDescription_Cloudflare": "Uma cópia do repositório (principal) oficial hospedado dentro de um bucket R2 da Cloudflare.",
     "CDNDescription_Bitbucket": "Uma cópia do repositório (principal) oficial hospedado no Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Localizar executável",
     "OpenDownloadPage": "Abrir página de download",
@@ -606,8 +620,8 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Launcher Name is Unknown)",
-    
-    "ImageCropperTitle": "Crop the image"
+
+    "ImageCropperTitle": "Recortar a imagem"
   },
 
   "_BackgroundNotification": {
@@ -680,7 +694,7 @@
     "InstallDataDownloadResumeTitle": "Retomar descarregamento?",
     "InstallDataDownloadResumeSubtitle": "Já baixaste {0}/{1} do jogo anteriormente.\r\n\r\nQueres retomar?",
     "InsufficientDiskTitle": "Espaço de disco insuficiente",
-    "InsufficientDiskSubtitle": "Não tens espaço suficiente para instalar este jogo no disco {2}!\r\n\r\nEspaço livre: {0}\r\nEspaço necessário: {1}.\r\n\r\nPor favor assegura-te que tens espaço suficiente antes da instalação.",
+    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
     "RelocateFolderTitle": "Realocar pasta de dados da aplicação",
     "RelocateFolderSubtitle": "Tens atualmente a pasta de dados do Launcher na seguinte localização:\r\n\r\n {0}\r\n\r\nQuerer realocá-la?",
     "UninstallGameTitle": "A desinstalar jogo: {0}",
@@ -793,6 +807,8 @@
     "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
     "ChoosePathTextBoxPlaceholder": "Escolhe o caminho alvo...",
     "ChoosePathButton": "Escolher alvo",
+    "ChoosePathErrorTitle": "Error has Occured!",
+    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
     "ChoosePathErrorPathUnselected": "Escolhe um caminho antes de continuar!",
     "ChoosePathErrorPathNotExist": "O caminho não existe!",
     "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
@@ -1001,7 +1017,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS está em testes! Usa com cuidado, por conta e risco próprios.",
-    "Graphics_FPS_Help2": "Além disso, definir o limite de FPS como \"120\" irá quebrar a página de definições gráficas dentro do jogo.\nNeste caso, tens que usar o Collapse para mudar as definições gráficas do jogo.",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "Escala de renderização",
@@ -1225,7 +1241,7 @@
   },
 
   "_OOBEAgreementMenu": {
-    "AgreementTitle": "Agreement:"
+    "AgreementTitle": "Acordo:"
   },
 
   "_OOBEStartUpMenu": {
@@ -1236,14 +1252,14 @@
     "SetupNextButton": "Clica aqui para continuar",
     "SetupBackButton": "Voltar",
 
-    "CustomizationTitle": "Customize Your Launcher",
+    "CustomizationTitle": "Customizar o teu Launcher",
     "CustomizationSettingsLanguageHeader": "Idioma",
     "CustomizationSettingsLanguageDescription": "This will adjust the language for the information displayed.",
     "CustomizationSettingsWindowSizeHeader": "Tamanho da janela",
-    "CustomizationSettingsWindowSizeDescription": "Change the size of the launcher.",
+    "CustomizationSettingsWindowSizeDescription": "Mudar o tamanho do Launcher.",
     "CustomizationSettingsCDNHeader": "Content Delivery Network",
     "CustomizationSettingsCDNDescription": "Select your primary Content Delivery Network to be used.",
-    "CustomizationSettingsStyleHeader": "Style Preference",
+    "CustomizationSettingsStyleHeader": "Preferência de estilo",
     "CustomizationSettingsStyleDescription": "Change the look of the launcher and prefer your choice.",
     "CustomizationSettingsStyleThemeHeader": "Tema",
     "CustomizationSettingsStyleThemeDescription": "Change the color that appear in your launcher.",
@@ -1254,7 +1270,7 @@
     "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
 
     "LoadingInitializationTitle": "Initializing Launcher's First Start-up",
-    "LoadingCDNCheckboxCheckLatency": "(Checking latency...)",
+    "LoadingCDNCheckboxCheckLatency": "(A verificar latência...)",
     "LoadingCDNCheckboxPlaceholder": "Checking CDN Recommendation...",
     "LoadingCDNCheckingSubitle": "Finding the nearest Content Delivery Network (CDN) server for you...",
     "LoadingCDNCheckingSkipButton": "Skip CDN Check",

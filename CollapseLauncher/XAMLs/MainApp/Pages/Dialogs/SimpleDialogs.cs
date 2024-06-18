@@ -104,6 +104,186 @@ namespace CollapseLauncher.Dialogs
                         null
                 );
 
+        public static async Task<(Dictionary<string, string>, string)> Dialog_ChooseAudioLanguageChoice(UIElement Content, Dictionary<string, string> langDict, string defaultLocaleCode = "ja-jp")
+        {
+            bool[] choices = new bool[langDict.Count];
+            if (!langDict.ContainsKey(defaultLocaleCode))
+                throw new KeyNotFoundException($"Default locale code: {defaultLocaleCode} is not found within langDict argument");
+
+            List<string> localecodelist = langDict.Keys.ToList();
+            List<string> langlist = langDict.Values.ToList();
+
+            // Naive approach to lookup default index value
+            string reflocalecode = localecodelist.FirstOrDefault(x => x.Equals(defaultLocaleCode, StringComparison.OrdinalIgnoreCase));
+            int defaultIndex = localecodelist.IndexOf(reflocalecode);
+            int choiceAsDefault = defaultIndex;
+            StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
+
+            parentPanel.AddElementToStackPanel(new TextBlock()
+            {
+                Text = Lang._Dialogs.ChooseAudioLangSubtitle,
+                TextWrapping = TextWrapping.Wrap,
+                FontWeight = FontWeights.Medium,
+                Margin = new Thickness(0, 0, 0, 16),
+                HorizontalAlignment = HorizontalAlignment.Center,
+            }.WithMargin(0d, 0d, 0d, 16d));
+            parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+            RadioButtons defaultChoiceRadioButton = new RadioButtons()
+                .WithHorizontalAlignment(HorizontalAlignment.Center);
+            defaultChoiceRadioButton.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+
+            parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
+
+            ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
+            {
+                Title = Lang._Dialogs.ChooseAudioLangTitle,
+                Content = parentPanel,
+                CloseButtonText = Lang._Misc.Cancel,
+                PrimaryButtonText = Lang._Misc.Next,
+                SecondaryButtonText = null,
+                DefaultButton = ContentDialogButton.Primary,
+                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
+            };
+
+            for (int i = 0; i < langlist.Count; i++)
+            {
+                Grid checkBoxGrid = CollapseUIExt.CreateGrid()
+                    .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Auto))
+                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .WithMargin(0, 0, 0, 8);
+
+                CheckBox checkBox = new CheckBox() { Content = checkBoxGrid };
+                checkBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+                checkBox.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+                checkBox.VerticalAlignment = VerticalAlignment.Center;
+                checkBox.VerticalContentAlignment = VerticalAlignment.Center;
+
+                TextBlock useAsDefaultText = new TextBlock
+                {
+                    Text = Lang._Misc.UseAsDefault,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    HorizontalTextAlignment = TextAlignment.Right,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Opacity = 0.25,
+                    Name = "UseAsDefaultLabel"
+                };
+                useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+                Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(
+                    langlist[i],
+                    "\uf1ab",
+                    iconSize: 14,
+                    textSize: 14,
+                    iconFontFamily: "FontAwesomeSolid")
+                    .WithOpacity(0.25);
+                iconTextGrid.Name = "IconText";
+                iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+                iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
+
+                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
+                checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
+
+                RadioButton radioButton = new RadioButton
+                {
+                    Content = checkBox,
+                    Style = CollapseUIExt.GetApplicationResource<Style>("AudioLanguageSelectionRadioButtonStyle"),
+                    Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
+                }
+                .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                .WithVerticalAlignment(VerticalAlignment.Center);
+
+                defaultChoiceRadioButton.Items.Add(radioButton);
+
+                radioButton.Tag = i;
+                checkBox.Tag = i;
+
+                radioButton.Checked += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    choiceAsDefault = (int)radioButtonLocal.Tag;
+                    checkBox.IsChecked = true;
+
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    if (textBlockLocal != null)
+                        textBlockLocal.Opacity = 1;
+                };
+
+                radioButton.Unchecked += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    if (textBlockLocal != null)
+                        textBlockLocal.Opacity = 0.25;
+                };
+
+                if (i == defaultIndex)
+                {
+                    choices[i] = true;
+                    checkBox.IsChecked = true;
+                    defaultChoiceRadioButton.SelectedIndex = i;
+                    iconTextGrid.Opacity = 1;
+                }
+
+                checkBox.Checked += (sender, _) =>
+                {
+                    CheckBox thisCheckBox = sender as CheckBox;
+                    int thisIndex = (int)thisCheckBox.Tag;
+                    choices[thisIndex] = true;
+                    radioButton.IsEnabled = true;
+
+                    bool isHasAnyChoices = choices.Any(x => x);
+                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                    if (defaultChoiceRadioButton.SelectedIndex < 0)
+                        defaultChoiceRadioButton.SelectedIndex = thisIndex;
+
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (thisIconText != null)
+                        thisIconText.Opacity = 1;
+                };
+                checkBox.Unchecked += (sender, _) =>
+                {
+                    CheckBox thisCheckBox = sender as CheckBox;
+                    int thisIndex = (int)thisCheckBox.Tag;
+                    choices[thisIndex] = false;
+                    radioButton.IsChecked = false;
+
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (thisIconText != null)
+                        thisIconText.Opacity = 0.25;
+
+                    bool isHasAnyChoices = choices.Any(x => x);
+                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+
+                    // TODO: Find a better way rather than this SPAGHEETTTTT CODE
+                    if (defaultChoiceRadioButton.SelectedIndex < 0 && isHasAnyChoices)
+                    {
+                        for (int i = 0; i < choices.Length; i++)
+                        {
+                            if (choices[i])
+                            {
+                                defaultChoiceRadioButton.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                };
+            }
+
+            ContentDialogResult dialogResult = await dialog.ShowAsync();
+            if (dialogResult == ContentDialogResult.None)
+                return (null, null);
+
+            Dictionary<string, string> returnDictionary = new Dictionary<string, string>();
+            for (int i = 0; i < choices.Length; i++)
+            {
+                if (choices[i])
+                    returnDictionary.Add(localecodelist[i], langlist[i]);
+            }
+
+            return (returnDictionary, localecodelist[choiceAsDefault]);
+        }
+
         public static async Task<(List<int>, int)> Dialog_ChooseAudioLanguageChoice(UIElement Content, List<string> langlist, int defaultIndex = 2)
         {
             bool[] choices = new bool[langlist.Count];

@@ -175,15 +175,15 @@
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
-        "requested": "[10.0.22621.3233, )",
-        "resolved": "10.0.22621.3233",
-        "contentHash": "v67zwCb9JOpfPxdSroZukIKHruU6FUB+KwcmSPcVvUFyYtcyvcUign5y8jPQNi54CVzWvaTg646e62LbanUkxg=="
+        "requested": "[10.0.26100.1, )",
+        "resolved": "10.0.26100.1",
+        "contentHash": "ju02pHSp1LDEIvFgLIDbCbXGPpTTrXJrH90HxC6neclpbRpdS8RxeRbYOzPQFByUPCgT/Egbz4s/cpNMamW1Sg=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240428000, )",
-        "resolved": "1.5.240428000",
-        "contentHash": "gV+UHuwtbZLypWIysNlIX+WHqcm7q3I00E5n+GiDrX28fHXW4yr56d6GwP2banJLDl/JVku5zX2YUOW5X2WRZQ==",
+        "requested": "[1.5.240607001, )",
+        "resolved": "1.5.240607001",
+        "contentHash": "hwPYYUGPlneZi7Uwhm2zAIzSnvGGoL1bIqlisba7Adi5fYbwsj1GvGqiFiyYxRV9bhs3ykQNnJ1LW1cdXvvLiQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
@@ -229,11 +229,11 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
-        "requested": "[2.2.5, )",
-        "resolved": "2.2.5",
-        "contentHash": "HczGXTuH9Ex3O88Mj8fzzgwg8XKulNl68TvqGJ9nyNFf1P2+uWeJyutFmvvA8fx6uv/TPFSkcZZmMZnzk39GGw==",
+        "requested": "[2.2.6, )",
+        "resolved": "2.2.6",
+        "contentHash": "x1h8deYRmDGIQDDGCcYNCqNm7J84zoBrIPqcdGSDoonZzlg/LpNDjeoXpR6ULywvR2Y51wiH8Za3K5H7+MZNlw==",
         "dependencies": {
-          "Hi3Helper.ZstdNet": "1.5.3",
+          "Hi3Helper.ZstdNet": "1.6.2",
           "ZstdSharp.Port": "0.8.1"
         }
       },
@@ -567,8 +567,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.5",
-        "contentHash": "n55wb6rL8YG254AG+SfQOSQencrcnpKAAcYyEcvBuO2pob7ltXuZ5skBBdvLJOLVPKd1Ya8+8ColIM5AtBo5ww==",
+        "resolved": "8.0.6",
+        "contentHash": "aSwRnJzz6fZ73JvWMMG0KvBwOnXsBTFtfHLriQyAPrDIZ+NrDfl15GWbO/A35k0dtH77D7jfxzEcFF7RONtU/w==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -962,7 +962,7 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.5, )"
+          "System.Drawing.Common": "[8.0.6, )"
         }
       },
       "discordrpc": {
@@ -981,7 +981,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.26.1, )",
+          "Google.Protobuf": "[3.27.1, )",
           "Hi3Helper.Http": "[1.5.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
@@ -993,7 +993,8 @@
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[*, )",
-          "Hi3Helper.ZstdNet": "[*, )"
+          "Hi3Helper.ZstdNet": "[*, )",
+          "System.IO.Hashing": "[*, )"
         }
       },
       "innosetuphelper": {
@@ -1019,9 +1020,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240428000, )",
-        "resolved": "1.5.240428000",
-        "contentHash": "gV+UHuwtbZLypWIysNlIX+WHqcm7q3I00E5n+GiDrX28fHXW4yr56d6GwP2banJLDl/JVku5zX2YUOW5X2WRZQ==",
+        "requested": "[1.5.240607001, )",
+        "resolved": "1.5.240607001",
+        "contentHash": "hwPYYUGPlneZi7Uwhm2zAIzSnvGGoL1bIqlisba7Adi5fYbwsj1GvGqiFiyYxRV9bhs3ykQNnJ1LW1cdXvvLiQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }

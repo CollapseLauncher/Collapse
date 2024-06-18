@@ -340,8 +340,8 @@
                         Orientation="Horizontal">
                 <Image x:Name="GridBG_IconImg"
                        Width="Auto"
-                       VerticalAlignment="Stretch"
                        Margin="-2,-2,0,-2"
+                       VerticalAlignment="Stretch"
                        Opacity="0.8"
                        Source="ms-appx:///Assets/CollapseLauncherLogo.png">
                     <Image.OpacityTransition>

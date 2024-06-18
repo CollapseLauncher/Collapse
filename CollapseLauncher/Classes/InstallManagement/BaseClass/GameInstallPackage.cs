@@ -26,8 +26,7 @@ namespace CollapseLauncher.InstallManager
         public GameVersion              Version         { get; set; }
         public byte[]                   Hash            { get; set; }
         public string                   HashString      { get => HexTool.BytesToHexUnsafe(Hash); }
-        public int                      LanguageID      { get; set; } = int.MinValue;
-        public string                   LanguageName    { get; set; }
+        public string                   LanguageID      { get; set; }
         public List<GameInstallPackage> Segments        { get; set; }
         public string                   RunCommand      { get; set; }
         public string                   PluginId        { get; set; }
@@ -77,8 +76,7 @@ namespace CollapseLauncher.InstallManager
             }
             if (packageProperty.language != null)
             {
-                LanguageID = packageProperty.languageID ?? 0;
-                LanguageName = packageProperty.language;
+                LanguageID = packageProperty.language;
             }
 
             if (packageProperty.segments != null && packageProperty.segments.Count > 0)

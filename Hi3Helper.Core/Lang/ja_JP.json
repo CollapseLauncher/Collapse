@@ -65,7 +65,11 @@
     "Footer1": "接続状況を確認してから、",
     "Footer2": "パイモン",
     "Footer3": "をクリックしてやり直してください。",
-    "ShowErrorBtn": "エラーメッセージを表示"
+    "ShowErrorBtn": "エラーメッセージを表示",
+    "GoToAppSettingsBtn": "ランチャー設定を開く",
+    "GoBackOverlayFrameBtn": "戻る",
+    "RegionChangerTitle": "ゲーム/サーバーを切り替え",
+    "RegionChangerSubtitle": "このページから出られない場合に試してください。"
   },
 
   "_UnhandledExceptionPage": {
@@ -387,6 +391,8 @@
     "AppThemes_Light": "ライト",
     "AppThemes_Dark": "ダーク",
     "AppThemes_ApplyNeedRestart": "*テーマの変更を適用するには、ランチャーを再起動してください。",
+
+    "IntroSequenceToggle": "起動時にアニメーションを表示",
 
     "AppWindowSize": "ウィンドウサイズ",
     "AppWindowSize_Normal": "通常",

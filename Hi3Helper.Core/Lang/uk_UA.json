@@ -65,7 +65,11 @@
     "Footer1": "Будь ласка, перевірте Інтернет-підключення та тисніть",
     "Footer2": "на Паймон",
     "Footer3": "щоб спробувати знову.",
-    "ShowErrorBtn": "Показати повідомлення про помилку"
+    "ShowErrorBtn": "Показати повідомлення про помилку",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {
@@ -96,9 +100,12 @@
     "NavCtrlTitleSettings": "Налаштування програми",
     "NotifNeverAsk": "Ніколи не показувати знову",
     "NotifNoNewNotifs": "Немає нових повідомлень",
-    "NotifClearAll": "Clear all notifications",
+    "NotifClearAll": "Очистити всі повідомлення",
     "NavigationMenu": "Меню",
-    "NavigationUtilities": "Утиліти"
+    "NavigationUtilities": "Утиліти",
+    "Initializing": "Ініціалізуємо",
+    "LoadingLauncherMetadata": "Завантажуємо метадані лаунчера",
+    "LoadingGameConfiguration": "Завантажуємо конфігурацію гри"
   },
 
   "_HomePage": {
@@ -348,6 +355,7 @@
     "CustomArgs_Footer3": "щоб побачити більше параметрів.",
 
     "GameBoost": "Прискорити пріорітет гри [Експериментально]",
+    "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Розширені налаштування",
     "Advanced_Subtitle1": "Команда Collapse Launcher",
@@ -357,6 +365,7 @@
     "Advanced_GLC_PreLaunch_Title": "Команди передзапуску",
     "Advanced_GLC_PreLaunch_Subtitle": "Команди, які будуть виконані перед запуском гри",
     "Advanced_GLC_PreLaunch_Exit": "Примусово зупинити процес, коли гру закрито/зупинено",
+    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "Команди після виходу",
     "Advanced_GLC_PostExit_Subtitle": "Команди, які будуть виконані після виходу з гри"
   },
@@ -382,6 +391,8 @@
     "AppThemes_Light": "Світла",
     "AppThemes_Dark": "Темна",
     "AppThemes_ApplyNeedRestart": "*Вам потрібно перезапустити програму, щоб зміна теми вступила в силу.",
+
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
 
     "AppWindowSize": "Розмір вікна",
     "AppWindowSize_Normal": "Нормальний",
@@ -556,6 +567,7 @@
     "Idle": "Очікуємо",
     "Change": "Змінити",
     "Cancelled": "Скасовано",
+    "FinishingUp": "Finishing Up",
     "Extracting": "Видобуток",
     "Converting": "Конвертування",
     "Patching": "Встановлення патчу",
@@ -570,6 +582,7 @@
     "ApplyingPatch": "Встановлюємо патч",
     "Disabled": "Вимкнено",
     "Enabled": "Ввімкнено",
+    "UseAsDefault": "Use as Default",
 
     "BuildChannelPreview": "Передогляд",
     "BuildChannelStable": "Стабільний",
@@ -577,7 +590,8 @@
     "CDNDescription_Github": "Офіційний (основний) репозиторій для лаунчера.",
     "CDNDescription_Cloudflare": "Дзеркало офіційного (основного) репозиторію, опубліковане на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Дзеркало офіційного (основного) репозиторію, опубліковане на Bitbucket.",
-    "CDNDescription_GitLab": "Дзеркало офіційного (основного) репозиторію, опубліковане на GitLab",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Знайти виконуваний файл",
     "OpenDownloadPage": "Відкрити сторінку завантаження",
@@ -606,7 +620,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Назва лаунчера невідома)",
-    
+
     "ImageCropperTitle": "Обрізати зображення"
   },
 
@@ -680,7 +694,7 @@
     "InstallDataDownloadResumeTitle": "Продовжити завантаження?",
     "InstallDataDownloadResumeSubtitle": "Минулого разу, ви завантажили {0}/{1} гри.\r\n\r\nЧи бажаєте ви продовжити завантаження?",
     "InsufficientDiskTitle": "Недостатньо місця",
-    "InsufficientDiskSubtitle": "На вашому диску {2} недостатньо місця, щоб завантажити цю гру!\r\n\r\nВільно: {0}\r\nПотрібно: {1}.\r\nПереконайтеся, що на вашому диску достатньо місця перед завантаженням.",
+    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
     "RelocateFolderTitle": "Перемістити папку з даними програми",
     "RelocateFolderSubtitle": "Зараз ви користуєтесь цією папкою як папкою з даними програми:\r\n\r\n{0}\r\n\r\nЧи бажаєте ви змінити її локацію?",
     "UninstallGameTitle": "Видаляємо гру: {0}",
@@ -793,6 +807,8 @@
     "LocateFolderSubtitle": "Оберіть локацію для переміщення файлу/папки до цільового шляху.",
     "ChoosePathTextBoxPlaceholder": "Оберіть цільовий шлях...",
     "ChoosePathButton": "Оберіть ціль",
+    "ChoosePathErrorTitle": "Error has Occured!",
+    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
     "ChoosePathErrorPathUnselected": "Будь ласка, перевірте ваш шлях перед продовженням!",
     "ChoosePathErrorPathNotExist": "Шляху не існує!",
     "ChoosePathErrorPathNoPermission": "Ви не маєте дозволу на доступ до цієї локації! Будь ласка, оберіть іншу локацію!"
@@ -1001,7 +1017,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS - ЕСПЕРИМЕНТАЛЬНА ФУНКЦІЯ! Використовуйте на свій страх, оскільки Honkai: Star Rail не має офіційної підтримки на це!",
-    "Graphics_FPS_Help2": "Зміна FPS на 120 зламає налаштування графіки в грі.\r\nЯкщо ваше меню не працює в грі, користуйтеся Collapse, щоб змінити графіку гри.",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "Вертикальна синхронізація",
     "Graphics_VSync_Help": "Верт. синхр. недоступна з 120 FPS",
     "Graphics_RenderScale": "Масштаб рендерингу",

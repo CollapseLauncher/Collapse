@@ -65,7 +65,11 @@
     "Footer1": "Mohon periksa koneksi internetmu dan klik",
     "Footer2": "Paimon",
     "Footer3": "untuk mencoba lagi.",
-    "ShowErrorBtn": "Perlihatkan Pesan Error"
+    "ShowErrorBtn": "Perlihatkan Pesan Error",
+    "GoToAppSettingsBtn": "Ke Pengaturan Aplikasi",
+    "GoBackOverlayFrameBtn": "Kembali",
+    "RegionChangerTitle": "Ubah Region Game",
+    "RegionChangerSubtitle": "Andaikata kamu terus-terusan masuk ke page ini"
   },
 
   "_UnhandledExceptionPage": {
@@ -387,6 +391,8 @@
     "AppThemes_Light": "Terang",
     "AppThemes_Dark": "Gelap",
     "AppThemes_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan tema ini.",
+
+    "IntroSequenceToggle": "Gunakan Animasi Intro",
 
     "AppWindowSize": "Ukuran Window",
     "AppWindowSize_Normal": "Biasa",

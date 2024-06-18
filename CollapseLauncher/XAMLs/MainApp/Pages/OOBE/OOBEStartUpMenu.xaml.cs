@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Dialogs;
+﻿using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
@@ -27,7 +28,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Text;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -112,40 +112,51 @@ namespace CollapseLauncher.Pages.OOBE
             TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
             CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
 
-            await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
-            await Task.Delay(TimeSpan.FromSeconds(1));
-            await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
-
-            // Adding delay and make sure the CDN recommendation has already been loaded
-            // before hiding the intro sequence
-            while (_isLoadingCDNRecommendation)
+            IAnimatedVisualSource2? newIntro = new NewLogoTitleIntro();
             {
-                await Task.Delay(250);
+                WelcomeLogoIntro.Source = newIntro;
+                WelcomeLogoIntro.AnimationOptimization = PlayerAnimationOptimization.Resources;
+
+                await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
+
+                // Adding delay and make sure the CDN recommendation has already been loaded
+                // before hiding the intro sequence
+                while (_isLoadingCDNRecommendation)
+                {
+                    await Task.Delay(250);
+                }
+                await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
+                WelcomeLogoIntro.Stop();
+                await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                      currentCompositor.CreateVector3KeyFrameAnimation(
+                                                        "Translation",
+                                                        new Vector3(0, -138, 0),
+                                                        WelcomeLogoIntro.Translation
+                                                      ));
+                await SpawnWelcomeText();
+
+                await Task.Delay(1000);
+
+                await SpawnWelcomeText(true);
+                await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                      currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
+                                                      currentCompositor.CreateVector3KeyFrameAnimation(
+                                                        "Translation",
+                                                        new Vector3(0, -32, 0),
+                                                        WelcomeLogoIntro.Translation
+                                                      ));
+
+                OOBEAgreementMenuExtensions.oobeStartParentUI = this;
+                OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
+                WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
+                WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
             }
-            await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
-            await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
-                                                  currentCompositor.CreateVector3KeyFrameAnimation(
-                                                    "Translation",
-                                                    new Vector3(0, -138, 0),
-                                                    WelcomeLogoIntro.Translation
-                                                  ));
-            await SpawnWelcomeText();
-
-            await Task.Delay(1000);
-
-            await SpawnWelcomeText(true);
-            await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
-                                                  currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
-                                                  currentCompositor.CreateVector3KeyFrameAnimation(
-                                                    "Translation",
-                                                    new Vector3(0, -32, 0),
-                                                    WelcomeLogoIntro.Translation
-                                                  ));
-
-            OOBEAgreementMenuExtensions.oobeStartParentUI = this;
-            OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
-            WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
-            WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
+            WelcomeLogoIntro.Source = null;
+            newIntro = null;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         public async void StartLauncherConfiguration()
@@ -221,7 +232,7 @@ namespace CollapseLauncher.Pages.OOBE
         private async void GetRecommendedCDN()
         {
             // Initialize the token source
-            _checkRecommendedCDNToken = new CancellationTokenSource();
+            _checkRecommendedCDNToken = new();
 
             // Set the selected CDN to -1
             SelectCDN.SelectedIndex   = -1;
@@ -237,7 +248,7 @@ namespace CollapseLauncher.Pages.OOBE
             LoadingMessageHelper.ShowActionButton(Lang._OOBEStartUpMenu.LoadingCDNCheckingSkipButton, "",
                                                   (_, _) =>
                                                   {
-                                                      _checkRecommendedCDNToken.Cancel();
+                                                      if (!_checkRecommendedCDNToken.IsDisposed) _checkRecommendedCDNToken.Cancel();
                                                       LoadingMessageHelper.HideLoadingFrame();
                                                   });
 
@@ -781,8 +792,8 @@ namespace CollapseLauncher.Pages.OOBE
 
         #region CDNStuffs
 
-        private CancellationTokenSource _checkRecommendedCDNToken = new();
-        private bool                    _recommendedCDNSelected;
+        private CancellationTokenSourceWrapper _checkRecommendedCDNToken = new();
+        private bool                           _recommendedCDNSelected;
 
         private int SelectedCDN
         {
