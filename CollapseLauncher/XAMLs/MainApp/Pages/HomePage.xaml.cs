@@ -1039,6 +1039,11 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"Pre-Download paused!", LogType.Warning);
             }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error occurred while starting preload process: {ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
             finally
             {
                 IsSkippingUpdateCheck = false;
