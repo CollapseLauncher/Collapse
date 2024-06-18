@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Windows.UI;
 using Windows.UI.Text;
 
@@ -712,6 +711,8 @@ namespace CollapseLauncher.Extension
             double blurRadius = 10, double opacity = 0.25, bool isMasked = false, Vector3? offset = null)
         {
             offset ??= Vector3.Zero;
+            string passedValue = $"{offset?.X ?? 0},{offset?.Y ?? 0},{offset?.Z ?? 0}";
+
             AttachedDropShadow shadow = new AttachedDropShadow()
             {
                 Color = shadowColor ?? Colors.Black,
@@ -719,7 +720,7 @@ namespace CollapseLauncher.Extension
                 Opacity = opacity,
                 CastTo = to,
                 IsMasked = isMasked,
-                Offset = offset.ToString()
+                Offset = passedValue
             };
             Effects.SetShadow(from, shadow);
         }
