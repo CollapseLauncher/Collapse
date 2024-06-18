@@ -313,24 +313,21 @@
             {
                 const uint WM_SYSCOMMAND    = 0x0112;
                 const uint WM_SHOWWINDOW    = 0x0018;
-                const uint WM_ACTIVATEAPP   = 0x001C;
                 const uint WM_NCHITTEST     = 0x0084;
                 const uint WM_NCCALCSIZE    = 0x0083;
                 const uint WM_SETTINGCHANGE = 0x001A;
-                // const uint WM_ACTIVATE      = 0x0006;
+                const uint WM_ACTIVATE      = 0x0006;
 
                 switch (msg)
                 {
-                    case WM_ACTIVATEAPP:
+                    case WM_ACTIVATE:
                     {
-                        if (wParam == 1)
-                        {
+                        if (wParam == 1 && lParam == 0)
                             MainPage.CurrentBackgroundHandler?.WindowFocused();
-                        }
-                        else
-                        {
+
+                        if (wParam == 0 && lParam == 0)
                             MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                        }
+
                         break;
                     }
                     case WM_SYSCOMMAND:
@@ -392,7 +389,6 @@
                             MainPage.CurrentBackgroundHandler?.WindowFocused();
                             InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
                         }
-
                         break;
                     }
                     case WM_NCHITTEST:
@@ -425,41 +421,6 @@
 
                         break;
                     }
-                    /*
-                    case WM_ACTIVATE:
-                        // TODO: Find the exact root-cause of this.
-                        // ????? IDK WHAT'S HAPPENING... MICROSOFT!!!!!!!
-                        // When the WndProc is called with message WM_ACTIVATE and WM_ACTIVATEAPP,
-                        // it sets the wParam to 0x200001 instead of 0x1 (WA_ACTIVE) and
-                        // WM_SYSCOMMAND message is ignored.
-                        // 
-                        // Reference to WM_ACTIVATE message:
-                        // https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-activate
-                        // 
-                        // So in order to fix this, if WA_ACTIVE has wParam being set to 0x200001 then
-                        // force the "restore window" call.
-                        // 
-                        // But this fix won't remove the "bell" sound while the window is getting restored.
-                        // 
-                        // Additional Note - WndProc routine sequence while retrying to restore window
-                        // with Video-BG being used:
-                        // PARAM: WM_GETICON             0x7F wParam: 0x1        lParam: 0x0
-                        // PARAM: WM_GETICON             0x7F wParam: 0x1        lParam: 0x0
-                        // PARAM: WM_WINDOWPOSCHANGING   0x46 wParam: 0x0        lParam: 0x6500B7DE10
-                        // PARAM: WM_WINDOWPOSCHANGED    0x47 wParam: 0x0        lParam: 0x6500B7DE10
-                        // PARAM: WM_ACTIVATEAPP         0x1C wParam: 0x1        lParam: 0x345C
-                        // PARAM: WM_NCACTIVATE          0x86 wParam: 0x200001   lParam: 0x0
-                        // PARAM: WM_ACTIVATE            0x6  wParam: 0x200001   lParam: 0x0
-                        // PARAM: WM_NCACTIVATE          0x86 wParam: 0x0        lParam: 0x0
-                        // PARAM: WM_ACTIVATE            0x6  wParam: 0x200000   lParam: 0x0
-                        // PARAM: WM_ACTIVATEAPP         0x1C wParam: 0x0        lParam: 0x365C
-                        if (0x200001 == wParam)
-                        {
-                            WindowRestore();
-                            return 0; // Return 0 as the message gets processed
-                        }
-                        break;
-                    */
                     case WM_SETTINGCHANGE:
                     {
                         var setting = Marshal.PtrToStringAnsi(lParam);
