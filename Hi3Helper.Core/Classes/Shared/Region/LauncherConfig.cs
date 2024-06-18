@@ -102,8 +102,6 @@ namespace Hi3Helper.Shared.Region
                     SetAppConfigValue(Entry.Key, Entry.Value);
                 }
             }
-            if (GetAppConfigValue("DownloadThread").ToInt() > 8)
-                SetAppConfigValue("DownloadThread", 8);
         }
         #endregion
 
