@@ -65,7 +65,11 @@
     "Footer1": "Please check your internet connection and click",
     "Footer2": "Paimon",
     "Footer3": "to Retry.",
-    "ShowErrorBtn": "Show Error Message"
+    "ShowErrorBtn": "Show Error Message",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {

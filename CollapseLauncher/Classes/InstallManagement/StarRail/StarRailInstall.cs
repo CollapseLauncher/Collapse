@@ -1,16 +1,11 @@
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
-using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.InstallManager.StarRail
 {
@@ -99,117 +94,6 @@ namespace CollapseLauncher.InstallManager.StarRail
         };
         #endregion
 
-        #region Override Methods - GetInstallationPath
-        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList, bool isSkipMainPackage = false)
-        {
-            // Do action from base method first and add the main package
-            if (!await base.TryAddResourceVersionList(asset, packageList, isSkipMainPackage)) return false;
-
-            // Initialize langID
-            int langID;
-
-            // Get available language names
-            List<string> langStrings = GetAudioLanguageStringList();
-            GameInstallPackage package;
-
-            // Skip if the asset doesn't have voice packs
-            if (asset.voice_packs == null || asset.voice_packs.Count == 0)
-            {
-                LogWriteLine($"Asset for version: {asset.version} doesn't have voice packs! Skipping!", LogType.Warning, true);
-                return true;
-            }
-
-            if (!_canSkipAudio)
-            {
-                // If the game has already installed or in preload, then try get Voice language ID from registry
-                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
-                if (gameState == GameInstallStateEnum.InstalledHavePreload
-                    || gameState == GameInstallStateEnum.NeedsUpdate)
-                {
-                    // Try get the voice language ID from the registry
-                    langID = _gameVoiceLanguageID;
-                    // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                    if (langID == 1) langID = 0; // Force to use zh-CN if zh-TW is used
-                    package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
-                        { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                    packageList.Add(package);
-
-                    // Also try add another voice pack that already been installed
-                    TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
-                }
-                // Else, show dialog to choose the language ID to be installed
-                else
-                {
-                    (List<int> addedVO, int setAsDefaultVO) = await Dialog_ChooseAudioLanguageChoice(_parentUI, langStrings, 2);
-                    if (addedVO == null || setAsDefaultVO < 0)
-                        throw new TaskCanceledException();
-
-                    for (int i = 0; i < addedVO.Count; i++)
-                    {
-                        langID = addedVO[i];
-                        // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
-                        langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
-
-                        package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version)
-                        { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                        packageList.Add(package);
-
-                        LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})",
-                                     LogType.Default, true);
-                    }
-
-                    // Set the voice language ID to value given
-                    _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
-                }
-            }
-            
-            return true;
-        }
-
-        private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
-        {
-            // If not found (null), then return
-            if (_gameAudioLangListPath == null) return;
-
-            // Start read the file
-            using (StreamReader sw = new StreamReader(_gameAudioLangListPath))
-            {
-                while (!sw.EndOfStream)
-                {
-                    // Get the line
-                    string langStr = sw.ReadLine();
-
-                    // Get the key value pair for the respective value
-                    KeyValuePair<string, int> langKey = langStr switch
-                    {
-                        "Chinese" => new KeyValuePair<string, int>("zh-cn", 0),
-                        "English(US)" => new KeyValuePair<string, int>("en-us", 2),
-                        "Japanese" => new KeyValuePair<string, int>("ja-jp", 3),
-                        "Korean" => new KeyValuePair<string, int>("ko-kr", 4),
-                        _ => throw new KeyNotFoundException($"Key: {langStr} is not supported!")
-                    };
-
-                    // Add the voice language to the list
-                    TryAddOtherVoicePacksDictionary(langKey.Key, packs[langKey.Value], langKey.Value, packageList, assetVersion);
-                }
-            }
-        }
-
-        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID, List<GameInstallPackage> packageList, string assetVersion)
-        {
-            // Try check if the package list matches the key
-            if (!packageList.Any(x => x.LanguageName == key))
-            {
-                // Then add to the package list
-                value.languageID = langID;
-                GameInstallPackage package = new GameInstallPackage(value, _gamePath, assetVersion) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
-                packageList.Add(package);
-
-                LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
-            }
-        }
-        #endregion
-
         #region Override Methods - UninstallGame
         protected override UninstallGameProperty AssignUninstallFolders() => new()
         {
@@ -220,17 +104,36 @@ namespace CollapseLauncher.InstallManager.StarRail
         };
         #endregion
 
-        #region Override Methods - Sophon
-        protected override string GetLangIdToSophonVOLangName(int id)
-            => id switch
-            {
-                0 => "zh-cn",
-                1 => "zh-cn",
-                2 => "en-us",
-                3 => "ja-jp",
-                4 => "ko-kr",
-                _ => throw new NotSupportedException($"This lang id: {id} is not supported")
-            };
+        #region Override Methods - Others
+        protected override string GetLanguageLocaleCodeByID(int id) => id switch
+        {
+            0 => "zh-cn",
+            1 => "zh-cn",
+            2 => "en-us",
+            3 => "ja-jp",
+            4 => "ko-kr",
+            _ => base.GetLanguageLocaleCodeByID(id)
+        };
+
+        protected override int GetIDByLanguageLocaleCode(string localeCode) => localeCode switch
+        {
+            "zh-cn" => 0,
+            "zh-tw" => 1,
+            "en-us" => 2,
+            "ja-jp" => 3,
+            "ko-kr" => 4,
+            _ => base.GetIDByLanguageLocaleCode(localeCode)
+        };
+
+        protected override string GetLanguageDisplayByLocaleCode(string localeCode, bool throwIfInvalid = true) => localeCode switch
+        {
+            "zh-cn" => Lang._Misc.LangNameCN,
+            "zh-tw" => null, // ^-> use the same one as per referred by the API
+            "en-us" => Lang._Misc.LangNameENUS,
+            "ko-kr" => Lang._Misc.LangNameKR,
+            "ja-jp" => Lang._Misc.LangNameJP,
+            _ => base.GetLanguageDisplayByLocaleCode(localeCode, throwIfInvalid)
+        };
         #endregion
     }
 }

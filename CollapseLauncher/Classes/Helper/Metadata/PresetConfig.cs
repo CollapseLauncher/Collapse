@@ -202,7 +202,6 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? IsHideSocMedDesc           { get; init; } = true;
         public bool? IsRepairEnabled            { get; init; }
         public bool? LauncherSpriteURLMultiLang { get; init; }
-        public bool? UseRightSideProgress       { get; init; }
 
         public byte? CachesListGameVerID { get; init; }
 

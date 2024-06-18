@@ -135,6 +135,7 @@ namespace CollapseLauncher.Pages
 
         private async Task WaitForCountdown()
         {
+            CancelUpdateCountdownBox.Visibility = Visibility.Visible;
             UpdateCountdownPanel.Visibility = Visibility.Visible;
             int maxCount = 10;
             while (maxCount > 0)

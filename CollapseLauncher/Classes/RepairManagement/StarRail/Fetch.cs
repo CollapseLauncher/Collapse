@@ -165,7 +165,7 @@ namespace CollapseLauncher
             if (isSuccess)
             {
                 // Set asset index URL
-                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
+                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
 
                 // Start downloading asset index using FallbackCDNUtil and return its stream
                 await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);

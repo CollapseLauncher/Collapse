@@ -65,7 +65,11 @@
     "Footer1": "Merci de vérifier l'état de votre connexion Internet et cliquez sur",
     "Footer2": "Paimon",
     "Footer3": "pour réessayer.",
-    "ShowErrorBtn": "Afficher le message d'erreur"
+    "ShowErrorBtn": "Afficher le message d'erreur",
+    "GoToAppSettingsBtn": "Accéder aux paramètres",
+    "GoBackOverlayFrameBtn": "Retour",
+    "RegionChangerTitle": "Changer la région du jeu",
+    "RegionChangerSubtitle": "Au cas où vous seriez coincé sur cette page"
   },
 
   "_UnhandledExceptionPage": {
@@ -387,6 +391,8 @@
     "AppThemes_Light": "Clair",
     "AppThemes_Dark": "Sombre",
     "AppThemes_ApplyNeedRestart": "*Vous devez redémarrer Collapse afin que les changements prennent effet.",
+
+    "IntroSequenceToggle": "Activer la séquence d'animation au démarrage",
 
     "AppWindowSize": "Taille de la fenêtre",
     "AppWindowSize_Normal": "Normale",

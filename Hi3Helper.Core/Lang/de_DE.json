@@ -65,7 +65,11 @@
     "Footer1": "Bitte überprüfe deine Internetverbindung und drücke",
     "Footer2": "Paimon",
     "Footer3": "um es erneut zu versuchen.",
-    "ShowErrorBtn": "Fehler anzeigen"
+    "ShowErrorBtn": "Fehler anzeigen",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {
@@ -98,7 +102,10 @@
     "NotifNoNewNotifs": "Keine neuen Benachrichtigungen",
     "NotifClearAll": "Alle Benachrichtigungen entfernen",
     "NavigationMenu": "Menü",
-    "NavigationUtilities": "Werkzeuge"
+    "NavigationUtilities": "Werkzeuge",
+    "Initializing": "Initializing",
+    "LoadingLauncherMetadata": "Loading Launcher Metadata",
+    "LoadingGameConfiguration": "Loading Game Configuration"
   },
 
   "_HomePage": {
@@ -348,6 +355,7 @@
     "CustomArgs_Footer3": "um weitere Parameter zu erhalten.",
 
     "GameBoost": "Boost Game Priority [Experimental]",
+    "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Erweiterte Einstellungen",
     "Advanced_Subtitle1": "Das Collapse Launcher Team",
@@ -357,6 +365,7 @@
     "Advanced_GLC_PreLaunch_Title": "Pre-Launch-Befehle",
     "Advanced_GLC_PreLaunch_Subtitle": "Befehle, die vor dem Start des Spiels ausgeführt werden",
     "Advanced_GLC_PreLaunch_Exit": "Beenden des gestarteten Prozesses erzwingen, wenn das Spiel geschlossen/gestoppt wird",
+    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
     "Advanced_GLC_PostExit_Title": "Post-Exit Commands",
     "Advanced_GLC_PostExit_Subtitle": "Commands to be executed after the game is closed"
   },
@@ -382,6 +391,8 @@
     "AppThemes_Light": "Hell",
     "AppThemes_Dark": "Dunkel",
     "AppThemes_ApplyNeedRestart": "*Du musst die Anwendung neu starten, damit diese Einstellung wirksam wird.",
+
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
 
     "AppWindowSize": "Fenstergröße",
     "AppWindowSize_Normal": "Normal",
@@ -556,6 +567,7 @@
     "Idle": "Inaktiv",
     "Change": "Ändern",
     "Cancelled": "Abgebrochen",
+    "FinishingUp": "Finishing Up",
     "Extracting": "Extrahieren",
     "Converting": "Konvertieren",
     "Patching": "Patchen",
@@ -570,6 +582,7 @@
     "ApplyingPatch": "Patch anwenden",
     "Disabled": "Deaktiviert",
     "Enabled": "Aktiviert",
+    "UseAsDefault": "Use as Default",
 
     "BuildChannelPreview": "Vorschau",
     "BuildChannelStable": "Stabil",
@@ -577,7 +590,8 @@
     "CDNDescription_Github": "Die offizielle (Haupt-)Repository des Launchers.",
     "CDNDescription_Cloudflare": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in Cloudflare R2 Bucket.",
     "CDNDescription_Bitbucket": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in Bitbucket.",
-    "CDNDescription_GitLab": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in GitLab",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Downloadseite öffnen",
@@ -606,7 +620,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Launcher Name is Unknown)",
-    
+
     "ImageCropperTitle": "Bild zuschneiden"
   },
 
@@ -680,7 +694,7 @@
     "InstallDataDownloadResumeTitle": "Download fortsetzen?",
     "InstallDataDownloadResumeSubtitle": "Du hast bereits {0}/{1} des Spiels heruntergeladen.\n\nWillst du den Download fortsetzen?",
     "InsufficientDiskTitle": "Unzureichender Speicherplatz",
-    "InsufficientDiskSubtitle": "Du hast nicht genug freien Speicherplatz, um dieses Spiel auf deinem {2} Laufwerk zu installieren!\n\nFreier Speicherplatz: {0}\nBenötigter Speicherplatz: {1}.\n\nBitte stelle sicher, dass du über genügend Speicherplatz verfügst, bevor du mit der Installation fortfährst.",
+    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
     "RelocateFolderTitle": "App-Datenordner verschieben",
     "RelocateFolderSubtitle": "Du verwendest derzeit folgenden Ordner als deinen App-Datenordner:\n\n{0}\n\nMöchtest du den Speicherort ändern?",
     "UninstallGameTitle": "Deinstalliere Spiel: {0}",
@@ -793,6 +807,8 @@
     "LocateFolderSubtitle": "Choose the location to move the file/folder to the target path.",
     "ChoosePathTextBoxPlaceholder": "Choose the target path...",
     "ChoosePathButton": "Choose Target",
+    "ChoosePathErrorTitle": "Error has Occured!",
+    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
     "ChoosePathErrorPathUnselected": "Please choose your path before continue!",
     "ChoosePathErrorPathNotExist": "Path does not exist!",
     "ChoosePathErrorPathNoPermission": "You don't have a permission to access this location! Please choose another location!"
@@ -1001,7 +1017,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS ist EXPERIMENTELL! Bitte mit Vorsicht verwenden, da Honkai: Star Rail dies nicht offiziell unterstützt!",
-    "Graphics_FPS_Help2": "Setzen des FPS-Wertes auf 120 führt zur Fehlfunktion des Grafikmenüs im Spiel.\nSollte das Menü fehlerhaft sein, verwende Collapse zum Einstellen der Spielegrafik.",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync is not available on 120 FPS",
     "Graphics_RenderScale": "Render-Skalierung",

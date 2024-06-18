@@ -11,16 +11,13 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:ui="using:CommunityToolkit.WinUI"
-      xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid>
         <AnimatedVisualPlayer x:Name="WelcomeLogoIntro"
                               Width="Auto"
-                              AutoPlay="False"
-                              HorizontalAlignment="Stretch">
-            <lottie:NewLogoTitleIntro/>
-        </AnimatedVisualPlayer>
+                              HorizontalAlignment="Stretch"
+                              AutoPlay="False" />
         <Grid x:Name="MainUI"
               Visibility="Collapsed">
             <Grid.ChildrenTransitions>

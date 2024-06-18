@@ -65,7 +65,11 @@
     "Footer1": "请检查您的互联网连接，并点击",
     "Footer2": "派蒙",
     "Footer3": "重试。",
-    "ShowErrorBtn": "显示错误消息"
+    "ShowErrorBtn": "显示错误消息",
+    "GoToAppSettingsBtn": "前往应用设置",
+    "GoBackOverlayFrameBtn": "返回",
+    "RegionChangerTitle": "更改游戏区服",
+    "RegionChangerSubtitle": "如果你卡在了这个页面"
   },
 
   "_UnhandledExceptionPage": {
@@ -387,6 +391,8 @@
     "AppThemes_Light": "浅色",
     "AppThemes_Dark": "深色",
     "AppThemes_ApplyNeedRestart": "*您需要重新启动应用程序以使主题修改生效。",
+
+    "IntroSequenceToggle": "启动时显示动画",
 
     "AppWindowSize": "窗口大小",
     "AppWindowSize_Normal": "标准",

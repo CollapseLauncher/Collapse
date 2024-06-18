@@ -870,12 +870,12 @@
                                     HorizontalAlignment="Center"
                                     Orientation="Horizontal">
                             <TextBlock FontSize="16"
-                                       Foreground="{ThemeResource TextFillColorInverse}"
+                                       Foreground="{ThemeResource AccentColor}"
                                        Text="😆" />
                             <TextBlock Margin="8,2,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Foreground="{ThemeResource TextFillColorInverse}">
+                                       Foreground="{ThemeResource AccentColor}">
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}" />
                                 <Run x:Name="UpdateAvailableLabel"
                                      FontWeight="Bold"

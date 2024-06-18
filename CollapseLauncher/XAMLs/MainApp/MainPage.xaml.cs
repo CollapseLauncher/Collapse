@@ -268,6 +268,12 @@ namespace CollapseLauncher
             LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
             IsLoadFrameCompleted = true;
         }
+
+        private void MainFrameChangerInvoker_FrameGoBackEvent(object sender, EventArgs e)
+        {
+            if (LauncherFrame.CanGoBack)
+                LauncherFrame.GoBack();
+        }
         #endregion
 
         #region Drag Area
@@ -439,7 +445,6 @@ namespace CollapseLauncher
 
         private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
-            e.IsImageLoaded                   = false;
             LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
             IsCustomBG                        = e.IsCustom;
 
@@ -457,20 +462,19 @@ namespace CollapseLauncher
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
-            });
-            
-            e.IsImageLoaded                   = true;
+            }, e.ActionAfterLoaded);
         }
 
         internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
+            bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
             }
-            else
+            else if (isAPIBackgroundAvailable)
             {
                 try
                 {
@@ -484,14 +488,20 @@ namespace CollapseLauncher
                 }
             }
 
+            // Use default background if the API background is empty (in-case HoYo did something catchy)
+            if (!isAPIBackgroundAvailable && !IsCustomBG)
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+
             if (!IsCustomBG || IsFirstStartup)
             {
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, IsCustomBG);
-                await BackgroundImgChanger.WaitForBackgroundToLoad();
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
+                    () =>
+                    {
+                        IsFirstStartup = false;
+                        ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                    },
+                    IsCustomBG);
             }
-
-            IsFirstStartup = false;
-            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
         }
         #endregion
 
@@ -500,6 +510,7 @@ namespace CollapseLauncher
         {
             ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
             MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
+            MainFrameChangerInvoker.FrameGoBackEvent += MainFrameChangerInvoker_FrameGoBackEvent;
             NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
             BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
             BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
@@ -1505,13 +1516,6 @@ namespace CollapseLauncher
                                 }
                 }.Start();
             }
-        }
-
-        private int GetIndexOfRegionStringOrDefault(string category)
-        {
-            int? index = LauncherMetadataHelper.GetPreviousGameRegion(category);
-
-            return index == -1 || index == null ? 0 : index ?? 0;
         }
         #endregion
 

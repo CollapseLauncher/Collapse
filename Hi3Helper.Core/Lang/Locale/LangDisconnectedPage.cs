@@ -15,6 +15,10 @@
                 public string Footer2 { get; set; } = LangFallback?._DisconnectedPage.Footer2;
                 public string Footer3 { get; set; } = LangFallback?._DisconnectedPage.Footer3;
                 public string ShowErrorBtn { get; set; } = LangFallback?._DisconnectedPage.ShowErrorBtn;
+                public string GoToAppSettingsBtn { get; set; } = LangFallback?._DisconnectedPage.GoToAppSettingsBtn;
+                public string GoBackOverlayFrameBtn { get; set; } = LangFallback?._DisconnectedPage.GoBackOverlayFrameBtn;
+                public string RegionChangerTitle { get; set; } = LangFallback?._DisconnectedPage.RegionChangerTitle;
+                public string RegionChangerSubtitle { get; set; } = LangFallback?._DisconnectedPage.RegionChangerSubtitle;
             }
         }
         #endregion
