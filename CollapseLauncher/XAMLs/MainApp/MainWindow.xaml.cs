@@ -83,6 +83,8 @@ namespace CollapseLauncher
 
             if (isIntroEnabled) await Task.Delay(250);
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
+            IsForceDisableIntro = true;
+            IntroSequenceToggle.Visibility = Visibility.Collapsed;
         }
 
         private void InitializeAppWindowAndIntPtr()
@@ -157,6 +159,7 @@ namespace CollapseLauncher
             }
 
             MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
+            MainFrameChangerInvoker.WindowFrameGoBackEvent += MainFrameChangerInvoker_WindowFrameGoBackEvent;
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
 
             m_consoleCtrlHandler += ConsoleCtrlHandler;
@@ -186,6 +189,12 @@ namespace CollapseLauncher
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
+        }
+
+        private void MainFrameChangerInvoker_WindowFrameGoBackEvent(object sender, EventArgs e)
+        {
+            if (rootFrame.CanGoBack)
+                rootFrame.GoBack();
         }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)

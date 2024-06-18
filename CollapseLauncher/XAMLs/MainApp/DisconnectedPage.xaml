@@ -6,21 +6,23 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:uielementex="using:CollapseLauncher.Extension"
+      xmlns:p="using:CollapseLauncher.Helper.Metadata"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid Margin="32">
-        <Grid Margin="32">
+        <Grid Margin="16"
+              x:Name="FrontGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="0.6*" />
             </Grid.ColumnDefinitions>
             <StackPanel Margin="0,-32,0,0"
                         VerticalAlignment="Center">
-                <TextBlock FontSize="76"
+                <TextBlock FontSize="56"
                            FontWeight="Normal"
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header1}" />
                 <TextBlock Margin="0,-24,0,0"
-                           FontSize="80"
+                           FontSize="72"
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}" />
                 <Button x:Name="ShowErrorBtn"
@@ -30,7 +32,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="ShowError"
                         CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ShowErrorBtn)}"
-                        Style="{ThemeResource AcrylicButtonStyle}">
+                        Style="{ThemeResource AccentButtonStyle}">
                     <Grid Margin="8,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -55,15 +57,76 @@
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center">
                                 <animatedvisuals:AnimatedChevronDownSmallVisualSource />
-                                <AnimatedIcon.FallbackIconSource>
-                                    <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                                    Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                                    Glyph="&#xE70D;" />
-                                </AnimatedIcon.FallbackIconSource>
                             </AnimatedIcon>
                         </Grid>
                     </Grid>
                 </Button>
+                <Button x:Name="GoToAppSettingsBtn"
+                        Margin="0,8,0,0"
+                        Padding="8,8"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Click="GoToAppSettings"
+                        CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(GoToAppSettingsBtn)}"
+                        Style="{ThemeResource DefaultButtonStyle}">
+                    <Grid Margin="8,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="0,-2,16,0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontSize="20"
+                                   FontWeight="Medium"
+                                   HorizontalTextAlignment="Left"
+                                   Text="{x:Bind helper:Locale.Lang._DisconnectedPage.GoToAppSettingsBtn}" />
+                        <Grid Grid.Column="1"
+                              Margin="4,0,0,0"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RenderTransformOrigin="0.5, 0.5">
+                            <Grid.RenderTransform>
+                                <RotateTransform Angle="-90" />
+                            </Grid.RenderTransform>
+                            <AnimatedIcon Width="24"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center">
+                                <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                            </AnimatedIcon>
+                        </Grid>
+                    </Grid>
+                </Button>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerTitle}"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           FontSize="20"
+                           Margin="0,16,0,0"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerSubtitle}"
+                           Margin="0,0,0,16"/>
+                <Grid x:Name="ComboBoxGameGrid"
+                      CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="ComboBoxGameCategory"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              Canvas.ZIndex="2"
+                              CornerRadius="15,0,0,15"
+                              PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
+                              SelectionChanged="SetGameCategoryChange"
+                              Style="{ThemeResource DefaultComboBoxStyle}" />
+                    <ComboBox x:Name="ComboBoxGameRegion"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              Grid.Column="1"
+                              Canvas.ZIndex="2"
+                              CornerRadius="0,15,15,0"
+                              PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
+                              SelectionChanged="SetGameRegionChange"
+                              Style="{ThemeResource DefaultComboBoxStyle}" />
+                </Grid>
             </StackPanel>
             <TextBlock VerticalAlignment="Bottom"
                        FontSize="16"
@@ -75,12 +138,56 @@
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}" />
             </TextBlock>
             <Image Grid.Column="1"
-                   MaxWidth="460"
                    Margin="32,0,0,0"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Bottom"
                    PointerPressed="PaimonClicked"
                    Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
+        </Grid>
+        <Grid x:Name="OverlayFrameBg"
+              Margin="-32"
+              Visibility="Collapsed"/>
+        <Grid Margin="-32">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Frame x:Name="OverlayFrame"
+                   CornerRadius="16"/>
+            <Button x:Name="GoBackOverlayFrame"
+                    Grid.Row="1"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Click="GoBackFromOverlayFrame"
+                    CornerRadius="0"
+                    BorderThickness="0"
+                    Visibility="Collapsed"
+                    Style="{ThemeResource NewAccentButtonStyle}">
+                <Grid Margin="0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          RenderTransformOrigin="0.5, 0.5">
+                        <AnimatedIcon Width="24"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                            <animatedvisuals:AnimatedBackVisualSource />
+                        </AnimatedIcon>
+                    </Grid>
+                    <TextBlock Grid.Column="1"
+                               Margin="8,-2,8,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               FontSize="14"
+                               FontWeight="Medium"
+                               HorizontalTextAlignment="Left"
+                               Text="{x:Bind helper:Locale.Lang._DisconnectedPage.GoBackOverlayFrameBtn}" />
+                </Grid>
+            </Button>
         </Grid>
     </Grid>
 </Page>
