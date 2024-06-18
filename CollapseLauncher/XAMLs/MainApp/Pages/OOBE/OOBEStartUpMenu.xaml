@@ -18,9 +18,7 @@
         <AnimatedVisualPlayer x:Name="WelcomeLogoIntro"
                               Width="Auto"
                               HorizontalAlignment="Stretch"
-                              AutoPlay="False">
-            <lottie:NewLogoTitleIntro />
-        </AnimatedVisualPlayer>
+                              AutoPlay="False"/>
         <Grid x:Name="MainUI"
               Visibility="Collapsed">
             <Grid.ChildrenTransitions>

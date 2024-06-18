@@ -1,4 +1,4 @@
-using CollapseLauncher.Extension;
+using CollapseLauncher.AnimatedVisuals.Lottie;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -8,13 +8,12 @@ using CollapseLauncher.Pages.OOBE;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -70,15 +69,26 @@ namespace CollapseLauncher
             if (isIntroEnabled)
             {
                 WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
-                IntroSequenceToggle.Visibility = Visibility.Visible;
-                IntroAnimation.Visibility = Visibility.Visible;
-                IntroAnimation.PlaybackRate = 2.2d;
-                await IntroAnimation.PlayAsync(0, 0.0001d, false);
-                await Task.Delay(500);
-                await IntroAnimation.PlayAsync(0.0001d, 260d / 600d, false);
-                IntroAnimation.PlaybackRate = 1.5d;
-                await IntroAnimation.PlayAsync(260d / 600d, 600d / 600d, false);
-                IntroAnimation.Visibility = Visibility.Collapsed;
+                IAnimatedVisualSource2 newIntro = new NewLogoTitleIntro();
+                {
+                    IntroAnimation.Source = newIntro;
+                    IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
+
+                    IntroSequenceToggle.Visibility = Visibility.Visible;
+                    IntroAnimation.Visibility = Visibility.Visible;
+                    IntroAnimation.PlaybackRate = 2.2d;
+                    await IntroAnimation.PlayAsync(0, 0.0001d, false);
+                    await Task.Delay(500);
+                    await IntroAnimation.PlayAsync(0.0001d, 260d / 600d, false);
+                    IntroAnimation.PlaybackRate = 1.5d;
+                    await IntroAnimation.PlayAsync(260d / 600d, 600d / 600d, false);
+                    IntroAnimation.Visibility = Visibility.Collapsed;
+                    IntroAnimation.Stop();
+                }
+                IntroAnimation.Source = null;
+                newIntro = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
             
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
