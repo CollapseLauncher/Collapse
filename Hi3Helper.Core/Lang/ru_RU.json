@@ -65,7 +65,11 @@
     "Footer1": "Пожалуйста, проверьте подключение к интернету и нажмите",
     "Footer2": "на Паймон",
     "Footer3": "чтобы попробовать снова.",
-    "ShowErrorBtn": "Показать сообщение об ошибке"
+    "ShowErrorBtn": "Показать сообщение об ошибке",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {
@@ -98,7 +102,10 @@
     "NotifNoNewNotifs": "No new notifications",
     "NotifClearAll": "Скрыть все уведомления",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilities"
+    "NavigationUtilities": "Utilities",
+    "Initializing": "Инициализация",
+    "LoadingLauncherMetadata": "Загрузка метаданных лаунчера",
+    "LoadingGameConfiguration": "Загрузка настроек игры"
   },
 
   "_HomePage": {
@@ -220,7 +227,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Статус",
     "Status1": "Нажмите \"Быстрая проверка\" или \"Полная проверка\" для проверки обновлений кэша",
-    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
+    "Status2": "Попытка определить доступность ресурса кэша \"{0}\": {1}",
     "CachesStatusHeader1": "Общий прогресс",
     "CachesStatusCancelled": "Операция была отменена!",
     "CachesStatusFetchingType": "Получение типа кэша: {0}",
@@ -348,6 +355,7 @@
     "CustomArgs_Footer3": ", чтобы увидеть больше параметров.",
 
     "GameBoost": "Повысить приоритет игры [Экспериментально]",
+    "MobileLayout": "Использовать мобильную раскладку",
 
     "Advanced_Title": "Дополнительные настройки",
     "Advanced_Subtitle1": "Команда Collapse Launcher",
@@ -357,6 +365,7 @@
     "Advanced_GLC_PreLaunch_Title": "Команды перед запуском",
     "Advanced_GLC_PreLaunch_Subtitle": "Команды, которые нужно выполнить перед запуском игры",
     "Advanced_GLC_PreLaunch_Exit": "Принудительный выход из запущенного процесса при закрытии/остановке игры",
+    "Advanced_GLC_PreLaunch_Delay": "Задержка запуска игры (мс)",
     "Advanced_GLC_PostExit_Title": "Команды после выхода",
     "Advanced_GLC_PostExit_Subtitle": "Команды, которые будут выполняться после закрытия игры"
   },
@@ -382,6 +391,8 @@
     "AppThemes_Light": "Светлая",
     "AppThemes_Dark": "Темная",
     "AppThemes_ApplyNeedRestart": "*Чтобы изменение темы вступило в силу, необходимо перезапустить приложение.",
+
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
 
     "AppWindowSize": "Размер окна",
     "AppWindowSize_Normal": "Обычный",
@@ -556,6 +567,7 @@
     "Idle": "В режиме ожидания",
     "Change": "Изменить",
     "Cancelled": "Отменено",
+    "FinishingUp": "Finishing Up",
     "Extracting": "Распаковка",
     "Converting": "Конвертация",
     "Patching": "Патчинг",
@@ -570,6 +582,7 @@
     "ApplyingPatch": "Применение патча",
     "Disabled": "Отключено",
     "Enabled": "Включено",
+    "UseAsDefault": "Использовать по умолчанию",
 
     "BuildChannelPreview": "Предпросмотр",
     "BuildChannelStable": "Стабильная",
@@ -577,7 +590,8 @@
     "CDNDescription_Github": "Официальный (основной) репозиторий лаунчера.",
     "CDNDescription_Cloudflare": "Зеркало официального (основного) репозитория, развернутое на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Зеркало официального (основного) репозитория, развернутое на Bitbucket.",
-    "CDNDescription_GitLab": "Зеркало официального (основного) репозитория, размещенного на GitLab",
+    "CDNDescription_GitLab": "Зеркало официального (основного) репозитория, размещенного в GitLab.",
+    "CDNDescription_Coding": "Зеркало официального (основного) репозитория, размещенного в Coding.",
 
     "LocateExecutable": "Найти исполняемый файл",
     "OpenDownloadPage": "Открыть страницу загрузки",
@@ -606,7 +620,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Название лаунчера неизвестно)",
-    
+
     "ImageCropperTitle": "Обрезать изображение"
   },
 
@@ -680,7 +694,7 @@
     "InstallDataDownloadResumeTitle": "Возобновить загрузку?",
     "InstallDataDownloadResumeSubtitle": "Ранее вы скачали {0}/{1} игры.\n\nХотите возобновить загрузку?",
     "InsufficientDiskTitle": "Недостаточно места на диске",
-    "InsufficientDiskSubtitle": "Недостаточно свободного места для установки игры на диске {2}!\n\nПамяти свободно: {0}\nПамяти необходимо: {1}.\n\nПрежде чем приступить к установке, убедитесь, что на диске достаточно места.",
+    "InsufficientDiskSubtitle": "У вас недостаточно свободного места для установки этой игры на вашем диске {2}! \r \n\nСвободное место: {0} \nТребуемое пространство: {1}\n\nПожалуйста, убедитесь, что у вас достаточно места на диске, прежде чем приступить к установке.",
     "RelocateFolderTitle": "Переместить папку с данными приложения",
     "RelocateFolderSubtitle": "В настоящее время Вы используете эту папку для хранения данных приложения:\n\n {0}\n\nХотите изменить местоположение?",
     "UninstallGameTitle": "Удаление игры: {0}",
@@ -793,6 +807,8 @@
     "LocateFolderSubtitle": "Выберите расположение для перемещения файла/папки по целевому пути.",
     "ChoosePathTextBoxPlaceholder": "Выберите путь...",
     "ChoosePathButton": "Выбрать",
+    "ChoosePathErrorTitle": "Произошла ошибка!",
+    "ChoosePathErrorPathIdentical": "Выбранный вами путь находится в пределах текущего расположения или идентичен ему!\nПожалуйста, выберите другое место!",
     "ChoosePathErrorPathUnselected": "Пожалуйста, выберите путь, прежде чем продолжить!",
     "ChoosePathErrorPathNotExist": "Путь не существует!",
     "ChoosePathErrorPathNoPermission": "У Вас нет разрешения на доступ к этому месту! Пожалуйста, выберите другую папку!"
@@ -1001,7 +1017,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS - ЭКСПЕРИМЕНТ! Используйте на свой страх и риск.",
-    "Graphics_FPS_Help2": "Кроме того, установка FPS на 120 выведет из строя предусмотренные игрой настройки графики.\nИспользуйте Collapse, чтобы изменить настройки игровой графики.",
+    "Graphics_FPS_Help2": "Установка значения FPS на 120 больше не приводит к проблемам работы меню, но изменение внутриигровой настройки FPS на более низкое значение больше не будет работать.\nЕсли вы используете опцию 120 кадров в секунду, используйте Collapse для изменения настроек графики в игре.",
     "Graphics_VSync": "Вертикальная синхронизация",
     "Graphics_VSync_Help": "Вертикальная синхронизация недоступена при 120 FPS",
     "Graphics_RenderScale": "Масштаб отрисовки",
