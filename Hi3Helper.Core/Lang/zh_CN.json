@@ -65,7 +65,11 @@
     "Footer1": "请检查您的互联网连接，并点击",
     "Footer2": "派蒙",
     "Footer3": "重试。",
-    "ShowErrorBtn": "显示错误消息"
+    "ShowErrorBtn": "显示错误消息",
+    "GoToAppSettingsBtn": "前往应用设置",
+    "GoBackOverlayFrameBtn": "返回",
+    "RegionChangerTitle": "更改游戏区服",
+    "RegionChangerSubtitle": "如果你卡在了这个页面"
   },
 
   "_UnhandledExceptionPage": {
