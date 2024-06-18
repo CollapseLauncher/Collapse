@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -7,6 +8,7 @@ using CollapseLauncher.Pages.OOBE;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -52,6 +54,7 @@ namespace CollapseLauncher
 
                 TitleBarFrameGrid.EnableImplicitAnimation(true);
                 LoadingStatusUIContainer.EnableImplicitAnimation(true);
+                LoadingStatusGrid.ApplyDropShadow(Colors.Black, 24, 0.5, true, new Vector3(0,8,0));
             }
             catch (Exception ex)
             {

@@ -79,8 +79,6 @@
               x:FieldModifier="internal"
               Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
               CornerRadius="8"
-              Shadow="{ThemeResource SharedThemeShadow}"
-              Translation="0,0,16"
               Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
