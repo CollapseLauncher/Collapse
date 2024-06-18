@@ -662,7 +662,13 @@ namespace CollapseLauncher.Extension
             // If the element happened to have the parent null (in case of
             // the element is initialized but not added to a Panel yet), then
             // attach the shadow while the element is already loaded.
-            if (element.Parent is null) element.Loaded += (_, _) => AssignShadowAttachment(element, isMasked);
+            if (element.Parent is null) element.Loaded += (_, _) =>
+            {
+                if (element.DispatcherQueue.HasThreadAccess)
+                    AssignShadowAttachment(element, isMasked);
+                else
+                    element.DispatcherQueue.TryEnqueue(() => AssignShadowAttachment(element, isMasked));
+            };
             // However if the element has been added to a parent
             // Panel, then assign it right away.
             else AssignShadowAttachment(element, isMasked);
