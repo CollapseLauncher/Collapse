@@ -5,13 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:uielementex="using:CollapseLauncher.Extension"
       xmlns:p="using:CollapseLauncher.Helper.Metadata"
+      xmlns:uielementex="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
     <Grid Margin="32">
-        <Grid Margin="16"
-              x:Name="FrontGrid">
+        <Grid x:Name="FrontGrid"
+              Margin="16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="0.6*" />
@@ -97,12 +97,12 @@
                         </Grid>
                     </Grid>
                 </Button>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerTitle}"
-                           Style="{ThemeResource TitleTextBlockStyle}"
+                <TextBlock Margin="0,16,0,0"
                            FontSize="20"
-                           Margin="0,16,0,0"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerSubtitle}"
-                           Margin="0,0,0,16"/>
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerTitle}" />
+                <TextBlock Margin="0,0,0,16"
+                           Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerSubtitle}" />
                 <Grid x:Name="ComboBoxGameGrid"
                       CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
                     <Grid.ColumnDefinitions>
@@ -118,9 +118,9 @@
                               SelectionChanged="SetGameCategoryChange"
                               Style="{ThemeResource DefaultComboBoxStyle}" />
                     <ComboBox x:Name="ComboBoxGameRegion"
+                              Grid.Column="1"
                               HorizontalAlignment="Stretch"
                               HorizontalContentAlignment="Stretch"
-                              Grid.Column="1"
                               Canvas.ZIndex="2"
                               CornerRadius="0,15,15,0"
                               PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
@@ -146,24 +146,24 @@
         </Grid>
         <Grid x:Name="OverlayFrameBg"
               Margin="-32"
-              Visibility="Collapsed"/>
+              Visibility="Collapsed" />
         <Grid Margin="-32">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Frame x:Name="OverlayFrame"
-                   CornerRadius="16"/>
+                   CornerRadius="16" />
             <Button x:Name="GoBackOverlayFrame"
                     Grid.Row="1"
-                    VerticalAlignment="Bottom"
                     HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
                     HorizontalContentAlignment="Left"
+                    BorderThickness="0"
                     Click="GoBackFromOverlayFrame"
                     CornerRadius="0"
-                    BorderThickness="0"
-                    Visibility="Collapsed"
-                    Style="{ThemeResource NewAccentButtonStyle}">
+                    Style="{ThemeResource NewAccentButtonStyle}"
+                    Visibility="Collapsed">
                 <Grid Margin="0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />

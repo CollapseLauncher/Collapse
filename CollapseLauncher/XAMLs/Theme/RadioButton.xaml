@@ -762,12 +762,12 @@
                 <ControlTemplate TargetType="RadioButton">
                     <Grid x:Name="RootGrid"
                           MinWidth="560"
-                          Background="{TemplateBinding Background}"
-                          BorderThickness="1"
-                          BorderBrush="{ThemeResource RadioButtonGridBorderThemeBrush}"
-                          CornerRadius="8"
+                          Margin="0,-1"
                           Padding="8,8,16,8"
-                          Margin="0, -1">
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{ThemeResource RadioButtonGridBorderThemeBrush}"
+                          BorderThickness="1"
+                          CornerRadius="8">
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
