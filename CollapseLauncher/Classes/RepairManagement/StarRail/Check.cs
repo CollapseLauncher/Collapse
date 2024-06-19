@@ -202,7 +202,7 @@ namespace CollapseLauncher
             FileInfo fileInfoPersistent = new FileInfo(StarRailRepairExtension.ReplaceStreamingToPersistentPath(asset.N, _execName, asset.FT));
             FileInfo fileInfoStreaming = new FileInfo(asset.N);
 
-            bool UsePersistent = !fileInfoStreaming.Exists;
+            bool UsePersistent = asset.IsPatchApplicable || !fileInfoStreaming.Exists;
             bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.S;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.S;
 
@@ -237,8 +237,8 @@ namespace CollapseLauncher
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
             }
 
-            // If the file has Hash Mark, then create the hash mark file
-            if (asset.IsHasHashMark && UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
+            // If the file has Hash Mark or is persistent, then create the hash mark file
+            if (asset.IsHasHashMark || UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
 
             // Check if both location has the file exist or has the size right
             if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
