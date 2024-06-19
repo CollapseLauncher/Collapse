@@ -278,11 +278,26 @@ namespace CollapseLauncher
 
             // Open and read fileInfo as FileStream
             string fileNameToOpen = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+            try
+            {
+                await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
+            }
+            catch (FileNotFoundException)
+            {
+                LogWriteLine($"File {fileNameToOpen} is not found while UsePersistent is {UsePersistent}. Retrying...");
+                var fileNameToOpen_Retry = !UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+                await CheckFile(fileNameToOpen_Retry, asset, targetAssetIndex, token);
+            }
+
+        }
+
+        async ValueTask CheckFile(string fileNameToOpen, FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        {
             using (FileStream filefs = new FileStream(fileNameToOpen,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                _bufferBigLength))
+                                                      FileMode.Open,
+                                                      FileAccess.Read,
+                                                      FileShare.Read,
+                                                      _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
@@ -295,15 +310,15 @@ namespace CollapseLauncher
                     _progressTotalCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            ConvertRepairAssetTypeEnum(asset.FT),
-                            Path.GetDirectoryName(asset.N),
-                            asset.S,
-                            localCRC,
-                            asset.CRCArray
-                        )
-                    ));
+                                                  new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(asset.N),
+                                                       ConvertRepairAssetTypeEnum(asset.FT),
+                                                       Path.GetDirectoryName(asset.N),
+                                                       asset.S,
+                                                       localCRC,
+                                                       asset.CRCArray
+                                                      )
+                                                 ));
 
                     // Mark the main block as "need to be repaired"
                     asset.IsBlockNeedRepair = true;
