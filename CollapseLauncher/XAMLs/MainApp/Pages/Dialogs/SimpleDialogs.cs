@@ -6,7 +6,6 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -1230,7 +1229,7 @@ namespace CollapseLauncher.Dialogs
             string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary,
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
-            return await DispatcherQueue.GetForCurrentThread().EnqueueAsync(async() =>
+            return await Content.DispatcherQueue.EnqueueAsync(async() =>
             {
                 // Create a new instance of dialog
                 ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
