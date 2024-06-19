@@ -133,6 +133,12 @@ namespace Hi3Helper
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern ExecutionState SetThreadExecutionState(ExecutionState esFlags);
 
+        [DllImport("Kernel32.dll", CharSet = CharSet.Unicode )]
+        public static extern bool CreateHardLink(
+            string lpFileName,
+            string lpExistingFileName,
+            IntPtr lpSecurityAttributes
+        );
         #endregion
 
         #region User32

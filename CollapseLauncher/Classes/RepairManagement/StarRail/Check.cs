@@ -284,16 +284,23 @@ namespace CollapseLauncher
             }
             catch (FileNotFoundException)
             {
-                LogWriteLine($"File {fileNameToOpen} is not found while UsePersistent is {UsePersistent}. Retrying...");
-                var fileNameToOpen_Retry = !UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
-                await CheckFile(fileNameToOpen_Retry, asset, targetAssetIndex, token);
-            }
+                LogWriteLine($"File {fileNameToOpen} is not found while UsePersistent is {UsePersistent}. " +
+                             $"Creating hard link and retrying...", LogType.Warning, true);
 
+                var targetFile = File.Exists(fileInfoPersistent.FullName) ? fileInfoPersistent.FullName : 
+                    File.Exists(fileInfoStreaming.FullName)           ? fileInfoStreaming.FullName : 
+                                                                        throw new FileNotFoundException(fileNameToOpen);
+                
+                string targetLink     = fileNameToOpen;
+
+                InvokeProp.CreateHardLink(targetLink, targetFile, IntPtr.Zero);
+                await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
+            }
         }
 
         async ValueTask CheckFile(string fileNameToOpen, FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
-            using (FileStream filefs = new FileStream(fileNameToOpen,
+            await using (FileStream filefs = new FileStream(fileNameToOpen,
                                                       FileMode.Open,
                                                       FileAccess.Read,
                                                       FileShare.Read,
