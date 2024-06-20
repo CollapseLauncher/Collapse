@@ -56,87 +56,98 @@ namespace CollapseLauncher.GameSettings.StarRail
         #region Presets
         private static Model _VeryLowPreset = new()
         {
-            FPS               = 60,
-            EnableVSync       = false,
-            RenderScale       = 0.8,
-            ResolutionQuality = Quality.VeryLow,
-            ShadowQuality     = Quality.Low,
-            LightQuality      = Quality.VeryLow,
-            CharacterQuality  = Quality.Low,
-            EnvDetailQuality  = Quality.VeryLow,
-            ReflectionQuality = Quality.VeryLow,
-            SFXQuality        = Quality.VeryLow,
-            BloomQuality      = Quality.VeryLow,
-            AAMode            = AntialiasingMode.TAA,
-            EnableMetalFXSU   = false,
+            FPS                      = 60,
+            EnableVSync              = false,
+            RenderScale              = 0.8,
+            ResolutionQuality        = Quality.VeryLow,
+            ShadowQuality            = Quality.Low,
+            LightQuality             = Quality.VeryLow,
+            CharacterQuality         = Quality.Low,
+            EnvDetailQuality         = Quality.VeryLow,
+            ReflectionQuality        = Quality.VeryLow,
+            SFXQuality               = Quality.VeryLow,
+            BloomQuality             = Quality.VeryLow,
+            AAMode                   = AntialiasingMode.TAA,
+            EnableMetalFXSU          = false,
+            EnableHalfResTransparent = false,
+            EnableSelfShadow         = 2
+            
         };
 
         private static Model _LowPreset = new()
         {
-            FPS               = 60,
-            EnableVSync       = true,
-            RenderScale       = 1.0,
-            ResolutionQuality = Quality.Low,
-            ShadowQuality     = Quality.Low,
-            LightQuality      = Quality.Low,
-            CharacterQuality  = Quality.Low,
-            EnvDetailQuality  = Quality.Low,
-            ReflectionQuality = Quality.Low,
-            SFXQuality        = Quality.Low,
-            BloomQuality      = Quality.Low,
-            AAMode            = AntialiasingMode.TAA,
-            EnableMetalFXSU   = false,
+            FPS                      = 60,
+            EnableVSync              = true,
+            RenderScale              = 1.0,
+            ResolutionQuality        = Quality.Low,
+            ShadowQuality            = Quality.Low,
+            LightQuality             = Quality.Low,
+            CharacterQuality         = Quality.Low,
+            EnvDetailQuality         = Quality.Low,
+            ReflectionQuality        = Quality.Low,
+            SFXQuality               = Quality.Low,
+            BloomQuality             = Quality.Low,
+            AAMode                   = AntialiasingMode.TAA,
+            EnableMetalFXSU          = false,
+            EnableHalfResTransparent = false,
+            EnableSelfShadow         = 2
         };
 
         private static Model _MediumPreset = new()
         {
-            FPS               = 60,
-            EnableVSync       = true,
-            RenderScale       = 1.0,
-            ResolutionQuality = Quality.Medium,
-            ShadowQuality     = Quality.Medium,
-            LightQuality      = Quality.Medium,
-            CharacterQuality  = Quality.Medium,
-            EnvDetailQuality  = Quality.Medium,
-            ReflectionQuality = Quality.Medium,
-            SFXQuality        = Quality.Medium,
-            BloomQuality      = Quality.Medium,
-            AAMode            = AntialiasingMode.TAA,
-            EnableMetalFXSU   = false,
+            FPS                      = 60,
+            EnableVSync              = true,
+            RenderScale              = 1.0,
+            ResolutionQuality        = Quality.Medium,
+            ShadowQuality            = Quality.Medium,
+            LightQuality             = Quality.Medium,
+            CharacterQuality         = Quality.Medium,
+            EnvDetailQuality         = Quality.Medium,
+            ReflectionQuality        = Quality.Medium,
+            SFXQuality               = Quality.Medium,
+            BloomQuality             = Quality.Medium,
+            AAMode                   = AntialiasingMode.TAA,
+            EnableMetalFXSU          = false,
+            EnableHalfResTransparent = false,
+            EnableSelfShadow         = 2
         };
 
         private static Model _HighPreset = new()
         {
-            FPS               = 60,
-            EnableVSync       = true,
-            RenderScale       = 1.2,
-            ResolutionQuality = Quality.High,
-            ShadowQuality     = Quality.High,
-            LightQuality      = Quality.High,
-            CharacterQuality  = Quality.High,
-            EnvDetailQuality  = Quality.High,
-            ReflectionQuality = Quality.High,
-            SFXQuality        = Quality.High,
-            BloomQuality      = Quality.High,
-            AAMode            = AntialiasingMode.TAA,
-            EnableMetalFXSU   = false,
+            FPS                      = 60,
+            EnableVSync              = true,
+            RenderScale              = 1.2,
+            ResolutionQuality        = Quality.High,
+            ShadowQuality            = Quality.High,
+            LightQuality             = Quality.High,
+            CharacterQuality         = Quality.High,
+            EnvDetailQuality         = Quality.High,
+            ReflectionQuality        = Quality.High,
+            SFXQuality               = Quality.High,
+            BloomQuality             = Quality.High,
+            AAMode                   = AntialiasingMode.TAA,
+            EnableMetalFXSU          = false,
+            EnableHalfResTransparent = false,
+            EnableSelfShadow         = 1
         };
 
         private static Model _VeryHighPreset = new()
         {
-            FPS               = 60,
-            EnableVSync       = true,
-            RenderScale       = 1.4,
-            ResolutionQuality = Quality.VeryHigh,
-            ShadowQuality     = Quality.High,
-            LightQuality      = Quality.VeryHigh,
-            CharacterQuality  = Quality.High,
-            EnvDetailQuality  = Quality.VeryHigh,
-            ReflectionQuality = Quality.VeryHigh,
-            SFXQuality        = Quality.High,
-            BloomQuality      = Quality.VeryHigh,
-            AAMode            = AntialiasingMode.TAA,
-            EnableMetalFXSU   = false,
+            FPS                      = 60,
+            EnableVSync              = true,
+            RenderScale              = 1.4,
+            ResolutionQuality        = Quality.VeryHigh,
+            ShadowQuality            = Quality.High,
+            LightQuality             = Quality.VeryHigh,
+            CharacterQuality         = Quality.High,
+            EnvDetailQuality         = Quality.VeryHigh,
+            ReflectionQuality        = Quality.VeryHigh,
+            SFXQuality               = Quality.High,
+            BloomQuality             = Quality.VeryHigh,
+            AAMode                   = AntialiasingMode.TAA,
+            EnableMetalFXSU          = false,
+            EnableHalfResTransparent = false,
+            EnableSelfShadow         = 1
         };
         #endregion
 
@@ -231,6 +242,19 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Default: false
         /// </summary>
         public bool EnableMetalFXSU { get; set; }
+        
+        /// <summary>
+        /// This controls if the resolution of transparency object is halved. <br/>
+        /// There is no in-game setting for this, and it's also not controlled by preset.
+        /// </summary>
+        public bool EnableHalfResTransparent { get; set; }
+        
+        /// <summary>
+        /// This defines "<c>Real Time Character Shadow in Map Exploration</c>" combobox in-game settings. <br/>
+        /// Options: Off (2), On (1)
+        /// </summary>
+        // dont ask why
+        public int EnableSelfShadow { get; set; }
 
         #endregion
 

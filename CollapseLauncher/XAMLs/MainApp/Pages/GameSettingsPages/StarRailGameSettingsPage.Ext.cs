@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
+using Hi3Helper;
 using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -287,6 +288,26 @@ namespace CollapseLauncher.Pages
         {
             get => Math.Clamp((int)Settings.GraphicsSettings.AAMode, 0, 2);
             set => Settings.GraphicsSettings.AAMode = (AntialiasingMode)value;
+        }
+        //EnableSelfShadow
+        public bool SelfShadow
+        {
+            get
+            {
+                var v = Settings.GraphicsSettings.EnableSelfShadow;
+                if (v == 1) return true;
+                if (v == 2) return false;
+                Logger.LogWriteLine($"Self Shadow value is unknown! Val: {v}", LogType.Error, true);
+                return false;
+
+            }
+            set => Settings.GraphicsSettings.EnableSelfShadow = value ? 1 : 2;
+        }
+        //HalfResTransparent
+        public bool HalfResTransparent
+        {
+            get => Settings.GraphicsSettings.EnableHalfResTransparent;
+            set => Settings.GraphicsSettings.EnableHalfResTransparent = value;
         }
         #endregion
 

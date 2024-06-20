@@ -486,6 +486,31 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox x:Name="ToggleSelfShadow"
+                                              Grid.Column="0"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{x:Bind SelfShadow, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SelfShadow}"
+                                                   TextWrapping="WrapWholeWords" />
+                                    </CheckBox>
+                                    <CheckBox x:Name="ToggleHalfResTransparency"
+                                              Grid.Column="1"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{x:Bind HalfResTransparent, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_HalfResTransparent}"
+                                                   TextWrapping="WrapWholeWords" />
+                                    </CheckBox>
+                                </Grid>
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
