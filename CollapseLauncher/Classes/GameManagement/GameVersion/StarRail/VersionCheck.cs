@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
 using Microsoft.UI.Xaml;
@@ -41,12 +42,16 @@ namespace CollapseLauncher.GameVersioning
         public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp == null ? null : GameDeltaPatchProp;
 
 #nullable enable
-        private void InitializeProtoId()
+        public void InitializeProtoId()
         {
             if (base.GamePreset.GameDataTemplates != null && base.GamePreset.GameDataTemplates.Count != 0)
             {
-                byte[]? data = base.GamePreset.GetGameDataTemplate("MagicSpell", new byte[] { 2, 1, 0, 0 });
-                if (data == null) return;
+                byte[]? data = base.GamePreset.GetGameDataTemplate("MagicSpell", new byte[] { 2, 3, 0, 0 });
+                if (data == null)
+                {
+                    Logger.LogWriteLine("[IGameVersionCheck:InitializeProtoId] data is null!", LogType.Error, true);
+                    return;
+                }
 
                 string jsonResponse = Encoding.UTF8.GetString(data);
                 StarRailDispatchGatewayProps.Deserialize(jsonResponse);

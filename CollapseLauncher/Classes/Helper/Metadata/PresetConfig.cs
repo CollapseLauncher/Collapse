@@ -195,12 +195,19 @@ namespace CollapseLauncher.Helper.Metadata
         public List<string>? GameDispatchArrayURL { get; init; }
 
         public bool? IsPluginUpdateEnabled      { get; init; } = false;
-        public bool? IsCacheUpdateEnabled       { get; init; }
+        
         public bool? IsConvertible              { get; init; }
         public bool? IsExperimental             { get; init; }
         public bool? IsGenshin                  { get; init; }
         public bool? IsHideSocMedDesc           { get; init; } = true;
+        
+        #if !DEBUG
         public bool? IsRepairEnabled            { get; init; }
+        public bool? IsCacheUpdateEnabled       { get; init; }
+        #else
+        public bool? IsRepairEnabled      = true;
+        public bool? IsCacheUpdateEnabled = true;
+        #endif
         public bool? LauncherSpriteURLMultiLang { get; init; }
 
         public byte? CachesListGameVerID { get; init; }

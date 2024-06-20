@@ -1229,21 +1229,24 @@ namespace CollapseLauncher.Dialogs
             string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary,
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
-            // Create a new instance of dialog
-            ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
+            return await Content.DispatcherQueue.EnqueueAsync(async() =>
             {
-                Title = title,
-                Content = content,
-                CloseButtonText = closeText,
-                PrimaryButtonText = primaryText,
-                SecondaryButtonText = secondaryText,
-                DefaultButton = defaultButton,
-                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
-            };
+                // Create a new instance of dialog
+                ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
+                {
+                    Title = title,
+                    Content = content,
+                    CloseButtonText = closeText,
+                    PrimaryButtonText = primaryText,
+                    SecondaryButtonText = secondaryText,
+                    DefaultButton = defaultButton,
+                    Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                    XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
+                };
 
-            // Queue and spawn the dialog instance
-            return await dialog.QueueAndSpawnDialog();
+                // Queue and spawn the dialog instance
+                return await dialog.QueueAndSpawnDialog();
+            });
         }
 
         public static async ValueTask<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)

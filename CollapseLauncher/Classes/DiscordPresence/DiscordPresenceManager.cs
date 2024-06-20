@@ -238,7 +238,7 @@
                                 Details = Lang._Misc.DiscordRP_Default,
                                 Assets = new Assets
                                 {
-                                    LargeImageKey = "launcher-logo",
+                                    LargeImageKey = "launcher-logo-new",
                                     LargeImageText =
                                         $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                                 }
@@ -269,7 +269,7 @@
                     {
                         LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
                         LargeImageText = $"{curGameNameTranslate} - {curGameRegionTranslate}",
-                        SmallImageKey  = "launcher-logo",
+                        SmallImageKey  = "launcher-logo-new",
                         SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} " +
                                          $"{(IsPreview ? "Preview" : "Stable")}"
                     },
@@ -303,7 +303,7 @@
                     {
                         LargeImageKey  = $"game-{LauncherMetadataHelper.CurrentMetadataConfig?.GameType.ToString().ToLower()}-logo",
                         LargeImageText = $"{curGameNameTranslate}",
-                        SmallImageKey  = "launcher-logo",
+                        SmallImageKey  = "launcher-logo-new",
                         SmallImageText = $"Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} " +
                                          $"{(IsPreview ? "Preview" : "Stable")}"
                     }
