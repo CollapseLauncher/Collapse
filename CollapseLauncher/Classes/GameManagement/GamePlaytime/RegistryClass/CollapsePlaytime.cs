@@ -1,27 +1,26 @@
-﻿using CollapseLauncher.GamePlaytime.Base;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using System.Globalization;
 using System.Text;
 using static Hi3Helper.Logger;
 
-namespace CollapseLauncher.GamePlaytime.Universal
+namespace CollapseLauncher.GamePlaytime
 {
-    internal class Playtime
+    internal class CollapsePlaytime
     {
         #region Fields
+        private static DateTime BaseDate => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
 
-        private const string      _ValueName              = "CollapseLauncher_Playtime";
-        private const string      _OldLastPlayedValueName = "CollapseLauncher_LastPlayed";
-        private       RegistryKey _RegistryRoot;
+        private const string _ValueName              = "CollapseLauncher_Playtime";
+        private const string _OldLastPlayedValueName = "CollapseLauncher_LastPlayed";
 
-        private static bool _IsDeserializing;
+        private static bool        _IsDeserializing;
+        private        RegistryKey _registryRoot;
 
         #endregion
 
         #region Properties
-
         /// <summary>
         /// Represents the total time a game was played.<br/><br/>
         /// Default: TimeSpan.MinValue
@@ -69,7 +68,7 @@ namespace CollapseLauncher.GamePlaytime.Universal
         /// Reads from the Registry and deserializes the contents. <br/>
         /// Converts RegistryKey values if they are of type DWORD (that is, if they were saved by the old implementation).
         /// </summary>
-        public static Playtime Load(RegistryKey root)
+        public static CollapsePlaytime Load(RegistryKey root)
         {
             try
             {
@@ -87,11 +86,11 @@ namespace CollapseLauncher.GamePlaytime.Universal
                     LogWriteLine($"Found old Playtime RegistryKey! Converting to the new format... (Playtime: {oldPlaytime} | Last Played: {lastPlayed})", writeToLog: true);
                     _IsDeserializing = false;
                     
-                    Playtime playtime = new Playtime()
+                    CollapsePlaytime playtime = new CollapsePlaytime()
                     {
                         CurrentPlaytime = TimeSpan.FromSeconds(oldPlaytime),
-                        LastPlayed = lastPlayed != null ? GamePlaytimeBase.BaseDate.AddSeconds((int)lastPlayed) : null,
-                        _RegistryRoot = root
+                        LastPlayed = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null,
+                        _registryRoot = root
                     };
                     playtime.Save();
 
@@ -104,8 +103,8 @@ namespace CollapseLauncher.GamePlaytime.Universal
 #if DEBUG
                     LogWriteLine($"Loaded Playtime:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    Playtime playtime = byteStr.Deserialize<Playtime>(UniversalPlaytimeJSONContext.Default) ?? new Playtime();
-                    playtime._RegistryRoot = root;
+                    CollapsePlaytime playtime = byteStr.Deserialize<CollapsePlaytime>(UniversalPlaytimeJSONContext.Default) ?? new CollapsePlaytime();
+                    playtime._registryRoot = root;
 
                     return playtime;
                 }
@@ -119,7 +118,7 @@ namespace CollapseLauncher.GamePlaytime.Universal
                 _IsDeserializing = false;
             }
 
-            return new Playtime();
+            return new CollapsePlaytime();
         }
 
         /// <summary>
@@ -129,14 +128,14 @@ namespace CollapseLauncher.GamePlaytime.Universal
         {
             try
             {
-                if (_RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (_registryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(UniversalPlaytimeJSONContext.Default, true);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
 #endif
-                _RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                _registryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {
@@ -206,10 +205,12 @@ namespace CollapseLauncher.GamePlaytime.Universal
             if (!_IsDeserializing) Save();
         }
 
-        private bool IsDifferentMonth(DateTime date1, DateTime date2) => date1.Year != date2.Year || date1.Month != date2.Month;
+        #endregion
 
-        private bool IsDifferentWeek(DateTime date1, DateTime date2) => date1.Year != date2.Year || ISOWeek.GetWeekOfYear(date1) != ISOWeek.GetWeekOfYear(date2);
+        #region Utility Methods
+        private static bool IsDifferentMonth(DateTime date1, DateTime date2) => date1.Year != date2.Year || date1.Month != date2.Month;
 
+        private static bool IsDifferentWeek(DateTime date1, DateTime date2) => date1.Year != date2.Year || ISOWeek.GetWeekOfYear(date1) != ISOWeek.GetWeekOfYear(date2);
         #endregion
     }
 }

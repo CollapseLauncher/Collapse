@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
+﻿using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
@@ -35,7 +36,6 @@ namespace CollapseLauncher.Statics
                     _GameCache    = new HonkaiCache(UIElementParent, _GameVersion);
                     _GameRepair   = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
                     _GameInstall  = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                    _GamePlaytime = new GamePlaytime.Universal.GamePlaytime(_GameVersion);
                     break;
                 case GameNameType.StarRail:
                     _GameVersion  = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
@@ -43,7 +43,6 @@ namespace CollapseLauncher.Statics
                     _GameCache    = new StarRailCache(UIElementParent, _GameVersion);
                     _GameRepair   = new StarRailRepair(UIElementParent, _GameVersion);
                     _GameInstall  = new StarRailInstall(UIElementParent, _GameVersion);
-                    _GamePlaytime = new GamePlaytime.Universal.GamePlaytime(_GameVersion);
                     break;
                 case GameNameType.Genshin:
                     _GameVersion = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
@@ -51,11 +50,12 @@ namespace CollapseLauncher.Statics
                     _GameCache = null;
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
                     _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
-                    _GamePlaytime = new GamePlaytime.Universal.GamePlaytime(_GameVersion);
                     break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
             }
+
+            _GamePlaytime = new Playtime(_GameVersion);
         }
 
         internal RegionResourceProp _APIResouceProp { get; set; }
@@ -122,6 +122,7 @@ namespace CollapseLauncher.Statics
             _GameRepair?.Dispose();
             _GameCache?.Dispose();
             _GameInstall?.Dispose();
+            _GamePlaytime?.Dispose();
 
             _APIResouceProp = null;
             _GameSettings   = null;

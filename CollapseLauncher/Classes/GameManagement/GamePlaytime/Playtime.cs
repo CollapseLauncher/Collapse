@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GamePlaytime.Base;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
@@ -10,25 +10,32 @@ using static Hi3Helper.Logger;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 
-namespace CollapseLauncher.GamePlaytime.Universal
+namespace CollapseLauncher.GamePlaytime
 {
-    internal class GamePlaytime : GamePlaytimeBase, IGamePlaytime
+    internal class Playtime : IGamePlaytime
     {
         #region Properties
-        public event EventHandler<Playtime> PlaytimeUpdated;
+        public event EventHandler<CollapsePlaytime> PlaytimeUpdated;
+#nullable enable
+        private RegistryKey?      _registryRoot;
+        private CollapsePlaytime? _playtime;
+        private IGameVersionCheck _gameVersionManager;
+
+        private CancellationTokenSourceWrapper _token = new();
         #endregion
 
-        public GamePlaytime(IGameVersionCheck GameVersionManager) : base(GameVersionManager)
+        public Playtime(IGameVersionCheck GameVersionManager)
         {
             string registryPath = Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
-            RegistryRoot = Registry.CurrentUser.OpenSubKey(registryPath, true);
+            _registryRoot = Registry.CurrentUser.OpenSubKey(registryPath, true);
 
-            RegistryRoot ??= Registry.CurrentUser.CreateSubKey(registryPath, true, RegistryOptions.None);
+            _registryRoot ??= Registry.CurrentUser.CreateSubKey(registryPath, true, RegistryOptions.None);
 
             _gameVersionManager = GameVersionManager;
 
-            _playtime = Playtime.Load(RegistryRoot);
+            _playtime = CollapsePlaytime.Load(_registryRoot);
         }
+#nullable disable
 
         public void ForceUpdate()
         {
@@ -85,7 +92,7 @@ namespace CollapseLauncher.GamePlaytime.Universal
                 };
 
                 inGameTimer.Start();
-                await proc.WaitForExitAsync();
+                await proc.WaitForExitAsync(_token.Token);
                 inGameTimer.Stop();
             }
 
@@ -93,7 +100,7 @@ namespace CollapseLauncher.GamePlaytime.Universal
             double totalElapsedSeconds = (end - begin).TotalSeconds;
             if (totalElapsedSeconds < 0)
             {
-                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
+                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({totalElapsedSeconds}s)", LogType.Error);
                 Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
                 totalElapsedSeconds = elapsedSeconds;
             }
@@ -104,6 +111,20 @@ namespace CollapseLauncher.GamePlaytime.Universal
             
             _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false);
             PlaytimeUpdated?.Invoke(this, _playtime);
+        }
+
+        private static string TimeSpanToString(TimeSpan timeSpan)
+        {
+            return $"{timeSpan.Days * 24 + timeSpan.Hours}h {timeSpan.Minutes}m";
+        }
+
+        public void Dispose()
+        {
+            _token.Cancel();
+            _playtime?.Save();
+
+            _playtime     = null;
+            _registryRoot = null;
         }
     }
 }

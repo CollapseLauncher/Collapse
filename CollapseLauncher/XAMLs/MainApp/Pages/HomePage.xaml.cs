@@ -5,7 +5,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.GamePlaytime.Universal;
+using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -1852,7 +1852,7 @@ namespace CollapseLauncher.Pages
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
-        private void UpdatePlaytime(object sender, Playtime playtime)
+        private void UpdatePlaytime(object sender, CollapsePlaytime playtime)
         {
             DispatcherQueue.TryEnqueue(() =>
             {

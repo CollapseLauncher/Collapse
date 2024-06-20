@@ -1,12 +1,12 @@
-﻿using CollapseLauncher.GamePlaytime.Universal;
+﻿using CollapseLauncher.GamePlaytime;
 using System;
 using System.Diagnostics;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGamePlaytime
+    internal interface IGamePlaytime : IDisposable
     {
-        event EventHandler<Playtime> PlaytimeUpdated;
+        event EventHandler<CollapsePlaytime> PlaytimeUpdated;
 
         void Reset();
         void ForceUpdate();
