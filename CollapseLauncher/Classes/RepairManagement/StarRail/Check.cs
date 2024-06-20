@@ -203,6 +203,7 @@ namespace CollapseLauncher
             FileInfo fileInfoStreaming = new FileInfo(asset.N);
 
             bool UsePersistent = asset.IsPatchApplicable || !fileInfoStreaming.Exists;
+            bool IsHasMark = asset.IsHasHashMark || UsePersistent;
             bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.S;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.S;
 
@@ -238,10 +239,11 @@ namespace CollapseLauncher
             }
 
             // If the file has Hash Mark or is persistent, then create the hash mark file
-            if (asset.IsHasHashMark || UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
+            if (IsHasMark) CreateHashMarkFile(asset.N, asset.CRC);
 
             // Check if both location has the file exist or has the size right
-            if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
+            if ((UsePersistent && !IsPersistentExist && !IsStreamingExist)
+             || (UsePersistent && !IsPersistentExist))
             {
                 // Update the total progress and found counter
                 _progressTotalSizeFound += asset.S;
@@ -353,6 +355,7 @@ namespace CollapseLauncher
 
             // Re-create the hash file
             string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
+            if (File.Exists(toName)) return;
             File.Create(toName).Dispose();
         }
         #endregion
