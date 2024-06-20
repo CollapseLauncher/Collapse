@@ -58,6 +58,13 @@ namespace CollapseLauncher
                 TryDeleteReadOnlyFile(badlistFile);
             }
 
+            // Try to find "verify.fail" files in the game folder and delete it
+            foreach (string verifFail in Directory.EnumerateFiles(_gamePath, "*verify*.fail*", SearchOption.AllDirectories))
+            {
+                LogWriteLine($"Removing verify.fail mark at: {verifFail}", LogType.Warning, true);
+                TryDeleteReadOnlyFile(verifFail);
+            }
+
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
