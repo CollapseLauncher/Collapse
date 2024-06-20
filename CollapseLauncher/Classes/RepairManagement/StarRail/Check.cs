@@ -51,6 +51,13 @@ namespace CollapseLauncher
     {
         private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
+            // Try to find "badlist.byte" files in the game folder and delete it
+            foreach (string badlistFile in Directory.EnumerateFiles(_gamePath, "*badlist*.byte*", SearchOption.AllDirectories))
+            {
+                LogWriteLine($"Removing bad list mark at: {badlistFile}", LogType.Warning, true);
+                TryDeleteReadOnlyFile(badlistFile);
+            }
+
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
