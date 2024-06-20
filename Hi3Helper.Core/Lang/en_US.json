@@ -1030,6 +1030,8 @@
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",

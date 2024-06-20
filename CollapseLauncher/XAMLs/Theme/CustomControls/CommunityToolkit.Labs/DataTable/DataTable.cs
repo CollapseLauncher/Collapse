@@ -147,12 +147,12 @@ public class DataTable : Panel
             if (column.CurrentWidth.IsStar)
             {
                 width = proportionalAmount * column.CurrentWidth.Value;
-                column.Arrange(new Rect(x, 0, width, finalSize.Height));
+                column.Arrange(new Rect(x, 0, Math.Clamp(width, 0, int.MaxValue), finalSize.Height));
             }
             else if (column.CurrentWidth.IsAbsolute)
             {
                 width = column.CurrentWidth.Value;
-                column.Arrange(new Rect(x, 0, width, finalSize.Height));
+                column.Arrange(new Rect(x, 0, Math.Clamp(width, 0, int.MaxValue), finalSize.Height));
             }
             else
             {

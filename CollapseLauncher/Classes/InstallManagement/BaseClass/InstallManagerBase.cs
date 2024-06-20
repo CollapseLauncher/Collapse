@@ -852,7 +852,7 @@ namespace CollapseLauncher.InstallManager.Base
                 if (_gameAudioLangListPath != null)
                 {
                     // Add existing voice-over diff data
-                    await AddAdditionalVODiffAssetsToList(httpClient, requestedBaseUrlFrom, requestedBaseUrlTo, sophonUpdateAssetList);
+                    await AddSophonAdditionalVODiffAssetsToList(httpClient, requestedBaseUrlFrom, requestedBaseUrlTo, sophonUpdateAssetList);
                 }
 
                 // Get the remote total size and current total size
@@ -940,7 +940,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async Task AddAdditionalVODiffAssetsToList(HttpClient httpClient,
+        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient httpClient,
             string requestedUrlFrom, string requestedUrlTo, List<SophonAsset> sophonPreloadAssetList)
         {
             // Get the main VO language name from Id
@@ -963,7 +963,7 @@ namespace CollapseLauncher.InstallManager.Base
                             continue;
 
                         // Get other lang Id, pass it and try add to the list
-                        string otherLangId = GetLanguageStringByLocaleCode(line);
+                        string otherLangId = GetLanguageLocaleCodeByLanguageString(line);
                         // Get the manifest pair for both previous (from) and next (to) version for other VOs
                         await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo, sophonPreloadAssetList, otherLangId);
                     }
@@ -1938,6 +1938,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual string GetLanguageLocaleCodeByLanguageString(string langString) => langString switch
         {
             "Chinese" => "zh-cn",
+            "English" => "en-us",
             "English(US)" => "en-us",
             "Korean" => "ko-kr",
             "Japanese" => "ja-jp",

@@ -6,9 +6,9 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using static CollapseLauncher.MainEntryPoint;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -152,16 +152,6 @@ namespace CollapseLauncher.ShortcutUtils
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
             GetImageFromUrl(gridPath, assets["Preview"], "");
-        }
-
-        private static string MD5Hash(string path)
-        {
-            if (!File.Exists(path))
-                return "";
-            FileStream stream = File.OpenRead(path);
-            var hash = MD5.Create().ComputeHash(stream);
-            stream.Close();
-            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
         private async void GetImageFromUrl(string gridPath, SteamGameProp asset, string steamSuffix)
