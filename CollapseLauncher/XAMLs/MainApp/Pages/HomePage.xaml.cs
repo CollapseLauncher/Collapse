@@ -5,6 +5,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GamePlaytime.Universal;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -53,7 +54,6 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
-using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Pages
@@ -183,8 +183,9 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
-                UpdatePlaytime();
-                UpdateLastPlayed();
+                CurrentGameProperty._GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
+                CurrentGameProperty._GamePlaytime.ForceUpdate();
+
                 CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll(CarouselToken.Token);
 
@@ -234,6 +235,7 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
+            CurrentGameProperty._GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
             PageToken.Cancel();
             CarouselToken.Cancel();
         }
@@ -1331,7 +1333,8 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                StartPlaytimeCounter(proc, _gamePreset);
+                CurrentGameProperty._GamePlaytime.StartSession(proc);
+
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
@@ -1818,26 +1821,20 @@ namespace CollapseLauncher.Pages
             if (_cachedIsGameRunning)
                 return;
 
-            UpdatePlaytime();
+            CurrentGameProperty._GamePlaytime.ForceUpdate();
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int playtimeMins = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int playtimeHours = int.Parse("0" + HourPlaytimeTextBox.Text);
-            int finalPlaytimeMinutes = playtimeMins % 60;
-            int finalPlaytimeHours = playtimeHours + playtimeMins / 60;
-            if (finalPlaytimeHours > 99999) { finalPlaytimeHours = 99999; finalPlaytimeMinutes = 59; }
-            MinutePlaytimeTextBox.Text = finalPlaytimeMinutes.ToString();
-            HourPlaytimeTextBox.Text = finalPlaytimeHours.ToString();
-
-            int finalPlaytime = finalPlaytimeHours * 3600 + finalPlaytimeMinutes * 60;
-
-            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
-            LogWriteLine($"Playtime counter changed to {HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m"}. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, finalPlaytime);
+            int      Mins                = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int      Hours               = int.Parse("0" + HourPlaytimeTextBox.Text);
+            
+            TimeSpan time                = TimeSpan.FromMinutes(Hours * 60 + Mins);
+            if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
+            
+            CurrentGameProperty._GamePlaytime.Update(time);
             PlaytimeFlyout.Hide();
         }
 
@@ -1845,9 +1842,7 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
-            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
-            LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, 0);
+            CurrentGameProperty._GamePlaytime.Reset();
             PlaytimeFlyout.Hide();
         }
 
@@ -1856,129 +1851,45 @@ namespace CollapseLauncher.Pages
             sender.MaxLength = sender == HourPlaytimeTextBox ? 5 : 3;
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
-        #endregion
 
-        #region Playtime Tracker Method
-        private void UpdatePlaytime(bool readRegistry = true, int value = 0)
+        private void UpdatePlaytime(object sender, Playtime playtime)
         {
-            if (readRegistry)
-                value = ReadPlaytimeFromRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
-
-            HourPlaytimeTextBox.Text = (value / 3600).ToString();
-            MinutePlaytimeTextBox.Text = (value % 3600 / 60).ToString();
-            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, (value / 3600), (value % 3600 / 60));
-        }
-
-        private DateTime Hoyoception => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
-        private void UpdateLastPlayed(bool readRegistry = true, int value = 0)
-        {
-            if (readRegistry)
-                value = ReadPlaytimeFromRegistry(false, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
-
-            DateTime last = Hoyoception.AddSeconds(value).ToLocalTime();
-
-            if (value == 0)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                PlaytimeLastOpen.Visibility = Visibility.Collapsed;
-                return;
-            }
+                PlaytimeMainBtn.Text = FormatTimeStamp(playtime.CurrentPlaytime);
+                HourPlaytimeTextBox.Text = (playtime.CurrentPlaytime.Days * 24 + playtime.CurrentPlaytime.Hours).ToString();
+                MinutePlaytimeTextBox.Text = playtime.CurrentPlaytime.Minutes.ToString();
 
-            PlaytimeLastOpen.Visibility = Visibility.Visible;
-            string formattedText = string.Format(Lang._HomePage.GamePlaytime_ToolTipDisplay, last.Day,
-                last.Month, last.Year, last.Hour, last.Minute);
-            ToolTipService.SetToolTip(PlaytimeBtn, formattedText);
-        }
-
-        private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset)
-        {
-            int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
-
-            DateTime begin = DateTime.Now;
-            int lastPlayed = (int)(begin.ToUniversalTime() - Hoyoception).TotalSeconds;
-            SavePlaytimeToRegistry(false, gamePreset.ConfigRegistryLocation, lastPlayed);
-            UpdateLastPlayed(false, lastPlayed);
-            int numOfLoops = 0;
-
-#if DEBUG
-            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
-#endif
-
-            using (var inGameTimer = new Timer())
-            {
-                inGameTimer.Interval = 60000;
-                inGameTimer.Elapsed += (_, _) =>
+                if (playtime.LastPlayed == null)
                 {
-                    numOfLoops++;
+                    ToolTipService.SetToolTip(PlaytimeBtn, null);
+                    return;
+                }
 
-                    DateTime now = DateTime.Now;
-                    int elapsedSeconds = (int)(now - begin).TotalSeconds;
-                    if (elapsedSeconds < 0)
-                        elapsedSeconds = numOfLoops * 60;
+                DateTime? last = playtime.LastPlayed?.ToLocalTime();
+                string lastPlayed = string.Format(Lang._HomePage.GamePlaytime_ToolTipDisplay, last?.Day,
+                                                  last?.Month, last?.Year, last?.Hour, last?.Minute);
 
-                    if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                        m_homePage?.DispatcherQueue?.TryEnqueue(() =>
-                        {
-                            m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
-                        });
-#if DEBUG
-                    LogWriteLine($"{gamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
-#endif
-                    SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
+                StackPanel panel = new StackPanel()
+                {
+                    Children =
+                    {
+                        new TextBlock() { Text = "Last opened" },
+                        new TextBlock() { Text = lastPlayed, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
+                        new TextBlock() { Text = "Daily Playtime" },
+                        new TextBlock() { Text = FormatTimeStamp(playtime.DailyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
+                        new TextBlock() { Text = "Weekly Playtime" },
+                        new TextBlock() { Text = FormatTimeStamp(playtime.WeeklyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
+                        new TextBlock() { Text = "Monthly Playtime" },
+                        new TextBlock() { Text = FormatTimeStamp(playtime.MonthlyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) }
+                    }
                 };
 
-                inGameTimer.Start();
-                await proc.WaitForExitAsync();
-                inGameTimer.Stop();
-            }
+                ToolTipService.SetToolTip(PlaytimeBtn, panel);
+            });
+            return;
 
-            DateTime end = DateTime.Now;
-            int elapsedSeconds = (int)(end - begin).TotalSeconds;
-            if (elapsedSeconds < 0)
-            {
-                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
-                elapsedSeconds = numOfLoops * 60;
-                Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
-            }
-
-            SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] " +
-                         $"to {gamePreset.ProfileName} playtime.", LogType.Default, true);
-            if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                m_homePage?.DispatcherQueue?.TryEnqueue(() =>
-                {
-                    m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
-                });
-        }
-
-        private const string _playtimeRegName = "CollapseLauncher_Playtime";
-        private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
-        private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
-        {
-            try
-            {
-                return (int)
-                    Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                            .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
-                return 0;
-            }
-        }
-
-        private static void SavePlaytimeToRegistry(bool isPlaytime, string regionRegistryKey, int value)
-        {
-            try
-            {
-                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                        .SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value,
-                                  RegistryValueKind.DWord);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
-            }
+            static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
         }
         #endregion
 

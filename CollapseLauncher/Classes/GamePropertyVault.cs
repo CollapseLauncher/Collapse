@@ -30,18 +30,20 @@ namespace CollapseLauncher.Statics
             switch (GamePreset!.GameType)
             {
                 case GameNameType.Honkai:
-                    _GameVersion = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                    _GameVersion  = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
                     _GameSettings = new HonkaiSettings(_GameVersion);
-                    _GameCache = new HonkaiCache(UIElementParent, _GameVersion);
-                    _GameRepair = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                    _GameInstall = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
+                    _GameCache    = new HonkaiCache(UIElementParent, _GameVersion);
+                    _GameRepair   = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
+                    _GameInstall  = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
+                    _GamePlaytime = new GamePlaytime.Universal.GamePlaytime(_GameVersion);
                     break;
                 case GameNameType.StarRail:
-                    _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                    _GameVersion  = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
                     _GameSettings = new StarRailSettings(_GameVersion);
-                    _GameCache = new StarRailCache(UIElementParent, _GameVersion);
-                    _GameRepair = new StarRailRepair(UIElementParent, _GameVersion);
-                    _GameInstall = new StarRailInstall(UIElementParent, _GameVersion);
+                    _GameCache    = new StarRailCache(UIElementParent, _GameVersion);
+                    _GameRepair   = new StarRailRepair(UIElementParent, _GameVersion);
+                    _GameInstall  = new StarRailInstall(UIElementParent, _GameVersion);
+                    _GamePlaytime = new GamePlaytime.Universal.GamePlaytime(_GameVersion);
                     break;
                 case GameNameType.Genshin:
                     _GameVersion = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
@@ -49,6 +51,7 @@ namespace CollapseLauncher.Statics
                     _GameCache = null;
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
                     _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
+                    _GamePlaytime = new GamePlaytime.Universal.GamePlaytime(_GameVersion);
                     break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
@@ -58,6 +61,7 @@ namespace CollapseLauncher.Statics
         internal RegionResourceProp _APIResouceProp { get; set; }
         internal PresetConfig _GamePreset { get => _GameVersion.GamePreset; }
         internal IGameSettings _GameSettings { get; set; }
+        internal IGamePlaytime _GamePlaytime { get; set; }
         internal IRepair _GameRepair { get; set; }
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
@@ -120,11 +124,12 @@ namespace CollapseLauncher.Statics
             _GameInstall?.Dispose();
 
             _APIResouceProp = null;
-            _GameSettings = null;
-            _GameRepair = null;
-            _GameCache = null;
-            _GameVersion = null;
-            _GameInstall = null;
+            _GameSettings   = null;
+            _GameRepair     = null;
+            _GameCache      = null;
+            _GameVersion    = null;
+            _GameInstall    = null;
+            _GamePlaytime   = null;
         }
     }
 
