@@ -409,6 +409,7 @@ namespace CollapseLauncher.Interfaces
 
         protected void TryDeleteReadOnlyFile(string path)
         {
+            if (!File.Exists(path)) return;
             try
             {
                 FileInfo file = new FileInfo(path!);
