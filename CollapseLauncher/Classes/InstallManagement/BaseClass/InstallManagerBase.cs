@@ -1232,6 +1232,14 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         LogWriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}", LogType.Error, true);
                     }
+                    finally
+                    {
+                        // Check if the DXSETUP file is exist, then delete it.
+                        // The DXSETUP files causes some false positive detection of data modification
+                        // for some games (like Genshin, which causes 4302-x errors for some reason)
+                        string dxSetupDir = Path.Combine(_gamePath, "DXSETUP");
+                        TryDeleteReadOnlyDir(dxSetupDir);
+                    }
                 }
 
                 // If the _canDeleteZip flag is true and not in doNotDeleteZipExplicit mode, then delete the zip
