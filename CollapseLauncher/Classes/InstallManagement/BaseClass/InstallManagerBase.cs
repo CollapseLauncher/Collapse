@@ -1392,6 +1392,12 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     _gameVersionManager.UpdatePluginVersions(gamePluginVersionDictionary);
                 }
+
+                RegionResourcePlugin? gameSdkList = _gameVersionManager.GetGameSdkZip()?.FirstOrDefault();
+                if (gameSdkList != null && GameVersion.TryParse(gameSdkList?.version, out GameVersion? sdkVersionResult))
+                {
+                    _gameVersionManager.UpdateSdkVersion(sdkVersionResult);
+                }
 #nullable restore
             }
 
@@ -2395,18 +2401,24 @@ namespace CollapseLauncher.InstallManager.Base
                     if (asset == null) continue;
                     await TryAddResourceVersionList(asset, packageList);
                 }
-
-                // Check if the existing installation has the plugin installed or not
-                if (!await _gameVersionManager.IsPluginVersionsMatch())
-                {
-                    // Try get the plugin package
-                    TryAddPluginPackage(packageList);
-                }
-                return;
             }
 
-            // Try get the plugin package
-            TryAddPluginPackage(packageList);
+            // Check if the existing installation has the plugin installed or not
+            if (!await _gameVersionManager.IsPluginVersionsMatch())
+            {
+                // Try get the plugin package
+                TryAddPluginPackage(packageList);
+            }
+
+            // Check if the existing installation has the sdk installed or not
+            if (!await _gameVersionManager.IsSdkVersionsMatch())
+            {
+                // Get the sdk package
+                foreach (RegionResourcePlugin sdkPackage in _gameVersionManager.GetGameSdkZip())
+                {
+                    packageList.Add(new GameInstallPackage(sdkPackage, _gamePath));
+                }
+            }
         }
 
 #nullable enable
@@ -2448,7 +2460,7 @@ namespace CollapseLauncher.InstallManager.Base
                         {
                             // If the both plugin versions from API and INI is equal, then remove the package
                             // from the dictionary.
-                            if (pluginResourceVersionResult?.ToVersion() == installedPluginVersionResult?.ToVersion())
+                            if (pluginResourceVersionResult.Equals(installedPluginVersionResult))
                             {
                                 // Remove the plugin resource
                                 pluginResourceDictionary.Remove(iniPluginId);

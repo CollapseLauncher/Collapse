@@ -113,6 +113,12 @@ namespace CollapseLauncher.Interfaces
         ValueTask<bool> IsPluginVersionsMatch();
 
         /// <summary>
+        /// Checks if the sdk version is installed or matches the version provided from miHoYo's API.
+        /// This is used to obtain the status of the SDK .dlls for certain builds (for example: Bilibili version)
+        /// </summary>
+        ValueTask<bool> IsSdkVersionsMatch();
+
+        /// <summary>
         /// Check if the game version is installed.
         /// </summary>
         bool IsGameInstalled();
@@ -158,6 +164,11 @@ namespace CollapseLauncher.Interfaces
         List<RegionResourcePlugin>? GetGamePluginZip();
 
         /// <summary>
+        /// Returns the <c>List</c> of the Resource Version for the SDKs
+        /// </summary>
+        List<RegionResourcePlugin>? GetGameSdkZip();
+
+        /// <summary>
         /// Try find game installation path from the given path.
         /// If it returns null, then there's no game installation found.
         /// </summary>
@@ -193,8 +204,16 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Update the game plugin versions and save it to the config.
         /// </summary>
+        /// <param name="versions">The dictionary collection of the plugins</param>
         /// <param name="saveValue">Save the config file</param>
         void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue = true);
+
+        /// <summary>
+        /// Update the game SDK version and save it to the config.
+        /// </summary>
+        /// <param name="version">The version of the SDK</param>
+        /// <param name="saveValue">Save the config file</param>
+        void UpdateSdkVersion(GameVersion? version, bool saveValue = true);
 
         /// <summary>
         /// Reinitialize the game version configs, including the INIs.
