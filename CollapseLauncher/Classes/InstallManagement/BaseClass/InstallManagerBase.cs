@@ -2070,15 +2070,28 @@ namespace CollapseLauncher.InstallManager.Base
             // If the game does not have audio lang list, then return
             if (string.IsNullOrEmpty(_gameAudioLangListPathStatic)) return;
 
+            // Read all the existing list
+            List<string> langList = File.Exists(_gameAudioLangListPathStatic) ?
+                File.ReadAllLines(_gameAudioLangListPathStatic).ToList() :
+                new List<string>();
+
+            // Try lookup if there is a new language list, then add it to the list
+            foreach (GameInstallPackage package in _assetIndex.Where(x => x.PackageType == GameInstallPackageType.Audio))
+            {
+                string langString = GetLanguageStringByLocaleCode(package.LanguageID);
+                if (!langList.Contains(langString, StringComparer.OrdinalIgnoreCase))
+                    langList.Add(langString);
+            }
+
             // Create the audio lang list file
             using (StreamWriter sw = new StreamWriter(_gameAudioLangListPathStatic,
                 new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
             {
                 // Iterate the package list
-                foreach (GameInstallPackage package in _assetIndex.Where(x => x.PackageType == GameInstallPackageType.Audio))
+                foreach (string langString in langList)
                 {
                     // Write the language string as per ID
-                    sw.WriteLine(GetLanguageStringByLocaleCode(package.LanguageID));
+                    sw.WriteLine(langString);
                 }
             }
         }
@@ -2091,14 +2104,27 @@ namespace CollapseLauncher.InstallManager.Base
             // If the game does not have audio lang list, then return
             if (string.IsNullOrEmpty(_gameAudioLangListPathStatic)) return;
 
+            // Read all the existing list
+            List<string> langList = File.Exists(_gameAudioLangListPathStatic) ?
+                File.ReadAllLines(_gameAudioLangListPathStatic).ToList() :
+                new List<string>();
+
+            // Try lookup if there is a new language list, then add it to the list
+            foreach (string packageLocaleCodeString in sophonVOList)
+            {
+                string langString = GetLanguageStringByLocaleCode(packageLocaleCodeString);
+                if (!langList.Contains(langString, StringComparer.OrdinalIgnoreCase))
+                    langList.Add(langString);
+            }
+
             // Create the audio lang list file
             using (var sw = new StreamWriter(_gameAudioLangListPathStatic,
                                              new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
             {
                 // Iterate the package list
-                foreach (var voIds in sophonVOList)
+                foreach (var voIds in langList)
                     // Write the language string as per ID
-                    sw.WriteLine(GetLanguageStringByLocaleCode(voIds));
+                    sw.WriteLine(voIds);
             }
         }
         #endregion
