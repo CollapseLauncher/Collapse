@@ -82,6 +82,12 @@ namespace CollapseLauncher
             if (!fromVersion.HasValue || !toVersion.HasValue) return false;
             return fromVersion.Value.ToVersion() < toVersion.Value.ToVersion();
         }
+
+        public static bool Equals(this GameVersion? fromVersion, GameVersion? toVersion)
+        {
+            if (!fromVersion.HasValue || !toVersion.HasValue) return false;
+            return fromVersion.Value.ToVersion() == toVersion.Value.ToVersion();
+        }
     }
 
     public struct GameVersion
