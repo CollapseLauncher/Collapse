@@ -23,12 +23,32 @@ namespace CollapseLauncher
         
         public App()
         {
-            try
+            if (DebugSettings != null)
             {
-                DebugSettings!.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
+#if ENABLEFRAMECOUNTER
+                DebugSettings.EnableFrameRateCounter = true;
+#endif
+#if DEBUG
+                DebugSettings.LayoutCycleDebugBreakLevel = LayoutCycleDebugBreakLevel.High;
+                DebugSettings.LayoutCycleTracingLevel = LayoutCycleTracingLevel.High;
+                DebugSettings.IsXamlResourceReferenceTracingEnabled = true;
+                DebugSettings.IsBindingTracingEnabled = true;
+#endif
+                DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
                 DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
                 UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true); };
-                
+            }
+
+            RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
+            SetPreferredAppMode(ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+
+            this.InitializeComponent();
+        }
+
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            try
+            {
                 ThemeChangerInvoker.ThemeEvent += (_, _) => {
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
                     bool isThemeLight = IsAppThemeLight;
@@ -39,11 +59,8 @@ namespace CollapseLauncher
                     WindowUtility.CurrentAppWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
 
                     if (WindowUtility.CurrentWindow!.Content is not null and FrameworkElement frameworkElement)
-                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark; };
-
-                this.InitializeComponent();
-                RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
-                SetPreferredAppMode(ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+                };
 
                 Window toInitializeWindow = null;
                 switch (m_appMode)
