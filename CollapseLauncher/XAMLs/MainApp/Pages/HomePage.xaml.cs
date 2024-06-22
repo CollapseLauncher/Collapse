@@ -64,7 +64,7 @@ namespace CollapseLauncher.Pages
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
         private CancellationTokenSource PageToken { get; set; }
-        private CancellationTokenSource CarouselToken { get; set; }
+        private CancellationTokenSourceWrapper CarouselToken { get; set; }
 
         private int barWidth;
         private int consoleWidth;
@@ -146,7 +146,7 @@ namespace CollapseLauncher.Pages
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 PageToken = new CancellationTokenSource();
-                CarouselToken = new CancellationTokenSource();
+                CarouselToken = new CancellationTokenSourceWrapper();
 
                 this.InitializeComponent();
 
@@ -187,7 +187,7 @@ namespace CollapseLauncher.Pages
                 UpdatePlaytime();
                 UpdateLastPlayed();
                 CheckRunningGameInstance(PageToken.Token);
-                StartCarouselAutoScroll(CarouselToken.Token);
+                StartCarouselAutoScroll();
 
                 if (m_arguments.StartGame?.Play != true)
                     return;
@@ -313,14 +313,14 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
+        public async void StartCarouselAutoScroll(int delaySeconds = 5)
         {
             if (!IsCarouselPanelAvailable) return;
             try
             {
                 while (true)
                 {
-                    await Task.Delay(delay * 1000, token);
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
                     if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1)
                         ImageCarousel.SelectedIndex++;
@@ -328,7 +328,7 @@ namespace CollapseLauncher.Pages
                         for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
                             ImageCarousel.SelectedIndex = i - 1;
-                            await Task.Delay(100, token);
+                            await Task.Delay(100, CarouselToken.Token);
                         }
                 }
             }
@@ -342,15 +342,26 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public void CarouselStopScroll(object sender = null, PointerRoutedEventArgs e = null) => CarouselToken.Cancel();
+        private       void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)  => CarouselRestartScroll(5);
+        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
-        public void CarouselRestartScroll(object sender = null, PointerRoutedEventArgs e = null)
+        public async void CarouselRestartScroll(int delaySeconds = 5)
         {
             // Don't restart carousel if game is running and LoPrio is on
             if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
+            await CarouselStopScroll();
 
-            CarouselToken = new CancellationTokenSource();
-            StartCarouselAutoScroll(CarouselToken.Token);
+            CarouselToken = new CancellationTokenSourceWrapper();
+            StartCarouselAutoScroll(delaySeconds);
+        }
+
+        public async ValueTask CarouselStopScroll()
+        {
+            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled)
+            {
+                await CarouselToken.CancelAsync();
+                CarouselToken.Dispose();
+            }
         }
 
         private async void HideImageCarousel(bool hide)
@@ -2172,7 +2183,7 @@ namespace CollapseLauncher.Pages
                                  $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
 
-                CarouselStopScroll();
+                await CarouselStopScroll();
                 await proc.WaitForExitAsync();
 
                 using (Process collapseProcess = Process.GetCurrentProcess())
