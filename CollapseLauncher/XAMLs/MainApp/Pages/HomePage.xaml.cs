@@ -55,6 +55,7 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
+using CollapseLauncher.InstallManager.Base;
 
 namespace CollapseLauncher.Pages
 {
@@ -347,6 +348,7 @@ namespace CollapseLauncher.Pages
         {
             // Don't restart carousel if game is running and LoPrio is on
             if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
+
             CarouselToken = new CancellationTokenSource();
             StartCarouselAutoScroll(CarouselToken.Token);
         }
@@ -997,10 +999,14 @@ namespace CollapseLauncher.Pages
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
-            // While this fixes #191, we need to find a way to move all elements above it by at least 16
 
             try
             {
+                // Prevent device from sleep
+                InvokeProp.PreventSleep();
+                // Set the notification trigger to "Running" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
@@ -1034,15 +1040,22 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Pre-Download paused!", LogType.Warning);
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"An error occurred while starting preload process: {ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             finally
             {
@@ -1050,6 +1063,9 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.ProgressChanged -= PreloadDownloadProgress;
                 CurrentGameProperty._GameInstall.StatusChanged -= PreloadDownloadStatus;
                 CurrentGameProperty._GameInstall.Flush();
+
+                // Turn the sleep back on
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -1085,6 +1101,11 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                // Prevent device from sleep
+                InvokeProp.PreventSleep();
+                // Set the notification trigger to "Running" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 IsSkippingUpdateCheck = true;
 
                 HideImageCarousel(true);
@@ -1127,17 +1148,27 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
                 if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch (TaskCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             catch (NullReferenceException ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
@@ -1145,6 +1176,9 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
@@ -1158,6 +1192,9 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
+
+                // Turn the sleep back on
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -1992,6 +2029,11 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                // Prevent device from sleep
+                InvokeProp.PreventSleep();
+                // Set the notification trigger to "Running" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 IsSkippingUpdateCheck = true;
 
                 ProgressStatusGrid.Visibility = Visibility.Visible;
@@ -2014,17 +2056,27 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
                 if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch (TaskCanceledException)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
             catch (OperationCanceledException)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
             catch (NullReferenceException ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Update error on {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
@@ -2032,6 +2084,9 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Update error on {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
@@ -2045,6 +2100,9 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
+
+                // Turn the sleep back on
+                InvokeProp.RestoreSleep();
             }
         }
         #endregion

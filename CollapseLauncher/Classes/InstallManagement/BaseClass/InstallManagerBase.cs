@@ -46,6 +46,8 @@ using SophonManifest = Hi3Helper.Sophon.SophonManifest;
 
 namespace CollapseLauncher.InstallManager.Base
 {
+    public enum CompletenessStatus { Running, Completed, Cancelled, Idle }
+
     // ReSharper disable once UnusedTypeParameter
     internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage> where T : IGameVersionCheck
     {
@@ -130,7 +132,6 @@ namespace CollapseLauncher.InstallManager.Base
             _httpClient?.Dispose();
             _gameRepairTool?.Dispose();
             _token?.Cancel();
-            InvokeProp.RestoreSleep();
             IsRunning = false;
             Flush();
         }
@@ -239,9 +240,6 @@ namespace CollapseLauncher.InstallManager.Base
 
                 try
                 {
-                    // Prevent sleep
-                    InvokeProp.PreventSleep();
-                    
                     List<FilePropertiesRemote> localAssetIndex = repairGame!.GetAssetIndex();
                     MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath, isHonkai, isSR);
 
@@ -284,14 +282,11 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                     }
 
-                    UpdateCompletenessStatus(CompletenessStatus.Completed);
-
                     // Then return
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                     LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
                     throw;
                 }
@@ -299,8 +294,6 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     EventListener.PatchEvent -= DeltaPatchCheckProgress;
                     EventListener.LoggerEvent -= DeltaPatchCheckLogEvent;
-                    
-                    InvokeProp.RestoreSleep();
                 }
             }
 
@@ -363,8 +356,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
-                InvokeProp.PreventSleep();
-
                 // Skip installation if sophon is used and not in update state
                 if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
                     return true;
@@ -377,12 +368,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch
             {
-                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
-            }
-            finally
-            {
-                InvokeProp.RestoreSleep();
             }
 
             return true;
@@ -464,7 +450,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async Task StartPackageDownload(bool skipDialog)
         {
-            UpdateCompletenessStatus(CompletenessStatus.Running);
             ResetToken();
 
             // Get the game state and run the action for each of them
@@ -527,21 +512,12 @@ namespace CollapseLauncher.InstallManager.Base
                     await CheckExistingDownloadAsync(_parentUI, _assetIndex);
                 }
 
-                InvokeProp.PreventSleep();
-
                 // Start downloading process
                 await InvokePackageDownloadRoutine(_assetIndex, _token!.Token);
-
-                UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch
             {
-                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
-            }
-            finally
-            {
-                InvokeProp.RestoreSleep();
             }
         }
 
@@ -573,7 +549,6 @@ namespace CollapseLauncher.InstallManager.Base
                 gamePackage ??= _assetIndex;
                 ArgumentNullException.ThrowIfNull(gamePackage);
 
-                UpdateCompletenessStatus(CompletenessStatus.Running);
                 // Get the total asset count
                 int assetCount = gamePackage.Sum(x => x!.Segments != null ? x.Segments.Count : 1);
 
@@ -625,11 +600,9 @@ namespace CollapseLauncher.InstallManager.Base
                         return returnCode;
                     }
                 }
-                UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch
             {
-                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
             }
 
@@ -662,9 +635,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
-                // Set background status
-                UpdateCompletenessStatus(CompletenessStatus.Running);
-
                 // Reset status and progress properties
                 ResetStatusAndProgressProperty();
 
@@ -776,15 +746,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                         File.Move(filePath, origFilePath, true);
                                                 }));
 
-                // Set background status
-                UpdateCompletenessStatus(CompletenessStatus.Completed);
                 _isSophonDownloadCompleted = true;
-            }
-            catch (Exception)
-            {
-                // Set background status
-                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-                throw;
             }
             finally
             {
@@ -822,9 +784,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
-                // Set background status
-                UpdateCompletenessStatus(CompletenessStatus.Running);
-
                 // Reset status and progress properties
                 ResetStatusAndProgressProperty();
 
@@ -902,15 +861,7 @@ namespace CollapseLauncher.InstallManager.Base
                             canDeleteChunks, parallelOptions, UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
                     });
 
-                // Set background status
-                UpdateCompletenessStatus(CompletenessStatus.Completed);
                 _isSophonDownloadCompleted = true;
-            }
-            catch (Exception)
-            {
-                // Set background status
-                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-                throw;
             }
             finally
             {
@@ -1091,27 +1042,10 @@ namespace CollapseLauncher.InstallManager.Base
             asset.DeleteFile(_downloadThreadCount);
         }
 
-        public async Task StartPackageInstallation()
-        {
-            try
-            {
-                UpdateCompletenessStatus(CompletenessStatus.Running);
-
-                await StartPackageInstallationInner()!;
-
-                UpdateCompletenessStatus(CompletenessStatus.Completed);
-            }
-            catch
-            {
-                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-                throw;
-            }
-        }
+        public async Task StartPackageInstallation() => await StartPackageInstallationInner();
 
         protected virtual async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null, bool isOnlyInstallPackage = false, bool doNotDeleteZipExplicit = false)
         {
-            InvokeProp.PreventSleep();
-            
             // Sanity Check: Check if the _gamePath is null, then throw
             if (string.IsNullOrEmpty(_gamePath)) throw new NullReferenceException("_gamePath cannot be null or empty!");
 
@@ -1249,8 +1183,6 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 _progressTotalCountCurrent++;
-                
-                InvokeProp.RestoreSleep();
             }
         }
 
@@ -1461,8 +1393,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         public async ValueTask<bool> MoveGameLocation()
         {
-            InvokeProp.PreventSleep();
-            
             // Get the Game folder
             string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
@@ -1471,7 +1401,6 @@ namespace CollapseLauncher.InstallManager.Base
             if (migrationOptionReturn == -1) return false;
 
             // If all the operation is complete, then return true as completed
-            InvokeProp.RestoreSleep();
             return true;
         }
 
@@ -1492,7 +1421,6 @@ namespace CollapseLauncher.InstallManager.Base
             try
             {
             #nullable enable
-                InvokeProp.PreventSleep();
                 // Assign UninstallProperty from each overrides
                 UninstallGameProperty UninstallProperty = AssignUninstallFolders();
 
@@ -1644,10 +1572,6 @@ namespace CollapseLauncher.InstallManager.Base
                 LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - Region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}",
                              LogType.Error, true);
             }
-            finally
-            {
-                InvokeProp.RestoreSleep();
-            }
 
             _gameVersionManager.UpdateGamePath("", true);
             _gameVersionManager.Reinitialize();
@@ -1658,8 +1582,6 @@ namespace CollapseLauncher.InstallManager.Base
         public void CancelRoutine()
         {
             // Always cancel PreventSleep token when cancelling any installation process
-            InvokeProp.RestoreSleep();
-            
             _gameRepairTool?.CancelRoutine();
             _token.Cancel();
             Flush();
@@ -1746,7 +1668,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async ValueTask ApplyHdiffListPatch()
         {
-            InvokeProp.PreventSleep();
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
 
             _progress.ProgressTotalSizeToDownload = hdiffEntry.Sum(x => x.fileSize);
@@ -1825,7 +1746,6 @@ namespace CollapseLauncher.InstallManager.Base
                     patchFile.Delete();
                 }
             }
-            InvokeProp.RestoreSleep();
         }
 
         private async void EventListener_PatchEvent(object sender, PatchEvent e)
@@ -2738,7 +2658,6 @@ namespace CollapseLauncher.InstallManager.Base
             _httpClient.DownloadProgress += HttpClientDownloadProgressAdapter;
             try
             {
-                InvokeProp.PreventSleep();
                 // Iterate the package list
                 foreach (GameInstallPackage package in packageList)
                 {
@@ -2762,8 +2681,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Unsubscribe the download progress from the event adapter
                 _httpClient.DownloadProgress -= HttpClientDownloadProgressAdapter;
-                
-                InvokeProp.RestoreSleep();
             }
         }
 
@@ -2989,8 +2906,7 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
         #region Virtual Methods - StartPackageDownload
 
-        protected enum CompletenessStatus { Running, Completed, Cancelled, Idle }
-        protected void UpdateCompletenessStatus(CompletenessStatus status)
+        public void UpdateCompletenessStatus(CompletenessStatus status)
         {
             switch (status)
             {
