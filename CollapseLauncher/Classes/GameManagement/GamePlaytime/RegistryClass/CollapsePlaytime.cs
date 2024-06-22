@@ -207,7 +207,7 @@ namespace CollapseLauncher.GamePlaytime
 
         #endregion
 
-        #region Utility Methods
+        #region Utility
         private static bool IsDifferentMonth(DateTime date1, DateTime date2) => date1.Year != date2.Year || date1.Month != date2.Month;
 
         private static bool IsDifferentWeek(DateTime date1, DateTime date2) => date1.Year != date2.Year || ISOWeek.GetWeekOfYear(date1) != ISOWeek.GetWeekOfYear(date2);

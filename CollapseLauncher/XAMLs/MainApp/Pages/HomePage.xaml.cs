@@ -1815,7 +1815,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Playtime Buttons
+        #region Playtime
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             if (_cachedIsGameRunning)
@@ -1867,20 +1867,20 @@ namespace CollapseLauncher.Pages
                 }
 
                 DateTime? last = playtime.LastPlayed?.ToLocalTime();
-                string lastPlayed = string.Format(Lang._HomePage.GamePlaytime_ToolTipDisplay, last?.Day,
+                string lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
                                                   last?.Month, last?.Year, last?.Hour, last?.Minute);
 
                 StackPanel panel = new StackPanel()
                 {
                     Children =
                     {
-                        new TextBlock() { Text = "Last opened" },
+                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastPlayed },
                         new TextBlock() { Text = lastPlayed, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = "Daily Playtime" },
+                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Daily },
                         new TextBlock() { Text = FormatTimeStamp(playtime.DailyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = "Weekly Playtime" },
+                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Weekly },
                         new TextBlock() { Text = FormatTimeStamp(playtime.WeeklyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = "Monthly Playtime" },
+                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Monthly },
                         new TextBlock() { Text = FormatTimeStamp(playtime.MonthlyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) }
                     }
                 };
