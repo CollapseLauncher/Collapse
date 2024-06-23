@@ -976,7 +976,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
-                hashLocal = await base.CheckHashAsync(fs, MD5.Create(), token, true).ConfigureAwait(false);
+                hashLocal = await base.CheckHashAsync(fs, MD5.Create(), token, true);
             }
 
             // Check for the hash differences. If found, then show dialog to delete or cancel the process
