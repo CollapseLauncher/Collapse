@@ -91,6 +91,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected bool _forceIgnoreDeltaPatch;
         private long _totalLastSizeCurrent;
 
+        protected bool _isAllowExtractCorruptZip { get; set; }
         protected bool _isUseSophon { get => base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null; }
         protected bool _isSophonDownloadCompleted { get; set; }
         protected List<string> _sophonVOLanguageList { get; set; } = new();
@@ -995,6 +996,7 @@ namespace CollapseLauncher.InstallManager.Base
                         ContentDialogResult installCorruptDialogResult = await Dialog_GameInstallCorruptedDataAnyway(_parentUI, fileName, asset.Size);
                         // If cancel is pressed, then cancel the whole process
                         if (installCorruptDialogResult == ContentDialogResult.None) return -1;
+                        _isAllowExtractCorruptZip = true;
                         break;
                 }
             }
@@ -1089,8 +1091,8 @@ namespace CollapseLauncher.InstallManager.Base
 #if USENEWZIPDECOMPRESS
                 InstallPackageExtractorDelegate installTaskDelegate = packageExtension switch
                 {
-                    ".zip" => ExtractUsingNativeZip,
-                    ".zip.001" => ExtractUsingNativeZip,
+                    ".zip" => _isAllowExtractCorruptZip ? ExtractUsing7zip : ExtractUsingNativeZip,
+                    ".zip.001" => _isAllowExtractCorruptZip ? ExtractUsing7zip : ExtractUsingNativeZip,
                     _ => ExtractUsing7zip
                 };
 #else
