@@ -73,6 +73,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
             
             base.LauncherGameResource = sophonResourcePropRoot;
+
+            PerformDebugRoutines();
         }
 
         #region Convert Sdk Resources
@@ -159,31 +161,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 .Where(x => x.GameDetail?.GameBiz?
                     .Equals(PresetConfig?.LauncherBizName, StringComparison.OrdinalIgnoreCase) ?? false))
             {
-            #if !SIMULATEPRELOAD && SIMULATEAPPLYPRELOAD
-                // Assign and convert main game package (latest)
-                // WARNING!: SIMULATING PRELOAD AS MAIN PACKAGE
-                PackageResourceSections? hypMainPackageSection_Sim = hypRootPackage?.PreDownload?.CurrentVersion;
-                RegionResourceVersion sophonMainPackageSection_Sim = new RegionResourceVersion();
-                if (hypMainPackageSection_Sim != null)
-                    ConvertHYPSectionToResourceVersion(ref hypMainPackageSection_Sim, ref sophonMainPackageSection_Sim);
-                sophonPackageResources.game.latest = sophonMainPackageSection_Sim;
-
-                // Assign and convert main game package (diff)
-                if (hypRootPackage?.PreDownload?.Patches != null)
-                {
-                    sophonPackageResources.game.diffs = new List<RegionResourceVersion>();
-                    foreach (PackageResourceSections hypMainDiffPackageSection_Sim in hypRootPackage.PreDownload.Patches)
-                    {
-                        if (hypMainDiffPackageSection_Sim != null)
-                        {
-                            PackageResourceSections hypMainDiffPackageSectionRef_Sim = hypMainDiffPackageSection_Sim;
-                            RegionResourceVersion sophonResourceVersion_Sim = new RegionResourceVersion();
-                            ConvertHYPSectionToResourceVersion(ref hypMainDiffPackageSectionRef_Sim, ref sophonResourceVersion_Sim);
-                            sophonPackageResources.game.diffs.Add(sophonResourceVersion_Sim);
-                        }
-                    }
-                }
-            #else
                 // Assign and convert main game package (latest)
                 PackageResourceSections? hypMainPackageSection = hypRootPackage?.MainPackage?.CurrentVersion;
                 RegionResourceVersion sophonMainPackageSection = new RegionResourceVersion();
@@ -206,7 +183,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                         }
                     }
                 }
-            #endif
                 sophonPackageResources.pre_download_game = new RegionResourceLatest();
 
                 // Convert if preload entry is not empty or null

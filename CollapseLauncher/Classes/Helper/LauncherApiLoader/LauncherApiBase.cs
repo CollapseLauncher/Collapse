@@ -115,37 +115,42 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 }
             }
 
-        #if DEBUG
-            if (LauncherGameResource.data.game.latest.decompressed_path != null)
+            PerformDebugRoutines();
+        }
+
+        protected virtual void PerformDebugRoutines()
+        {
+#if DEBUG
+            if (LauncherGameResource?.data.game.latest.decompressed_path != null)
             {
                 Logger.LogWriteLine($"Decompressed Path: {LauncherGameResource.data.game.latest.decompressed_path}",
                                     LogType.Default, true);
             }
 
-            if (LauncherGameResource.data.game.latest.path != null)
+            if (LauncherGameResource?.data.game.latest.path != null)
             {
                 Logger.LogWriteLine($"ZIP Path: {LauncherGameResource.data.game.latest.path}", LogType.Default, true);
             }
 
-            if (LauncherGameResource.data.pre_download_game?.latest?.decompressed_path != null)
+            if (LauncherGameResource?.data.pre_download_game?.latest?.decompressed_path != null)
             {
                 Logger.LogWriteLine($"Decompressed Path Pre-load: {LauncherGameResource.data.pre_download_game?.latest?.decompressed_path}",
                                     LogType.Default, true);
             }
 
-            if (LauncherGameResource.data.sdk?.path != null)
+            if (LauncherGameResource?.data.sdk?.path != null)
             {
                 Logger.LogWriteLine($"SDK found! Path: {LauncherGameResource.data.sdk.path}", LogType.Default, true);
             }
 
-            if (LauncherGameResource.data.pre_download_game?.latest?.path != null)
+            if (LauncherGameResource?.data.pre_download_game?.latest?.path != null)
             {
                 Logger.LogWriteLine($"ZIP Path Pre-load: {LauncherGameResource.data.pre_download_game?.latest?.path}",
                                     LogType.Default, true);
             }
-        #endif
+#endif
 
-        #if SIMULATEPRELOAD && !SIMULATEAPPLYPRELOAD
+#if SIMULATEPRELOAD && !SIMULATEAPPLYPRELOAD
             if (LauncherGameResource.data.pre_download_game == null)
             {
                 Logger.LogWriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
@@ -164,18 +169,18 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 }
                 LauncherGameResource.data.pre_download_game.diffs = simDataDiff;
             }
-        #endif
-        #if !SIMULATEPRELOAD && SIMULATEAPPLYPRELOAD
+#endif
+#if !SIMULATEPRELOAD && SIMULATEAPPLYPRELOAD
             if (LauncherGameResource.data.pre_download_game != null)
             {
                 LauncherGameResource.data.game = LauncherGameResource.data.pre_download_game;
             }
-        #endif
+#endif
 
-        #if DEBUG
+#if DEBUG
             Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading game resource has been completed!",
                                 LogType.Debug, true);
-        #endif
+#endif
         }
 
         protected void EnsurePresetConfigNotNull()
