@@ -32,6 +32,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             HoYoPlayLauncherResources? hypPluginResource = null;
+            HoYoPlayLauncherResources? hypSdkResource = null;
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
@@ -40,6 +41,16 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
                 hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                   ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+            }
+
+            if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
+            {
+                ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
+                    new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherGameChannelSDKURL, InternalAppJSONContext.Default, innerToken));
+
+                hypSdkResource = await hypSdkResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                               ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
             }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest
@@ -58,10 +69,35 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             };
 
             ConvertPluginResources(ref sophonResourceData, hypPluginResource);
+            ConvertSdkResources(ref sophonResourceData, hypSdkResource);
             ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
             
             base.LauncherGameResource = sophonResourcePropRoot;
         }
+
+        #region Convert Sdk Resources
+        private void ConvertSdkResources(ref RegionResourceGame sophonResourceData, HoYoPlayLauncherResources? hypSdkResources)
+        {
+            LauncherSdkPackages? sdkPackages = hypSdkResources?.Data?.ChannelSdks?
+                .FirstOrDefault(x => x.GameDetail?
+                    .GameBiz?
+                    .Equals(PresetConfig?.LauncherBizName, StringComparison.OrdinalIgnoreCase) ?? false);
+
+            if (sdkPackages == null) return;
+            if (sdkPackages.SdkPackageDetail == null) return;
+
+            sophonResourceData.sdk = new RegionResourceVersion
+            {
+                md5 = sdkPackages.SdkPackageDetail.PackageMD5Hash,
+                size = sdkPackages.SdkPackageDetail.PackageDecompressSize,
+                package_size = sdkPackages.SdkPackageDetail.PackageSize ?? 0,
+                path = sdkPackages.SdkPackageDetail.PackageUrl,
+                url = sdkPackages.SdkPackageDetail.PackageUrl,
+                version = sdkPackages.Version,
+                pkg_version = sdkPackages.PkgVersionFileName
+            };
+        }
+        #endregion
 
         #region Convert Plugin Resources
         private void ConvertPluginResources(ref RegionResourceGame sophonResourceData, HoYoPlayLauncherResources? hypPluginResources)

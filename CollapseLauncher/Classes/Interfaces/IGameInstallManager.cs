@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.InstallManager;
+using CollapseLauncher.InstallManager.Base;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -22,5 +23,7 @@ namespace CollapseLauncher.Interfaces
 
         ValueTask<bool> TryShowFailedDeltaPatchState();
         ValueTask<bool> TryShowFailedGameConversionState();
+
+        void UpdateCompletenessStatus(CompletenessStatus status);
     }
 }

@@ -974,7 +974,7 @@ namespace CollapseLauncher.Pages
 
                 bool? value = false;
                 if (task.Definition.Actions[0] is ExecAction execAction)
-                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.CurrentCultureIgnoreCase);
+                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.OrdinalIgnoreCase);
 
                 task.Dispose();
                 return value ?? false;
