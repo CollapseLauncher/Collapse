@@ -130,6 +130,7 @@ namespace CollapseLauncher
         public RegionResourceVersion Copy() => new RegionResourceVersion()
         {
             version = version,
+            pkg_version = pkg_version,
             path = path,
             url = url,
             decompressed_path = decompressed_path,

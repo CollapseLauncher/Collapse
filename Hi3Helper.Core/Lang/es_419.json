@@ -257,9 +257,9 @@
 
     "Graphics_Title": "Ajustes de Gráficos",
     "Graphics_ResolutionPanel": "Resolución del juego",
-    "Graphics_Borderless": "Usar modo ventana sin bordes",
+    "Graphics_Borderless": "Modo Ventana Sin Bordes",
     "Graphics_Fullscreen": "Pantalla Completa",
-    "Graphics_ExclusiveFullscreen": "Usar Pantalla Completa Exclusiva",
+    "Graphics_ExclusiveFullscreen": "Pantalla Completa Exclusiva",
     "Graphics_ResizableWindow": "Permitir Redimensionar Ventana",
     "Graphics_ResizableWindowTooltip": "Solo disponible cuando el modo Pantalla Completa está deshabilitado",
     "Graphics_ResSelectPlaceholder": "Seleccionar",
@@ -278,7 +278,7 @@
 
     "Graphics_SpecPanel": "Configuración Global de Gráficos",
     "Graphics_Preset": "Ajustes Gráficos Predefinidos",
-    "Graphics_Render": "Calidad Renderizado",
+    "Graphics_Render": "Calidad de Renderizado",
     "Graphics_Shadow": "Calidad de Sombras",
     "Graphics_Reflection": "Calidad del Reflejo",
     "Graphics_FX": "Efectos Visuales",
@@ -298,7 +298,7 @@
     "Graphics_ParticleQuality": "Calidad de Partículas",
     "Graphics_LightingQuality": "Calidad de Iluminación",
     "Graphics_PostFXQuality": "Calidad de Post-FX",
-    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_CharacterQuality": "Calidad de Personajes",
     "Graphics_WeatherQuality": "Calidad del Clima",
 
@@ -320,7 +320,7 @@
     "Audio_VOLang": "Idioma de la voz",
     "Audio_VOLang1": "Chino (PRC)",
     "Audio_VOLang2": "Japonés",
-    "Audio_VODefault": " [Default]",
+    "Audio_VODefault": " [Por Defecto]",
     "Audio_VO": "Volumen de la Voz",
     "Audio_Elf": "Volumen de la Voz del Elfo",
     "Audio_Cutscenes": "Volumen de las Escenas",
@@ -473,7 +473,7 @@
 
     "AppChangeReleaseChannel": "Cambiar Collapse a versión {0} ",
 
-    "EnableAcrylicEffect": "Usar efecto de desenfoque",
+    "EnableAcrylicEffect": "Usar Efecto de Desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
     "UseExternalBrowser": "Usar Navegador Web Externo ",
 
@@ -1028,8 +1028,10 @@
     "Graphics_EnvDetailQuality": "Detalle de Escena",
     "Graphics_ReflectionQuality": "Calidad de Reflejos",
     "Graphics_BloomQuality": "Calidad de Bloom",
-    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_SFXQuality": "Calidad de SFX",
+    "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
+    "Graphics_HalfResTransparent": "Resolución media en transparencia ",
 
     "Graphics_SpecPanel": "Configuración Grafica Global",
     "SpecEnabled": "Habilitado",
@@ -1095,7 +1097,7 @@
     "Graphics_SFXQuality": "Calidad de SFX",
     "Graphics_EnvDetailQuality": "Detalle de Escena",
     "Graphics_VSync": "VSync",
-    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_VolFogs": "Niebla volumétrica",
     "Graphics_VolFogs_ToolTip": "¡Requiere que la calidad de sombras se establezca en Medio o superior!",
     "Graphics_ReflectionQuality": "Reflejos",

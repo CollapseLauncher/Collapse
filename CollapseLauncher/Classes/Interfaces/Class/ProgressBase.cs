@@ -381,8 +381,35 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
+        protected void TryDeleteReadOnlyDir(string dirPath)
+        {
+            if (!Directory.Exists(dirPath)) return;
+            DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
+            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    files.IsReadOnly = false;
+                    files.Delete();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
+                } // Suppress errors
+            }
+            try
+            {
+                dirInfo.Delete(true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while deleting parent dir: {dirPath}\r\n{ex}", LogType.Warning, true);
+            } // Suppress errors
+        }
+
         protected void TryDeleteReadOnlyFile(string path)
         {
+            if (!File.Exists(path)) return;
             try
             {
                 FileInfo file = new FileInfo(path!);

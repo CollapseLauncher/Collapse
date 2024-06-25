@@ -154,6 +154,8 @@ namespace CollapseLauncher.Statics
 #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
 #endif
+                // Try reinitialize the config file on reloading cached game property
+                Vault[GamePreset!.HashID]?._GameVersion?.Reinitialize();
                 return;
             }
 

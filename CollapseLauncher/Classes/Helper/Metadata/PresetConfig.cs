@@ -150,6 +150,9 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherResourceURL { get; init; }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGameChannelSDKURL { get; init; }
+
         public SophonChunkUrls? LauncherResourceChunksURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]

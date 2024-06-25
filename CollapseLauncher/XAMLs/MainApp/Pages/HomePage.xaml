@@ -478,8 +478,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"
                         Orientation="Vertical">
-                <Grid PointerEntered="CarouselStopScroll"
-                      PointerExited="CarouselRestartScroll">
+                <Grid PointerEntered="CarouselPointerEntered"
+                      PointerExited="CarouselPointerExited">
                     <FlipView x:Name="ImageCarousel"
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
                               MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}"

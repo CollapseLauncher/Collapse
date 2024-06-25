@@ -136,7 +136,15 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
 
+		<Content Include="icon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
         <None Include="..\.editorconfig" Link=".editorconfig" />
+
+		<Content Include="..\LICENSE.rtf">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 
         <Content Include="..\PRIVACY.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
