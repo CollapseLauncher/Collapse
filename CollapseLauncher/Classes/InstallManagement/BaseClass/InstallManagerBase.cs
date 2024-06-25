@@ -2438,13 +2438,13 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Initialize langID
             int langID;
+            
+            // Skip if the asset doesn't have voice packs
+            if (asset.voice_packs == null || asset.voice_packs.Count == 0) return;
 
             // Get available language names
             Dictionary<string, string> langStringsDict = GetLanguageDisplayDictFromVoicePackList(asset.voice_packs);
             GameInstallPackage package;
-
-            // Skip if the asset doesn't have voice packs
-            if (asset.voice_packs == null || asset.voice_packs.Count == 0) return;
 
             if (!_canSkipAudio)
             {
