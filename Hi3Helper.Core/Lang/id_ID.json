@@ -1030,6 +1030,8 @@
     "Graphics_BloomQuality": "Efek Bloom",
     "Graphics_AAMode": "Mode Anti-Aliasing",
     "Graphics_SFXQuality": "Kualitas SFX",
+    "Graphics_SelfShadow": "Bayangan Karakter di Map Eksplorasi",
+    "Graphics_HalfResTransparent": "Transparan Setengah Resolusi",
 
     "Graphics_SpecPanel": "Pengaturan Grafis Keseluruhan",
     "SpecEnabled": "Hidup",
