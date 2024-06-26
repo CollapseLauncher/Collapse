@@ -56,6 +56,7 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 using CollapseLauncher.InstallManager.Base;
+using Microsoft.UI.Xaml.Documents;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
 namespace CollapseLauncher.Pages
@@ -1919,48 +1920,44 @@ namespace CollapseLauncher.Pages
                 string lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
                                                   last?.Month, last?.Year, last?.Hour, last?.Minute);
 
+                Grid grid = new Grid()
+                {
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition(),
+                        new ColumnDefinition()
+                    },
+                    RowDefinitions =
+                    {
+                        new RowDefinition(),
+                        new RowDefinition(),
+                        new RowDefinition(),
+                        new RowDefinition()
+                    }
+                };
+
+                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_Daily,       playtime.DailyPlaytime);
+                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_Weekly,      playtime.WeeklyPlaytime,  1);
+                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_Monthly,     playtime.MonthlyPlaytime, 2);
+                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_LastSession, playtime.LastSession,     3);
+
+                TextBlock lastPlayedBlock = new TextBlock()
+                {
+                    Margin = new Thickness(0, 0, 0, 5),
+                    Inlines =
+                    {
+                        new Run() { Text = "(Started at " },
+                        new Run() { Text = lastPlayed, FontWeight = FontWeights.Bold },
+                        new Run() { Text = ")" }
+                    }
+                };
+
                 StackPanel panel = new StackPanel()
                 {
                     Children =
                     {
-                        new Grid()
-                        {
-                            ColumnDefinitions =
-                            {
-                                new ColumnDefinition(),
-                                new ColumnDefinition() { Width = GridLength.Auto },
-                                new ColumnDefinition()
-                            },
-                            ColumnSpacing = 20,
-                            Children =
-                            {
-                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_Daily,   playtime.DailyPlaytime, HorizontalAlignment.Left, gridCol:0),
-                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_Weekly,  playtime.WeeklyPlaytime, gridCol:1),
-                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_Monthly, playtime.MonthlyPlaytime, HorizontalAlignment.Right, gridCol:2)
-                            }
-                        },
-                        new Grid()
-                        {
-                            ColumnDefinitions =
-                            {
-                                new ColumnDefinition() { Width = GridLength.Auto },
-                                new ColumnDefinition()
-                            },
-                            ColumnSpacing = 20,
-                            Children =
-                            {
-                                new StackPanel()
-                                {
-                                    HorizontalAlignment = HorizontalAlignment.Left,
-                                    Children =
-                                    {
-                                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastPlayed },
-                                        new TextBlock() { Text = lastPlayed, FontWeight = FontWeights.Bold }
-                                    }
-                                },
-                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_LastSession, playtime.LastSession, HorizontalAlignment.Right, isLast:true, gridCol:1)
-                            }
-                        }
+                        grid,
+                        lastPlayedBlock
                     }
                 };
 
@@ -1968,26 +1965,23 @@ namespace CollapseLauncher.Pages
             });
             return;
 
-            static StackPanel TimeSpanPanel(string label, TimeSpan time, HorizontalAlignment alignment = HorizontalAlignment.Center, bool isLast = false, int gridCol = 0)
+            static void TimeSpanPanel(Grid grid, string label, TimeSpan time, int row = 0, bool isLast = false)
             {
-                 StackPanel panel = new StackPanel()
-                 {
-                    HorizontalAlignment = alignment,
-                    Orientation = Orientation.Vertical,
-                    Children =
-                    {
-                        new TextBlock() { Text = label },
-                        new TextBlock()
-                        {
-                            Text   = FormatTimeStamp(time), FontWeight = FontWeights.Bold,
-                            Margin = new Thickness(0, 0, 0, isLast ? 0 : 5),
-                            HorizontalAlignment = alignment
-                        }
-                    }
-                 };
-                 Grid.SetColumn(panel, gridCol);
+                TextBlock labelBlock = new TextBlock() { Text = label };
+                Grid.SetColumn(labelBlock, 0);
+                Grid.SetRow(labelBlock, row);
 
-                 return panel;
+                TextBlock timeBlock = new TextBlock()
+                {
+                    Text                = FormatTimeStamp(time), FontWeight = FontWeights.Bold,
+                    Margin              = new Thickness(0, 0, 0, isLast ? 0 : 5),
+                    HorizontalAlignment = HorizontalAlignment.Right
+                };
+                Grid.SetColumn(timeBlock, 2);
+                Grid.SetRow(timeBlock, row);
+
+                grid.Children.Add(labelBlock);
+                grid.Children.Add(timeBlock);
             }
 
             static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
