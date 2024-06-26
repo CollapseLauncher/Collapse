@@ -184,7 +184,7 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CurrentGameProperty._GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
-                CurrentGameProperty._GamePlaytime.ForceUpdate();
+                UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
 
                 CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll(CarouselToken.Token);
@@ -1821,7 +1821,7 @@ namespace CollapseLauncher.Pages
             if (_cachedIsGameRunning)
                 return;
 
-            CurrentGameProperty._GamePlaytime.ForceUpdate();
+            UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
@@ -1856,9 +1856,9 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                PlaytimeMainBtn.Text = FormatTimeStamp(playtime.CurrentPlaytime);
-                HourPlaytimeTextBox.Text = (playtime.CurrentPlaytime.Days * 24 + playtime.CurrentPlaytime.Hours).ToString();
-                MinutePlaytimeTextBox.Text = playtime.CurrentPlaytime.Minutes.ToString();
+                PlaytimeMainBtn.Text = FormatTimeStamp(playtime.TotalPlaytime);
+                HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
+                MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
                 if (playtime.LastPlayed == null)
                 {
@@ -1876,12 +1876,14 @@ namespace CollapseLauncher.Pages
                     {
                         new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastPlayed },
                         new TextBlock() { Text = lastPlayed, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
+                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastSession },
+                        new TextBlock() { Text = FormatTimeStamp(playtime.LastSession), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
                         new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Daily },
                         new TextBlock() { Text = FormatTimeStamp(playtime.DailyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
                         new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Weekly },
                         new TextBlock() { Text = FormatTimeStamp(playtime.WeeklyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
                         new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Monthly },
-                        new TextBlock() { Text = FormatTimeStamp(playtime.MonthlyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) }
+                        new TextBlock() { Text = FormatTimeStamp(playtime.MonthlyPlaytime), FontWeight = FontWeights.Bold }
                     }
                 };
 

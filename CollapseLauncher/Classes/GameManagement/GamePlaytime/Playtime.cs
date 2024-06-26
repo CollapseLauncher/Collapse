@@ -17,8 +17,10 @@ namespace CollapseLauncher.GamePlaytime
         #region Properties
         public event EventHandler<CollapsePlaytime> PlaytimeUpdated;
 #nullable enable
+        public CollapsePlaytime CollapsePlaytime => _playtime;
+
         private RegistryKey?      _registryRoot;
-        private CollapsePlaytime? _playtime;
+        private CollapsePlaytime  _playtime;
         private IGameVersionCheck _gameVersionManager;
 
         private CancellationTokenSourceWrapper _token = new();
@@ -26,25 +28,20 @@ namespace CollapseLauncher.GamePlaytime
 
         public Playtime(IGameVersionCheck GameVersionManager)
         {
-            string registryPath = Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
+            string registryPath = Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig!);
             _registryRoot = Registry.CurrentUser.OpenSubKey(registryPath, true);
 
             _registryRoot ??= Registry.CurrentUser.CreateSubKey(registryPath, true, RegistryOptions.None);
 
             _gameVersionManager = GameVersionManager;
 
-            _playtime = CollapsePlaytime.Load(_registryRoot);
+            _playtime = CollapsePlaytime.Load(_registryRoot, _gameVersionManager.GamePreset.HashID);
         }
 #nullable disable
 
-        public void ForceUpdate()
-        {
-            PlaytimeUpdated?.Invoke(this, _playtime);
-        }
-
         public void Update(TimeSpan timeSpan)
         {
-            TimeSpan oldTimeSpan = _playtime.CurrentPlaytime;
+            TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
 
             _playtime.Update(timeSpan);
             PlaytimeUpdated?.Invoke(this, _playtime);
@@ -54,7 +51,7 @@ namespace CollapseLauncher.GamePlaytime
 
         public void Reset()
         {
-            TimeSpan oldTimeSpan = _playtime.CurrentPlaytime;
+            TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
 
             _playtime.Reset();
             PlaytimeUpdated?.Invoke(this, _playtime);
@@ -65,10 +62,12 @@ namespace CollapseLauncher.GamePlaytime
         public async void StartSession(Process proc)
         {
             DateTime begin          = DateTime.Now;
-            TimeSpan initialTimeSpan = _playtime.CurrentPlaytime;
+            TimeSpan initialTimeSpan = _playtime.TotalPlaytime;
 
-            _playtime.LastPlayed = begin;
+            _playtime.LastPlayed  = begin;
+            _playtime.LastSession = TimeSpan.Zero;
             _playtime.Save();
+            PlaytimeUpdated?.Invoke(this, _playtime);
 
 #if DEBUG
             LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
@@ -83,9 +82,8 @@ namespace CollapseLauncher.GamePlaytime
                     elapsedSeconds += 60;
                     DateTime now = DateTime.Now;
 
-                    _playtime.Add(TimeSpan.FromMinutes(1));
+                    _playtime.AddMinute();
                     PlaytimeUpdated?.Invoke(this, _playtime);
-
 #if DEBUG
                     LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
 #endif
@@ -121,7 +119,7 @@ namespace CollapseLauncher.GamePlaytime
         public void Dispose()
         {
             _token.Cancel();
-            _playtime?.Save();
+            _playtime.Save();
 
             _playtime     = null;
             _registryRoot = null;

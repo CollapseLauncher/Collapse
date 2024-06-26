@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using static Hi3Helper.Logger;
@@ -15,17 +16,24 @@ namespace CollapseLauncher.GamePlaytime
         private const string _ValueName              = "CollapseLauncher_Playtime";
         private const string _OldLastPlayedValueName = "CollapseLauncher_LastPlayed";
 
-        private static bool        _IsDeserializing;
-        private        RegistryKey _registryRoot;
+        private static Dictionary<int, bool> _IsDeserializing = [];
+        private        RegistryKey           _registryRoot;
+        private        int                   _hashID;
 
         #endregion
 
         #region Properties
         /// <summary>
         /// Represents the total time a game was played.<br/><br/>
-        /// Default: TimeSpan.MinValue
+        /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan CurrentPlaytime { get; set; } = TimeSpan.Zero;
+        public TimeSpan TotalPlaytime { get; set; } = TimeSpan.Zero;
+
+        /// <summary>
+        /// Represents the total time the last/current session lasted.<br/><br/>
+        /// Default: TimeSpan.Zero
+        /// </summary>
+        public TimeSpan LastSession { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the daily playtime.<br/>
@@ -68,11 +76,11 @@ namespace CollapseLauncher.GamePlaytime
         /// Reads from the Registry and deserializes the contents. <br/>
         /// Converts RegistryKey values if they are of type DWORD (that is, if they were saved by the old implementation).
         /// </summary>
-        public static CollapsePlaytime Load(RegistryKey root)
+        public static CollapsePlaytime Load(RegistryKey root, int hashID)
         {
             try
             {
-                _IsDeserializing = true;
+                _IsDeserializing[hashID] = true;
                 if (root == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
                 object? value = root.GetValue(_ValueName, null);
@@ -84,13 +92,14 @@ namespace CollapseLauncher.GamePlaytime
                     root.DeleteValue(_OldLastPlayedValueName, false);
 
                     LogWriteLine($"Found old Playtime RegistryKey! Converting to the new format... (Playtime: {oldPlaytime} | Last Played: {lastPlayed})", writeToLog: true);
-                    _IsDeserializing = false;
+                    _IsDeserializing[hashID] = false;
                     
                     CollapsePlaytime playtime = new CollapsePlaytime()
                     {
-                        CurrentPlaytime = TimeSpan.FromSeconds(oldPlaytime),
+                        TotalPlaytime = TimeSpan.FromSeconds(oldPlaytime),
                         LastPlayed = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null,
-                        _registryRoot = root
+                        _registryRoot = root,
+                        _hashID = hashID
                     };
                     playtime.Save();
 
@@ -105,6 +114,7 @@ namespace CollapseLauncher.GamePlaytime
 #endif
                     CollapsePlaytime playtime = byteStr.Deserialize<CollapsePlaytime>(UniversalPlaytimeJSONContext.Default) ?? new CollapsePlaytime();
                     playtime._registryRoot = root;
+                    playtime._hashID = hashID;
 
                     return playtime;
                 }
@@ -115,10 +125,10 @@ namespace CollapseLauncher.GamePlaytime
             }
             finally
             {
-                _IsDeserializing = false;
+                _IsDeserializing[hashID] = false;
             }
 
-            return new CollapsePlaytime();
+            return new CollapsePlaytime() { _hashID = hashID, _registryRoot = root };
         }
 
         /// <summary>
@@ -148,13 +158,14 @@ namespace CollapseLauncher.GamePlaytime
         /// </summary>
         public void Reset()
         {
-            CurrentPlaytime = TimeSpan.Zero;
-            DailyPlaytime = TimeSpan.Zero;
-            WeeklyPlaytime = TimeSpan.Zero;
+            TotalPlaytime   = TimeSpan.Zero;
+            LastSession     = TimeSpan.Zero;
+            DailyPlaytime   = TimeSpan.Zero;
+            WeeklyPlaytime  = TimeSpan.Zero;
             MonthlyPlaytime = TimeSpan.Zero;
-            ControlDate = DateTime.Today;
+            ControlDate     = DateTime.Today;
 
-            if (!_IsDeserializing) Save();
+            if (!_IsDeserializing[_hashID]) Save();
         }
 
         /// <summary>
@@ -166,43 +177,46 @@ namespace CollapseLauncher.GamePlaytime
         {
             if (reset)
             {
+                LastSession     = TimeSpan.Zero;
                 DailyPlaytime   = TimeSpan.Zero;
                 WeeklyPlaytime  = TimeSpan.Zero;
                 MonthlyPlaytime = TimeSpan.Zero;
                 ControlDate     = DateTime.Today;
             }
             
-            CurrentPlaytime = timeSpan;
+            TotalPlaytime = timeSpan;
 
-            if (!_IsDeserializing) Save();
+            if (!_IsDeserializing[_hashID]) Save();
         }
 
         /// <summary>
-        /// Updates all fields, and checks if any should be reset.<br/>
+        /// Adds a minute to all fields, and checks if any should be reset.<br/>
         /// After it saves to the Registry.<br/><br/>
         /// </summary>
-        /// <param name="timeSpan">New playtime value</param>
-        public void Add(TimeSpan timeSpan)
+        public void AddMinute()
         {
-            CurrentPlaytime = CurrentPlaytime.Add(timeSpan);
+            TimeSpan minute = TimeSpan.FromMinutes(1);
+            DateTime today  = DateTime.Today;
 
-            DateTime today = DateTime.Today;
+            TotalPlaytime = TotalPlaytime.Add(minute);
+            LastSession   = LastSession.Add(minute);
+            
             if (today == DateTime.Today)
             {
-                DailyPlaytime   = DailyPlaytime.Add(timeSpan);
-                WeeklyPlaytime  = WeeklyPlaytime.Add(timeSpan);
-                MonthlyPlaytime = MonthlyPlaytime.Add(timeSpan);
+                DailyPlaytime   = DailyPlaytime.Add(minute);
+                WeeklyPlaytime  = WeeklyPlaytime.Add(minute);
+                MonthlyPlaytime = MonthlyPlaytime.Add(minute);
             }
             else
             {
-                DailyPlaytime   = timeSpan;
-                WeeklyPlaytime  = IsDifferentWeek(ControlDate, today) ? timeSpan : WeeklyPlaytime.Add(timeSpan);
-                MonthlyPlaytime = IsDifferentMonth(ControlDate, today) ? timeSpan : MonthlyPlaytime.Add(timeSpan);
+                DailyPlaytime   = minute;
+                WeeklyPlaytime  = IsDifferentWeek(ControlDate, today) ? minute : WeeklyPlaytime.Add(minute);
+                MonthlyPlaytime = IsDifferentMonth(ControlDate, today) ? minute : MonthlyPlaytime.Add(minute);
                 
                 ControlDate   = today;
             }
 
-            if (!_IsDeserializing) Save();
+            if (!_IsDeserializing[_hashID]) Save();
         }
 
         #endregion
