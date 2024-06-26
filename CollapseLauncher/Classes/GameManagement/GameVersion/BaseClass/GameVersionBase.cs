@@ -2,6 +2,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -184,6 +185,23 @@ namespace CollapseLauncher.GameVersioning
             }
         }
 
+        protected GameVersion? SdkVersionAPI
+        {
+            get
+            {
+                // Return null if the plugin is not exist
+                if (GameAPIProp.data?.sdk == null)
+                    return null;
+
+                // If the version provided by the SDK API, return the result
+                if (GameVersion.TryParse(GameAPIProp.data?.sdk?.version, out GameVersion? result))
+                    return result;
+
+                // Otherwise, return null
+                return null;
+            }
+        }
+
         protected GameVersion? GameVersionAPIPreload
         {
             get
@@ -262,6 +280,30 @@ namespace CollapseLauncher.GameVersioning
             set => UpdatePluginVersions(value ?? PluginVersionsAPI);
         }
 
+        protected GameVersion? SdkVersionInstalled
+        {
+            get
+            {
+                // Check if the game config has SDK version. If not, return null
+                string keyName = $"plugin_sdk_version";
+                if (!GameIniVersion[_defaultIniVersionSection].ContainsKey(keyName))
+                    return null;
+
+                // Check if it has no value, then return null
+                string versionName = GameIniVersion[_defaultIniVersionSection][keyName].ToString();
+                if (string.IsNullOrEmpty(versionName))
+                    return null;
+
+                // Try parse the version. If it's not valid, then return null
+                if (!GameVersion.TryParse(versionName, out GameVersion? result))
+                    return null;
+
+                // Return the result
+                return result;
+            }
+            set => UpdateSdkVersion(value ?? SdkVersionAPI);
+        }
+
         protected List<RegionResourcePlugin> MismatchPlugin { get; set; }
 
         // Assign for the Game Delta-Patch properties (if any).
@@ -314,7 +356,7 @@ namespace CollapseLauncher.GameVersioning
                     return GameInstallStateEnum.InstalledHavePreload;
                 }
 
-                if (!await IsPluginVersionsMatch())
+                if (!await IsPluginVersionsMatch() || !await IsSdkVersionsMatch())
                 {
                     return GameInstallStateEnum.InstalledHavePlugin;
                 }
@@ -351,12 +393,7 @@ namespace CollapseLauncher.GameVersioning
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
-            // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
             returnList.Add(diff ?? GameAPIProp.data.game.latest);
-            if (GameAPIProp.data.sdk != null)
-            {
-                returnList.Add(GameAPIProp.data.sdk);
-            }
 
             return returnList;
         }
@@ -381,12 +418,6 @@ namespace CollapseLauncher.GameVersioning
             // If diff is found, then add the diff one.
             returnList.Add(diff ?? GameAPIProp.data.pre_download_game?.latest);
 
-            // If the SDK is not null, then add the SDK
-            if (GameAPIProp.data.sdk != null)
-            {
-                returnList.Add(GameAPIProp.data.sdk);
-            }
-
             // Return the list
             return returnList;
         }
@@ -394,12 +425,43 @@ namespace CollapseLauncher.GameVersioning
 #nullable enable
         public virtual List<RegionResourcePlugin>? GetGamePluginZip()
         {
-            // Check if the plugin is empty, then return null
-            if ((GameAPIProp?.data?.plugins?.Count ?? 0) == 0)
-                return null;
+            // Check if the plugin is not empty, then add it
+            if ((GameAPIProp?.data?.plugins?.Count ?? 0) != 0)
+                return new List<RegionResourcePlugin>(GameAPIProp?.data?.plugins!);
 
-            // Return the available plugin list
-            return GameAPIProp?.data?.plugins;
+            // Return null if plugin is unavailable
+            return null;
+        }
+
+        public virtual List<RegionResourcePlugin>? GetGameSdkZip()
+        {
+            // Check if the sdk is not empty, then add it
+            if (GameAPIProp?.data?.sdk != null)
+            {
+                // Convert the value
+                RegionResourcePlugin sdkPlugin = new RegionResourcePlugin
+                {
+                    plugin_id = "sdk",
+                    release_id = "sdk",
+                    version = GameAPIProp?.data?.sdk.version,
+                    package = GameAPIProp?.data?.sdk
+                };
+
+                // If the package is not null, then add the validation
+                if (sdkPlugin.package != null)
+                {
+                    sdkPlugin.package.pkg_version = GameAPIProp?.data?.sdk?.pkg_version;
+                }
+
+                // Return a single list
+                return new List<RegionResourcePlugin>
+                {
+                    sdkPlugin
+                };
+            }
+
+            // Return null if sdk is unavailable
+            return null;
         }
 #nullable restore
 
@@ -469,7 +531,71 @@ namespace CollapseLauncher.GameVersioning
             PluginVersionsInstalled = PluginVersionsAPI;
 
             return true;
-        #endif
+#endif
+        }
+
+        public virtual async ValueTask<bool> IsSdkVersionsMatch()
+        {
+#if !MHYPLUGINSUPPORT
+            return true;
+#else
+            // Get the pluginVersions and installedPluginVersions
+            var sdkVersion = SdkVersionAPI;
+            var installedSdkVersion = SdkVersionInstalled;
+
+            // If the SDK API has no value, return true
+            if (!installedSdkVersion.HasValue && !sdkVersion.HasValue)
+                return true;
+
+            // If the SDK Resource is null, return true
+            RegionResourcePlugin sdkResource = GetGameSdkZip()?.FirstOrDefault();
+            if (sdkResource == null)
+                return true;
+
+            // If the installed SDK returns empty (null), return false
+            if (!installedSdkVersion.HasValue)
+                return false;
+
+            // Compare the version and the current SDK state if the indicator file is exist
+            string validatePath = Path.Combine(GameDirPath, sdkResource?.package?.pkg_version);
+            bool isVersionEqual = installedSdkVersion.Equals(sdkVersion);
+            bool isValidatePathExist = File.Exists(validatePath);
+            bool isPkgVersionMatch = isValidatePathExist ? await CheckSdkUpdate(validatePath) : false;
+
+            bool isSdkInstalled = isVersionEqual && isPkgVersionMatch;
+            return isSdkInstalled;
+#endif
+        }
+
+        public virtual async ValueTask<bool> CheckSdkUpdate(string validatePath)
+        {
+            try
+            {
+                using (StreamReader reader = new StreamReader(validatePath))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        PkgVersionProperties pkgVersion = (await reader.ReadLineAsync())
+                            .Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+
+                        string filePath = Path.Combine(GameDirPath, pkgVersion.remoteName);
+                        if (!File.Exists(filePath))
+                            return false;
+
+                        using FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                        string md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
+                        if (!md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"Failed while checking the SDK file update\r\n{ex}", LogType.Error, true);
+                return false;
+            }
         }
 
         public virtual async ValueTask<List<RegionResourcePlugin>> CheckPluginUpdate(string pluginKey)
@@ -673,7 +799,7 @@ namespace CollapseLauncher.GameVersioning
         public void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue = true)
         {
             // If the plugin is empty, ignore it
-            if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0)
+            if ((versions?.Count ?? 0) == 0)
             {
                 return;
             }
@@ -686,6 +812,26 @@ namespace CollapseLauncher.GameVersioning
                 // Set the value
                 GameIniVersion[_defaultIniVersionSection][keyName] = version.Value.VersionString;
             }
+
+            if (saveValue)
+            {
+                SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
+        }
+
+        public void UpdateSdkVersion(GameVersion? version, bool saveValue = true)
+        {
+            // If the version is null, return
+            if (!version.HasValue)
+                return;
+
+            // If the sdk is empty, ignore it
+            if (GameAPIProp.data?.sdk == null)
+                return;
+
+            // Set the value
+            string keyName = $"plugin_sdk_version";
+            GameIniVersion[_defaultIniVersionSection][keyName] = version.ToString();
 
             if (saveValue)
             {

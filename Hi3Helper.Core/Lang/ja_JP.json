@@ -1030,6 +1030,8 @@
     "Graphics_BloomQuality": "ブルーム効果",
     "Graphics_AAMode": "アンチエイリアス",
     "Graphics_SFXQuality": "エフェクトのクオリティ",
+    "Graphics_SelfShadow": "マップ探索内のキャラのリアルタイムシャドウ",
+    "Graphics_HalfResTransparent": "透明オブジェクトのハーフ解像度",
 
     "Graphics_SpecPanel": "画質",
     "SpecEnabled": "有効",

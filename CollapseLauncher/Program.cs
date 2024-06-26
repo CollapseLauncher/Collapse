@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using WinRT;
@@ -267,5 +268,15 @@ public static class MainEntryPoint
         if (m_isWindows11)
             return $"Windows 11 (build: {version.Build}.{version.Revision})";
         return $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
+    }
+    
+    public static string MD5Hash(string path)
+    {
+        if (!File.Exists(path))
+            return "";
+        FileStream stream = File.OpenRead(path);
+        var        hash   = MD5.Create().ComputeHash(stream);
+        stream.Close();
+        return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
     }
 }

@@ -15,7 +15,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.80.12</Version>
+        <Version>1.80.13</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -136,7 +136,15 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
 
+		<Content Include="icon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
         <None Include="..\.editorconfig" Link=".editorconfig" />
+
+		<Content Include="..\LICENSE.rtf">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 
         <Content Include="..\PRIVACY.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

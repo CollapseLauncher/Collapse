@@ -29,11 +29,13 @@ namespace CollapseLauncher
 
         internal static void AddSanitize(this List<FilePropertiesRemote> assetIndex, FilePropertiesRemote assetProperty)
         {
+            string key = assetProperty.N + assetProperty.IsPatchApplicable;
+
             // Check if the asset has the key
-            if (_hashtable.ContainsKey(assetProperty.N))
+            if (_hashtable.ContainsKey(key))
             {
                 // If yes (exist), then get the index of the asset from hashtable
-                int index = _hashtable[assetProperty.N];
+                int index = _hashtable[key];
 
                 // Get the property of the asset based on index from hashtable
                 FilePropertiesRemote oldAssetProperty = assetIndex[index];
@@ -50,7 +52,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            _hashtable.Add(assetProperty.N, assetIndex.Count);
+            _hashtable.Add(key, assetIndex.Count);
             assetIndex.Add(assetProperty);
         }
     }

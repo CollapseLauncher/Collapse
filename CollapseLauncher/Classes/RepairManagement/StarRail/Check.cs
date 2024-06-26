@@ -51,6 +51,20 @@ namespace CollapseLauncher
     {
         private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
+            // Try to find "badlist.byte" files in the game folder and delete it
+            foreach (string badlistFile in Directory.EnumerateFiles(_gamePath, "*badlist*.byte*", SearchOption.AllDirectories))
+            {
+                LogWriteLine($"Removing bad list mark at: {badlistFile}", LogType.Warning, true);
+                TryDeleteReadOnlyFile(badlistFile);
+            }
+
+            // Try to find "verify.fail" files in the game folder and delete it
+            foreach (string verifFail in Directory.EnumerateFiles(_gamePath, "*verify*.fail*", SearchOption.AllDirectories))
+            {
+                LogWriteLine($"Removing verify.fail mark at: {verifFail}", LogType.Warning, true);
+                TryDeleteReadOnlyFile(verifFail);
+            }
+
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
@@ -203,6 +217,7 @@ namespace CollapseLauncher
             FileInfo fileInfoStreaming = new FileInfo(asset.N);
 
             bool UsePersistent = asset.IsPatchApplicable || !fileInfoStreaming.Exists;
+            bool IsHasMark = asset.IsHasHashMark || UsePersistent;
             bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.S;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.S;
 
@@ -238,10 +253,11 @@ namespace CollapseLauncher
             }
 
             // If the file has Hash Mark or is persistent, then create the hash mark file
-            if (asset.IsHasHashMark || UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
+            if (IsHasMark) CreateHashMarkFile(asset.N, asset.CRC);
 
             // Check if both location has the file exist or has the size right
-            if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
+            if ((UsePersistent && !IsPersistentExist && !IsStreamingExist)
+             || (UsePersistent && !IsPersistentExist))
             {
                 // Update the total progress and found counter
                 _progressTotalSizeFound += asset.S;
@@ -278,11 +294,33 @@ namespace CollapseLauncher
 
             // Open and read fileInfo as FileStream
             string fileNameToOpen = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
-            using (FileStream filefs = new FileStream(fileNameToOpen,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                _bufferBigLength))
+            try
+            {
+                await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
+            }
+            catch (FileNotFoundException)
+            {
+                LogWriteLine($"File {fileNameToOpen} is not found while UsePersistent is {UsePersistent}. " +
+                             $"Creating hard link and retrying...", LogType.Warning, true);
+
+                var targetFile = File.Exists(fileInfoPersistent.FullName) ? fileInfoPersistent.FullName : 
+                    File.Exists(fileInfoStreaming.FullName)           ? fileInfoStreaming.FullName : 
+                                                                        throw new FileNotFoundException(fileNameToOpen);
+                
+                string targetLink     = fileNameToOpen;
+
+                InvokeProp.CreateHardLink(targetLink, targetFile, IntPtr.Zero);
+                await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
+            }
+        }
+
+        async ValueTask CheckFile(string fileNameToOpen, FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        {
+            await using (FileStream filefs = new FileStream(fileNameToOpen,
+                                                      FileMode.Open,
+                                                      FileAccess.Read,
+                                                      FileShare.Read,
+                                                      _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
@@ -295,15 +333,15 @@ namespace CollapseLauncher
                     _progressTotalCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            ConvertRepairAssetTypeEnum(asset.FT),
-                            Path.GetDirectoryName(asset.N),
-                            asset.S,
-                            localCRC,
-                            asset.CRCArray
-                        )
-                    ));
+                                                  new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(asset.N),
+                                                       ConvertRepairAssetTypeEnum(asset.FT),
+                                                       Path.GetDirectoryName(asset.N),
+                                                       asset.S,
+                                                       localCRC,
+                                                       asset.CRCArray
+                                                      )
+                                                 ));
 
                     // Mark the main block as "need to be repaired"
                     asset.IsBlockNeedRepair = true;
@@ -331,6 +369,7 @@ namespace CollapseLauncher
 
             // Re-create the hash file
             string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
+            if (File.Exists(toName)) return;
             File.Create(toName).Dispose();
         }
         #endregion

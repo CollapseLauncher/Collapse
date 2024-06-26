@@ -466,12 +466,12 @@ namespace CollapseLauncher.Helper.Background
         public static MediaType GetMediaType(string mediaPath)
         {
             string extension = Path.GetExtension(mediaPath);
-            if (SupportedImageExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+            if (SupportedImageExt.Contains(extension, StringComparer.OrdinalIgnoreCase))
             {
                 return MediaType.StillImage;
             }
 
-            return SupportedMediaPlayerExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase) ? MediaType.Media : MediaType.Unknown;
+            return SupportedMediaPlayerExt.Contains(extension, StringComparer.OrdinalIgnoreCase) ? MediaType.Media : MediaType.Unknown;
         }
     }
 }
