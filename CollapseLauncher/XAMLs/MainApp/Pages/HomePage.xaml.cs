@@ -56,6 +56,7 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 using CollapseLauncher.InstallManager.Base;
+using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
 namespace CollapseLauncher.Pages
 {
@@ -287,8 +288,8 @@ namespace CollapseLauncher.Pages
                             copyIconFileStream.Position = 0;
                             // Get the icon image information and set the resized frame size
                             var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                            var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                            var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                            var width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                            var height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
                             copyIconFileStream.Position = 0; // Reset the original icon stream position
                             await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
@@ -344,7 +345,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private       void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)  => CarouselRestartScroll(5);
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll(5);
         private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
         public async void CarouselRestartScroll(int delaySeconds = 5)
@@ -373,10 +374,10 @@ namespace CollapseLauncher.Pages
 
             HideImageEventImg(hide);
 
-            Storyboard      storyboard       = new Storyboard();
+            Storyboard storyboard = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
-            OpacityAnimation.From     = hide ? 1 : 0;
-            OpacityAnimation.To       = hide ? 0 : 1;
+            OpacityAnimation.From = hide ? 1 : 0;
+            OpacityAnimation.To = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
             Storyboard.SetTarget(OpacityAnimation, ImageCarouselAndPostPanel);
@@ -397,8 +398,8 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = Shadow16;
 
-            Grid  iconGrid   = btn.FindDescendant<Grid>();
-            Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
+            Grid iconGrid = btn.FindDescendant<Grid>();
+            Image iconFirst = iconGrid!.FindDescendant("Icon") as Image;
             Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
 
             TimeSpan dur = TimeSpan.FromSeconds(0.25f);
@@ -418,8 +419,8 @@ namespace CollapseLauncher.Pages
                 flyout!.Hide();
             }
 
-            Grid  iconGrid   = btn.FindDescendant<Grid>();
-            Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
+            Grid iconGrid = btn.FindDescendant<Grid>();
+            Image iconFirst = iconGrid!.FindDescendant("Icon") as Image;
             Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
 
             TimeSpan dur = TimeSpan.FromSeconds(0.25f);
@@ -858,12 +859,12 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
-            TextBlock               StartGameBtnText              = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon                StartGameBtnIcon              = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            Grid                    StartGameBtnAnimatedIconGrid  = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon StartGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+            Grid StartGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
             // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
-            string                  StartGameBtnIconGlyph         = StartGameBtnIcon!.Glyph;
-            string                  StartGameBtnRunningIconGlyph  = "";
+            string StartGameBtnIconGlyph = StartGameBtnIcon!.Glyph;
+            string StartGameBtnRunningIconGlyph = "";
 
             StartGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
             StartGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -876,52 +877,52 @@ namespace CollapseLauncher.Pages
                     {
                         _cachedIsGameRunning = true;
 
-                        StartGameBtn.IsEnabled                  = false;
-                        StartGameBtnText!.Text                  = Lang._HomePage.StartBtnRunning;
-                        StartGameBtnIcon.Glyph                  = StartGameBtnRunningIconGlyph;
-                        StartGameBtnAnimatedIconGrid.Opacity    = 0;
-                        StartGameBtnIcon.Opacity                = 1;
+                        StartGameBtn.IsEnabled = false;
+                        StartGameBtnText!.Text = Lang._HomePage.StartBtnRunning;
+                        StartGameBtnIcon.Glyph = StartGameBtnRunningIconGlyph;
+                        StartGameBtnAnimatedIconGrid.Opacity = 0;
+                        StartGameBtnIcon.Opacity = 1;
 
                         //GameStartupSetting.IsEnabled = false;
-                        RepairGameButton.IsEnabled       = false;
-                        UninstallGameButton.IsEnabled    = false;
-                        ConvertVersionButton.IsEnabled   = false;
-                        CustomArgsTextBox.IsEnabled      = false;
+                        RepairGameButton.IsEnabled = false;
+                        UninstallGameButton.IsEnabled = false;
+                        ConvertVersionButton.IsEnabled = false;
+                        CustomArgsTextBox.IsEnabled = false;
                         MoveGameLocationButton.IsEnabled = false;
-                        StopGameButton.IsEnabled         = true;
+                        StopGameButton.IsEnabled = true;
 
-                        PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
+                        PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                    #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                         AppDiscordPresence?.SetActivity(ActivityType.Play);
-                    #endif
+#endif
 
                         await Task.Delay(RefreshRate, Token);
                     }
 
                     _cachedIsGameRunning = false;
 
-                    StartGameBtn.IsEnabled                  = true;
-                    StartGameBtnText!.Text                  = Lang._HomePage.StartBtn;
-                    StartGameBtnIcon.Glyph                  = StartGameBtnIconGlyph;
-                    StartGameBtnAnimatedIconGrid.Opacity    = 1;
-                    StartGameBtnIcon.Opacity                = 0;
+                    StartGameBtn.IsEnabled = true;
+                    StartGameBtnText!.Text = Lang._HomePage.StartBtn;
+                    StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
+                    StartGameBtnAnimatedIconGrid.Opacity = 1;
+                    StartGameBtnIcon.Opacity = 0;
 
-                    GameStartupSetting.IsEnabled     = true;
-                    RepairGameButton.IsEnabled       = true;
+                    GameStartupSetting.IsEnabled = true;
+                    RepairGameButton.IsEnabled = true;
                     MoveGameLocationButton.IsEnabled = true;
-                    UninstallGameButton.IsEnabled    = true;
-                    ConvertVersionButton.IsEnabled   = true;
-                    CustomArgsTextBox.IsEnabled      = true;
-                    StopGameButton.IsEnabled         = false;
+                    UninstallGameButton.IsEnabled = true;
+                    ConvertVersionButton.IsEnabled = true;
+                    CustomArgsTextBox.IsEnabled = true;
+                    StopGameButton.IsEnabled = false;
 
-                    PlaytimeIdleStack.Visibility    = Visibility.Visible;
+                    PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
 
-                #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                     AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                #endif
+#endif
 
                     await Task.Delay(RefreshRate, Token);
                 }
@@ -931,7 +932,7 @@ namespace CollapseLauncher.Pages
                 // Ignore
             }
             catch (Exception e)
-            { 
+            {
                 LogWriteLine($"Error when checking if game is running!\r\n{e}", LogType.Error, true);
             }
         }
@@ -1497,7 +1498,7 @@ namespace CollapseLauncher.Pages
 
         #region Game Launch Argument Builder
         bool RequireWindowExclusivePayload;
-        
+
         internal string GetLaunchArguments(IGameSettingsUniversal _Settings)
         {
             StringBuilder parameter = new StringBuilder();
@@ -1552,12 +1553,12 @@ namespace CollapseLauncher.Pages
                     parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
                 }
-                
+
                 // Enable mobile mode
                 if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                 {
-                    const string regLoc  = GameSettings.StarRail.Model._ValueName;
-                    var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
+                    const string regLoc = GameSettings.StarRail.Model._ValueName;
+                    var regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
 
                     if (regRoot != null || !string.IsNullOrEmpty(regLoc))
                     {
@@ -1603,7 +1604,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
-                
+
                 // Enable mobile mode
                 if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                     parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
@@ -1689,9 +1690,9 @@ namespace CollapseLauncher.Pages
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName        = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
+                        FileName = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
                         UseShellExecute = true,
-                        Verb            = "runas"
+                        Verb = "runas"
                     }
                 };
 
@@ -1738,23 +1739,23 @@ namespace CollapseLauncher.Pages
                     Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
 
                 await using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-                    using (StreamReader reader = new StreamReader(fs))
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    while (true)
                     {
-                        while (true)
+                        while (!reader.EndOfStream)
                         {
-                            while (!reader.EndOfStream)
+                            var line = await reader.ReadLineAsync(WatchOutputLog.Token);
+                            if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
-                                var line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                                if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
-                                {
-                                    StartExclusiveWindowPayload();
-                                    RequireWindowExclusivePayload = false;
-                                }
-                                LogWriteLine(line!, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
+                                StartExclusiveWindowPayload();
+                                RequireWindowExclusivePayload = false;
                             }
-                            await Task.Delay(100, WatchOutputLog.Token);
+                            LogWriteLine(line!, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
                         }
+                        await Task.Delay(100, WatchOutputLog.Token);
                     }
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
@@ -1876,12 +1877,12 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int      Mins                = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int      Hours               = int.Parse("0" + HourPlaytimeTextBox.Text);
-            
-            TimeSpan time                = TimeSpan.FromMinutes(Hours * 60 + Mins);
+            int Mins = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int Hours = int.Parse("0" + HourPlaytimeTextBox.Text);
+
+            TimeSpan time = TimeSpan.FromMinutes(Hours * 60 + Mins);
             if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
-            
+
             CurrentGameProperty._GamePlaytime.Update(time);
             PlaytimeFlyout.Hide();
         }
@@ -1922,22 +1923,72 @@ namespace CollapseLauncher.Pages
                 {
                     Children =
                     {
-                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastPlayed },
-                        new TextBlock() { Text = lastPlayed, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastSession },
-                        new TextBlock() { Text = FormatTimeStamp(playtime.LastSession), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Daily },
-                        new TextBlock() { Text = FormatTimeStamp(playtime.DailyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Weekly },
-                        new TextBlock() { Text = FormatTimeStamp(playtime.WeeklyPlaytime), FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 5) },
-                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_Monthly },
-                        new TextBlock() { Text = FormatTimeStamp(playtime.MonthlyPlaytime), FontWeight = FontWeights.Bold }
+                        new Grid()
+                        {
+                            ColumnDefinitions =
+                            {
+                                new ColumnDefinition(),
+                                new ColumnDefinition() { Width = GridLength.Auto },
+                                new ColumnDefinition()
+                            },
+                            ColumnSpacing = 20,
+                            Children =
+                            {
+                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_Daily,   playtime.DailyPlaytime, HorizontalAlignment.Left, gridCol:0),
+                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_Weekly,  playtime.WeeklyPlaytime, gridCol:1),
+                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_Monthly, playtime.MonthlyPlaytime, HorizontalAlignment.Right, gridCol:2)
+                            }
+                        },
+                        new Grid()
+                        {
+                            ColumnDefinitions =
+                            {
+                                new ColumnDefinition() { Width = GridLength.Auto },
+                                new ColumnDefinition()
+                            },
+                            ColumnSpacing = 20,
+                            Children =
+                            {
+                                new StackPanel()
+                                {
+                                    HorizontalAlignment = HorizontalAlignment.Left,
+                                    Children =
+                                    {
+                                        new TextBlock() { Text = Lang._HomePage.GamePlaytime_Stats_LastPlayed },
+                                        new TextBlock() { Text = lastPlayed, FontWeight = FontWeights.Bold }
+                                    }
+                                },
+                                TimeSpanPanel(Lang._HomePage.GamePlaytime_Stats_LastSession, playtime.LastSession, HorizontalAlignment.Right, isLast:true, gridCol:1)
+                            }
+                        }
                     }
                 };
 
                 ToolTipService.SetToolTip(PlaytimeBtn, panel);
             });
             return;
+
+            static StackPanel TimeSpanPanel(string label, TimeSpan time, HorizontalAlignment alignment = HorizontalAlignment.Center, bool isLast = false, int gridCol = 0)
+            {
+                 StackPanel panel = new StackPanel()
+                 {
+                    HorizontalAlignment = alignment,
+                    Orientation = Orientation.Vertical,
+                    Children =
+                    {
+                        new TextBlock() { Text = label },
+                        new TextBlock()
+                        {
+                            Text   = FormatTimeStamp(time), FontWeight = FontWeights.Bold,
+                            Margin = new Thickness(0, 0, 0, isLast ? 0 : 5),
+                            HorizontalAlignment = alignment
+                        }
+                    }
+                 };
+                 Grid.SetColumn(panel, gridCol);
+
+                 return panel;
+            }
 
             static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
         }
@@ -2091,7 +2142,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = false;
-                    collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
                                  $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
@@ -2102,7 +2153,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = true;
-                    collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
                                  $"PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
@@ -2133,7 +2184,7 @@ namespace CollapseLauncher.Pages
 
         private async void GameBoost_Invoke(GamePresetProperty gameProp)
         {
-        #nullable enable
+#nullable enable
             // Init new target process
             Process? toTargetProc = null;
             try
@@ -2169,7 +2220,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }
-        #nullable restore
+#nullable restore
         }
         #endregion
 
@@ -2361,7 +2412,7 @@ namespace CollapseLauncher.Pages
 
         private bool IsPointerInsideSidePanel;
         private bool IsSidePanelCurrentlyScaledOut;
-        
+
         private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
             IsPointerInsideSidePanel = true;
@@ -2371,9 +2422,9 @@ namespace CollapseLauncher.Pages
                 if (IsSidePanelCurrentlyScaledOut) return;
                 if (!IsPointerInsideSidePanel) return;
 
-                var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+                var toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
                 var storyboard = new Storyboard();
-                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
                 var cubicEaseOut = new CubicEase()
                 {
@@ -2382,9 +2433,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleXAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleX,
-                    To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
+                    From = transform.ScaleX,
+                    To = toScale,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -2393,9 +2444,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleYAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleY,
-                    To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
+                    From = transform.ScaleY,
+                    To = toScale,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);
@@ -2421,7 +2472,7 @@ namespace CollapseLauncher.Pages
                 HideImageEventImg(false);
 
                 var storyboard = new Storyboard();
-                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
                 var cubicEaseOut = new CubicEase()
                 {
@@ -2430,9 +2481,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleXAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleX,
-                    To             = 1,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    From = transform.ScaleX,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.25)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -2441,9 +2492,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleYAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleY,
-                    To             = 1,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    From = transform.ScaleY,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.25)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);

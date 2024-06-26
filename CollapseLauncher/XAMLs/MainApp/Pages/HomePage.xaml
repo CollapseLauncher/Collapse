@@ -920,8 +920,7 @@
                     <Flyout x:Name="PlaytimeFlyout">
                         <StackPanel MaxWidth="224">
                             <StackPanel x:Name="PlaytimeIdleStack"
-                                        MaxWidth="224"
-                                        Margin="0,0">
+                                        MaxWidth="224">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
@@ -938,8 +937,7 @@
                                              BeforeTextChanging="NumberValidationTextBox"
                                              Text="" />
                                 </StackPanel>
-                                <StackPanel Margin="0,0"
-                                            Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="PlaytimeHours"
                                                Width="55"
                                                Margin="5,1,0,8"
@@ -991,7 +989,6 @@
                             </StackPanel>
                             <StackPanel x:Name="PlaytimeRunningStack"
                                         MaxWidth="250"
-                                        Margin="0,0"
                                         Visibility="Collapsed">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"

@@ -7,7 +7,7 @@ namespace CollapseLauncher.Interfaces
     internal interface IGamePlaytime : IDisposable
     {
         event EventHandler<CollapsePlaytime> PlaytimeUpdated;
-        CollapsePlaytime? CollapsePlaytime { get; }
+        CollapsePlaytime CollapsePlaytime { get; }
 
         void Reset();
         void Update(TimeSpan timeSpan);
