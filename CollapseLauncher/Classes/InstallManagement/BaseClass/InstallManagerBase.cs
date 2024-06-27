@@ -93,16 +93,16 @@ namespace CollapseLauncher.InstallManager.Base
         private long _totalLastSizeCurrent;
 
         protected bool _isAllowExtractCorruptZip { get; set; }
-        protected bool _isUseSophon { get => base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null; }
         protected bool _isSophonDownloadCompleted { get; set; }
         protected List<string> _sophonVOLanguageList { get; set; } = new();
 
         #endregion
 
         #region Public Properties
-        public bool IsRunning { get; protected set; }
         public event EventHandler FlushingTrigger;
-        public bool StartAfterInstall { get; set; }
+        public virtual bool StartAfterInstall { get; set; }
+        public virtual bool IsRunning { get; protected set; }
+        public virtual bool IsUseSophon { get => base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null; }
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
@@ -359,7 +359,7 @@ namespace CollapseLauncher.InstallManager.Base
             try
             {
                 // Skip installation if sophon is used and not in update state
-                if (_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+                if (IsUseSophon && gameState == GameInstallStateEnum.NotInstalled)
                     return true;
 
                 // Start the download routine
@@ -458,7 +458,7 @@ namespace CollapseLauncher.InstallManager.Base
             GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
 
-            if (_isUseSophon)
+            if (IsUseSophon)
             {
                 switch (gameState)
                 {
@@ -531,7 +531,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Skip routine if sophon is use
             GameInstallStateEnum gameState = await _gameVersionManager!.GetGameState();
-            if ((_isUseSophon && gameState == GameInstallStateEnum.NotInstalled)
+            if ((IsUseSophon && gameState == GameInstallStateEnum.NotInstalled)
               || _isSophonDownloadCompleted)
             {
                 // We are going to override the verification method from base class. So in order to bypass the loop,
@@ -1343,7 +1343,7 @@ namespace CollapseLauncher.InstallManager.Base
             _gameVersionManager.Reinitialize();
 
             // Write the audio lang list file
-            if (_isUseSophon && _sophonVOLanguageList.Count != 0)
+            if (IsUseSophon && _sophonVOLanguageList.Count != 0)
             {
                 WriteAudioLangListSophon(_sophonVOLanguageList);
             }
