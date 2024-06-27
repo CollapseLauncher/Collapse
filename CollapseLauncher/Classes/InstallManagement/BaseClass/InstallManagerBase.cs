@@ -49,7 +49,8 @@ namespace CollapseLauncher.InstallManager.Base
     public enum CompletenessStatus { Running, Completed, Cancelled, Idle }
 
     // ReSharper disable once UnusedTypeParameter
-    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage> where T : IGameVersionCheck
+    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage>, IGameInstallManager
+        where T : IGameVersionCheck
     {
         #region Internal Struct
         protected struct UninstallGameProperty

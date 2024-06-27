@@ -9,7 +9,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.InstallManager.StarRail
 {
-    internal class StarRailInstall : InstallManagerBase<GameTypeStarRailVersion>, IGameInstallManager
+    internal class StarRailInstall : InstallManagerBase<GameTypeStarRailVersion>
     {
         #region Override Properties
         protected override int _gameVoiceLanguageID { get => _gameVersionManager.GamePreset.GetVoiceLanguageID(); }

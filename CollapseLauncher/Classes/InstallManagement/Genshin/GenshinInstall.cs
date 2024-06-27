@@ -13,7 +13,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
-    internal class GenshinInstall : InstallManagerBase<GameTypeGenshinVersion>, IGameInstallManager
+    internal class GenshinInstall : InstallManagerBase<GameTypeGenshinVersion>
     {
         #region Override Properties
         protected override int _gameVoiceLanguageID { get => _gameVersionManager.GamePreset.GetVoiceLanguageID(); }
