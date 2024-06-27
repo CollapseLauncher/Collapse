@@ -842,6 +842,10 @@ namespace CollapseLauncher.InstallManager.Base
                 string targetPath = sourcePath;
                 string chunkPath = Path.Combine(sourcePath, "chunk_collapse");
 
+                // If the chunk directory is not exist, then create one.
+                if (!Directory.Exists(chunkPath))
+                    Directory.CreateDirectory(chunkPath);
+
                 bool canDeleteChunks = _canDeleteZip;
 
                 // Enumerate in parallel and process the assets
