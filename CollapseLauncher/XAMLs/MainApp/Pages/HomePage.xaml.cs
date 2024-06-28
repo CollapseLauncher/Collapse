@@ -152,17 +152,6 @@ namespace CollapseLauncher.Pages
 
                 BackgroundImgChanger.ToggleBackground(false);
 
-                if (IsGameStatusComingSoon || IsGameStatusPreRegister)
-                {
-                    LauncherBtn.Visibility = Visibility.Collapsed;
-                    LauncherGameStatusPlaceholderBtn.Visibility = Visibility.Visible;
-
-                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility = Visibility.Visible;
-                    if (IsGameStatusPreRegister) GamePlaceholderBtnPreRegister.Visibility = Visibility.Visible;
-
-                    return;
-                }
-
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
@@ -200,6 +189,17 @@ namespace CollapseLauncher.Pages
                 UpdateLastPlayed();
                 CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll();
+
+                if (IsGameStatusComingSoon || IsGameStatusPreRegister)
+                {
+                    LauncherBtn.Visibility = Visibility.Collapsed;
+                    LauncherGameStatusPlaceholderBtn.Visibility = Visibility.Visible;
+
+                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility = Visibility.Visible;
+                    if (IsGameStatusPreRegister) GamePlaceholderBtnPreRegister.Visibility = Visibility.Visible;
+
+                    return;
+                }
 
                 if (m_arguments.StartGame?.Play != true)
                     return;

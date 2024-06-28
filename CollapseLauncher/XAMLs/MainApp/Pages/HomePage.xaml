@@ -81,9 +81,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="32" />
@@ -200,9 +200,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Button x:Name="PauseDownloadPreBtn"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Stretch"
@@ -314,16 +314,16 @@
             <StackPanel.Resources>
                 <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             </StackPanel.Resources>
-            <!--<StackPanel.Transitions>
+            <StackPanel.Transitions>
                 <PopupThemeTransition />
-            </StackPanel.Transitions>-->
+            </StackPanel.Transitions>
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}">
-                    <!--<ItemsControl.Transitions>
+                    <ItemsControl.Transitions>
                         <PopupThemeTransition />
-                    </ItemsControl.Transitions>-->
+                    </ItemsControl.Transitions>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button x:Name="SocMedButton"
@@ -771,13 +771,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Grid>
-                <!--<Grid.ChildrenTransitions>
+                <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>-->
+                </Grid.ChildrenTransitions>
                 <Grid x:Name="progressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
