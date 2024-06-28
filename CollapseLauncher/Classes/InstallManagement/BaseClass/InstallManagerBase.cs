@@ -105,7 +105,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual bool IsUseSophon =>
             base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null 
-            && !File.Exists(Path.Combine(_gamePath, "@DisableSophon"));
+            && !File.Exists(Path.Combine(_gamePath, "@DisableSophon"))
+            && (!_canDeltaPatch && !_forceIgnoreDeltaPatch);
 
         #endregion
 
