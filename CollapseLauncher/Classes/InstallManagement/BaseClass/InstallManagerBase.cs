@@ -102,7 +102,11 @@ namespace CollapseLauncher.InstallManager.Base
         public event EventHandler FlushingTrigger;
         public virtual bool StartAfterInstall { get; set; }
         public virtual bool IsRunning { get; protected set; }
-        public virtual bool IsUseSophon { get => base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null; }
+
+        public virtual bool IsUseSophon =>
+            base._gameVersionManager.GamePreset.LauncherResourceChunksURL != null 
+            && !File.Exists(Path.Combine(_gamePath, "@DisableSophon"));
+
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
