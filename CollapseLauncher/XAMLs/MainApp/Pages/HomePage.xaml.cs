@@ -1142,6 +1142,12 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    DownloadModeLabel.Visibility = Visibility.Visible;
+                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                }
+
                 int verifResult;
                 bool skipDialog = false;
                 while ((verifResult = await CurrentGameProperty._GameInstall.StartPackageVerification()) == 0)
@@ -2050,6 +2056,12 @@ namespace CollapseLauncher.Pages
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
+
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    DownloadModeLabel.Visibility = Visibility.Visible;
+                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                }
 
                 int verifResult;
                 bool skipDialog = false;

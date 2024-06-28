@@ -851,6 +851,22 @@
                            FontSize="10"
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                <Grid x:Name="DownloadModeLabel"
+                      Background="{ThemeResource AccentColorBrush}"
+                      HorizontalAlignment="Center"
+                      Padding="8,2"
+                      Margin="0,8,0,0"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16"
+                      CornerRadius="8"
+                      Visibility="Collapsed">
+                    <TextBlock x:Name="DownloadModeLabelText"
+                               Text=""
+                               FontWeight="Bold"
+                               FontSize="10"
+                               Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                               HorizontalTextAlignment="Center"/>
+                </Grid>
             </StackPanel>
             <Button x:Name="ProgressSettingsButton"
                     Width="32"
