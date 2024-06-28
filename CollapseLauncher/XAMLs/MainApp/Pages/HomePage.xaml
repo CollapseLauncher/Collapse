@@ -81,9 +81,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="32" />
@@ -200,9 +200,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Button x:Name="PauseDownloadPreBtn"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Stretch"
@@ -314,16 +314,16 @@
             <StackPanel.Resources>
                 <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             </StackPanel.Resources>
-            <StackPanel.Transitions>
+            <!--<StackPanel.Transitions>
                 <PopupThemeTransition />
-            </StackPanel.Transitions>
+            </StackPanel.Transitions>-->
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}">
-                    <ItemsControl.Transitions>
+                    <!--<ItemsControl.Transitions>
                         <PopupThemeTransition />
-                    </ItemsControl.Transitions>
+                    </ItemsControl.Transitions>-->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button x:Name="SocMedButton"
@@ -771,13 +771,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             <Grid>
-                <Grid.ChildrenTransitions>
+                <!--<Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>
+                </Grid.ChildrenTransitions>-->
                 <Grid x:Name="progressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
@@ -1500,6 +1500,84 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <Grid x:Name="LauncherGameStatusPlaceholderBtn"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  HorizontalAlignment="Stretch"
+                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
+                  PointerEntered="ElementScaleOutHoveredPointerEntered"
+                  PointerExited="ElementScaleInHoveredPointerExited"
+                  Shadow="{ThemeResource SharedShadow}"
+                  Translation="0,0,32"
+                  Visibility="Collapsed">
+                <Button x:Name="GamePlaceholderBtnComingSoon"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        IsEnabled="False"
+                        Visibility="Collapsed"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                        Style="{ThemeResource NewAccentButtonStyle}">
+                    <Button.Content>
+                        <Grid Margin="8,0">
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Center"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderComingSoonBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="GamePlaceholderBtnPreRegister"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Visibility="Collapsed"
+                        Click="OpenButtonLinkFromTag"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Tag="{x:Bind GamePreRegisterLink}">
+                    <Button.Content>
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0"
+                                  RenderTransformOrigin="0.5, 0.5">
+                                <Grid.RenderTransform>
+                                    <RotateTransform Angle="180" />
+                                </Grid.RenderTransform>
+                                <AnimatedVisualPlayer Height="28"
+                                      HorizontalAlignment="Right">
+                                    <lottie:StartGameIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
+                            <TextBlock Grid.Column="1"
+                                       Margin="0,-2,0,0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Center"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <Grid Grid.Column="2"
+                                  Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0">
+                                <AnimatedVisualPlayer Height="28"
+                                      HorizontalAlignment="Right">
+                                    <lottie:StartGameIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
+                        </Grid>
+                    </Button.Content>
+                </Button>
+            </Grid>
             <Grid x:Name="LauncherBtn"
                   Grid.Row="0"
                   Grid.Column="0"

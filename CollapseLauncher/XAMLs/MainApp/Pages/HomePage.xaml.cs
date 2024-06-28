@@ -151,6 +151,18 @@ namespace CollapseLauncher.Pages
                 this.InitializeComponent();
 
                 BackgroundImgChanger.ToggleBackground(false);
+
+                if (IsGameStatusComingSoon || IsGameStatusPreRegister)
+                {
+                    LauncherBtn.Visibility = Visibility.Collapsed;
+                    LauncherGameStatusPlaceholderBtn.Visibility = Visibility.Visible;
+
+                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility = Visibility.Visible;
+                    if (IsGameStatusPreRegister) GamePlaceholderBtnPreRegister.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
