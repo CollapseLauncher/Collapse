@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 
+#nullable enable
 namespace CollapseLauncher
 {
     public interface IRegionResourceCopyable<T>
@@ -34,7 +35,7 @@ namespace CollapseLauncher
 
     public class RegionResourceProp : IRegionResourceCopyable<RegionResourceProp>
     {
-        public RegionResourceGame data { get; set; }
+        public RegionResourceGame? data { get; set; }
         public string imgLocalPath { get; set; } = string.Empty;
         public RegionResourceProp Copy() => new RegionResourceProp()
         {
@@ -45,14 +46,14 @@ namespace CollapseLauncher
 
     public class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
     {
-        public List<RegionResourcePlugin> plugins { get; set; }
-        public RegionResourceLatest game { get; set; }
-        public RegionResourceLatest pre_download_game { get; set; }
-        public RegionBackgroundProp adv { get; set; }
-        public RegionResourceVersion sdk { get; set; }
-        public List<RegionSocMedProp> banner { get; set; }
-        public List<RegionSocMedProp> icon { get; set; }
-        public List<RegionSocMedProp> post { get; set; }
+        public List<RegionResourcePlugin>? plugins { get; set; }
+        public RegionResourceLatest? game { get; set; }
+        public RegionResourceLatest? pre_download_game { get; set; }
+        public RegionBackgroundProp? adv { get; set; }
+        public RegionResourceVersion? sdk { get; set; }
+        public List<RegionSocMedProp>? banner { get; set; }
+        public List<RegionSocMedProp>? icon { get; set; }
+        public List<RegionSocMedProp>? post { get; set; }
         public RegionResourceGame Copy() => new RegionResourceGame()
         {
             plugins = plugins?.Copy(),
@@ -68,10 +69,10 @@ namespace CollapseLauncher
 
     public class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
     {
-        public string release_id { get; set; }
-        public string plugin_id { get; set; }
-        public string version { get; set; }
-        public RegionResourceVersion package { get; set; }
+        public string? release_id { get; set; }
+        public string? plugin_id { get; set; }
+        public string? version { get; set; }
+        public RegionResourceVersion? package { get; set; }
         public RegionResourcePlugin Copy() => new RegionResourcePlugin()
         {
             release_id = release_id,
@@ -83,8 +84,8 @@ namespace CollapseLauncher
 
     public class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
     {
-        public string path { get; set; }
-        public string md5 { get; set; }
+        public string? path { get; set; }
+        public string? md5 { get; set; }
         public RegionResourcePluginValidate Copy() => new RegionResourcePluginValidate()
         {
             path = path,
@@ -94,8 +95,8 @@ namespace CollapseLauncher
 
     public class RegionResourceLatest : IRegionResourceCopyable<RegionResourceLatest>
     {
-        public RegionResourceVersion latest { get; set; }
-        public List<RegionResourceVersion> diffs { get; set; }
+        public RegionResourceVersion? latest { get; set; }
+        public List<RegionResourceVersion>? diffs { get; set; }
         public RegionResourceLatest Copy() => new RegionResourceLatest()
         {
             latest = latest?.Copy(),
@@ -105,28 +106,28 @@ namespace CollapseLauncher
 
     public class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
     {
-        public string run_command { get; set; }
-        public string version { get; set; }
-        public string url { get; set; }
-        public string path { get; set; }
-        public string decompressed_path { get; set; }
+        public string? run_command { get; set; }
+        public string? version { get; set; }
+        public string? url { get; set; }
+        public string? path { get; set; }
+        public string? decompressed_path { get; set; }
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long size { get; set; }
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long package_size { get; set; }
-        public string md5 { get; set; }
-        public string language { get; set; }
+        public string? md5 { get; set; }
+        public string? language { get; set; }
         public bool is_recommended_update { get; set; }
-        public string entry { get; set; }
-        public string pkg_version { get; set; }
+        public string? entry { get; set; }
+        public string? pkg_version { get; set; }
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int? channel_id { get; set; }
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int? sub_channel_id { get; set; }
-        public List<RegionResourceVersion> voice_packs { get; set; }
-        public List<RegionResourceVersion> segments { get; set; }
+        public List<RegionResourceVersion>? voice_packs { get; set; }
+        public List<RegionResourceVersion>? segments { get; set; }
         [JsonConverter(typeof(RegionResourcePluginValidateConverter))]
-        public List<RegionResourcePluginValidate> validate { get; set; }
+        public List<RegionResourcePluginValidate>? validate { get; set; }
         public RegionResourceVersion Copy() => new RegionResourceVersion()
         {
             version = version,
@@ -148,10 +149,10 @@ namespace CollapseLauncher
 
     public class HomeMenuPanel : IRegionResourceCopyable<HomeMenuPanel>
     {
-        public List<MenuPanelProp> sideMenuPanel { get; set; }
-        public List<MenuPanelProp> imageCarouselPanel { get; set; }
-        public PostCarouselTypes articlePanel { get; set; }
-        public RegionBackgroundProp eventPanel { get; set; }
+        public List<MenuPanelProp>? sideMenuPanel { get; set; }
+        public List<MenuPanelProp>? imageCarouselPanel { get; set; }
+        public PostCarouselTypes? articlePanel { get; set; }
+        public RegionBackgroundProp? eventPanel { get; set; }
         public HomeMenuPanel Copy() => new HomeMenuPanel()
         {
             sideMenuPanel = sideMenuPanel?.Copy(),
