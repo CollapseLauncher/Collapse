@@ -142,6 +142,9 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherSpriteURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGameInfoDisplayURL { get; init; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherSpriteURLMultiLangFallback { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]

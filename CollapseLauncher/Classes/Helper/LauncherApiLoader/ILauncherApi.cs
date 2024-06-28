@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         string? GameRegion { get; }
         string? GameNameTranslation { get; }
         string? GameRegionTranslation { get; }
+        HoYoPlayGameInfoField? LauncherGameInfoField { get; }
         RegionResourceProp? LauncherGameResource { get; }
         LauncherGameNews? LauncherGameNews { get; }
         Task<bool> LoadAsync(OnLoadAction? beforeLoadRoutine = null, OnLoadAction? afterLoadRoutine = null,

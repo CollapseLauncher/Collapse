@@ -21,7 +21,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
         protected override async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
-            // TODO: HoYoPlay API reading and conversion into Sophon format
             EnsurePresetConfigNotNull();
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
@@ -166,6 +165,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 RegionResourceVersion sophonMainPackageSection = new RegionResourceVersion();
                 if (hypMainPackageSection != null)
                     ConvertHYPSectionToResourceVersion(ref hypMainPackageSection, ref sophonMainPackageSection);
+
+                // If the main game package reference is null, skip it
+                if (sophonPackageResources.game == null)
+                    continue;
+
                 sophonPackageResources.game.latest = sophonMainPackageSection;
 
                 // Assign and convert main game package (diff)
@@ -438,6 +442,39 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     });
                 }
             }
+        }
+        #endregion
+
+        protected override async ValueTask LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
+        {
+            if (PresetConfig?.LauncherGameInfoDisplayURL == null)
+            {
+                base.LauncherGameInfoField = new HoYoPlayGameInfoField();
+                return;
+            }
+
+            bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
+
+            string localeCode = isUseMultiLang ? Locale.Lang.LanguageID.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback!;
+            string launcherGameInfoUrl = string.Format(PresetConfig?.LauncherGameInfoDisplayURL!, localeCode);
+
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
+                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?>(async (innerToken) =>
+                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(launcherGameInfoUrl, InternalAppJSONContext.Default, innerToken));
+
+            HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await hypLauncherGameInfoCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+
+            HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = null;
+            ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo?.GameInfoData);
+
+            base.LauncherGameInfoField = sophonLauncherGameInfoRoot == null ? new HoYoPlayGameInfoField() : sophonLauncherGameInfoRoot;
+        }
+
+        #region Convert Game Info Resources
+        private void ConvertGameInfoResources(ref HoYoPlayGameInfoField? sophonGameInfo, HoYoPlayGameInfoData? hypLauncherGameInfoList)
+        {
+            sophonGameInfo = hypLauncherGameInfoList?.Data?.FirstOrDefault(x => x.BizName?.Equals(PresetConfig?.LauncherBizName) ?? false);
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
@@ -36,8 +37,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public string? GameRegionTranslation =>
             InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions);
 
-        public virtual RegionResourceProp? LauncherGameResource { get; protected set; }
-        public virtual LauncherGameNews?   LauncherGameNews     { get; protected set; }
+        public virtual RegionResourceProp?    LauncherGameResource  { get; protected set; }
+        public virtual LauncherGameNews?      LauncherGameNews      { get; protected set; }
+        public virtual HoYoPlayGameInfoField? LauncherGameInfoField { get; protected set; }
 
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion)
         {
@@ -76,6 +78,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         {
             await LoadLauncherGameResource(onTimeoutRoutine, token);
             await LoadLauncherNews(onTimeoutRoutine, token);
+            await LoadLauncherGameInfo(onTimeoutRoutine, token);
         }
 
         protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
@@ -105,9 +108,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
-                if (pluginProp != null)
+                if (pluginProp != null && LauncherGameResource.data != null)
                 {
-                    LauncherGameResource.data.plugins = pluginProp.data.plugins;
+                    LauncherGameResource.data.plugins = pluginProp?.data?.plugins;
                 #if DEBUG
                     Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading plugin handle!",
                                         LogType.Debug, true);
@@ -121,29 +124,29 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected virtual void PerformDebugRoutines()
         {
 #if DEBUG
-            if (LauncherGameResource?.data.game.latest.decompressed_path != null)
+            if (LauncherGameResource?.data?.game?.latest?.decompressed_path != null)
             {
                 Logger.LogWriteLine($"Decompressed Path: {LauncherGameResource.data.game.latest.decompressed_path}",
                                     LogType.Default, true);
             }
 
-            if (LauncherGameResource?.data.game.latest.path != null)
+            if (LauncherGameResource?.data?.game?.latest?.path != null)
             {
                 Logger.LogWriteLine($"ZIP Path: {LauncherGameResource.data.game.latest.path}", LogType.Default, true);
             }
 
-            if (LauncherGameResource?.data.pre_download_game?.latest?.decompressed_path != null)
+            if (LauncherGameResource?.data?.pre_download_game?.latest?.decompressed_path != null)
             {
                 Logger.LogWriteLine($"Decompressed Path Pre-load: {LauncherGameResource.data.pre_download_game?.latest?.decompressed_path}",
                                     LogType.Default, true);
             }
 
-            if (LauncherGameResource?.data.sdk?.path != null)
+            if (LauncherGameResource?.data?.sdk?.path != null)
             {
                 Logger.LogWriteLine($"SDK found! Path: {LauncherGameResource.data.sdk.path}", LogType.Default, true);
             }
 
-            if (LauncherGameResource?.data.pre_download_game?.latest?.path != null)
+            if (LauncherGameResource?.data?.pre_download_game?.latest?.path != null)
             {
                 Logger.LogWriteLine($"ZIP Path Pre-load: {LauncherGameResource.data.pre_download_game?.latest?.path}",
                                     LogType.Default, true);
@@ -151,13 +154,18 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 #endif
 
 #if SIMULATEPRELOAD && !SIMULATEAPPLYPRELOAD
-            if (LauncherGameResource.data.pre_download_game == null)
+            if (LauncherGameResource != null && LauncherGameResource?.data?.pre_download_game == null)
             {
                 Logger.LogWriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
-                RegionResourceVersion simDataLatest = LauncherGameResource.data.game.latest.Copy();
-                List<RegionResourceVersion> simDataDiff = LauncherGameResource.data.game.diffs.Copy();
+                RegionResourceVersion? simDataLatest = LauncherGameResource?.data?.game?.latest?.Copy();
+                List<RegionResourceVersion>? simDataDiff = LauncherGameResource?.data?.game?.diffs?.Copy();
+
+                if (simDataLatest == null)
+                    return;
 
                 simDataLatest.version = new GameVersion(simDataLatest.version).GetIncrementedVersion().ToString();
+
+                LauncherGameResource!.data ??= new RegionResourceGame();
                 LauncherGameResource.data.pre_download_game = new RegionResourceLatest() { latest = simDataLatest };
 
                 if (simDataDiff == null || simDataDiff.Count == 0) return;
@@ -171,7 +179,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
 #endif
 #if !SIMULATEPRELOAD && SIMULATEAPPLYPRELOAD
-            if (LauncherGameResource.data.pre_download_game != null)
+            if (LauncherGameResource?.data?.pre_download_game != null)
             {
                 LauncherGameResource.data.game = LauncherGameResource.data.pre_download_game;
             }
@@ -240,6 +248,15 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             regionResourceProp?.Content?.InjectDownloadableItemCancelToken(token);
             LauncherGameNews = regionResourceProp;
+        }
+
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        protected virtual async ValueTask LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine,
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+                                                               CancellationToken token)
+        {
+            LauncherGameInfoField = new HoYoPlayGameInfoField();
         }
 
         private static async ValueTask<LauncherGameNews?> LoadLauncherNewsInner(

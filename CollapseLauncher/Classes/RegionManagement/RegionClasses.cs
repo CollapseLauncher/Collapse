@@ -24,7 +24,7 @@ namespace CollapseLauncher
 
     public static class RegionResourceListHelper
     {
-        public static List<T> Copy<T>(this List<T> source)
+        public static List<T>? Copy<T>(this List<T> source)
             where T : IRegionResourceCopyable<T>
         {
             if (source == null) return null;
@@ -128,7 +128,7 @@ namespace CollapseLauncher
         public List<RegionResourceVersion>? segments { get; set; }
         [JsonConverter(typeof(RegionResourcePluginValidateConverter))]
         public List<RegionResourcePluginValidate>? validate { get; set; }
-        public RegionResourceVersion Copy() => new RegionResourceVersion()
+        public RegionResourceVersion? Copy() => new RegionResourceVersion()
         {
             version = version,
             pkg_version = pkg_version,

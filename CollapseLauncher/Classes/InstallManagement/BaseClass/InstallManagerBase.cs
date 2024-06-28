@@ -68,7 +68,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected readonly string _gamePersistentFolderBasePath;
         protected readonly string _gameStreamingAssetsFolderBasePath;
         protected RegionResourceGame _gameRegion { get => _gameVersionManager!.GameAPIProp!.data; }
-        protected GameVersion _gameLatestVersion { get => _gameVersionManager!.GetGameVersionAPI(); }
+        protected GameVersion? _gameLatestVersion { get => _gameVersionManager!.GetGameVersionAPI(); }
         protected GameVersion? _gameLatestPreloadVersion { get => _gameVersionManager!.GetGameVersionAPIPreload(); }
         protected GameVersion? _gameInstalledVersion { get => _gameVersionManager!.GetGameExistingVersion(); }
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
@@ -1332,6 +1332,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Dictionary<string, GameVersion>? gamePluginVersionDictionary = new Dictionary<string, GameVersion>();
                     foreach (RegionResourcePlugin plugins in gamePluginList!)
                     {
+                        if (plugins == null || plugins.plugin_id == null) continue;
                         gamePluginVersionDictionary.Add(plugins.plugin_id, new GameVersion(plugins.version));
                     }
                     _gameVersionManager.UpdatePluginVersions(gamePluginVersionDictionary);
@@ -2367,7 +2368,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Parse game version INI configuration and search for the installed plugin.
             // Matching it if the latest version is found, then remove the corresponding
             Dictionary<string, RegionResourcePlugin> pluginResourceDictionary = pluginResourceList
-                .ToDictionary(asset => asset.plugin_id, StringComparer.OrdinalIgnoreCase);
+                .ToDictionary(asset => asset.plugin_id!, StringComparer.OrdinalIgnoreCase);
             
             // If the game ini section is not null, then try eliminate the version section
             if (_gameVersionManager.GameIniVersionSection != null)
@@ -2386,7 +2387,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         // Try to get the plugin version from both installed and api's one
                         RegionResourcePlugin pluginResource = pluginResourceDictionary[iniPluginId];
-                        string pluginResourceVersion = pluginResource.version;
+                        string pluginResourceVersion = pluginResource.version!;
                         if (GameVersion.TryParse(pluginResourceVersion, out GameVersion? pluginResourceVersionResult)
                          && GameVersion.TryParse(iniProperty.Value.ToString(), out GameVersion? installedPluginVersionResult))
                         {
