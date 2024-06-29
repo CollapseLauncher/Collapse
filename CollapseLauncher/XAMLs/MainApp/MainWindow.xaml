@@ -42,7 +42,8 @@
                 </Frame.ContentTransitions>
             </Frame>
         </Grid>
-        <Grid x:Name="IntroAnimationGrid"
+        <Grid Grid.Row="0"
+              x:Name="IntroAnimationGrid"
               Grid.RowSpan="3"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
