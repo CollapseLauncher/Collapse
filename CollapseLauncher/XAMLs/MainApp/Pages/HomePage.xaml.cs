@@ -2029,13 +2029,15 @@ namespace CollapseLauncher.Pages
 
         private const string _playtimeRegName = "CollapseLauncher_Playtime";
         private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
+#nullable enable
         private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
         {
             try
             {
-                return (int)
-                    Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                            .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0);
+                object subKeyObj = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)?
+                                   .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0) ?? 0;
+
+                return (int)subKeyObj;
             }
             catch (Exception ex)
             {
@@ -2048,15 +2050,15 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                        .SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value,
-                                  RegistryValueKind.DWord);
+                RegistryKey? subKey = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true);
+                subKey?.SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
             }
         }
+#nullable restore
         #endregion
 
         #region Game Update Dialog
