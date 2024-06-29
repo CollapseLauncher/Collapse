@@ -1,9 +1,10 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
-    internal class StarRailSettings : SettingsBase, IGameSettings, IGameSettingsUniversal
+    internal class StarRailSettings : SettingsBase
     {
         public Model GraphicsSettings { get; set; }
         public BGMVolume AudioSettings_BGM { get; set; }
@@ -20,7 +21,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             InitializeSettings();
         }
 
-        public override void InitializeSettings()
+        public sealed override void InitializeSettings()
         {
             // Load Settings required for MainPage
             base.InitializeSettings();

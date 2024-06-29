@@ -1,15 +1,18 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿#nullable enable
+    using CollapseLauncher.Extension;
+    using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+    using CollapseLauncher.Helper.Metadata;
+    using Hi3Helper;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+// ReSharper disable IdentifierTypo
 
-#nullable enable
-namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
+    // ReSharper disable once CheckNamespace
+namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
     internal class HoYoPlayLauncherApiLoader : LauncherApiBase, ILauncherApi
     {
@@ -24,8 +27,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             EnsurePresetConfigNotNull();
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
-                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
+                async innerToken =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken);
 
             HoYoPlayLauncherResources? hypResourceResponse = await hypResourceResponseCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
@@ -35,8 +38,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
-                    new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
-                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken));
+                    async innerToken =>
+                        await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken);
 
                 hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                   ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
@@ -45,17 +48,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
-                    new ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?>(async (innerToken) =>
-                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherGameChannelSDKURL, InternalAppJSONContext.Default, innerToken));
+                    async innerToken =>
+                        await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherGameChannelSDKURL, InternalAppJSONContext.Default, innerToken);
 
                 hypSdkResource = await hypSdkResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
             }
 
-            RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest
-            {
-
-            };
+            RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest();
 
             RegionResourceGame sophonResourceData = new RegionResourceGame
             {
@@ -112,10 +112,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             if (hypPluginPackage == null) return;
 
             List<RegionResourcePlugin> pluginCurrentPackageList = new List<RegionResourcePlugin>();
-            RegionResourcePlugin plugin = new RegionResourcePlugin()
-            {
-                package = new RegionResourceVersion()
-            };
             GuessAssignPluginConversion(pluginCurrentPackageList, hypPluginPackage);
             sophonResourceData.plugins = pluginCurrentPackageList;
         }
@@ -128,8 +124,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
             foreach (PackagePluginSections firstPluginSection in pluginSectionsList)
             {
-                if (firstPluginSection == null) continue;
-
                 RegionResourcePlugin sophonPlugin = new RegionResourcePlugin();
                 sophonPlugin.version = firstPluginSection.Version;
                 sophonPlugin.plugin_id = firstPluginSection.PluginId;
@@ -161,8 +155,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     .Equals(PresetConfig?.LauncherBizName, StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 // Assign and convert main game package (latest)
-                PackageResourceSections? hypMainPackageSection = hypRootPackage?.MainPackage?.CurrentVersion;
-                RegionResourceVersion sophonMainPackageSection = new RegionResourceVersion();
+                PackageResourceSections? hypMainPackageSection    = hypRootPackage.MainPackage?.CurrentVersion;
+                RegionResourceVersion    sophonMainPackageSection = new RegionResourceVersion();
                 if (hypMainPackageSection != null)
                     ConvertHYPSectionToResourceVersion(ref hypMainPackageSection, ref sophonMainPackageSection);
 
@@ -173,28 +167,25 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 sophonPackageResources.game.latest = sophonMainPackageSection;
 
                 // Assign and convert main game package (diff)
-                if (hypRootPackage?.MainPackage?.Patches != null)
+                if (hypRootPackage.MainPackage?.Patches != null)
                 {
                     sophonPackageResources.game.diffs = new List<RegionResourceVersion>();
                     foreach (PackageResourceSections hypMainDiffPackageSection in hypRootPackage.MainPackage.Patches)
                     {
-                        if (hypMainDiffPackageSection != null)
-                        {
-                            PackageResourceSections hypMainDiffPackageSectionRef = hypMainDiffPackageSection;
-                            RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
-                            ConvertHYPSectionToResourceVersion(ref hypMainDiffPackageSectionRef, ref sophonResourceVersion);
-                            sophonPackageResources.game.diffs.Add(sophonResourceVersion);
-                        }
+                        PackageResourceSections hypMainDiffPackageSectionRef = hypMainDiffPackageSection;
+                        RegionResourceVersion   sophonResourceVersion        = new RegionResourceVersion();
+                        ConvertHYPSectionToResourceVersion(ref hypMainDiffPackageSectionRef, ref sophonResourceVersion);
+                        sophonPackageResources.game.diffs.Add(sophonResourceVersion);
                     }
                 }
                 sophonPackageResources.pre_download_game = new RegionResourceLatest();
 
                 // Convert if preload entry is not empty or null
-                if (hypRootPackage?.PreDownload?.CurrentVersion != null || (hypRootPackage?.PreDownload?.Patches?.Count ?? 0) != 0)
+                if (hypRootPackage.PreDownload?.CurrentVersion != null || (hypRootPackage.PreDownload?.Patches?.Count ?? 0) != 0)
                 {
 
                     // Assign and convert preload game package (latest)
-                    PackageResourceSections? hypPreloadPackageSection = hypRootPackage?.PreDownload?.CurrentVersion;
+                    PackageResourceSections? hypPreloadPackageSection = hypRootPackage.PreDownload?.CurrentVersion;
                     if (hypPreloadPackageSection != null)
                     {
                         RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
@@ -203,19 +194,20 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     }
 
                     // Assign and convert preload game package (diff)
-                    if (hypRootPackage?.PreDownload?.Patches != null && hypRootPackage.PreDownload.Patches.Count != 0)
+                    if (hypRootPackage.PreDownload?.Patches == null || hypRootPackage.PreDownload.Patches.Count == 0)
                     {
-                        sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
-                        foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload.Patches)
-                        {
-                            if (hypPreloadDiffPackageSection != null)
-                            {
-                                PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
-                                RegionResourceVersion sophonResourceVersion = new RegionResourceVersion();
-                                ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef, ref sophonResourceVersion);
-                                sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
-                            }
-                        }
+                        continue;
+                    }
+
+                    sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
+                    foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload
+                                .Patches)
+                    {
+                        PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
+                        RegionResourceVersion   sophonResourceVersion           = new RegionResourceVersion();
+                        ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef,
+                                                           ref sophonResourceVersion);
+                        sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
                     }
                 }
             }
@@ -223,9 +215,19 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
         private void ConvertHYPSectionToResourceVersion(ref PackageResourceSections hypPackageResourceSection, ref RegionResourceVersion sophonResourceVersion)
         {
+            if (hypPackageResourceSection == null)
+            {
+                throw new ArgumentNullException(nameof(hypPackageResourceSection));
+            }
+
+            if (sophonResourceVersion == null)
+            {
+                throw new ArgumentNullException(nameof(sophonResourceVersion));
+            }
+
             // Convert game packages
             RegionResourceVersion packagesVersion = new RegionResourceVersion();
-            DelegatePackageResConversionMode(ref packagesVersion, hypPackageResourceSection?.GamePackages, hypPackageResourceSection?.AudioPackages, hypPackageResourceSection?.Version, hypPackageResourceSection?.ResourceListUrl);
+            DelegatePackageResConversionMode(ref packagesVersion, hypPackageResourceSection.GamePackages, hypPackageResourceSection.AudioPackages, hypPackageResourceSection.Version, hypPackageResourceSection.ResourceListUrl);
             sophonResourceVersion = packagesVersion;
         }
 
@@ -316,12 +318,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             string launcherNewsUrl = string.Format(PresetConfig?.LauncherNewsURL!, localeCode);
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
-                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherSpriteUrl, InternalAppJSONContext.Default, innerToken));
+                async innerToken =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherSpriteUrl, InternalAppJSONContext.Default, innerToken);
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
-                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherNewsUrl, InternalAppJSONContext.Default, innerToken));
+                async innerToken =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherNewsUrl, InternalAppJSONContext.Default, innerToken);
 
             HoYoPlayLauncherNews? hypLauncherBackground = await hypLauncherBackgroundCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
@@ -330,7 +332,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
             // Merge background image
             if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)
-                hypLauncherNews.Data.GameInfoList = hypLauncherBackground?.Data?.GameInfoList;
+                hypLauncherNews.Data.GameInfoList = hypLauncherBackground.Data?.GameInfoList;
 
             LauncherGameNews? sophonLauncherNewsRoot = null;
             EnsureInitializeSophonLauncherNews(ref sophonLauncherNewsRoot);
@@ -369,9 +371,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             if (string.IsNullOrEmpty(hypLauncherInfoData?.BackgroundImageUrl)) return;
 
             if (sophonLauncherNewsData?.Content?.Background == null) return;
-            sophonLauncherNewsData.Content.Background.BackgroundImg = hypLauncherInfoData?.BackgroundImageUrl;
-            sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnImg = hypLauncherInfoData?.FeaturedEventIconUrl;
-            sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnUrl = hypLauncherInfoData?.FeaturedEventIconClickLink;
+            sophonLauncherNewsData.Content.Background.BackgroundImg           = hypLauncherInfoData.BackgroundImageUrl;
+            sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnImg = hypLauncherInfoData.FeaturedEventIconUrl;
+            sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnUrl = hypLauncherInfoData.FeaturedEventIconClickLink;
         }
 
         private void ConvertLauncherNews(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
@@ -382,7 +384,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 // Post
                 foreach (LauncherContentData hypPostData in hypLauncherInfoData.GameNewsContent.NewsPostsList)
                 {
-                    sophonLauncherNewsData?.Content?.NewsPost?.Add(new LauncherGameNewsPost()
+                    sophonLauncherNewsData?.Content?.NewsPost?.Add(new LauncherGameNewsPost
                     {
                         PostDate = hypPostData.Date,
                         PostUrl = hypPostData.ClickLink,
@@ -421,24 +423,24 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 {
                     sophonLauncherNewsData?.Content?.SocialMedia?.Add(new LauncherGameNewsSocialMedia
                     {
-                        IconId = hypSocMedData?.SocialMediaId,
-                        IconImg = hypSocMedData?.SocialMediaIcon?.ImageUrl,
-                        IconImgHover = string.IsNullOrEmpty(hypSocMedData?.SocialMediaIcon?.ImageHoverUrl) ? hypSocMedData?.SocialMediaIcon?.ImageUrl : hypSocMedData?.SocialMediaIcon?.ImageHoverUrl,
-                        Title = hypSocMedData?.SocialMediaIcon?.Title,
-                        SocialMediaUrl = (hypSocMedData?.SocialMediaLinks?.Count ?? 0) != 0 ?
-                            hypSocMedData?.SocialMediaLinks?.FirstOrDefault()?.ClickLink :
-                            hypSocMedData?.SocialMediaIcon?.ClickLink,
-                        QrImg = hypSocMedData?.SocialMediaQrImage?.ImageUrl,
-                        QrTitle = hypSocMedData?.SocialMediaQrDescription,
-                        QrLinks = hypSocMedData?.SocialMediaLinks?.Select(x =>
-                        {
-                            LauncherGameNewsSocialMediaQrLinks qrLink = new LauncherGameNewsSocialMediaQrLinks
-                            {
-                                Title = x.Title,
-                                Url = x.ClickLink
-                            };
-                            return qrLink;
-                        }).ToList()
+                        IconId       = hypSocMedData.SocialMediaId,
+                        IconImg      = hypSocMedData.SocialMediaIcon?.ImageUrl,
+                        IconImgHover = string.IsNullOrEmpty(hypSocMedData.SocialMediaIcon?.ImageHoverUrl) ? hypSocMedData.SocialMediaIcon?.ImageUrl : hypSocMedData.SocialMediaIcon?.ImageHoverUrl,
+                        Title        = hypSocMedData.SocialMediaIcon?.Title,
+                        SocialMediaUrl = (hypSocMedData.SocialMediaLinks?.Count ?? 0) != 0 ?
+                            hypSocMedData.SocialMediaLinks?.FirstOrDefault()?.ClickLink :
+                            hypSocMedData.SocialMediaIcon?.ClickLink,
+                        QrImg   = hypSocMedData.SocialMediaQrImage?.ImageUrl,
+                        QrTitle = hypSocMedData.SocialMediaQrDescription,
+                        QrLinks = hypSocMedData.SocialMediaLinks?.Select(x =>
+                                                                         {
+                                                                             LauncherGameNewsSocialMediaQrLinks qrLink = new LauncherGameNewsSocialMediaQrLinks
+                                                                             {
+                                                                                 Title = x.Title,
+                                                                                 Url = x.ClickLink
+                                                                             };
+                                                                             return qrLink;
+                                                                         }).ToList()
                     });
                 }
             }
@@ -459,22 +461,35 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             string launcherGameInfoUrl = string.Format(PresetConfig?.LauncherGameInfoDisplayURL!, localeCode);
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
-                new ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(launcherGameInfoUrl, InternalAppJSONContext.Default, innerToken));
+                async innerToken =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(launcherGameInfoUrl, InternalAppJSONContext.Default, innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await hypLauncherGameInfoCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
             HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = null;
-            ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo?.GameInfoData);
+            if (sophonLauncherGameInfoRoot != null)
+            {
+                ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo?.GameInfoData);
 
-            base.LauncherGameInfoField = sophonLauncherGameInfoRoot == null ? new HoYoPlayGameInfoField() : sophonLauncherGameInfoRoot;
+                base.LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
+            }
         }
 
         #region Convert Game Info Resources
-        private void ConvertGameInfoResources(ref HoYoPlayGameInfoField? sophonGameInfo, HoYoPlayGameInfoData? hypLauncherGameInfoList)
+        private void ConvertGameInfoResources([DisallowNull] ref HoYoPlayGameInfoField? sophonGameInfo, HoYoPlayGameInfoData? hypLauncherGameInfoList)
         {
-            sophonGameInfo = hypLauncherGameInfoList?.Data?.FirstOrDefault(x => x.BizName?.Equals(PresetConfig?.LauncherBizName) ?? false);
+            if (sophonGameInfo == null)
+            {
+                throw new ArgumentNullException(nameof(sophonGameInfo));
+            }
+
+            if (hypLauncherGameInfoList == null)
+            {
+                throw new ArgumentNullException(nameof(hypLauncherGameInfoList));
+            }
+
+            sophonGameInfo = hypLauncherGameInfoList.Data?.FirstOrDefault(x => x.BizName?.Equals(PresetConfig?.LauncherBizName) ?? false);
         }
         #endregion
     }

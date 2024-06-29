@@ -48,7 +48,7 @@
               VerticalAlignment="Stretch">
             <AnimatedVisualPlayer x:Name="IntroAnimation"
                                   AutoPlay="False"
-                                  Visibility="Collapsed"/>
+                                  Visibility="Collapsed" />
             <CheckBox x:Name="IntroSequenceToggle"
                       Margin="32,32,16,24"
                       HorizontalAlignment="Right"

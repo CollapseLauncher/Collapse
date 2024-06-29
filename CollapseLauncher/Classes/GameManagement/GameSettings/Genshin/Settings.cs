@@ -16,7 +16,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             InitializeSettings();
         }
 
-        public override void InitializeSettings()
+        public sealed override void InitializeSettings()
         {
             // Load Settings
             base.InitializeSettings();

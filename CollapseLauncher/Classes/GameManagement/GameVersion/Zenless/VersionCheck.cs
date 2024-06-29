@@ -1,9 +1,8 @@
-using CollapseLauncher.Interfaces;
 using Microsoft.UI.Xaml;
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal class GameTypeZenlessVersion : GameVersionBase, IGameVersionCheck
+    internal sealed class GameTypeZenlessVersion : GameVersionBase
     {
         #region Properties
         #endregion

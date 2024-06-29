@@ -852,20 +852,20 @@
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
                 <Grid x:Name="DownloadModeLabel"
-                      Background="{ThemeResource AccentColorBrush}"
-                      HorizontalAlignment="Center"
-                      Padding="8,2"
                       Margin="0,8,0,0"
+                      Padding="8,2"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      CornerRadius="8"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16"
-                      CornerRadius="8"
                       Visibility="Collapsed">
                     <TextBlock x:Name="DownloadModeLabelText"
-                               Text=""
-                               FontWeight="Bold"
                                FontSize="10"
+                               FontWeight="Bold"
                                Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                               HorizontalTextAlignment="Center"/>
+                               HorizontalTextAlignment="Center"
+                               Text="" />
                 </Grid>
             </StackPanel>
             <Button x:Name="ProgressSettingsButton"
@@ -1514,10 +1514,10 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
-                        IsEnabled="False"
-                        Visibility="Collapsed"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
-                        Style="{ThemeResource NewAccentButtonStyle}">
+                        IsEnabled="False"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
                     <Button.Content>
                         <Grid Margin="8,0">
                             <TextBlock HorizontalAlignment="Center"
@@ -1533,11 +1533,11 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
-                        Visibility="Collapsed"
                         Click="OpenButtonLinkFromTag"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Tag="{x:Bind GamePreRegisterLink}">
+                        Tag="{x:Bind GamePreRegisterLink}"
+                        Visibility="Collapsed">
                     <Button.Content>
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
@@ -1553,7 +1553,7 @@
                                     <RotateTransform Angle="180" />
                                 </Grid.RenderTransform>
                                 <AnimatedVisualPlayer Height="28"
-                                      HorizontalAlignment="Right">
+                                                      HorizontalAlignment="Right">
                                     <lottie:StartGameIcon />
                                 </AnimatedVisualPlayer>
                             </Grid>
@@ -1570,7 +1570,7 @@
                                   Margin="-20,-12"
                                   Padding="8,0">
                                 <AnimatedVisualPlayer Height="28"
-                                      HorizontalAlignment="Right">
+                                                      HorizontalAlignment="Right">
                                     <lottie:StartGameIcon />
                                 </AnimatedVisualPlayer>
                             </Grid>

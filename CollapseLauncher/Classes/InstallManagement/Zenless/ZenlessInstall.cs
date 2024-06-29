@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml;
 
 namespace CollapseLauncher.InstallManager.Zenless
 {
-    internal class ZenlessInstall : InstallManagerBase<GameTypeZenlessVersion>, IGameInstallManager
+    internal class ZenlessInstall : InstallManagerBase<GameTypeZenlessVersion>
     {
         #region Override Properties
         #endregion

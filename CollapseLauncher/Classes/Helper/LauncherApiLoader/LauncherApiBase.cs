@@ -88,8 +88,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             EnsureResourceUrlNotNull();
 
             ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
-                new ActionTimeoutValueTaskCallback<RegionResourceProp?>(async (innerToken) =>
-                await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken));
+                async innerToken =>
+                    await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken);
 
             LauncherGameResource = await launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
@@ -102,15 +102,15 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             if (string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL))
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
-                    new ActionTimeoutValueTaskCallback<RegionResourceProp?>(async (innerToken) =>
-                    await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, innerToken));
+                    async innerToken =>
+                        await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, innerToken);
 
                 RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
                 if (pluginProp != null && LauncherGameResource.data != null)
                 {
-                    LauncherGameResource.data.plugins = pluginProp?.data?.plugins;
+                    LauncherGameResource.data.plugins = pluginProp.data?.plugins;
                 #if DEBUG
                     Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading plugin handle!",
                                         LogType.Debug, true);
@@ -269,10 +269,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
 
             ActionTimeoutValueTaskCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
-                new ActionTimeoutValueTaskCallback<LauncherGameNews?>(async (innerToken) =>
-                isMultiLang
-                ? await LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
-                : await LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, innerToken));
+                async innerToken =>
+                    isMultiLang
+                        ? await LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
+                        : await LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, innerToken);
 
             return await taskGameLauncherNewsSophonCallback.WaitForRetryAsync(
                 ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt,

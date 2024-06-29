@@ -891,36 +891,40 @@ namespace CollapseLauncher.Pages
                     _cachedIsGameRunning = true;
 
                     StartGameBtn.IsEnabled = false;
-                    StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                    StartGameBtnIcon.Glyph = StartGameBtnRunningIconGlyph;
-                    StartGameBtnAnimatedIconGrid.Opacity = 0;
-                    StartGameBtnIcon.Opacity = 1;
-
-                    StartGameBtnText.UpdateLayout();
-
-                    RepairGameButton.IsEnabled = false;
-                    UninstallGameButton.IsEnabled = false;
-                    ConvertVersionButton.IsEnabled = false;
-                    CustomArgsTextBox.IsEnabled = false;
-                    MoveGameLocationButton.IsEnabled = false;
-                    StopGameButton.IsEnabled = true;
-
-                    PlaytimeIdleStack.Visibility = Visibility.Collapsed;
-                    PlaytimeRunningStack.Visibility = Visibility.Visible;
-
-#if !DISABLEDISCORD
-                    AppDiscordPresence?.SetActivity(ActivityType.Play);
-#endif
-
-                    Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
-                    if (currentGameProcess != null
-                        && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
-                        // HACK: For some reason, the text still unchanged.
-                        //       Make sure the start game button text also changed.
-                        )
+                    if (StartGameBtnText != null && StartGameBtnAnimatedIconGrid != null)
                     {
-                        await currentGameProcess.WaitForExitAsync(Token);
+                        StartGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
+                        StartGameBtnIcon.Glyph               = StartGameBtnRunningIconGlyph;
+                        StartGameBtnAnimatedIconGrid.Opacity = 0;
+                        StartGameBtnIcon.Opacity             = 1;
+
+                        StartGameBtnText.UpdateLayout();
+
+                        RepairGameButton.IsEnabled       = false;
+                        UninstallGameButton.IsEnabled    = false;
+                        ConvertVersionButton.IsEnabled   = false;
+                        CustomArgsTextBox.IsEnabled      = false;
+                        MoveGameLocationButton.IsEnabled = false;
+                        StopGameButton.IsEnabled         = true;
+
+                        PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
+                        PlaytimeRunningStack.Visibility = Visibility.Visible;
+
+                    #if !DISABLEDISCORD
+                        AppDiscordPresence?.SetActivity(ActivityType.Play);
+                    #endif
+
+                        Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
+                        if (currentGameProcess != null
+                            && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
+                            // HACK: For some reason, the text still unchanged.
+                            //       Make sure the start game button text also changed.
+                           )
+                        {
+                            await currentGameProcess.WaitForExitAsync(Token);
+                        }
                     }
+
                     await Task.Delay(RefreshRate, Token);
                 }
 
