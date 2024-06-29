@@ -187,8 +187,11 @@ namespace CollapseLauncher.Pages
 
                 UpdatePlaytime();
                 UpdateLastPlayed();
-                CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll();
+
+#if !DISABLEDISCORD
+                AppDiscordPresence?.SetActivity(ActivityType.Idle);
+#endif
 
                 if (IsGameStatusComingSoon || IsGameStatusPreRegister)
                 {
@@ -201,13 +204,16 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
+                if (CurrentGameProperty.IsGameRunning)
+                {
+                    CheckRunningGameInstance(PageToken.Token);
+                    return;
+                }
+
                 if (m_arguments.StartGame?.Play != true)
                     return;
 
                 m_arguments.StartGame.Play = false;
-
-                if (CurrentGameProperty.IsGameRunning)
-                    return;
 
                 if (CurrentGameProperty._GameInstall.IsRunning)
                 {
@@ -880,68 +886,70 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                while (!Token.IsCancellationRequested)
+                while (CurrentGameProperty.IsGameRunning)
                 {
-                    while (CurrentGameProperty.IsGameRunning)
+                    _cachedIsGameRunning = true;
+
+                    StartGameBtn.IsEnabled = false;
+                    StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                    StartGameBtnIcon.Glyph = StartGameBtnRunningIconGlyph;
+                    StartGameBtnAnimatedIconGrid.Opacity = 0;
+                    StartGameBtnIcon.Opacity = 1;
+
+                    StartGameBtnText.UpdateLayout();
+
+                    RepairGameButton.IsEnabled = false;
+                    UninstallGameButton.IsEnabled = false;
+                    ConvertVersionButton.IsEnabled = false;
+                    CustomArgsTextBox.IsEnabled = false;
+                    MoveGameLocationButton.IsEnabled = false;
+                    StopGameButton.IsEnabled = true;
+
+                    PlaytimeIdleStack.Visibility = Visibility.Collapsed;
+                    PlaytimeRunningStack.Visibility = Visibility.Visible;
+
+#if !DISABLEDISCORD
+                    AppDiscordPresence?.SetActivity(ActivityType.Play);
+#endif
+
+                    Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
+                    if (currentGameProcess != null
+                        && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
+                        // HACK: For some reason, the text still unchanged.
+                        //       Make sure the start game button text also changed.
+                        )
                     {
-                        _cachedIsGameRunning = true;
-
-                        StartGameBtn.IsEnabled                  = false;
-                        StartGameBtnText!.Text                  = Lang._HomePage.StartBtnRunning;
-                        StartGameBtnIcon.Glyph                  = StartGameBtnRunningIconGlyph;
-                        StartGameBtnAnimatedIconGrid.Opacity    = 0;
-                        StartGameBtnIcon.Opacity                = 1;
-
-                        //GameStartupSetting.IsEnabled = false;
-                        RepairGameButton.IsEnabled       = false;
-                        UninstallGameButton.IsEnabled    = false;
-                        ConvertVersionButton.IsEnabled   = false;
-                        CustomArgsTextBox.IsEnabled      = false;
-                        MoveGameLocationButton.IsEnabled = false;
-                        StopGameButton.IsEnabled         = true;
-
-                        PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
-                        PlaytimeRunningStack.Visibility = Visibility.Visible;
-
-                    #if !DISABLEDISCORD
-                        AppDiscordPresence?.SetActivity(ActivityType.Play);
-                    #endif
-
-                        await Task.Delay(RefreshRate, Token);
+                        await currentGameProcess.WaitForExitAsync(Token);
                     }
-
-                    _cachedIsGameRunning = false;
-
-                    StartGameBtn.IsEnabled                  = true;
-                    StartGameBtnText!.Text                  = Lang._HomePage.StartBtn;
-                    StartGameBtnIcon.Glyph                  = StartGameBtnIconGlyph;
-                    StartGameBtnAnimatedIconGrid.Opacity    = 1;
-                    StartGameBtnIcon.Opacity                = 0;
-
-                    GameStartupSetting.IsEnabled     = true;
-                    RepairGameButton.IsEnabled       = true;
-                    MoveGameLocationButton.IsEnabled = true;
-                    UninstallGameButton.IsEnabled    = true;
-                    ConvertVersionButton.IsEnabled   = true;
-                    CustomArgsTextBox.IsEnabled      = true;
-                    StopGameButton.IsEnabled         = false;
-
-                    PlaytimeIdleStack.Visibility    = Visibility.Visible;
-                    PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-
-                #if !DISABLEDISCORD
-                    AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                #endif
-
                     await Task.Delay(RefreshRate, Token);
                 }
+
+                _cachedIsGameRunning = false;
+
+                StartGameBtn.IsEnabled = true;
+                StartGameBtnText!.Text = Lang._HomePage.StartBtn;
+                StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
+                StartGameBtnAnimatedIconGrid.Opacity = 1;
+                StartGameBtnIcon.Opacity = 0;
+
+                GameStartupSetting.IsEnabled = true;
+                RepairGameButton.IsEnabled = true;
+                MoveGameLocationButton.IsEnabled = true;
+                UninstallGameButton.IsEnabled = true;
+                ConvertVersionButton.IsEnabled = true;
+                CustomArgsTextBox.IsEnabled = true;
+                StopGameButton.IsEnabled = false;
+
+                PlaytimeIdleStack.Visibility = Visibility.Visible;
+                PlaytimeRunningStack.Visibility = Visibility.Collapsed;
             }
             catch (TaskCanceledException)
             {
                 // Ignore
+                LogWriteLine($"Game run watcher has been terminated!");
             }
             catch (Exception e)
-            { 
+            {
                 LogWriteLine($"Error when checking if game is running!\r\n{e}", LogType.Error, true);
             }
         }
@@ -1402,6 +1410,9 @@ namespace CollapseLauncher.Pages
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
+
+                // Run game process watcher
+                CheckRunningGameInstance(PageToken.Token);
             }
             catch (Win32Exception ex)
             {
