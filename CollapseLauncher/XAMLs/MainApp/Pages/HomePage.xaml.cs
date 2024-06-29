@@ -63,7 +63,7 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
-        private CancellationTokenSource PageToken { get; set; }
+        private CancellationTokenSourceWrapper PageToken { get; set; }
         private CancellationTokenSourceWrapper CarouselToken { get; set; }
 
         private int barWidth;
@@ -145,7 +145,7 @@ namespace CollapseLauncher.Pages
                 // HACK: Fix random crash by manually load the XAML part
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                PageToken = new CancellationTokenSource();
+                PageToken = new CancellationTokenSourceWrapper();
                 CarouselToken = new CancellationTokenSourceWrapper();
 
                 this.InitializeComponent();
@@ -247,8 +247,8 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            PageToken.Cancel();
-            CarouselToken.Cancel();
+            if (!PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
