@@ -1691,7 +1691,8 @@
                                   HorizontalAlignment="Right"
                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="" />
+                                  Glyph=""
+                                  Opacity="0" />
                     </Grid>
                 </Button>
                 <Button x:Name="CancelDownloadBtn"
