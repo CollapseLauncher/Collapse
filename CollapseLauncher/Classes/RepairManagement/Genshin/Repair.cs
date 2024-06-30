@@ -44,7 +44,7 @@ namespace CollapseLauncher
 #endif
                     )
                 {
-                    await RepairAssetTypeGeneric(asset, _httpClient, token).ConfigureAwait(false);
+                    await RepairAssetTypeGeneric(asset, _httpClient, token);
                 }
 
                 return true;

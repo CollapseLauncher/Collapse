@@ -64,7 +64,7 @@ namespace CollapseLauncher
         public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
             _useFastMethod = useFastCheck;
-            return await TryRunExamineThrow(CheckRoutine()).ConfigureAwait(false);
+            return await TryRunExamineThrow(CheckRoutine());
         }
 
         public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null)
@@ -76,7 +76,7 @@ namespace CollapseLauncher
                 await SpawnRepairDialog(_assetIndex, actionIfInteractiveCancel);
             }
 
-            _ = await TryRunExamineThrow(RepairRoutine()).ConfigureAwait(false);
+            _ = await TryRunExamineThrow(RepairRoutine());
         }
 
         private async Task<bool> CheckRoutine()
