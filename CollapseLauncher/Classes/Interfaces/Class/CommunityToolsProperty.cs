@@ -1,11 +1,11 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
@@ -31,19 +31,15 @@ namespace CollapseLauncher
             CommunityToolsList.Clear();
         }
 
-        public static CommunityToolsProperty LoadCommunityTools()
+        public static async Task<CommunityToolsProperty> LoadCommunityTools(Stream fileStream)
         {
-            string filePath = Path.Combine(LauncherConfig.AppFolder, @"Assets\Presets\CommunityTools.json");
-
             try
             {
-                if (!File.Exists(filePath)) throw new FileNotFoundException("Community Tools file is not found!", filePath);
-
-                return File.ReadAllText(filePath).Deserialize<CommunityToolsProperty>(InternalAppJSONContext.Default);
+                return await fileStream.DeserializeAsync<CommunityToolsProperty>(InternalAppJSONContext.Default);
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"Error while parsing Community Tools list file in Assets\\Presets\\CommunityTools.json\r\n{ex}", LogType.Error, true);
+                Logger.LogWriteLine($"Error while parsing Community Tools list from the {(fileStream is FileStream fs ? $"FileStream: {fs.Name}" : "Stream")}\r\n{ex}", LogType.Error, true);
                 return new CommunityToolsProperty();
             }
         }

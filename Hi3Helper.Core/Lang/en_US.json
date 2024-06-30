@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Pause/Cancel",
     "DownloadBtn": "Download Game",
 
+    "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
+    "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",
+
     "GameSettingsBtn": "Quick Settings",
     "GameSettings_Panel1": "Quick Settings",
     "GameSettings_Panel1OpenGameFolder": "Open Game Folder",
@@ -607,6 +610,8 @@
     "DiscordRP_Default": "No Activity",
     "DiscordRP_Ad": "- With Collapse Launcher",
     "DiscordRP_Region": "Region:",
+
+    "DownloadModeLabelSophon": "Sophon Mode",
 
     "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
     "Taskbar_PopupHelp2": "Double click to toggle windows visibility",

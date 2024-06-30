@@ -63,7 +63,7 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
-        private CancellationTokenSource PageToken { get; set; }
+        private CancellationTokenSourceWrapper PageToken { get; set; }
         private CancellationTokenSourceWrapper CarouselToken { get; set; }
 
         private int barWidth;
@@ -145,12 +145,13 @@ namespace CollapseLauncher.Pages
                 // HACK: Fix random crash by manually load the XAML part
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                PageToken = new CancellationTokenSource();
+                PageToken = new CancellationTokenSourceWrapper();
                 CarouselToken = new CancellationTokenSourceWrapper();
 
                 this.InitializeComponent();
 
                 BackgroundImgChanger.ToggleBackground(false);
+
                 await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
@@ -186,16 +187,33 @@ namespace CollapseLauncher.Pages
 
                 UpdatePlaytime();
                 UpdateLastPlayed();
-                CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll();
+
+#if !DISABLEDISCORD
+                AppDiscordPresence?.SetActivity(ActivityType.Idle);
+#endif
+
+                if (IsGameStatusComingSoon || IsGameStatusPreRegister)
+                {
+                    LauncherBtn.Visibility = Visibility.Collapsed;
+                    LauncherGameStatusPlaceholderBtn.Visibility = Visibility.Visible;
+
+                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility = Visibility.Visible;
+                    if (IsGameStatusPreRegister) GamePlaceholderBtnPreRegister.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                if (CurrentGameProperty.IsGameRunning)
+                {
+                    CheckRunningGameInstance(PageToken.Token);
+                    return;
+                }
 
                 if (m_arguments.StartGame?.Play != true)
                     return;
 
                 m_arguments.StartGame.Play = false;
-
-                if (CurrentGameProperty.IsGameRunning)
-                    return;
 
                 if (CurrentGameProperty._GameInstall.IsRunning)
                 {
@@ -235,8 +253,8 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            PageToken.Cancel();
-            CarouselToken.Cancel();
+            if (!PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -868,19 +886,20 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                while (!Token.IsCancellationRequested)
+                while (CurrentGameProperty.IsGameRunning)
                 {
-                    while (CurrentGameProperty.IsGameRunning)
+                    _cachedIsGameRunning = true;
+
+                    StartGameBtn.IsEnabled = false;
+                    if (StartGameBtnText != null && StartGameBtnAnimatedIconGrid != null)
                     {
-                        _cachedIsGameRunning = true;
+                        StartGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
+                        StartGameBtnIcon.Glyph               = StartGameBtnRunningIconGlyph;
+                        StartGameBtnAnimatedIconGrid.Opacity = 0;
+                        StartGameBtnIcon.Opacity             = 1;
 
-                        StartGameBtn.IsEnabled                  = false;
-                        StartGameBtnText!.Text                  = Lang._HomePage.StartBtnRunning;
-                        StartGameBtnIcon.Glyph                  = StartGameBtnRunningIconGlyph;
-                        StartGameBtnAnimatedIconGrid.Opacity    = 0;
-                        StartGameBtnIcon.Opacity                = 1;
+                        StartGameBtnText.UpdateLayout();
 
-                        //GameStartupSetting.IsEnabled = false;
                         RepairGameButton.IsEnabled       = false;
                         UninstallGameButton.IsEnabled    = false;
                         ConvertVersionButton.IsEnabled   = false;
@@ -895,41 +914,46 @@ namespace CollapseLauncher.Pages
                         AppDiscordPresence?.SetActivity(ActivityType.Play);
                     #endif
 
-                        await Task.Delay(RefreshRate, Token);
+                        Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
+                        if (currentGameProcess != null
+                            && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
+                            // HACK: For some reason, the text still unchanged.
+                            //       Make sure the start game button text also changed.
+                           )
+                        {
+                            await currentGameProcess.WaitForExitAsync(Token);
+                        }
                     }
-
-                    _cachedIsGameRunning = false;
-
-                    StartGameBtn.IsEnabled                  = true;
-                    StartGameBtnText!.Text                  = Lang._HomePage.StartBtn;
-                    StartGameBtnIcon.Glyph                  = StartGameBtnIconGlyph;
-                    StartGameBtnAnimatedIconGrid.Opacity    = 1;
-                    StartGameBtnIcon.Opacity                = 0;
-
-                    GameStartupSetting.IsEnabled     = true;
-                    RepairGameButton.IsEnabled       = true;
-                    MoveGameLocationButton.IsEnabled = true;
-                    UninstallGameButton.IsEnabled    = true;
-                    ConvertVersionButton.IsEnabled   = true;
-                    CustomArgsTextBox.IsEnabled      = true;
-                    StopGameButton.IsEnabled         = false;
-
-                    PlaytimeIdleStack.Visibility    = Visibility.Visible;
-                    PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-
-                #if !DISABLEDISCORD
-                    AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                #endif
 
                     await Task.Delay(RefreshRate, Token);
                 }
+
+                _cachedIsGameRunning = false;
+
+                StartGameBtn.IsEnabled = true;
+                StartGameBtnText!.Text = Lang._HomePage.StartBtn;
+                StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
+                StartGameBtnAnimatedIconGrid.Opacity = 1;
+                StartGameBtnIcon.Opacity = 0;
+
+                GameStartupSetting.IsEnabled = true;
+                RepairGameButton.IsEnabled = true;
+                MoveGameLocationButton.IsEnabled = true;
+                UninstallGameButton.IsEnabled = true;
+                ConvertVersionButton.IsEnabled = true;
+                CustomArgsTextBox.IsEnabled = true;
+                StopGameButton.IsEnabled = false;
+
+                PlaytimeIdleStack.Visibility = Visibility.Visible;
+                PlaytimeRunningStack.Visibility = Visibility.Collapsed;
             }
             catch (TaskCanceledException)
             {
                 // Ignore
+                LogWriteLine($"Game run watcher has been terminated!");
             }
             catch (Exception e)
-            { 
+            {
                 LogWriteLine($"Error when checking if game is running!\r\n{e}", LogType.Error, true);
             }
         }
@@ -1140,6 +1164,12 @@ namespace CollapseLauncher.Pages
                 {
                     CurrentGameProperty._GameInstall.ApplyGameConfig();
                     return;
+                }
+
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    DownloadModeLabel.Visibility = Visibility.Visible;
+                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
                 }
 
                 int verifResult;
@@ -1384,6 +1414,9 @@ namespace CollapseLauncher.Pages
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
+
+                // Run game process watcher
+                CheckRunningGameInstance(PageToken.Token);
             }
             catch (Win32Exception ex)
             {
@@ -2000,13 +2033,15 @@ namespace CollapseLauncher.Pages
 
         private const string _playtimeRegName = "CollapseLauncher_Playtime";
         private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
+#nullable enable
         private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
         {
             try
             {
-                return (int)
-                    Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                            .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0);
+                object subKeyObj = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)?
+                                   .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0) ?? 0;
+
+                return (int)subKeyObj;
             }
             catch (Exception ex)
             {
@@ -2019,15 +2054,15 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                        .SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value,
-                                  RegistryValueKind.DWord);
+                RegistryKey? subKey = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true);
+                subKey?.SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
             }
         }
+#nullable restore
         #endregion
 
         #region Game Update Dialog
@@ -2050,6 +2085,12 @@ namespace CollapseLauncher.Pages
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
+
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    DownloadModeLabel.Visibility = Visibility.Visible;
+                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                }
 
                 int verifResult;
                 bool skipDialog = false;

@@ -169,7 +169,10 @@
                         case "Genshin Impact":
                             EnablePresence(AppDiscordApplicationID_GI);
                             return;
-                        default:
+                        case "Zenless Zone Zero":
+                            EnablePresence(AppDiscordApplicationID_ZZZ);
+                            return;
+                    default:
                             Logger.LogWriteLine("Discord Presence (Unknown Game)", LogType.Error, true);
                             break;
                     }

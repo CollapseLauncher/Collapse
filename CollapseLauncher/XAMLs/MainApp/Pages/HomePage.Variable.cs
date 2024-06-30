@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.WindowSize;
 using Hi3Helper;
@@ -16,8 +17,12 @@ namespace CollapseLauncher.Pages
 
 #nullable enable
         private LauncherGameNewsData? GameNewsData { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameNews?.Content; }
+        private HoYoPlayGameInfoField? GameInfoDisplayField { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameInfoField; }
         public bool IsPostPanelAvailable => (GameNewsData?.NewsPost?.Count ?? 0) > 0;
         public bool IsCarouselPanelAvailable => (GameNewsData?.NewsCarousel?.Count ?? 0) > 0;
+        public bool IsGameStatusPreRegister => GameInfoDisplayField?.DisplayStatus == LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED;
+        public bool IsGameStatusComingSoon => GameInfoDisplayField?.DisplayStatus == LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON;
+        public string? GamePreRegisterLink => GameInfoDisplayField?.ReservationLink?.ClickLink;
 
         public Visibility IsPostEventPanelVisible => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostEventPanelEmpty => (GameNewsData?.NewsPostTypeActivity?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;

@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -161,7 +162,17 @@ namespace CollapseLauncher.GameVersioning
             };
 
         protected UIElement   ParentUIElement { get; init; }
-        protected GameVersion GameVersionAPI  => new(GameAPIProp.data.game.latest.version);
+
+        protected GameVersion? GameVersionAPI
+        {
+            get
+            {
+                if (GameVersion.TryParse(GameAPIProp.data?.game?.latest?.version, out GameVersion? version))
+                    return version;
+
+                return null;
+            }
+        }
 
         protected Dictionary<string, GameVersion> PluginVersionsAPI
         {
@@ -178,7 +189,10 @@ namespace CollapseLauncher.GameVersioning
                 // Get the version and convert it into GameVersion
                 foreach (var plugin in GameAPIProp.data?.plugins!)
                 {
-                    value.Add(plugin.plugin_id, new GameVersion(plugin.version));
+                    if (plugin.plugin_id != null)
+                    {
+                        value.Add(plugin.plugin_id, new GameVersion(plugin.version));
+                    }
                 }
 
                 return value;
@@ -271,7 +285,10 @@ namespace CollapseLauncher.GameVersioning
                             continue;
                         }
 
-                        value.Add(plugin.plugin_id, new GameVersion(val));
+                        if (plugin.plugin_id != null)
+                        {
+                            value.Add(plugin.plugin_id, new GameVersion(val));
+                        }
                     }
                 }
 
@@ -309,7 +326,7 @@ namespace CollapseLauncher.GameVersioning
         // Assign for the Game Delta-Patch properties (if any).
         // If there's no Delta-Patch, then set it to null.
         protected DeltaPatchProperty GameDeltaPatchProp =>
-            CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI);
+            CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI ?? throw new NullReferenceException("GameVersionAPI returns a null"));
 
         #endregion
 
@@ -329,7 +346,7 @@ namespace CollapseLauncher.GameVersioning
             return GameVersionInstalled;
         }
 
-        public GameVersion GetGameVersionAPI()
+        public GameVersion? GetGameVersionAPI()
         {
             return GameVersionAPI;
         }
@@ -378,22 +395,20 @@ namespace CollapseLauncher.GameVersioning
             if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
             {
                 // Add the latest prop to the return list
-                returnList.Add(GameAPIProp.data.game.latest);
-                // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
-                if (GameAPIProp.data.sdk != null)
-                {
-                    returnList.Add(GameAPIProp.data.sdk);
-                }
+                returnList.Add(GameAPIProp.data?.game?.latest);
 
                 return returnList;
             }
 
             // Try get the diff file  by the first or default (null)
-            RegionResourceVersion diff = GameAPIProp.data.game.diffs
-                                                    .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
+            if (GameAPIProp.data?.game?.diffs != null)
+            {
+                RegionResourceVersion diff = GameAPIProp.data?.game?.diffs
+                                                        .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
-            // Return if the diff is null, then get the latest. If found, then return the diff one.
-            returnList.Add(diff ?? GameAPIProp.data.game.latest);
+                // Return if the diff is null, then get the latest. If found, then return the diff one.
+                returnList.Add(diff ?? GameAPIProp.data?.game?.latest);
+            }
 
             return returnList;
         }
@@ -404,7 +419,7 @@ namespace CollapseLauncher.GameVersioning
             List<RegionResourceVersion> returnList = new();
 
             // If the preload is not exist, then return null
-            if (GameAPIProp.data.pre_download_game == null)
+            if (GameAPIProp.data?.pre_download_game == null)
             {
                 return null;
             }
@@ -473,9 +488,9 @@ namespace CollapseLauncher.GameVersioning
         public virtual bool IsGameHasPreload()
         {
             if (GamePreset.LauncherType == LauncherType.Sophon)
-                return GameAPIProp.data.pre_download_game != null;
+                return GameAPIProp.data?.pre_download_game != null;
 
-            return GameAPIProp.data.pre_download_game?.latest != null || GameAPIProp.data.pre_download_game?.diffs != null;
+            return GameAPIProp.data?.pre_download_game?.latest != null || GameAPIProp.data?.pre_download_game?.diffs != null;
         }
 
         public virtual bool IsGameHasDeltaPatch()
@@ -557,10 +572,10 @@ namespace CollapseLauncher.GameVersioning
                 return false;
 
             // Compare the version and the current SDK state if the indicator file is exist
-            string validatePath = Path.Combine(GameDirPath, sdkResource?.package?.pkg_version);
-            bool isVersionEqual = installedSdkVersion.Equals(sdkVersion);
-            bool isValidatePathExist = File.Exists(validatePath);
-            bool isPkgVersionMatch = isValidatePathExist ? await CheckSdkUpdate(validatePath) : false;
+            string validatePath        = Path.Combine(GameDirPath, sdkResource.package?.pkg_version ?? string.Empty);
+            bool   isVersionEqual      = installedSdkVersion.Equals(sdkVersion);
+            bool   isValidatePathExist = File.Exists(validatePath);
+            bool   isPkgVersionMatch   = isValidatePathExist && await CheckSdkUpdate(validatePath);
 
             bool isSdkInstalled = isVersionEqual && isPkgVersionMatch;
             return isSdkInstalled;
@@ -575,17 +590,23 @@ namespace CollapseLauncher.GameVersioning
                 {
                     while (!reader.EndOfStream)
                     {
-                        PkgVersionProperties pkgVersion = (await reader.ReadLineAsync())
-                            .Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                        string line = await reader.ReadLineAsync();
+                        if (string.IsNullOrEmpty(line))
+                            continue;
 
-                        string filePath = Path.Combine(GameDirPath, pkgVersion.remoteName);
-                        if (!File.Exists(filePath))
-                            return false;
+                        PkgVersionProperties pkgVersion = line.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
 
-                        using FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                        string md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
-                        if (!md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
-                            return false;
+                        if (pkgVersion != null)
+                        {
+                            string filePath = Path.Combine(GameDirPath, pkgVersion.remoteName);
+                            if (!File.Exists(filePath))
+                                return false;
+
+                            using FileStream fs  = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                            string           md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
+                            if (!md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
+                                return false;
+                        }
                     }
                 }
 
@@ -607,34 +628,40 @@ namespace CollapseLauncher.GameVersioning
             }
 
             RegionResourcePlugin plugin = GameAPIProp.data?.plugins?
-                .FirstOrDefault(x => x.plugin_id.Equals(pluginKey, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(x => x.plugin_id != null && x.plugin_id.Equals(pluginKey, StringComparison.OrdinalIgnoreCase));
             if (plugin == null)
             {
                 return result;
             }
 
-            foreach (var validate in plugin.package.validate)
+            if (plugin.package?.validate != null)
             {
-                var path = Path.Combine(GameDirPath, validate.path);
-                try
+                foreach (var validate in plugin.package?.validate!)
                 {
-                    if (!File.Exists(path))
+                    if (validate.path != null)
                     {
-                        result.Add(plugin);
-                        break;
-                    }
+                        var path = Path.Combine(GameDirPath, validate.path);
+                        try
+                        {
+                            if (!File.Exists(path))
+                            {
+                                result.Add(plugin);
+                                break;
+                            }
 
-                    using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    var md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
-                    if (md5 != validate.md5)
-                    {
-                        result.Add(plugin);
-                        break;
+                            using var fs  = new FileStream(path, FileMode.Open, FileAccess.Read);
+                            var       md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
+                            if (md5 != validate.md5)
+                            {
+                                result.Add(plugin);
+                                break;
+                            }
+                        }
+                        catch (FileNotFoundException)
+                        {
+                            result.Add(plugin);
+                        }
                     }
-                }
-                catch (FileNotFoundException)
-                {
-                    result.Add(plugin);
                 }
             }
 
@@ -717,7 +744,7 @@ namespace CollapseLauncher.GameVersioning
                     DeltaPatchProperty patchProperty = new DeltaPatchProperty(path);
                     // If the version of the game is valid and the profile name matches, then return the property.
                     if (GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
-                        && GameVersionAPI.IsMatch(patchProperty.TargetVer)
+                        && (GameVersionAPI?.IsMatch(patchProperty.TargetVer) ?? false)
                         && patchProperty.ProfileName == GamePreset.ProfileName)
                     {
                         return patchProperty;
@@ -753,7 +780,7 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameVersionToLatest(bool saveValue = true)
         {
-            GameIniVersion[_defaultIniVersionSection]["game_version"] = GameVersionAPI.VersionString;
+            GameIniVersion[_defaultIniVersionSection]["game_version"] = GameVersionAPI?.VersionString;
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
@@ -762,9 +789,9 @@ namespace CollapseLauncher.GameVersioning
             }
         }
 
-        public void UpdateGameVersion(GameVersion version, bool saveValue = true)
+        public void UpdateGameVersion(GameVersion? version, bool saveValue = true)
         {
-            GameIniVersion[_defaultIniVersionSection]["game_version"] = version.VersionString;
+            GameIniVersion[_defaultIniVersionSection]["game_version"] = version?.VersionString;
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
@@ -843,7 +870,7 @@ namespace CollapseLauncher.GameVersioning
         {
             // Check if the GameVersionInstalled == null (version config doesn't exist),
             // Reinitialize the version config and save the version config by assigning GameVersionInstalled.
-            if (GameVersionInstalled == null)
+            if (GameVersionInstalled == null && GameAPIProp.data?.game?.latest?.version != null)
             {
                 GameVersionInstalled = GameVersionAPI;
             }
@@ -940,7 +967,7 @@ namespace CollapseLauncher.GameVersioning
             bool IsDiskReady = IsDiskPartitionExist(iniDirPath);
 
             // Create the directory of the gile if doesn't exist
-            if (!Directory.Exists(iniDirPath) && IsDiskReady)
+            if (iniDirPath != null && !Directory.Exists(iniDirPath) && IsDiskReady)
             {
                 Directory.CreateDirectory(iniDirPath);
             }

@@ -851,6 +851,22 @@
                            FontSize="10"
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                <Grid x:Name="DownloadModeLabel"
+                      Margin="0,8,0,0"
+                      Padding="8,2"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      CornerRadius="8"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16"
+                      Visibility="Collapsed">
+                    <TextBlock x:Name="DownloadModeLabelText"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                               HorizontalTextAlignment="Center"
+                               Text="" />
+                </Grid>
             </StackPanel>
             <Button x:Name="ProgressSettingsButton"
                     Width="32"
@@ -1484,6 +1500,84 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <Grid x:Name="LauncherGameStatusPlaceholderBtn"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  HorizontalAlignment="Stretch"
+                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
+                  PointerEntered="ElementScaleOutHoveredPointerEntered"
+                  PointerExited="ElementScaleInHoveredPointerExited"
+                  Shadow="{ThemeResource SharedShadow}"
+                  Translation="0,0,32"
+                  Visibility="Collapsed">
+                <Button x:Name="GamePlaceholderBtnComingSoon"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                        IsEnabled="False"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
+                    <Button.Content>
+                        <Grid Margin="8,0">
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Center"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderComingSoonBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="GamePlaceholderBtnPreRegister"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Click="OpenButtonLinkFromTag"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Tag="{x:Bind GamePreRegisterLink}"
+                        Visibility="Collapsed">
+                    <Button.Content>
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0"
+                                  RenderTransformOrigin="0.5, 0.5">
+                                <Grid.RenderTransform>
+                                    <RotateTransform Angle="180" />
+                                </Grid.RenderTransform>
+                                <AnimatedVisualPlayer Height="28"
+                                                      HorizontalAlignment="Right">
+                                    <lottie:StartGameIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
+                            <TextBlock Grid.Column="1"
+                                       Margin="0,-2,0,0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Center"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <Grid Grid.Column="2"
+                                  Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0">
+                                <AnimatedVisualPlayer Height="28"
+                                                      HorizontalAlignment="Right">
+                                    <lottie:StartGameIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
+                        </Grid>
+                    </Button.Content>
+                </Button>
+            </Grid>
             <Grid x:Name="LauncherBtn"
                   Grid.Row="0"
                   Grid.Column="0"
@@ -1597,7 +1691,8 @@
                                   HorizontalAlignment="Right"
                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="" />
+                                  Glyph=""
+                                  Opacity="0" />
                     </Grid>
                 </Button>
                 <Button x:Name="CancelDownloadBtn"

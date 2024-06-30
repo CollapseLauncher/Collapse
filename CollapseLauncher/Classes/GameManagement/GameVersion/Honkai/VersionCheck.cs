@@ -12,7 +12,7 @@ namespace CollapseLauncher.GameVersioning
         #endregion
 
         #region Public properties
-        public bool IsCurrentSenadinaVersion { get => GameVersionAPI.ToVersion() >= senadinaVersion; }
+        public bool IsCurrentSenadinaVersion { get => GameVersionAPI?.ToVersion() >= senadinaVersion; }
         public bool IsPreloadSenadinaVersion { get => GameVersionAPIPreload.HasValue ? GameVersionAPIPreload.Value.ToVersion() >= senadinaVersion : false; }
         #endregion
 
