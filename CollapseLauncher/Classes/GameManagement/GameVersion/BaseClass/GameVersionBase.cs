@@ -379,11 +379,6 @@ namespace CollapseLauncher.GameVersioning
             {
                 // Add the latest prop to the return list
                 returnList.Add(GameAPIProp.data.game.latest);
-                // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
-                if (GameAPIProp.data.sdk != null)
-                {
-                    returnList.Add(GameAPIProp.data.sdk);
-                }
 
                 return returnList;
             }
