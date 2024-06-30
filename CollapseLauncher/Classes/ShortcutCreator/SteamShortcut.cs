@@ -48,27 +48,26 @@ namespace CollapseLauncher.ShortcutUtils
 
         internal SteamShortcut(PresetConfig preset, bool play = false)
         {
-            AppName = string.Format("{0} - {1}", preset.GameName, preset.ZoneName);
+            AppName = $"{preset.GameName} - {preset.ZoneName}";
             
-            string stubPath = MainEntryPoint.FindCollapseStubPath();
-            Exe = string.Format("\"{0}\"", stubPath);
-            StartDir = string.Format("\"{0}\"", Path.GetDirectoryName(stubPath));
+            string stubPath = FindCollapseStubPath();
+            Exe = $"\"{stubPath}\"";
+            StartDir = $"\"{Path.GetDirectoryName(stubPath)}\"";
 
             var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
             appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
 
             preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
 
-            LaunchOptions = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
-            if (play)
-                LaunchOptions += " -p";
+            LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
+            if (play) LaunchOptions += " -p";
         }
 
         private static char BoolToByte(bool b) => b ? '\x01' : '\x00';
 
-        public string ToEntry(int entryID = -1)
+        public string ToEntry(int id = -1)
         {
-            return '\x00' + (entryID >= 0 ? entryID.ToString() : this.entryID) + '\x00'
+            return '\x00' + (id >= 0 ? id.ToString() : entryID) + '\x00'
                     + '\x02' + "appid" + '\x00' + appid
                     + '\x01' + "AppName" + '\x00' + AppName + '\x00'
                     + '\x01' + "Exe" + '\x00' + Exe + '\x00'
@@ -92,9 +91,12 @@ namespace CollapseLauncher.ShortcutUtils
         private static uint GeneratePreliminaryId(string exe, string appname)
         {
             string key = exe + appname;
+
             var crc32 = new Crc32();
             crc32.Append(SteamShortcutParser.ANSI.GetBytes(key));
+
             uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
+
             return (top << 32) | 0x02000000;
         }
 
@@ -118,26 +120,21 @@ namespace CollapseLauncher.ShortcutUtils
 
             path = Path.GetDirectoryName(path);
             string gridPath = Path.Combine(path, "grid");
-            if (!Directory.Exists(gridPath))
-                Directory.CreateDirectory(gridPath);
+            if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
-            string iconName = preset.GameType switch
-            {
-                GameNameType.StarRail => "icon-starrail.ico",
-                GameNameType.Genshin => "icon-genshin.ico",
-                _ => "icon-honkai.ico",
-            };
+            string iconName = ShortcutCreator.GetIconName(preset.GameType);
 
             icon = Path.Combine(gridPath, iconName);
-            string iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets\\Images\\GameIcon\\" + iconName);
+            string iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, "Assets\\Images\\GameIcon\\" + iconName);
 
             if (!Path.Exists(icon) && Path.Exists(iconAssetPath))
             {
                 File.Copy(iconAssetPath, icon);
-                LogWriteLine(string.Format("[SteamShortcut::MoveImages] Copied icon from {0} to {1}.", iconAssetPath, icon));
+                LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {icon}.");
             }
 
             Dictionary<string, SteamGameProp> assets = preset.ZoneSteamAssets;
+            if (assets == null) return;
 
             // Game background
             GetImageFromUrl(gridPath, assets["Hero"], "_hero");
@@ -175,10 +172,10 @@ namespace CollapseLauncher.ShortcutUtils
 
                 File.Delete(steamPath);
 
-                LogWriteLine(string.Format("[SteamShortcut::GetImageFromUrl] Invalid checksum for file {0}! {1} does not match {2}.", steamPath, hash, asset.MD5), LogType.Error);
+                LogWriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {steamPath}! {hash} does not match {asset.MD5}.", LogType.Error);
             }
             
-            LogWriteLine("[SteamShortcut::GetImageFromUrl] After 3 tries, " + cdnURL + " could not be downloaded successfully.", LogType.Error);
+            LogWriteLine($"[SteamShortcut::GetImageFromUrl] After 3 tries, {cdnURL} could not be downloaded successfully.", LogType.Error);
             return;
         }
 
@@ -187,7 +184,7 @@ namespace CollapseLauncher.ShortcutUtils
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
-                // Try get the remote stream and download the file
+                // Try to get the remote stream and download the file
                 using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
                 using Stream outStream = fileInfo.Open(new FileStreamOptions()
                 {
@@ -202,7 +199,7 @@ namespace CollapseLauncher.ShortcutUtils
 
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
-                int read = 0;
+                int read;
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer, 0, read, token);
 
