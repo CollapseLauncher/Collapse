@@ -177,7 +177,7 @@ namespace CollapseLauncher.Dialogs
 
             GameVersion = _Entry.data.game.latest.version;
 
-            return _RepoList[GameVersion];
+            return _RepoList[GameVersion ?? throw new InvalidOperationException()];
         }
 
         internal bool IsSourceGameExist(PresetConfig Profile)

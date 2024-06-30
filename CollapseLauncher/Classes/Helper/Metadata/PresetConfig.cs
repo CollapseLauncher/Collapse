@@ -559,7 +559,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (subKey == null) continue;
 
                 string[] subKeyKey = subKey.GetSubKeyNames();
-                if (subKeyKey?.Length == 0) continue;
+                if (subKeyKey.Length == 0) continue;
 
                 string? gameKeyName = subKeyKey?.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
                 if (string.IsNullOrEmpty(gameKeyName)) continue;
