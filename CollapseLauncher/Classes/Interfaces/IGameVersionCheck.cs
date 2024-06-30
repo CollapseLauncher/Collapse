@@ -87,7 +87,7 @@ namespace CollapseLauncher.Interfaces
         /// Returns the current version of the game as provided by miHoYo's API.
         /// </summary>
         /// <returns>The current version of the game</returns>
-        GameVersion GetGameVersionAPI();
+        GameVersion? GetGameVersionAPI();
 
         /// <summary>
         /// Returns the preload version of the game as provided by miHoYo's API.
@@ -193,7 +193,7 @@ namespace CollapseLauncher.Interfaces
         /// </summary>
         /// <param name="version">The version to change</param>
         /// <param name="saveValue">Save the config file</param>
-        void UpdateGameVersion(GameVersion version, bool saveValue = true);
+        void UpdateGameVersion(GameVersion? version, bool saveValue = true);
 
         /// <summary>
         /// Update the game channel and save it to the config.

@@ -219,7 +219,7 @@ namespace CollapseLauncher.Dialogs
                 string localVersionString = SourceIniVersionFile["General"]["game_version"].ToString();
                 if (string.IsNullOrEmpty(localVersionString)) return false;
                 GameVersion localVersion = new GameVersion(localVersionString);
-                GameVersion remoteVersion = CurrentGameProperty._GameVersion.GetGameVersionAPI();
+                GameVersion? remoteVersion = CurrentGameProperty._GameVersion.GetGameVersionAPI();
                 if (!localVersion.IsMatch(remoteVersion)) return false;
 
                 ExecPath = Path.Combine(GamePath, Profile.GameExecutableName);

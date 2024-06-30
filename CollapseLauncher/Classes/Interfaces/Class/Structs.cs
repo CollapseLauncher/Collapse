@@ -168,7 +168,11 @@ namespace CollapseLauncher
             return IsMatch(parsed);
         }
 
-        public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Build == versionToCompare.Build && Revision == versionToCompare.Revision;
+        public bool IsMatch(GameVersion? versionToCompare)
+        {
+            if (versionToCompare == null) return false;
+            return Major == versionToCompare?.Major && Minor == versionToCompare?.Minor && Build == versionToCompare?.Build && Revision == versionToCompare?.Revision;
+        }
 
         public GameVersion GetIncrementedVersion()
         {
