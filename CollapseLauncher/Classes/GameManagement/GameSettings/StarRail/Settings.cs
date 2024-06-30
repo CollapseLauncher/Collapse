@@ -1,17 +1,11 @@
 ﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
-using Microsoft.Win32;
-using System.IO;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
-    internal class StarRailSettings : SettingsBase, IGameSettings, IGameSettingsUniversal
+    internal class StarRailSettings : SettingsBase
     {
-        public CustomArgs SettingsCustomArgument { get; set; }
-        public BaseScreenSettingData SettingsScreen { get; set; }
-        public CollapseScreenSetting SettingsCollapseScreen { get; set; }
-        public CollapseMiscSetting SettingsCollapseMisc { get; set; }
         public Model GraphicsSettings { get; set; }
         public BGMVolume AudioSettings_BGM { get; set; }
         public MasterVolume AudioSettings_Master { get; set; }
@@ -23,31 +17,18 @@ namespace CollapseLauncher.GameSettings.StarRail
         public StarRailSettings(IGameVersionCheck GameVersionManager)
             : base(GameVersionManager)
         {
-            // Init Root Registry Key
-            RegistryPath = Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
-            RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
-
-            // If the Root Registry Key is null (not exist), then create a new one.
-            if (RegistryRoot == null)
-            {
-                RegistryRoot = Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
-            }
-
             // Initialize and Load Settings
             InitializeSettings();
         }
 
-        private void InitializeSettings()
+        public sealed override void InitializeSettings()
         {
             // Load Settings required for MainPage
-            SettingsCustomArgument = CustomArgs.Load();
-            SettingsCollapseScreen = CollapseScreenSetting.Load();
-            SettingsCollapseMisc   = CollapseMiscSetting.Load();
+            base.InitializeSettings();
             SettingsScreen         = PCResolution.Load();
-            
         }
 
-        public void ReloadSettings()
+        public override void ReloadSettings()
         {
             // Load rest of the settings for GSP
             AudioSettings_BGM    = BGMVolume.Load();
@@ -60,13 +41,11 @@ namespace CollapseLauncher.GameSettings.StarRail
             InitializeSettings();
         } 
 
-        public void SaveSettings()
+        public override void SaveSettings()
         {
             // Save Settings
-            SettingsCustomArgument.Save();
+            base.SaveSettings();
             GraphicsSettings.Save();
-            SettingsCollapseScreen.Save();
-            SettingsCollapseMisc.Save();
             SettingsScreen.Save();
             AudioSettings_BGM.Save();
             AudioSettings_Master.Save();
@@ -76,6 +55,6 @@ namespace CollapseLauncher.GameSettings.StarRail
             TextLanguage.Save();
         }
 
-        public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
+        public override IGameSettingsUniversal AsIGameSettingsUniversal() => this;
     }
 }

@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Jeda/Batalkan",
     "DownloadBtn": "Unduh Pra-unduh",
 
+    "GameStatusPlaceholderComingSoonBtn": "Segera Tersedia",
+    "GameStatusPlaceholderPreRegisterBtn": "Pra-Daftar Sekarang!",
+
     "GameSettingsBtn": "Pengaturan Cepat",
     "GameSettings_Panel1": "Pengaturan Cepat",
     "GameSettings_Panel1OpenGameFolder": "Buka Folder Game",
@@ -607,6 +610,8 @@
     "DiscordRP_Default": "Tidak ada Aktivitas",
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
     "DiscordRP_Region": "Wilayah:",
+
+    "DownloadModeLabelSophon": "Mode Sophon",
 
     "Taskbar_PopupHelp1": "Klik untuk membawa Collapse ke layar depan",
     "Taskbar_PopupHelp2": "Klik ganda untuk mengatur visibilitas jendela",
