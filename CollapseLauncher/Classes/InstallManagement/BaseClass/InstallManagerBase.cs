@@ -881,6 +881,12 @@ namespace CollapseLauncher.InstallManager.Base
 
                 httpClientHandler.Dispose();
                 httpClient.Dispose();
+
+                // Check if the DXSETUP file is exist, then delete it.
+                // The DXSETUP files causes some false positive detection of data modification
+                // for some games (like Genshin, which causes 4302-x errors for some reason)
+                string dxSetupDir = Path.Combine(_gamePath, "DXSETUP");
+                TryDeleteReadOnlyDir(dxSetupDir);
             }
         }
 
