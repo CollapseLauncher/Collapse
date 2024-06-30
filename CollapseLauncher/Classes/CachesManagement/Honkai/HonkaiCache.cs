@@ -27,7 +27,7 @@ namespace CollapseLauncher
                   GameVersionManager!,
                   GameVersionManager!.GameDirAppDataPath,
                   null,
-                  GameVersionManager.GetGameVersionAPI().VersionString)
+                  GameVersionManager.GetGameVersionAPI()?.VersionString)
         {
             _gameLang = _gameVersionManager!.GamePreset!.GetGameLanguage() ?? "en";
         }

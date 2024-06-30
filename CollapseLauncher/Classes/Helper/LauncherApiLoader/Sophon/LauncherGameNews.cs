@@ -1,6 +1,7 @@
 #nullable enable
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -14,6 +15,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         POST_TYPE_INFO,
         POST_TYPE_ACTIVITY,
         POST_TYPE_ANNOUNCE
+    }
+
+    [JsonConverter(typeof(JsonStringEnumConverter<LauncherGameAvailabilityStatus>))]
+    public enum LauncherGameAvailabilityStatus
+    {
+        LAUNCHER_GAME_DISPLAY_STATUS_AVAILABLE,
+        LAUNCHER_GAME_DISPLAY_STATUS_RESERVATION_ENABLED,
+        LAUNCHER_GAME_DISPLAY_STATUS_COMING_SOON
     }
 
     public interface ILauncherGameNewsDataTokenized
@@ -39,10 +48,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         private List<LauncherGameNewsCarousel>? _newsCarousel;
         private List<LauncherGameNewsPost>?     _newsPost;
 
+        public HoYoPlayGameInfoField GameInfoField { get; init; } = new HoYoPlayGameInfoField();
+
         [JsonPropertyName("adv")] public LauncherGameNewsBackground? Background { get; set; }
 
         [JsonPropertyName("banner")]
-        public List<LauncherGameNewsCarousel>? NewsCarousel
+        public List<LauncherGameNewsCarousel>? NewsCarousel 
         {
             get => _newsCarousel;
             set => _newsCarousel = value?.OrderBy(x => x.CarouselOrder).ToList();

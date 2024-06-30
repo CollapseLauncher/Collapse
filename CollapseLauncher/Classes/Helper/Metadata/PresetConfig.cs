@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -140,6 +141,9 @@ namespace CollapseLauncher.Helper.Metadata
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherSpriteURL { get; init; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGameInfoDisplayURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherSpriteURLMultiLangFallback { get; init; }
@@ -526,9 +530,14 @@ namespace CollapseLauncher.Helper.Metadata
         {
             try
             {
-                if (string.IsNullOrEmpty(InstallRegistryLocation)) return false;
-                string? value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
-                return TryCheckGameLocation(value);
+                if (LauncherType == LauncherType.HoYoPlay)
+                    return TryCheckGameLocationHYP();
+                else
+                {
+                    if (string.IsNullOrEmpty(InstallRegistryLocation)) return false;
+                    string? value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
+                    return TryCheckGameLocation(value);
+                }
             }
             catch (Exception e)
             {
@@ -537,24 +546,55 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        public bool TryCheckGameLocation(in string? path)
+        public bool TryCheckGameLocationHYP()
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                return CheckInnerGameConfig(DefaultGameLocation);
-            }
+            string rootRegistryKey = string.Format(@"Software\{0}\HYP", VendorType);
+            RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey(rootRegistryKey);
+            if (registryKey == null) return false;
 
-            if (Directory.Exists(path))
+            string[] subKeyVersions = registryKey.GetSubKeyNames();
+            foreach (string subKeyVersion in subKeyVersions)
             {
-                return CheckInnerGameConfig(path);
+                RegistryKey? subKey = registryKey.OpenSubKey(subKeyVersion);
+                if (subKey == null) continue;
+
+                string[] subKeyKey = subKey.GetSubKeyNames();
+                if (subKeyKey.Length == 0) continue;
+
+                string? gameKeyName = subKeyKey.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
+                if (string.IsNullOrEmpty(gameKeyName)) continue;
+
+                RegistryKey? gameKey = subKey.OpenSubKey(gameKeyName);
+                if (gameKey == null) continue;
+
+                object? gamePathObj = gameKey.GetValue("GameInstallPath", null);
+                if (gamePathObj is not null and string gamePath)
+                {
+                    return CheckInnerGameConfig(gamePath, LauncherType.HoYoPlay);
+                }
             }
 
             return false;
         }
 
-        private bool CheckInnerGameConfig(in string gamePath)
+        public bool TryCheckGameLocation(string? path)
         {
-            switch (LauncherType)
+            if (string.IsNullOrEmpty(path))
+            {
+                return CheckInnerGameConfig(DefaultGameLocation, LauncherType.Sophon);
+            }
+
+            if (Directory.Exists(path))
+            {
+                return CheckInnerGameConfig(path, LauncherType.Sophon);
+            }
+
+            return false;
+        }
+
+        private bool CheckInnerGameConfig(string gamePath, LauncherType launcherType)
+        {
+            switch (launcherType)
             {
                 case LauncherType.Sophon:
                     // Start: Sophon Check
@@ -576,7 +616,7 @@ namespace CollapseLauncher.Helper.Metadata
                     // Start: HYP Check
                     if (string.IsNullOrEmpty(GameDirectoryName)) return false;
                     if (string.IsNullOrEmpty(GameExecutableName)) return false;
-                    string tryHypDirPath = ConverterTool.NormalizePath(Path.Combine(gamePath, GameDirectoryName));
+                    string tryHypDirPath = ConverterTool.NormalizePath(gamePath);
                     string tryHypConfigPath = Path.Combine(tryHypDirPath, "config.ini");
                     string tryHypGameExePath = Path.Combine(tryHypDirPath, GameExecutableName);
 

@@ -175,7 +175,7 @@ namespace Hi3Helper.Shared.Region
         public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
         public const long AppDiscordApplicationID_GI  = 1124137436650426509;
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
-        //public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
+        public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
       
         public const string AppNotifURLPrefix           = "/notification_{0}.json";
         public const string AppGameConfigV2URLPrefix    = "/metadata/metadatav2_{0}.json";

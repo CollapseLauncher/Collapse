@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
@@ -7,6 +8,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
+using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -50,6 +52,14 @@ namespace CollapseLauncher.Statics
                     _GameCache = null;
                     _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
                     _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
+                    break;
+                case GameNameType.Zenless:
+                    _GameVersion = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                    _GameSettings = new SettingsBase(_GameVersion);
+                    _GameSettings.InitializeSettings(); // TODO: Remove this call if we already find a way to do game settings for ZZZ
+                    _GameCache = null;
+                    _GameRepair = null;
+                    _GameInstall = new ZenlessInstall(UIElementParent, _GameVersion);
                     break;
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
@@ -227,6 +237,10 @@ namespace CollapseLauncher.Statics
     [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     internal partial class PageStatics
     {
-        internal static CommunityToolsProperty _CommunityToolsProperty { get; set; }
+        internal static CommunityToolsProperty _CommunityToolsProperty { get; set; } = new CommunityToolsProperty()
+        {
+            OfficialToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>(),
+            CommunityToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>()
+        };
     }
 }

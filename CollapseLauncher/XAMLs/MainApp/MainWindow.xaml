@@ -19,26 +19,6 @@
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <Grid x:Name="IntroAnimationGrid"
-              Grid.RowSpan="3"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-            <AnimatedVisualPlayer x:Name="IntroAnimation"
-                                  AutoPlay="False"
-                                  Visibility="Collapsed"/>
-            <CheckBox x:Name="IntroSequenceToggle"
-                      Margin="32,32,16,24"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Bottom"
-                      HorizontalContentAlignment="Right"
-                      Content="{x:Bind helper:Locale.Lang._SettingsPage.IntroSequenceToggle}"
-                      IsChecked="{x:Bind IsIntroEnabled, Mode=TwoWay}"
-                      Opacity="0.25"
-                      PointerEntered="IntroSequenceToggle_PointerEntered"
-                      PointerExited="IntroSequenceToggle_PointerExited"
-                      Scale="0.85,0.85,0.85"
-                      Visibility="Collapsed" />
-        </Grid>
         <Grid x:Name="RootFrameGrid"
               Grid.Row="0"
               Grid.RowSpan="3"
@@ -61,6 +41,27 @@
                     </TransitionCollection>
                 </Frame.ContentTransitions>
             </Frame>
+        </Grid>
+        <Grid Grid.Row="0"
+              x:Name="IntroAnimationGrid"
+              Grid.RowSpan="3"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+            <AnimatedVisualPlayer x:Name="IntroAnimation"
+                                  AutoPlay="False"
+                                  Visibility="Collapsed" />
+            <CheckBox x:Name="IntroSequenceToggle"
+                      Margin="32,32,16,24"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      HorizontalContentAlignment="Right"
+                      Content="{x:Bind helper:Locale.Lang._SettingsPage.IntroSequenceToggle}"
+                      IsChecked="{x:Bind IsIntroEnabled, Mode=TwoWay}"
+                      Opacity="0.25"
+                      PointerEntered="IntroSequenceToggle_PointerEntered"
+                      PointerExited="IntroSequenceToggle_PointerExited"
+                      Scale="0.85,0.85,0.85"
+                      Visibility="Collapsed" />
         </Grid>
         <Grid x:Name="LoadingStatusBackgroundGrid"
               Grid.RowSpan="3"

@@ -32,6 +32,8 @@
                 public string PauseCancelDownloadBtn { get; set; } = LangFallback?._HomePage.PauseCancelDownloadBtn;
                 public string PauseCancelBtn { get; set; } = LangFallback?._HomePage.PauseCancelBtn;
                 public string DownloadBtn { get; set; } = LangFallback?._HomePage.DownloadBtn;
+                public string GameStatusPlaceholderComingSoonBtn { get; set; } = LangFallback?._HomePage.GameStatusPlaceholderComingSoonBtn;
+                public string GameStatusPlaceholderPreRegisterBtn { get; set; } = LangFallback?._HomePage.GameStatusPlaceholderPreRegisterBtn;
                 public string GameSettingsBtn { get; set; } = LangFallback?._HomePage.GameSettingsBtn;
                 public string GameSettings_Panel1 { get; set; } = LangFallback?._HomePage.GameSettings_Panel1;
                 public string GameSettings_Panel1OpenGameFolder { get; set; } = LangFallback?._HomePage.GameSettings_Panel1OpenGameFolder;

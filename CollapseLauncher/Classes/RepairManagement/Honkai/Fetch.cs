@@ -96,7 +96,7 @@ namespace CollapseLauncher
 
                 // Get the status if the current game is Senadina version.
                 GameTypeHonkaiVersion gameVersionKind = _gameVersionManager!.CastAs<GameTypeHonkaiVersion>()!;
-                int[] versionArray = gameVersionKind.GetGameVersionAPI().VersionArray!;
+                int[] versionArray = gameVersionKind.GetGameVersionAPI()?.VersionArray!;
                 bool IsSenadinaVersion = gameVersionKind.IsCurrentSenadinaVersion;
 
                 // TODO: Use FallbackCDNUtil to fetch the stream.
