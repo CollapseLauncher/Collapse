@@ -105,6 +105,8 @@ namespace Hi3Helper
                 public string DiscordRP_Ad           { get; set; } = LangFallback?._Misc.DiscordRP_Ad;
                 public string DiscordRP_Region       { get; set; } = LangFallback?._Misc.DiscordRP_Region;
 
+                public string DownloadModeLabelSophon { get; set; } = LangFallback?._Misc.DownloadModeLabelSophon;
+
                 public string Taskbar_PopupHelp1  { get; set; } = LangFallback?._Misc.Taskbar_PopupHelp1;
                 public string Taskbar_PopupHelp2  { get; set; } = LangFallback?._Misc.Taskbar_PopupHelp2;
                 public string Taskbar_ShowApp     { get; set; } = LangFallback?._Misc.Taskbar_ShowApp;

@@ -10,6 +10,14 @@
 		<DebugType>portable</DebugType>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<TieredCompilation>true</TieredCompilation>
+        <!-- Assembly Info Properties -->
+        <AssemblyName>Hi3Helper.Core</AssemblyName>
+        <ProductName>Hi3Helper.Core</ProductName>
+        <Product>Hi3Helper.Core</Product>
+        <Description>Core module for Collapse Launcher</Description>
+        <Company>Collapse Launcher Team</Company>
+        <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+        <Copyright>Copyright 2022-2024 $(Company)</Copyright>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

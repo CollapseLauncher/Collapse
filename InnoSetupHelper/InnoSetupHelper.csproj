@@ -7,6 +7,14 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Platforms>x64</Platforms>
 		<DebugType>portable</DebugType>
+        <!-- Assembly Info Properties -->
+        <AssemblyName>InnoSetupHelper</AssemblyName>
+        <ProductName>InnoSetupHelper</ProductName>
+        <Product>InnoSetupHelper</Product>
+        <Description>Module for parsing and modifying the Inno Setup Log file (unins000.dat) for Collapse Launcher</Description>
+        <Company>Collapse Launcher Team</Company>
+        <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+        <Copyright>Copyright 2022-2024 $(Company)</Copyright>
 	</PropertyGroup>
 
 	<ItemGroup>

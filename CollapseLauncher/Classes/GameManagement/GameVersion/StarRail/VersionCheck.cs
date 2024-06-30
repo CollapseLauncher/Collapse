@@ -28,7 +28,7 @@ namespace CollapseLauncher.GameVersioning
                     GamePreset.GameDispatchURLTemplate,
                     GamePreset.GameGatewayURLTemplate,
                     GamePreset.GameDispatchChannelName,
-                    GameVersionAPI.VersionString);
+                    GameVersionAPI?.VersionString);
             }
 
             // Initialize Proto ID for static StarRailGateway

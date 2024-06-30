@@ -10,7 +10,6 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -159,9 +158,6 @@ namespace CollapseLauncher
             // Initialize the background image utility
             CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
             LocalBackgroundHandler = CurrentBackgroundHandler;
-
-            // Load community tools properties
-            PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
 
             Type Page = typeof(HomePage);
 

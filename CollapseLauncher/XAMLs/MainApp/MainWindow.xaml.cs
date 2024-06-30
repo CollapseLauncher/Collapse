@@ -61,10 +61,18 @@ namespace CollapseLauncher
             }
         }
 
-        public async void StartMainPage()
+        public void StartMainPage()
         {
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
+            
+            RunIntroSequence();
+            rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+        }
+
+        private async void RunIntroSequence()
+        {
             bool isIntroEnabled = IsIntroEnabled && !IsForceDisableIntro;
+            RootFrameGrid.Opacity = 0;
 
             if (isIntroEnabled)
             {
@@ -76,27 +84,36 @@ namespace CollapseLauncher
 
                     IntroSequenceToggle.Visibility = Visibility.Visible;
                     IntroAnimation.Visibility = Visibility.Visible;
-                    IntroAnimation.PlaybackRate = 2.2d;
-                    await IntroAnimation.PlayAsync(0, 0.0001d, false);
-                    await Task.Delay(500);
-                    await IntroAnimation.PlayAsync(0.0001d, 260d / 600d, false);
                     IntroAnimation.PlaybackRate = 1.5d;
-                    await IntroAnimation.PlayAsync(260d / 600d, 600d / 600d, false);
-                    IntroAnimation.Visibility = Visibility.Collapsed;
+                    await Task.Delay(500);
+                    await IntroAnimation.PlayAsync(0, 600d / 600d, false);
                     IntroAnimation.Stop();
                 }
                 IntroAnimation.Source = null;
                 newIntro = null;
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-            }
-            
-            rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
 
-            if (isIntroEnabled) await Task.Delay(250);
+                Task rootFrameAnimTask = RootFrameGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
+                    RootFrameGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)
+                    );
+                Task introFrameAnimTask = IntroAnimationGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
+                    IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
+                    );
+
+                await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+            }
+            else
+            {
+                RootFrameGrid.Opacity = 1;
+            }
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
+
             IsForceDisableIntro = true;
             IntroSequenceToggle.Visibility = Visibility.Collapsed;
+            IntroAnimationGrid.Visibility = Visibility.Collapsed;
+
+            if (isIntroEnabled) await Task.Delay(250);
         }
 
         private void InitializeAppWindowAndIntPtr()
