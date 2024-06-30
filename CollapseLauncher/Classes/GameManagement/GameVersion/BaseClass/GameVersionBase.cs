@@ -838,7 +838,7 @@ namespace CollapseLauncher.GameVersioning
         {
             // Check if the GameVersionInstalled == null (version config doesn't exist),
             // Reinitialize the version config and save the version config by assigning GameVersionInstalled.
-            if (GameVersionInstalled == null)
+            if (GameVersionInstalled == null && GameAPIProp.data?.game?.latest?.version != null)
             {
                 GameVersionInstalled = GameVersionAPI;
             }
