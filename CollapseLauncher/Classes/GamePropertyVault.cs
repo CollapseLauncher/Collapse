@@ -231,6 +231,10 @@ namespace CollapseLauncher.Statics
     [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     internal partial class PageStatics
     {
-        internal static CommunityToolsProperty _CommunityToolsProperty { get; set; }
+        internal static CommunityToolsProperty _CommunityToolsProperty { get; set; } = new CommunityToolsProperty()
+        {
+            OfficialToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>(),
+            CommunityToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>()
+        };
     }
 }

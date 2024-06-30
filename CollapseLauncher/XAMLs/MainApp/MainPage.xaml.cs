@@ -15,6 +15,7 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using InnoSetupHelper;
 using Microsoft.UI;
 using Microsoft.UI.Input;
@@ -159,9 +160,6 @@ namespace CollapseLauncher
             // Initialize the background image utility
             CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
             LocalBackgroundHandler = CurrentBackgroundHandler;
-
-            // Load community tools properties
-            PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
 
             Type Page = typeof(HomePage);
 

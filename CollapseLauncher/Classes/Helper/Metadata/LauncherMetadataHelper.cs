@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
@@ -316,6 +317,14 @@ namespace CollapseLauncher.Helper.Metadata
             }
             await LoadConfigInner(masterKeyStamp, currentChannel, false, true);
 
+            // Iterate the CommunityTools configs
+            Stamp? stampCommunityToolkit = LauncherMetadataStamp
+               .FirstOrDefault(x => x.MetadataType == MetadataType.CommunityTools);
+            if (stampCommunityToolkit != null)
+            {
+                await LoadConfigInner(stampCommunityToolkit, currentChannel, false, false);
+            }
+
             // Iterate the stamp and try to load the configs
             int index = 1;
             List<Stamp> stampList = LauncherMetadataStamp
@@ -385,6 +394,11 @@ namespace CollapseLauncher.Helper.Metadata
 
                             // Assign the key to instance property
                             CurrentMasterKey = keyConfig ?? throw new InvalidDataException("Master key config seems to be empty!");
+                            break;
+                        }
+                    case MetadataType.CommunityTools:
+                        {
+                            PageStatics._CommunityToolsProperty = await CommunityToolsProperty.LoadCommunityTools(configLocalStream);
                             break;
                         }
                     case MetadataType.PresetConfigV2 when string.IsNullOrEmpty(stamp.GameName) || string.IsNullOrEmpty(stamp.GameRegion):
