@@ -467,8 +467,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await hypLauncherGameInfoCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
 
-            HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = null;
-            if (sophonLauncherGameInfoRoot != null)
+            HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
+            if (hypLauncherGameInfo != null)
             {
                 ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo?.GameInfoData);
 
