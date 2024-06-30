@@ -561,7 +561,7 @@ namespace CollapseLauncher.Helper.Metadata
                 string[] subKeyKey = subKey.GetSubKeyNames();
                 if (subKeyKey.Length == 0) continue;
 
-                string? gameKeyName = subKeyKey?.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
+                string? gameKeyName = subKeyKey.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
                 if (string.IsNullOrEmpty(gameKeyName)) continue;
 
                 RegistryKey? gameKey = subKey.OpenSubKey(gameKeyName);
