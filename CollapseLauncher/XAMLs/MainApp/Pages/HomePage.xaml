@@ -922,7 +922,7 @@
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
                                        Text="-" />
-                            <TextBlock x:Name="PlaytimeLastOpen"
+                            <TextBlock x:Name="PlaytimeToolTipIcon"
                                        Margin="8,0,0,0"
                                        VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"

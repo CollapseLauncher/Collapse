@@ -1901,8 +1901,7 @@ namespace CollapseLauncher.Pages
         #region Playtime
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_cachedIsGameRunning)
-                return;
+            if (_cachedIsGameRunning) return;
 
             UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
         }
@@ -1943,15 +1942,13 @@ namespace CollapseLauncher.Pages
                 HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
                 MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
-                if (playtime.LastPlayed == null)
+                string lastPlayed = "-";
+                if (playtime.LastPlayed != null)
                 {
-                    ToolTipService.SetToolTip(PlaytimeBtn, null);
-                    return;
+                    DateTime? last = playtime.LastPlayed?.ToLocalTime();
+                    lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
+                                                      last?.Month, last?.Year, last?.Hour, last?.Minute);
                 }
-
-                DateTime? last = playtime.LastPlayed?.ToLocalTime();
-                string lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
-                                                  last?.Month, last?.Year, last?.Hour, last?.Minute);
 
                 Grid grid = new Grid()
                 {
@@ -1960,6 +1957,7 @@ namespace CollapseLauncher.Pages
                         new ColumnDefinition(),
                         new ColumnDefinition()
                     },
+                    ColumnSpacing = 8,
                     RowDefinitions =
                     {
                         new RowDefinition(),
@@ -1982,7 +1980,8 @@ namespace CollapseLauncher.Pages
                         new Run() { Text = "(Started at " },
                         new Run() { Text = lastPlayed, FontWeight = FontWeights.Bold },
                         new Run() { Text = ")" }
-                    }
+                    },
+                    HorizontalAlignment = HorizontalAlignment.Right
                 };
 
                 StackPanel panel = new StackPanel()
