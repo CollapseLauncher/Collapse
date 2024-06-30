@@ -246,7 +246,9 @@ namespace CollapseLauncher.Helper.Metadata
                 // Load and add stamp into stamp dictionary
                 foreach (Stamp? stamp in LauncherMetadataStamp)
                 {
-                    LauncherMetadataStampDictionary?.Add($"{stamp.GameName} - {stamp.GameRegion}", stamp);
+                    string? gameName = string.IsNullOrEmpty(stamp.GameName) ? stamp.MetadataType.ToString() : stamp.GameName;
+                    string? gameRegion = string.IsNullOrEmpty(stamp.GameRegion) ? stamp.MetadataPath : stamp.GameRegion;
+                    LauncherMetadataStampDictionary?.Add($"{gameName} - {gameRegion}", stamp);
                 }
             }
             catch (Exception ex)
