@@ -185,14 +185,6 @@
             {
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool())
                 {
-                    // Only change activity for Idle or Play status the second time we call SetActivity
-                    if ((activity == ActivityType.Idle || activity == ActivityType.Play) &&
-                        _lastAttemptedActivityType != activity)
-                    {
-                        _lastAttemptedActivityType = activity;
-                        return;
-                    }
-
                     _lastAttemptedActivityType = activity;
                     _activityType              = activity;
 
