@@ -4,6 +4,7 @@
     using DiscordRPC;
     using Hi3Helper;
     using System;
+    using System.Threading.Tasks.Dataflow;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -31,12 +32,12 @@
 
             private DiscordRpcClient _client;
 
-            private RichPresence _presence;
-            private ActivityType _activityType;
-            private ActivityType _lastAttemptedActivityType;
-            private DateTime?    _lastPlayTime;
-            private long         _lastApplicationId;
-            private bool         _firstTimeConnect = true;
+            private RichPresence                _presence;
+            private ActivityType                _activityType;
+            private ActivityType                _lastAttemptedActivityType;
+            private DateTime?                   _lastPlayTime;
+            private bool                        _firstTimeConnect = true;
+            private ActionBlock<RichPresence>   _presenceUpdateQueue = null;
 
             private bool _cachedIsIdleEnabled = true;
 
@@ -86,20 +87,22 @@
 
             private void EnablePresence(long applicationId)
             {
-                if (_lastApplicationId != applicationId)
-                {
-                    if (_client != null)
-                    {
-                        DisablePresence();
-                    }
-
-                    _lastApplicationId = applicationId;
-                }
-
                 _firstTimeConnect = true;
+                
+                // Flush and dispose the session
+                DisablePresence();
 
                 // Initialize Discord RPC client
                 _client = new DiscordRpcClient(applicationId.ToString());
+                _presenceUpdateQueue = new ActionBlock<RichPresence>(
+                    presence => _client?.SetPresence(_presence),
+                    new ExecutionDataflowBlockOptions
+                    {
+                        MaxMessagesPerTask      = 1,
+                        MaxDegreeOfParallelism  = 1,
+                        EnsureOrdered           = true
+                    });
+
                 _client.OnReady += (_, msg) =>
                                    {
                                        Logger.LogWriteLine($"Connected to Discord with user {msg.User.Username}");
@@ -146,6 +149,7 @@
 
             public void DisablePresence()
             {
+                _presenceUpdateQueue?.Complete();
                 _client?.SetPresence(null);
                 _client?.Dispose();
                 _client = null;
@@ -248,9 +252,13 @@
             private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
             {
                 var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+                var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+
+                if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
+                    return;
+
                 var curGameNameTranslate =
                     InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Lang._GameClientTitles);
-                var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
                 var curGameRegionTranslate =
                     InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Lang._GameClientRegions);
                 
@@ -284,9 +292,13 @@
             private void BuildActivityAppStatus(string activityName)
             {
                 var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
+                var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
+                
+                if (string.IsNullOrEmpty(curGameName) || string.IsNullOrEmpty(curGameRegion))
+                    return;
+                
                 var curGameNameTranslate =
                     InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Lang._GameClientTitles);
-                var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
                 var curGameRegionTranslate =
                     InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Lang._GameClientRegions);
                 
@@ -307,7 +319,7 @@
 
             private void UpdateActivity()
             {
-                _client?.SetPresence(_presence);
+                _presenceUpdateQueue?.Post(_presence);
             }
         }
     }
