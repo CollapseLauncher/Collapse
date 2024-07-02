@@ -2905,7 +2905,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
                                 $"(Free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}), " +
-                                $"Existing Package Size: {existingPackageSizeGb}, Drive: {driveInfo.Name})";
+                                $"Existing Package Size (Compressed): {currentDownloadedCompressed} (Uncompressed): {currentDownloadedUncompressed}, Drive: {driveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
                 await Dialog_InsufficientDriveSpace(Content, diskFreeSpace, remainedDownloadUncompressed, driveInfo.Name);
                 throw new TaskCanceledException(errStr);
