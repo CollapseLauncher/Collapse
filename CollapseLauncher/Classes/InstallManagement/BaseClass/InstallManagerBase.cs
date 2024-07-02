@@ -406,7 +406,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalSizeCurrent = GetExistingDownloadPackageSize(gamePackage);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(_parentUI, gamePackage);
+            await CheckDriveFreeSpace(_parentUI, gamePackage, _progressTotalSizeCurrent);
 
             // Check for the existing download
             await CheckExistingDownloadAsync(_parentUI, gamePackage);
@@ -516,7 +516,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(_parentUI, _assetIndex);
+            await CheckDriveFreeSpace(_parentUI, _assetIndex, _progressTotalSizeCurrent);
 
             // Sanitize Check: Show dialog for resuming/reset the existing download
             if (!skipDialog)
@@ -2861,41 +2861,53 @@ namespace CollapseLauncher.InstallManager.Base
             return totalSize;
         }
 
-        private async ValueTask CheckDriveFreeSpace(UIElement Content, List<GameInstallPackage> packageList)
+        private async ValueTask CheckDriveFreeSpace(UIElement Content, List<GameInstallPackage> packageList, long sizeDownloaded)
         {
             // Get the information about the disk
-            DriveInfo _DriveInfo = new DriveInfo(_gamePath);
+            DriveInfo driveInfo = new DriveInfo(_gamePath);
 
-            // Get the total of required size on every package
-            long RequiredSpace = packageList.Sum(x => x.SizeRequired);
-            long ExistingPackageSize = packageList.Sum(x => x.Segments != null ? x.Segments.Sum(y => GetExistingPartialDownloadLength(y.PathOutput, y.Size)) : GetExistingPartialDownloadLength(x.PathOutput, x.Size));
+            // Get the required space uncompressed
+            long requiredSpaceUncompressed = packageList.Sum(x => x.SizeRequired);
+            long requiredSpaceCompressed = packageList.Sum(x => x.Size);
 
-            // Get the total free space of the disk
-            long DiskSpace = _DriveInfo.TotalFreeSpace;
-            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
+            // Get the progress of the compressed zip from 0.0d to 1.0d
+            double packageSizeDownloadedProgress = (double)sizeDownloaded / requiredSpaceCompressed;
 
-            // Check if the disk space is insufficient, then show the dialog.
-            double requiredSpaceGb       = Convert.ToDouble(RequiredSpace / (1L << 30));
-            double existingPackageSizeGb = Convert.ToDouble(ExistingPackageSize / (1L << 30));
-            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(RequiredSpace - ExistingPackageSize), 3), 4);
-            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(DiskSpace), 3), 4);
-        #if DEBUG
+            // Get the required size of the uncompressed, then multiply by the packageSizeDownloadedProgress
+            double currentDownloadedUncompressed = requiredSpaceUncompressed * packageSizeDownloadedProgress;
+            double currentDownloadedCompressed = sizeDownloaded;
+
+            // Get the remained size to download
+            double remainedDownloadUncompressed = requiredSpaceUncompressed - currentDownloadedUncompressed;
+            double remainedDownloadCompressed = requiredSpaceCompressed - currentDownloadedCompressed;
+
+            // Get the total free space of the disk and log the required size
+            long diskFreeSpace = driveInfo.TotalFreeSpace;
+            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} remained to be downloaded (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}) with {driveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}", LogType.Default, true);
+
+#if DEBUG
+            double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(diskFreeSpace), 3), 4);
+            double requiredSpaceGb = Convert.ToDouble(requiredSpaceUncompressed / (1L << 30));
+            double existingPackageSizeGb = Convert.ToDouble(currentDownloadedCompressed / (1L << 30));
+            double remainingDownloadSizeGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(remainedDownloadCompressed), 3), 4);
             LogWriteLine($"Available Drive Space (GB): {diskSpaceGb}", LogType.Debug);
-            LogWriteLine($"Existing Package Size: {ExistingPackageSize}", LogType.Debug);
-            LogWriteLine($"Required Space: {RequiredSpace}", LogType.Debug);
-            LogWriteLine($"Required Space Minus Existing Package Size: {(RequiredSpace - ExistingPackageSize)}", LogType.Debug);
-            LogWriteLine($"Existing Package Size (GB): {existingPackageSizeGb}", LogType.Debug);
-            LogWriteLine($"Required Space (GB): {requiredSpaceGb}", LogType.Debug);
-            LogWriteLine($"Required Space Minus Existing Package Size (GB): {(double)(RequiredSpace - ExistingPackageSize) / (1L << 30)}", LogType.Debug);
-            LogWriteLine($"Remaining Package Download Size (GB): {remainingDownloadSizeGb}", LogType.Debug);
-        #endif
-            if (diskSpaceGb < remainingDownloadSizeGb)
+            LogWriteLine($"Existing Package Size (Compressed Size): {currentDownloadedCompressed}", LogType.Debug);
+            LogWriteLine($"Required Space (Uncompressed Size): {requiredSpaceUncompressed}", LogType.Debug);
+            LogWriteLine($"Required Space Minus Existing Package Size (Uncompressed Size): {requiredSpaceUncompressed - currentDownloadedUncompressed}", LogType.Debug);
+            LogWriteLine($"===============================================================================================", LogType.Debug);
+            LogWriteLine($"Existing Package Size (Compressed Size)(GB): {existingPackageSizeGb}", LogType.Debug);
+            LogWriteLine($"Required Space (Uncompressed Size)(GB): {requiredSpaceGb}", LogType.Debug);
+            LogWriteLine($"Required Space Minus Existing Package Size (Uncompressed Size)(GB): {(double)(requiredSpaceUncompressed - currentDownloadedUncompressed) / (1L << 30)}", LogType.Debug);
+            LogWriteLine($"Remaining Package Download Size (Compressed Size)(GB): {remainingDownloadSizeGb}", LogType.Debug);
+#endif
+
+            if (diskFreeSpace < remainedDownloadUncompressed)
             {
-                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! " +
-                                $"(Free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(RequiredSpace)}, " +
-                                $"Existing Package Size: {existingPackageSizeGb}, Drive: {_DriveInfo.Name})";
+                string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
+                                $"(Free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}), " +
+                                $"Existing Package Size: {existingPackageSizeGb}, Drive: {driveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
-                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace, _DriveInfo.Name);
+                await Dialog_InsufficientDriveSpace(Content, diskFreeSpace, remainedDownloadUncompressed, driveInfo.Name);
                 throw new TaskCanceledException(errStr);
             }
         }
