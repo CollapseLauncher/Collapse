@@ -1105,12 +1105,17 @@ namespace CollapseLauncher.InstallManager.Base
                 // Assign extractor
                 string packageExtension = Path.GetExtension(asset!.PathOutput).ToLower();
 #if USENEWZIPDECOMPRESS
-                InstallPackageExtractorDelegate installTaskDelegate = packageExtension switch
+                InstallPackageExtractorDelegate installTaskDelegate;
+                if ((asset!.PathOutput.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                  || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
+                  && !_isAllowExtractCorruptZip)
                 {
-                    ".zip" => _isAllowExtractCorruptZip ? ExtractUsing7zip : ExtractUsingNativeZip,
-                    ".zip.001" => _isAllowExtractCorruptZip ? ExtractUsing7zip : ExtractUsingNativeZip,
-                    _ => ExtractUsing7zip
-                };
+                    installTaskDelegate = ExtractUsingNativeZip;
+                }
+                else
+                {
+                    installTaskDelegate = ExtractUsing7zip;
+                }
 #else
                 InstallPackageExtractorDelegate installTaskDelegate = ExtractUsing7zip;
 #endif
