@@ -2782,6 +2782,8 @@ namespace CollapseLauncher.InstallManager.Base
                     case ContentDialogResult.Secondary:
                         ResetDownload(packageList);
                         break;
+                    case ContentDialogResult.None:
+                        throw new OperationCanceledException("Cancelling progress");
                 }
             }
         }
