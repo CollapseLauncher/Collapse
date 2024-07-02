@@ -575,7 +575,7 @@
                     <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
                                UnderlineStyle="None">
                         <Run FontWeight="Bold"
-                             Text="MIT License" />
+                             Text="{x:Bind helper:Locale.Lang._SettingsPage.LicenseType}" />
                     </Hyperlink>
                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" />
                 </TextBlock>
