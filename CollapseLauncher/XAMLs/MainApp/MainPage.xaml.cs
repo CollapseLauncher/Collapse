@@ -1195,12 +1195,14 @@ namespace CollapseLauncher
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
                     break;
-            }
-
-            if (CurrentGameVersionCheck.GameType == GameNameType.Genshin)
-            {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+                case GameNameType.Genshin:
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem() 
+                    { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+                    break;
+                case GameNameType.Zenless:
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    {Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "zenlessgamesettings"});
+                    break;
             }
 
             if (ResetSelection)
@@ -1309,6 +1311,10 @@ namespace CollapseLauncher
 
                 case "genshingamesettings":
                     Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+                
+                case "zenlessgamesettings":
+                    Navigate(IsGameInstalled() ? typeof(ZenlessGameSettingsPage) : typeof(NotificationInvoker), itemTag);
                     break;
             }
         }

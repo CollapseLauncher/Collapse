@@ -29,6 +29,10 @@ namespace CollapseLauncher.GameSettings.Zenless
             }
         }
         #endregion
+
+        #region Properties
+        public GeneralData GeneralData {get;set;}
+        #endregion
     
         public ZenlessSettings(IGameVersionCheck GameVersionManager) : base(GameVersionManager)
         {
@@ -42,6 +46,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             base.InitializeSettings();
             SettingsScreen = ScreenManager.Load();
+            GeneralData = GeneralData.Load(MagicReDo);
         }
 
         public override void ReloadSettings()
