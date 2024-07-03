@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
+using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
@@ -54,8 +55,7 @@ namespace CollapseLauncher.Statics
                     break;
                 case GameNameType.Zenless:
                     _GameVersion = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                    _GameSettings = new SettingsBase(_GameVersion);
-                    _GameSettings.InitializeSettings(); // TODO: Remove this call if we already find a way to do game settings for ZZZ
+                    _GameSettings = new ZenlessSettings(_GameVersion);
                     _GameCache = null;
                     _GameRepair = null;
                     _GameInstall = new ZenlessInstall(UIElementParent, _GameVersion);

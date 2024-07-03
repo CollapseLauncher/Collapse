@@ -190,13 +190,13 @@ namespace CollapseLauncher.Pages
         #region Misc
         public bool IsGameBoost
         {
-            get => Settings.SettingsCollapseMisc.UseGameBoost;
+            get => Settings?.SettingsCollapseMisc?.UseGameBoost ?? false;
             set => Settings.SettingsCollapseMisc.UseGameBoost = value;
         }
         
         public bool IsMobileMode
         {
-            get => Settings.SettingsCollapseMisc.LaunchMobileMode;
+            get => Settings?.SettingsCollapseMisc?.LaunchMobileMode ?? false;
             set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
         }
         #endregion
@@ -206,7 +206,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value                                  = Settings.SettingsCollapseMisc.UseAdvancedGameSettings;
+                bool value                                  = Settings?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
                 if (value){AdvancedSettingsPanel.Visibility = Visibility.Visible;}
                 else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
                 return value;
@@ -222,8 +222,8 @@ namespace CollapseLauncher.Pages
         public bool IsUsePreLaunchCommand
         {
             get 
-            { 
-                bool value = Settings.SettingsCollapseMisc.UseGamePreLaunchCommand;
+            {
+                bool value = Settings?.SettingsCollapseMisc?.UseGamePreLaunchCommand ?? false;
 
                 if (value)
                 {
@@ -259,19 +259,19 @@ namespace CollapseLauncher.Pages
 
         public string PreLaunchCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePreLaunchCommand;
+            get => Settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
             set => Settings.SettingsCollapseMisc.GamePreLaunchCommand = value;
         }
 
         public bool IsPreLaunchCommandExitOnGameClose
         {
-            get => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop;
+            get => Settings?.SettingsCollapseMisc?.GamePreLaunchExitOnGameStop ?? false;
             set => Settings.SettingsCollapseMisc.GamePreLaunchExitOnGameStop = value;
         }
 
         public int LaunchDelay
         {
-            get => Settings.SettingsCollapseMisc.GameLaunchDelay;
+            get => Settings?.SettingsCollapseMisc?.GameLaunchDelay ?? 0;
             set => Settings.SettingsCollapseMisc.GameLaunchDelay = value;
         }
         
@@ -279,7 +279,7 @@ namespace CollapseLauncher.Pages
         {
             get 
             {
-                bool value = Settings.SettingsCollapseMisc.UseGamePostExitCommand;
+                bool value = Settings?.SettingsCollapseMisc?.UseGamePostExitCommand ?? false;
 
                 if (value) PostExitCommandTextBox.IsEnabled = true;
                 else PostExitCommandTextBox.IsEnabled       = false;
@@ -297,7 +297,7 @@ namespace CollapseLauncher.Pages
 
         public string PostExitCommand
         {
-            get => Settings.SettingsCollapseMisc.GamePostExitCommand;
+            get => Settings?.SettingsCollapseMisc?.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
         }
         

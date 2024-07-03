@@ -1314,7 +1314,7 @@ namespace CollapseLauncher
                     break;
                 
                 case "zenlessgamesettings":
-                    Navigate(IsGameInstalled() ? typeof(ZenlessGameSettingsPage) : typeof(NotificationInvoker), itemTag);
+                    Navigate(IsGameInstalled() ? typeof(ZenlessGameSettingsPage) : typeof(NotInstalledPage), itemTag);
                     break;
             }
         }

@@ -468,8 +468,16 @@ namespace CollapseLauncher.Helper.Metadata
             int verInt = GameDataVersion.GetBytesToIntVersion(gameVersion);
             if (!value.DataVersion.TryGetValue(verInt, out GameDataVersion? verData))
             {
-                return null;
+                // Fallback to find the default value anyway
+                KeyValuePair<int, GameDataVersion>? kvpTemp = value.DataVersion.FirstOrDefault();
+                if (kvpTemp == null)
+                    return null;
+
+                verData = kvpTemp?.Value;
             }
+
+            if (verData == null)
+                return null;
 
             if (!DataCooker.IsServeV3Data(verData.Data))
             {

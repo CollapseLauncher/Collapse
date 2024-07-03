@@ -29,7 +29,7 @@
     public partial class ZenlessGameSettingsPage
     {
         private GamePresetProperty CurrentGameProperty   { get; set; }
-        private ZenlessSettings   Settings              { get; set; }
+        private ZenlessSettings    Settings              { get; set; }
         private Brush              InheritApplyTextColor { get; set; }
         private RegistryMonitor    RegistryWatcher       { get; set; }
         
@@ -77,13 +77,13 @@
         private void LoadPage()
         {
             BackgroundImgChanger.ToggleBackground(true);
-            Settings.ReloadSettings();
 
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
+            Settings?.ReloadSettings();
 
             InheritApplyTextColor = ApplyText.Foreground!;
         }

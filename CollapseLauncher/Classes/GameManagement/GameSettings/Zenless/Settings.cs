@@ -22,7 +22,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             {
                 if (_magicReDo != null) return _magicReDo;
                 _magicReDo = (_gameVersionManager as GameTypeZenlessVersion)?.GamePreset
-                                                                             .GetGameDataTemplate("MagicReDo", new byte[] {1, 0, 0, 0});
+                                                                             .GetGameDataTemplate("ImSleepin", new byte[] {1, 0, 0, 0});
                 if (_magicReDo == null || _magicReDo.Length == 0)
                     throw new NullReferenceException("MagicReDo value for ZZZ settings is empty!");
                 return _magicReDo;
