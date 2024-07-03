@@ -19,7 +19,7 @@ internal class GeneralData
         {
             if (_gamePresetProperty != null) return _gamePresetProperty;
             _gamePresetProperty = GamePropertyVault.GetCurrentGameProperty();
-            if (ZenlessGameProperty._GamePreset.GameType == GameNameType.Zenless)
+            if (_gamePresetProperty._GamePreset.GameType != GameNameType.Zenless)
                 throw new InvalidDataException("[ZenlessSettings] GameProperty value is not Zenless!");
             return _gamePresetProperty;
         }
