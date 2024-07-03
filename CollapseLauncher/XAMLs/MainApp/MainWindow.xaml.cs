@@ -218,6 +218,9 @@ namespace CollapseLauncher
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
+
+            // Recalculate non-client area size
+            WindowUtility.EnableWindowNonClientArea();
         }
 
         private void MainFrameChangerInvoker_WindowFrameGoBackEvent(object sender, EventArgs e)
