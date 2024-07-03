@@ -26,7 +26,7 @@ internal class GeneralData
     }
 
     private static string gameFolder    = ZenlessGameProperty._GameVersion.GameDirPath;
-    private static string gameExec      = ZenlessGameProperty._GamePreset.GameExecutableName!;
+    private static string gameExec      = Path.GetFileNameWithoutExtension(ZenlessGameProperty._GamePreset.GameExecutableName!);
     private static string configFileLoc = $@"{gameExec}_Data\Persistent\LocalStorage\GENERAL_DATA.bin";
 
     private static string configFile = Path.Join(gameFolder, configFileLoc);

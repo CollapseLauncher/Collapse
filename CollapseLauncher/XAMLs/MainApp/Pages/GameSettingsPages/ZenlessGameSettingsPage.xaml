@@ -219,500 +219,31 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel x:Name="ZenlessGameGraphicsPanel"
-                                    Grid.Column="1"
-                                    Margin="0,16">
+                                        Grid.Column="1"
+                                        Margin="0,16">
                             <TextBlock Margin="0,0,0,16"
-                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}"
-                                       TextWrapping="Wrap" />
-                            <!--         <StackPanel> -->
-                            <!--             <StackPanel Margin="0,0,56,8"> -->
-                            <!--                 <Grid x:Name="RenderScaleGrid"> -->
-                            <!--  <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_RenderScale}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <TextBlock HorizontalAlignment="Right"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{Binding Value, ElementName=RenderScaleSlider}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--                 </Grid> -->
-                            <!--  <Slider x:Name="RenderScaleSlider"  -->
-                            <!--  Maximum="2.0"  -->
-                            <!--  Minimum="0.6"  -->
-                            <!--  StepFrequency="0.2"  -->
-                            <!--  TickFrequency="0.2"  -->
-                            <!--  TickPlacement="Outside"  -->
-                            <!--  Value="{x:Bind RenderScale, Mode=TwoWay}" />  -->
-                            <!--             </StackPanel> -->
-                            <!--             <Grid> -->
-                            <!--                 <Grid.ColumnDefinitions> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                 </Grid.ColumnDefinitions> -->
-                            <!--  <StackPanel Grid.Column="0"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,0,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ShadowQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="ShadowQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind ShadowQuality, Mode=TwoWay}">  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}" /> -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <StackPanel Grid.Column="1"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,0,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_LightQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="LightQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind LightQuality, Mode=TwoWay}">  -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <StackPanel Grid.Column="2"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,0,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_CharacterQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="CharacterQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">  -->
-                            <!--  ~1~  dum workaround for the dum enum  @1@  -->
-                            <!--  <ComboBoxItem Content="0"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--  <ComboBoxItem Content="1"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--             </Grid> -->
-                            <!--         </StackPanel> -->
-                            <!--         <StackPanel> -->
-                            <!--             <Grid> -->
-                            <!--                 <Grid.ColumnDefinitions> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                 </Grid.ColumnDefinitions> -->
-                            <!--  <StackPanel Grid.Column="0"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,8,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_EnvDetailQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="EnvDetailQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind EnvDetailQuality, Mode=TwoWay}">  -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <StackPanel Grid.Column="1"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,8,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ReflectionQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="ReflectionQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind ReflectionQuality, Mode=TwoWay}">  -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <StackPanel Grid.Column="2"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,8,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_BloomQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="BloomQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind BloomQuality, Mode=TwoWay}">  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--             </Grid> -->
-                            <!--         </StackPanel> -->
-                            <!--         <StackPanel> -->
-                            <!--             <Grid> -->
-                            <!--                 <Grid.ColumnDefinitions> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                 </Grid.ColumnDefinitions> -->
-                            <!--  <StackPanel Grid.Column="0"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,8,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_AAMode}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="AAModeSelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind AAMode, Mode=TwoWay}">  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}" /> -->
-                            <!--                         <ComboBoxItem Content="TAA" /> -->
-                            <!--                         <ComboBoxItem Content="FXAA" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <StackPanel Grid.Column="2"  -->
-                            <!--  VerticalAlignment="Bottom"  -->
-                            <!--  Visibility="Collapsed">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,8,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ResolutionQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="ResolutionQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind ResolutionQuality, Mode=TwoWay}">  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}" /> -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <StackPanel Grid.Column="1"  -->
-                            <!--  VerticalAlignment="Bottom">  -->
-                            <!--  <TextBlock MaxWidth="128"  -->
-                            <!--  Margin="0,8,0,8"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_SFXQuality}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <ComboBox x:Name="SFXQualitySelector"  -->
-                            <!--  Margin="0,0,16,8"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind SFXQuality, Mode=TwoWay}">  -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecDisabled}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecLow}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecMedium}" /> -->
-                            <!--                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecHigh}" /> -->
-                            <!--  <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.SpecVeryHigh}"  -->
-                            <!--  IsEnabled="False"  -->
-                            <!--  Visibility="Collapsed" />  -->
-                            <!--                     </ComboBox> -->
-                            <!--                 </StackPanel> -->
-                            <!--             </Grid> -->
-                            <!--         </StackPanel> -->
-                            <!--         <StackPanel> -->
-                            <!--             <Grid> -->
-                            <!--                 <Grid.ColumnDefinitions> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                     <ColumnDefinition /> -->
-                            <!--                 </Grid.ColumnDefinitions> -->
-                            <!--  <CheckBox x:Name="ToggleSelfShadow"  -->
-                            <!--  Grid.Column="0"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  VerticalAlignment="Center"  -->
-                            <!--  IsChecked="{x:Bind SelfShadow, Mode=TwoWay}">  -->
-                            <!--  <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_SelfShadow}"  -->
-                            <!--  TextWrapping="WrapWholeWords" />  -->
-                            <!--                 </CheckBox> -->
-                            <!--  <CheckBox x:Name="ToggleHalfResTransparency"  -->
-                            <!--  Grid.Column="1"  -->
-                            <!--  HorizontalAlignment="Left"  -->
-                            <!--  VerticalAlignment="Center"  -->
-                            <!--  IsChecked="{x:Bind HalfResTransparent, Mode=TwoWay}">  -->
-                            <!--  <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_HalfResTransparent}"  -->
-                            <!--  TextWrapping="WrapWholeWords" />  -->
-                            <!--                 </CheckBox> -->
-                            <!--             </Grid> -->
-                            <!--         </StackPanel> -->
-                            <!--     </StackPanel> -->
-                            <!-- </Grid> -->
-                            <!-- <MenuFlyoutSeparator Margin="0,4,0,8" /> -->
-                            <!--  <TextBlock Margin="0,0,0,16"  -->
-                            <!--  Style="{ThemeResource TitleLargeTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_Title}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!-- <Grid> -->
-                            <!--     <Grid.ColumnDefinitions> -->
-                            <!--         <ColumnDefinition /> -->
-                            <!--         <ColumnDefinition /> -->
-                            <!--     </Grid.ColumnDefinitions> -->
-                            <!--     <StackPanel Grid.Column="0"> -->
-                            <!--  <StackPanel x:Name="AudioSettingsPanelLeft"  -->
-                            <!--  Margin="0,16,64,16">  -->
-                            <!--             <StackPanel> -->
-                            <!--  <TextBlock Margin="0,0,0,16"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_Master}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <StackPanel Margin="0,0,32,8"  -->
-                            <!--  Orientation="Vertical">  -->
-                            <!--                     <Grid> -->
-                            <!--                         <Grid.ColumnDefinitions> -->
-                            <!--                             <ColumnDefinition Width="40px" /> -->
-                            <!--                             <ColumnDefinition /> -->
-                            <!--                         </Grid.ColumnDefinitions> -->
-                            <!--  <TextBlock VerticalAlignment="Center"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{Binding Value, ElementName=AudioMasterVolumeSlider}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <Slider x:Name="AudioMasterVolumeSlider"  -->
-                            <!--  Grid.Column="1"  -->
-                            <!--  Maximum="10"  -->
-                            <!--  TickFrequency="1"  -->
-                            <!--  TickPlacement="Outside"  -->
-                            <!--  Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />  -->
-                            <!--                     </Grid> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <TextBlock Margin="0,16,0,16"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_SFX}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <StackPanel Margin="0,0,32,8"  -->
-                            <!--  Orientation="Vertical">  -->
-                            <!--                     <Grid> -->
-                            <!--                         <Grid.ColumnDefinitions> -->
-                            <!--                             <ColumnDefinition Width="40px" /> -->
-                            <!--                             <ColumnDefinition /> -->
-                            <!--                         </Grid.ColumnDefinitions> -->
-                            <!--  <TextBlock VerticalAlignment="Center"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{Binding Value, ElementName=AudioSFXVolumeSlider}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <Slider x:Name="AudioSFXVolumeSlider"  -->
-                            <!--  Grid.Column="1"  -->
-                            <!--  Maximum="10"  -->
-                            <!--  TickFrequency="1"  -->
-                            <!--  TickPlacement="Outside"  -->
-                            <!--  Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />  -->
-                            <!--                     </Grid> -->
-                            <!--                 </StackPanel> -->
-                            <!--             </StackPanel> -->
-                            <!--         </StackPanel> -->
-                            <!--     </StackPanel> -->
-                            <!--     <StackPanel Grid.Column="1"> -->
-                            <!--  <StackPanel x:Name="AudioSettingsPanelRight"  -->
-                            <!--  Margin="0,16,64,16">  -->
-                            <!--             <StackPanel> -->
-                            <!--  <TextBlock Margin="0,0,0,16"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_BGM}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <StackPanel Margin="0,0,32,8"  -->
-                            <!--  Orientation="Vertical">  -->
-                            <!--                     <Grid> -->
-                            <!--                         <Grid.ColumnDefinitions> -->
-                            <!--                             <ColumnDefinition Width="40px" /> -->
-                            <!--                             <ColumnDefinition /> -->
-                            <!--                         </Grid.ColumnDefinitions> -->
-                            <!--  <TextBlock VerticalAlignment="Center"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{Binding Value, ElementName=AudioBGMVolumeSlider}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <Slider x:Name="AudioBGMVolumeSlider"  -->
-                            <!--  Grid.Column="1"  -->
-                            <!--  Maximum="10"  -->
-                            <!--  TickFrequency="1"  -->
-                            <!--  TickPlacement="Outside"  -->
-                            <!--  Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />  -->
-                            <!--                     </Grid> -->
-                            <!--                 </StackPanel> -->
-                            <!--  <TextBlock Margin="0,16,0,16"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_VO}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <StackPanel Margin="0,0,32,8"  -->
-                            <!--  Orientation="Vertical">  -->
-                            <!--                     <Grid> -->
-                            <!--                         <Grid.ColumnDefinitions> -->
-                            <!--                             <ColumnDefinition Width="40px" /> -->
-                            <!--                             <ColumnDefinition /> -->
-                            <!--                         </Grid.ColumnDefinitions> -->
-                            <!--  <TextBlock VerticalAlignment="Center"  -->
-                            <!--  Style="{ThemeResource SubtitleTextBlockStyle}"  -->
-                            <!--  Text="{Binding Value, ElementName=AudioVOVolumeSlider}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--  <Slider x:Name="AudioVOVolumeSlider"  -->
-                            <!--  Grid.Column="1"  -->
-                            <!--  Maximum="10"  -->
-                            <!--  TickFrequency="1"  -->
-                            <!--  TickPlacement="Outside"  -->
-                            <!--  Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />  -->
-                            <!--                     </Grid> -->
-                            <!--                 </StackPanel> -->
-                            <!--             </StackPanel> -->
-                            <!--         </StackPanel> -->
-                            <!--     </StackPanel> -->
-                            <!-- </Grid> -->
-                            <!-- <MenuFlyoutSeparator Margin="0,4,0,8" /> -->
-                            <!-- <StackPanel> -->
-                            <!--  <TextBlock Margin="0,0,0,16"  -->
-                            <!--  Style="{ThemeResource TitleLargeTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Language}"  -->
-                            <!--  TextWrapping="Wrap" />  -->
-                            <!--     <Grid> -->
-                            <!--         <Grid.RowDefinitions> -->
-                            <!--             <RowDefinition Height="Auto" /> -->
-                            <!--             <RowDefinition Height="*" /> -->
-                            <!--         </Grid.RowDefinitions> -->
-                            <!--         <Grid.ColumnDefinitions> -->
-                            <!--             <ColumnDefinition /> -->
-                            <!--             <ColumnDefinition /> -->
-                            <!--         </Grid.ColumnDefinitions> -->
-                            <!--  <TextBlock Grid.Row="0"  -->
-                            <!--  Margin="0,0,0,16"  -->
-                            <!--  TextWrapping="Wrap">  -->
-                            <!--             <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Language_Help1}" /> -->
-                            <!--             <LineBreak /> -->
-                            <!--             <Run Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Language_Help2}" /> -->
-                            <!--         </TextBlock> -->
-                            <!--  <Grid Grid.Row="1"  -->
-                            <!--  Grid.Column="0">  -->
-                            <!--             <Grid.ColumnDefinitions> -->
-                            <!--                 <ColumnDefinition Width="200" /> -->
-                            <!--                 <ColumnDefinition Width="200" /> -->
-                            <!--             </Grid.ColumnDefinitions> -->
-                            <!--  <StackPanel x:Name="LangSettingLeft"  -->
-                            <!--  Grid.Column="0"  -->
-                            <!--  Margin="0,0,24,0">  -->
-                            <!--  <TextBlock Margin="0,0,0,8"  -->
-                            <!--  FontSize="16"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.LanguageAudio}" />  -->
-                            <!--  <ComboBox x:Name="AudioLangSelector"  -->
-                            <!--  Margin="-4,0,0,16"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">  -->
-                            <!--                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.VO_en}" /> -->
-                            <!--                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.VO_jp}" /> -->
-                            <!--                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.VO_cn}" /> -->
-                            <!--                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.VO_kr}" /> -->
-                            <!--                 </ComboBox> -->
-                            <!--             </StackPanel> -->
-                            <!--  <StackPanel x:Name="LangSettingRight"  -->
-                            <!--  Grid.Column="1"  -->
-                            <!--  Margin="0,0,24,0">  -->
-                            <!--  <TextBlock Margin="0,0,0,8"  -->
-                            <!--  FontSize="16"  -->
-                            <!--  Style="{ThemeResource BodyStrongTextBlockStyle}"  -->
-                            <!--  Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.LanguageText}" />  -->
-                            <!--  <ComboBox x:Name="TextLangSelector"  -->
-                            <!--  Margin="-4,0,0,16"  -->
-                            <!--  HorizontalAlignment="Stretch"  -->
-                            <!--  CornerRadius="14"  -->
-                            <!--  MaxDropDownHeight="200"  -->
-                            <!--  SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">  -->
-                            <!--                     <ComboBoxItem Content="English" /> -->
-                            <!--                     <ComboBoxItem Content="日本語" /> -->
-                            <!--                     <ComboBoxItem Content="简体中文" /> -->
-                            <!--                     <ComboBoxItem Content="繁體中文" /> -->
-                            <!--                     <ComboBoxItem Content="한국어" /> -->
-                            <!--                     <ComboBoxItem Content="Español" /> -->
-                            <!--                     <ComboBoxItem Content="Русский" /> -->
-                            <!--                     <ComboBoxItem Content="ภาษาไทย" /> -->
-                            <!--                     <ComboBoxItem Content="Tiếng Việt" /> -->
-                            <!--                     <ComboBoxItem Content="Bahasa Indonesia" /> -->
-                            <!--                     <ComboBoxItem Content="Français" /> -->
-                            <!--                     <ComboBoxItem Content="Deutsch" /> -->
-                            <!--                     <ComboBoxItem Content="Português" /> -->
-                            <!--                 </ComboBox> -->
-                            <!--             </StackPanel> -->
-                            <!--         </Grid> -->
-                            <!--     </Grid> -->
-                            <!-- </StackPanel> -->
-                            <MenuFlyoutSeparator Margin="0,4,0,8" />
-                            <TextBlock Margin="0,0,0,16"
+                                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}"
+                                           TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                    <MenuFlyoutSeparator Margin="0,4,0,8" />
+                    <TextBlock Margin="0,0,0,16"
                                        Style="{ThemeResource TitleLargeTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Title}" />
-                            <TextBlock Margin="0,0,0,0"
+                    <TextBlock Margin="0,0,0,0"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" />
-                            <ToggleSwitch Margin="0,0,0,16"
+                    <ToggleSwitch Margin="0,0,0,16"
                                           IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                            <TextBox x:Name="CustomArgsTextBox"
+                    <TextBox x:Name="CustomArgsTextBox"
                                      Margin="0,0,0,16"
                                      HorizontalAlignment="Stretch"
                                      CornerRadius="8,8,0,0"
                                      Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
-                            <TextBlock Height="Auto"
+                    <TextBlock Height="Auto"
                                        TextWrapping="WrapWholeWords">
                                 <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer1}" />
                                 <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
@@ -721,19 +252,19 @@
                                          Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer2}" />
                                 </Hyperlink>
                                 <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer3}" />
-                            </TextBlock>
-                            <MenuFlyoutSeparator Margin="0,16,0,16" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0"
+                    </TextBlock>
+                    <MenuFlyoutSeparator Margin="0,16,0,16" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
                                            Margin="0,0,8,0"
                                            VerticalAlignment="Stretch"
                                            Style="{ThemeResource TitleLargeTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
-                                <ToggleSwitch Grid.Column="1"
+                        <ToggleSwitch Grid.Column="1"
                                               Margin="8,12,0,8"
                                               VerticalAlignment="Stretch"
                                               VerticalContentAlignment="Stretch"
@@ -742,67 +273,64 @@
                                               IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                            </Grid>
-                            <StackPanel x:Name="AdvancedSettingsPanel"
+                    </Grid>
+                    <StackPanel x:Name="AdvancedSettingsPanel"
                                         Visibility="Collapsed">
-                                <TextBlock Margin="0,0,0,8"
+                        <TextBlock Margin="0,0,0,8"
                                            TextWrapping="WrapWholeWords">
                                     <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle1}" />
                                     <Run FontWeight="Bold"
                                          Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle2}" />
                                     <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle3}" />
-                                </TextBlock>
-                                <TextBlock Margin="0,0,8,8"
+                        </TextBlock>
+                        <TextBlock Margin="0,0,8,8"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}" />
-                                <ToggleSwitch Margin="0,0,0,0"
+                        <ToggleSwitch Margin="0,0,0,0"
                                               Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
                                               IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                                <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
+                        <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
                                               Margin="0,0,0,0"
                                               Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
                                               IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                                <NumberBox x:Name="GameLaunchDelay"
+                        <NumberBox x:Name="GameLaunchDelay"
                                            Width="200"
                                            Margin="0,0,0,12"
                                            HorizontalAlignment="Left"
                                            Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
                                            ValueChanged="GameLaunchDelay_OnValueChanged"
                                            Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
-                                <TextBox x:Name="PreLaunchCommandTextBox"
+                        <TextBox x:Name="PreLaunchCommandTextBox"
                                          Margin="0,0,0,4"
                                          HorizontalAlignment="Stretch"
                                          CornerRadius="8,8,0,0"
                                          IsSpellCheckEnabled="False"
                                          Text="{x:Bind PreLaunchCommand, Mode=TwoWay}" />
-                                <TextBlock Margin="0,0,0,8"
+                        <TextBlock Margin="0,0,0,8"
                                            FontWeight="Semibold"
                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
-                                <TextBlock Margin="0,0,8,8"
+                        <TextBlock Margin="0,0,8,8"
                                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}" />
-                                <ToggleSwitch Margin="0,0,0,8"
+                        <ToggleSwitch Margin="0,0,0,8"
                                               Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
                                               IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                                <TextBox x:Name="PostExitCommandTextBox"
+                        <TextBox x:Name="PostExitCommandTextBox"
                                          Margin="0,0,0,4"
                                          HorizontalAlignment="Stretch"
                                          CornerRadius="8,8,0,0"
                                          IsSpellCheckEnabled="False"
                                          Text="{x:Bind PostExitCommand, Mode=TwoWay}" />
-                                <TextBlock Margin="0,0,0,16"
+                        <TextBlock Margin="0,0,0,16"
                                            FontWeight="Semibold"
                                            Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
-                            </StackPanel>
-                        </StackPanel>
-                        <!--  TODO: DISABLE THESE CLOSINGS WHEN YOU ARE DONE  -->
-                    </Grid>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
             <Grid x:Name="GameSettingsApplyGrid"

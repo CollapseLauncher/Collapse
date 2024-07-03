@@ -46,11 +46,12 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             base.InitializeSettings();
             SettingsScreen = ScreenManager.Load();
-            GeneralData = GeneralData.Load(MagicReDo);
         }
 
         public override void ReloadSettings()
         {
+            GeneralData = GeneralData.Load(MagicReDo);
+
             InitializeSettings();
         }
     
