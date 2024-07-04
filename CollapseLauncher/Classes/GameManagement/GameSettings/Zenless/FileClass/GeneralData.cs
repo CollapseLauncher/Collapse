@@ -39,8 +39,8 @@ internal class GeneralData
         try
         {
             if (!File.Exists(configFile)) throw new FileNotFoundException("Zenless settings not found!");
-
-            string raw = Decode.DecodeToString(configFile, magic);
+            byte[] input = File.ReadAllBytes(configFile);
+            string raw = Decode.RunDecode(input, magic);
 
         #if DEBUG
             LogWriteLine($"RAW Zenless Settings: {configFile}\r\n" +
