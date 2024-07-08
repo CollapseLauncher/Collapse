@@ -87,8 +87,17 @@ namespace CollapseLauncher.GameSettings.Base
             // Try get node as struct value
             if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
             {
-                TValue returnValue = jsonNodeValue.AsValue().GetValue<TValue>();
-                return returnValue;
+                if (typeof(TValue) == typeof(bool) && jsonNodeValue.GetValueKind() == JsonValueKind.Number)
+                {
+                    // Assuming 0 is false, and any non-zero number is true
+                    int  numValue  = jsonNodeValue.AsValue().GetValue<int>();
+                    bool boolValue = numValue != 0;
+                    return (TValue)(object)boolValue; // Cast bool to TValue
+                }
+                else
+                {
+                    return jsonNodeValue.AsValue().GetValue<TValue>();
+                }
             }
 
             return defaultValue;
