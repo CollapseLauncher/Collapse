@@ -61,7 +61,7 @@ namespace CollapseLauncher.Helper.Background
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
         internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) => {
-            await action.ConfigureAwait(false);
+            await action;
         },
         new ExecutionDataflowBlockOptions
         {
@@ -290,13 +290,15 @@ namespace CollapseLauncher.Helper.Background
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
         internal void LoadBackground(string mediaPath,                  bool                  isRequestInit = false,
-                                     bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null)
+                                     bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
+                                     Action? actionAfterLoaded = null)
         {
-            SharedActionBlockQueue?.Post(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction));
+            SharedActionBlockQueue?.Post(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded));
         }
 
         private async Task LoadBackgroundInner(string mediaPath,                  bool                  isRequestInit = false,
-                                                bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null)
+                                                bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
+                                                Action? actionAfterLoaded = null)
         {
             try
             {
@@ -343,22 +345,23 @@ namespace CollapseLauncher.Helper.Background
                 switch (mediaType)
                 {
                     case MediaType.Media:
-                        _loaderStillImage.Hide();
-                        _loaderMediaPlayer.Show();
+                        _loaderStillImage?.Hide();
+                        _loaderMediaPlayer?.Show();
                         break;
                     case MediaType.StillImage:
-                        _loaderStillImage.Show();
-                        _loaderMediaPlayer.Hide();
+                        _loaderStillImage?.Show();
+                        _loaderMediaPlayer?.Hide();
                         break;
                 }
 
                 if (InnerLauncherConfig.m_appCurrentFrameName != "HomePage")
                 {
-                    _loaderMediaPlayer.IsBackgroundDimm = true;
-                    _loaderStillImage.IsBackgroundDimm = true;
+                    if (_loaderMediaPlayer != null) _loaderMediaPlayer.IsBackgroundDimm = true;
+                    if (_loaderStillImage != null) _loaderStillImage.IsBackgroundDimm = true;
                 }
 
                 CurrentAppliedMediaType = mediaType;
+                actionAfterLoaded?.Invoke();
             }
             catch (Exception ex)
             {
@@ -463,12 +466,12 @@ namespace CollapseLauncher.Helper.Background
         public static MediaType GetMediaType(string mediaPath)
         {
             string extension = Path.GetExtension(mediaPath);
-            if (SupportedImageExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+            if (SupportedImageExt.Contains(extension, StringComparer.OrdinalIgnoreCase))
             {
                 return MediaType.StillImage;
             }
 
-            return SupportedMediaPlayerExt.Contains(extension, StringComparer.InvariantCultureIgnoreCase) ? MediaType.Media : MediaType.Unknown;
+            return SupportedMediaPlayerExt.Contains(extension, StringComparer.OrdinalIgnoreCase) ? MediaType.Media : MediaType.Unknown;
         }
     }
 }

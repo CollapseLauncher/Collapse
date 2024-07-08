@@ -14,6 +14,7 @@
       xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:localStatic="using:CollapseLauncher.Statics"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
+      xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="using:CommunityToolkit.WinUI"
       x:Name="HomePage_Page"
@@ -477,8 +478,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"
                         Orientation="Vertical">
-                <Grid PointerEntered="CarouselStopScroll"
-                      PointerExited="CarouselRestartScroll">
+                <Grid PointerEntered="CarouselPointerEntered"
+                      PointerExited="CarouselPointerExited">
                     <FlipView x:Name="ImageCarousel"
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
                               MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}"
@@ -763,8 +764,8 @@
         </Grid>
         <Grid x:Name="ProgressStatusGrid"
               Grid.Row="1"
-              Grid.Column="1"
-              MaxWidth="280"
+              Grid.Column="0"
+              MaxWidth="300"
               Margin="0,0,0,48"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
@@ -777,28 +778,33 @@
                 <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
                 </Grid.ChildrenTransitions>
-                <ProgressRing x:Name="progressRingAcrBG"
+                <Grid x:Name="progressRingShadow"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="1,1,48" />
+                <ProgressRing Width="Auto"
+                              Height="Auto"
                               HorizontalAlignment="Stretch"
                               IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}"
                               Maximum="{Binding Maximum, ElementName=progressRing}"
                               Value="{Binding Value, ElementName=progressRing}" />
                 <Ellipse x:Name="progressRingBG"
-                         Margin="4"
                          HorizontalAlignment="Stretch"
                          Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
                 <ProgressRing x:Name="progressRing"
                               Width="Auto"
                               Height="Auto"
+                              Margin="-6"
                               HorizontalAlignment="Stretch"
                               IsIndeterminate="True"
                               Maximum="100"
                               Value="0" />
                 <Grid x:Name="progressPerFile"
-                      Margin="12"
+                      Margin="16"
                       Visibility="Visible">
-                    <ProgressRing x:Name="progressRingAcrBG2"
-                                  Width="Auto"
+                    <ProgressRing Width="Auto"
                                   Height="Auto"
+                                  HorizontalAlignment="Stretch"
                                   IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
                                   Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
                                   Value="{Binding Value, ElementName=progressRingPerFile}" />
@@ -811,6 +817,7 @@
                                   Width="Auto"
                                   Height="Auto"
                                   Margin="8"
+                                  HorizontalAlignment="Stretch"
                                   IsIndeterminate="True"
                                   Maximum="100"
                                   Value="0" />
@@ -844,6 +851,22 @@
                            FontSize="10"
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+                <Grid x:Name="DownloadModeLabel"
+                      Margin="0,8,0,0"
+                      Padding="8,2"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      CornerRadius="8"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16"
+                      Visibility="Collapsed">
+                    <TextBlock x:Name="DownloadModeLabelText"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                               HorizontalTextAlignment="Center"
+                               Text="" />
+                </Grid>
             </StackPanel>
             <Button x:Name="ProgressSettingsButton"
                     Width="32"
@@ -1386,7 +1409,8 @@
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Left"
                                         Click="StopGameButton_Click"
-                                        CornerRadius="14">
+                                        CornerRadius="14"
+                                        IsEnabled="False">
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>
@@ -1499,6 +1523,84 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <Grid x:Name="LauncherGameStatusPlaceholderBtn"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  HorizontalAlignment="Stretch"
+                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
+                  PointerEntered="ElementScaleOutHoveredPointerEntered"
+                  PointerExited="ElementScaleInHoveredPointerExited"
+                  Shadow="{ThemeResource SharedShadow}"
+                  Translation="0,0,32"
+                  Visibility="Collapsed">
+                <Button x:Name="GamePlaceholderBtnComingSoon"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                        IsEnabled="False"
+                        Style="{ThemeResource NewAccentButtonStyle}"
+                        Visibility="Collapsed">
+                    <Button.Content>
+                        <Grid Margin="8,0">
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Center"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderComingSoonBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="GamePlaceholderBtnPreRegister"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Click="OpenButtonLinkFromTag"
+                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Tag="{x:Bind GamePreRegisterLink}"
+                        Visibility="Collapsed">
+                    <Button.Content>
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0"
+                                  RenderTransformOrigin="0.5, 0.5">
+                                <Grid.RenderTransform>
+                                    <RotateTransform Angle="180" />
+                                </Grid.RenderTransform>
+                                <AnimatedVisualPlayer Height="28"
+                                                      HorizontalAlignment="Right">
+                                    <lottie:StartGameIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
+                            <TextBlock Grid.Column="1"
+                                       Margin="0,-2,0,0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Center"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <Grid Grid.Column="2"
+                                  Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0">
+                                <AnimatedVisualPlayer Height="28"
+                                                      HorizontalAlignment="Right">
+                                    <lottie:StartGameIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
+                        </Grid>
+                    </Button.Content>
+                </Button>
+            </Grid>
             <Grid x:Name="LauncherBtn"
                   Grid.Row="0"
                   Grid.Column="0"
@@ -1528,11 +1630,17 @@
                                        HorizontalTextAlignment="Left"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"
                                        TextTrimming="CharacterEllipsis" />
-                            <FontIcon Grid.Column="1"
-                                      HorizontalAlignment="Right"
-                                      FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="" />
+                            <Grid x:Name="InstallGameBtnAnimBackground"
+                                  Grid.Column="1"
+                                  Width="64"
+                                  Margin="-20,-12"
+                                  Padding="8,0"
+                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
+                                <AnimatedVisualPlayer Height="28"
+                                                      HorizontalAlignment="Right">
+                                    <lottie:DownloadIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
                         </Grid>
                     </Button.Content>
                 </Button>
@@ -1557,11 +1665,17 @@
                                        HorizontalTextAlignment="Left"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"
                                        TextTrimming="CharacterEllipsis" />
-                            <FontIcon Grid.Column="1"
-                                      HorizontalAlignment="Right"
-                                      FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="14"
-                                      Glyph="" />
+                            <Grid x:Name="UpdateGameBtnAnimBackground"
+                                  Grid.Column="1"
+                                  Width="64"
+                                  Margin="-20,-12"
+                                  Padding="12,0"
+                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtnAnimBackground)}">
+                                <AnimatedVisualPlayer Height="28"
+                                                      HorizontalAlignment="Right">
+                                    <lottie:UpdateIcon />
+                                </AnimatedVisualPlayer>
+                            </Grid>
                         </Grid>
                     </Button.Content>
                 </Button>
@@ -1585,11 +1699,23 @@
                                    HorizontalTextAlignment="Left"
                                    Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"
                                    TextTrimming="CharacterEllipsis" />
+                        <Grid x:Name="StartGameBtnAnimBackground"
+                              Grid.Column="1"
+                              Width="64"
+                              Margin="-20,-12"
+                              Padding="12,0"
+                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
+                            <AnimatedVisualPlayer Height="28"
+                                                  HorizontalAlignment="Right">
+                                <lottie:StartGameIcon />
+                            </AnimatedVisualPlayer>
+                        </Grid>
                         <FontIcon Grid.Column="1"
                                   HorizontalAlignment="Right"
                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                   FontSize="14"
-                                  Glyph="" />
+                                  Glyph=""
+                                  Opacity="0" />
                     </Grid>
                 </Button>
                 <Button x:Name="CancelDownloadBtn"

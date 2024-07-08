@@ -65,7 +65,11 @@
     "Footer1": "接続状況を確認してから、",
     "Footer2": "パイモン",
     "Footer3": "をクリックしてやり直してください。",
-    "ShowErrorBtn": "エラーメッセージを表示"
+    "ShowErrorBtn": "エラーメッセージを表示",
+    "GoToAppSettingsBtn": "ランチャー設定を開く",
+    "GoBackOverlayFrameBtn": "戻る",
+    "RegionChangerTitle": "ゲーム/サーバーを切り替え",
+    "RegionChangerSubtitle": "このページから出られない場合に試してください。"
   },
 
   "_UnhandledExceptionPage": {
@@ -128,6 +132,9 @@
     "PauseCancelDownloadBtn": "一時停止/キャンセル",
     "PauseCancelBtn": "一時停止/キャンセル",
     "DownloadBtn": "ダウンロード",
+
+    "GameStatusPlaceholderComingSoonBtn": "乞うご期待",
+    "GameStatusPlaceholderPreRegisterBtn": "今すぐ事前登録！",
 
     "GameSettingsBtn": "クイック設定",
     "GameSettings_Panel1": "クイック設定",
@@ -388,6 +395,8 @@
     "AppThemes_Dark": "ダーク",
     "AppThemes_ApplyNeedRestart": "*テーマの変更を適用するには、ランチャーを再起動してください。",
 
+    "IntroSequenceToggle": "起動時にアニメーションを表示",
+
     "AppWindowSize": "ウィンドウサイズ",
     "AppWindowSize_Normal": "通常",
     "AppWindowSize_Small": "小さめ",
@@ -561,6 +570,7 @@
     "Idle": "待機",
     "Change": "変更",
     "Cancelled": "キャンセルされました",
+    "FinishingUp": "まもなく完了",
     "Extracting": "展開中",
     "Converting": "変換中",
     "Patching": "パッチ中",
@@ -575,6 +585,7 @@
     "ApplyingPatch": "パッチ適用中",
     "Disabled": "無効",
     "Enabled": "有効",
+    "UseAsDefault": "デフォルトとして使用",
 
     "BuildChannelPreview": "プレビュー版",
     "BuildChannelStable": "安定版",
@@ -600,6 +611,8 @@
     "DiscordRP_Ad": "- Collapse Launcherから起動",
     "DiscordRP_Region": "サーバー:",
 
+    "DownloadModeLabelSophon": "Sophonモード",
+
     "Taskbar_PopupHelp1": "クリックでCollapseを最前面で開く",
     "Taskbar_PopupHelp2": "ダブルクリックでウィンドウの表示/非表示を切り替え",
     "Taskbar_ShowApp": "Collapseメインウィンドウを表示",
@@ -612,7 +625,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "（ランチャー不明）",
-    
+
     "ImageCropperTitle": "画像の表示範囲を選択"
   },
 
@@ -1022,6 +1035,8 @@
     "Graphics_BloomQuality": "ブルーム効果",
     "Graphics_AAMode": "アンチエイリアス",
     "Graphics_SFXQuality": "エフェクトのクオリティ",
+    "Graphics_SelfShadow": "マップ探索内のキャラのリアルタイムシャドウ",
+    "Graphics_HalfResTransparent": "透明オブジェクトのハーフ解像度",
 
     "Graphics_SpecPanel": "画質",
     "SpecEnabled": "有効",

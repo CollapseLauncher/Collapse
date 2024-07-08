@@ -6,6 +6,8 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Sophon;
+using Hi3Helper.Sophon.Helper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -273,6 +275,58 @@ namespace CollapseLauncher.Interfaces
         }
         #endregion
 
+        #region ProgressEventHandlers - SophonInstaller
+        protected async void UpdateSophonDownloadProgress(long read)
+        {
+            Interlocked.Add(ref _progressTotalSizeCurrent, read);
+            _progressTotalReadCurrent += read;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Assign local sizes to progress
+                _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
+                _progress.ProgressTotalSizeToDownload = _progressTotalSize;
+
+                // Calculate the speed
+                _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+
+                // Calculate percentage
+                _progress.ProgressTotalPercentage =
+                    Math.Round((double)_progressTotalSizeCurrent / _progressTotalSize * 100, 2);
+                // Calculate the timelapse
+                _progress.ProgressTotalTimeLeft =
+                    ((_progressTotalSize - _progressTotalSizeCurrent) /
+                     ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+
+                UpdateProgress();
+            }
+        }
+
+        protected void UpdateSophonDownloadStatus(SophonAsset asset)
+        {
+            Interlocked.Add(ref _progressTotalCountCurrent, 1);
+            _status.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Downloading,
+                                     string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent,
+                                        _progressTotalCount));
+            UpdateStatus();
+        }
+
+        protected void UpdateSophonLogHandler(object sender, LogStruct e)
+        {
+#if !DEBUG
+            if (e.LogLevel == LogLevel.Debug) return;
+#endif
+            (bool isNeedWriteLog, LogType logType) logPair = e.LogLevel switch
+            {
+                LogLevel.Warning => (true, LogType.Warning),
+                LogLevel.Debug => (true, LogType.Debug),
+                LogLevel.Error => (true, LogType.Error),
+                _ => (true, LogType.Default)
+            };
+            LogWriteLine(e.Message, logPair.logType, logPair.isNeedWriteLog);
+        }
+        #endregion
+
         #region BaseTools
         protected async Task DoCopyStreamProgress(Stream source, Stream target, CancellationToken token = default, long? estimatedSize = null)
         {
@@ -327,8 +381,35 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
+        protected void TryDeleteReadOnlyDir(string dirPath)
+        {
+            if (!Directory.Exists(dirPath)) return;
+            DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
+            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    files.IsReadOnly = false;
+                    files.Delete();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
+                } // Suppress errors
+            }
+            try
+            {
+                dirInfo.Delete(true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while deleting parent dir: {dirPath}\r\n{ex}", LogType.Warning, true);
+            } // Suppress errors
+        }
+
         protected void TryDeleteReadOnlyFile(string path)
         {
+            if (!File.Exists(path)) return;
             try
             {
                 FileInfo file = new FileInfo(path!);
@@ -685,6 +766,33 @@ namespace CollapseLauncher.Interfaces
                 await _httpClient!.Download(assetURL, assetPath, true, null, null, token);
             }
         }
+
+        /// <summary>
+        /// IDK what Microsoft is smoking but for some reason, the file were throwing IO_SharingViolation_File error,
+        /// or sometimes "File is being used by another process" error even though the file HAS NEVER BEEN OPENED LIKE, WTFFF????!>!!!!!!
+        /// </summary>
+        internal static async ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+        {
+            const int MaxTry = 10;
+            int currentTry = 1;
+            while (true)
+            {
+                try
+                {
+                    return info.Open(fileMode, fileAccess, fileShare);
+                }
+                catch
+                {
+                    if (currentTry <= MaxTry)
+                    {
+                        LogWriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {MaxTry}", LogType.Warning, true);
+                        await Task.Delay(50); // Adding 50ms delay
+                        continue;
+                    }
+                    throw; // Throw this MFs
+                }
+            }
+        }
         #endregion
 
         #region HashTools
@@ -747,7 +855,7 @@ namespace CollapseLauncher.Interfaces
                 using (FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // Verify the patch file and if it doesn't match, then redownload it
-                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false).ConfigureAwait(false);
+                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false);
                     if (!IsArrayMatch(patchCRC, patchHash.Span))
                     {
                         // Revert back the total size
@@ -770,7 +878,7 @@ namespace CollapseLauncher.Interfaces
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
                 patchUtil.Initialize(inputFile, patchOutputFile, outputFile);
-                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
+                await Task.Run(() => patchUtil.Apply(token));
 
                 // Delete old block
                 File.Delete(inputFile);

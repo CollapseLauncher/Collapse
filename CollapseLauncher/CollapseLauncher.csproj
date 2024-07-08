@@ -1,255 +1,256 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<!-- General Properties -->
-		<OutputType>WinExe</OutputType>
-		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Configurations>Debug;Release;Publish</Configurations>
-		<!-- Assembly Info Properties -->
-		<AssemblyName>CollapseLauncher</AssemblyName>
-		<ProductName>Collapse</ProductName>
-		<Product>Collapse</Product>
-		<Description>Collapse Launcher</Description>
-		<Company>Collapse Launcher Team</Company>
-		<Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-		<Copyright>Copyright 2022-2024 $(Company)</Copyright>
-		<!-- Versioning -->
-		<Version>1.80.5</Version>
-		<LangVersion>preview</LangVersion>
-		<!-- Target Settings -->
-		<Platforms>x64</Platforms>
-		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>		
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<EnableWindowsTargeting>true</EnableWindowsTargeting>
-		<!-- Debug Settings -->
-		<DebugType>portable</DebugType>
-		<GitVersion>false</GitVersion>
-		<!-- Performance Settings -->
-		<TieredPGO>true</TieredPGO>
-		<TieredCompilation>true</TieredCompilation>
-		<TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-		<TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
-		<!-- WinUI Properties -->
-		<UseWinUI>true</UseWinUI>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<!-- Other Settings -->
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-		<InvariantGlobalization>false</InvariantGlobalization>
-		<ShouldComputeInputPris>true</ShouldComputeInputPris>
-		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-	</PropertyGroup>
+    <PropertyGroup>
+        <!-- General Properties -->
+        <OutputType>WinExe</OutputType>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+        <StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <Configurations>Debug;Release;Publish</Configurations>
+        <!-- Assembly Info Properties -->
+        <AssemblyName>CollapseLauncher</AssemblyName>
+        <ProductName>Collapse</ProductName>
+        <Product>Collapse</Product>
+        <Description>Collapse Launcher</Description>
+        <Company>Collapse Launcher Team</Company>
+        <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+        <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+        <!-- Versioning -->
+        <Version>1.80.14</Version>
+        <LangVersion>preview</LangVersion>
+        <!-- Target Settings -->
+        <Platforms>x64</Platforms>
+        <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+        <!-- Debug Settings -->
+        <DebugType>portable</DebugType>
+        <GitVersion>false</GitVersion>
+        <!-- WinUI Properties -->
+        <UseWinUI>true</UseWinUI>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <!-- Other Settings -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <InvariantGlobalization>false</InvariantGlobalization>
+        <ShouldComputeInputPris>true</ShouldComputeInputPris>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
 
 <!--
   Constants List:
-		- PREVIEW : States the version is a preview branch 
-		- DISABLEDISCORD : Disable Discord RPC module
-		- SIMULATEPRELOAD : Simulate downloading preload
-		- ENABLEHTTPREPAIR : Override HTTPS download scheme to HTTP while downloading repair files
-		- SIMULATEAPPLYPRELOAD : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
-		- DUMPGIJSON : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
-		- SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
-		- GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
-		- MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
-		- USEDYNAMICVIDEOPALETTE : Enable an experimental dynamic color palette change in video background support
-		- USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
-								This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
-	    - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
+        - PREVIEW : States the version is a preview branch 
+        - DISABLEDISCORD : Disable Discord RPC module
+        - SIMULATEPRELOAD : Simulate downloading preload
+        - ENABLEHTTPREPAIR : Override HTTPS download scheme to HTTP while downloading repair files
+        - SIMULATEAPPLYPRELOAD : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
+        - DUMPGIJSON : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
+        - SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
+        - GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
+        - MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
+        - USEDYNAMICVIDEOPALETTE : Enable an experimental dynamic color palette change in video background support
+        - USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
+                                This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
+        - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
 -->
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
-		<DebugType>portable</DebugType>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
     </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
-		<Optimize>True</Optimize>
-		<GitSkipCache>true</GitSkipCache>
-		<DebugType>portable</DebugType>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;USENEWZIPDECOMPRESS;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
-		<Optimize>true</Optimize>
-		<GitSkipCache>true</GitSkipCache>
-		<DebugType>portable</DebugType>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
+        <Optimize>True</Optimize>
+        <GitSkipCache>true</GitSkipCache>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;USENEWZIPDECOMPRESS;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
+        <Optimize>true</Optimize>
+        <GitSkipCache>true</GitSkipCache>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
+    <ItemGroup>
+        <PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
 
-		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-		<PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240328-rc" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
-		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240328-rc" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
-		
-		<!--
-		Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
-		Also, Version="*-*" means grab the latest preview version.
-		-->
-		<PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
-		
-		<PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
-		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.131" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
-		<PackageReference Include="ImageEx" Version="2.1.1" />
-		<PackageReference Include="Markdig.Signed" Version="0.37.0" />
-		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
-		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
-		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
-		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
-		<PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
-		<PackageReference Include="Roman-Numerals" Version="2.0.0" />
-		<PackageReference Include="SharpCompress" Version="0.37.2" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.5" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
-		<PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
-		<PackageReference Include="System.Net.Http" Version="4.3.4" />
-		<PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
-		<PackageReference Include="System.Text.Json" Version="8.0.3" />
-		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-		<PackageReference Include="TaskScheduler" Version="2.11.0" />
-	</ItemGroup>
+        <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240328-rc" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240328-rc" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
+        
+        <!--
+        Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
+        Also, Version="*-*" means grab the latest preview version.
+        -->
+        <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+        
+        <PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
+        <PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.131" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+        <PackageReference Include="ImageEx" Version="2.1.1" />
+        <PackageReference Include="Markdig.Signed" Version="0.37.0" />
+        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
+        <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
+        <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+        <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
+        <PackageReference Include="Roman-Numerals" Version="2.0.0" />
+        <PackageReference Include="SharpCompress" Version="0.37.2" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
+        <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.6" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
+        <PackageReference Include="System.Net.Http" Version="4.3.4" />
+        <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+        <PackageReference Include="System.Text.Json" Version="8.0.3" />
+        <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+        <PackageReference Include="TaskScheduler" Version="2.11.0" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
-		<ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
-		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
-		<ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
-		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
-		<ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
-		<ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
+        <ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
+        <ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
+    </ItemGroup>
 
-	<ItemGroup>
+    <ItemGroup>
 
-		<Content Include="Misc\InstallMediaPack.cmd">
+        <Content Include="Misc\InstallMediaPack.cmd">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+
+        <Content Update="Assets\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+
+		<Content Include="icon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 
-		<Content Update="Assets\**">
+        <None Include="..\.editorconfig" Link=".editorconfig" />
+
+		<Content Include="..\LICENSE.rtf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 
-		<None Include="..\.editorconfig" Link=".editorconfig" />
+        <Content Include="..\PRIVACY.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
 
-		<Content Include="..\PRIVACY.md">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
+        <Content Include="..\THIRD_PARTY_NOTICES.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
 
-		<Content Include="..\THIRD_PARTY_NOTICES.md">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
+        <Content Include="Lib\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
+    <Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
+        <ItemGroup>
+            <!-- Trimmable submodule assemblies -->
+            <TrimmableAssembly Include="ColorThief" />
+            <TrimmableAssembly Include="DiscordRPC" />
+            <TrimmableAssembly Include="Hi3Helper.Core" />
+            <TrimmableAssembly Include="Hi3Helper.EncTool" />
+            <TrimmableAssembly Include="Hi3Helper.Http" />
+            <TrimmableAssembly Include="Hi3Helper.Sophon" />
+            <TrimmableAssembly Include="InnoSetupHelper" />
+            <TrimmableAssembly Include="SevenZipExtractor" />
+            <TrimmableAssembly Include="SharpHDiffPatch.Core" />
 
-		<Content Include="Lib\**">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	
-	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
-		<ItemGroup>
-			<!-- Trimmable submodule assemblies -->
-			<TrimmableAssembly Include="ColorThief" />
-			<TrimmableAssembly Include="DiscordRPC" />
-			<TrimmableAssembly Include="Hi3Helper.Core" />
-			<TrimmableAssembly Include="Hi3Helper.EncTool" />
-			<TrimmableAssembly Include="Hi3Helper.Http" />
-			<TrimmableAssembly Include="InnoSetupHelper" />
-			<TrimmableAssembly Include="SevenZipExtractor" />
-			<TrimmableAssembly Include="SharpHDiffPatch.Core" />
-
-			<!-- Untrimmable submodule assemblies-->
+            <!-- Untrimmable submodule assemblies-->
       
-			<!-- Additional assemblies -->
-			<TrimmableAssembly Include="ColorCode.Core" />
-			<TrimmableAssembly Include="ColorCode.WinUI" />
-			<TrimmableAssembly Include="CommunityToolkit.Common" />
-			<TrimmableAssembly Include="CommunityToolkit.Mvvm" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
-			<TrimmableAssembly Include="Google.Protobuf" />
-			<TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
-			<TrimmableAssembly Include="H.NotifyIcon" />
-			<TrimmableAssembly Include="H.NotifyIcon.WinUI" />
-			<TrimmableAssembly Include="Microsoft.DirectManipulation" />
-			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
-			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
-			<TrimmableAssembly Include="Microsoft.Graphics.Display" />
-			<TrimmableAssembly Include="Microsoft.InputStateManager" />
-			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
-			<TrimmableAssembly Include="Microsoft.Internal.FrameworkUdk" />
-			<TrimmableAssembly Include="Microsoft.UI.Composition.OSSupport" />
-			<TrimmableAssembly Include="Microsoft.UI" />
-			<TrimmableAssembly Include="Microsoft.ui.xaml" />
-			<TrimmableAssembly Include="Microsoft.UI.Xaml.Controls" />
-			<TrimmableAssembly Include="Microsoft.UI.Xaml.Internal" />
-			<TrimmableAssembly Include="Microsoft.UI.Xaml.Phone" />
-			<TrimmableAssembly Include="Microsoft.UI.Windowing.Core" />
-			<TrimmableAssembly Include="Microsoft.UI.Windowing" />
-			<TrimmableAssembly Include="Microsoft.Web.WebView2.Core" />
-			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
-			<TrimmableAssembly Include="Microsoft.Windows.Widgets" />
-			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime.Bootstrap" />
-			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
-			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
-			<TrimmableAssembly Include="SquirrelLib" />
-			<TrimmableAssembly Include="System.CommandLine" />
-			<TrimmableAssembly Include="System.Drawing.Common" />
-			<TrimmableAssembly Include="System.Linq.Expressions" />
-			<TrimmableAssembly Include="System.Net.Http" />
-			<TrimmableAssembly Include="System.Net.Security" />
-			<TrimmableAssembly Include="System.Security.Cryptography" />
-			<TrimmableAssembly Include="System.Text.Json" />
-			<TrimmableAssembly Include="System.Text.RegularExpressions" />
-			<TrimmableAssembly Include="WinRT.Runtime" />
-			<TrimmableAssembly Include="WinUIEdit" />
-			<TrimmableAssembly Include="ZstdSharp" />
+            <!-- Additional assemblies -->
+            <TrimmableAssembly Include="ColorCode.Core" />
+            <TrimmableAssembly Include="ColorCode.WinUI" />
+            <TrimmableAssembly Include="CommunityToolkit.Common" />
+            <TrimmableAssembly Include="CommunityToolkit.Mvvm" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
+            <TrimmableAssembly Include="Google.Protobuf" />
+            <TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
+            <TrimmableAssembly Include="H.NotifyIcon" />
+            <TrimmableAssembly Include="H.NotifyIcon.WinUI" />
+            <TrimmableAssembly Include="Microsoft.DirectManipulation" />
+            <TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
+            <TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
+            <TrimmableAssembly Include="Microsoft.Graphics.Display" />
+            <TrimmableAssembly Include="Microsoft.InputStateManager" />
+            <TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
+            <TrimmableAssembly Include="Microsoft.Internal.FrameworkUdk" />
+            <TrimmableAssembly Include="Microsoft.UI.Composition.OSSupport" />
+            <TrimmableAssembly Include="Microsoft.UI" />
+            <TrimmableAssembly Include="Microsoft.ui.xaml" />
+            <TrimmableAssembly Include="Microsoft.UI.Xaml.Controls" />
+            <TrimmableAssembly Include="Microsoft.UI.Xaml.Internal" />
+            <TrimmableAssembly Include="Microsoft.UI.Xaml.Phone" />
+            <TrimmableAssembly Include="Microsoft.UI.Windowing.Core" />
+            <TrimmableAssembly Include="Microsoft.UI.Windowing" />
+            <TrimmableAssembly Include="Microsoft.Web.WebView2.Core" />
+            <TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
+            <TrimmableAssembly Include="Microsoft.Windows.Widgets" />
+            <TrimmableAssembly Include="Microsoft.WindowsAppRuntime.Bootstrap" />
+            <TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
+            <TrimmableAssembly Include="PhotoSauce.MagicScaler" />
+            <TrimmableAssembly Include="SquirrelLib" />
+            <TrimmableAssembly Include="System.CommandLine" />
+            <TrimmableAssembly Include="System.Drawing.Common" />
+            <TrimmableAssembly Include="System.Linq.Expressions" />
+            <TrimmableAssembly Include="System.Net.Http" />
+            <TrimmableAssembly Include="System.Net.Security" />
+            <TrimmableAssembly Include="System.Security.Cryptography" />
+            <TrimmableAssembly Include="System.Text.Json" />
+            <TrimmableAssembly Include="System.Text.RegularExpressions" />
+            <TrimmableAssembly Include="WinRT.Runtime" />
+            <TrimmableAssembly Include="WinUIEdit" />
+            <TrimmableAssembly Include="ZstdSharp" />
 
-			<!-- Descriptor for all classes that cannot be trimmed -->
-			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+            <!-- Descriptor for all classes that cannot be trimmed -->
+            <TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
 
-			<!--
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
-			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
-			<TrimmerRootAssembly Include="ImageEx" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.Resources.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.SDK.NET" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.System.Power.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.System.Projection" />
-			<TrimmerRootAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
-			<TrimmerRootAssembly Include="SquirrelLib" />
-			<TrimmerRootAssembly Include="System.CommandLine.NamingConventionBinder" />
-			<TrimmerRootAssembly Include="WinRT.Runtime" />
-			-->
-		</ItemGroup>
-	</Target>
-	
-	<Target Name="PostBuild" AfterTargets="Build" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
-		<Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" />
-	</Target>
-	
-	<Target Name="PostBuild" AfterTargets="Publish" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
-	  <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
-	</Target>
+            <!--
+            <TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
+            <TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
+            <TrimmerRootAssembly Include="ImageEx" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.Resources.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.SDK.NET" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.System.Power.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.System.Projection" />
+            <TrimmerRootAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
+            <TrimmerRootAssembly Include="SquirrelLib" />
+            <TrimmerRootAssembly Include="System.CommandLine.NamingConventionBinder" />
+            <TrimmerRootAssembly Include="WinRT.Runtime" />
+            -->
+        </ItemGroup>
+    </Target>
+    
+    <Target Name="PostBuild" AfterTargets="Build" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
+        <Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" />
+    </Target>
+    
+    <Target Name="PostBuild" AfterTargets="Publish" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
+      <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
+    </Target>
 </Project>

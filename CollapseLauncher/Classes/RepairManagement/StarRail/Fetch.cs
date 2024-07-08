@@ -29,11 +29,13 @@ namespace CollapseLauncher
 
         internal static void AddSanitize(this List<FilePropertiesRemote> assetIndex, FilePropertiesRemote assetProperty)
         {
+            string key = assetProperty.N + assetProperty.IsPatchApplicable;
+
             // Check if the asset has the key
-            if (_hashtable.ContainsKey(assetProperty.N))
+            if (_hashtable.ContainsKey(key))
             {
                 // If yes (exist), then get the index of the asset from hashtable
-                int index = _hashtable[assetProperty.N];
+                int index = _hashtable[key];
 
                 // Get the property of the asset based on index from hashtable
                 FilePropertiesRemote oldAssetProperty = assetIndex[index];
@@ -50,7 +52,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            _hashtable.Add(assetProperty.N, assetIndex.Count);
+            _hashtable.Add(key, assetIndex.Count);
             assetIndex.Add(assetProperty);
         }
     }
@@ -165,7 +167,7 @@ namespace CollapseLauncher
             if (isSuccess)
             {
                 // Set asset index URL
-                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
+                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
 
                 // Start downloading asset index using FallbackCDNUtil and return its stream
                 await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
@@ -184,7 +186,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Falling back to the miHoYo provided pkg_version as the asset index!", LogType.Warning, true);
 
                 // Get the latest game property from the API
-                GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
+                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
                 RegionResourceVersion gameVersion = _gameVersionManager.GetGameLatestZip(gameState).FirstOrDefault();
 
                 // If the gameVersion is null, then return

@@ -65,7 +65,11 @@
     "Footer1": "Por favor revisa tu conexion a internet y haz clic en",
     "Footer2": "Paimon",
     "Footer3": "para Intentarlo de Nuevo.",
-    "ShowErrorBtn": "Mostrar Mensaje de Error"
+    "ShowErrorBtn": "Mostrar Mensaje de Error",
+    "GoToAppSettingsBtn": "Ir a Ajustes de la Aplicación",
+    "GoBackOverlayFrameBtn": "Ir Atrás",
+    "RegionChangerTitle": "Cambiar la Región del Juego",
+    "RegionChangerSubtitle": "En caso de que estés atascado en esta página"
   },
 
   "_UnhandledExceptionPage": {
@@ -128,6 +132,9 @@
     "PauseCancelDownloadBtn": "Pausar/Cancelar",
     "PauseCancelBtn": "Pausar/Cancelar",
     "DownloadBtn": "Descargar el Juego",
+
+    "GameStatusPlaceholderComingSoonBtn": "Próximamente",
+    "GameStatusPlaceholderPreRegisterBtn": "¡Pre-regístrate ahora!",
 
     "GameSettingsBtn": "Ajustes Rápidos",
     "GameSettings_Panel1": "Configuración Rápida",
@@ -253,9 +260,9 @@
 
     "Graphics_Title": "Ajustes de Gráficos",
     "Graphics_ResolutionPanel": "Resolución del juego",
-    "Graphics_Borderless": "Usar modo ventana sin bordes",
+    "Graphics_Borderless": "Modo Ventana Sin Bordes",
     "Graphics_Fullscreen": "Pantalla Completa",
-    "Graphics_ExclusiveFullscreen": "Usar Pantalla Completa Exclusiva",
+    "Graphics_ExclusiveFullscreen": "Pantalla Completa Exclusiva",
     "Graphics_ResizableWindow": "Permitir Redimensionar Ventana",
     "Graphics_ResizableWindowTooltip": "Solo disponible cuando el modo Pantalla Completa está deshabilitado",
     "Graphics_ResSelectPlaceholder": "Seleccionar",
@@ -274,7 +281,7 @@
 
     "Graphics_SpecPanel": "Configuración Global de Gráficos",
     "Graphics_Preset": "Ajustes Gráficos Predefinidos",
-    "Graphics_Render": "Calidad Renderizado",
+    "Graphics_Render": "Calidad de Renderizado",
     "Graphics_Shadow": "Calidad de Sombras",
     "Graphics_Reflection": "Calidad del Reflejo",
     "Graphics_FX": "Efectos Visuales",
@@ -294,7 +301,7 @@
     "Graphics_ParticleQuality": "Calidad de Partículas",
     "Graphics_LightingQuality": "Calidad de Iluminación",
     "Graphics_PostFXQuality": "Calidad de Post-FX",
-    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_CharacterQuality": "Calidad de Personajes",
     "Graphics_WeatherQuality": "Calidad del Clima",
 
@@ -316,7 +323,7 @@
     "Audio_VOLang": "Idioma de la voz",
     "Audio_VOLang1": "Chino (PRC)",
     "Audio_VOLang2": "Japonés",
-    "Audio_VODefault": " [Default]",
+    "Audio_VODefault": " [Por Defecto]",
     "Audio_VO": "Volumen de la Voz",
     "Audio_Elf": "Volumen de la Voz del Elfo",
     "Audio_Cutscenes": "Volumen de las Escenas",
@@ -387,6 +394,8 @@
     "AppThemes_Light": "Claro",
     "AppThemes_Dark": "Oscuro",
     "AppThemes_ApplyNeedRestart": "*Necesitas reiniciar la aplicación para que los cambios del tema surtan efecto.",
+
+    "IntroSequenceToggle": "Usar Animación de Inicio",
 
     "AppWindowSize": "Tamaño de la Ventana",
     "AppWindowSize_Normal": "Normal",
@@ -467,7 +476,7 @@
 
     "AppChangeReleaseChannel": "Cambiar Collapse a versión {0} ",
 
-    "EnableAcrylicEffect": "Usar efecto de desenfoque",
+    "EnableAcrylicEffect": "Usar Efecto de Desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
     "UseExternalBrowser": "Usar Navegador Web Externo ",
 
@@ -561,6 +570,7 @@
     "Idle": "Inactivo",
     "Change": "Cambiar",
     "Cancelled": "Cancelado",
+    "FinishingUp": "Finalizando",
     "Extracting": "Extrayendo",
     "Converting": "Convirtiendo",
     "Patching": "Parcheando",
@@ -575,6 +585,7 @@
     "ApplyingPatch": "Aplicando Parche",
     "Disabled": "Deshabilitado",
     "Enabled": "Habilitado",
+    "UseAsDefault": "Usar como Predeterminado",
 
     "BuildChannelPreview": "Version Preview",
     "BuildChannelStable": "Estable",
@@ -600,6 +611,8 @@
     "DiscordRP_Ad": "- Con Collapse Launcher",
     "DiscordRP_Region": "Región:",
 
+    "DownloadModeLabelSophon": "Modo Sophon",
+
     "Taskbar_PopupHelp1": "Haz clic para llevar Collapse al primer plano.",
     "Taskbar_PopupHelp2": "Hacer doble clic para alternar la visibilidad de las ventanas",
     "Taskbar_ShowApp": "Mostrar ventana de Collapse",
@@ -612,7 +625,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
-    
+
     "ImageCropperTitle": "Recortar Imagen"
   },
 
@@ -1020,8 +1033,10 @@
     "Graphics_EnvDetailQuality": "Detalle de Escena",
     "Graphics_ReflectionQuality": "Calidad de Reflejos",
     "Graphics_BloomQuality": "Calidad de Bloom",
-    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_SFXQuality": "Calidad de SFX",
+    "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
+    "Graphics_HalfResTransparent": "Resolución media en transparencia ",
 
     "Graphics_SpecPanel": "Configuración Grafica Global",
     "SpecEnabled": "Habilitado",
@@ -1087,7 +1102,7 @@
     "Graphics_SFXQuality": "Calidad de SFX",
     "Graphics_EnvDetailQuality": "Detalle de Escena",
     "Graphics_VSync": "VSync",
-    "Graphics_AAMode": "Modo de Anti-Aliasing",
+    "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_VolFogs": "Niebla volumétrica",
     "Graphics_VolFogs_ToolTip": "¡Requiere que la calidad de sombras se establezca en Medio o superior!",
     "Graphics_ReflectionQuality": "Reflejos",

@@ -378,7 +378,7 @@ namespace CollapseLauncher.Pages
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, true);
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
                 
                 if (currentMediaType == MediaType.Media)
                 {
@@ -497,7 +497,7 @@ namespace CollapseLauncher.Pages
                         }
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
-                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, false);
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, false);
                     AppBGCustomizer.Visibility       = Visibility.Visible;
                     AppBGCustomizerNote.Visibility   = Visibility.Visible;
                         
@@ -547,6 +547,12 @@ namespace CollapseLauncher.Pages
                 }
                 SetAndSaveConfigValue("EnableConsole", value);
             }
+        }
+
+        private bool IsIntroEnabled
+        {
+            get => LauncherConfig.IsIntroEnabled;
+            set => LauncherConfig.IsIntroEnabled = value;
         }
 
         private bool IsMultipleInstanceEnabled
@@ -677,7 +683,7 @@ namespace CollapseLauncher.Pages
             {
                 ImageLoaderHelper.IsWaifu2XEnabled = value;
                 if (ImageLoaderHelper.Waifu2XStatus < Waifu2XStatus.Error)
-                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, IsCustomBG);
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, IsCustomBG);
                 else
                     Bindings.Update();
             }
@@ -968,7 +974,7 @@ namespace CollapseLauncher.Pages
 
                 bool? value = false;
                 if (task.Definition.Actions[0] is ExecAction execAction)
-                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.CurrentCultureIgnoreCase);
+                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.OrdinalIgnoreCase);
 
                 task.Dispose();
                 return value ?? false;

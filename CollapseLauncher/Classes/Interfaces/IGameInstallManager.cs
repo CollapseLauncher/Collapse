@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.InstallManager;
+using CollapseLauncher.InstallManager.Base;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,7 +14,6 @@ namespace CollapseLauncher.Interfaces
         ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage = null);
         Task StartPackageInstallation();
         void ApplyGameConfig(bool forceUpdateToLatest = false);
-        bool StartAfterInstall { get; set; }
 
         ValueTask<bool> MoveGameLocation();
         ValueTask<bool> UninstallGame();
@@ -22,5 +22,10 @@ namespace CollapseLauncher.Interfaces
 
         ValueTask<bool> TryShowFailedDeltaPatchState();
         ValueTask<bool> TryShowFailedGameConversionState();
+
+        void UpdateCompletenessStatus(CompletenessStatus status);
+
+        bool StartAfterInstall { get; set; }
+        bool IsUseSophon { get; }
     }
 }

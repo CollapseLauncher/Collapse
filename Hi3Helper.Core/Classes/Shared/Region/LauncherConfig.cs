@@ -102,8 +102,6 @@ namespace Hi3Helper.Shared.Region
                     SetAppConfigValue(Entry.Key, Entry.Value);
                 }
             }
-            if (GetAppConfigValue("DownloadThread").ToInt() > 8)
-                SetAppConfigValue("DownloadThread", 8);
         }
         #endregion
 
@@ -177,7 +175,7 @@ namespace Hi3Helper.Shared.Region
         public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
         public const long AppDiscordApplicationID_GI  = 1124137436650426509;
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
-        //public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
+        public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
       
         public const string AppNotifURLPrefix           = "/notification_{0}.json";
         public const string AppGameConfigV2URLPrefix    = "/metadata/metadatav2_{0}.json";
@@ -257,6 +255,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
         }
 
+        public static bool IsIntroEnabled
+        {
+            get => GetAppConfigValue("IsIntroEnabled").ToBoolNullable() ?? true;
+            set => SetAndSaveConfigValue("IsIntroEnabled", value);
+        }
+
         private static bool? _cachedIsInstantRegionChange = null;
         public static bool IsInstantRegionChange
         {
@@ -296,7 +300,7 @@ namespace Hi3Helper.Shared.Region
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
             { "CurrentCDN", 0 },
-            { "ShowRegionChangeWarning", true },
+            { "ShowRegionChangeWarning", false },
             #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
             { "EnableDiscordGameStatus", true },
@@ -315,7 +319,8 @@ namespace Hi3Helper.Shared.Region
             { "EnableWaifu2X", false },
             { "BackgroundAudioVolume", 0.5d },
             { "BackgroundAudioIsMute", true },
-            { "UseInstantRegionChange", true }
+            { "UseInstantRegionChange", true },
+            { "IsIntroEnabled", true }
         };
         #endregion
     }

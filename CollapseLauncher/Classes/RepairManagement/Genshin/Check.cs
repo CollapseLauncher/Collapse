@@ -30,6 +30,9 @@ namespace CollapseLauncher
             // Reset stopwatch
             RestartStopwatch();
 
+            // Ensure to delete the DXSetup files
+            EnsureDeleteDXSetupFiles();
+
             // Try move persistent files to StreamingAssets
             if (_isParsePersistentManifestSuccess) TryMovePersistentToStreamingAssets(assetIndex);
 
@@ -43,7 +46,7 @@ namespace CollapseLauncher
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken).ConfigureAwait(false);
+                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
                 });
             }
             catch (AggregateException ex)
@@ -58,6 +61,15 @@ namespace CollapseLauncher
             // Re-add the asset index with a broken asset index
             assetIndex.Clear();
             assetIndex.AddRange(brokenAssetIndex);
+        }
+
+        private void EnsureDeleteDXSetupFiles()
+        {
+            // Check if the DXSETUP file is exist, then delete it.
+            // The DXSETUP files causes some false positive detection of data modification
+            // for some games (like Genshin, which causes 4302-x error for some reason)
+            string dxSetupDir = Path.Combine(_gamePath, "DXSETUP");
+            TryDeleteReadOnlyDir(dxSetupDir);
         }
 
         private void TryMovePersistentToStreamingAssets(IEnumerable<PkgVersionProperties> assetIndex)

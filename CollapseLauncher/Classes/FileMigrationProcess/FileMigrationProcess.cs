@@ -157,7 +157,7 @@ namespace CollapseLauncher
                         FileInfo outputFileInfo = new FileInfo(outputTargetPath);
                         await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
                     }
-                }).ConfigureAwait(false);
+                });
 
             inputPathInfo.Delete(true);
             return outputDirPath;

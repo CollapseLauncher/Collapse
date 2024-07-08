@@ -55,39 +55,54 @@ namespace CollapseLauncher
 
             async void BeforeLoadRoutine(CancellationToken token)
             {
-                LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
+                try
+                {
+                    LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
 
-                ClearMainPageState();
-                DisableKbShortcuts(1000);
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                if (preset.GameLauncherApi.IsLoadingCompleted || token.IsCancellationRequested) return;
+                    ClearMainPageState();
+                    DisableKbShortcuts(1000);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    if (preset.GameLauncherApi.IsLoadingCompleted || token.IsCancellationRequested) return;
 
-                LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle, regionToChangeName);
-                LoadingMessageHelper.SetProgressBarState(isProgressIndeterminate: true);
-                LoadingMessageHelper.ShowLoadingFrame();
+                    LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle, regionToChangeName);
+                    LoadingMessageHelper.SetProgressBarState(isProgressIndeterminate: true);
+                    LoadingMessageHelper.ShowLoadingFrame();
 
-                IsLoadRegionComplete = false;
+                    IsLoadRegionComplete = false;
+                }
+                catch (Exception ex)
+                {
+                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                }
             }
 
-            void AfterLoadRoutine(CancellationToken token)
+            async void AfterLoadRoutine(CancellationToken token)
             {
-                LoadingMessageHelper.HideActionButton();
-                LoadingMessageHelper.HideLoadingFrame();
+                try
+                {
+                    LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
+                    await FinalizeLoadRegion(gameName, gameRegion);
+                    ChangeBackgroundImageAsRegionAsync();
+                    IsLoadRegionComplete = true;
 
-                IsLoadRegionComplete = true;
-
-                LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
-                FinalizeLoadRegion(gameName, gameRegion);
-                ChangeBackgroundImageAsRegionAsync();
+                    LoadingMessageHelper.HideActionButton();
+                    LoadingMessageHelper.HideLoadingFrame();
+                }
+                catch (Exception ex)
+                {
+                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                }
             }
 
-            void OnErrorRoutine(Exception ex)
+            void OnErrorRoutine(Exception ex) => OnErrorRoutineInner(ex, ErrorType.Unhandled);
+
+            void OnErrorRoutineInner(Exception ex, ErrorType errorType)
             {
                 LoadingMessageHelper.HideActionButton();
                 LoadingMessageHelper.HideLoadingFrame();
 
                 LogWriteLine($"Error has occurred while loading: {regionToChangeName}!\r\n{ex}", LogType.Scheme, true);
-                ErrorSender.SendExceptionWithoutPage(ex, ErrorType.Connection);
+                ErrorSender.SendExceptionWithoutPage(ex, errorType);
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
             }
 
@@ -153,7 +168,7 @@ namespace CollapseLauncher
             await ImageLoaderHelper.DownloadAndEnsureCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg, LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, Token);
         }
 
-        private void FinalizeLoadRegion(string gameName, string gameRegion)
+        private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
@@ -161,21 +176,22 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
-            LoadGameStaticsByGameType(preset, gameName, gameRegion);
+            await LoadGameStaticsByGameType(preset, gameName, gameRegion);
 
             // Init NavigationPanel Items
             InitializeNavigationItems();
         }
 
-        private void LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
+        private async ValueTask LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
         {
-            GamePropertyVault.AttachNotifForCurrentGame();
+            await GamePropertyVault.AttachNotifForCurrentGame();
             DisposeAllPageStatics();
 
             GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
 
             // Spawn Region Notification
             SpawnRegionNotification(preset.ProfileName);
+            GamePropertyVault.DetachNotifForCurrentGame();
         }
 
         private void DisposeAllPageStatics()

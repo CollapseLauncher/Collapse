@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using System;
 using System.IO;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher
 {
@@ -81,6 +82,12 @@ namespace CollapseLauncher
         {
             if (!fromVersion.HasValue || !toVersion.HasValue) return false;
             return fromVersion.Value.ToVersion() < toVersion.Value.ToVersion();
+        }
+
+        public static bool Equals(this GameVersion? fromVersion, GameVersion? toVersion)
+        {
+            if (!fromVersion.HasValue || !toVersion.HasValue) return false;
+            return fromVersion.Value.ToVersion() == toVersion.Value.ToVersion();
         }
     }
 
@@ -162,7 +169,11 @@ namespace CollapseLauncher
             return IsMatch(parsed);
         }
 
-        public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Build == versionToCompare.Build && Revision == versionToCompare.Revision;
+        public bool IsMatch(GameVersion? versionToCompare)
+        {
+            if (versionToCompare == null) return false;
+            return Major == versionToCompare.Value.Major && Minor == versionToCompare.Value.Minor && Build == versionToCompare.Value.Build && Revision == versionToCompare.Value.Revision;
+        }
 
         public GameVersion GetIncrementedVersion()
         {
@@ -176,7 +187,7 @@ namespace CollapseLauncher
                 NextMajor++;
             }
 
-            return new GameVersion(new int[] { NextMajor, NextMinor, Build, Revision });
+            return new GameVersion(new[] { NextMajor, NextMinor, Build, Revision });
         }
 
         public Version ToVersion() => new Version(Major, Minor, Build, Revision);

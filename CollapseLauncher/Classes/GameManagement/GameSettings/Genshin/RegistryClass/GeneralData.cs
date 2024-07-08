@@ -260,7 +260,9 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// This holds value for controllers input that has been customized.
         /// </summary>
         public List<string> _overrideControllerMapKeyList { get; set; }
-
+        
+        // unused field
+        public List<string> rewiredMapMigrateRecord { get; set; }
 
         /// <summary>
         /// This holds controller mapping override for controller ID in _overrideControllerMapKeyList.

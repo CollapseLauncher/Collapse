@@ -65,7 +65,11 @@
     "Footer1": "请检查您的互联网连接，并点击",
     "Footer2": "派蒙",
     "Footer3": "重试。",
-    "ShowErrorBtn": "显示错误消息"
+    "ShowErrorBtn": "显示错误消息",
+    "GoToAppSettingsBtn": "前往应用设置",
+    "GoBackOverlayFrameBtn": "返回",
+    "RegionChangerTitle": "更改游戏区服",
+    "RegionChangerSubtitle": "如果你卡在了这个页面"
   },
 
   "_UnhandledExceptionPage": {
@@ -128,6 +132,9 @@
     "PauseCancelDownloadBtn": "暂停/取消",
     "PauseCancelBtn": "暂停/取消",
     "DownloadBtn": "下载游戏",
+
+    "GameStatusPlaceholderComingSoonBtn": "即将推出",
+    "GameStatusPlaceholderPreRegisterBtn": "立即预注册！",
 
     "GameSettingsBtn": "快速设置",
     "GameSettings_Panel1": "快速设置",
@@ -374,7 +381,7 @@
     "Debug_IncludeGameLogs": "保存游戏日志到 Collapse（可能含有敏感数据）",
     "Debug_MultipleInstance": "允许开启多个 Collapse",
 
-    "ChangeRegionWarning_Toggle": "显示区域更改警告",
+    "ChangeRegionWarning_Toggle": "显示区服更改警告",
     "ChangeRegionInstant_Toggle": "选择后立即更改区服",
     "ChangeRegionWarning_Warning": "*您需要重新启动应用程序以使此设置生效。",
 
@@ -387,6 +394,8 @@
     "AppThemes_Light": "浅色",
     "AppThemes_Dark": "深色",
     "AppThemes_ApplyNeedRestart": "*您需要重新启动应用程序以使主题修改生效。",
+
+    "IntroSequenceToggle": "启动时显示动画",
 
     "AppWindowSize": "窗口大小",
     "AppWindowSize_Normal": "标准",
@@ -561,6 +570,7 @@
     "Idle": "闲置",
     "Change": "更改",
     "Cancelled": "已取消",
+    "FinishingUp": "即将完成",
     "Extracting": "提取中",
     "Converting": "转换中",
     "Patching": "修补中",
@@ -575,6 +585,7 @@
     "ApplyingPatch": "应用补丁",
     "Disabled": "关闭",
     "Enabled": "开启",
+    "UseAsDefault": "设为默认",
 
     "BuildChannelPreview": "预览版",
     "BuildChannelStable": "正式版",
@@ -600,6 +611,8 @@
     "DiscordRP_Ad": "- 使用 Collapse 启动器",
     "DiscordRP_Region": "区服：",
 
+    "DownloadModeLabelSophon": "Sophon 模式",
+
     "Taskbar_PopupHelp1": "单击将 Collapse 置顶",
     "Taskbar_PopupHelp2": "双击切换窗口可见性",
     "Taskbar_ShowApp": "显示 Collapse 窗口",
@@ -612,7 +625,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(启动器名称未知)",
-    
+
     "ImageCropperTitle": "裁剪图像"
   },
 
@@ -1022,6 +1035,8 @@
     "Graphics_BloomQuality": "泛光效果（Bloom）",
     "Graphics_AAMode": "抗锯齿模式",
     "Graphics_SFXQuality": "特效质量",
+    "Graphics_SelfShadow": "地图探索中角色实时阴影",
+    "Graphics_HalfResTransparent": "半分辨率透明",
 
     "Graphics_SpecPanel": "全局图形设置",
     "SpecEnabled": "启用",

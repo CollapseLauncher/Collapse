@@ -58,6 +58,7 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
+using CollapseLauncher.InstallManager.Base;
 
 namespace CollapseLauncher.Pages
 {
@@ -65,13 +66,13 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
-        private CancellationTokenSource PageToken { get; set; }
-        private CancellationTokenSource CarouselToken { get; set; }
+        private CancellationTokenSourceWrapper PageToken { get; set; }
+        private CancellationTokenSourceWrapper CarouselToken { get; set; }
 
         private int barWidth;
         private int consoleWidth;
 
-        public static int RefreshRateDefault { get; } = 200;
+        public static int RefreshRateDefault { get; } = 500;
         public static int RefreshRateSlow { get; } = 1000;
 
         private static int _refreshRate;
@@ -147,14 +148,14 @@ namespace CollapseLauncher.Pages
                 // HACK: Fix random crash by manually load the XAML part
                 //       But first, let it initialize its properties.
                 CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                PageToken = new CancellationTokenSource();
-                CarouselToken = new CancellationTokenSource();
+                PageToken = new CancellationTokenSourceWrapper();
+                CarouselToken = new CancellationTokenSourceWrapper();
 
                 this.InitializeComponent();
 
                 BackgroundImgChanger.ToggleBackground(false);
-                CheckIfRightSideProgress();
-                GetCurrentGameState();
+
+                await GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                 {
@@ -189,16 +190,33 @@ namespace CollapseLauncher.Pages
 
                 UpdatePlaytime();
                 UpdateLastPlayed();
-                CheckRunningGameInstance(PageToken.Token);
-                StartCarouselAutoScroll(CarouselToken.Token);
+                StartCarouselAutoScroll();
+
+#if !DISABLEDISCORD
+                AppDiscordPresence?.SetActivity(ActivityType.Idle);
+#endif
+
+                if (IsGameStatusComingSoon || IsGameStatusPreRegister)
+                {
+                    LauncherBtn.Visibility = Visibility.Collapsed;
+                    LauncherGameStatusPlaceholderBtn.Visibility = Visibility.Visible;
+
+                    if (IsGameStatusComingSoon) GamePlaceholderBtnComingSoon.Visibility = Visibility.Visible;
+                    if (IsGameStatusPreRegister) GamePlaceholderBtnPreRegister.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                if (CurrentGameProperty.IsGameRunning)
+                {
+                    CheckRunningGameInstance(PageToken.Token);
+                    return;
+                }
 
                 if (m_arguments.StartGame?.Play != true)
                     return;
 
                 m_arguments.StartGame.Play = false;
-
-                if (CurrentGameProperty.IsGameRunning)
-                    return;
 
                 if (CurrentGameProperty._GameInstall.IsRunning)
                 {
@@ -206,7 +224,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                switch (CurrentGameProperty._GameVersion.GetGameState())
+                switch (await CurrentGameProperty._GameVersion.GetGameState())
                 {
                     case GameInstallStateEnum.InstalledHavePreload:
                     case GameInstallStateEnum.Installed:
@@ -238,8 +256,8 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            PageToken.Cancel();
-            CarouselToken.Cancel();
+            if (!PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -316,14 +334,14 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
+        public async void StartCarouselAutoScroll(int delaySeconds = 5)
         {
             if (!IsCarouselPanelAvailable) return;
             try
             {
                 while (true)
                 {
-                    await Task.Delay(delay * 1000, token);
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
                     if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1)
                         ImageCarousel.SelectedIndex++;
@@ -331,7 +349,7 @@ namespace CollapseLauncher.Pages
                         for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
                             ImageCarousel.SelectedIndex = i - 1;
-                            await Task.Delay(100, token);
+                            await Task.Delay(100, CarouselToken.Token);
                         }
                 }
             }
@@ -345,14 +363,26 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public void CarouselStopScroll(object sender = null, PointerRoutedEventArgs e = null) => CarouselToken.Cancel();
+        private       void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)  => CarouselRestartScroll(5);
+        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
-        public void CarouselRestartScroll(object sender = null, PointerRoutedEventArgs e = null)
+        public async void CarouselRestartScroll(int delaySeconds = 5)
         {
             // Don't restart carousel if game is running and LoPrio is on
             if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
-            CarouselToken = new CancellationTokenSource();
-            StartCarouselAutoScroll(CarouselToken.Token);
+            await CarouselStopScroll();
+
+            CarouselToken = new CancellationTokenSourceWrapper();
+            StartCarouselAutoScroll(delaySeconds);
+        }
+
+        public async ValueTask CarouselStopScroll()
+        {
+            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled)
+            {
+                await CarouselToken.CancelAsync();
+                CarouselToken.Dispose();
+            }
         }
 
         private async void HideImageCarousel(bool hide)
@@ -730,23 +760,8 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Right Side Progress
-        private void CheckIfRightSideProgress()
-        {
-            if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-            {
-                // FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
-                // FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
-                LauncherBtn.SetValue(Grid.ColumnProperty, 0);
-                ProgressStatusGrid.SetValue(Grid.ColumnProperty, 0);
-                GameStartupSetting.SetValue(Grid.ColumnProperty, 1);
-                GameStartupSetting.HorizontalAlignment = HorizontalAlignment.Right;
-            }
-        }
-        #endregion
-
         #region Game State
-        private void GetCurrentGameState()
+        private async ValueTask GetCurrentGameState()
         {
             Visibility RepairGameButtonVisible = (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
@@ -786,7 +801,7 @@ namespace CollapseLauncher.Pages
 
             if (CurrentGameProperty._GameVersion.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
 
-            GameInstallationState = CurrentGameProperty._GameVersion.GetGameState();
+            GameInstallationState = await CurrentGameProperty._GameVersion.GetGameState();
             switch (GameInstallationState)
             {
                 case GameInstallStateEnum.Installed:
@@ -845,8 +860,7 @@ namespace CollapseLauncher.Pages
              || GameInstallationState == GameInstallStateEnum.GameBroken
              || GameInstallationState == GameInstallStateEnum.NotInstalled)
             {
-                if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                    HideImageCarousel(true);
+                HideImageCarousel(true);
 
                 progressRing.Value = 0;
                 progressRing.IsIndeterminate = true;
@@ -863,24 +877,32 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
-            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon  StartGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            string    StartGameBtnIconGlyph = StartGameBtnIcon!.Glyph;
-            string    StartGameBtnRunningIconGlyph = "";
+            TextBlock               StartGameBtnText              = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon                StartGameBtnIcon              = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+            Grid                    StartGameBtnAnimatedIconGrid  = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+            // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
+            string                  StartGameBtnIconGlyph         = StartGameBtnIcon!.Glyph;
+            string                  StartGameBtnRunningIconGlyph  = "";
+
+            StartGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+            StartGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
 
             try
             {
-                while (!Token.IsCancellationRequested)
+                while (CurrentGameProperty.IsGameRunning)
                 {
-                    while (CurrentGameProperty.IsGameRunning)
+                    _cachedIsGameRunning = true;
+
+                    StartGameBtn.IsEnabled = false;
+                    if (StartGameBtnText != null && StartGameBtnAnimatedIconGrid != null)
                     {
-                        _cachedIsGameRunning = true;
+                        StartGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
+                        StartGameBtnIcon.Glyph               = StartGameBtnRunningIconGlyph;
+                        StartGameBtnAnimatedIconGrid.Opacity = 0;
+                        StartGameBtnIcon.Opacity             = 1;
 
-                        StartGameBtn.IsEnabled = false;
-                        StartGameBtnText!.Text = Lang._HomePage.StartBtnRunning;
-                        StartGameBtnIcon.Glyph = StartGameBtnRunningIconGlyph;
+                        StartGameBtnText.UpdateLayout();
 
-                        //GameStartupSetting.IsEnabled = false;
                         RepairGameButton.IsEnabled       = false;
                         UninstallGameButton.IsEnabled    = false;
                         ConvertVersionButton.IsEnabled   = false;
@@ -895,39 +917,50 @@ namespace CollapseLauncher.Pages
                         AppDiscordPresence?.SetActivity(ActivityType.Play);
                     #endif
 
-                        await Task.Delay(RefreshRate, Token);
+                        Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
+                        if (currentGameProcess != null
+                            && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
+                            // HACK: For some reason, the text still unchanged.
+                            //       Make sure the start game button text also changed.
+                           )
+                        {
+                            await currentGameProcess.WaitForExitAsync(Token);
+                        }
                     }
-
-                    _cachedIsGameRunning = false;
-
-                    StartGameBtn.IsEnabled = true;
-                    StartGameBtnText!.Text = Lang._HomePage.StartBtn;
-                    StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
-
-                    //GameStartupSetting.IsEnabled = true;
-                    RepairGameButton.IsEnabled       = true;
-                    MoveGameLocationButton.IsEnabled = true;
-                    UninstallGameButton.IsEnabled    = true;
-                    ConvertVersionButton.IsEnabled   = true;
-                    CustomArgsTextBox.IsEnabled      = true;
-                    StopGameButton.IsEnabled         = false;
-
-                    PlaytimeIdleStack.Visibility    = Visibility.Visible;
-                    PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-
-                #if !DISABLEDISCORD
-                    AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                #endif
 
                     await Task.Delay(RefreshRate, Token);
                 }
+
+                _cachedIsGameRunning = false;
+
+                StartGameBtn.IsEnabled = true;
+                StartGameBtnText!.Text = Lang._HomePage.StartBtn;
+                StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
+                StartGameBtnAnimatedIconGrid.Opacity = 1;
+                StartGameBtnIcon.Opacity = 0;
+
+                GameStartupSetting.IsEnabled = true;
+                RepairGameButton.IsEnabled = true;
+                MoveGameLocationButton.IsEnabled = true;
+                UninstallGameButton.IsEnabled = true;
+                ConvertVersionButton.IsEnabled = true;
+                CustomArgsTextBox.IsEnabled = true;
+                StopGameButton.IsEnabled = false;
+
+                PlaytimeIdleStack.Visibility = Visibility.Visible;
+                PlaytimeRunningStack.Visibility = Visibility.Collapsed;
+                
+            #if !DISABLEDISCORD
+                AppDiscordPresence?.SetActivity(ActivityType.Idle);
+            #endif
             }
             catch (TaskCanceledException)
             {
                 // Ignore
+                LogWriteLine($"Game run watcher has been terminated!");
             }
             catch (Exception e)
-            { 
+            {
                 LogWriteLine($"Error when checking if game is running!\r\n{e}", LogType.Error, true);
             }
         }
@@ -1008,10 +1041,14 @@ namespace CollapseLauncher.Pages
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
-            // While this fixes #191, we need to find a way to move all elements above it by at least 16
 
             try
             {
+                // Prevent device from sleep
+                InvokeProp.PreventSleep();
+                // Set the notification trigger to "Running" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
@@ -1045,10 +1082,22 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Pre-Download paused!", LogType.Warning);
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error occurred while starting preload process: {ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             finally
             {
@@ -1056,6 +1105,9 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.ProgressChanged -= PreloadDownloadProgress;
                 CurrentGameProperty._GameInstall.StatusChanged -= PreloadDownloadStatus;
                 CurrentGameProperty._GameInstall.Flush();
+
+                // Turn the sleep back on
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -1091,10 +1143,14 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                // Prevent device from sleep
+                InvokeProp.PreventSleep();
+                // Set the notification trigger to "Running" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 IsSkippingUpdateCheck = true;
 
-                if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                    HideImageCarousel(true);
+                HideImageCarousel(true);
 
                 progressRing.Value = 0;
                 progressRing.IsIndeterminate = true;
@@ -1117,6 +1173,12 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    DownloadModeLabel.Visibility = Visibility.Visible;
+                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                }
+
                 int verifResult;
                 bool skipDialog = false;
                 while ((verifResult = await CurrentGameProperty._GameInstall.StartPackageVerification()) == 0)
@@ -1134,17 +1196,27 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
                 if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch (TaskCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             catch (NullReferenceException ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
@@ -1152,6 +1224,9 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
@@ -1165,6 +1240,9 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
+
+                // Turn the sleep back on
+                InvokeProp.RestoreSleep();
             }
         }
 
@@ -1236,18 +1314,22 @@ namespace CollapseLauncher.Pages
         {
             CurrentGameProperty._GameInstall.CancelRoutine();
 
+            /*
             ProgressStatusGrid.Visibility = Visibility.Collapsed;
             UpdateGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
+            */
         }
 
         private void CancelInstallationDownload()
         {
             CurrentGameProperty._GameInstall.CancelRoutine();
 
+            /*
             ProgressStatusGrid.Visibility = Visibility.Collapsed;
             InstallGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
+            */
         }
         #endregion
 
@@ -1339,6 +1421,9 @@ namespace CollapseLauncher.Pages
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
+
+                // Run game process watcher
+                CheckRunningGameInstance(PageToken.Token);
             }
             catch (Win32Exception ex)
             {
@@ -1977,13 +2062,15 @@ namespace CollapseLauncher.Pages
 
         private const string _playtimeRegName = "CollapseLauncher_Playtime";
         private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
+#nullable enable
         private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
         {
             try
             {
-                return (int)
-                    Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                            .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0);
+                object subKeyObj = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)?
+                                   .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0) ?? 0;
+
+                return (int)subKeyObj;
             }
             catch (Exception ex)
             {
@@ -1996,15 +2083,15 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)!
-                        .SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value,
-                                  RegistryValueKind.DWord);
+                RegistryKey? subKey = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true);
+                subKey?.SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
             }
         }
+#nullable restore
         #endregion
 
         #region Game Update Dialog
@@ -2013,16 +2100,26 @@ namespace CollapseLauncher.Pages
             CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
             CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
 
-            if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                HideImageCarousel(true);
+            HideImageCarousel(true);
 
             try
             {
+                // Prevent device from sleep
+                InvokeProp.PreventSleep();
+                // Set the notification trigger to "Running" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 IsSkippingUpdateCheck = true;
 
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
+
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    DownloadModeLabel.Visibility = Visibility.Visible;
+                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                }
 
                 int verifResult;
                 bool skipDialog = false;
@@ -2040,17 +2137,27 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
                 if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch (TaskCanceledException)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
             catch (OperationCanceledException)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
             catch (NullReferenceException ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Update error on {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
@@ -2058,6 +2165,9 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
                 IsPageUnload = true;
                 LogWriteLine($"Update error on {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
@@ -2071,6 +2181,9 @@ namespace CollapseLauncher.Pages
                 await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
+
+                // Turn the sleep back on
+                InvokeProp.RestoreSleep();
             }
         }
         #endregion
@@ -2140,7 +2253,7 @@ namespace CollapseLauncher.Pages
                                  $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
 
-                CarouselStopScroll();
+                await CarouselStopScroll();
                 await proc.WaitForExitAsync();
 
                 using (Process collapseProcess = Process.GetCurrentProcess())
@@ -2411,12 +2524,9 @@ namespace CollapseLauncher.Pages
             IsPointerInsideSidePanel = true;
             if (sender is FrameworkElement elementPanel)
             {
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                await Task.Delay(TimeSpan.FromSeconds(0.2));
                 if (IsSidePanelCurrentlyScaledOut) return;
                 if (!IsPointerInsideSidePanel) return;
-
-                MainPage.CurrentBackgroundHandler?.Dimm();
-                HideImageEventImg(true);
 
                 var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
                 var storyboard = new Storyboard();
@@ -2431,7 +2541,7 @@ namespace CollapseLauncher.Pages
                 {
                     From           = transform.ScaleX,
                     To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -2442,15 +2552,18 @@ namespace CollapseLauncher.Pages
                 {
                     From           = transform.ScaleY,
                     To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);
                 Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
                 storyboard.Children.Add(scaleYAnim);
 
-                await storyboard.BeginAsync();
+                MainPage.CurrentBackgroundHandler?.Dimm();
+                HideImageEventImg(true);
+
                 IsSidePanelCurrentlyScaledOut = true;
+                await storyboard.BeginAsync();
             }
         }
 

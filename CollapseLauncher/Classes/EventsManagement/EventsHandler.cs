@@ -193,17 +193,26 @@ namespace CollapseLauncher
         private static Type currentWindow;
         private static Type currentPage;
         static MainFrameChangerInvoker invoker = new MainFrameChangerInvoker();
-        public static void ChangeWindowFrame(Type e) => ChangeWindowFrame(e, new DrillInNavigationTransitionInfo());
-        public static void ChangeWindowFrame(Type e, NavigationTransitionInfo eT)
+        public static void GoBackWindowFrame() => invoker!.GoBackWindowFrame();
+        public static void ChangeWindowFrame(Type toPage) => ChangeWindowFrame(toPage, new DrillInNavigationTransitionInfo());
+        public static void ChangeWindowFrame(Type toPage, NavigationTransitionInfo transition)
         {
-            currentWindow = e;
-            invoker!.ChangeWindowFrame(e, eT);
+            if (toPage == null)
+                throw new NullReferenceException("Argument: toPage cannot be null!");
+
+            currentWindow = toPage;
+            invoker!.ChangeWindowFrame(toPage, transition);
         }
-        public static void ChangeMainFrame(Type e) => ChangeMainFrame(e, new DrillInNavigationTransitionInfo());
-        public static void ChangeMainFrame(Type e, NavigationTransitionInfo eT)
+
+        public static void GoBackMainFrame() => invoker!.GoBackMainFrame();
+        public static void ChangeMainFrame(Type toPage) => ChangeMainFrame(toPage, new DrillInNavigationTransitionInfo());
+        public static void ChangeMainFrame(Type toPage, NavigationTransitionInfo transition)
         {
-            currentPage = e;
-            invoker!.ChangeMainFrame(e, eT);
+            if (toPage == null)
+                throw new NullReferenceException("Argument: toPage cannot be null!");
+
+            currentPage = toPage;
+            invoker!.ChangeMainFrame(toPage, transition);
         }
 
         public static void ReloadCurrentWindowFrame() => ChangeWindowFrame(currentWindow);
@@ -214,8 +223,12 @@ namespace CollapseLauncher
     {
         public static event EventHandler<MainFrameProperties> WindowFrameEvent;
         public static event EventHandler<MainFrameProperties> FrameEvent;
+        public static event EventHandler WindowFrameGoBackEvent;
+        public static event EventHandler FrameGoBackEvent;
         public void ChangeWindowFrame(Type e, NavigationTransitionInfo eT) => WindowFrameEvent?.Invoke(this, new MainFrameProperties(e, eT));
         public void ChangeMainFrame(Type e, NavigationTransitionInfo eT) => FrameEvent?.Invoke(this, new MainFrameProperties(e, eT));
+        public void GoBackWindowFrame() => WindowFrameGoBackEvent?.Invoke(this, null);
+        public void GoBackMainFrame() => FrameGoBackEvent?.Invoke(this, null);
     }
 
     internal class MainFrameProperties
@@ -277,8 +290,11 @@ namespace CollapseLauncher
     internal static class BackgroundImgChanger
     {
         static BackgroundImgChangerInvoker invoker = new();
-        public static async Task WaitForBackgroundToLoad() => await invoker!.WaitForBackgroundToLoad();
-        public static void ChangeBackground(string ImgPath, bool IsCustom = true, bool IsForceRecreateCache = false, bool IsRequestInit = false) => invoker!.ChangeBackground(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit);
+        public static void ChangeBackground(string ImgPath, Action ActionAfterLoaded,
+            bool IsCustom = true, bool IsForceRecreateCache = false, bool IsRequestInit = false)
+        {
+            invoker!.ChangeBackground(ImgPath, ActionAfterLoaded, IsCustom, IsForceRecreateCache, IsRequestInit);
+        }
         public static void ToggleBackground(bool Hide) => invoker!.ToggleBackground(Hide);
     }
 
@@ -287,24 +303,29 @@ namespace CollapseLauncher
         public static event EventHandler<BackgroundImgProperty> ImgEvent;
         public static event EventHandler<bool> IsImageHide;
         BackgroundImgProperty property;
-        public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property!.IsImageLoaded) { } });
-        public void ChangeBackground(string ImgPath, bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit));
+        public void ChangeBackground(string ImgPath, Action ActionAfterLoaded,
+            bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false)
+        {
+            ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit, ActionAfterLoaded));
+        }
+
         public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);
     }
 
     internal class BackgroundImgProperty
     {
-        internal BackgroundImgProperty(string ImgPath, bool IsCustom, bool IsForceRecreateCache, bool IsRequestInit)
+        internal BackgroundImgProperty(string ImgPath, bool IsCustom, bool IsForceRecreateCache, bool IsRequestInit, Action ActionAfterLoaded)
         {
             this.ImgPath              = ImgPath;
             this.IsCustom             = IsCustom;
             this.IsForceRecreateCache = IsForceRecreateCache;
             this.IsRequestInit        = IsRequestInit;
+            this.ActionAfterLoaded    = ActionAfterLoaded;
         }
 
+        public Action ActionAfterLoaded { get; set; }
         public bool IsRequestInit { get; set; }
         public bool IsForceRecreateCache { get; set; }
-        public bool IsImageLoaded { get; set; }
         public string ImgPath { get; private set; }
         public bool IsCustom { get; private set; }
     }
@@ -373,6 +394,7 @@ namespace CollapseLauncher
     #region ChangeTitleDragArea
     public enum DragAreaTemplate
     {
+        None,
         Full,
         Default
     }

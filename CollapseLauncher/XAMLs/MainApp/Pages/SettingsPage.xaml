@@ -108,6 +108,11 @@
                                        Visibility="Collapsed" />
                         </StackPanel>
                         <ToggleSwitch Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.IntroSequenceToggle}"
+                                      IsOn="{x:Bind IsIntroEnabled, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableAcrylicEffect}"
                                       IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
@@ -570,7 +575,7 @@
                     <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE"
                                UnderlineStyle="None">
                         <Run FontWeight="Bold"
-                             Text="MIT License" />
+                             Text="{x:Bind helper:Locale.Lang._SettingsPage.LicenseType}" />
                     </Hyperlink>
                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" />
                 </TextBlock>
@@ -865,12 +870,12 @@
                                     HorizontalAlignment="Center"
                                     Orientation="Horizontal">
                             <TextBlock FontSize="16"
-                                       Foreground="{ThemeResource TextFillColorInverse}"
+                                       Foreground="{ThemeResource AccentColor}"
                                        Text="😆" />
                             <TextBlock Margin="8,2,0,0"
                                        VerticalAlignment="Center"
                                        FontWeight="Medium"
-                                       Foreground="{ThemeResource TextFillColorInverse}">
+                                       Foreground="{ThemeResource AccentColor}">
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}" />
                                 <Run x:Name="UpdateAvailableLabel"
                                      FontWeight="Bold"

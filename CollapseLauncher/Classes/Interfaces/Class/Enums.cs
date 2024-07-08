@@ -39,6 +39,7 @@
     {
         General,
         Audio,
+        Plugin,
         Utilities
     }
 }

@@ -15,7 +15,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Honkai
 {
-    internal class HonkaiInstall : InstallManagerBase<GameTypeHonkaiVersion>, IGameInstallManager
+    internal class HonkaiInstall : InstallManagerBase<GameTypeHonkaiVersion>
     {
         #region Override Properties
         protected override bool _canDeltaPatch { get => _gameVersionManager.IsGameHasDeltaPatch(); }

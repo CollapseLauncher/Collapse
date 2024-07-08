@@ -7,6 +7,7 @@ namespace CollapseLauncher.Helper.Metadata
     {
         Unknown,
         PresetConfigV2,
-        MasterKey
+        MasterKey,
+        CommunityTools
     }
 }

@@ -65,7 +65,11 @@
     "Footer1": "Please check your internet connection and click",
     "Footer2": "Paimon",
     "Footer3": "to Retry.",
-    "ShowErrorBtn": "Show Error Message"
+    "ShowErrorBtn": "Show Error Message",
+    "GoToAppSettingsBtn": "Go to App Settings",
+    "GoBackOverlayFrameBtn": "Go Back",
+    "RegionChangerTitle": "Change the Game Region",
+    "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
   "_UnhandledExceptionPage": {
@@ -128,6 +132,9 @@
     "PauseCancelDownloadBtn": "Pause/Cancel",
     "PauseCancelBtn": "Pause/Cancel",
     "DownloadBtn": "Download Game",
+
+    "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
+    "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",
 
     "GameSettingsBtn": "Quick Settings",
     "GameSettings_Panel1": "Quick Settings",
@@ -389,6 +396,8 @@
     "AppThemes_Dark": "Dark",
     "AppThemes_ApplyNeedRestart": "*You need to restart the app for theme changes to take effect.",
 
+    "IntroSequenceToggle": "Use Intro Animation Sequence",
+
     "AppWindowSize": "Window Size",
     "AppWindowSize_Normal": "Normal",
     "AppWindowSize_Small": "Small",
@@ -562,6 +571,7 @@
     "Idle": "Idle",
     "Change": "Change",
     "Cancelled": "Canceled",
+    "FinishingUp": "Finishing Up",
     "Extracting": "Extracting",
     "Converting": "Converting",
     "Patching": "Patching",
@@ -576,6 +586,7 @@
     "ApplyingPatch": "Applying Patch",
     "Disabled": "Disabled",
     "Enabled": "Enabled",
+    "UseAsDefault": "Use as Default",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -601,6 +612,8 @@
     "DiscordRP_Ad": "- With Collapse Launcher",
     "DiscordRP_Region": "Region:",
 
+    "DownloadModeLabelSophon": "Sophon Mode",
+
     "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
     "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
     "Taskbar_ShowApp": "Show Collapse window",
@@ -613,7 +626,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Launcher Name is Unknown)",
-    
+
     "ImageCropperTitle": "Crop the image"
   },
 
@@ -1026,6 +1039,8 @@
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",

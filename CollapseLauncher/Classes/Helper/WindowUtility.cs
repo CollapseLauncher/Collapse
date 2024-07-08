@@ -1,7 +1,6 @@
 ﻿#nullable enable
     using CollapseLauncher.Extension;
     using CollapseLauncher.FileDialogCOM;
-    using CollapseLauncher.Helper.Background;
     using Hi3Helper;
     using Hi3Helper.Screen;
     using Hi3Helper.Shared.Region;
@@ -34,7 +33,9 @@
         internal static class WindowUtility
         {
             private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
-            private static nint                             OldWindowWndProcPtr;
+
+            private static nint OldMainWndProcPtr;
+            private static nint OldDesktopSiteBridgeWndProcPtr;
 
             private delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
@@ -154,16 +155,35 @@
                         return;
                     }
 
-                    CurrentAppWindow.ResizeClient(new SizeInt32
+                    if (InnerLauncherConfig.m_isWindows11)
                     {
-                        Width  = (int)value.Width,
-                        Height = (int)value.Height
-                    });
-                    CurrentAppWindow.Move(new PointInt32
+                        // We have no title bar
+                        var titleBarHeight = InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CYSIZEFRAME) +
+                                             InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CYCAPTION) +
+                                             InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CXPADDEDBORDER);
+                        value.Height -= titleBarHeight;
+
+                        CurrentAppWindow.ResizeClient(new SizeInt32
+                        {
+                            Width  = (int) value.Width,
+                            Height = (int) value.Height
+                        });
+                        CurrentAppWindow.Move(new PointInt32
+                        {
+                            X = (int) value.X,
+                            Y = (int) value.Y
+                        });
+                    }
+                    else
                     {
-                        X = (int)value.X,
-                        Y = (int)value.Y
-                    });
+                        CurrentAppWindow.MoveAndResize(new RectInt32()
+                        {
+                            Width  = (int) value.Width,
+                            Height = (int) value.Height,
+                            X      = (int) value.X,
+                            Y      = (int) value.Y
+                        });
+                    }
                 }
             }
 
@@ -241,7 +261,7 @@
                 CurrentOverlappedPresenter = CurrentAppWindow.Presenter as OverlappedPresenter;
 
                 // Install WndProc callback
-                InstallWndProcCallback();
+                OldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
 
                 // Install Drag Area Change monitor
                 InstallDragAreaChangeMonitor();
@@ -249,7 +269,7 @@
                 // Apply fix for mouse event
                 ApplyWindowTitlebarContextFix();
 
-                // Apply fix for Window border on Windows 11
+                // Apply fix for Window border on Windows 10
                 ApplyWindowBorderFix();
 
                 // Initialize FileDialogHandler
@@ -280,38 +300,36 @@
 
             #region WndProc Handler
 
-            private static void InstallWndProcCallback()
+            private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
             {
                 // Install WndProc hook
-                const int       GWLP_WNDPROC         = -4;
-                WndProcDelegate mNewWndProcDelegate = WndProc;
-                IntPtr          pWndProc             = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
-                OldWindowWndProcPtr = InvokeProp.SetWindowLongPtr(CurrentWindowPtr, GWLP_WNDPROC, pWndProc);
+                const int       GWLP_WNDPROC        = -4;
+                WndProcDelegate mNewWndProcDelegate = wndProc;
+                IntPtr          pWndProc            = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
+                return InvokeProp.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
             }
 
-            private static IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+            private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
             {
                 const uint WM_SYSCOMMAND    = 0x0112;
                 const uint WM_SHOWWINDOW    = 0x0018;
-                const uint WM_ACTIVATEAPP   = 0x001C;
                 const uint WM_NCHITTEST     = 0x0084;
                 const uint WM_NCCALCSIZE    = 0x0083;
                 const uint WM_SETTINGCHANGE = 0x001A;
+                const uint WM_ACTIVATE      = 0x0006;
 
                 switch (msg)
                 {
-                    case WM_ACTIVATEAPP:
+                    case WM_ACTIVATE:
                     {
-                        if (wParam == 1)
-                        {
+                        if (wParam == 1 && lParam == 0)
                             MainPage.CurrentBackgroundHandler?.WindowFocused();
-                        }
-                        else
-                        {
+
+                        if (wParam == 0 && lParam == 0)
                             MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                        }
-                    }
+
                         break;
+                    }
                     case WM_SYSCOMMAND:
                     {
                         const uint SC_MAXIMIZE = 0xF030;
@@ -371,7 +389,6 @@
                             MainPage.CurrentBackgroundHandler?.WindowFocused();
                             InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
                         }
-
                         break;
                     }
                     case WM_NCHITTEST:
@@ -379,21 +396,25 @@
                         const int HTCLIENT    = 1;
                         const int HTCAPTION   = 2;
                         const int HTMINBUTTON = 8;
+                        const int HTRIGHT     = 11;
                         const int HTTOP       = 12;
+                        const int HTTOPRIGHT  = 14;
 
-                        var result = InvokeProp.CallWindowProc(OldWindowWndProcPtr, hwnd, msg, wParam, lParam);
+                        var result = InvokeProp.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                                {
                                    // Fix "Ghost Minimize Button" issue
                                    HTMINBUTTON => HTCLIENT,
                                    // Fix "Caption Resize" issue
+                                   HTRIGHT => HTCAPTION,
                                    HTTOP => HTCAPTION,
+                                   HTTOPRIGHT => HTCAPTION,
                                    _ => result
                                };
                     }
                     case WM_NCCALCSIZE:
                     {
-                        if (!InnerLauncherConfig.m_isWindows11 && wParam == 1)
+                        if (!InnerLauncherConfig.m_isWindows11 && wParam != 0)
                         {
                             return 0;
                         }
@@ -414,7 +435,7 @@
                     }
                 }
 
-                return InvokeProp.CallWindowProc(OldWindowWndProcPtr, hwnd, msg, wParam, lParam);
+                return InvokeProp.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
             }
 
             #endregion
@@ -515,7 +536,39 @@
                                 | InvokeProp.SetWindowPosFlags.SWP_NOZORDER
                                 | InvokeProp.SetWindowPosFlags.SWP_FRAMECHANGED;
                     InvokeProp.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
+
+                    var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+                    OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
                 }
+            }
+
+            private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+            {
+                const uint WM_WINDOWPOSCHANGING = 0x0046;
+
+                switch (msg)
+                {
+                    case WM_WINDOWPOSCHANGING:
+                    {
+                        // Fix the weird 1px offset
+                        if (!InnerLauncherConfig.m_isWindows11)
+                        {
+                            var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
+                            if (windowPos.x == 0 && windowPos.y == 1 &&
+                                windowPos.cx == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width &&
+                                windowPos.cy == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height - 1)
+                            {
+                                windowPos.y  =  0;
+                                windowPos.cy += 1;
+                                Marshal.StructureToPtr(windowPos, lParam, false);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                return InvokeProp.CallWindowProc(OldDesktopSiteBridgeWndProcPtr, hwnd, msg, wParam, lParam);
             }
 
             internal static void SetWindowSize(int width, int height)
@@ -524,14 +577,6 @@
                 {
                     return;
                 }
-
-                // We have no title bar
-                const int SM_CYCAPTION      = 4;
-                const int SM_CYSIZEFRAME    = 33;
-                const int SM_CXPADDEDBORDER = 92;
-                var titleBarHeight = InvokeProp.GetSystemMetrics(SM_CYSIZEFRAME) +
-                                     InvokeProp.GetSystemMetrics(SM_CYCAPTION) +
-                                     InvokeProp.GetSystemMetrics(SM_CXPADDEDBORDER);
 
                 // Get the scale factor and calculate the size and offset
                 double scaleFactor      = CurrentWindowMonitorScaleFactor;
@@ -544,7 +589,7 @@
 
                 // Use CurrentWindowPosition to change the size and position
                 CurrentWindowPosition = new Rect
-                    { Height = lastWindowHeight - titleBarHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
+                    { Height = lastWindowHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
             }
 
             internal static void WindowMinimize()

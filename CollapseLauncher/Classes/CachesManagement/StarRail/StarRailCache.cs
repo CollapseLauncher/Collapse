@@ -23,7 +23,7 @@ namespace CollapseLauncher
                   GameVersionManager,
                   GameVersionManager.GameDirPath,
                   null,
-                  GameVersionManager.GetGameVersionAPI().VersionString)
+                  GameVersionManager.GetGameVersionAPI()?.VersionString)
         {
             _innerGameVersionManager = GameVersionManager as GameTypeStarRailVersion;
         }

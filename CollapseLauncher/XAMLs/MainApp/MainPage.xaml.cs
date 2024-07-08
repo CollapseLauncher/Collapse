@@ -10,7 +10,6 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -160,9 +159,6 @@ namespace CollapseLauncher
             CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
             LocalBackgroundHandler = CurrentBackgroundHandler;
 
-            // Load community tools properties
-            PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
-
             Type Page = typeof(HomePage);
 
             bool isCacheUpdaterMode = m_appMode == AppMode.Hi3CacheUpdater;
@@ -268,6 +264,12 @@ namespace CollapseLauncher
             LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
             IsLoadFrameCompleted = true;
         }
+
+        private void MainFrameChangerInvoker_FrameGoBackEvent(object sender, EventArgs e)
+        {
+            if (LauncherFrame.CanGoBack)
+                LauncherFrame.GoBack();
+        }
         #endregion
 
         #region Drag Area
@@ -328,9 +330,9 @@ namespace CollapseLauncher
 
         private void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            await Task.Delay(250);
+            UpdateLayout();
 
             InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId.Value);
             WindowUtility.EnableWindowNonClientArea();
@@ -338,6 +340,12 @@ namespace CollapseLauncher
 
             switch (e.Template)
             {
+                case DragAreaTemplate.None:
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new RectInt32[]
+                    {
+                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
+                    });
+                    break;
                 case DragAreaTemplate.Full:
                     nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
                     break;
@@ -439,7 +447,6 @@ namespace CollapseLauncher
 
         private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
-            e.IsImageLoaded                   = false;
             LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
             IsCustomBG                        = e.IsCustom;
 
@@ -457,20 +464,19 @@ namespace CollapseLauncher
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
-            });
-            
-            e.IsImageLoaded                   = true;
+            }, e.ActionAfterLoaded);
         }
 
         internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
+            bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
             }
-            else
+            else if (isAPIBackgroundAvailable)
             {
                 try
                 {
@@ -484,14 +490,20 @@ namespace CollapseLauncher
                 }
             }
 
+            // Use default background if the API background is empty (in-case HoYo did something catchy)
+            if (!isAPIBackgroundAvailable && !IsCustomBG)
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+
             if (!IsCustomBG || IsFirstStartup)
             {
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, IsCustomBG);
-                await BackgroundImgChanger.WaitForBackgroundToLoad();
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
+                    () =>
+                    {
+                        IsFirstStartup = false;
+                        ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                    },
+                    IsCustomBG);
             }
-
-            IsFirstStartup = false;
-            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
         }
         #endregion
 
@@ -500,6 +512,7 @@ namespace CollapseLauncher
         {
             ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
             MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
+            MainFrameChangerInvoker.FrameGoBackEvent += MainFrameChangerInvoker_FrameGoBackEvent;
             NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
             BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
             BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
@@ -1047,6 +1060,16 @@ namespace CollapseLauncher
             if (!IsShowRegionChangeWarning && IsInstantRegionChange && !DisableInstantRegionChange && !IsFirstStartup)
                 ChangeRegionInstant();
         }
+
+        private void GameComboBox_OnDropDownOpened(object sender, object e)
+        {
+            ChangeTitleDragArea.Change(DragAreaTemplate.None);
+        }
+
+        private void GameComboBox_OnDropDownClosed(object sender, object e)
+        {
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+        }
         #endregion
 
         #region Metadata Update Method
@@ -1228,8 +1251,8 @@ namespace CollapseLauncher
                 paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
             }
 
-            var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
-            backIcon?.ApplyDropShadow(Colors.Gray, 20);
+            // var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
+            // backIcon?.ApplyDropShadow(Colors.Gray, 20);
 
             var toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
             toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
@@ -1505,13 +1528,6 @@ namespace CollapseLauncher
                                 }
                 }.Start();
             }
-        }
-
-        private int GetIndexOfRegionStringOrDefault(string category)
-        {
-            int? index = LauncherMetadataHelper.GetPreviousGameRegion(category);
-
-            return index == -1 || index == null ? 0 : index ?? 0;
         }
         #endregion
 

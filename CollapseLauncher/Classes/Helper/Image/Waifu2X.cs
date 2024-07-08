@@ -10,10 +10,10 @@ namespace CollapseLauncher.Helper.Image
     {
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern int ncnn_get_default_gpu_index();
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern IntPtr ncnn_get_gpu_name(int gpuId);
 
         public static int DefaultGpuIndex => ncnn_get_default_gpu_index();
@@ -30,31 +30,32 @@ namespace CollapseLauncher.Helper.Image
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
 
         #region DllImports
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern IntPtr waifu2x_create(int gpuId = 0, bool ttaMode = false, int numThreads = 0);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern void waifu2x_destroy(IntPtr context);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern unsafe int waifu2x_load(IntPtr context, byte* param, byte* model);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern unsafe int waifu2x_process(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern unsafe int waifu2x_process_cpu(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern void waifu2x_set_param(IntPtr context, Param param, int value);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern int waifu2x_get_param(IntPtr context, Param param);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, ExactSpelling = true)]
         private static extern Waifu2XStatus waifu2x_self_test(IntPtr context);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern long GetPackagesByPackageFamily(string packageFamilyName, ref uint count, [Out] IntPtr packageFullNames, ref uint bufferLength, [Out] IntPtr buffer);
         #endregion
 

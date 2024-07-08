@@ -129,7 +129,9 @@
                                       ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
                                       SelectionChanged="SetGameCategoryChange"
-                                      Style="{ThemeResource AcrylicComboBoxStyle}" />
+                                      Style="{ThemeResource AcrylicComboBoxStyle}"
+                                      DropDownOpened="GameComboBox_OnDropDownOpened"
+                                      DropDownClosed="GameComboBox_OnDropDownClosed" />
                             <ComboBox x:Name="ComboBoxGameRegion"
                                       Grid.Column="1"
                                       MinWidth="148"
@@ -137,7 +139,9 @@
                                       CornerRadius="0,15,15,0"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
                                       SelectionChanged="EnableRegionChangeButton"
-                                      Style="{ThemeResource AcrylicComboBoxStyle}" />
+                                      Style="{ThemeResource AcrylicComboBoxStyle}"
+                                      DropDownOpened="GameComboBox_OnDropDownOpened"
+                                      DropDownClosed="GameComboBox_OnDropDownClosed" />
                         </Grid>
                         <Grid x:Name="ChangeGameBtnGridShadow"
                               Grid.Column="1"
@@ -339,9 +343,9 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
                 <Image x:Name="GridBG_IconImg"
-                       Width="24"
-                       Height="24"
-                       Margin="0,-1,0,0"
+                       Width="Auto"
+                       Margin="-2,-2,0,-2"
+                       VerticalAlignment="Stretch"
                        Opacity="0.8"
                        Source="ms-appx:///Assets/CollapseLauncherLogo.png">
                     <Image.OpacityTransition>
@@ -350,13 +354,13 @@
                 </Image>
                 <StackPanel Name="GridBG_IconTitle"
                             Width="0"
-                            Margin="8,-8,0,0"
+                            Margin="6,-8,0,0"
                             VerticalAlignment="Center"
                             Opacity="0">
                     <StackPanel.OpacityTransition>
                         <ScalarTransition />
                     </StackPanel.OpacityTransition>
-                    <TextBlock Margin="-6,0,0,0"
+                    <TextBlock Margin="0,0,0,0"
                                HorizontalAlignment="Left"
                                FontSize="10"
                                FontWeight="Medium"
@@ -373,7 +377,7 @@
                 <StackPanel x:Name="PreviewBuildIndicator"
                             Grid.Column="4"
                             Grid.ColumnSpan="2"
-                            Margin="-16,-12,0,0"
+                            Margin="-10,-12,0,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Background="{ThemeResource AccentColor}"

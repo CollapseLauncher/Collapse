@@ -11,6 +11,7 @@ namespace Hi3Helper.Shared.ClassStruct
     public enum FileType : byte { Generic, Blocks, Audio, Video, Unused }
     public class FilePropertiesRemote : IAssetIndexSummary
     {
+        public bool IsUsed { get; set; }
         private string _crc;
         private byte[] _crcArray;
 

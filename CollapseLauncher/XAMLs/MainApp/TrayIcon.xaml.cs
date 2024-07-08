@@ -124,7 +124,7 @@ namespace CollapseLauncher
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
                 IntPtr consoleWindowHandle = GetConsoleWindow();
-                if (m_consoleHandle == IntPtr.Zero) return;
+                if (LoggerConsole.ConsoleHandle == IntPtr.Zero) return;
                 if (IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();

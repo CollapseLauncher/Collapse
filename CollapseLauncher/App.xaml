@@ -25,6 +25,8 @@
                             <ui:Color x:Key="SystemAccentColorLight1">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight2">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight3">#ffd52a</ui:Color>
+                            <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent" Color="#00FFFFFF"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent" Color="#00222222"/>
                             <AcrylicBrush x:Key="AccentColorBrush"
                                           TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor"
@@ -107,6 +109,11 @@
                                           TintLuminosityOpacity="0.75"
                                           TintOpacity="0.75"/>
                             <!--  Controls element brush  -->
+                            <AcrylicBrush x:Key="AudioLanguageSelectionRadioButtonBrush"
+                                          FallbackColor="#EE303030"
+                                          TintColor="#222222"
+                                          TintLuminosityOpacity="0.75"
+                                          TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#AA222222"
                                           TintColor="#000000"
@@ -336,6 +343,8 @@
                             <ui:Color x:Key="SystemAccentColorDark1">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark2">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark3">#693758</ui:Color>
+                            <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent" Color="#00000000"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent" Color="#00FFFFFF"/>
                             <AcrylicBrush x:Key="AccentColorBrush"
                                           TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor"
@@ -418,6 +427,11 @@
                                           TintLuminosityOpacity="0.5"
                                           TintOpacity="0"/>
                             <!--  Controls element brush  -->
+                            <AcrylicBrush x:Key="AudioLanguageSelectionRadioButtonBrush"
+                                          FallbackColor="#EEEEEEEE"
+                                          TintColor="#EEEEEE"
+                                          TintLuminosityOpacity="0.75"
+                                          TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#CCFFFFFF"
                                           TintColor="#FFFFFF"
@@ -1492,7 +1506,15 @@
                                         </ContentPresenter.BackgroundTransition>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
-                                                <VisualState x:Name="Normal"/>
+                                                <VisualState x:Name="Normal">
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="Background">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="{ThemeResource SolidColorBrushBackgroundTransparent}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </VisualState>
                                                 <VisualState x:Name="PointerOver">
                                                     <Storyboard>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"

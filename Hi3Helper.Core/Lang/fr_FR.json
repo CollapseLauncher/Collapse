@@ -65,7 +65,11 @@
     "Footer1": "Merci de vérifier l'état de votre connexion Internet et cliquez sur",
     "Footer2": "Paimon",
     "Footer3": "pour réessayer.",
-    "ShowErrorBtn": "Afficher le message d'erreur"
+    "ShowErrorBtn": "Afficher le message d'erreur",
+    "GoToAppSettingsBtn": "Accéder aux paramètres",
+    "GoBackOverlayFrameBtn": "Retour",
+    "RegionChangerTitle": "Changer la région du jeu",
+    "RegionChangerSubtitle": "Au cas où vous seriez coincé sur cette page"
   },
 
   "_UnhandledExceptionPage": {
@@ -98,7 +102,10 @@
     "NotifNoNewNotifs": "Aucune nouvelle notification",
     "NotifClearAll": "Supprimer toutes les notifications",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilitaires"
+    "NavigationUtilities": "Utilitaires",
+    "Initializing": "Initialisation",
+    "LoadingLauncherMetadata": "Chargement des métadonnées du launcher",
+    "LoadingGameConfiguration": "Chargement de la configuration du jeu"
   },
 
   "_HomePage": {
@@ -220,7 +227,7 @@
     "ListCol6": "CRC D.",
     "ListCol7": "Statut",
     "Status1": "Cliquez sur « Vérification rapide » ou « Vérification complète » pour vérifier les mises à jour des caches.",
-    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
+    "Status2": "Tentative de détermination de la disponibilité de l'actif de cache « {0} » : {1}",
     "CachesStatusHeader1": "État d'avancement",
     "CachesStatusCancelled": "L'opération a été annulée !",
     "CachesStatusFetchingType": "Récupération du type de Caches : {0}",
@@ -348,6 +355,7 @@
     "CustomArgs_Footer3": "pour afficher d'autres paramètres.",
 
     "GameBoost": "Augmenter la priorité du jeu [Expérimental]",
+    "MobileLayout": "Utiliser l'interface mobile",
 
     "Advanced_Title": "Paramètres avancés",
     "Advanced_Subtitle1": "L'équipe Collapse Launcher",
@@ -357,6 +365,7 @@
     "Advanced_GLC_PreLaunch_Title": "Commandes pré-lancement",
     "Advanced_GLC_PreLaunch_Subtitle": "Commandes à exécuter avant le lancement du jeu",
     "Advanced_GLC_PreLaunch_Exit": "Forcer l'arrêt du processus lancé lorsque le jeu est fermé/arrêté",
+    "Advanced_GLC_PreLaunch_Delay": "Retarder le lancement du jeu (ms)",
     "Advanced_GLC_PostExit_Title": "Commandes post-sortie",
     "Advanced_GLC_PostExit_Subtitle": "Commandes à exécuter après la fermeture du jeu"
   },
@@ -382,6 +391,8 @@
     "AppThemes_Light": "Clair",
     "AppThemes_Dark": "Sombre",
     "AppThemes_ApplyNeedRestart": "*Vous devez redémarrer Collapse afin que les changements prennent effet.",
+
+    "IntroSequenceToggle": "Activer la séquence d'animation au démarrage",
 
     "AppWindowSize": "Taille de la fenêtre",
     "AppWindowSize_Normal": "Normale",
@@ -556,6 +567,7 @@
     "Idle": "Inactif",
     "Change": "Changer",
     "Cancelled": "Annulé",
+    "FinishingUp": "Finalisation",
     "Extracting": "Extraction",
     "Converting": "Conversion",
     "Patching": "Mise à jour",
@@ -570,6 +582,7 @@
     "ApplyingPatch": "Application du correctif",
     "Disabled": "Désactivé",
     "Enabled": "Activé",
+    "UseAsDefault": "Utiliser par défaut",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -578,6 +591,7 @@
     "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) hébergé dans le seau R2 de Cloudflare",
     "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) hébergé sur Bitbucket",
     "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) hébergé sur GitLab",
+    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) hébergé sur Coding",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -606,7 +620,7 @@
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nom du launcher inconnu)",
-    
+
     "ImageCropperTitle": "Rogner l'image"
   },
 
@@ -793,6 +807,8 @@
     "LocateFolderSubtitle": "Choisissez l'emplacement pour déplacer le fichier/dossier vers le chemin cible.",
     "ChoosePathTextBoxPlaceholder": "Choisir le chemin cible…",
     "ChoosePathButton": "Choisir la cible",
+    "ChoosePathErrorTitle": "Une erreur est survenue !",
+    "ChoosePathErrorPathIdentical": "Le chemin de sortie choisi est situé à l’intérieur ou identique à l’emplacement actuel !\r\nVeuillez choisir un autre emplacement !",
     "ChoosePathErrorPathUnselected": "Veuillez choisir la destination avant de continuer !",
     "ChoosePathErrorPathNotExist": "Le chemin n'existe pas !",
     "ChoosePathErrorPathNoPermission": "Vous n'avez pas la permission d'accéder à cet emplacement ! Veuillez choisir un autre emplacement !"
@@ -1001,7 +1017,7 @@
 
     "Graphics_FPS": "Taux d'IPS",
     "Graphics_FPS_Help": "Le mode 120 IPS est EXPÉRIMENTAL ! Veuillez faire preuve de prudence, car Honkai : Star Rail ne le prend pas officiellement en charge !",
-    "Graphics_FPS_Help2": "Définir la valeur de taux d'IPS sur 120 rendra le menu « Paramètres graphiques » du jeu inopérant.\r\nSi votre menu ne fonctionne plus dans le jeu, utilisez Collapse pour modifier les paramètres graphiques du jeu.",
+    "Graphics_FPS_Help2": "Définir la valeur de taux d'IPS à 120 n'entraîne plus le dysfonctionnement du menu en jeu, en revanche modifier la valeur de taux d'IPS à une valeur plus faible ne fonctionnera pas.\r\nSi vous utilisez l'option 120 IPS, utilisez Collapse pour modifier les paramètres graphiques du jeu.",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "La VSync n'est pas disponible en mode 120 IPS",
     "Graphics_RenderScale": "Échelle de rendu",

@@ -10,26 +10,32 @@ namespace CollapseLauncher.ShortcutUtils
 {
     public static class ShortcutCreator
     {
+        public static string GetIconName(GameNameType gameType)
+        {
+            return gameType switch
+            {
+                GameNameType.Genshin => "icon-genshin.ico",
+                GameNameType.StarRail => "icon-starrail.ico",
+                GameNameType.Zenless => "icon-zenless.ico",
+                _ => "icon-honkai.ico",
+            };
+        }
+
         internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
-            string shortcutName = string.Format("{0} ({1}) - Collapse Launcher.url", preset.GameName, preset.ZoneName).Replace(":", "");
-            string url = string.Format("collapse://open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
+            string shortcutName = $"{preset.GameName} ({preset.ZoneName}) - Collapse Launcher.url".Replace(":", "");
+            string url = $"collapse://open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
 
-            if (play)
-                url += " -p";
+            if (play) url += " -p";
 
-            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath), "Assets/Images/GameIcon/" + preset.GameType switch
-            {
-                GameNameType.StarRail => "icon-starrail.ico",
-                GameNameType.Genshin => "icon-genshin.ico",
-                _ => "icon-honkai.ico",
-            });
+            string icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!,
+                                       $"Assets/Images/GameIcon/{GetIconName(preset.GameType)}");
 
             string fullPath = Path.Combine(path, shortcutName);
 
             using (StreamWriter writer = new StreamWriter(fullPath, false))
             {
-                writer.WriteLine(string.Format("[InternetShortcut]\nURL={0}\nIconIndex=0\nIconFile={1}", url, icon));
+                writer.WriteLine($"[InternetShortcut]\nURL={url}\nIconIndex=0\nIconFile={icon}");
             }
         }
 
@@ -37,7 +43,6 @@ namespace CollapseLauncher.ShortcutUtils
         /// 
         /// Source:
         /// https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/blob/8bdee1383446d3b81e240a4300baaf337d48ec92/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
-
         internal static bool AddToSteam(PresetConfig preset, bool play)
         {
             var paths = GetShortcutsPath();
@@ -55,7 +60,7 @@ namespace CollapseLauncher.ShortcutUtils
                 parser.Insert(preset, play);
 
                 parser.Save();
-                LogWriteLine(string.Format("[ShortcutCreator::AddToSteam] Added shortcut for {0} - {1} for Steam3ID {2} ", preset.GameName, preset.ZoneName, userId));
+                LogWriteLine($"[ShortcutCreator::AddToSteam] Added shortcut for {preset.GameName} - {preset.ZoneName} for Steam3ID {userId}");
             }
 
             return true;
