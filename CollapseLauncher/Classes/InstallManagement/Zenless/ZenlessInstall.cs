@@ -16,7 +16,7 @@ namespace CollapseLauncher.InstallManager.Zenless
         #region Override Methods - UninstallGame
         protected override UninstallGameProperty AssignUninstallFolders() => new UninstallGameProperty()
         {
-            gameDataFolderName = "ZZZ_Data",
+            gameDataFolderName = "ZenlessZoneZero_Data",
             foldersToDelete = new string[] { "APMCrashReporter" },
             filesToDelete = new string[] { "mhypbase.dll", "HoYoKProtect.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^ZZZ.*", "^Unity.*" },
             foldersToKeepInData = new string[] { "ScreenShots" }
