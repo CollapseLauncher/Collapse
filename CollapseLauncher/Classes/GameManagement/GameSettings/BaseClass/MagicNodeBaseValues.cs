@@ -3,13 +3,211 @@ using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
 {
+    public enum JsonEnumStoreType
+    {
+        AsNumber,
+        AsString,
+        AsNumberString
+    }
+
+    internal static class MagicNodeBaseValuesExt
+    {
+        internal static JsonNode EnsureCreated<T>([NotNull] this JsonNode node, string keyName)
+            where T : JsonNode
+        {
+            ArgumentNullException.ThrowIfNull(node, nameof(node));
+
+            // Try get if the type is an array or object
+            bool isTryCreateArray = typeof(T) == typeof(JsonArray);
+
+            // Set parent node as object
+            JsonObject parentNodeObj = node.AsObject();
+            JsonNode? valueNode = null;
+
+            // If the value node does not exist, then create and add a new one
+            if (!(parentNodeObj.TryGetPropertyValue(keyName, out valueNode) && valueNode != null))
+            {
+                // Otherwise, create a new empty one.
+                JsonNode? jsonValueNode = isTryCreateArray ?
+                    JsonArray.Create(new JsonElement(), new JsonNodeOptions { PropertyNameCaseInsensitive = true }) :
+                    JsonObject.Create(new JsonElement(), new JsonNodeOptions { PropertyNameCaseInsensitive = true });
+                valueNode = jsonValueNode;
+                parentNodeObj.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValueNode));
+            }
+
+            // If the value node keeps returning null, SCREW IT!!!
+            if (valueNode == null)
+                throw new TypeInitializationException(
+                    nameof(T),
+                    new NullReferenceException(
+                        $"Failed to create the type of {nameof(T)} in the parent node as it is a null!"
+                        ));
+
+            // Return as a reference
+            return valueNode;
+        }
+
+        public static string? GetNodeValue(this JsonNode? node, string keyName, string? defaultValue)
+        {
+            // Get node as object
+            JsonObject? jsonObject = node?.AsObject();
+
+            // If node is null, return the default value
+            if (jsonObject == null) return defaultValue;
+
+            // Try get node as struct value
+            if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
+            {
+                string returnValue = jsonNodeValue.AsValue().GetValue<string>();
+                return returnValue;
+            }
+
+            return defaultValue;
+        }
+
+        public static TValue GetNodeValue<TValue>(this JsonNode? node, string keyName, TValue defaultValue)
+            where TValue : struct
+        {
+            // Get node as object
+            JsonObject? jsonObject = node?.AsObject();
+
+            // If node is null, return the default value
+            if (jsonObject == null) return defaultValue;
+
+            // Try get node as struct value
+            if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
+            {
+                TValue returnValue = jsonNodeValue.AsValue().GetValue<TValue>();
+                return returnValue;
+            }
+
+            return defaultValue;
+        }
+
+        public static TEnum GetNodeValueEnum<TEnum>(this JsonNode? node, string keyName, TEnum defaultValue)
+            where TEnum : struct
+        {
+            // Get node as object
+            JsonObject? jsonObject = node?.AsObject();
+
+            // If node is null, return the default value
+            if (jsonObject == null) return defaultValue;
+
+            // Try get node as struct value
+            if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
+            {
+                // Get the JsonValue representative from the node and get the kind/type
+                JsonValue enumValueRaw = jsonNodeValue.AsValue();
+                JsonValueKind enumValueRawKind = enumValueRaw.GetValueKind();
+
+                // Decide the return value
+                switch (enumValueRawKind)
+                {
+                    case JsonValueKind.Number: // If it's a number
+                        int enumAsInt = (int)enumValueRaw; // Cast JsonValue as int
+                        return EnumFromInt(enumAsInt); // Cast and return it as an enum
+                    case JsonValueKind.String: // If it's a string
+                        string? enumAsString = (string?)enumValueRaw; // Cast JsonValue as string
+
+                        if (Enum.TryParse<TEnum>(enumAsString, true, out TEnum enumParsedFromString)) // Try parse as a named member
+                            return enumParsedFromString; // If successful, return the returned value
+
+                        // If the string is actually a number as a string, then try parse it as int
+                        if (int.TryParse(enumAsString, null, out int enumAsIntFromString))
+                            return EnumFromInt(enumAsIntFromString); // Cast and return it as an enum
+
+                        // Throw if all the attempts were failed
+                        throw new InvalidDataException($"String value: {enumAsString} at key: {keyName} is not a valid member of enum: {nameof(TEnum)}");
+                }
+            }
+
+            TEnum EnumFromInt(int value) => Unsafe.As<int, TEnum>(ref value); // Unsafe casting from int to TEnum
+
+            // Otherwise, return the default value instead
+            return defaultValue;
+        }
+
+        public static void SetNodeValue<TValue>(this JsonNode? node, string keyName, TValue value)
+        {
+            // If node is null, return and ignore
+            if (node == null) return;
+
+            // Get node as object
+            JsonObject? jsonObject = node.AsObject();
+
+            // If node is null, return and ignore
+            if (jsonObject == null) return;
+
+            // Create an instance of the JSON node value
+            JsonValue? jsonValue = JsonValue.Create(value);
+
+            // If the node has object, then assign the new value
+            if (jsonObject.ContainsKey(keyName))
+                node[keyName] = jsonValue;
+            // Otherwise, add it
+            else
+                jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValue));
+        }
+
+        public static void SetNodeValueEnum<TEnum>(this JsonNode? node, string keyName, TEnum value, JsonEnumStoreType enumStoreType = JsonEnumStoreType.AsNumber)
+            where TEnum : struct, Enum
+        {
+            // If node is null, return and ignore
+            if (node == null) return;
+
+            // Get node as object
+            JsonObject? jsonObject = node.AsObject();
+
+            // If node is null, return and ignore
+            if (jsonObject == null) return;
+
+            // Create an instance of the JSON node value
+            JsonValue? jsonValue = enumStoreType switch
+            {
+                JsonEnumStoreType.AsNumber => AsEnumNumber(value),
+                JsonEnumStoreType.AsString => AsEnumString(value),
+                JsonEnumStoreType.AsNumberString => AsEnumNumberString(value),
+                _ => throw new NotSupportedException($"Enum store type: {enumStoreType} is not supported!")
+            };
+
+            // If the node has object, then assign the new value
+            if (jsonObject.ContainsKey(keyName))
+                node[keyName] = jsonValue;
+            // Otherwise, add it
+            else
+                jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValue));
+
+            JsonValue AsEnumNumber(TEnum value)
+            {
+                int enumAsNumber = Unsafe.As<TEnum, int>(ref value);
+                return JsonValue.Create(enumAsNumber);
+            }
+
+            JsonValue? AsEnumString(TEnum value)
+            {
+                string? enumName = Enum.GetName<TEnum>(value);
+                return JsonValue.Create(enumName);
+            }
+
+            JsonValue? AsEnumNumberString(TEnum value)
+            {
+                int enumAsNumber = Unsafe.As<TEnum, int>(ref value);
+                string enumAsNumberString = $"{enumAsNumber}";
+                return JsonValue.Create(enumAsNumberString);
+            }
+        }
+    }
+
     internal class MagicNodeBaseValues<T>
             where T : MagicNodeBaseValues<T>, new()
     {
@@ -102,65 +300,6 @@ namespace CollapseLauncher.GameSettings.Base
             SettingsJsonNode = jsonNode;
             Magic = magic;
             Context = context;
-        }
-
-        protected virtual string GetValue(JsonNode? node, string keyName, string defaultValue)
-        {
-            // Get node as object
-            JsonObject? jsonObject = node?.AsObject();
-
-            // If node is null, return the default value
-            if (jsonObject == null) return defaultValue;
-
-            // Try get node as struct value
-            if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
-            {
-                string returnValue = jsonNodeValue.AsValue().GetValue<string>();
-                return returnValue;
-            }
-
-            return defaultValue;
-        }
-
-        protected virtual TValue GetValue<TValue>(JsonNode? node, string keyName, TValue defaultValue)
-            where TValue : struct
-        {
-            // Get node as object
-            JsonObject? jsonObject = node?.AsObject();
-
-            // If node is null, return the default value
-            if (jsonObject == null) return defaultValue;
-
-            // Try get node as struct value
-            if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
-            {
-                TValue returnValue = jsonNodeValue.AsValue().GetValue<TValue>();
-                return returnValue;
-            }
-
-            return defaultValue;
-        }
-
-        protected virtual void SetValue<TValue>(JsonNode? node, string keyName, TValue value)
-        {
-            // If node is null, return and ignore
-            if (node == null) return;
-
-            // Get node as object
-            JsonObject? jsonObject = node.AsObject();
-
-            // If node is null, return and ignore
-            if (jsonObject == null) return;
-
-            // Create an instance of the JSON node value
-            JsonValue? jsonValue = JsonValue.Create(value);
-
-            // If the node has object, then assign the new value
-            if (jsonObject.ContainsKey(keyName))
-                node[keyName] = jsonValue;
-            // Otherwise, add it
-            else
-                jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValue));
         }
     }
 }
