@@ -3,6 +3,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
@@ -986,6 +987,8 @@ namespace CollapseLauncher.Dialogs
 
             selectBGPath.Visibility = Visibility.Collapsed;
 
+            string bgPathLocation = "";
+
             enableBG.Checked += (sender, _) =>
               {
                   if (sender is CheckBox enableBgCheckBox)
@@ -1005,19 +1008,18 @@ namespace CollapseLauncher.Dialogs
             mainStack.AddElementToStackPanel(mainStackContent);
             mainStackContent.AddElementToStackPanel(enableBG, selectBGPath);
             
-            // choosePathButton.Click += async (_, _) =>
-            //                           {
-            //                               string pathResult = isFileTransfer ? await FileDialogNative.GetFileSavePicker(null, dialogTitle) :
-            //                                   await FileDialogNative.GetFolderPicker(dialogTitle);
-            //
-            //                               choosePathTextBox!.Text = string.IsNullOrEmpty(pathResult) ? null : pathResult;
-            //                           };
-
             selectBGPath.Click += async (_, _) =>
                                   {
-                                      string bgPathLocation =
-                                          await FileDialogNative.GetFilePicker(null, Lang._Dialogs
+                                      bgPathLocation =
+                                          await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats, Lang._Dialogs
                                                                                   .QuickSettingsChangeBGSelectImgDialogTitle);
+                                      if (!string.IsNullOrEmpty(bgPathLocation))
+                                      {
+                                          // Load image
+                                          ImageLoaderHelper.LoadImage(bgPathLocation);
+                                          // FIXME: This will crash if the user loads a video
+                                          
+                                      }
                                   };
             
             return await SpawnDialog(
