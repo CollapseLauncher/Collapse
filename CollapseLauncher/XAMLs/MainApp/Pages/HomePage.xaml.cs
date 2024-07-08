@@ -1942,7 +1942,7 @@ namespace CollapseLauncher.Pages
                 HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
                 MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
-                string lastPlayed = "-";
+                string lastPlayed = "Never Played";
                 if (playtime.LastPlayed != null)
                 {
                     DateTime? last = playtime.LastPlayed?.ToLocalTime();
@@ -1950,71 +1950,13 @@ namespace CollapseLauncher.Pages
                                                       last?.Month, last?.Year, last?.Hour, last?.Minute);
                 }
 
-                Grid grid = new Grid()
-                {
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition(),
-                        new ColumnDefinition()
-                    },
-                    ColumnSpacing = 8,
-                    RowDefinitions =
-                    {
-                        new RowDefinition(),
-                        new RowDefinition(),
-                        new RowDefinition(),
-                        new RowDefinition()
-                    }
-                };
-
-                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_Daily,       playtime.DailyPlaytime);
-                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_Weekly,      playtime.WeeklyPlaytime,  1);
-                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_Monthly,     playtime.MonthlyPlaytime, 2);
-                TimeSpanPanel(grid, Lang._HomePage.GamePlaytime_Stats_LastSession, playtime.LastSession,     3);
-
-                TextBlock lastPlayedBlock = new TextBlock()
-                {
-                    Margin = new Thickness(0, 0, 0, 5),
-                    Inlines =
-                    {
-                        new Run() { Text = "(Started at " },
-                        new Run() { Text = lastPlayed, FontWeight = FontWeights.Bold },
-                        new Run() { Text = ")" }
-                    },
-                    HorizontalAlignment = HorizontalAlignment.Right
-                };
-
-                StackPanel panel = new StackPanel()
-                {
-                    Children =
-                    {
-                        grid,
-                        lastPlayedBlock
-                    }
-                };
-
-                ToolTipService.SetToolTip(PlaytimeBtn, panel);
+                PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
+                PlaytimeStatsWeekly.Text      = FormatTimeStamp(playtime.WeeklyPlaytime);
+                PlaytimeStatsMonthly.Text     = FormatTimeStamp(playtime.MonthlyPlaytime);
+                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);
+                PlaytimeStatsLastPlayed.Text  = lastPlayed;
             });
             return;
-
-            static void TimeSpanPanel(Grid grid, string label, TimeSpan time, int row = 0, bool isLast = false)
-            {
-                TextBlock labelBlock = new TextBlock() { Text = label };
-                Grid.SetColumn(labelBlock, 0);
-                Grid.SetRow(labelBlock, row);
-
-                TextBlock timeBlock = new TextBlock()
-                {
-                    Text                = FormatTimeStamp(time), FontWeight = FontWeights.Bold,
-                    Margin              = new Thickness(0, 0, 0, isLast ? 0 : 5),
-                    HorizontalAlignment = HorizontalAlignment.Right
-                };
-                Grid.SetColumn(timeBlock, 2);
-                Grid.SetRow(timeBlock, row);
-
-                grid.Children.Add(labelBlock);
-                grid.Children.Add(timeBlock);
-            }
 
             static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
         }

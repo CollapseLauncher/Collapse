@@ -164,6 +164,7 @@ namespace CollapseLauncher.GamePlaytime
             WeeklyPlaytime  = TimeSpan.Zero;
             MonthlyPlaytime = TimeSpan.Zero;
             ControlDate     = DateTime.Today;
+            LastPlayed      = null;
 
             if (!_IsDeserializing[_hashID]) Save();
         }

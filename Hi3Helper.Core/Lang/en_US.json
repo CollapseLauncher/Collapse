@@ -166,9 +166,9 @@
     "GamePlaytime_Stats_Title": "Playtime Statistics",
     "GamePlaytime_Stats_LastPlayed": "Last Played At",
     "GamePlaytime_Stats_LastSession": "Last Session",
-    "GamePlaytime_Stats_Daily": "Daily",
-    "GamePlaytime_Stats_Weekly": "Weekly",
-    "GamePlaytime_Stats_Monthly": "Monthly",
+    "GamePlaytime_Stats_Daily": "Today",
+    "GamePlaytime_Stats_Weekly": "Week",
+    "GamePlaytime_Stats_Monthly": "Month",
 
     "PostPanel_Events": "Events",
     "PostPanel_Notices": "Notices",
