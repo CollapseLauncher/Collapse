@@ -35,6 +35,13 @@ public enum FpsOption
     Unlimited
 }
 
+public enum RenderResOption
+{
+    f08,
+    f10,
+    f12
+}
+
 public enum AntiAliasingOption
 {
     Off,

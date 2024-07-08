@@ -173,20 +173,30 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     public bool VSync
     {
         // Initialize the field under _vSyncData as SystemSettingLocalData<TValue>
-        get => (_vSyncData.HasValue ? _vSyncData : _vSyncData = SystemSettingDataMap!
-            .AsSystemSettingLocalData<bool>("8")).Value.GetData();
-        set => _vSyncData?.SetData(value);
+        get =>
+            (_vSyncData.HasValue
+                ? _vSyncData
+                : _vSyncData = SystemSettingDataMap!
+                   .AsSystemSettingLocalData<bool>("8")).Value.GetData();
+        set =>
+            _vSyncData?.SetData(value);
     }
 
-    private SystemSettingLocalData<QualityOption3>? _renderResolutionData;
+    private SystemSettingLocalData<RenderResOption>? _renderResolutionData;
 
     [JsonIgnore]
-    public QualityOption3 RenderResolution
+    public RenderResOption RenderResolution
     {
         // Initialize the field under _renderResolutionData as SystemSettingLocalData<TValue>
-        get => (_renderResolutionData.HasValue ? _renderResolutionData : _renderResolutionData = SystemSettingDataMap!
-            .AsSystemSettingLocalData<QualityOption3>("9", QualityOption3.Medium)).Value.GetDataEnum<QualityOption3>();
-        set => _renderResolutionData?.SetDataEnum(value);
+        get =>
+            (_renderResolutionData.HasValue
+                ? _renderResolutionData
+                : _renderResolutionData = SystemSettingDataMap!
+                   .AsSystemSettingLocalData<RenderResOption>("9",
+                                                              RenderResOption.f10)).Value
+           .GetDataEnum<RenderResOption>();
+        set =>
+            _renderResolutionData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<AntiAliasingOption>? _antiAliasingData;
@@ -195,9 +205,15 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     public AntiAliasingOption AntiAliasing
     {
         // Initialize the field under _antiAliasingData as SystemSettingLocalData<TValue>
-        get => (_antiAliasingData.HasValue ? _antiAliasingData : _antiAliasingData = SystemSettingDataMap!
-            .AsSystemSettingLocalData<AntiAliasingOption>("12")).Value.GetDataEnum<AntiAliasingOption>();
-        set => _antiAliasingData?.SetDataEnum(value);
+        get =>
+            (_antiAliasingData.HasValue
+                ? _antiAliasingData
+                : _antiAliasingData = SystemSettingDataMap!
+                   .AsSystemSettingLocalData<AntiAliasingOption>("12",
+                                                                 AntiAliasingOption.TAA)).Value
+           .GetDataEnum<AntiAliasingOption>();
+        set =>
+            _antiAliasingData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<QualityOption3>? _shadowQualityData;
@@ -206,9 +222,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     public QualityOption3 ShadowQuality
     {
         // Initialize the field under _shadowQualityData as SystemSettingLocalData<TValue>
-        get => (_shadowQualityData.HasValue ? _shadowQualityData : _shadowQualityData = SystemSettingDataMap!
-            .AsSystemSettingLocalData<QualityOption3>("12")).Value.GetDataEnum<QualityOption3>();
-        set => _shadowQualityData?.SetDataEnum(value);
+        get =>
+            (_shadowQualityData.HasValue
+                ? _shadowQualityData
+                : _shadowQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("12",
+                         QualityOption3.Medium)).Value
+                                                .GetDataEnum<QualityOption3>();
+        set =>
+            _shadowQualityData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<QualityOption3>? _fxQualityData;
@@ -216,11 +237,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     [JsonIgnore]
     public QualityOption3 FxQuality
     {
-        get => (_fxQualityData.HasValue
+        get =>
+            (_fxQualityData.HasValue
                 ? _fxQualityData
-                : _fxQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("16")).Value
-           .GetDataEnum<QualityOption3>();
-        set => _fxQualityData?.SetDataEnum(value);
+                : _fxQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("16", 
+                    QualityOption3.Medium)).Value
+                                           .GetDataEnum<QualityOption3>();
+        set =>
+            _fxQualityData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<QualityOption3>? _colorQualityData;
@@ -228,11 +252,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     [JsonIgnore]
     public QualityOption3 ColorQuality
     {
-        get => (_colorQualityData.HasValue
+        get =>
+            (_colorQualityData.HasValue
                 ? _colorQualityData
-                : _colorQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108")).Value
-           .GetDataEnum<QualityOption3>();
-        set => _colorQualityData?.SetDataEnum(value);
+                : _colorQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108",
+                    QualityOption3.Medium)).Value
+                                           .GetDataEnum<QualityOption3>();
+        set =>
+            _colorQualityData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<QualityOption2>? _charQualityData;
@@ -240,11 +267,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     [JsonIgnore]
     public QualityOption2 CharacterQuality
     {
-        get => (_charQualityData.HasValue
+        get =>
+            (_charQualityData.HasValue
                 ? _charQualityData
-                : _charQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("99")).Value
-           .GetDataEnum<QualityOption2>();
-        set => _charQualityData?.SetDataEnum(value);
+                : _charQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("99",
+                    QualityOption2.High)).Value
+                                         .GetDataEnum<QualityOption2>();
+        set =>
+            _charQualityData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<QualityOption2>? _envQualityData;
@@ -252,11 +282,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     [JsonIgnore]
     public QualityOption2 EnvironmentQuality
     {
-        get => (_envQualityData.HasValue
+        get =>
+            (_envQualityData.HasValue
                 ? _envQualityData
-                : _envQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("109")).Value
-           .GetDataEnum<QualityOption2>();
-        set => _envQualityData?.SetDataEnum(value);
+                : _envQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("109",
+                    QualityOption2.High)).Value
+                                         .GetDataEnum<QualityOption2>();
+        set =>
+            _envQualityData?.SetDataEnum(value);
     }
 
     private SystemSettingLocalData<QualityOption4>? _reflQualityData;
@@ -264,11 +297,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     [JsonIgnore]
     public QualityOption4 ReflectionQuality
     {
-        get => (_reflQualityData.HasValue
+        get =>
+            (_reflQualityData.HasValue
                 ? _reflQualityData
-                : _reflQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption4>("15")).Value
-           .GetDataEnum<QualityOption4>();
-        set => _reflQualityData?.SetDataEnum(value);
+                : _reflQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption4>("15",
+                    QualityOption4.Medium)).Value
+                                           .GetDataEnum<QualityOption4>();
+        set =>
+            _reflQualityData?.SetDataEnum(value);
     }
     
     
