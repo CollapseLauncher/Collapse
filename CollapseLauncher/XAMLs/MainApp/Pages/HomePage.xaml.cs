@@ -950,6 +950,10 @@ namespace CollapseLauncher.Pages
 
                 PlaytimeIdleStack.Visibility = Visibility.Visible;
                 PlaytimeRunningStack.Visibility = Visibility.Collapsed;
+                
+            #if !DISABLEDISCORD
+                AppDiscordPresence?.SetActivity(ActivityType.Idle);
+            #endif
             }
             catch (TaskCanceledException)
             {

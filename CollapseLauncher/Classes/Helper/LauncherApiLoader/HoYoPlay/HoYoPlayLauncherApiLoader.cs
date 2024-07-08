@@ -31,7 +31,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                     await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken);
 
             HoYoPlayLauncherResources? hypResourceResponse = await hypResourceResponseCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
 
             HoYoPlayLauncherResources? hypPluginResource = null;
             HoYoPlayLauncherResources? hypSdkResource = null;
@@ -42,7 +42,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                         await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default, innerToken);
 
                 hypPluginResource = await hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                  ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                  ExecutionTimeoutAttempt, onTimeoutRoutine, token);
             }
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
@@ -52,7 +52,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                         await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherResources>(PresetConfig?.LauncherGameChannelSDKURL, InternalAppJSONContext.Default, innerToken);
 
                 hypSdkResource = await hypSdkResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                               ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                               ExecutionTimeoutAttempt, onTimeoutRoutine, token);
             }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest();
@@ -326,9 +326,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                     await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherNews>(launcherNewsUrl, InternalAppJSONContext.Default, innerToken);
 
             HoYoPlayLauncherNews? hypLauncherBackground = await hypLauncherBackgroundCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
             HoYoPlayLauncherNews? hypLauncherNews = await hypLauncherNewsCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
 
             // Merge background image
             if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)
@@ -465,7 +465,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                     await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(launcherGameInfoUrl, InternalAppJSONContext.Default, innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await hypLauncherGameInfoCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
 
             HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
             if (hypLauncherGameInfo != null)

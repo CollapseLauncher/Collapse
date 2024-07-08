@@ -47,13 +47,13 @@ namespace CollapseLauncher
                     )
                 {
                     // Assign a task depends on the asset type
-                    ConfiguredTaskAwaitable assetTask = (asset.FT switch
+                    Task assetTask = (asset.FT switch
                     {
                         FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient, token),
                         FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient, token),
                         FileType.Video => RepairAssetTypeVideo(asset, _httpClient, token),
                         _ => RepairAssetTypeGeneric(asset, _httpClient, token)
-                    }).ConfigureAwait(false);
+                    });
 
                     // Await the task
                     await assetTask;

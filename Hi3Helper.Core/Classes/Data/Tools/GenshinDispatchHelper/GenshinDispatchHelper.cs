@@ -48,7 +48,7 @@ namespace Hi3Helper.Data
                 Console.WriteLine(dFormat);
                 Logger.WriteLog(dFormat, LogType.Default);
 #endif
-                await this._httpClient!.Download(DispatchBaseURL, s, null, null, cancelToken).ConfigureAwait(false);
+                await this._httpClient!.Download(DispatchBaseURL, s, null, null, cancelToken);
                 s.Position = 0;
                 DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), CoreLibraryJSONContext.Default);
             }
@@ -83,7 +83,7 @@ namespace Hi3Helper.Data
 
             ParseGameResPkgProp(ref returnValProp);
             ParseDesignDataURL(ref returnValProp);
-            await ParseAudioAssetsURL(returnValProp).ConfigureAwait(false);
+            await ParseAudioAssetsURL(returnValProp);
         }
 
         private void ParseDesignDataURL(ref QueryProperty ValProp)
@@ -136,7 +136,7 @@ namespace Hi3Helper.Data
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await this._httpClient!.Download(ConverterTool.CombineURLFromString(ValProp!.ClientGameResURL, "/StandaloneWindows64/base_revision"), response, null, null, cancelToken).ConfigureAwait(false);
+                await this._httpClient!.Download(ConverterTool.CombineURLFromString(ValProp!.ClientGameResURL, "/StandaloneWindows64/base_revision"), response, null, null, cancelToken);
                 string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
 
                 ValProp.ClientAudioAssetsURL = string.Format("{0}/output_{1}_{2}/client",

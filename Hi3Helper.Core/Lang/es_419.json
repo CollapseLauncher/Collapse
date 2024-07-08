@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Pausar/Cancelar",
     "DownloadBtn": "Descargar el Juego",
 
+    "GameStatusPlaceholderComingSoonBtn": "Próximamente",
+    "GameStatusPlaceholderPreRegisterBtn": "¡Pre-regístrate ahora!",
+
     "GameSettingsBtn": "Ajustes Rápidos",
     "GameSettings_Panel1": "Configuración Rápida",
     "GameSettings_Panel1OpenGameFolder": "Abrir Carpeta del Juego",
@@ -607,6 +610,8 @@
     "DiscordRP_Default": "Sin actividad",
     "DiscordRP_Ad": "- Con Collapse Launcher",
     "DiscordRP_Region": "Región:",
+
+    "DownloadModeLabelSophon": "Modo Sophon",
 
     "Taskbar_PopupHelp1": "Haz clic para llevar Collapse al primer plano.",
     "Taskbar_PopupHelp2": "Hacer doble clic para alternar la visibilidad de las ventanas",

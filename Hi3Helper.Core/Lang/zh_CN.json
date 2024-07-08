@@ -133,6 +133,9 @@
     "PauseCancelBtn": "暂停/取消",
     "DownloadBtn": "下载游戏",
 
+    "GameStatusPlaceholderComingSoonBtn": "即将推出",
+    "GameStatusPlaceholderPreRegisterBtn": "立即预注册！",
+
     "GameSettingsBtn": "快速设置",
     "GameSettings_Panel1": "快速设置",
     "GameSettings_Panel1OpenGameFolder": "打开游戏文件夹",
@@ -607,6 +610,8 @@
     "DiscordRP_Default": "没有活动",
     "DiscordRP_Ad": "- 使用 Collapse 启动器",
     "DiscordRP_Region": "区服：",
+
+    "DownloadModeLabelSophon": "Sophon 模式",
 
     "Taskbar_PopupHelp1": "单击将 Collapse 置顶",
     "Taskbar_PopupHelp2": "双击切换窗口可见性",

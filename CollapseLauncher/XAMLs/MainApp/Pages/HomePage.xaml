@@ -1476,7 +1476,8 @@
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Left"
                                         Click="StopGameButton_Click"
-                                        CornerRadius="14">
+                                        CornerRadius="14"
+                                        IsEnabled="False">
                                     <Button.Content>
                                         <Grid Margin="4,0">
                                             <Grid.ColumnDefinitions>

@@ -216,7 +216,7 @@ namespace CollapseLauncher.Helper.Background
                                                                  ColorThief.GetColor(bitmapInput.Buffer,
                                                                      bitmapInput.Channel, bitmapInput.Width,
                                                                      bitmapInput.Height, 1))
-                                                        .ConfigureAwait(false);
+                                                        ;
 
                 WColor wColor        = DrawingColorToColor(averageColor);
                 WColor adjustedColor = wColor.SetSaturation(1.5);
