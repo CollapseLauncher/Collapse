@@ -1,4 +1,5 @@
 using CollapseLauncher.GameSettings.Base;
+using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
 using CollapseLauncher.Interfaces;
 using System.Collections.Generic;
@@ -29,14 +30,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     public int SelectedServerIndex { get; set; } = 0;
 
     [JsonPropertyName("DeviceLanguageType")]
-    public int DeviceLanguageType { get; set; } = -1;
+    public LanguageText DeviceLanguageType { get; set; } = LanguageText.Unset;
 
     [JsonPropertyName("DeviceLanguageVoiceType")]
-    public int DeviceLanguageVoiceType
-    {
-        get => GetValue(SettingsJsonNode, "DeviceLanguageVoiceType", -1); // Set the default value here
-        set => SetValue(SettingsJsonNode, "DeviceLanguageVoiceType", value);
-    }
+    public LanguageVoice DeviceLanguageVoiceType { get; set; } = LanguageVoice.Unset;
 
     [JsonPropertyName("selectServerName")]
     public string? SelectedServerName
