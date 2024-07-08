@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
@@ -19,8 +20,6 @@ using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Dialogs
@@ -1005,6 +1004,21 @@ namespace CollapseLauncher.Dialogs
 
             mainStack.AddElementToStackPanel(mainStackContent);
             mainStackContent.AddElementToStackPanel(enableBG, selectBGPath);
+            
+            // choosePathButton.Click += async (_, _) =>
+            //                           {
+            //                               string pathResult = isFileTransfer ? await FileDialogNative.GetFileSavePicker(null, dialogTitle) :
+            //                                   await FileDialogNative.GetFolderPicker(dialogTitle);
+            //
+            //                               choosePathTextBox!.Text = string.IsNullOrEmpty(pathResult) ? null : pathResult;
+            //                           };
+
+            selectBGPath.Click += async (_, _) =>
+                                  {
+                                      string bgPathLocation =
+                                          await FileDialogNative.GetFilePicker(null, Lang._Dialogs
+                                                                                  .QuickSettingsChangeBGSelectImgDialogTitle);
+                                  };
             
             return await SpawnDialog(
                                      Lang._Dialogs.QuickSettingsChangeBGTitle,

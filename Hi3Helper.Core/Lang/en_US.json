@@ -758,6 +758,7 @@
 
     "QuickSettingsChangeBGTitle": "Change Region Background",
     "QuickSettingsChangeBGSubtitle": "Please toggle custom region background using the checkbox below. The allowed formats are: PLACEHOLDER.",
+    "QuickSettingsChangeBGSelectImgDialogTitle": "Select an image",
     
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
