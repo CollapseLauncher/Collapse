@@ -1,61 +1,75 @@
-using CollapseLauncher.GameSettings.Zenless.Context;
-using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Statics;
-using Hi3Helper;
-using System;
-using System.IO;
-using static Hi3Helper.Logger;
+using CollapseLauncher.GameSettings.Base;
+using CollapseLauncher.GameSettings.Zenless.JsonProperties;
+using CollapseLauncher.Interfaces;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.GameSettings.Zenless;
 
-internal class GeneralData
+internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValueMagic<GeneralData>
 {
     #region Fields
 #nullable enable
-    private static GamePresetProperty? _gamePresetProperty;
-    private static GamePresetProperty ZenlessGameProperty
-    {
-        get
-        {
-            if (_gamePresetProperty != null) return _gamePresetProperty;
-            _gamePresetProperty = GamePropertyVault.GetCurrentGameProperty();
-            if (_gamePresetProperty._GamePreset.GameType != GameNameType.Zenless)
-                throw new InvalidDataException("[ZenlessSettings] GameProperty value is not Zenless!");
-            return _gamePresetProperty;
-        }
-    }
-
-    private static string gameFolder    = ZenlessGameProperty._GameVersion.GameDirPath;
-    private static string gameExec      = Path.GetFileNameWithoutExtension(ZenlessGameProperty._GamePreset.GameExecutableName!);
-    private static string configFileLoc = $@"{gameExec}_Data\Persistent\LocalStorage\GENERAL_DATA.bin";
-
-    private static string configFile = Path.Join(gameFolder, configFileLoc);
     #endregion
 
-    #region Methods
+    #region Properties
+    [JsonPropertyName("$Type")]
+    public string? TypeString { get; set; } = "MoleMole.GeneralLocalDataItem";
 
-    public static GeneralData Load(byte[] magic)
+    [JsonPropertyName("deviceUUID")]
+    public string? DeviceUUID { get; set; }
+
+    [JsonPropertyName("userLocalDataVersionId")]
+    public string? UserLocalDataVersionId { get; set; } = "0.0.1";
+
+    [JsonPropertyName("curAccountName")]
+    public string? CurrentAccountName { get; set; }
+
+    [JsonPropertyName("selectedServerIndex")]
+    public int SelectedServerIndex { get; set; } = 0;
+
+    [JsonPropertyName("DeviceLanguageType")]
+    public int DeviceLanguageType { get; set; } = -1;
+
+    [JsonPropertyName("DeviceLanguageVoiceType")]
+    public int DeviceLanguageVoiceType
     {
-        try
-        {
-            if (!File.Exists(configFile)) throw new FileNotFoundException("Zenless settings not found!");
-            byte[] input = File.ReadAllBytes(configFile);
-            string raw = Decode.RunDecode(input, magic);
-
-        #if DEBUG
-            LogWriteLine($"RAW Zenless Settings: {configFile}\r\n" +
-                         $"{raw}", LogType.Debug, true);
-        #endif
-            GeneralData data = raw.Deserialize<GeneralData>(ZenlessSettingsJSONContext.Default) ?? new GeneralData();
-            return data;
-        }
-        catch (Exception ex)
-        {
-            LogWriteLine($"Failed to parse Zenless settings\r\n{ex}", LogType.Error, true);
-            return new GeneralData();
-        }
+        get => GetValue(SettingsJsonNode, "DeviceLanguageVoiceType", -1); // Set the default value here
+        set => SetValue(SettingsJsonNode, "DeviceLanguageVoiceType", value);
     }
 
-    
+    [JsonPropertyName("selectServerName")]
+    public string? SelectedServerName
+    {
+        get => GetValue(SettingsJsonNode, "selectServerName", "prod_gf_jp"); // Set the default value here
+        set => SetValue(SettingsJsonNode, "selectServerName", value);
+    }
+
+    [JsonPropertyName("SystemSettingDataMap")]
+    public Dictionary<string, SystemSettingDataMap> SystemSettingDataMap { get; set; } = new Dictionary<string, SystemSettingDataMap>();
+
+    [JsonPropertyName("KeyboardBindingMap")]
+    public Dictionary<string, SystemSettingDataMap> KeyboardBindingMap { get; set; } = new Dictionary<string, SystemSettingDataMap>();
+
+    [JsonPropertyName("MouseBindingMap")]
+    public Dictionary<string, SystemSettingDataMap> MouseBindingMap { get; set; } = new Dictionary<string, SystemSettingDataMap>();
+
+    [JsonPropertyName("GamepadBindingMap")]
+    public Dictionary<string, SystemSettingDataMap> GamepadBindingMap { get; set; } = new Dictionary<string, SystemSettingDataMap>();
+
+    [JsonPropertyName("HDRSettingRecordState")]
+    public int HDRSettingRecordState { get; set; } = 0;
+
+    [JsonPropertyName("HDRMaxLuminosityLevel")]
+    public int HDRMaxLuminosityLevel { get; set; } = -1;
+
+    [JsonPropertyName("HDRUIPaperWhiteLevel")]
+    public int HDRUIPaperWhiteLevel { get; set; } = -1;
+
+    [JsonPropertyName("LastVHSStoreOpenTime")]
+    public string? LastVHSStoreOpenTime { get; set; } = "01/01/0001 00:00:00";
+
+    [JsonPropertyName("DisableBattleUIOptimization")]
+    public bool DisableBattleUIOptimization { get; set; } = false;
     #endregion
 }

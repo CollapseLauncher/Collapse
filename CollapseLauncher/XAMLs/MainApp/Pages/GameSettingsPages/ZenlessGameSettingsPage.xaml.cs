@@ -151,8 +151,8 @@
                     #if !GSPBYPASSGAMERUNNING
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._ZenlessGameSettingsPage.OverlayGameRunningTitle;
-                    OverlaySubtitle.Text = Lang._ZenlessGameSettingsPage.OverlayGameRunningSubtitle;
+                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
+                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
                     #endif
                 }
                 else if (GameInstallationState == GameInstallStateEnum.NotInstalled

@@ -25,7 +25,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             Fullscreen = 1,
             Something,
-            SomethingElse
+            Windowed
         }
 
         #endregion
@@ -91,7 +91,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         /// Range: 0 - 1
         /// Default: 1
         /// </summary>
-        public FullScreenMode fullscreen { get; set; }
+        public FullScreenMode fullscreen { get; set; } = FullScreenMode.Fullscreen;
 
         public override bool isfullScreen
         {
@@ -103,7 +103,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             set => fullscreen = value switch
             {
                 true => FullScreenMode.Fullscreen,
-                _ => 0,
+                false => FullScreenMode.Windowed,
             };
         }
         #endregion
@@ -125,9 +125,10 @@ namespace CollapseLauncher.GameSettings.Zenless
                     int height = (int)valueHeight;
                     FullScreenMode fullscreen = (FullScreenMode)valueFullscreen;
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerWidth} : {width}", LogType.Debug, true);
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
+                    LogWriteLine($"Loaded Zenless Settings:\r\n\t" +
+                                 $"{_ValueNameScreenManagerWidth} : {width}\r\n\t" +
+                                 $"{_ValueNameScreenManagerHeight} : {height}\r\n\t" +
+                                 $"{_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
 #endif
                     return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
                 }
@@ -155,9 +156,10 @@ namespace CollapseLauncher.GameSettings.Zenless
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
 #if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
-                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
-                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+                LogWriteLine($"Saved Zenless Settings:]\r\n\t" +
+                             $"{_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}\r\n\t" +
+                             $"{_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}\r\n\t" +
+                             $"{_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
