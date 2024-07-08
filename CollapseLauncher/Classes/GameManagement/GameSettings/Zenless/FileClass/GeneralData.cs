@@ -2,6 +2,8 @@ using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
+using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -151,6 +153,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     #endregion
 
     #region Single Node Dependent Properties
+
+    #region Graphics
+
     private SystemSettingLocalData<FpsOption>? _fpsData;
 
     [JsonIgnore]
@@ -195,15 +200,106 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         set => _antiAliasingData?.SetDataEnum(value);
     }
 
-    private SystemSettingLocalData<AntiAliasingOption>? _shadowQualityData;
+    private SystemSettingLocalData<QualityOption3>? _shadowQualityData;
 
     [JsonIgnore]
-    public AntiAliasingOption ShadowQuality
+    public QualityOption3 ShadowQuality
     {
         // Initialize the field under _shadowQualityData as SystemSettingLocalData<TValue>
         get => (_shadowQualityData.HasValue ? _shadowQualityData : _shadowQualityData = SystemSettingDataMap!
-            .AsSystemSettingLocalData<AntiAliasingOption>("12")).Value.GetDataEnum<AntiAliasingOption>();
+            .AsSystemSettingLocalData<QualityOption3>("12")).Value.GetDataEnum<QualityOption3>();
         set => _shadowQualityData?.SetDataEnum(value);
     }
+
+    private SystemSettingLocalData<QualityOption3>? _fxQualityData;
+
+    [JsonIgnore]
+    public QualityOption3 FxQuality
+    {
+        get => (_fxQualityData.HasValue
+                ? _fxQualityData
+                : _fxQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("16")).Value
+           .GetDataEnum<QualityOption3>();
+        set => _fxQualityData?.SetDataEnum(value);
+    }
+
+    private SystemSettingLocalData<QualityOption3>? _colorQualityData;
+
+    [JsonIgnore]
+    public QualityOption3 ColorQuality
+    {
+        get => (_colorQualityData.HasValue
+                ? _colorQualityData
+                : _colorQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108")).Value
+           .GetDataEnum<QualityOption3>();
+        set => _colorQualityData?.SetDataEnum(value);
+    }
+
+    private SystemSettingLocalData<QualityOption2>? _charQualityData;
+
+    [JsonIgnore]
+    public QualityOption2 CharacterQuality
+    {
+        get => (_charQualityData.HasValue
+                ? _charQualityData
+                : _charQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("99")).Value
+           .GetDataEnum<QualityOption2>();
+        set => _charQualityData?.SetDataEnum(value);
+    }
+
+    private SystemSettingLocalData<QualityOption2>? _envQualityData;
+
+    [JsonIgnore]
+    public QualityOption2 EnvironmentQuality
+    {
+        get => (_envQualityData.HasValue
+                ? _envQualityData
+                : _envQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("109")).Value
+           .GetDataEnum<QualityOption2>();
+        set => _envQualityData?.SetDataEnum(value);
+    }
+
+    private SystemSettingLocalData<QualityOption4>? _reflQualityData;
+
+    [JsonIgnore]
+    public QualityOption4 ReflectionQuality
+    {
+        get => (_reflQualityData.HasValue
+                ? _reflQualityData
+                : _reflQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption4>("15")).Value
+           .GetDataEnum<QualityOption4>();
+        set => _reflQualityData?.SetDataEnum(value);
+    }
+    
+    
+
     #endregion
+    #endregion
+
+    [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!", true)]
+    public new static GeneralData Load() => throw new NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");
+
+    public new static GeneralData LoadWithMagic(byte[]                magic, SettingsGameVersionManager versionManager,
+                                                JsonSerializerContext context)
+    {
+        var returnVal    = Base.MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, context);
+        
+    #if DEBUG
+        const bool isPrintDebug = true;
+        if (isPrintDebug)
+        {
+            Logger.LogWriteLine($"Zenless GeneralData parsed value:\r\n\t" +
+                                $"FPS   : {returnVal.Fps}\r\n\t" +
+                                $"VSync : {returnVal.VSync}\r\n\t" +
+                                $"RenRes: {returnVal.RenderResolution}\r\n\t" +
+                                $"AA    : {returnVal.AntiAliasing}\r\n\t" +
+                                $"Shadow: {returnVal.ShadowQuality}\r\n\t" +
+                                $"CharQ : {returnVal.CharacterQuality}\r\n\t" +
+                                $"RelfQ : {returnVal.ReflectionQuality}\r\n\t",
+                                LogType.Debug, true);
+        }
+    #endif
+        
+        return returnVal;
+    }
 }

@@ -1,7 +1,7 @@
 // ReSharper disable InconsistentNaming
 namespace CollapseLauncher.GameSettings.Zenless.Enums;
 
-enum LanguageText
+public enum LanguageText
 {
     Unset = -1,
     en_us = 1,
@@ -19,7 +19,7 @@ enum LanguageText
     id_id = 13
 }
 
-enum LanguageVoice
+public enum LanguageVoice
 {
     Unset = -1,
     en_us = 1,
@@ -28,34 +28,34 @@ enum LanguageVoice
     ko_kr = 4
 }
 
-enum FpsOption
+public enum FpsOption
 {
     Lo30,
     Hi60,
     Unlimited
 }
 
-enum AntiAliasingOption
+public enum AntiAliasingOption
 {
     Off,
     TAA,
     SMAA
 }
 
-enum QualityOption2
+public enum QualityOption2
 {
     Low,
     High
 }
 
-enum QualityOption3
+public enum QualityOption3
 {
     Low,
     Medium,
     High
 }
 
-enum QualityOption4
+public enum QualityOption4
 {
     Off,
     Low,
@@ -63,7 +63,7 @@ enum QualityOption4
     High
 }
 
-enum AudioPlaybackDevice
+public enum AudioPlaybackDevice
 {
     Headphones,
     Speakers,
