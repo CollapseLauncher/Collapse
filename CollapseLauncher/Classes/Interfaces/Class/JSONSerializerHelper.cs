@@ -220,6 +220,9 @@ namespace CollapseLauncher
                     // Try serialize the type into JSON string
                     JsonSerializer.Serialize(writer, data, typeInfo);
 
+                    // Flush the writter
+                    writer.Flush();
+
                     // Write the buffer to string
                     ReadOnlySpan<byte> buffer = jsonBufferWriter.WrittenSpan;
                     string returnValue = Encoding.UTF8.GetString(buffer);
@@ -261,6 +264,9 @@ namespace CollapseLauncher
 
                     // Try serialize the JSON Node into JSON string
                     node.WriteTo(writer, jsonOptions);
+
+                    // Flush the writter
+                    writer.Flush();
 
                     // Write the buffer to string
                     ReadOnlySpan<byte> buffer = jsonBufferWriter.WrittenSpan;
