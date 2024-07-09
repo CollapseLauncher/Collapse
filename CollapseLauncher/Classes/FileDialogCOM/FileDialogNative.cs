@@ -25,19 +25,19 @@ namespace CollapseLauncher.FileDialogCOM
         public static void InitHandlerPointer(IntPtr handle) => parentHandler = handle;
 
         public static async ValueTask<string> GetFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
-            (string)await GetPickerOpenTask<string>(string.Empty, FileTypeFilter, title).ConfigureAwait(false);
+            (string)await GetPickerOpenTask<string>(string.Empty, FileTypeFilter, title);
 
         public static async ValueTask<string[]> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
-            (string[])await GetPickerOpenTask<string[]>(Array.Empty<string>(), FileTypeFilter, title, true).ConfigureAwait(false);
+            (string[])await GetPickerOpenTask<string[]>(Array.Empty<string>(), FileTypeFilter, title, true);
 
         public static async ValueTask<string> GetFolderPicker(string title = null) =>
-            (string)await GetPickerOpenTask<string>(string.Empty, null, title, false, true).ConfigureAwait(false);
+            (string)await GetPickerOpenTask<string>(string.Empty, null, title, false, true);
 
         public static async ValueTask<string[]> GetMultiFolderPicker(string title = null) =>
-            (string[])await GetPickerOpenTask<string[]>(Array.Empty<string>(), null, title, true, true).ConfigureAwait(false);
+            (string[])await GetPickerOpenTask<string[]>(Array.Empty<string>(), null, title, true, true);
 
         public static async ValueTask<string> GetFileSavePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
-            await GetPickerSaveTask<string>(string.Empty, FileTypeFilter, title).ConfigureAwait(false);
+            await GetPickerSaveTask<string>(string.Empty, FileTypeFilter, title);
 
         private static ValueTask<object> GetPickerOpenTask<T>(object defaultValue, Dictionary<string, string> FileTypeFilter = null,
             string title = null, bool isMultiple = false, bool isFolder = false)

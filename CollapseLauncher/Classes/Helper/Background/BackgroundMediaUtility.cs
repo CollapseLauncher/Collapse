@@ -61,7 +61,7 @@ namespace CollapseLauncher.Helper.Background
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
         internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) => {
-            await action.ConfigureAwait(false);
+            await action;
         },
         new ExecutionDataflowBlockOptions
         {

@@ -133,6 +133,9 @@
     "PauseCancelBtn": "一時停止/キャンセル",
     "DownloadBtn": "ダウンロード",
 
+    "GameStatusPlaceholderComingSoonBtn": "乞うご期待",
+    "GameStatusPlaceholderPreRegisterBtn": "今すぐ事前登録！",
+
     "GameSettingsBtn": "クイック設定",
     "GameSettings_Panel1": "クイック設定",
     "GameSettings_Panel1OpenGameFolder": "ゲームフォルダーを開く",
@@ -607,6 +610,8 @@
     "DiscordRP_Default": "放置",
     "DiscordRP_Ad": "- Collapse Launcherから起動",
     "DiscordRP_Region": "サーバー:",
+
+    "DownloadModeLabelSophon": "Sophonモード",
 
     "Taskbar_PopupHelp1": "クリックでCollapseを最前面で開く",
     "Taskbar_PopupHelp2": "ダブルクリックでウィンドウの表示/非表示を切り替え",

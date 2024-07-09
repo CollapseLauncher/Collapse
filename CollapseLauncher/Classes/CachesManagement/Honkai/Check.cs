@@ -46,7 +46,7 @@ namespace CollapseLauncher
                 }, async (asset, localToken) =>
                 {
                     await CheckAsset(asset, returnAsset, localToken);
-                }).ConfigureAwait(false);
+                });
             }
             catch (AggregateException ex)
             {

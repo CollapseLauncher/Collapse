@@ -188,7 +188,7 @@ namespace CollapseLauncher
             try
             {
                 // Get the Dispatcher Query
-                QueryProperty queryProperty = await GetDispatcherQuery(_httpClient, token).ConfigureAwait(false);
+                QueryProperty queryProperty = await GetDispatcherQuery(_httpClient, token);
 
                 // Initialize persistent folder path and check for the folder existence
                 string basePersistentPath = $"{_execPrefix}_Data\\Persistent";

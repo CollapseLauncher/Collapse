@@ -60,7 +60,7 @@ namespace CollapseLauncher
                             await CheckAsset(asset, returnAsset, baseIFixPathPersistent, baseIFixPathStreaming, threadToken);
                             break;
                     }
-                }).ConfigureAwait(false);
+                });
             }
             catch (AggregateException ex)
             {
