@@ -298,11 +298,6 @@ namespace CollapseLauncher.GameSettings.Base
             // Generate dummy data
             T data = new T();
 
-            if (data is GeneralData generalData)
-            {
-                Console.WriteLine(generalData.AntiAliasing);
-            }
-
             // Generate raw JSON string
             string rawJson = data.Serialize(context, false, false);
 
