@@ -65,7 +65,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             base.SaveSettings();
             SettingsScreen.Save();
-            //GeneralData.Save();
+            GeneralData.Save();
         }
 
         public override IGameSettingsUniversal AsIGameSettingsUniversal() => this;

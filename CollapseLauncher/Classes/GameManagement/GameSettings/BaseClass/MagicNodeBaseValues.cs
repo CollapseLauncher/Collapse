@@ -3,7 +3,6 @@ using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -333,6 +332,7 @@ namespace CollapseLauncher.GameSettings.Base
         protected virtual void InjectNodeAndMagic(JsonNode? jsonNode, byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
         {
             SettingsJsonNode = jsonNode;
+            GameVersionManager = versionManager;
             Magic = magic;
             Context = context;
         }
