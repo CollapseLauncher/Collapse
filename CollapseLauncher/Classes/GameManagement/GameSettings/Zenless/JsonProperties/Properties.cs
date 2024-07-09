@@ -46,7 +46,7 @@ public static class SystemSettingLocalDataExt
     {
         ArgumentNullException.ThrowIfNull(node, nameof(node));
 
-        JsonNode ensuredNode = node.EnsureCreated<JsonObject>(keyName);
+        JsonNode ensuredNode = node.EnsureCreatedObject(keyName);
         SystemSettingLocalData<TData> map = new SystemSettingLocalData<TData>(ensuredNode, defaultData, defaultVersion);
         return map;
     }

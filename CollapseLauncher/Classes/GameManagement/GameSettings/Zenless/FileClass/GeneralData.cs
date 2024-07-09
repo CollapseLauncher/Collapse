@@ -25,7 +25,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         // Cache the SystemSettingDataMap inside of the parent SettingsJsonNode
         // and ensure that the node for SystemSettingDataMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _systemSettingDataMap ??= SettingsJsonNode?.EnsureCreated<JsonNode>("SystemSettingDataMap");
+        get => _systemSettingDataMap ??= SettingsJsonNode.EnsureCreatedObject("SystemSettingDataMap");
     }
 
     [JsonPropertyName("KeyboardBindingMap")]
@@ -35,7 +35,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         // Cache the KeyboardBindingMap inside of the parent SettingsJsonNode
         // and ensure that the node for KeyboardBindingMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _keyboardBindingMap ??= SettingsJsonNode?.EnsureCreated<JsonNode>("KeyboardBindingMap");
+        get => _keyboardBindingMap ??= SettingsJsonNode.EnsureCreatedObject("KeyboardBindingMap");
     }
 
     [JsonPropertyName("MouseBindingMap")]
@@ -45,7 +45,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         // Cache the MouseBindingMap inside of the parent SettingsJsonNode
         // and ensure that the node for MouseBindingMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _mouseBindingMap ??= SettingsJsonNode?.EnsureCreated<JsonNode>("MouseBindingMap");
+        get => _mouseBindingMap ??= SettingsJsonNode.EnsureCreatedObject("MouseBindingMap");
     }
 
     [JsonPropertyName("GamepadBindingMap")]
@@ -55,7 +55,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         // Cache the GamepadBindingMap inside of the parent SettingsJsonNode
         // and ensure that the node for GamepadBindingMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _gamepadBindingMap ??= SettingsJsonNode?.EnsureCreated<JsonNode>("GamepadBindingMap");
+        get => _gamepadBindingMap ??= SettingsJsonNode.EnsureCreatedObject("GamepadBindingMap");
     }
     #endregion
 
@@ -472,7 +472,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     public new static GeneralData LoadWithMagic(byte[]                magic, SettingsGameVersionManager versionManager,
                                                 JsonSerializerContext context)
     {
-        var returnVal    = Base.MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, context);
+        var returnVal    = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, context);
         
     #if DEBUG
         const bool isPrintDebug = true;

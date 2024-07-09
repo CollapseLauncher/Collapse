@@ -22,27 +22,53 @@ namespace CollapseLauncher.GameSettings.Base
 
     internal static class MagicNodeBaseValuesExt
     {
-        internal static JsonNode EnsureCreated<T>([NotNull] this JsonNode node, string keyName)
+        internal static JsonObject EnsureCreatedObject(this JsonNode? node, string keyName)
+        {
+            // If the node is empty, then create a new instance of it
+            if (node == null)
+                node = new JsonObject();
+
+            // Return
+            return node.EnsureCreatedInner<JsonObject>(keyName);
+        }
+
+        internal static JsonArray EnsureCreatedArray(this JsonNode? node, string keyName)
+        {
+            // If the node is empty, then create a new instance of it
+            if (node == null)
+                node = new JsonArray();
+
+            // Return
+            return node.EnsureCreatedInner<JsonArray>(keyName);
+        }
+
+        private static T EnsureCreatedInner<T>(this JsonNode? node, string keyName)
             where T : JsonNode
         {
-            ArgumentNullException.ThrowIfNull(node, nameof(node));
+            // SANITATION: Avoid creation of JsonNode directly
+            if (typeof(T) == typeof(JsonNode))
+                throw new InvalidOperationException("You cannot initialize the parent JsonNode type. Only JsonObject or JsonArray is accepted!");
 
             // Try get if the type is an array or object
             bool isTryCreateArray = typeof(T) == typeof(JsonArray);
 
             // Set parent node as object
-            JsonObject parentNodeObj = node.AsObject();
+            JsonObject? parentNodeObj = node?.AsObject();
             JsonNode? valueNode = null;
 
             // If the value node does not exist, then create and add a new one
-            if (!(parentNodeObj.TryGetPropertyValue(keyName, out valueNode) && valueNode != null))
+            if (!(parentNodeObj?.TryGetPropertyValue(keyName, out valueNode) ?? false && valueNode != null))
             {
                 // Otherwise, create a new empty one.
+                JsonNodeOptions options = new JsonNodeOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
                 JsonNode? jsonValueNode = isTryCreateArray ?
-                    JsonArray.Create(new JsonElement(), new JsonNodeOptions { PropertyNameCaseInsensitive = true }) :
-                    JsonObject.Create(new JsonElement(), new JsonNodeOptions { PropertyNameCaseInsensitive = true });
+                    new JsonArray(options) :
+                    new JsonObject(options);
                 valueNode = jsonValueNode;
-                parentNodeObj.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValueNode));
+                parentNodeObj?.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValueNode));
             }
 
             // If the value node keeps returning null, SCREW IT!!!
@@ -53,8 +79,8 @@ namespace CollapseLauncher.GameSettings.Base
                         $"Failed to create the type of {nameof(T)} in the parent node as it is a null!"
                         ));
 
-            // Return as a reference
-            return valueNode;
+            // Return object node
+            return (T)valueNode;
         }
 
         public static string? GetNodeValue(this JsonNode? node, string keyName, string? defaultValue)
@@ -272,8 +298,13 @@ namespace CollapseLauncher.GameSettings.Base
             // Generate dummy data
             T data = new T();
 
+            if (data is GeneralData generalData)
+            {
+                Console.WriteLine(generalData.AntiAliasing);
+            }
+
             // Generate raw JSON string
-            string rawJson = data.Serialize(Context, false, false);
+            string rawJson = data.Serialize(context, false, false);
 
             // Deserialize it back to JSON Node and inject
             // the node and magic
