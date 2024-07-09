@@ -191,12 +191,13 @@
         {
             var displayProp    = ScreenProp.GetScreenSize();
             var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
-
-            acceptableHeight.RemoveAll(h => h > ScreenProp.GetMaxHeight());
+            var acH            = acceptableHeight;
+            
+            acH.RemoveAll(h => h > ScreenProp.GetMaxHeight());
             
             List<string> resPairs = new List<string>();
 
-            foreach (var h in acceptableHeight)
+            foreach (var h in acH)
             {
                 int w = (int)(h * nativeAspRatio);
                 // TODO: remove identifier
@@ -212,8 +213,9 @@
             var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
             var wideRatio      = (double)16 / 9;
             var ulWideRatio    = (double)21 / 9;
-
-            acceptableHeight.RemoveAll(h => h > ScreenProp.GetMaxHeight());
+            var acH            = acceptableHeight;
+            
+            acH.RemoveAll(h => h > ScreenProp.GetMaxHeight());
             
             List<string> resPairs = new List<string>();
 
@@ -221,7 +223,7 @@
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
                 resPairs.Add($"{displayProp.Width}x{displayProp.Height}");
             
-            foreach (var h in acceptableHeight)
+            foreach (var h in acH)
             {
                 int w = (int)(h * wideRatio);
                 // TODO: remove identifier
