@@ -155,19 +155,25 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     #region Single Node Dependent Properties
 
     #region Graphics
-
-    private SystemSettingLocalData<FpsOption>? _fpsData;
+    // Key 3 Preset
+    private SystemSettingLocalData<GraphicsPresetOption>? _graphicsPresData;
 
     [JsonIgnore]
-    public FpsOption Fps
+    public GraphicsPresetOption GraphicsPreset
     {
-        // Initialize the field under _fpsData as SystemSettingLocalData<TValue>
-        get => (_fpsData.HasValue ? _fpsData : _fpsData = SystemSettingDataMap!
-            .AsSystemSettingLocalData<FpsOption>("110", FpsOption.Hi60)).Value.GetDataEnum<FpsOption>();
-        set => _fpsData?.SetDataEnum(value);
+        get => (_graphicsPresData.HasValue
+                   ? _graphicsPresData
+                   : _graphicsPresData =
+                       SystemSettingDataMap!
+                          .AsSystemSettingLocalData<GraphicsPresetOption>("3", GraphicsPresetOption.Medium))
+              .Value.GetDataEnum<GraphicsPresetOption>();
+        set => _graphicsPresData?.SetDataEnum(value);
     }
-
-    private SystemSettingLocalData<bool>? _vSyncData;
+    
+    // Key 5 Resolution Select
+    
+    // Key 8 VSync
+    private SystemSettingLocalData<int>? _vSyncData;
 
     [JsonIgnore]
     public bool VSync
@@ -177,11 +183,12 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
             (_vSyncData.HasValue
                 ? _vSyncData
                 : _vSyncData = SystemSettingDataMap!
-                   .AsSystemSettingLocalData<bool>("8")).Value.GetData();
+                   .AsSystemSettingLocalData<int>("8", 1)).Value.GetData() == 1;
         set =>
-            _vSyncData?.SetData(value);
+            _vSyncData?.SetData(value ? 1 : 0);
     }
 
+    // Key 9 Render Resolution
     private SystemSettingLocalData<RenderResOption>? _renderResolutionData;
 
     [JsonIgnore]
@@ -198,7 +205,25 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         set =>
             _renderResolutionData?.SetDataEnum(value);
     }
+    
+    // Key 10 Shadow
+    private SystemSettingLocalData<QualityOption3>? _shadowQualityData;
 
+    [JsonIgnore]
+    public QualityOption3 ShadowQuality
+    {
+        // Initialize the field under _shadowQualityData as SystemSettingLocalData<TValue>
+        get =>
+            (_shadowQualityData.HasValue
+                ? _shadowQualityData
+                : _shadowQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("10",
+                    QualityOption3.Medium)).Value
+                                           .GetDataEnum<QualityOption3>();
+        set =>
+            _shadowQualityData?.SetDataEnum(value);
+    }
+    
+    // Key 12 Anti Aliasing
     private SystemSettingLocalData<AntiAliasingOption>? _antiAliasingData;
 
     [JsonIgnore]
@@ -215,83 +240,35 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
         set =>
             _antiAliasingData?.SetDataEnum(value);
     }
-
-    private SystemSettingLocalData<QualityOption3>? _shadowQualityData;
-
-    [JsonIgnore]
-    public QualityOption3 ShadowQuality
-    {
-        // Initialize the field under _shadowQualityData as SystemSettingLocalData<TValue>
-        get =>
-            (_shadowQualityData.HasValue
-                ? _shadowQualityData
-                : _shadowQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("12",
-                         QualityOption3.Medium)).Value
-                                                .GetDataEnum<QualityOption3>();
-        set =>
-            _shadowQualityData?.SetDataEnum(value);
-    }
-
-    private SystemSettingLocalData<QualityOption3>? _fxQualityData;
+    
+    // Key 13 Volumetric Fog
+    private SystemSettingLocalData<QualityOption4>? _volFogQualityData;
 
     [JsonIgnore]
-    public QualityOption3 FxQuality
+    public QualityOption4 VolumetricFogQuality
     {
-        get =>
-            (_fxQualityData.HasValue
-                ? _fxQualityData
-                : _fxQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("16", 
-                    QualityOption3.Medium)).Value
-                                           .GetDataEnum<QualityOption3>();
-        set =>
-            _fxQualityData?.SetDataEnum(value);
+        get => (_volFogQualityData.HasValue
+                ? _volFogQualityData
+                : _volFogQualityData = SystemSettingDataMap!
+                   .AsSystemSettingLocalData<QualityOption4>("13", QualityOption4.Medium)).Value
+           .GetDataEnum<QualityOption4>();
+        set => _volFogQualityData?.SetDataEnum(value);
     }
-
-    private SystemSettingLocalData<QualityOption3>? _colorQualityData;
+    
+    // Key 14 Bloom
+    private SystemSettingLocalData<int>? _bloomData;
 
     [JsonIgnore]
-    public QualityOption3 ColorQuality
+    public bool Bloom
     {
-        get =>
-            (_colorQualityData.HasValue
-                ? _colorQualityData
-                : _colorQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108",
-                    QualityOption3.Medium)).Value
-                                           .GetDataEnum<QualityOption3>();
-        set =>
-            _colorQualityData?.SetDataEnum(value);
+        get => (_bloomData.HasValue
+                ? _bloomData
+                : _bloomData = SystemSettingDataMap!.AsSystemSettingLocalData<int>("14", 1)).Value
+           .GetData() == 1;
+        set => _bloomData?.SetData(value ? 1 : 0);
     }
-
-    private SystemSettingLocalData<QualityOption2>? _charQualityData;
-
-    [JsonIgnore]
-    public QualityOption2 CharacterQuality
-    {
-        get =>
-            (_charQualityData.HasValue
-                ? _charQualityData
-                : _charQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("99",
-                    QualityOption2.High)).Value
-                                         .GetDataEnum<QualityOption2>();
-        set =>
-            _charQualityData?.SetDataEnum(value);
-    }
-
-    private SystemSettingLocalData<QualityOption2>? _envQualityData;
-
-    [JsonIgnore]
-    public QualityOption2 EnvironmentQuality
-    {
-        get =>
-            (_envQualityData.HasValue
-                ? _envQualityData
-                : _envQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("109",
-                    QualityOption2.High)).Value
-                                         .GetDataEnum<QualityOption2>();
-        set =>
-            _envQualityData?.SetDataEnum(value);
-    }
-
+    
+    // Key 15 Reflection
     private SystemSettingLocalData<QualityOption4>? _reflQualityData;
 
     [JsonIgnore]
@@ -307,8 +284,185 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
             _reflQualityData?.SetDataEnum(value);
     }
     
-    
+    // Key 16 Effects
+    private SystemSettingLocalData<QualityOption3>? _fxQualityData;
 
+    [JsonIgnore]
+    public QualityOption3 FxQuality
+    {
+        get =>
+            (_fxQualityData.HasValue
+                ? _fxQualityData
+                : _fxQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("16", 
+                    QualityOption3.Medium)).Value
+                                           .GetDataEnum<QualityOption3>();
+        set =>
+            _fxQualityData?.SetDataEnum(value);
+    }
+    
+    // Key 95 Color Filter Effect
+    private SystemSettingLocalData<int>? _colorFilterData;
+
+    public int ColorFilter
+    {
+        get => (_colorFilterData.HasValue
+                   ? _colorFilterData
+                   : _colorFilterData = SystemSettingDataMap!.AsSystemSettingLocalData<int>("95", 10))
+              .Value.GetData();
+        set => _colorFilterData?.SetData(value);
+    }
+    
+    // Key 99 Character Quality
+    private SystemSettingLocalData<QualityOption2>? _charQualityData;
+
+    [JsonIgnore]
+    public QualityOption2 CharacterQuality
+    {
+        get =>
+            (_charQualityData.HasValue
+                ? _charQualityData
+                : _charQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("99",
+                    QualityOption2.High)).Value
+                                         .GetDataEnum<QualityOption2>();
+        set =>
+            _charQualityData?.SetDataEnum(value);
+    }
+    
+    // Key 107 Distortion
+    private SystemSettingLocalData<int>? _distortionData;
+
+    [JsonIgnore]
+    public bool Distortion
+    {
+        get => (_distortionData.HasValue
+                   ? _distortionData
+                   : _distortionData = SystemSettingDataMap!.AsSystemSettingLocalData<int>("107", 1))
+              .Value.GetData() == 1;
+        set => _distortionData?.SetData(value ? 1 : 0);
+    }
+    
+    // Key 108 Shading Quality
+    private SystemSettingLocalData<QualityOption3>? _colorQualityData;
+
+    [JsonIgnore]
+    public QualityOption3 ColorQuality
+    {
+        get =>
+            (_colorQualityData.HasValue
+                ? _colorQualityData
+                : _colorQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108",
+                    QualityOption3.Medium)).Value
+                                           .GetDataEnum<QualityOption3>();
+        set =>
+            _colorQualityData?.SetDataEnum(value);
+    }
+    
+    // Key 109 Environment Quality
+    private SystemSettingLocalData<QualityOption2>? _envQualityData;
+
+    [JsonIgnore]
+    public QualityOption2 EnvironmentQuality
+    {
+        get =>
+            (_envQualityData.HasValue
+                ? _envQualityData
+                : _envQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption2>("109",
+                    QualityOption2.High)).Value
+                                         .GetDataEnum<QualityOption2>();
+        set =>
+            _envQualityData?.SetDataEnum(value);
+    }
+    
+    // Key 110 FPS
+    private SystemSettingLocalData<FpsOption>? _fpsData;
+
+    [JsonIgnore]
+    public FpsOption Fps
+    {
+        // Initialize the field under _fpsData as SystemSettingLocalData<TValue>
+        get => (_fpsData.HasValue ? _fpsData : _fpsData = SystemSettingDataMap!
+            .AsSystemSettingLocalData<FpsOption>("110", FpsOption.Hi60)).Value.GetDataEnum<FpsOption>();
+        set => _fpsData?.SetDataEnum(value);
+    }
+
+    #endregion
+
+    #region Audio
+    // Key 31 Main Volume
+    private SystemSettingLocalData<int>? _mainVolData;
+
+    [JsonIgnore]
+    public int Audio_MainVolume
+    {
+        get => (_mainVolData.HasValue
+            ? _mainVolData
+            : _mainVolData = SystemSettingDataMap!.AsSystemSettingLocalData("31", 10)).Value.GetData();
+        set => _mainVolData?.SetData(value);
+    }
+    
+    // Key 32 Music
+    private SystemSettingLocalData<int>? _musicVolData;
+
+    [JsonIgnore]
+    public int Audio_MusicVolume
+    {
+        get => (_musicVolData.HasValue
+            ? _musicVolData
+            : _musicVolData = SystemSettingDataMap!.AsSystemSettingLocalData("32", 10)).Value.GetData();
+        set => _musicVolData?.SetData(value);
+    }
+    
+    // Key 33 Dialog
+    private SystemSettingLocalData<int>? _dialogVolData;
+
+    [JsonIgnore]
+    public int Audio_DialogVolume
+    {
+        get => (_dialogVolData.HasValue
+            ? _dialogVolData
+            : _dialogVolData = SystemSettingDataMap!.AsSystemSettingLocalData("33", 10)).Value.GetData();
+        set => _dialogVolData?.SetData(value);
+    }
+
+    // Key 34 SFX
+    private SystemSettingLocalData<int>? _sfxVolData;
+    
+    [JsonIgnore]
+    public int Audio_SfxVolume
+    {
+        get => (_sfxVolData.HasValue
+            ? _sfxVolData
+            : _sfxVolData = SystemSettingDataMap!.AsSystemSettingLocalData("34", 10)).Value.GetData();
+        set => _sfxVolData?.SetData(value);
+    }
+    
+    // Key 10104 Playback Device Type
+    private SystemSettingLocalData<AudioPlaybackDevice>? _playDevData;
+
+    [JsonIgnore]
+    public AudioPlaybackDevice Audio_PlaybackDevice
+    {
+        get => (_playDevData.HasValue
+                ? _playDevData
+                : _playDevData =
+                    SystemSettingDataMap!.AsSystemSettingLocalData<AudioPlaybackDevice>("10104",
+                        AudioPlaybackDevice.Headphones)).Value
+                                                        .GetDataEnum<AudioPlaybackDevice>();
+        set => _playDevData?.SetDataEnum(value);
+    }
+    
+    // Key 10113 Mute on Background
+    private SystemSettingLocalData<int>? _muteAudOnMinimizeData;
+
+    [JsonIgnore]
+    public bool Audio_MuteOnMinimize
+    {
+        get => (_muteAudOnMinimizeData.HasValue
+            ? _muteAudOnMinimizeData
+            : _muteAudOnMinimizeData = SystemSettingDataMap!.AsSystemSettingLocalData<int>("10113", 1)).Value.GetData() == 1;
+        set => _muteAudOnMinimizeData?.SetData((value ? 1 : 0));
+    }
+    
     #endregion
     #endregion
 

@@ -28,6 +28,13 @@ public enum LanguageVoice
     ko_kr = 4
 }
 
+public enum GraphicsPresetOption
+{
+    High,
+    Medium,
+    Low
+}
+
 public enum FpsOption
 {
     Lo30,
