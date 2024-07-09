@@ -99,7 +99,7 @@ namespace CollapseLauncher
                             await CheckAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                     }
-                }).ConfigureAwait(false);
+                });
             }
             catch (AggregateException ex)
             {

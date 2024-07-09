@@ -20,7 +20,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         internal static string? RegistryPath
         {
-            get => _registryPath ??= string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ?
+            get => _registryPath = string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ?
                 null :
                 Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
         }
@@ -28,11 +28,9 @@ namespace CollapseLauncher.GameSettings.Base
         internal static RegistryKey? RegistryRoot
         {
             get
-            {
+             {
                 // If the registry path is null, then return null
                 if (RegistryPath == null) return null;
-
-                if (_registryRoot != null) return _registryRoot;
 
                 // Try to open the registry path
                 _registryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);

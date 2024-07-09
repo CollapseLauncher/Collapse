@@ -49,7 +49,7 @@ namespace CollapseLauncher
             int totalRead = 0;
             while (totalRead < buffer.Length)
             {
-                int read = await ReadAsync(buffer.Slice(totalRead), cancellationToken).ConfigureAwait(false);
+                int read = await ReadAsync(buffer.Slice(totalRead), cancellationToken);
                 if (read == 0) return;
 
                 totalRead += read;

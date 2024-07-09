@@ -46,7 +46,7 @@ namespace CollapseLauncher
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken).ConfigureAwait(false);
+                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
                 });
             }
             catch (AggregateException ex)

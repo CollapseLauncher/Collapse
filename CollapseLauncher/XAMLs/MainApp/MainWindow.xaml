@@ -161,7 +161,7 @@
                         x:FieldModifier="internal" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
-            <Grid x:Name="AppTitleBar">
+            <Grid x:Name="AppTitleBar" x:FieldModifier="internal">
                 <Button x:Name="MinimizeButton"
                         Width="40"
                         Height="40"

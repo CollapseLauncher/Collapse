@@ -855,7 +855,7 @@ namespace CollapseLauncher.Interfaces
                 using (FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // Verify the patch file and if it doesn't match, then redownload it
-                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false).ConfigureAwait(false);
+                    byte[] patchCRC = await CheckHashAsync(patchfs, MD5.Create(), token, false);
                     if (!IsArrayMatch(patchCRC, patchHash.Span))
                     {
                         // Revert back the total size
@@ -878,7 +878,7 @@ namespace CollapseLauncher.Interfaces
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
                 patchUtil.Initialize(inputFile, patchOutputFile, outputFile);
-                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
+                await Task.Run(() => patchUtil.Apply(token));
 
                 // Delete old block
                 File.Delete(inputFile);

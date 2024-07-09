@@ -394,6 +394,7 @@ namespace CollapseLauncher
     #region ChangeTitleDragArea
     public enum DragAreaTemplate
     {
+        None,
         Full,
         Default
     }

@@ -92,7 +92,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                     await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken);
 
             LauncherGameResource = await launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
 
             if (LauncherGameResource == null)
             {
@@ -106,7 +106,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                         await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, innerToken);
 
                 RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token).ConfigureAwait(false);
+                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token);
 
                 if (pluginProp != null && LauncherGameResource.data != null)
                 {

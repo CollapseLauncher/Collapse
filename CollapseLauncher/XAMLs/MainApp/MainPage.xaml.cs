@@ -330,9 +330,9 @@ namespace CollapseLauncher
 
         private void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            await Task.Delay(250);
+            UpdateLayout();
 
             InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId.Value);
             WindowUtility.EnableWindowNonClientArea();
@@ -340,6 +340,12 @@ namespace CollapseLauncher
 
             switch (e.Template)
             {
+                case DragAreaTemplate.None:
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new RectInt32[]
+                    {
+                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
+                    });
+                    break;
                 case DragAreaTemplate.Full:
                     nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
                     break;
@@ -1053,6 +1059,16 @@ namespace CollapseLauncher
 
             if (!IsShowRegionChangeWarning && IsInstantRegionChange && !DisableInstantRegionChange && !IsFirstStartup)
                 ChangeRegionInstant();
+        }
+
+        private void GameComboBox_OnDropDownOpened(object sender, object e)
+        {
+            ChangeTitleDragArea.Change(DragAreaTemplate.None);
+        }
+
+        private void GameComboBox_OnDropDownClosed(object sender, object e)
+        {
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
         }
         #endregion
 

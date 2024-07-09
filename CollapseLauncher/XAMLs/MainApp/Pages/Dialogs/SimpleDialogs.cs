@@ -757,7 +757,7 @@ namespace CollapseLauncher.Dialogs
                                       SummarizeSizeSimple(partialLength),
                                       SummarizeSizeSimple(contentLength)),
                         Content,
-                        null,
+                        Lang._Misc.Cancel,
                         Lang._Misc.YesResume,
                         Lang._Misc.NoStartFromBeginning,
                         ContentDialogButton.Primary,
