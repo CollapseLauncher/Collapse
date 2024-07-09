@@ -96,10 +96,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public bool IsCanExclusiveFullscreen
-        {
-            get => !(!IsFullscreenEnabled || IsCustomResolutionEnabled);
-        }
+        /// <summary>
+        /// Zenless does not support exclusive fullscreen
+        /// </summary>
+        public readonly bool IsCanExclusiveFullscreen = false;
 
         public bool IsExclusiveFullscreenEnabled
         {

@@ -1658,6 +1658,15 @@ namespace CollapseLauncher.Pages
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
             }
 
+            if (CurrentGameProperty._GameVersion.GameType == GameNameType.Zenless)
+            {
+                // does not support exclusive mode at all
+                // also doesn't properly support dx12 or dx11 st
+
+                Size screenSize = _Settings.SettingsScreen.sizeRes;
+                parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+            }
+
             if (_Settings.SettingsCollapseScreen.UseBorderlessScreen)
             {
                 parameter.Append("-popupwindow ");

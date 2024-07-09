@@ -7,6 +7,7 @@
     using CollapseLauncher.Interfaces;
     using CollapseLauncher.Statics;
     using Hi3Helper;
+    using Hi3Helper.Screen;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Media;
@@ -14,6 +15,7 @@
     using Microsoft.Win32;
     using RegistryUtils;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
@@ -144,7 +146,11 @@
         {
             try
             {
-                GameResolutionSelector.ItemsSource = ScreenResolutionsList;
+                var resList = new List<string>();
+                resList.AddRange(GetResPairs_Fullscreen());
+                resList.AddRange(GetResPairs_Windowed());
+                
+                GameResolutionSelector.ItemsSource = resList;
 
                 if (CurrentGameProperty.IsGameRunning)
                 {
@@ -179,6 +185,52 @@
             }
         }
 
+        private static readonly List<int> acceptableHeight = [4320, 2880, 2160, 1440, 1280, 1080, 900, 720];
+        
+        private List<string> GetResPairs_Fullscreen()
+        {
+            var displayProp    = ScreenProp.GetScreenSize();
+            var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
+
+            acceptableHeight.RemoveAll(h => h > ScreenProp.GetMaxHeight());
+            
+            List<string> resPairs = new List<string>();
+
+            foreach (var h in acceptableHeight)
+            {
+                int w = (int)(h * nativeAspRatio);
+                // TODO: remove identifier
+                resPairs.Add($"{w}x{h} Fullscreen");
+            }
+
+            return resPairs;
+        }
+
+        private List<string> GetResPairs_Windowed()
+        {
+            var displayProp    = ScreenProp.GetScreenSize();
+            var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
+            var wideRatio      = (double)16 / 9;
+            var ulWideRatio    = (double)21 / 9;
+
+            acceptableHeight.RemoveAll(h => h > ScreenProp.GetMaxHeight());
+            
+            List<string> resPairs = new List<string>();
+
+            // If res is 21:9 then add proper native to the list
+            if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
+                resPairs.Add($"{displayProp.Width}x{displayProp.Height}");
+            
+            foreach (var h in acceptableHeight)
+            {
+                int w = (int)(h * wideRatio);
+                // TODO: remove identifier
+                resPairs.Add($"{w}x{h} Windowed");
+            }
+
+            return resPairs;
+        }
+        
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             try

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using static Hi3Helper.InvokeProp;
 
 namespace Hi3Helper.Screen
@@ -34,5 +35,18 @@ namespace Hi3Helper.Screen
             Width = GetSystemMetrics(SystemMetric.SM_CXSCREEN),
             Height = GetSystemMetrics(SystemMetric.SM_CYSCREEN)
         };
+
+        public static int GetMaxHeight()
+        {
+            devMode = new DEVMODE();
+            int maxHeight = 0;
+            
+            for (int i = 0; EnumDisplaySettings(null, i, ref devMode); i++)
+            {
+                if (devMode.dmPelsHeight > maxHeight) maxHeight = (int)devMode.dmPelsHeight;
+            }
+
+            return maxHeight;
+        }
     }
 }
