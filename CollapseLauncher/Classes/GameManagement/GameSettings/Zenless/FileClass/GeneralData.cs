@@ -169,9 +169,22 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
               .Value.GetDataEnum<GraphicsPresetOption>();
         set => _graphicsPresData?.SetDataEnum(value);
     }
-    
+
     // Key 5 Resolution Select
-    
+    private SystemSettingLocalData<int>? _resolutionIndexData;
+
+    [JsonIgnore]
+    public int ResolutionIndex
+    {
+        get => (_resolutionIndexData.HasValue
+                   ? _resolutionIndexData
+                   : _resolutionIndexData =
+                       SystemSettingDataMap!
+                          .AsSystemSettingLocalData<int>("5", -1))
+              .Value.GetData();
+        set => _resolutionIndexData?.SetData(value);
+    }
+
     // Key 8 VSync
     private SystemSettingLocalData<int>? _vSyncData;
 

@@ -24,8 +24,9 @@
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using static CollapseLauncher.Statics.GamePropertyVault;
+    using System.Linq;
 
-    namespace CollapseLauncher.Pages
+namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class ZenlessGameSettingsPage
@@ -147,6 +148,11 @@
             try
             {
                 var resList = new List<string>();
+                List<string> resFullscreen = GetResPairs_Fullscreen();
+                List<string> resWindowed = GetResPairs_Windowed();
+                ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resFullscreen.Count).Select(_ => true));
+                ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resWindowed.Count).Select(_ => false));
+
                 resList.AddRange(GetResPairs_Fullscreen());
                 resList.AddRange(GetResPairs_Windowed());
                 
