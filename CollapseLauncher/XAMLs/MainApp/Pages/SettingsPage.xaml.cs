@@ -227,14 +227,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (Directory.Exists(AppGameLogsFolder))
-                {
-                    _log.Dispose();
-                    Directory.Delete(AppGameLogsFolder, true);
-                    _log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
-                }
-
-                Directory.CreateDirectory(AppGameLogsFolder);
+                _log?.ResetLogFiles(AppGameLogsFolder, Encoding.UTF8);
                 (sender as Button).IsEnabled = false;
             }
             catch (Exception ex)

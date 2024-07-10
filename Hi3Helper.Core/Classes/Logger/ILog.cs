@@ -45,5 +45,15 @@ namespace Hi3Helper
         /// <param name="folderPath">The path of the log folder</param>
         /// <param name="logEncoding">Encoding for the log</param>
         void SetFolderPathAndInitialize(string folderPath, Encoding logEncoding);
+
+#nullable enable
+        /// <summary>
+        /// Reset and clean up all the old log files in the respective folder and
+        /// reload the log writer.
+        /// </summary>
+        /// <param name="reloadToPath">The path of the logs to be cleaned up and reloaded</param>
+        /// <param name="encoding">The encoding of the log writer (Default is <see cref="Encoding.UTF8"/> if null)</param>
+        void ResetLogFiles(string? reloadToPath, Encoding? encoding = null);
+#nullable restore
     }
 }

@@ -202,20 +202,52 @@ namespace Hi3Helper.Shared.Region
             set => SetAppConfigValue("GameFolder", value);
         }
         public static string[] AppCurrentArgument;
+        private static string _appExecutablePath;
         public static string AppExecutablePath
         {
             get
             {
-                string execName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule!.FileName);
-                string dirPath = AppFolder;
-                return Path.Combine(dirPath!, execName + ".exe");
+                if (string.IsNullOrEmpty(_appExecutablePath))
+                {
+                    using Process currentProcess = Process.GetCurrentProcess();
+                    string execName = Path.GetFileNameWithoutExtension(currentProcess.MainModule?.FileName);
+                    string dirPath = AppFolder;
+                    return _appExecutablePath = Path.Combine(dirPath!, execName + ".exe");
+                }
+                return _appExecutablePath;
             }
         }
-        public static string AppExecutableName      { get => Path.GetFileName(AppExecutablePath); }
-        public static string AppGameImgFolder       { get => Path.Combine(AppGameFolder!,    "_img"); }
-        public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder!, "cached"); }
-        public static string AppGameLogsFolder      { get => Path.Combine(AppGameFolder!,    "_logs"); }
-        
+        public static string AppExecutableName       { get => Path.GetFileName(AppExecutablePath); }
+        public static string AppGameImgFolder        { get => Path.Combine(AppGameFolder!,    "_img"); }
+        public static string AppGameImgCachedFolder  { get => Path.Combine(AppGameImgFolder!, "cached"); }
+        public static string AppGameLogsFolder       { get => Path.Combine(AppGameFolder!,    "_logs"); }
+
+        private static string _appCurrentVersionString;
+        public static string AppCurrentVersionString
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_appCurrentVersionString))
+                {
+                    string executablePath = AppExecutablePath;
+                    if (string.IsNullOrEmpty(executablePath))
+                        return "Unknown";
+
+                    try
+                    {
+                        FileVersionInfo verInfo = FileVersionInfo.GetVersionInfo(executablePath);
+                        string version = $"{verInfo.FileMajorPart}.{verInfo.FileMinorPart}.{verInfo.FileBuildPart}";
+                        return _appCurrentVersionString = version;
+                    }
+                    catch
+                    {
+                        return "Unknown";
+                    }
+                }
+                return _appCurrentVersionString;
+            }
+        }
+
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder!, "config.ini");
         public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder,  "ignore_notif_ids.json");
         

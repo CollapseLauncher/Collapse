@@ -5,7 +5,6 @@
     using Squirrel;
     using Squirrel.Sources;
     using System;
-    using System.Reflection;
     using System.Threading.Tasks;
 
     namespace CollapseLauncher.Helper.Update
@@ -14,13 +13,12 @@
     {
         static LauncherUpdateHelper()
         {
-            Version? version = Assembly.GetExecutingAssembly().GetName().Version;
-            if (version == null)
+            string? versionString = LauncherConfig.AppCurrentVersionString;
+            if (string.IsNullOrEmpty(versionString))
                 throw new NullReferenceException("App cannot retrieve the current version of the executable!");
 
-            _launcherCurrentVersion = new GameVersion(version);
+            _launcherCurrentVersion = new GameVersion(versionString);
             _launcherCurrentVersionString = _launcherCurrentVersion.VersionString;
-            LoggerBase.CurrentLauncherVersion = _launcherCurrentVersion.VersionString;
         }
 
         internal static AppUpdateVersionProp? AppUpdateVersionProp;

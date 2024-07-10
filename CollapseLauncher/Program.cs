@@ -89,14 +89,6 @@ public static class MainEntryPoint
 
             switch (m_appMode)
             {
-                case AppMode.Launcher:
-                    if (!IsConsoleEnabled)
-                    {
-                        LoggerConsole.DisposeConsole();
-                        _log = new LoggerNull(logPath, Encoding.UTF8);
-                    }
-
-                    break;
                 case AppMode.ElevateUpdater:
                     RunElevateUpdate();
                     return;
