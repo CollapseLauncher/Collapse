@@ -1,9 +1,7 @@
-﻿using CollapseLauncher.GameSettings.Zenless;
-using Hi3Helper;
-using Hi3Helper.Screen;
+﻿using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -25,6 +23,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region GameResolution
+        private List<bool> ScreenResolutionIsFullscreenIdx = new List<bool>();
+
         public bool IsFullscreenEnabled
         {
             get => Settings.SettingsScreen.isfullScreen;
@@ -185,6 +185,25 @@ namespace CollapseLauncher.Pages
             }
             set => Settings.SettingsScreen.sizeResString = value;
         }
+
+        public int ResolutionIndexSelected
+        {
+            get
+            {
+                int res = Settings.GeneralData?.ResolutionIndex ?? -1;
+                bool isFullscreen = res >= 0 && (res + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
+                IsFullscreenEnabled = isFullscreen;
+
+                return res;
+            }
+            set
+            {
+                if (value < 0) return;
+                Settings.GeneralData.ResolutionIndex = value;
+                bool isFullscreen = value >= 0 && (value + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[value] : false;
+                IsFullscreenEnabled = isFullscreen;
+            }
+        }
         #endregion
 
         #region Misc
@@ -306,6 +325,14 @@ namespace CollapseLauncher.Pages
             // clamp for negative value when clearing the number box
             if ((int)sender.Value < 0)
                 sender.Value = 0;
+        }
+        #endregion
+
+        #region Graphics Settings - GENERAL_DATA > SystemSettingDataMap
+        public bool EnableVSync
+        {
+            get => Settings.GeneralData?.VSync ?? false;
+            set => Settings.GeneralData.VSync = value;
         }
         #endregion
     }

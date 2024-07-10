@@ -28,7 +28,7 @@
                                TextWrapping="Wrap" />
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="0.6*" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0"
@@ -41,27 +41,23 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResolutionPanel}"
                                                TextWrapping="Wrap" />
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
                                         <StackPanel x:Name="GameResolutionWindow"
-                                                    Grid.Column="0"
                                                     Margin="0,0,0,8"
                                                     Orientation="Vertical">
                                             <Grid>
-                                                <!--  <CheckBox x:Name="VSyncToggle"  -->
-                                                <!--  HorizontalAlignment="Left"  -->
-                                                <!--  VerticalAlignment="Center"  -->
-                                                <!--  IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">  -->
-                                                <!--  <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_VSync}"  -->
-                                                <!--  TextWrapping="Wrap" />  -->
-                                                <!-- </CheckBox> -->
+                                                <CheckBox x:Name="VSyncToggle"
+                                                          HorizontalAlignment="Left"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind EnableVSync, Mode=TwoWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
                                             </Grid>
                                             <CheckBox x:Name="GameResolutionFullscreen"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}">
+                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"
+                                                      Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Fullscreen}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
@@ -117,9 +113,39 @@
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ExclusiveFullscreen}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1"
-                                                    Margin="4,0,0,0">
+                                            <Grid HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Center">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <CheckBox x:Name="GameCustomResolutionCheckbox"
+                                                          Margin="0,0,0,0"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
+                                                          IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustom}"
+                                                               TextWrapping="Wrap" />
+                                                </CheckBox>
+                                                <Button Grid.Column="1"
+                                                        Margin="8,-4,0,0"
+                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                    <Button.Content>
+                                                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#x3f;" />
+                                                    </Button.Content>
+                                                    <Button.Flyout>
+                                                        <Flyout AllowFocusOnInteraction="True">
+                                                            <TextBlock MaxWidth="360"
+                                                                       FontWeight="SemiBold"
+                                                                       Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"
+                                                                       TextAlignment="Center"
+                                                                       TextWrapping="Wrap" />
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                            </Grid>
                                             <CheckBox x:Name="MobileModeToggle"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
@@ -140,41 +166,7 @@
                                                   CornerRadius="14"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   PlaceholderText="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResSelectPlaceholder}"
-                                                  SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}" />
-                                        <Grid Grid.Column="1"
-                                              HorizontalAlignment="Stretch"
-                                              VerticalAlignment="Center">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <CheckBox x:Name="GameCustomResolutionCheckbox"
-                                                      Margin="16,0,0,0"
-                                                      VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustom}"
-                                                           TextWrapping="Wrap" />
-                                            </CheckBox>
-                                            <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
-                                                <Button.Content>
-                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
-                                                              Glyph="&#x3f;" />
-                                                </Button.Content>
-                                                <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
-                                                        <TextBlock MaxWidth="360"
-                                                                   FontWeight="SemiBold"
-                                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"
-                                                                   TextAlignment="Center"
-                                                                   TextWrapping="Wrap" />
-                                                    </Flyout>
-                                                </Button.Flyout>
-                                            </Button>
-                                        </Grid>
+                                                  SelectedIndex="{x:Bind ResolutionIndexSelected, Mode=TwoWay}" />
                                     </Grid>
                                 </StackPanel>
                                 <StackPanel x:Name="GameCustomResolutionPanel"
@@ -219,39 +211,39 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel x:Name="ZenlessGameGraphicsPanel"
-                                        Grid.Column="1"
-                                        Margin="0,16">
+                                    Grid.Column="1"
+                                    Margin="0,16">
                             <TextBlock Margin="0,0,0,16"
-                                           Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}"
-                                           TextWrapping="Wrap" />
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}"
+                                       TextWrapping="Wrap" />
                         </StackPanel>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <TextBlock Margin="0,0,0,16"
-                                       Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Title}" />
+                               Style="{ThemeResource TitleLargeTextBlockStyle}"
+                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Title}" />
                     <TextBlock Margin="0,0,0,0"
-                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" />
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
+                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" />
                     <ToggleSwitch Margin="0,0,0,16"
-                                          IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
-                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                  IsOn="{x:Bind IsUseCustomArgs, Mode=TwoWay}"
+                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     <TextBox x:Name="CustomArgsTextBox"
-                                     Margin="0,0,0,16"
-                                     HorizontalAlignment="Stretch"
-                                     CornerRadius="8,8,0,0"
-                                     Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
+                             Margin="0,0,0,16"
+                             HorizontalAlignment="Stretch"
+                             CornerRadius="8,8,0,0"
+                             Text="{x:Bind CustomArgsValue, Mode=TwoWay}" />
                     <TextBlock Height="Auto"
-                                       TextWrapping="WrapWholeWords">
-                                <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer1}" />
-                                <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
-                                           UnderlineStyle="None">
-                                    <Run FontWeight="Bold"
-                                         Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer2}" />
-                                </Hyperlink>
-                                <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer3}" />
+                               TextWrapping="WrapWholeWords">
+                        <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer1}" />
+                        <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html"
+                                   UnderlineStyle="None">
+                            <Run FontWeight="Bold"
+                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer2}" />
+                        </Hyperlink>
+                        <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer3}" />
                     </TextBlock>
                     <MenuFlyoutSeparator Margin="0,16,0,16" />
                     <Grid>
@@ -260,76 +252,76 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
-                                           Margin="0,0,8,0"
-                                           VerticalAlignment="Stretch"
-                                           Style="{ThemeResource TitleLargeTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
+                                   Margin="0,0,8,0"
+                                   VerticalAlignment="Stretch"
+                                   Style="{ThemeResource TitleLargeTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Title}" />
                         <ToggleSwitch Grid.Column="1"
-                                              Margin="8,12,0,8"
-                                              VerticalAlignment="Stretch"
-                                              VerticalContentAlignment="Stretch"
-                                              FontSize="26"
-                                              FontWeight="SemiBold"
-                                              IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
-                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      Margin="8,12,0,8"
+                                      VerticalAlignment="Stretch"
+                                      VerticalContentAlignment="Stretch"
+                                      FontSize="26"
+                                      FontWeight="SemiBold"
+                                      IsOn="{x:Bind IsUseAdvancedSettings, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </Grid>
                     <StackPanel x:Name="AdvancedSettingsPanel"
-                                        Visibility="Collapsed">
+                                Visibility="Collapsed">
                         <TextBlock Margin="0,0,0,8"
-                                           TextWrapping="WrapWholeWords">
-                                    <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle1}" />
-                                    <Run FontWeight="Bold"
-                                         Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle2}" />
-                                    <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle3}" />
+                                   TextWrapping="WrapWholeWords">
+                            <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle1}" />
+                            <Run FontWeight="Bold"
+                                 Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle2}" />
+                            <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_Subtitle3}" />
                         </TextBlock>
                         <TextBlock Margin="0,0,8,8"
-                                           Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}" />
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Title}" />
                         <ToggleSwitch Margin="0,0,0,0"
-                                              Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
-                                              IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
-                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Subtitle}"
+                                      IsOn="{x:Bind IsUsePreLaunchCommand, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <ToggleSwitch x:Name="PreLaunchForceCloseToggle"
-                                              Margin="0,0,0,0"
-                                              Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
-                                              IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
-                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      Margin="0,0,0,0"
+                                      Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Exit}"
+                                      IsOn="{x:Bind IsPreLaunchCommandExitOnGameClose, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <NumberBox x:Name="GameLaunchDelay"
-                                           Width="200"
-                                           Margin="0,0,0,12"
-                                           HorizontalAlignment="Left"
-                                           Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
-                                           ValueChanged="GameLaunchDelay_OnValueChanged"
-                                           Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
+                                   Width="200"
+                                   Margin="0,0,0,12"
+                                   HorizontalAlignment="Left"
+                                   Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PreLaunch_Delay}"
+                                   ValueChanged="GameLaunchDelay_OnValueChanged"
+                                   Value="{x:Bind LaunchDelay, Mode=TwoWay}" />
                         <TextBox x:Name="PreLaunchCommandTextBox"
-                                         Margin="0,0,0,4"
-                                         HorizontalAlignment="Stretch"
-                                         CornerRadius="8,8,0,0"
-                                         IsSpellCheckEnabled="False"
-                                         Text="{x:Bind PreLaunchCommand, Mode=TwoWay}" />
+                                 Margin="0,0,0,4"
+                                 HorizontalAlignment="Stretch"
+                                 CornerRadius="8,8,0,0"
+                                 IsSpellCheckEnabled="False"
+                                 Text="{x:Bind PreLaunchCommand, Mode=TwoWay}" />
                         <TextBlock Margin="0,0,0,8"
-                                           FontWeight="Semibold"
-                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
+                                   FontWeight="Semibold"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
                         <TextBlock Margin="0,0,8,8"
-                                           Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}" />
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Title}" />
                         <ToggleSwitch Margin="0,0,0,8"
-                                              Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
-                                              IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
-                                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                      Header="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_PostExit_Subtitle}"
+                                      IsOn="{x:Bind IsUsePostExitCommand, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <TextBox x:Name="PostExitCommandTextBox"
-                                         Margin="0,0,0,4"
-                                         HorizontalAlignment="Stretch"
-                                         CornerRadius="8,8,0,0"
-                                         IsSpellCheckEnabled="False"
-                                         Text="{x:Bind PostExitCommand, Mode=TwoWay}" />
+                                 Margin="0,0,0,4"
+                                 HorizontalAlignment="Stretch"
+                                 CornerRadius="8,8,0,0"
+                                 IsSpellCheckEnabled="False"
+                                 Text="{x:Bind PostExitCommand, Mode=TwoWay}" />
                         <TextBlock Margin="0,0,0,16"
-                                           FontWeight="Semibold"
-                                           Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
+                                   FontWeight="Semibold"
+                                   Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Advanced_GLC_WarningAdmin}" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
