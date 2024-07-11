@@ -123,12 +123,12 @@
       },
       "H.NotifyIcon.WinUI": {
         "type": "Direct",
-        "requested": "[2.0.131, )",
-        "resolved": "2.0.131",
-        "contentHash": "W+C+Nl1XhsGMbPjW0GyK311qJa8uTeqXZJ7WziPjgqTPDis8tIhWKh+/nB9Jz0XPBSQntQzmIkrSiUwmohee9g==",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "vw3300WdGfJjq/zbdBbEfwd0ctvVyiHX92POkMYtlNATRMHnAatauAxk9lkk2vAugH91XFfyPpynDHJ8h0LZOw==",
         "dependencies": {
-          "H.NotifyIcon": "2.0.131",
-          "Microsoft.WindowsAppSDK": "1.4.231115000"
+          "H.NotifyIcon": "2.1.0",
+          "Microsoft.WindowsAppSDK": "1.5.240627000"
         }
       },
       "HtmlAgilityPack": {
@@ -181,9 +181,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240607001, )",
-        "resolved": "1.5.240607001",
-        "contentHash": "hwPYYUGPlneZi7Uwhm2zAIzSnvGGoL1bIqlisba7Adi5fYbwsj1GvGqiFiyYxRV9bhs3ykQNnJ1LW1cdXvvLiQ==",
+        "requested": "[1.5.240627000, )",
+        "resolved": "1.5.240627000",
+        "contentHash": "qzzWG8rxZyzKzBuUdwr4ApezMINf+NT2b8EiEE5fchczNJJmDwlHImMWxX1pHK1W8Yby99alqLyC8DB0fIrhuA==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
@@ -306,9 +306,9 @@
       },
       "System.Text.Json": {
         "type": "Direct",
-        "requested": "[8.0.3, )",
-        "resolved": "8.0.3",
-        "contentHash": "hpagS9joOwv6efWfrMmV9MjQXpiXZH72PgN067Ysfr6AWMSD1/1hEcvh/U5mUpPLezEWsOJSuVrmqDIVD958iA==",
+        "requested": "[8.0.4, )",
+        "resolved": "8.0.4",
+        "contentHash": "bAkhgDJ88XTsqczoxEMliSrpijKZHhbJQldhAmObj/RbrN3sU5dcokuXmWJWsdQAhiMJ9bTayWsL1C9fbbCRhw==",
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
         }
@@ -370,18 +370,18 @@
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
-        "resolved": "2.0.131",
-        "contentHash": "QoNGQrhxzG+dQufa4xRjSqihMy5aVVVZqQUt0fLJbwhs7rcM4hpN1qVkZpZEkHsRgrHfFBC/Ursjh8STY/sg7A==",
+        "resolved": "2.1.0",
+        "contentHash": "Yn6XETLTcIycGJgddV0kCXHW+ah7pz7LSKfmJEXHwyM5pFWvjq8rEvB9e5dQ4ZNDmFZT7n+H5weLYrBGpAfiRA==",
         "dependencies": {
-          "System.Drawing.Common": "8.0.0"
+          "System.Drawing.Common": "8.0.7"
         }
       },
       "H.NotifyIcon": {
         "type": "Transitive",
-        "resolved": "2.0.131",
-        "contentHash": "mdznQAfcJFehblFoDUvtmdm1Y9+u1eMN1ffORbdYv5EwreMxkCwvdj8qQn3qnUo9EIJ6h5Xdgqey9Nj4us8w7w==",
+        "resolved": "2.1.0",
+        "contentHash": "Fc4AsLukCfdHt+A5ORqMarJT6EhKzdrGm/ZiZkdAhdXPDl1ZTUVRleABoxEN8VW9CLeS1HrRwYIlf+Wm1PfRqg==",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.0.131"
+          "H.GeneratedIcons.System.Drawing": "2.1.0"
         }
       },
       "Hi3Helper.ZstdNet": {
@@ -567,8 +567,8 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "8.0.6",
-        "contentHash": "aSwRnJzz6fZ73JvWMMG0KvBwOnXsBTFtfHLriQyAPrDIZ+NrDfl15GWbO/A35k0dtH77D7jfxzEcFF7RONtU/w==",
+        "resolved": "8.0.7",
+        "contentHash": "DoeBae0gZvxs3mtfoub6F1k28fSkFPzmhFuvblplKMnLYKmTMVy0j4Yxahh96KM532JzHGDxhJn1VpMKSB1pyg==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
@@ -962,13 +962,13 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[8.0.6, )"
+          "System.Drawing.Common": "[8.0.7, )"
         }
       },
       "discordrpc": {
         "type": "Project",
         "dependencies": {
-          "System.Text.Json": "[8.0.3, )"
+          "System.Text.Json": "[8.0.4, )"
         }
       },
       "hi3helper.core": {
@@ -1020,9 +1020,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.5.240607001, )",
-        "resolved": "1.5.240607001",
-        "contentHash": "hwPYYUGPlneZi7Uwhm2zAIzSnvGGoL1bIqlisba7Adi5fYbwsj1GvGqiFiyYxRV9bhs3ykQNnJ1LW1cdXvvLiQ==",
+        "requested": "[1.5.240627000, )",
+        "resolved": "1.5.240627000",
+        "contentHash": "qzzWG8rxZyzKzBuUdwr4ApezMINf+NT2b8EiEE5fchczNJJmDwlHImMWxX1pHK1W8Yby99alqLyC8DB0fIrhuA==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }

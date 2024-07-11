@@ -199,6 +199,27 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
+   <tr>
+      <td rowspan="2">Zenless Zone Zero</td>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+    </tr>
   </tbody>
 </table>
 
@@ -207,11 +228,11 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.14/CL-1.80.14-stable_Installer.exe)
-> **Note**: The version for this build is `1.80.14` (Released on: June 30th, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.15/CL-1.80.15-stable_Installer.exe)
+> **Note**: The version for this build is `1.80.15` (Released on: July 9th, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.14-pre/CL-1.80.14-preview_Installer.exe)
-> **Note**: The version for this build is `1.80.14` (Released on: June 30th, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.15-pre/CL-1.80.15-preview_Installer.exe)
+> **Note**: The version for this build is `1.80.15` (Released on: July 9th, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
