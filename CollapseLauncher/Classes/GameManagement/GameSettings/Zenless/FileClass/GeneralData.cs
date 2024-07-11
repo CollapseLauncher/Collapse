@@ -158,6 +158,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 3 Preset
     private SystemSettingLocalData<GraphicsPresetOption>? _graphicsPresData;
 
+    /// <summary>
+    /// Sets the preset for Graphics Settings
+    /// </summary>
+    /// <see cref="GraphicsPresetOption"/>
     [JsonIgnore]
     public GraphicsPresetOption GraphicsPreset
     {
@@ -173,6 +177,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 5 Resolution Select
     private SystemSettingLocalData<int>? _resolutionIndexData;
 
+    /// <summary>
+    /// Sets the resolution based on the in-game logic.
+    /// </summary>
     [JsonIgnore]
     public int ResolutionIndex
     {
@@ -188,6 +195,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 8 VSync
     private SystemSettingLocalData<int>? _vSyncData;
 
+    /// <summary>
+    /// Set VSync mode
+    /// </summary>
     [JsonIgnore]
     public bool VSync
     {
@@ -204,6 +214,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 9 Render Resolution
     private SystemSettingLocalData<RenderResOption>? _renderResolutionData;
 
+    /// <summary>
+    /// Sets the render resolution used in-game
+    /// </summary>
+    /// <see cref="RenderResOption"/>
     [JsonIgnore]
     public RenderResOption RenderResolution
     {
@@ -222,6 +236,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 10 Shadow
     private SystemSettingLocalData<QualityOption3>? _shadowQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Shadow
+    /// </summary>
+    /// <see cref="QualityOption3"/>
     [JsonIgnore]
     public QualityOption3 ShadowQuality
     {
@@ -257,6 +275,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 13 Volumetric Fog
     private SystemSettingLocalData<QualityOption4>? _volFogQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Volumetric Fog
+    /// </summary>
+    /// <see cref="QualityOption4"/>
     [JsonIgnore]
     public QualityOption4 VolumetricFogQuality
     {
@@ -284,6 +306,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 15 Reflection
     private SystemSettingLocalData<QualityOption4>? _reflQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Reflection
+    /// </summary>
+    /// <see cref="QualityOption4"/>
     [JsonIgnore]
     public QualityOption4 ReflectionQuality
     {
@@ -300,6 +326,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 16 Effects
     private SystemSettingLocalData<QualityOption3>? _fxQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Effects
+    /// </summary>
+    /// <see cref="QualityOption3"/>
     [JsonIgnore]
     public QualityOption3 FxQuality
     {
@@ -328,6 +358,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 99 Character Quality
     private SystemSettingLocalData<QualityOption2>? _charQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Character
+    /// </summary>
+    /// <see cref="QualityOption2"/>
     [JsonIgnore]
     public QualityOption2 CharacterQuality
     {
@@ -343,7 +377,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     
     // Key 107 Distortion
     private SystemSettingLocalData<int>? _distortionData;
-
+    
     [JsonIgnore]
     public bool Distortion
     {
@@ -357,6 +391,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 108 Shading Quality
     private SystemSettingLocalData<QualityOption3>? _colorQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Color
+    /// </summary>
+    /// <see cref="QualityOption3"/>
     [JsonIgnore]
     public QualityOption3 ColorQuality
     {
@@ -373,6 +411,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 109 Environment Quality
     private SystemSettingLocalData<QualityOption2>? _envQualityData;
 
+    /// <summary>
+    /// Sets the in-game quality settings for Environment
+    /// </summary>
+    /// <see cref="QualityOption2"/>
     [JsonIgnore]
     public QualityOption2 EnvironmentQuality
     {
@@ -389,6 +431,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     // Key 110 FPS
     private SystemSettingLocalData<FpsOption>? _fpsData;
 
+    /// <summary>
+    /// Sets the in-game frame limiter
+    /// </summary>
+    /// <see cref="FpsOption"/>
     [JsonIgnore]
     public FpsOption Fps
     {

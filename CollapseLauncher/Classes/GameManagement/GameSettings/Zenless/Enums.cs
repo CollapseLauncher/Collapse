@@ -1,6 +1,10 @@
 // ReSharper disable InconsistentNaming
 namespace CollapseLauncher.GameSettings.Zenless.Enums;
 
+/// <summary>
+/// Represent int for corresponding text languages <br/>
+/// Default : -1 (Unset)
+/// </summary>
 public enum LanguageText
 {
     Unset = -1,
@@ -19,6 +23,10 @@ public enum LanguageText
     id_id = 13
 }
 
+/// <summary>
+/// Represent int for corresponding audio languages <br/>
+/// Default : -1 (Unset)
+/// </summary>
 public enum LanguageVoice
 {
     Unset = -1,
@@ -28,13 +36,23 @@ public enum LanguageVoice
     ko_kr = 4
 }
 
+/// <summary>
+/// Represent int for graphics preset options <br/>
+/// Needs to be set to 4 (Custom) for other Graphics options to apply <br/>
+/// Default : 2 (Medium)
+/// </summary>
 public enum GraphicsPresetOption
 {
     High,
     Medium,
-    Low
+    Low,
+    Custom
 }
 
+/// <summary>
+/// Available options for in-game FPS limiter <br/>
+/// Default : 1 (60 FPS)
+/// </summary>
 public enum FpsOption
 {
     Lo30,
@@ -42,6 +60,10 @@ public enum FpsOption
     Unlimited
 }
 
+/// <summary>
+/// Available options for render resolutions. 0.8, 1.0, 1.2 <br/>
+/// Default : 1 (1.0)
+/// </summary>
 public enum RenderResOption
 {
     f08,
@@ -49,6 +71,10 @@ public enum RenderResOption
     f12
 }
 
+/// <summary>
+/// Available options for AntiAliasing <br/>
+/// Default : TAA
+/// </summary>
 public enum AntiAliasingOption
 {
     Off,
@@ -56,12 +82,18 @@ public enum AntiAliasingOption
     SMAA
 }
 
+/// <summary>
+/// Available options for graphics settings that has 2 options <br/>
+/// </summary>
 public enum QualityOption2
 {
     Low,
     High
 }
 
+/// <summary>
+/// Available options for graphics settings that has 3 options <br/>
+/// </summary>
 public enum QualityOption3
 {
     Low,
@@ -69,6 +101,9 @@ public enum QualityOption3
     High
 }
 
+/// <summary>
+/// Available options for graphics settings that has 4 options <br/>
+/// </summary>
 public enum QualityOption4
 {
     Off,
@@ -77,6 +112,10 @@ public enum QualityOption4
     High
 }
 
+/// <summary>
+/// Available options for Audio Playback Device. Alters sound profile <br/>
+/// Default : Headphones
+/// </summary>
 public enum AudioPlaybackDevice
 {
     Headphones,
