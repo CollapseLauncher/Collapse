@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Screen;
+﻿using CollapseLauncher.GameSettings.Zenless.Enums;
+using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
@@ -19,6 +20,71 @@ namespace CollapseLauncher.Pages
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private GraphicsPresetOption? oldPreset;
+        public void PresetSelector(object sender, SelectionChangedEventArgs _)
+        {
+            GraphicsPresetOption idx = (GraphicsPresetOption)((ComboBox)sender).SelectedIndex;
+            if (oldPreset == idx) return;
+            oldPreset = idx;
+        // ## Qual Preset
+        //     1. Low
+        //
+        //         - VSync: On
+        //         - Render Res: 1.0
+        //         - AA: TAA
+        //         - Shadow: Medium
+        //         - FX : Low
+        //         - Shading: High
+        //         - Char: High
+        //         - Env: High
+        //         - Mirror: Low
+        //         - VolFog: Low
+        //         - Bloom: Enable
+        //         - Distortion: Enable
+        //
+        //     2. Medium
+        //
+        //         - VSync: On
+        //         - Render Res: 1.0
+        //         - AA: TAA
+        //         - Shadow: High
+        //         - FX : Medium
+        //         - Shading: High
+        //         - Char: High
+        //         - Env: High
+        //         - Mirror: Medium
+        //         - VolFog: Medium
+        //         - Bloom: Enable
+        //         - Distortion: Enable
+        //
+        //     3. High
+        //
+        //         - VSync: On
+        //         - Render Res: 1.0
+        //         - AA: TAA
+        //         - Shadow: High
+        //         - FX : High
+        //         - Shading: High
+        //         - Char: High
+        //         - Env: High
+        //         - Mirror: High
+        //         - VolFog: High
+        //         - Bloom: Enable
+        //         - Distortion: Enable
+            switch (idx)
+            {
+                case GraphicsPresetOption.High:
+                    VSyncToggle.IsEnabled = true;
+                    break;
+                case GraphicsPresetOption.Medium:
+                    VSyncToggle.IsEnabled = true;
+                    break;
+                case GraphicsPresetOption.Low:
+                    VSyncToggle.IsEnabled = true;
+                    break;
+            }
         }
         #endregion
 
@@ -333,6 +399,129 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.GeneralData?.VSync ?? false;
             set => Settings.GeneralData.VSync = value;
+        }
+
+        public int Graphics_Preset
+        {
+            get => (int)Settings.GeneralData.GraphicsPreset;
+            set => Settings.GeneralData.GraphicsPreset = (GraphicsPresetOption)value;
+        }
+
+        public int Graphics_RenderRes
+        {
+            get => (int)Settings.GeneralData.RenderResolution;
+            set => Settings.GeneralData.RenderResolution = (RenderResOption)value;
+        }
+
+        public int Graphics_Shadow
+        {
+            get => (int)Settings.GeneralData.ShadowQuality;
+            set => Settings.GeneralData.ShadowQuality = (QualityOption3)value;
+        }
+
+        public int Graphics_AntiAliasing
+        {
+            get => (int)Settings.GeneralData.AntiAliasing;
+            set => Settings.GeneralData.AntiAliasing = (AntiAliasingOption)value;
+        }
+
+        public int Graphics_VolFog
+        {
+            get => (int)Settings.GeneralData.VolumetricFogQuality;
+            set => Settings.GeneralData.VolumetricFogQuality = (QualityOption4)value;
+        }
+
+        public bool Graphics_Bloom
+        {
+            get => Settings.GeneralData.Bloom;
+            set => Settings.GeneralData.Bloom = value;
+        }
+
+        public int Graphics_Reflection
+        {
+            get => (int)Settings.GeneralData.ReflectionQuality;
+            set => Settings.GeneralData.ReflectionQuality = (QualityOption4)value;
+        }
+
+        public int Graphics_Effects
+        {
+            get => (int)Settings.GeneralData.FxQuality;
+            set => Settings.GeneralData.FxQuality = (QualityOption3)value;
+        }
+
+        public int Graphics_ColorFilter
+        {
+            get => Settings.GeneralData.ColorFilter;
+            set => Settings.GeneralData.ColorFilter = value;
+        }
+
+        public int Graphics_Character
+        {
+            get => (int)Settings.GeneralData.CharacterQuality;
+            set => Settings.GeneralData.CharacterQuality = (QualityOption2)value;
+        }
+
+        public bool Graphics_Distortion
+        {
+            get => Settings.GeneralData.Distortion;
+            set => Settings.GeneralData.Distortion = value;
+        }
+
+        public int Graphics_Color
+        {
+            get => (int)Settings.GeneralData.ColorQuality;
+            set => Settings.GeneralData.ColorQuality = (QualityOption3)value;
+        }
+
+        public int Graphics_Environment
+        {
+            get => (int)Settings.GeneralData.EnvironmentQuality;
+            set => Settings.GeneralData.EnvironmentQuality = (QualityOption2)value;
+        }
+
+        public int Graphics_Fps
+        {
+            get => (int)Settings.GeneralData.Fps;
+            set => Settings.GeneralData.Fps = (FpsOption)value;
+        }
+        #endregion
+
+        #region Audio Settings - GENERAL_DATA > SystemSettingDataMap
+
+        public int Audio_VolMain
+        {
+            get => Settings.GeneralData.Audio_MainVolume;
+            set => Settings.GeneralData.Audio_MainVolume = value;
+        }
+
+        public int Audio_VolMusic
+        {
+            get => Settings.GeneralData.Audio_MusicVolume;
+            set => Settings.GeneralData.Audio_MusicVolume = value;
+        }
+
+        public int Audio_VolDialog
+        {
+            get => Settings.GeneralData.Audio_DialogVolume;
+            set => Settings.GeneralData.Audio_DialogVolume = value;
+        }
+
+        public int Audio_VolSfx
+        {
+            get => Settings.GeneralData.Audio_SfxVolume;
+            set => Settings.GeneralData.Audio_SfxVolume = value;
+        }
+
+        public int Audio_PlaybackDevice
+        {
+            get => (int)Settings.GeneralData.Audio_PlaybackDevice;
+            set => Settings.GeneralData.Audio_PlaybackDevice = (AudioPlaybackDevice)value;
+        }
+
+        public bool Audio_MuteOnMinimize
+        {
+            get => Settings.GeneralData.Audio_MuteOnMinimize;
+            set => Settings.GeneralData.Audio_MuteOnMinimize = value;
         }
         #endregion
     }
