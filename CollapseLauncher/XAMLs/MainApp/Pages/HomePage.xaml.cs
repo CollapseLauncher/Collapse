@@ -1662,9 +1662,12 @@ namespace CollapseLauncher.Pages
             {
                 // does not support exclusive mode at all
                 // also doesn't properly support dx12 or dx11 st
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-                parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                
+                if (_Settings.SettingsCollapseScreen.UseCustomResolution)
+                {
+                    Size screenSize = _Settings.SettingsScreen.sizeRes;
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
             }
 
             if (_Settings.SettingsCollapseScreen.UseBorderlessScreen)
