@@ -4,6 +4,7 @@
 <Page x:Class="CollapseLauncher.Pages.ZenlessGameSettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:controls="using:CommunityToolkit.WinUI.Controls"
       xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
@@ -601,6 +602,37 @@
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,0,0,8">
+                        <controls:UniformGrid HorizontalAlignment="Left"
+                                              Columns="3">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Margin="0,0,0,8"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Text="Audio Playback Device"
+                                           TextWrapping="Wrap" />
+                                <ComboBox x:Name="AudioPlaybackDeviceSelector"
+                                          MinWidth="150"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"
+                                          CornerRadius="14"
+                                          SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}">
+                                    <ComboBoxItem Content="Headphones" />
+                                    <ComboBoxItem Content="Speakers" />
+                                    <ComboBoxItem Content="TV" />
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <ToggleSwitch x:Name="AudioMuteOnMinimizeToggle"
+                                              MinWidth="250"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              IsOn="{x:Bind Audio_MuteOnMinimize, Mode=TwoWay}">
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
+                                               TextWrapping="Wrap" />
+                                </ToggleSwitch>
+                            </StackPanel>
+                        </controls:UniformGrid>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <StackPanel>
