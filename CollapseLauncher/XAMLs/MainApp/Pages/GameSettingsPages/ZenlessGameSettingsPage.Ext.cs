@@ -143,7 +143,9 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    GameWindowResizable.IsEnabled = true;
+                    if (GameResolutionFullscreen.IsChecked == false)
+                        GameWindowResizable.IsEnabled  = true;
+                    else GameWindowResizable.IsEnabled = false;
                     GameResolutionFullscreen.IsEnabled = true;
                 }
             }

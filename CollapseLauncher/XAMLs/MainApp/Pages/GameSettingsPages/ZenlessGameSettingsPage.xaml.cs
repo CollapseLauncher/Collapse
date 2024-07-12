@@ -10,6 +10,7 @@
     using Hi3Helper.Screen;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls.Primitives;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.UI.Xaml.Navigation;
     using Microsoft.Win32;
@@ -35,8 +36,8 @@ namespace CollapseLauncher.Pages
         private ZenlessSettings    Settings              { get; set; }
         private Brush              InheritApplyTextColor { get; set; }
         private RegistryMonitor    RegistryWatcher       { get; set; }
-        
-        private       bool   IsNoReload   = false;
+
+        private bool IsNoReload = false;
         
         public ZenlessGameSettingsPage()
         {
@@ -52,6 +53,7 @@ namespace CollapseLauncher.Pages
                 });
 
                 LoadPage();
+                this.ColorFilterSlider.LayoutUpdated += ColFilSlider_DisablePopup;
             }
             catch (Exception ex)
             {
@@ -299,6 +301,16 @@ namespace CollapseLauncher.Pages
                 ToggleRegistrySubscribe(false);
                 RegistryWatcher?.Dispose();
             });
+        }
+
+        // https://stackoverflow.com/questions/76737204/regarding-sliders-in-win-ui
+        private void ColFilSlider_DisablePopup(object _, object n)
+        {
+            if (VisualTreeHelper.GetOpenPopupsForXamlRoot(this.ColorFilterSlider.XamlRoot)
+                                .FirstOrDefault() is { } popup)
+            {
+                popup.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

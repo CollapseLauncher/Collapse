@@ -1,6 +1,7 @@
 ﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
+<!--  ReSharper disable Xaml.RedundantNamespaceAlias  -->
 <Page x:Class="CollapseLauncher.Pages.ZenlessGameSettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -255,12 +256,20 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
-                                               HorizontalAlignment="Left"
-                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="Color Filter"
-                                               TextWrapping="WrapWholeWords" />
+                                    <Grid>
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,0,0,8"
+                                                   HorizontalAlignment="Left"
+                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                   Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ColorFilter}"
+                                                   TextWrapping="WrapWholeWords" />
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,0,16,8"
+                                                   HorizontalAlignment="Right"
+                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                   Text="{Binding Value, ElementName=ColorFilterSlider}"
+                                                   TextWrapping="WrapWholeWords" />
+                                    </Grid>
                                     <Slider x:Name="ColorFilterSlider"
                                             Margin="0,0,16,0"
                                             HorizontalAlignment="Stretch"
@@ -283,7 +292,7 @@
                                                Margin="0,0,0,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="Render Resolution"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_RenderRes}"
                                                TextWrapping="WrapWholeWords" />
                                     <ComboBox x:Name="RenderResolutionSelector"
                                               Margin="0,0,16,8"
@@ -382,7 +391,7 @@
                                                Margin="0,0,0,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="Effects Quality"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_EffectsQ}"
                                                TextWrapping="WrapWholeWords" />
                                     <ComboBox x:Name="FxQualitySelector"
                                               Margin="0,0,16,8"
@@ -424,7 +433,7 @@
                                                Margin="0,0,0,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="Shading Quality"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ShadingQ}"
                                                TextWrapping="WrapWholeWords" />
                                     <ComboBox x:Name="ShadingQualitySelector"
                                               Margin="0,0,16,8"
@@ -481,7 +490,7 @@
                                               Checked="EnforceCustomPreset_Checkbox"
                                               IsChecked="{x:Bind Graphics_Distortion, Mode=TwoWay}"
                                               Unchecked="EnforceCustomPreset_Checkbox">
-                                        <TextBlock Text="Distortion"
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_Distortion}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
                                 </StackPanel>
@@ -611,7 +620,7 @@
                             <StackPanel Grid.Column="0">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="Audio Playback Device"
+                                           Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev}"
                                            TextWrapping="Wrap" />
                                 <ComboBox x:Name="AudioPlaybackDeviceSelector"
                                           MinWidth="176"
@@ -619,9 +628,9 @@
                                           VerticalAlignment="Center"
                                           CornerRadius="14"
                                           SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}">
-                                    <ComboBoxItem Content="Headphones" />
-                                    <ComboBoxItem Content="Speakers" />
-                                    <ComboBoxItem Content="TV" />
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Headphones}" />
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Speakers}" />
+                                    <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_TV}" />
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
