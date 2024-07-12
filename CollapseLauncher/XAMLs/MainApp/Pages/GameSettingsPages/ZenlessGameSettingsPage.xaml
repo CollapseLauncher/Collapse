@@ -48,8 +48,9 @@
                                                 <CheckBox x:Name="VSyncToggle"
                                                           HorizontalAlignment="Left"
                                                           VerticalAlignment="Center"
+                                                          Checked="EnforceCustomPreset_Checkbox"
                                                           IsChecked="{x:Bind EnableVSync, Mode=TwoWay}"
-                                                          IsEnabledChanged="EnforceCustomPreset_Checkbox">
+                                                          Unchecked="EnforceCustomPreset_Checkbox">
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
@@ -462,8 +463,9 @@
                                     <CheckBox x:Name="BloomToggle"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                              Checked="EnforceCustomPreset_Checkbox"
                                               IsChecked="{x:Bind Graphics_Bloom, Mode=TwoWay}"
-                                              IsEnabledChanged="EnforceCustomPreset_Checkbox">
+                                              Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_BloomQuality}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
@@ -473,8 +475,9 @@
                                     <CheckBox x:Name="DistortionToggle"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
+                                              Checked="EnforceCustomPreset_Checkbox"
                                               IsChecked="{x:Bind Graphics_Distortion, Mode=TwoWay}"
-                                              IsEnabledChanged="EnforceCustomPreset_Checkbox">
+                                              Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="Distortion"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>

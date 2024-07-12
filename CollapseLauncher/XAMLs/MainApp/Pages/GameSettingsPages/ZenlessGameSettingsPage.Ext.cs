@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+// ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Pages
 {
@@ -23,60 +24,17 @@ namespace CollapseLauncher.Pages
         }
 
         private GraphicsPresetOption? oldPreset;
-        public void PresetSelector(object sender, SelectionChangedEventArgs _)
+        private void PresetSelector(object sender, SelectionChangedEventArgs _)
         {
+            _changingPreset = true;
             GraphicsPresetOption idx = (GraphicsPresetOption)((ComboBox)sender).SelectedIndex;
             if (oldPreset == idx) return;
             oldPreset = idx;
-        // ## Qual Preset
-        //     1. Low
-        //
-        //         - VSync: On
-        //         - Render Res: 1.0
-        //         - AA: TAA
-        //         - Shadow: Medium
-        //         - FX : Low
-        //         - Shading: High
-        //         - Char: High
-        //         - Env: High
-        //         - Mirror: Low
-        //         - VolFog: Low
-        //         - Bloom: Enable
-        //         - Distortion: Enable
-        //
-        //     2. Medium
-        //
-        //         - VSync: On
-        //         - Render Res: 1.0
-        //         - AA: TAA
-        //         - Shadow: High
-        //         - FX : Medium
-        //         - Shading: High
-        //         - Char: High
-        //         - Env: High
-        //         - Mirror: Medium
-        //         - VolFog: Medium
-        //         - Bloom: Enable
-        //         - Distortion: Enable
-        //
-        //     3. High
-        //
-        //         - VSync: On
-        //         - Render Res: 1.0
-        //         - AA: TAA
-        //         - Shadow: High
-        //         - FX : High
-        //         - Shading: High
-        //         - Char: High
-        //         - Env: High
-        //         - Mirror: High
-        //         - VolFog: High
-        //         - Bloom: Enable
-        //         - Distortion: Enable
+
             switch (idx)
             {
                 case GraphicsPresetOption.High:
-                    VSyncToggle.IsEnabled                    = true;
+                    VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
@@ -90,7 +48,7 @@ namespace CollapseLauncher.Pages
                     DistortionToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Medium:
-                    VSyncToggle.IsEnabled                    = true;
+                    VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
@@ -104,7 +62,7 @@ namespace CollapseLauncher.Pages
                     DistortionToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Low:
-                    VSyncToggle.IsEnabled                    = true;
+                    VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
@@ -118,22 +76,35 @@ namespace CollapseLauncher.Pages
                     DistortionToggle.IsChecked               = true;
                     break;
             }
+
+            _changingPreset = false;
         }
 
-        public void EnforceCustomPreset()
+        private bool _changingPreset;
+        
+        private async void EnforceCustomPreset()
         {
+            if (_changingPreset) return;
             if (GraphicsPresetSelector.SelectedIndex == (int)GraphicsPresetOption.Custom) return;
+            _changingPreset                      = true;
             GraphicsPresetSelector.SelectedIndex = (int)GraphicsPresetOption.Custom;
+            await System.Threading.Tasks.Task.Delay(200);
+            _changingPreset = false;
         }
 
-        public void EnforceCustomPreset_Checkbox(object _, DependencyPropertyChangedEventArgs n) =>
+        private void EnforceCustomPreset_Checkbox(object _, RoutedEventArgs n)
+        {
             EnforceCustomPreset();
+        }
 
-        public void EnforceCustomPreset_ComboBox(object _, SelectionChangedEventArgs n) =>
+        private void EnforceCustomPreset_ComboBox(object _, SelectionChangedEventArgs n)
+        {
             EnforceCustomPreset();
+        }
         #endregion
 
         #region GameResolution
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private List<bool> ScreenResolutionIsFullscreenIdx = new List<bool>();
 
         public bool IsFullscreenEnabled
@@ -464,42 +435,36 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Graphics Settings - GENERAL_DATA > SystemSettingDataMap
-        //done
         public bool EnableVSync
         {
             get => Settings.GeneralData?.VSync ?? false;
             set => Settings.GeneralData.VSync = value;
         }
-
-        //done
+        
         public int Graphics_Preset
         {
             get => (int)Settings.GeneralData.GraphicsPreset;
             set => Settings.GeneralData.GraphicsPreset = (GraphicsPresetOption)value;
         }
-
-        //done
+        
         public int Graphics_RenderRes
         {
             get => (int)Settings.GeneralData.RenderResolution;
             set => Settings.GeneralData.RenderResolution = (RenderResOption)value;
         }
-
-        //done
+        
         public int Graphics_Shadow
         {
             get => (int)Settings.GeneralData.ShadowQuality;
             set => Settings.GeneralData.ShadowQuality = (QualityOption3)value;
         }
-
-        //done
+        
         public int Graphics_AntiAliasing
         {
             get => (int)Settings.GeneralData.AntiAliasing;
             set => Settings.GeneralData.AntiAliasing = (AntiAliasingOption)value;
         }
-
-        //done
+        
         public int Graphics_VolFog
         {
             get => (int)Settings.GeneralData.VolumetricFogQuality;
@@ -511,15 +476,13 @@ namespace CollapseLauncher.Pages
             get => Settings.GeneralData.Bloom;
             set => Settings.GeneralData.Bloom = value;
         }
-
-        //done
+        
         public int Graphics_Reflection
         {
             get => (int)Settings.GeneralData.ReflectionQuality;
             set => Settings.GeneralData.ReflectionQuality = (QualityOption4)value;
         }
-
-        //done
+        
         public int Graphics_Effects
         {
             get => (int)Settings.GeneralData.FxQuality;
@@ -531,8 +494,7 @@ namespace CollapseLauncher.Pages
             get => Settings.GeneralData.ColorFilter;
             set => Settings.GeneralData.ColorFilter = value;
         }
-
-        //done
+        
         public int Graphics_Character
         {
             get => (int)Settings.GeneralData.CharacterQuality;
@@ -544,28 +506,24 @@ namespace CollapseLauncher.Pages
             get => Settings.GeneralData.Distortion;
             set => Settings.GeneralData.Distortion = value;
         }
-
-        //done
+        
         public int Graphics_Shading
         {
             get => (int)Settings.GeneralData.ShadingQuality;
             set => Settings.GeneralData.ShadingQuality = (QualityOption3)value;
         }
-
-        //done
+        
         public int Graphics_Environment
         {
             get => (int)Settings.GeneralData.EnvironmentQuality;
             set => Settings.GeneralData.EnvironmentQuality = (QualityOption2)value;
         }
-
-        //done
+        
         public int Graphics_Fps
         {
             get => (int)Settings.GeneralData.Fps;
             set => Settings.GeneralData.Fps = (FpsOption)value;
         }
-        
         #endregion
 
         #region Audio Settings - GENERAL_DATA > SystemSettingDataMap
