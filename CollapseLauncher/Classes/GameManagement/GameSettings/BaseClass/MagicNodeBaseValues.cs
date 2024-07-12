@@ -53,17 +53,16 @@ namespace CollapseLauncher.GameSettings.Base
 
             // Set parent node as object
             JsonObject? parentNodeObj = node?.AsObject();
-            JsonNode? valueNode = null;
 
             // If the value node does not exist, then create and add a new one
-            if (!(parentNodeObj?.TryGetPropertyValue(keyName, out valueNode) ?? false && valueNode != null))
+            if (!(parentNodeObj?.TryGetPropertyValue(keyName, out var valueNode) ?? false))
             {
                 // Otherwise, create a new empty one.
                 JsonNodeOptions options = new JsonNodeOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                JsonNode? jsonValueNode = isTryCreateArray ?
+                JsonNode jsonValueNode = isTryCreateArray ?
                     new JsonArray(options) :
                     new JsonObject(options);
                 valueNode = jsonValueNode;
@@ -153,7 +152,7 @@ namespace CollapseLauncher.GameSettings.Base
                     case JsonValueKind.String: // If it's a string
                         string? enumAsString = (string?)enumValueRaw; // Cast JsonValue as string
 
-                        if (Enum.TryParse<TEnum>(enumAsString, true, out TEnum enumParsedFromString)) // Try parse as a named member
+                        if (Enum.TryParse(enumAsString, true, out TEnum enumParsedFromString)) // Try parse as a named member
                             return enumParsedFromString; // If successful, return the returned value
 
                         // If the string is actually a number as a string, then try parse it as int
@@ -177,10 +176,7 @@ namespace CollapseLauncher.GameSettings.Base
             if (node == null) return;
 
             // Get node as object
-            JsonObject? jsonObject = node.AsObject();
-
-            // If node is null, return and ignore
-            if (jsonObject == null) return;
+            JsonObject jsonObject = node.AsObject();
 
             // Create an instance of the JSON node value
             JsonValue? jsonValue = JsonValue.Create(value);
@@ -200,10 +196,7 @@ namespace CollapseLauncher.GameSettings.Base
             if (node == null) return;
 
             // Get node as object
-            JsonObject? jsonObject = node.AsObject();
-
-            // If node is null, return and ignore
-            if (jsonObject == null) return;
+            JsonObject jsonObject = node.AsObject();
 
             // Create an instance of the JSON node value
             JsonValue? jsonValue = enumStoreType switch
@@ -221,21 +214,21 @@ namespace CollapseLauncher.GameSettings.Base
             else
                 jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValue));
 
-            JsonValue AsEnumNumber(TEnum value)
+            JsonValue AsEnumNumber(TEnum v)
             {
-                int enumAsNumber = Unsafe.As<TEnum, int>(ref value);
+                int enumAsNumber = Unsafe.As<TEnum, int>(ref v);
                 return JsonValue.Create(enumAsNumber);
             }
 
-            JsonValue? AsEnumString(TEnum value)
+            JsonValue? AsEnumString(TEnum v)
             {
-                string? enumName = Enum.GetName<TEnum>(value);
+                string? enumName = Enum.GetName(v);
                 return JsonValue.Create(enumName);
             }
 
-            JsonValue? AsEnumNumberString(TEnum value)
+            JsonValue AsEnumNumberString(TEnum v)
             {
-                int enumAsNumber = Unsafe.As<TEnum, int>(ref value);
+                int enumAsNumber = Unsafe.As<TEnum, int>(ref v);
                 string enumAsNumberString = $"{enumAsNumber}";
                 return JsonValue.Create(enumAsNumberString);
             }

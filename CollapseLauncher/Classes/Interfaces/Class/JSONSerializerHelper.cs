@@ -111,7 +111,6 @@ namespace CollapseLauncher
                 // Start deserialize and return
                 return InnerDeserialize(tempBuffer.AsSpan(0, bufferWritten), context, defaultType);
             }
-            catch { throw; }
             finally
             {
                 // Once the process is completed, then return the rented buffer (if it's being used)
@@ -162,7 +161,6 @@ namespace CollapseLauncher
                 // Start deserialize and return
                 return InnerDeserializeAsJsonNode(tempBuffer.AsSpan(0, bufferWritten));
             }
-            catch { throw; }
             finally
             {
                 // Once the process is completed, then return the rented buffer (if it's being used)

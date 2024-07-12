@@ -21,7 +21,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         #endregion
 
         #region Enums
-        public enum FullScreenMode : int
+        public enum FullScreenMode
         {
             Fullscreen = 1,
             Something,
@@ -114,7 +114,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load Genshin Screen Manager settings as RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load Zenless Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
                 object? valueWidth = RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null);
                 object? valueHeight = RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null);
@@ -135,12 +135,12 @@ namespace CollapseLauncher.GameSettings.Zenless
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading Genshin ScreenManager Data" +
+                LogWriteLine($"Failed while reading Zenless ScreenManager Data" +
                              $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                    $"Failed when reading Genshin ScreenManager Data\r\n" +
+                    $"Failed when reading Zenless ScreenManager Data\r\n" +
                     $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
@@ -156,7 +156,7 @@ namespace CollapseLauncher.GameSettings.Zenless
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
 #if DEBUG
-                LogWriteLine($"Saved Zenless Settings:]\r\n\t" +
+                LogWriteLine($"Saved Zenless Settings:\r\n\t" +
                              $"{_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}\r\n\t" +
                              $"{_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}\r\n\t" +
                              $"{_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
@@ -164,7 +164,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save Genshin Impact ScreenManager Values!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to save Zenless ScreenManager Values!\r\n{ex}", LogType.Error, true);
             }
         }
 

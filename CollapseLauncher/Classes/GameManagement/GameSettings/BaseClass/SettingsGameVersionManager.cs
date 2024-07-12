@@ -30,10 +30,10 @@ namespace CollapseLauncher.GameSettings.Base
         internal IGameVersionCheck? VersionManager { get; set; }
 
         internal string? GameFolder => VersionManager?.GameDirPath;
-        internal string? GameExecutable => Path.GetFileNameWithoutExtension(VersionManager?.GamePreset.GameExecutableName!);
+        internal string GameExecutable => Path.GetFileNameWithoutExtension(VersionManager?.GamePreset.GameExecutableName!);
         internal string? ConfigFileLocationFormat { get; set; }
         internal string? ConfigFileName { get; set; }
-        internal string? ConfigFilePath { get => Path.Combine(GameFolder ?? string.Empty, string.Format(ConfigFileLocationFormat ?? string.Empty, GameExecutable, ConfigFileName)); }
+        internal string ConfigFilePath { get => Path.Combine(GameFolder ?? string.Empty, string.Format(ConfigFileLocationFormat ?? string.Empty, GameExecutable, ConfigFileName)); }
     }
 
 }

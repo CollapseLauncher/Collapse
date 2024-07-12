@@ -2,6 +2,8 @@ using CollapseLauncher.GameSettings.Base;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
+// ReSharper disable UnusedTypeParameter
+// ReSharper disable RedundantNullableFlowAttribute
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless.JsonProperties;

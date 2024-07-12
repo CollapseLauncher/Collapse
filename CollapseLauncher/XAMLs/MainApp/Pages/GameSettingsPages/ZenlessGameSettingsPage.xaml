@@ -257,7 +257,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <Grid>
-                                        <TextBlock MaxWidth="128"
+                                        <TextBlock MaxWidth="160"
                                                    Margin="0,0,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"

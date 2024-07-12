@@ -7,6 +7,8 @@ using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedVariable
 
 namespace CollapseLauncher.GameSettings.Zenless;
 
@@ -16,64 +18,64 @@ internal static class Sleepy
     // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L7C1-L32C6
     private enum BinaryHeaderEnum
     {
-        SerializedStreamHeader = 0,
-        Object = 1,
-        ObjectWithMap = 2,
-        ObjectWithMapAssemId = 3,
-        ObjectWithMapTyped = 4,
+        SerializedStreamHeader    = 0,
+        Object                    = 1,
+        ObjectWithMap             = 2,
+        ObjectWithMapAssemId      = 3,
+        ObjectWithMapTyped        = 4,
         ObjectWithMapTypedAssemId = 5,
-        ObjectString = 6,
-        Array = 7,
-        MemberPrimitiveTyped = 8,
-        MemberReference = 9,
-        ObjectNull = 10,
-        MessageEnd = 11,
-        Assembly = 12,
-        ObjectNullMultiple256 = 13,
-        ObjectNullMultiple = 14,
-        ArraySinglePrimitive = 15,
-        ArraySingleObject = 16,
-        ArraySingleString = 17,
-        CrossAppDomainMap = 18,
-        CrossAppDomainString = 19,
-        CrossAppDomainAssembly = 20,
-        MethodCall = 21,
-        MethodReturn = 22,
-        BinaryReference = -1
+        ObjectString              = 6,
+        Array                     = 7,
+        MemberPrimitiveTyped      = 8,
+        MemberReference           = 9,
+        ObjectNull                = 10,
+        MessageEnd                = 11,
+        Assembly                  = 12,
+        ObjectNullMultiple256     = 13,
+        ObjectNullMultiple        = 14,
+        ArraySinglePrimitive      = 15,
+        ArraySingleObject         = 16,
+        ArraySingleString         = 17,
+        CrossAppDomainMap         = 18,
+        CrossAppDomainString      = 19,
+        CrossAppDomainAssembly    = 20,
+        MethodCall                = 21,
+        MethodReturn              = 22,
+        BinaryReference           = -1
     }
 
     // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L35
     private enum BinaryTypeEnum
     {
-        Primitive = 0,
-        String = 1,
-        Object = 2,
-        ObjectUrt = 3,
-        ObjectUser = 4,
-        ObjectArray = 5,
-        StringArray = 6,
+        Primitive      = 0,
+        String         = 1,
+        Object         = 2,
+        ObjectUrt      = 3,
+        ObjectUser     = 4,
+        ObjectArray    = 5,
+        StringArray    = 6,
         PrimitiveArray = 7,
     }
 
     // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L47
     private enum BinaryArrayTypeEnum
     {
-        Single = 0,
-        Jagged = 1,
-        Rectangular = 2,
-        SingleOffset = 3,
-        JaggedOffset = 4,
+        Single            = 0,
+        Jagged            = 1,
+        Rectangular       = 2,
+        SingleOffset      = 3,
+        JaggedOffset      = 4,
         RectangularOffset = 5,
     }
 
     // https://github.com/dotnet/runtime/blob/a7efcd9ca9255dc9faa8b4a2761cdfdb62619610/src/libraries/System.Runtime.Serialization.Formatters/src/System/Runtime/Serialization/Formatters/Binary/BinaryEnums.cs#L99
     private enum InternalArrayTypeE
     {
-        Empty = 0,
-        Single = 1,
-        Jagged = 2,
+        Empty       = 0,
+        Single      = 1,
+        Jagged      = 2,
         Rectangular = 3,
-        Base64 = 4,
+        Base64      = 4,
     }
 
     internal static string ReadString(string filePath, ReadOnlySpan<byte> magic)
@@ -100,36 +102,36 @@ internal static class Sleepy
         reader.EmulateSleepyBinaryFormatterHeaderAssertion();
 
         // Get the data length
-        int length = reader.GetBinaryFormatterDataLength();
+        int length      = reader.GetBinaryFormatterDataLength();
         int magicLength = magic.Length;
 
         // Alloc temporary buffers
-        bool isRent = length <= 1 << 17; // Check if length <= 128 KiB
+        bool   isRent      = length <= 1 << 17; // Check if length <= 128 KiB
         char[] bufferChars = isRent ? ArrayPool<char>.Shared.Rent(length) : new char[length];
 
         // Do the do
         CreateEvil(magic, out bool[] evil, out int evilsCount);
         fixed (bool* evp = &evil[0])
-        fixed (char* bp = &bufferChars[0])
-        {
-            try
+            fixed (char* bp = &bufferChars[0])
             {
-                // Do the do (pt. 2)
-                int j = InternalDecode(magic, evp, reader, length, magicLength, bp);
+                try
+                {
+                    // Do the do (pt. 2)
+                    int j = InternalDecode(magic, evp, reader, length, magicLength, bp);
 
-                // Emulate and Assert the BinaryFormatter footer
-                reader.EmulateSleepyBinaryFormatterFooterAssertion();
+                    // Emulate and Assert the BinaryFormatter footer
+                    reader.EmulateSleepyBinaryFormatterFooterAssertion();
 
-                // Return
-                return new string(bp, 0, j);
+                    // Return
+                    return new string(bp, 0, j);
+                }
+                finally
+                {
+                    // Return and clear the buffer, to only returns the return string.
+                    if (isRent) ArrayPool<char>.Shared.Return(bufferChars, true);
+                    else Array.Clear(bufferChars);
+                }
             }
-            finally
-            {
-                // Return and clear the buffer, to only returns the return string.
-                if (isRent) ArrayPool<char>.Shared.Return(bufferChars, true);
-                else Array.Clear(bufferChars);
-            }
-        }
     }
 
     private static unsafe int InternalDecode(ReadOnlySpan<byte> magic, bool* evil, BinaryReader reader, int length, int magicLength, char* bp)
@@ -138,11 +140,10 @@ internal static class Sleepy
 
         int j = 0;
         int i = 0;
-        int n = 0;
 
-    amimir:
-        n = i % magicLength;
-        byte c = reader.ReadByte();
+        amimir:
+        var  n  = i % magicLength;
+        byte c  = reader.ReadByte();
         byte ch = (byte)(c ^ magic[n]);
 
         if (*(evil + n))
@@ -153,8 +154,8 @@ internal static class Sleepy
         {
             if (eepy)
             {
-                ch += 0x40;
-                eepy = false;
+                ch   += 0x40;
+                eepy =  false;
             }
             *(bp + j++) = (char)ch;
         }
@@ -188,9 +189,9 @@ internal static class Sleepy
         writer.EmulateSleepyBinaryFormatterHeaderWrite();
 
         // Do the do
-        int contentLen = content.Length;
-        int bufferLen = contentLen * 2;
-        bool isRent = bufferLen <= 2 << 17;
+        int  contentLen = content.Length;
+        int  bufferLen  = contentLen * 2;
+        bool isRent     = bufferLen <= 2 << 17;
 
         // Alloc temporary buffers
         byte[] contentBytes = isRent ? ArrayPool<byte>.Shared.Rent(bufferLen) : new byte[bufferLen];
@@ -200,32 +201,32 @@ internal static class Sleepy
         CreateEvil(magic, out bool[] evil, out int evilsCount);
 
         fixed (char* cp = &content[0])
-        fixed (byte* bp = &contentBytes[0])
-        fixed (byte* ep = &encodedBytes[0])
-        fixed (bool* evp = &evil[0])
-        {
-            try
-            {
-                // Get the string bytes
-                _ = Encoding.UTF8.GetBytes(cp, contentLen, bp, bufferLen);
+            fixed (byte* bp = &contentBytes[0])
+                fixed (byte* ep = &encodedBytes[0])
+                    fixed (bool* evp = &evil[0])
+                    {
+                        try
+                        {
+                            // Get the string bytes
+                            _ = Encoding.UTF8.GetBytes(cp, contentLen, bp, bufferLen);
 
-                // Do the do (pt. 2)
-                int h = InternalWrite(magic, contentLen, bp, ep, evp);
+                            // Do the do (pt. 2)
+                            int h = InternalWrite(magic, contentLen, bp, ep, evp);
 
-                writer.Write7BitEncodedInt(h);
-                writer.BaseStream.Write(encodedBytes, 0, h);
-                writer.EmulateSleepyBinaryFormatterFooterWrite();
-            }
-            finally
-            {
-                // Return and clear the buffer.
-                if (isRent) ArrayPool<byte>.Shared.Return(contentBytes, true);
-                else Array.Clear(contentBytes);
+                            writer.Write7BitEncodedInt(h);
+                            writer.BaseStream.Write(encodedBytes, 0, h);
+                            writer.EmulateSleepyBinaryFormatterFooterWrite();
+                        }
+                        finally
+                        {
+                            // Return and clear the buffer.
+                            if (isRent) ArrayPool<byte>.Shared.Return(contentBytes, true);
+                            else Array.Clear(contentBytes);
 
-                if (isRent) ArrayPool<byte>.Shared.Return(encodedBytes, true);
-                else Array.Clear(encodedBytes);
-            }
-        }
+                            if (isRent) ArrayPool<byte>.Shared.Return(encodedBytes, true);
+                            else Array.Clear(encodedBytes);
+                        }
+                    }
     }
 
     private static unsafe int InternalWrite(ReadOnlySpan<byte> magic, int contentLen, byte* bp, byte* ep, bool* evil)
@@ -234,16 +235,16 @@ internal static class Sleepy
         int i = 0;
         int j = 0;
 
-    amimir:
-        int n = i % magic.Length;
+        amimir:
+        int  n  = i % magic.Length;
         byte ch = *(bp + j);
         if (*(evil + n))
         {
             byte eepy = 0;
             if (*(bp + j) > 0x40)
             {
-                ch -= 0x40;
-                eepy = 1;
+                ch   -= 0x40;
+                eepy =  1;
             }
             *(ep + h++) = (byte)(eepy ^ magic[n]);
 
@@ -260,10 +261,10 @@ internal static class Sleepy
     private static void CreateEvil(ReadOnlySpan<byte> magic, out bool[] evilist, out int evilsCount)
     {
         int magicLength = magic.Length;
-        int i = 0;
-        evilist = new bool[magicLength];
+        int i           = 0;
+        evilist    = new bool[magicLength];
         evilsCount = 0;
-    evilist:
+        evilist:
         int n = i % magicLength;
         evilist[i] = (magic[n] & 0xC0) == 0xC0;
         if (evilist[i]) ++evilsCount;
@@ -275,31 +276,31 @@ internal static class Sleepy
         // Do assert [class] -> [string object]
         // START!
         // Check if the first byte is SerializedStreamHeader
-        reader.LogAssertInfoByteEnum<BinaryHeaderEnum>(BinaryHeaderEnum.SerializedStreamHeader);
+        reader.LogAssertInfoByteEnum(BinaryHeaderEnum.SerializedStreamHeader);
 
         // Check if the type is an Object
-        reader.LogAssertInfoInt32Enum<BinaryHeaderEnum>(BinaryHeaderEnum.Object);
+        reader.LogAssertInfoInt32Enum(BinaryHeaderEnum.Object);
 
         // Check if the type is a BinaryReference
-        reader.LogAssertInfoInt32Enum<BinaryHeaderEnum>(BinaryHeaderEnum.BinaryReference);
+        reader.LogAssertInfoInt32Enum(BinaryHeaderEnum.BinaryReference);
 
         // Check if the BinaryReference type is a String
-        reader.LogAssertInfoInt32Enum<BinaryTypeEnum>(BinaryTypeEnum.String);
+        reader.LogAssertInfoInt32Enum(BinaryTypeEnum.String);
 
         // Check for the binary array type and check if it's Single
-        reader.LogAssertInfoInt32Enum<BinaryArrayTypeEnum>(BinaryArrayTypeEnum.Single);
+        reader.LogAssertInfoInt32Enum(BinaryArrayTypeEnum.Single);
 
         // Check for the binary type and check if it's StringArray (UTF-8)
-        reader.LogAssertInfoByteEnum<BinaryTypeEnum>(BinaryTypeEnum.StringArray);
+        reader.LogAssertInfoByteEnum(BinaryTypeEnum.StringArray);
 
         // Check for the internal array type and check if it's Single
-        reader.LogAssertInfoInt32Enum<InternalArrayTypeE>(InternalArrayTypeE.Single);
+        reader.LogAssertInfoInt32Enum(InternalArrayTypeE.Single);
     }
 
     // Do assert [class] -> [EOF mark]
     // START!
     private static void EmulateSleepyBinaryFormatterFooterAssertion(this BinaryReader reader) =>
-        reader.LogAssertInfoByteEnum<BinaryHeaderEnum>(BinaryHeaderEnum.MessageEnd);
+        reader.LogAssertInfoByteEnum(BinaryHeaderEnum.MessageEnd);
 
     private static void EmulateSleepyBinaryFormatterHeaderWrite(this BinaryWriter writer)
     {
@@ -315,7 +316,7 @@ internal static class Sleepy
 
     // Emulate to write Sleepy BinaryFormatter footer EOF
     private static void EmulateSleepyBinaryFormatterFooterWrite(this BinaryWriter writer) =>
-        writer.WriteEnumAsByte<BinaryHeaderEnum>(BinaryHeaderEnum.MessageEnd);
+        writer.WriteEnumAsByte(BinaryHeaderEnum.MessageEnd);
 
     private static void WriteEnumAsByte<T>(this BinaryWriter writer, T headerEnum)
         where T : struct, Enum
@@ -351,9 +352,9 @@ internal static class Sleepy
         int intAssertCasted = Unsafe.As<T, int>(ref assertHeaderEnum);
         if (intAssertCasted != currentInt)
         {
-            string? assertHeaderEnumValueName = Enum.GetName<T>(assertHeaderEnum);
-            T comparedEnumCasted = Unsafe.As<int, T>(ref currentInt);
-            string? comparedHeaderEnumValueName = Enum.GetName<T>(comparedEnumCasted);
+            string? assertHeaderEnumValueName   = Enum.GetName(assertHeaderEnum);
+            T       comparedEnumCasted          = Unsafe.As<int, T>(ref currentInt);
+            string? comparedHeaderEnumValueName = Enum.GetName(comparedEnumCasted);
 
             throw new InvalidDataException($"[Sleepy::LogAssertInfo] BinaryFormatter header is not valid at stream pos: {reader.BaseStream.Position:x8}. Expecting object enum: {assertHeaderEnumValueName} but getting: {comparedHeaderEnumValueName} instead!");
         }

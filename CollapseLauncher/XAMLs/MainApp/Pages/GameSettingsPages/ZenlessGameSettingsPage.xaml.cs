@@ -1,7 +1,6 @@
 ﻿#if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
-    using CollapseLauncher.Dialogs;
     using CollapseLauncher.GameSettings.Zenless;
     using CollapseLauncher.Helper.Animation;
     using CollapseLauncher.Interfaces;
@@ -10,7 +9,6 @@
     using Hi3Helper.Screen;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Controls.Primitives;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.UI.Xaml.Navigation;
     using Microsoft.Win32;

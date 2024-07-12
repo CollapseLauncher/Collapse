@@ -1290,7 +1290,7 @@
   },
   
   "_ZenlessGameSettingsPage": {
-    "Graphics_ColorFilter": "Color Filter",
+    "Graphics_ColorFilter": "Color Filter Strength",
     "Graphics_RenderRes": "Render Resolution",
     "Graphics_EffectsQ": "Effects Quality",
     "Graphics_ShadingQ": "Shading Quality",

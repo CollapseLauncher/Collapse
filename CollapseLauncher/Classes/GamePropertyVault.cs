@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.GameSettings.Genshin;
+﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameSettings.Zenless;

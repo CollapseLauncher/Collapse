@@ -284,7 +284,8 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
                 Settings.GeneralData.ResolutionIndex = value;
-                bool isFullscreen = value >= 0 && (value + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[value] : false;
+                // ReSharper disable once SimplifyConditionalTernaryExpression
+                bool isFullscreen = (value + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[value] : false;
                 IsFullscreenEnabled = isFullscreen;
             }
         }

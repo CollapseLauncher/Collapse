@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using static Hi3Helper.InvokeProp;
 
 namespace Hi3Helper.Screen

@@ -16,7 +16,10 @@ namespace Hi3Helper
         /// <param name="line">The line to print into console or write into the log file</param>
         void LogWriteLine(string line);
 
-        /// <inheritdoc cref="LogWriteLine"/>
+        /// <summary>
+        /// Print log to the console.
+        /// </summary>
+        /// <param name="line">The line to print into console or write into the log file</param>
         /// <param name="type">Type of the log line</param>
         /// <param name="writeToLog">Write the log line into the log file</param>
         // ReSharper disable MethodOverloadWithOptionalParameter
@@ -54,6 +57,5 @@ namespace Hi3Helper
         /// <param name="reloadToPath">The path of the logs to be cleaned up and reloaded</param>
         /// <param name="encoding">The encoding of the log writer (Default is <see cref="Encoding.UTF8"/> if null)</param>
         void ResetLogFiles(string? reloadToPath, Encoding? encoding = null);
-#nullable restore
     }
 }
