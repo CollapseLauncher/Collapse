@@ -262,6 +262,8 @@
                                                Text="Color Filter"
                                                TextWrapping="WrapWholeWords" />
                                     <Slider x:Name="ColorFilterSlider"
+                                            Margin="0,0,16,0"
+                                            HorizontalAlignment="Stretch"
                                             Maximum="10"
                                             Minimum="0"
                                             TickFrequency="1"
@@ -453,7 +455,7 @@
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
-                            <Grid>
+                            <Grid Margin="2,8,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -612,7 +614,7 @@
                                            Text="Audio Playback Device"
                                            TextWrapping="Wrap" />
                                 <ComboBox x:Name="AudioPlaybackDeviceSelector"
-                                          MinWidth="150"
+                                          MinWidth="176"
                                           HorizontalAlignment="Left"
                                           VerticalAlignment="Center"
                                           CornerRadius="14"
@@ -628,7 +630,8 @@
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
                                               IsOn="{x:Bind Audio_MuteOnMinimize, Mode=TwoWay}">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
                                                TextWrapping="Wrap" />
                                 </ToggleSwitch>
                             </StackPanel>
