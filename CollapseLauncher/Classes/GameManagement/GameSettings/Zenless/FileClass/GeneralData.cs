@@ -389,23 +389,23 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValu
     }
     
     // Key 108 Shading Quality
-    private SystemSettingLocalData<QualityOption3>? _colorQualityData;
+    private SystemSettingLocalData<QualityOption3>? _shadingQualityData;
 
     /// <summary>
     /// Sets the in-game quality settings for Color
     /// </summary>
     /// <see cref="QualityOption3"/>
     [JsonIgnore]
-    public QualityOption3 ColorQuality
+    public QualityOption3 ShadingQuality
     {
         get =>
-            (_colorQualityData.HasValue
-                ? _colorQualityData
-                : _colorQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108",
+            (_shadingQualityData.HasValue
+                ? _shadingQualityData
+                : _shadingQualityData = SystemSettingDataMap!.AsSystemSettingLocalData<QualityOption3>("108",
                     QualityOption3.Medium)).Value
                                            .GetDataEnum<QualityOption3>();
         set =>
-            _colorQualityData?.SetDataEnum(value);
+            _shadingQualityData?.SetDataEnum(value);
     }
     
     // Key 109 Environment Quality

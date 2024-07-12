@@ -76,16 +76,61 @@ namespace CollapseLauncher.Pages
             switch (idx)
             {
                 case GraphicsPresetOption.High:
-                    VSyncToggle.IsEnabled = true;
+                    VSyncToggle.IsEnabled                    = true;
+                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
+                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.High;
+                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
+                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.High;
+                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.High;
+                    BloomToggle.IsChecked                    = true;
+                    DistortionToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Medium:
-                    VSyncToggle.IsEnabled = true;
+                    VSyncToggle.IsEnabled                    = true;
+                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
+                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.Medium;
+                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
+                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Medium;
+                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Medium;
+                    BloomToggle.IsChecked                    = true;
+                    DistortionToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Low:
-                    VSyncToggle.IsEnabled = true;
+                    VSyncToggle.IsEnabled                    = true;
+                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
+                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.Low;
+                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
+                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Low;
+                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Low;
+                    BloomToggle.IsChecked                    = true;
+                    DistortionToggle.IsChecked               = true;
                     break;
             }
         }
+
+        public void EnforceCustomPreset()
+        {
+            if (GraphicsPresetSelector.SelectedIndex == (int)GraphicsPresetOption.Custom) return;
+            GraphicsPresetSelector.SelectedIndex = (int)GraphicsPresetOption.Custom;
+        }
+
+        public void EnforceCustomPreset_Checkbox(object _, DependencyPropertyChangedEventArgs n) =>
+            EnforceCustomPreset();
+
+        public void EnforceCustomPreset_ComboBox(object _, SelectionChangedEventArgs n) =>
+            EnforceCustomPreset();
         #endregion
 
         #region GameResolution
@@ -394,37 +439,67 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
+        #region Language Settings - GENERAL_DATA
+        public int Lang_Text
+        {
+            get
+            {
+                var v = (int)Settings.GeneralData.DeviceLanguageType;
+                if (v <= 0) return 1;
+                return v;
+            }
+            set => Settings.GeneralData.DeviceLanguageType = (LanguageText)value;
+        }
+
+        public int Lang_Audio
+        {
+            get
+            {
+                var v = (int)Settings.GeneralData.DeviceLanguageVoiceType;
+                if (v <= 0) return 1;
+                return v;
+            }
+            set => Settings.GeneralData.DeviceLanguageVoiceType = (LanguageVoice)value;
+        }
+        #endregion
+
         #region Graphics Settings - GENERAL_DATA > SystemSettingDataMap
+        //done
         public bool EnableVSync
         {
             get => Settings.GeneralData?.VSync ?? false;
             set => Settings.GeneralData.VSync = value;
         }
 
+        //done
         public int Graphics_Preset
         {
             get => (int)Settings.GeneralData.GraphicsPreset;
             set => Settings.GeneralData.GraphicsPreset = (GraphicsPresetOption)value;
         }
 
+        //done
         public int Graphics_RenderRes
         {
             get => (int)Settings.GeneralData.RenderResolution;
             set => Settings.GeneralData.RenderResolution = (RenderResOption)value;
         }
 
+        //done
         public int Graphics_Shadow
         {
             get => (int)Settings.GeneralData.ShadowQuality;
             set => Settings.GeneralData.ShadowQuality = (QualityOption3)value;
         }
 
+        //done
         public int Graphics_AntiAliasing
         {
             get => (int)Settings.GeneralData.AntiAliasing;
             set => Settings.GeneralData.AntiAliasing = (AntiAliasingOption)value;
         }
 
+        //done
         public int Graphics_VolFog
         {
             get => (int)Settings.GeneralData.VolumetricFogQuality;
@@ -437,12 +512,14 @@ namespace CollapseLauncher.Pages
             set => Settings.GeneralData.Bloom = value;
         }
 
+        //done
         public int Graphics_Reflection
         {
             get => (int)Settings.GeneralData.ReflectionQuality;
             set => Settings.GeneralData.ReflectionQuality = (QualityOption4)value;
         }
 
+        //done
         public int Graphics_Effects
         {
             get => (int)Settings.GeneralData.FxQuality;
@@ -455,6 +532,7 @@ namespace CollapseLauncher.Pages
             set => Settings.GeneralData.ColorFilter = value;
         }
 
+        //done
         public int Graphics_Character
         {
             get => (int)Settings.GeneralData.CharacterQuality;
@@ -467,23 +545,27 @@ namespace CollapseLauncher.Pages
             set => Settings.GeneralData.Distortion = value;
         }
 
-        public int Graphics_Color
+        //done
+        public int Graphics_Shading
         {
-            get => (int)Settings.GeneralData.ColorQuality;
-            set => Settings.GeneralData.ColorQuality = (QualityOption3)value;
+            get => (int)Settings.GeneralData.ShadingQuality;
+            set => Settings.GeneralData.ShadingQuality = (QualityOption3)value;
         }
 
+        //done
         public int Graphics_Environment
         {
             get => (int)Settings.GeneralData.EnvironmentQuality;
             set => Settings.GeneralData.EnvironmentQuality = (QualityOption2)value;
         }
 
+        //done
         public int Graphics_Fps
         {
             get => (int)Settings.GeneralData.Fps;
             set => Settings.GeneralData.Fps = (FpsOption)value;
         }
+        
         #endregion
 
         #region Audio Settings - GENERAL_DATA > SystemSettingDataMap

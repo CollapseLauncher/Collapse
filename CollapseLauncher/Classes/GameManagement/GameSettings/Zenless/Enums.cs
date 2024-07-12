@@ -84,6 +84,7 @@ public enum AntiAliasingOption
 
 /// <summary>
 /// Available options for graphics settings that has 2 options <br/>
+/// Low, High
 /// </summary>
 public enum QualityOption2
 {
@@ -93,6 +94,7 @@ public enum QualityOption2
 
 /// <summary>
 /// Available options for graphics settings that has 3 options <br/>
+/// Low, Medium, High
 /// </summary>
 public enum QualityOption3
 {
@@ -103,6 +105,7 @@ public enum QualityOption3
 
 /// <summary>
 /// Available options for graphics settings that has 4 options <br/>
+/// Off, Low, Medium, High
 /// </summary>
 public enum QualityOption4
 {
@@ -114,7 +117,7 @@ public enum QualityOption4
 
 /// <summary>
 /// Available options for Audio Playback Device. Alters sound profile <br/>
-/// Default : Headphones
+/// Default : Headphones, Options: Headphones, Speakers, TV
 /// </summary>
 public enum AudioPlaybackDevice
 {
