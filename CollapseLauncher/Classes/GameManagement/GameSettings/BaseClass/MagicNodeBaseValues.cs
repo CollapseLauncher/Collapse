@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Zenless;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using System;
 using System.Collections.Generic;
@@ -273,8 +274,8 @@ namespace CollapseLauncher.GameSettings.Base
         };
     }
 
-    internal class MagicNodeBaseValues<T>
-            where T : MagicNodeBaseValues<T>, new()
+    internal class MagicNodeBaseValues<T> : IGameSettingsValueMagic<T>
+        where T : MagicNodeBaseValues<T>, new()
     {
         [JsonIgnore]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

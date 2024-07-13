@@ -1,7 +1,6 @@
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
-using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using System;
 using System.Text.Json.Nodes;
@@ -10,7 +9,7 @@ using System.Text.Json.Serialization;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless;
-internal class GeneralData : MagicNodeBaseValues<GeneralData>, IGameSettingsValueMagic<GeneralData>
+internal class GeneralData : MagicNodeBaseValues<GeneralData>
 {
     #region Node Based Properties
     private JsonNode? _systemSettingDataMap;
