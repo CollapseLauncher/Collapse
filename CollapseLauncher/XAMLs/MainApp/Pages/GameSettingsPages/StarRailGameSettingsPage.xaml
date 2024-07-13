@@ -77,8 +77,8 @@
                                             </CheckBox>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
                                                     <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
                                                 <CheckBox x:Name="GameWindowResizable"
                                                           HorizontalAlignment="Stretch"
@@ -89,15 +89,19 @@
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
                                                 <Button Grid.Column="1"
-                                                        Margin="8,-4,0,0"
-                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                        Width="24"
+                                                        Height="24"
+                                                        Margin="16,0,8,0"
+                                                        Padding="0"
+                                                        HorizontalAlignment="Left"
+                                                        CornerRadius="4">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                                  FontSize="12"
+                                                                  FontSize="10"
                                                                   Glyph="&#x3f;" />
                                                     </Button.Content>
                                                     <Button.Flyout>
-                                                        <Flyout AllowFocusOnInteraction="True">
+                                                        <Flyout>
                                                             <TextBlock MaxWidth="360"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
@@ -148,11 +152,11 @@
                                               HorizontalAlignment="Stretch"
                                               VerticalAlignment="Center">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
                                                 <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <CheckBox x:Name="GameCustomResolutionCheckbox"
-                                                      Margin="16,0,0,0"
+                                                      Margin="16,0,16,0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
@@ -160,15 +164,19 @@
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
+                                                    Width="24"
+                                                    Height="24"
+                                                    Margin="0,0,8,0"
+                                                    Padding="0"
+                                                    HorizontalAlignment="Left"
+                                                    CornerRadius="4">
                                                 <Button.Content>
                                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
+                                                              FontSize="10"
                                                               Glyph="&#x3f;" />
                                                 </Button.Content>
                                                 <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
+                                                    <Flyout>
                                                         <TextBlock MaxWidth="360"
                                                                    FontWeight="SemiBold"
                                                                    Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"
@@ -237,7 +245,7 @@
                                        Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SpecPanel}"
                                        TextWrapping="Wrap" />
                             <StackPanel>
-                                <StackPanel Margin="0,0,56,8">
+                                <StackPanel Margin="0,0,16,8">
                                     <Grid x:Name="RenderScaleGrid">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                    Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}"
@@ -248,12 +256,13 @@
                                                    TextWrapping="Wrap" />
                                     </Grid>
                                     <Slider x:Name="RenderScaleSlider"
+                                            Margin="0,8,0,0"
                                             Maximum="2.0"
                                             Minimum="0.6"
                                             StepFrequency="0.2"
                                             Style="{ThemeResource FatSliderStyle}"
                                             TickFrequency="0.2"
-                                            TickPlacement="None"
+                                            TickPlacement="Inline"
                                             Value="{x:Bind RenderScale, Mode=TwoWay}" />
                                 </StackPanel>
                                 <Grid>
@@ -548,7 +557,7 @@
                                                     Maximum="10"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -572,7 +581,7 @@
                                                     Maximum="10"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -603,7 +612,7 @@
                                                     Maximum="10"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -627,7 +636,7 @@
                                                     Maximum="10"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>

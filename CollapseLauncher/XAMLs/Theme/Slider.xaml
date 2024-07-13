@@ -1,4 +1,4 @@
-﻿ 
+﻿
 <!--  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information.  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -846,11 +846,8 @@
                                        FocusVisualMargin="-6,-14,-6,-14"
                                        Style="{StaticResource SliderThumbStyle}" />
                             </Grid>
-
                         </Grid>
-
                     </Grid>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -885,7 +882,6 @@
                                                     BorderBrush="{ThemeResource SliderThumbBorderBrush}"
                                                     BorderThickness="0"
                                                     CornerRadius="20">
-
                                                 <VisualStateManager.VisualStateGroups>
                                                     <VisualStateGroup x:Name="CommonStates">
                                                         <VisualState x:Name="Normal">
@@ -967,7 +963,7 @@
                                                          Fill="White"
                                                          RenderTransformOrigin="0.5, 0.5"
                                                          Shadow="{ThemeResource SliderTrackShadow}"
-                                                         Translation="0,0,32">
+                                                         Translation="0,0,16">
                                                     <Ellipse.RenderTransform>
                                                         <CompositeTransform />
                                                     </Ellipse.RenderTransform>
@@ -1204,7 +1200,7 @@
                               Background="{ThemeResource SliderContainerBackground}">
                             <Grid x:Name="HorizontalTemplate"
                                   MinHeight="{ThemeResource SliderHorizontalHeight}"
-                                  Margin="0,0,20,0">
+                                  Margin="0,0,16,0">
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -1327,11 +1323,8 @@
                                        FocusVisualMargin="-6,-14,-6,-14"
                                        Style="{StaticResource SliderThumbStyle}" />
                             </Grid>
-
                         </Grid>
-
                     </Grid>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

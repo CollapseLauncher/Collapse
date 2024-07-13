@@ -86,15 +86,18 @@
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
                                                 <Button Grid.Column="1"
-                                                        Margin="8,-4,0,0"
-                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                        Width="24"
+                                                        Height="24"
+                                                        Padding="0"
+                                                        HorizontalAlignment="Left"
+                                                        CornerRadius="4">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                                  FontSize="12"
+                                                                  FontSize="10"
                                                                   Glyph="&#x3f;" />
                                                     </Button.Content>
                                                     <Button.Flyout>
-                                                        <Flyout AllowFocusOnInteraction="True">
+                                                        <Flyout>
                                                             <TextBlock MaxWidth="360"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
@@ -131,16 +134,20 @@
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustom}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
+
                                                 <Button Grid.Column="1"
-                                                        Margin="8,-4,0,0"
-                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                        Width="24"
+                                                        Height="24"
+                                                        Padding="0"
+                                                        HorizontalAlignment="Left"
+                                                        CornerRadius="4">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                                  FontSize="12"
+                                                                  FontSize="10"
                                                                   Glyph="&#x3f;" />
                                                     </Button.Content>
                                                     <Button.Flyout>
-                                                        <Flyout AllowFocusOnInteraction="True">
+                                                        <Flyout>
                                                             <TextBlock MaxWidth="360"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"

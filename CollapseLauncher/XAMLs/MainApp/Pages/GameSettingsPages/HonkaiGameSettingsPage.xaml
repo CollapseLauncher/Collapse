@@ -64,8 +64,8 @@
                                         </CheckBox>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
                                                 <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <CheckBox x:Name="GameWindowResizable"
                                                       HorizontalAlignment="Left"
@@ -76,15 +76,19 @@
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
+                                                    Width="24"
+                                                    Height="24"
+                                                    Margin="16,0,8,0"
+                                                    Padding="0"
+                                                    HorizontalAlignment="Left"
+                                                    CornerRadius="4">
                                                 <Button.Content>
                                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
+                                                              FontSize="10"
                                                               Glyph="&#x3f;" />
                                                 </Button.Content>
                                                 <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
+                                                    <Flyout>
                                                         <TextBlock MaxWidth="360"
                                                                    FontWeight="SemiBold"
                                                                    Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
@@ -200,10 +204,16 @@
                                     <ComboBoxItem Content="DirectX 11 (FL 11.1) No ST" />
                                     <ComboBoxItem Content="DirectX 12 [EXPERIMENTAL]" />
                                 </ComboBox>
-                                <Button Margin="16,0">
+                                <Button Grid.Column="1"
+                                        Width="24"
+                                        Height="24"
+                                        Margin="16,0,8,0"
+                                        Padding="0"
+                                        HorizontalAlignment="Left"
+                                        CornerRadius="4">
                                     <Button.Content>
                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                  FontSize="12"
+                                                  FontSize="10"
                                                   Glyph="&#x3f;" />
                                     </Button.Content>
                                     <Button.Flyout>
@@ -709,8 +719,8 @@
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickFrequency="10"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -733,8 +743,8 @@
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickFrequency="10"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -757,8 +767,8 @@
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickFrequency="10"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -786,8 +796,8 @@
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickFrequency="10"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioVoiceVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -810,8 +820,8 @@
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickFrequency="10"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioElfVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -834,8 +844,8 @@
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="None"
+                                                    TickFrequency="10"
+                                                    TickPlacement="Inline"
                                                     Value="{x:Bind AudioCutsceneVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
