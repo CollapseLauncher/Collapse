@@ -269,7 +269,13 @@
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "Maximum FPS",
     "Graphics_FPSInCombat": "In-Combat",
     "Graphics_FPSInMenu": "Main Menu",
@@ -309,6 +315,7 @@
     "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
 
     "SpecDisabled": "Disabled",
+    "SpecCustom": "Custom",
     "SpecLow": "Low",
     "SpecMedium": "Medium",
     "SpecHigh": "High",
@@ -1287,5 +1294,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
+  },
+  
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

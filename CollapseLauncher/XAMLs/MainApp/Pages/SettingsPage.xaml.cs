@@ -28,7 +28,6 @@
     using static CollapseLauncher.Dialogs.SimpleDialogs;
     using static CollapseLauncher.Helper.Image.Waifu2X;
     using static CollapseLauncher.InnerLauncherConfig;
-    using static CollapseLauncher.RegionResourceListHelper;
     using static CollapseLauncher.WindowSize.WindowSize;
     using static CollapseLauncher.FileDialogCOM.FileDialogNative;
     using static Hi3Helper.Locale;
@@ -38,6 +37,7 @@
     using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
 
+// ReSharper disable CheckNamespace
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -66,7 +66,7 @@ namespace CollapseLauncher.Pages
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             LoadAppConfig();
-            this.DataContext = this;
+            DataContext = this;
 
             string Version = $" {LauncherUpdateHelper.LauncherCurrentVersionString}";
 #if DEBUG
@@ -171,7 +171,7 @@ namespace CollapseLauncher.Pages
                     try
                     {
                         var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
-                        if (collapsePath == null || LauncherMetadataHelper.LauncherMetadataFolder == null) return;
+                        if (collapsePath == null) return;
                         Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
                         Process.Start(collapsePath);
                         (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
@@ -191,9 +191,9 @@ namespace CollapseLauncher.Pages
 
         private void OpenAppDataFolder(object sender, RoutedEventArgs e)
         {
-            new Process()
+            new Process
             {
-                StartInfo = new ProcessStartInfo()
+                StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
                     FileName = "explorer.exe",
@@ -227,14 +227,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (Directory.Exists(AppGameLogsFolder))
-                {
-                    _log.Dispose();
-                    Directory.Delete(AppGameLogsFolder, true);
-                    _log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
-                }
-
-                Directory.CreateDirectory(AppGameLogsFolder);
+                _log?.ResetLogFiles(AppGameLogsFolder, Encoding.UTF8);
                 (sender as Button).IsEnabled = false;
             }
             catch (Exception ex)
@@ -302,11 +295,18 @@ namespace CollapseLauncher.Pages
 
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
                 bool isUpdateAvailable = await LauncherUpdateHelper.IsUpdateAvailable(true);
-                LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = isUpdateAvailable, NewVersionName = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value });
+                if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+                {
+                    LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
+                    {
+                        IsUpdateAvailable = isUpdateAvailable,
+                        NewVersionName    = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
+                    });
+                }
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
                 UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableStatus.Visibility = Visibility.Collapsed;
                 UpToDateStatus.Visibility = Visibility.Collapsed;
@@ -413,7 +413,7 @@ namespace CollapseLauncher.Pages
             taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
             taskDefinition.Settings.Enabled             = false;
             taskDefinition.Triggers.Add(new LogonTrigger());
-            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
+            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget));
 
             TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
@@ -497,7 +497,7 @@ namespace CollapseLauncher.Pages
                         }
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
-                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, false);
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
                     AppBGCustomizer.Visibility       = Visibility.Visible;
                     AppBGCustomizerNote.Visibility   = Visibility.Visible;
                         
@@ -986,7 +986,7 @@ namespace CollapseLauncher.Pages
 
                 TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Actions.Clear();
-                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null, null));
+                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null));
                 task.RegisterChanges();
                 task.Dispose();
             }

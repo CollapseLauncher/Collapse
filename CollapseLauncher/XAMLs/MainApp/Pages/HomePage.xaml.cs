@@ -933,7 +933,11 @@ namespace CollapseLauncher.Pages
                 StartGameBtn.IsEnabled = true;
                 StartGameBtnText!.Text = Lang._HomePage.StartBtn;
                 StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
-                StartGameBtnAnimatedIconGrid.Opacity = 1;
+                if (StartGameBtnAnimatedIconGrid != null)
+                {
+                    StartGameBtnAnimatedIconGrid.Opacity = 1;
+                }
+
                 StartGameBtnIcon.Opacity = 0;
 
                 GameStartupSetting.IsEnabled = true;
@@ -1656,6 +1660,18 @@ namespace CollapseLauncher.Pages
                 }
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+            }
+
+            if (CurrentGameProperty._GameVersion.GameType == GameNameType.Zenless)
+            {
+                // does not support exclusive mode at all
+                // also doesn't properly support dx12 or dx11 st
+                
+                if (_Settings.SettingsCollapseScreen.UseCustomResolution)
+                {
+                    Size screenSize = _Settings.SettingsScreen.sizeRes;
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
             }
 
             if (_Settings.SettingsCollapseScreen.UseBorderlessScreen)
