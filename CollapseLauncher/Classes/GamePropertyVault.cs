@@ -180,11 +180,11 @@ namespace CollapseLauncher.Statics
 
                 GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
                 Vault.Add(GamePreset.HashID, Property);
-            #if DEBUG
+#if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
+#endif
             }
 
-        #endif
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
