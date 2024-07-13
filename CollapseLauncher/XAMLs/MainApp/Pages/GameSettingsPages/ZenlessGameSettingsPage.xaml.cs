@@ -206,7 +206,7 @@ namespace CollapseLauncher.Pages
             {
                 int w = (int)(h * nativeAspRatio);
                 // TODO: remove identifier
-                resPairs.Add($"{w}x{h} Fullscreen");
+                resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, w, h));
             }
 
             return resPairs;
@@ -232,7 +232,7 @@ namespace CollapseLauncher.Pages
             {
                 int w = (int)(h * wideRatio);
                 // TODO: remove identifier
-                resPairs.Add($"{w}x{h} Windowed");
+                resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixWindowed, w, h));
             }
 
             return resPairs;

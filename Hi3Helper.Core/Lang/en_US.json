@@ -269,6 +269,8 @@
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
     "Graphics_VSync": "VSync",
 
