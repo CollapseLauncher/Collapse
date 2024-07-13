@@ -270,6 +270,10 @@
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "Maximum FPS",
     "Graphics_FPSInCombat": "In-Combat",
     "Graphics_FPSInMenu": "Main Menu",
@@ -309,6 +313,7 @@
     "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
 
     "SpecDisabled": "Disabled",
+    "SpecCustom": "Custom",
     "SpecLow": "Low",
     "SpecMedium": "Medium",
     "SpecHigh": "High",

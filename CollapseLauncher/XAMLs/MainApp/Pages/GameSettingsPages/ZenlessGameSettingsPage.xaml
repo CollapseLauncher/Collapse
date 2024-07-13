@@ -53,7 +53,7 @@
                                                           Checked="EnforceCustomPreset_Checkbox"
                                                           IsChecked="{x:Bind EnableVSync, Mode=TwoWay}"
                                                           Unchecked="EnforceCustomPreset_Checkbox">
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}"
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_VSync}"
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
                                             </Grid>
@@ -235,7 +235,7 @@
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
-                                        <ComboBoxItem Content="Custom" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecCustom}" />
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
@@ -243,7 +243,7 @@
                                                Margin="0,0,0,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS}"
+                                               Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FPS}"
                                                TextWrapping="WrapWholeWords" />
                                     <ComboBox x:Name="FpsSelector"
                                               Margin="0,0,16,8"
@@ -252,7 +252,7 @@
                                               SelectedIndex="{x:Bind Graphics_Fps, Mode=TwoWay}">
                                         <ComboBoxItem Content="30" />
                                         <ComboBoxItem Content="60" />
-                                        <ComboBoxItem Content="Unlimited" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FPSUnlimited}" />
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
