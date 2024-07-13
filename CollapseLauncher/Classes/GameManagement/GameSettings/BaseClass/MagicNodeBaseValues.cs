@@ -319,11 +319,11 @@ namespace CollapseLauncher.GameSettings.Base
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
-                return new T().DefaultValue(magic, versionManager, context);
+                return DefaultValue(magic, versionManager, context);
             }
         }
 
-        public T DefaultValue(byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
+        private static T DefaultValue(byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
         {
             // Generate dummy data
             T data = new T();
