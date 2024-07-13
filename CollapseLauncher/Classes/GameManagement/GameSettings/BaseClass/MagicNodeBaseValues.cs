@@ -3,11 +3,13 @@ using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
@@ -21,6 +23,12 @@ namespace CollapseLauncher.GameSettings.Base
 
     internal static class MagicNodeBaseValuesExt
     {
+        private static JsonSerializerOptions JsonSerializerOpts = new JsonSerializerOptions
+        {
+            AllowTrailingCommas = true,
+            ReadCommentHandling = JsonCommentHandling.Skip
+        };
+
         internal static JsonObject EnsureCreatedObject(this JsonNode? node, string keyName)
         {
             // If the node is empty, then create a new instance of it
@@ -114,7 +122,7 @@ namespace CollapseLauncher.GameSettings.Base
                 if (typeof(TValue) == typeof(bool) && jsonNodeValue.GetValueKind() == JsonValueKind.Number)
                 {
                     // Assuming 0 is false, and any non-zero number is true
-                    int  numValue  = jsonNodeValue.AsValue().GetValue<int>();
+                    int numValue = jsonNodeValue.AsValue().GetValue<int>();
                     bool boolValue = numValue != 0;
                     return (TValue)(object)boolValue; // Cast bool to TValue
                 }
@@ -170,7 +178,7 @@ namespace CollapseLauncher.GameSettings.Base
             return defaultValue;
         }
 
-        public static void SetNodeValue<TValue>(this JsonNode? node, string keyName, TValue value)
+        public static void SetNodeValue<TValue>(this JsonNode? node, string keyName, TValue value, JsonSerializerContext? context = null)
         {
             // If node is null, return and ignore
             if (node == null) return;
@@ -179,7 +187,7 @@ namespace CollapseLauncher.GameSettings.Base
             JsonObject jsonObject = node.AsObject();
 
             // Create an instance of the JSON node value
-            JsonValue? jsonValue = JsonValue.Create(value);
+            JsonValue? jsonValue = CreateJsonValue(value, context);
 
             // If the node has object, then assign the new value
             if (jsonObject.ContainsKey(keyName))
@@ -233,6 +241,37 @@ namespace CollapseLauncher.GameSettings.Base
                 return JsonValue.Create(enumAsNumberString);
             }
         }
+
+        private static JsonValue? CreateJson<TDynamic>(TDynamic dynamicValue, JsonSerializerContext context)
+        {
+            JsonTypeInfo jsonTypeInfo = context.GetTypeInfo(typeof(TDynamic))
+                ?? throw new NotSupportedException($"Context does not include a JsonTypeInfo<T> of type {nameof(TDynamic)}");
+            JsonTypeInfo<TDynamic> jsonTypeInfoT = (JsonTypeInfo<TDynamic>)jsonTypeInfo;
+            return JsonValue.Create(dynamicValue, jsonTypeInfoT);
+        }
+
+        private static JsonValue? CreateJsonValue<TValue>(TValue value, JsonSerializerContext? context)
+            => value switch
+        {
+            bool v_bool => JsonValue.Create(v_bool),
+            byte v_byte => JsonValue.Create(v_byte),
+            sbyte v_sbyte => JsonValue.Create(v_sbyte),
+            short v_short => JsonValue.Create(v_short),
+            char v_char => JsonValue.Create(v_char),
+            int v_int => JsonValue.Create(v_int),
+            uint v_uint => JsonValue.Create(v_uint),
+            long v_long => JsonValue.Create(v_long),
+            ulong v_ulong => JsonValue.Create(v_ulong),
+            float v_float => JsonValue.Create(v_float),
+            double v_double => JsonValue.Create(v_double),
+            decimal v_decimal => JsonValue.Create(v_decimal),
+            string v_string => JsonValue.Create(v_string),
+            DateTime v_datetime => JsonValue.Create(v_datetime),
+            DateTimeOffset v_datetimeoffset => JsonValue.Create(v_datetimeoffset),
+            Guid v_guid => JsonValue.Create(v_guid),
+            JsonElement v_jsonelement => JsonValue.Create(v_jsonelement),
+            _ => CreateJson(value, context ?? throw new NotSupportedException("You cannot pass a null context while setting a non-struct value to JsonValue"))
+        };
     }
 
     internal class MagicNodeBaseValues<T>

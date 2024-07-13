@@ -2,6 +2,7 @@ using CollapseLauncher.GameSettings.Base;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable RedundantNullableFlowAttribute
 
@@ -23,7 +24,7 @@ public struct SystemSettingLocalData<TData>
     public TData GetData() => _node.GetNodeValue("Data", _defaultData);
     public TData GetDataEnum<TDataEnum>() => _node.GetNodeValueEnum("Data", _defaultData);
 
-    public void SetData(TData value) => _node.SetNodeValue("Data", value);
+    public void SetData(TData value, JsonSerializerContext? context = null) => _node.SetNodeValue("Data", value, context);
     public void SetDataEnum<TDataEnum>(TDataEnum value, JsonEnumStoreType enumStoreType = JsonEnumStoreType.AsNumber)
         where TDataEnum : struct, Enum => _node.SetNodeValueEnum("Data", value, enumStoreType);
 
