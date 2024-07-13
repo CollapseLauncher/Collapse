@@ -6,6 +6,7 @@
     using Squirrel.Sources;
     using System;
     using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
     namespace CollapseLauncher.Helper.Update
 {
@@ -24,11 +25,11 @@
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
         internal static bool IsLauncherUpdateAvailable;
 
-        private static GameVersion _launcherCurrentVersion;
+        private static readonly GameVersion _launcherCurrentVersion;
         internal static GameVersion? LauncherCurrentVersion
             => _launcherCurrentVersion;
 
-        private static string _launcherCurrentVersionString;
+        private static readonly string _launcherCurrentVersionString;
         internal static string LauncherCurrentVersionString
             => _launcherCurrentVersionString;
 
@@ -66,7 +67,7 @@
                 IsLauncherUpdateAvailable = LauncherCurrentVersion.Compare(remoteVersion);
 
                 bool isUserIgnoreUpdate = (LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false) && !isForceCheckUpdate;
-                bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !(AppUpdateVersionProp?.IsForceUpdate ?? false);
+                bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !AppUpdateVersionProp.IsForceUpdate;
 
                 return IsLauncherUpdateAvailable && !isUpdateRoutineSkipped;
             }
@@ -75,7 +76,7 @@
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)
         {
             string relativePath = ConverterTool.CombineURLFromString(updateChannel, "fileindex.json");
-            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
+            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
             return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
         }
     }

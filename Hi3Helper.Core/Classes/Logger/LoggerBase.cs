@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 #if !APPLYUPDATE
 using Hi3Helper.Shared.Region;
+// ReSharper disable CheckNamespace
 #endif
 
 namespace Hi3Helper
@@ -39,7 +40,7 @@ namespace Hi3Helper
 
 #if !APPLYUPDATE
             // Check if the directory exist. If not, then create.
-            if (!Directory.Exists(_logFolder))
+            if (!string.IsNullOrEmpty(_logFolder) && !Directory.Exists(_logFolder))
             {
                 Directory.CreateDirectory(_logFolder);
             }

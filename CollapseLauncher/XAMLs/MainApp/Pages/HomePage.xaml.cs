@@ -933,7 +933,11 @@ namespace CollapseLauncher.Pages
                 StartGameBtn.IsEnabled = true;
                 StartGameBtnText!.Text = Lang._HomePage.StartBtn;
                 StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
-                StartGameBtnAnimatedIconGrid.Opacity = 1;
+                if (StartGameBtnAnimatedIconGrid != null)
+                {
+                    StartGameBtnAnimatedIconGrid.Opacity = 1;
+                }
+
                 StartGameBtnIcon.Opacity = 0;
 
                 GameStartupSetting.IsEnabled = true;
