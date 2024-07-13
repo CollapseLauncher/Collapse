@@ -42,8 +42,8 @@
                 </Frame.ContentTransitions>
             </Frame>
         </Grid>
-        <Grid Grid.Row="0"
-              x:Name="IntroAnimationGrid"
+        <Grid x:Name="IntroAnimationGrid"
+              Grid.Row="0"
               Grid.RowSpan="3"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
@@ -161,7 +161,8 @@
                         x:FieldModifier="internal" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
-            <Grid x:Name="AppTitleBar" x:FieldModifier="internal">
+            <Grid x:Name="AppTitleBar"
+                  x:FieldModifier="internal">
                 <Button x:Name="MinimizeButton"
                         Width="40"
                         Height="40"

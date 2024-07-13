@@ -251,8 +251,9 @@
                                             Maximum="2.0"
                                             Minimum="0.6"
                                             StepFrequency="0.2"
+                                            Style="{ThemeResource FatSliderStyle}"
                                             TickFrequency="0.2"
-                                            TickPlacement="Outside"
+                                            TickPlacement="None"
                                             Value="{x:Bind RenderScale, Mode=TwoWay}" />
                                 </StackPanel>
                                 <Grid>
@@ -545,8 +546,9 @@
                                             <Slider x:Name="AudioMasterVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="Outside"
+                                                    TickPlacement="None"
                                                     Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -568,8 +570,9 @@
                                             <Slider x:Name="AudioSFXVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="Outside"
+                                                    TickPlacement="None"
                                                     Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -598,8 +601,9 @@
                                             <Slider x:Name="AudioBGMVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="Outside"
+                                                    TickPlacement="None"
                                                     Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -621,8 +625,9 @@
                                             <Slider x:Name="AudioVOVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
-                                                    TickPlacement="Outside"
+                                                    TickPlacement="None"
                                                     Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
