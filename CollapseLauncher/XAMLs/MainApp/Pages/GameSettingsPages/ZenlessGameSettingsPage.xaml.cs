@@ -51,7 +51,6 @@ namespace CollapseLauncher.Pages
                 });
 
                 LoadPage();
-                this.ColorFilterSlider.LayoutUpdated += ColFilSlider_DisablePopup;
             }
             catch (Exception ex)
             {
@@ -299,16 +298,6 @@ namespace CollapseLauncher.Pages
                 ToggleRegistrySubscribe(false);
                 RegistryWatcher?.Dispose();
             });
-        }
-
-        // https://stackoverflow.com/questions/76737204/regarding-sliders-in-win-ui
-        private void ColFilSlider_DisablePopup(object _, object n)
-        {
-            if (VisualTreeHelper.GetOpenPopupsForXamlRoot(this.ColorFilterSlider.XamlRoot)
-                                .FirstOrDefault() is { } popup)
-            {
-                popup.Visibility = Visibility.Collapsed;
-            }
         }
     }
 }
