@@ -264,7 +264,7 @@ namespace CollapseLauncher.GameSettings.Base
 
             try
             {
-                string? filePath = versionManager.ConfigFilePath;
+                string filePath = versionManager.ConfigFilePath;
 
                 if (!File.Exists(filePath)) throw new FileNotFoundException("MagicNodeBaseValues config file not found!");
                 string raw = Sleepy.ReadString(filePath, magic);
@@ -305,7 +305,7 @@ namespace CollapseLauncher.GameSettings.Base
         public void Save()
         {
             // Get the file and dir path
-            string? filePath = GameVersionManager.ConfigFilePath;
+            string filePath = GameVersionManager.ConfigFilePath;
             string? fileDirPath = Path.GetDirectoryName(filePath);
 
             // Create the dir if not exist
@@ -314,7 +314,7 @@ namespace CollapseLauncher.GameSettings.Base
 
             // Write into the file
             string jsonString = SettingsJsonNode.SerializeJsonNode(Context, false, false);
-            Sleepy.WriteString(filePath!, jsonString, Magic);
+            Sleepy.WriteString(filePath, jsonString, Magic);
         }
 
         public bool Equals(GeneralData? other)

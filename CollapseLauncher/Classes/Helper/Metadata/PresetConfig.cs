@@ -75,6 +75,7 @@ namespace CollapseLauncher.Helper.Metadata
     {
         #region Constants
 
+        // ReSharper disable once UnusedMember.Local
         private const string PrefixRegInstallLocation =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
 
@@ -473,6 +474,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (kvpTemp == null)
                     return null;
 
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 verData = kvpTemp?.Value;
             }
 
