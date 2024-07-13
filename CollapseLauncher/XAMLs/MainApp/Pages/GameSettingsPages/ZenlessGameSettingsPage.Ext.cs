@@ -119,6 +119,7 @@ namespace CollapseLauncher.Pages
                     GameWindowResizable.IsChecked = false;
                     GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
                     GameResolutionBorderless.IsChecked = false;
+                    GameResolutionBorderless.IsEnabled = false;
                     return;
                 }
                 GameWindowResizable.IsEnabled = true;
