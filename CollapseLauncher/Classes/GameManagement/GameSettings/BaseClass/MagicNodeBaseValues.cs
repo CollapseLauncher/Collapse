@@ -356,10 +356,7 @@ namespace CollapseLauncher.GameSettings.Base
             Sleepy.WriteString(filePath, jsonString, Magic);
         }
 
-        public bool Equals(GeneralData? other)
-        {
-            return true;
-        }
+        public bool Equals(T? other) => JsonNode.DeepEquals(this.SettingsJsonNode, other?.SettingsJsonNode);
 
         protected virtual void InjectNodeAndMagic(JsonNode? jsonNode, byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
         {
