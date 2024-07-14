@@ -269,7 +269,13 @@
     "Graphics_ResCustom": "カスタム解像度を使用",
     "Graphics_ResCustomW": "横",
     "Graphics_ResCustomH": "縦",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} フルスクリーン",
+    "Graphics_ResPrefixWindowed": "{0}x{1} ウィンドウモード",
 
+    "Graphics_VSync": "垂直同期",
+
+    "Graphics_FPS": "フレームレート",
+    "Graphics_FPSUnlimited": "無制限",
     "Graphics_FPSPanel": "最大FPS",
     "Graphics_FPSInCombat": "戦闘フレーム",
     "Graphics_FPSInMenu": "その他",
@@ -309,6 +315,7 @@
     "Graphics_Legacy_Subtitle": "これらの設定項目はゲーム内に存在しないため、変更しても効果がない可能性があります。",
 
     "SpecDisabled": "OFF",
+    "SpecCustom": "カスタム",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
@@ -1287,5 +1294,17 @@
     "CDNCheckboxItemLatencyFormat": "（{0}ms）",
     "CDNCheckboxItemLatencyUnknownFormat": "（不明）",
     "CDNCheckboxItemLatencyRecommendedFormat": "[おすすめ]"
+  },
+  
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "カラーフィルター",
+    "Graphics_RenderRes": "レンダリング精度",
+    "Graphics_EffectsQ": "SFX品質",
+    "Graphics_ShadingQ": "シェーディング",
+    "Graphics_Distortion": "ディストーション",
+    "Audio_PlaybackDev": "再生デバイス",
+    "Audio_PlaybackDev_Headphones": "ヘッドホン",
+    "Audio_PlaybackDev_Speakers": "スピーカー",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }
