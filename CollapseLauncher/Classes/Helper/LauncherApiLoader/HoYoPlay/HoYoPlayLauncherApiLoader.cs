@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
     using CollapseLauncher.Extension;
     using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
     using CollapseLauncher.Helper.Metadata;
