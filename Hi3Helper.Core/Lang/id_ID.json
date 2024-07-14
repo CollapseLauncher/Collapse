@@ -269,7 +269,13 @@
     "Graphics_ResCustom": "Gunakan Resolusi Lainnya",
     "Graphics_ResCustomW": "P",
     "Graphics_ResCustomH": "T",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Layar penuh",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Tidak Terbatas",
     "Graphics_FPSPanel": "FPS Maksimal",
     "Graphics_FPSInCombat": "Dalam Pertarungan",
     "Graphics_FPSInMenu": "Menu Awal",
@@ -309,6 +315,7 @@
     "Graphics_Legacy_Subtitle": "Pengaturan ini sudah tidak tersedia di dalam game dan kemungkinan ttidak akan mempengaruhi apapun.",
 
     "SpecDisabled": "Mati",
+    "SpecCustom": "Kustom",
     "SpecLow": "Rendah",
     "SpecMedium": "Sedang",
     "SpecHigh": "Tinggi",
@@ -1287,5 +1294,17 @@
     "CDNCheckboxItemLatencyFormat": "({0} md)",
     "CDNCheckboxItemLatencyUnknownFormat": "(Tidak diketahui)",
     "CDNCheckboxItemLatencyRecommendedFormat": "[Direkomendasikan]"
+  },
+  
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Penguatan Filter Warna",
+    "Graphics_RenderRes": "Resolusi Render",
+    "Graphics_EffectsQ": "Kualitas Efek",
+    "Graphics_ShadingQ": "Kualitas Shading",
+    "Graphics_Distortion": "Distorsi",
+    "Audio_PlaybackDev": "Perangkat Pemutaran Audio",
+    "Audio_PlaybackDev_Headphones": "Headphone",
+    "Audio_PlaybackDev_Speakers": "Speaker",
+    "Audio_PlaybackDev_TV": "Televisi"
   }
 }
