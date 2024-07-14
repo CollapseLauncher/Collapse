@@ -708,19 +708,11 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioMasterVolumeSlider}" />
                                             <Slider x:Name="AudioMasterVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="10"
-                                                    TickPlacement="Inline"
+                                                    TickPlacement="Outside"
                                                     Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -732,19 +724,11 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioBGMVolumeSlider}" />
                                             <Slider x:Name="AudioBGMVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="10"
-                                                    TickPlacement="Inline"
+                                                    TickPlacement="Outside"
                                                     Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -756,19 +740,11 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioSFXVolumeSlider}" />
                                             <Slider x:Name="AudioSFXVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="10"
-                                                    TickPlacement="Inline"
+                                                    TickPlacement="Outside"
                                                     Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -785,19 +761,11 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioCVVolumeSlider}" />
                                             <Slider x:Name="AudioCVVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="10"
-                                                    TickPlacement="Inline"
+                                                    TickPlacement="Outside"
                                                     Value="{x:Bind AudioVoiceVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -809,19 +777,12 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioElfCVVolumeSlider}" />
                                             <Slider x:Name="AudioElfCVVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="10"
-                                                    TickPlacement="Inline"
+                                                    TickPlacement="Outside"
                                                     Value="{x:Bind AudioElfVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
@@ -833,19 +794,12 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioCutscenesVolumeSlider}" />
                                             <Slider x:Name="AudioCutscenesVolumeSlider"
                                                     Grid.Column="1"
                                                     Maximum="100"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="10"
-                                                    TickPlacement="Inline"
+                                                    TickPlacement="Outside"
                                                     Value="{x:Bind AudioCutsceneVolume, Mode=TwoWay}" />
                                         </Grid>
                                     </StackPanel>
