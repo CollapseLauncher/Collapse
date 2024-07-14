@@ -6,6 +6,7 @@
     using CollapseLauncher.Interfaces;
     using CollapseLauncher.Statics;
     using Hi3Helper;
+    using Hi3Helper.Data;
     using Hi3Helper.Screen;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
@@ -17,13 +18,13 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Linq;
     using System.Numerics;
     using Windows.UI;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using static CollapseLauncher.Statics.GamePropertyVault;
-    using System.Linq;
 
 namespace CollapseLauncher.Pages
 {
@@ -95,7 +96,9 @@ namespace CollapseLauncher.Pages
             try
             {
                 ToggleRegistrySubscribe(false);
-                Exception exc = Settings.ExportSettings();
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
+                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?._GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
+                Exception exc = Settings.ExportSettings(true, gameBasePath, relativePaths);
 
                 if (exc != null) throw exc;
 
@@ -116,12 +119,29 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private string[] GetFilesRelativePaths(string gameDir, string relativePath)
+        {
+            List<string> fileRelativePaths = new List<string>();
+            string sourceDirPath = Path.Combine(gameDir, relativePath);
+
+            foreach (string filePath in Directory.EnumerateFiles(sourceDirPath, "*", SearchOption.AllDirectories))
+            {
+                string fileName = Path.GetFileName(filePath);
+                string trimmedRelativeDir = Path.GetDirectoryName(filePath.Substring(gameDir.Length)).Trim('\\');
+                string relativeFilePath = Path.Combine(trimmedRelativeDir, fileName);
+                fileRelativePaths.Add(relativeFilePath);
+            }
+
+            return fileRelativePaths.ToArray();
+        }
+
         private void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                Exception exc = Settings.ImportSettings();
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
+                Exception exc = Settings.ImportSettings(gameBasePath);
 
                 if (exc != null) throw exc;
 
