@@ -121,18 +121,14 @@ namespace CollapseLauncher.Pages
 
         private string[] GetFilesRelativePaths(string gameDir, string relativePath)
         {
-            List<string> fileRelativePaths = new List<string>();
             string sourceDirPath = Path.Combine(gameDir, relativePath);
-
-            foreach (string filePath in Directory.EnumerateFiles(sourceDirPath, "*", SearchOption.AllDirectories))
+            return Directory.EnumerateFiles(sourceDirPath, "*", SearchOption.AllDirectories).Select(filePath =>
             {
                 string fileName = Path.GetFileName(filePath);
                 string trimmedRelativeDir = Path.GetDirectoryName(filePath.Substring(gameDir.Length)).Trim('\\');
                 string relativeFilePath = Path.Combine(trimmedRelativeDir, fileName);
-                fileRelativePaths.Add(relativeFilePath);
-            }
-
-            return fileRelativePaths.ToArray();
+                return relativeFilePath;
+            }).ToArray();
         }
 
         private void RegistryImportClick(object sender, RoutedEventArgs e)
