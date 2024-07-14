@@ -269,7 +269,13 @@
     "Graphics_ResCustom": "使用自定义分辨率",
     "Graphics_ResCustomW": "宽",
     "Graphics_ResCustomH": "高",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} 全屏",
+    "Graphics_ResPrefixWindowed": "{0}x{1} 窗口",
 
+    "Graphics_VSync": "垂直同步",
+
+    "Graphics_FPS": "帧率",
+    "Graphics_FPSUnlimited": "无限制",
     "Graphics_FPSPanel": "最大 FPS",
     "Graphics_FPSInCombat": "战斗中",
     "Graphics_FPSInMenu": "主菜单",
@@ -292,7 +298,7 @@
     "Graphics_FXAA": "抗锯齿",
     "Graphics_FXDistort": "扭曲效果",
 
-    "Graphics_APHO2Panel": "新章节图形设置",
+    "Graphics_APHO2Panel": "后崩坏书2 & 新章节图形设置",
     "Graphics_APHO2GI": "全局光照",
     "Graphics_APHO2VL": "体积光",
     "Graphics_APHO2AO": "环境光遮蔽",
@@ -309,6 +315,7 @@
     "Graphics_Legacy_Subtitle": "这些设置不存在于游戏中，并且可能不会产生任何效果。",
 
     "SpecDisabled": "关闭",
+    "SpecCustom": "自定义",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
@@ -1287,5 +1294,17 @@
     "CDNCheckboxItemLatencyFormat": "（{0} ms）",
     "CDNCheckboxItemLatencyUnknownFormat": "（未知）",
     "CDNCheckboxItemLatencyRecommendedFormat": "[推荐]"
+  },
+  
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "调色滤镜强度",
+    "Graphics_RenderRes": "渲染精度",
+    "Graphics_EffectsQ": "特效质量",
+    "Graphics_ShadingQ": "着色质量",
+    "Graphics_Distortion": "扭曲",
+    "Audio_PlaybackDev": "声音播放设备",
+    "Audio_PlaybackDev_Headphones": "耳机",
+    "Audio_PlaybackDev_Speakers": "音响",
+    "Audio_PlaybackDev_TV": "电视"
   }
 }
