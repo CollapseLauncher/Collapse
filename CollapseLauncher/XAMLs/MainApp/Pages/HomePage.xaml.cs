@@ -1092,6 +1092,10 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
 
                     verifResult = await CurrentGameProperty._GameInstall.StartPackageVerification();
+                    
+                    // Restore sleep before the dialog
+                    // so system won't be stuck when download is finished because of the download verified dialog
+                    InvokeProp.RestoreSleep();
 
                     if (verifResult == -1)
                     {

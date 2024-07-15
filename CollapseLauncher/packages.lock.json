@@ -993,7 +993,8 @@
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[*, )",
-          "Hi3Helper.ZstdNet": "[*, )"
+          "Hi3Helper.ZstdNet": "[*, )",
+          "System.IO.Hashing": "[*, )"
         }
       },
       "innosetuphelper": {
