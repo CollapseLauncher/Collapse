@@ -978,6 +978,12 @@ namespace CollapseLauncher.Pages
         #region Preload
         private async void SpawnPreloadBox()
         {
+            if (CurrentGameProperty._GameInstall.IsUseSophon)
+            {
+                DownloadModeLabelPreload.Visibility = Visibility.Visible;
+                DownloadModeLabelPreloadText.Text = Lang._Misc.DownloadModeLabelSophon;
+            }
+
             if (CurrentGameProperty._GameInstall.IsRunning)
             {
                 // TODO
@@ -987,7 +993,15 @@ namespace CollapseLauncher.Pages
 
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
-                ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    ProgressPreSophonStatusGrid.Visibility = Visibility.Visible;
+                    ProgressPreStatusGrid.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                }
                 ProgressPreButtonGrid.Visibility = Visibility.Visible;
                 PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
                 PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
@@ -1052,7 +1066,15 @@ namespace CollapseLauncher.Pages
 
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
-                ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                {
+                    ProgressPreSophonStatusGrid.Visibility = Visibility.Visible;
+                    ProgressPreStatusGrid.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                }
                 ProgressPreButtonGrid.Visibility = Visibility.Visible;
                 PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
                 PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
