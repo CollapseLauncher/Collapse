@@ -769,8 +769,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Set the max thread and httpHandler based on settings
             int maxThread = _threadCount;
-            int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
-            maxHttpHandler = Math.Max(maxHttpHandler, maxThread);
+            int maxHttpHandler = Math.Min(_downloadThreadCount * 4, 64);
 
             LogWriteLine($"Initializing Sophon Chunk update method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
