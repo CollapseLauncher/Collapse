@@ -306,6 +306,18 @@ namespace Hi3Helper.Shared.Region
 
         public static bool                 ForceInvokeUpdate     = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
+
+        public static Guid GetGuid(int sessionNum)
+        {
+            var guidString = GetAppConfigValue($"sessionGuid{sessionNum}").ToString();
+            if (string.IsNullOrEmpty(guidString))
+            {
+                var g = Guid.NewGuid();
+                SetAndSaveConfigValue($"sessionGuid{sessionNum}", g.ToString());
+                return g;
+            }
+            return Guid.Parse(guidString);
+        }
         #endregion
 
         #region App Settings Template
