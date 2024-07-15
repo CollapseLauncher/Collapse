@@ -1153,21 +1153,22 @@ namespace CollapseLauncher.Pages
 
                 HideImageCarousel(true);
 
-                progressRing.Value = 0;
-                progressRing.IsIndeterminate = true;
+                progressRing.Value            = 0;
+                progressRing.IsIndeterminate  = true;
                 ProgressStatusGrid.Visibility = Visibility.Visible;
-                InstallGameBtn.Visibility = Visibility.Collapsed;
-                CancelDownloadBtn.Visibility = Visibility.Visible;
-                ProgressTimeLeft.Visibility = Visibility.Visible;
+                InstallGameBtn.Visibility     = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility  = Visibility.Visible;
+                ProgressTimeLeft.Visibility   = Visibility.Visible;
 
                 CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+                CurrentGameProperty._GameInstall.StatusChanged   += GameInstall_StatusChanged;
 
                 int dialogResult = await CurrentGameProperty._GameInstall.GetInstallationPath();
                 if (dialogResult < 0)
                 {
                     return;
                 }
+
                 if (dialogResult == 0)
                 {
                     CurrentGameProperty._GameInstall.ApplyGameConfig();
@@ -1177,16 +1178,17 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty._GameInstall.IsUseSophon)
                 {
                     DownloadModeLabel.Visibility = Visibility.Visible;
-                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                    DownloadModeLabelText.Text   = Lang._Misc.DownloadModeLabelSophon;
                 }
 
-                int verifResult;
+                int  verifResult;
                 bool skipDialog = false;
                 while ((verifResult = await CurrentGameProperty._GameInstall.StartPackageVerification()) == 0)
                 {
                     await CurrentGameProperty._GameInstall.StartPackageDownload(skipDialog);
                     skipDialog = true;
                 }
+
                 if (verifResult == -1)
                 {
                     CurrentGameProperty._GameInstall.ApplyGameConfig(true);
@@ -1195,7 +1197,8 @@ namespace CollapseLauncher.Pages
 
                 await CurrentGameProperty._GameInstall.StartPackageInstallation();
                 CurrentGameProperty._GameInstall.ApplyGameConfig(true);
-                if (CurrentGameProperty._GameInstall.StartAfterInstall && CurrentGameProperty._GameVersion.IsGameInstalled())
+                if (CurrentGameProperty._GameInstall.StartAfterInstall &&
+                    CurrentGameProperty._GameVersion.IsGameInstalled())
                     StartGame(null, null);
 
                 // Set the notification trigger to "Completed" state
@@ -1219,9 +1222,31 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
                 IsPageUnload = true;
-                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(new NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
-                    $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}\r\n{ex}",
+                             LogType.Error, true);
+                ErrorSender.SendException(new
+                                              NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
+                                                                     $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}",
+                                                                     ex));
+            }
+            catch (TimeoutException ex)
+            {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+                IsPageUnload = true;
+                string exMessage = $"Timeout occurred when trying to install {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}.\r\n\t" +
+                             $"Check stability of your internet! If your internet speed is slow, please lower the download thread count.\r\n\t" +
+                             $"**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!" +
+                             $"\r\n{ex}";
+                
+                string exTitleLocalized = string.Format(Lang._HomePage.Exception_DownloadTimeout1, CurrentGameProperty._GameVersion.GamePreset.ZoneFullname);
+                string exMessageLocalized = string.Format($"{exTitleLocalized}\r\n\t" +
+                                                          $"{Lang._HomePage.Exception_DownloadTimeout2}\r\n\t" +
+                                                          $"{Lang._HomePage.Exception_DownloadTimeout3}");
+
+                LogWriteLine($"{exMessage}", LogType.Error, true);
+                Exception newEx = new TimeoutException(exMessageLocalized, ex);
+                ErrorSender.SendException(newEx);
             }
             catch (Exception ex)
             {
@@ -1229,7 +1254,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
                 IsPageUnload = true;
-                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneName}.\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
             }
             finally

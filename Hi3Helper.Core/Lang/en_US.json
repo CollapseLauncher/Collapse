@@ -174,7 +174,11 @@
     "CommunityToolsBtn_CommunityText": "Community Tools",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}",
 
-    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut",
+    
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
   },
 
   "_GameRepairPage": {
