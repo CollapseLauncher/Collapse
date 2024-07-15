@@ -764,6 +764,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
         {
+            GC.SuppressFinalize(this);
             // Set the flag to false
             _isSophonDownloadCompleted = false;
 
@@ -886,6 +887,8 @@ namespace CollapseLauncher.InstallManager.Base
                 // for some games (like Genshin, which causes 4302-x errors for some reason)
                 string dxSetupDir = Path.Combine(_gamePath, "DXSETUP");
                 TryDeleteReadOnlyDir(dxSetupDir);
+                
+                GC.ReRegisterForFinalize(this);
             }
         }
 
