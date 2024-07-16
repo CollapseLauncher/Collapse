@@ -676,21 +676,36 @@ namespace CollapseLauncher.InstallManager.Base
                 if (_gameVersionManager.GamePreset
                                        .LauncherResourceChunksURL != null)
                 {
+#if SIMULATEAPPLYPRELOAD
                     string requestedUrl = gameState switch
-                                       {
-                                           GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
-                                              .LauncherResourceChunksURL.PreloadUrl,
-                                           _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
-                                       };
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                           .LauncherResourceChunksURL.PreloadUrl,
+                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                    };
                     GameVersion? requestedVersion = gameState switch
-                                           {
-                                               GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
-                                                  .GetGameVersionAPIPreload(),
-                                               _ => _gameVersionManager!.GetGameVersionAPI()
-                                           } ?? _gameVersionManager!.GetGameVersionAPI();
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                           .GetGameVersionAPIPreload(),
+                        _ => _gameVersionManager!.GetGameVersionAPIPreload()
+                    } ?? _gameVersionManager!.GetGameVersionAPI();
+#else
+                    string requestedUrl = gameState switch
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                           .LauncherResourceChunksURL.PreloadUrl,
+                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                    };
+                    GameVersion? requestedVersion = gameState switch
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                           .GetGameVersionAPIPreload(),
+                        _ => _gameVersionManager!.GetGameVersionAPI()
+                    } ?? _gameVersionManager!.GetGameVersionAPI();
 
                     // Add the tag query to the Url
                     requestedUrl += $"&tag={requestedVersion.ToString()}";
+#endif
 
                     // Set the progress bar to indetermined
                     _status!.IsIncludePerFileIndicator     = false;
@@ -854,7 +869,11 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     string requestedBaseUrlFrom = isPreloadMode ? _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl
                         : _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl;
+#if SIMULATEAPPLYPRELOAD
+                    string requestedBaseUrlTo = _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl;
+#else
                     string requestedBaseUrlTo = requestedBaseUrlFrom;
+#endif
                     // Add the tag query to the previous version's Url
                     requestedBaseUrlFrom += $"&tag={requestedVersionFrom.ToString()}";
 
