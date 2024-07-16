@@ -636,14 +636,15 @@ namespace CollapseLauncher.InstallManager.Base
             return 1;
         }
 
+        public virtual int SophonGetThreadNum => Math.Clamp((int)Math.Sqrt(_threadCount), 2, 64);
+
         public virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState)
         {
             // Set the flag to false
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThreadSqrt   = (int)Math.Sqrt(_threadCount);
-            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 2); //Clamp to AT LEAST 2
+            int maxThread       = SophonGetThreadNum;
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
             int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
@@ -830,8 +831,7 @@ namespace CollapseLauncher.InstallManager.Base
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThreadSqrt   = (int)Math.Sqrt(_threadCount);
-            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 2); //Clamp to AT LEAST 2
+            int maxThread       = SophonGetThreadNum;
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
             int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
