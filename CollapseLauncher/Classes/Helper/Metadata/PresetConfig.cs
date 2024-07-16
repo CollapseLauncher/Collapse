@@ -75,6 +75,7 @@ namespace CollapseLauncher.Helper.Metadata
     {
         #region Constants
 
+        // ReSharper disable once UnusedMember.Local
         private const string PrefixRegInstallLocation =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
 
@@ -468,8 +469,17 @@ namespace CollapseLauncher.Helper.Metadata
             int verInt = GameDataVersion.GetBytesToIntVersion(gameVersion);
             if (!value.DataVersion.TryGetValue(verInt, out GameDataVersion? verData))
             {
-                return null;
+                // Fallback to find the default value anyway
+                KeyValuePair<int, GameDataVersion>? kvpTemp = value.DataVersion.FirstOrDefault();
+                if (kvpTemp == null)
+                    return null;
+
+                // ReSharper disable once ConstantConditionalAccessQualifier
+                verData = kvpTemp?.Value;
             }
+
+            if (verData == null)
+                return null;
 
             if (!DataCooker.IsServeV3Data(verData.Data))
             {

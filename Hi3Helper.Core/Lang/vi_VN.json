@@ -66,10 +66,10 @@
     "Footer2": "Paimon",
     "Footer3": "để thử lại.",
     "ShowErrorBtn": "Hiển thị thông báo lỗi",
-    "GoToAppSettingsBtn": "Go to App Settings",
-    "GoBackOverlayFrameBtn": "Go Back",
-    "RegionChangerTitle": "Change the Game Region",
-    "RegionChangerSubtitle": "In-case you're stuck in this page"
+    "GoToAppSettingsBtn": "Đi tới trang Cài đặt",
+    "GoBackOverlayFrameBtn": "Quay lại",
+    "RegionChangerTitle": "Đổi Server Trò chơi",
+    "RegionChangerSubtitle": "Nếu bạn bị mắc kệt ở trang này"
   },
 
   "_UnhandledExceptionPage": {
@@ -103,9 +103,9 @@
     "NotifClearAll": "Xoá mọi thông báo",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Tiện ích",
-    "Initializing": "Initializing",
-    "LoadingLauncherMetadata": "Loading Launcher Metadata",
-    "LoadingGameConfiguration": "Loading Game Configuration"
+    "Initializing": "Khởi động",
+    "LoadingLauncherMetadata": "Đang tải dữ liệu Launcher",
+    "LoadingGameConfiguration": "Đang tải dữ liệu thiết lập Game"
   },
 
   "_HomePage": {
@@ -132,6 +132,9 @@
     "PauseCancelDownloadBtn": "Tạm dừng/Huỷ",
     "PauseCancelBtn": "Tạm dừng/Huỷ",
     "DownloadBtn": "Tải trò chơi",
+
+    "GameStatusPlaceholderComingSoonBtn": "Sắp ra mắt",
+    "GameStatusPlaceholderPreRegisterBtn": "Đăng Ký Trước Ngay",
 
     "GameSettingsBtn": "Cài đặt nhanh trò chơi",
     "GameSettings_Panel1": "Cài đặt nhanh",
@@ -266,7 +269,13 @@
     "Graphics_ResCustom": "Chọn độ phân giải khác",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Toàn Màn Hình",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Cửa Sổ",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Không Giới Hạn",
     "Graphics_FPSPanel": "FPS tối đa",
     "Graphics_FPSInCombat": "Chiến đấu",
     "Graphics_FPSInMenu": "Khác",
@@ -306,6 +315,7 @@
     "Graphics_Legacy_Subtitle": "Các cài đặt này không có trong trò chơi và có thể không có bất kỳ tác động nào.",
 
     "SpecDisabled": "Tắt",
+    "SpecCustom": "Tuỳ chọn",
     "SpecLow": "Thấp",
     "SpecMedium": "Trung bình",
     "SpecHigh": "Cao",
@@ -355,7 +365,7 @@
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
     "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
-    "MobileLayout": "Use Mobile Layout",
+    "MobileLayout": "Sử dụng Layout Cảm Ứng",
 
     "Advanced_Title": "Cài đặt Nâng cao",
     "Advanced_Subtitle1": "Collapse Launcher Team",
@@ -365,7 +375,7 @@
     "Advanced_GLC_PreLaunch_Title": "Lệnh trước khi khởi động",
     "Advanced_GLC_PreLaunch_Subtitle": "Các lệnh được chạy trước khi trò chơi khởi động",
     "Advanced_GLC_PreLaunch_Exit": "Buộc đóng tiến trình đã chạy khi trò chơi bị đóng/dừng lại",
-    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
+    "Advanced_GLC_PreLaunch_Delay": "Trì hoãn mở trò chơi (ms)",
     "Advanced_GLC_PostExit_Title": "Lệnh sau khi thoát",
     "Advanced_GLC_PostExit_Subtitle": "Các lệnh được chạy sau khi trò chơi bị đóng"
   },
@@ -392,7 +402,7 @@
     "AppThemes_Dark": "Tối",
     "AppThemes_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi giao diện.",
 
-    "IntroSequenceToggle": "Use Intro Animation Sequence",
+    "IntroSequenceToggle": "Sử dụng hoạt ảnh giới thiệu",
 
     "AppWindowSize": "Kích thước cửa sổ",
     "AppWindowSize_Normal": "Bình thường",
@@ -567,7 +577,7 @@
     "Idle": "Chờ",
     "Change": "Thay đổi",
     "Cancelled": "Đã huỷ",
-    "FinishingUp": "Finishing Up",
+    "FinishingUp": "Đang hoàn tất",
     "Extracting": "Đang giải nén",
     "Converting": "Đang chuyển đổi",
     "Patching": "Đang vá",
@@ -582,7 +592,7 @@
     "ApplyingPatch": "Đang áp dụng bản vá",
     "Disabled": "Tắt",
     "Enabled": "Bật",
-    "UseAsDefault": "Use as Default",
+    "UseAsDefault": "Đặt Làm Mặc Định",
 
     "BuildChannelPreview": "Xem trước",
     "BuildChannelStable": "Ổn định",
@@ -590,8 +600,8 @@
     "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
     "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
+    "CDNDescription_GitLab": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên GitLab",
+    "CDNDescription_Coding": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Coding",
 
     "LocateExecutable": "Vị trí thực thi",
     "OpenDownloadPage": "Mở trang Tải xuống",
@@ -607,6 +617,8 @@
     "DiscordRP_Default": "Không có hoạt động",
     "DiscordRP_Ad": "- Với trình khởi chạy Collapse",
     "DiscordRP_Region": "Khu vực:",
+
+    "DownloadModeLabelSophon": "Chế độ Sophon",
 
     "Taskbar_PopupHelp1": "Nhấp để đưa Collapse lên nền trước",
     "Taskbar_PopupHelp2": "Nhấn hai lần để hiện hoặc ẩn cửa sổ",
@@ -694,7 +706,7 @@
     "InstallDataDownloadResumeTitle": "Tiếp tục tải?",
     "InstallDataDownloadResumeSubtitle": "Bạn đã tải {0}/{1} trước đó.\r\n\r\nBạn có muốn tiếp tục tải?",
     "InsufficientDiskTitle": "Dung lượng ổ cứng không đủ",
-    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
+    "InsufficientDiskSubtitle": "Bạn không có đủ dung lượng để thực hiện thao tác trên ổ {2} của bạn!\r\n\r\nDung lượng trống: {0}\r\nYêu cầu còn trống: {1}.\r\n\r\nHãy bảo đảm rằng bạn có đủ dung lượng đĩa trước khi tiếp tục.",
     "RelocateFolderTitle": "Chọn lại vị trí lưu dữ liệu thư mục",
     "RelocateFolderSubtitle": "Bạn đang sử dụng thư mục này làm nơi lưu dữ liệu thư mục:\r\n\r\n {0}\r\n\r\nBạn có muốn thay đổi không?",
     "UninstallGameTitle": "Gỡ cài đặt trò chơi: {0}",
@@ -807,8 +819,8 @@
     "LocateFolderSubtitle": "Chọn vị trí để di chuyển tệp/thư mục tới.",
     "ChoosePathTextBoxPlaceholder": "Chọn đường đẫn đích:",
     "ChoosePathButton": "Chọn đích",
-    "ChoosePathErrorTitle": "Error has Occured!",
-    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
+    "ChoosePathErrorTitle": "Đã xảy ra lỗi!",
+    "ChoosePathErrorPathIdentical": "Đường dẫn đầu ra bạn chọn nằm trong hoặc giống hệt với vị trí hiện tại!\r\nVui lòng chọn vị trí khác",
     "ChoosePathErrorPathUnselected": "Vui lòng chọn đường dẫn trước khi tiếp tục!",
     "ChoosePathErrorPathNotExist": "Đường đẫn không tồn tại!",
     "ChoosePathErrorPathNoPermission": "Bạn không có quyền truy cập vào vị trí này. Vui lòng chọn vị trí khác!"
@@ -1017,7 +1029,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS vẫn đang được THỬ NGHIỆM! Vui lòng sử dụng cẩn thận và hãy tự chịu trách nhiệm (DWYOR).",
-    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
+    "Graphics_FPS_Help2": "Đặt gía trị FPS ở 120 FPS sẽ không làm hỏng menu, nhưng đặt giá trị FPS trong game sẽ không còn hoạt động nữa. \r\nNếu bạn cần chỉnh 120 FPS, vui lòng dùng cài đặt game trong Collapse để chỉnh cài đặt đồ họa",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync không khả dụng ở 120 FPS",
     "Graphics_RenderScale": "Kết xuất đồ hoạ",
@@ -1030,6 +1042,8 @@
     "Graphics_BloomQuality": "Hiệu ứng toả sáng",
     "Graphics_AAMode": "Khử răng cưa",
     "Graphics_SFXQuality": "Chất lượng SFX",
+    "Graphics_SelfShadow": "Bóng nhân vật trong bản đồ",
+    "Graphics_HalfResTransparent": "Độ Phân Giải Một Nữa Trong Suốt",
 
     "Graphics_SpecPanel": "Thiết lập đồ hoạ",
     "SpecEnabled": "Bật",
@@ -1280,5 +1294,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": "(không rõ)",
     "CDNCheckboxItemLatencyRecommendedFormat": "[Khuyến nghị]"
+  },
+  
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Cường độ bộ lọc màu",
+    "Graphics_RenderRes": "Độ hiển thị chính xác",
+    "Graphics_EffectsQ": "Chất lượng hiệu ứng",
+    "Graphics_ShadingQ": "Chất lượng bóng",
+    "Graphics_Distortion": "Bóp méo",
+    "Audio_PlaybackDev": "Thiết bị phát",
+    "Audio_PlaybackDev_Headphones": "Tai Nghe",
+    "Audio_PlaybackDev_Speakers": "Loa",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }
