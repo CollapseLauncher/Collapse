@@ -642,10 +642,10 @@ namespace CollapseLauncher.InstallManager.Base
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThreadSqrt = (int)Math.Sqrt(_threadCount);
-            int maxThread = Math.Min(maxThreadSqrt, 4);
+            int maxThreadSqrt   = (int)Math.Sqrt(_threadCount);
+            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 4); //Clamp to AT LEAST 4
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
-            int maxHttpHandler = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
+            int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
             LogWriteLine($"Initializing Sophon Chunk download method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
@@ -815,10 +815,10 @@ namespace CollapseLauncher.InstallManager.Base
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThreadSqrt = (int)Math.Sqrt(_threadCount);
-            int maxThread = Math.Min(maxThreadSqrt, 4);
+            int maxThreadSqrt   = (int)Math.Sqrt(_threadCount);
+            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 4); //Clamp to AT LEAST 4
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
-            int maxHttpHandler = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
+            int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
             LogWriteLine($"Initializing Sophon Chunk update method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
