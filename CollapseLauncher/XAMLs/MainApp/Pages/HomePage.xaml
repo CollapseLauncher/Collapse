@@ -100,7 +100,8 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
+                                    <StackPanel Grid.Column="0"
+                                                Grid.ColumnSpan="2">
                                         <StackPanel HorizontalAlignment="Left"
                                                     Orientation="Horizontal">
                                             <TextBlock x:Name="ProgressPrePerFileStatusFooter"
@@ -195,6 +196,104 @@
                             </StackPanel>
                         </Grid>
                     </Grid>
+                    <Grid x:Name="ProgressPreSophonStatusGrid"
+                          Visibility="Collapsed">
+                        <Grid.ChildrenTransitions>
+                            <PopupThemeTransition />
+                        </Grid.ChildrenTransitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0"
+                              HorizontalAlignment="Stretch">
+                            <StackPanel HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0"
+                                                Grid.ColumnSpan="2">
+                                        <StackPanel HorizontalAlignment="Left"
+                                                    Orientation="Horizontal">
+                                            <TextBlock FontSize="12"
+                                                       FontWeight="Bold"
+                                                       Text="{Binding Text, ElementName=ProgressPrePerFileStatusFooter}" />
+                                        </StackPanel>
+                                        <TextBlock Margin="0,4,0,0"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Text="{Binding Text, ElementName=ProgressPreStatusFooter}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="0"
+                              Grid.ColumnSpan="3"
+                              Margin="0,0,0,8"
+                              HorizontalAlignment="Stretch"
+                              ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Bottom">
+                                <TextBlock HorizontalAlignment="Right"
+                                           FontSize="12"
+                                           Text="{Binding Text, ElementName=ProgressPreStatusSubtitle}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Orientation="Horizontal">
+                                <TextBlock FontSize="12"
+                                           FontWeight="Bold"
+                                           Text="{Binding Value, ElementName=progressPreBar}" />
+                                <TextBlock FontSize="12"
+                                           FontWeight="Bold"
+                                           Text="%" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="2"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Bottom">
+                            <StackPanel HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                <Grid Margin="0,0,0,8">
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" />
+                                        <TextBlock Margin="0,4,0,0"
+                                                   HorizontalAlignment="Right"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Text="{Binding Text, ElementName=ProgressPreTimeLeft}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <ProgressBar Grid.Row="1"
+                                     Grid.ColumnSpan="3"
+                                     Margin="0,8,0,24"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Bottom"
+                                     IsIndeterminate="{Binding IsIndeterminate, ElementName=progressPreBar}"
+                                     Maximum="{Binding Maximum, ElementName=progressPreBar}"
+                                     Value="{Binding Value, ElementName=progressPreBar}" />
+                    </Grid>
                     <Grid x:Name="ProgressPreButtonGrid"
                           Margin="0,-8,0,16"
                           HorizontalAlignment="Stretch"
@@ -203,6 +302,23 @@
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
                         </Grid.ChildrenTransitions>
+
+                        <Grid x:Name="DownloadModeLabelPreload"
+                              Padding="8,2"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Background="{ThemeResource AccentColorBrush}"
+                              CornerRadius="8"
+                              Shadow="{ThemeResource SharedShadow}"
+                              Translation="0,0,16"
+                              Visibility="Collapsed">
+                            <TextBlock x:Name="DownloadModeLabelPreloadText"
+                                       FontSize="10"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                       HorizontalTextAlignment="Center"
+                                       Text="" />
+                        </Grid>
                         <Button x:Name="PauseDownloadPreBtn"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Stretch"

@@ -69,6 +69,12 @@
                 public string CommunityToolsBtn_OfficialText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OfficialText;
                 public string CommunityToolsBtn_CommunityText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_CommunityText;
                 public string CommunityToolsBtn_OpenExecutableAppDialogTitle { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle;
+                public string Exception_DownloadTimeout1 { get; set; } =
+                    LangFallback?._HomePage.Exception_DownloadTimeout1;
+                public string Exception_DownloadTimeout2 { get; set; } =
+                    LangFallback?._HomePage.Exception_DownloadTimeout2;
+                public string Exception_DownloadTimeout3 { get; set; } =
+                    LangFallback?._HomePage.Exception_DownloadTimeout3;
             }
         }
         #endregion

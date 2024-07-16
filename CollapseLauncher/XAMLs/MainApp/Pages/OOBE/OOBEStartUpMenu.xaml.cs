@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.AnimatedVisuals.Lottie;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;

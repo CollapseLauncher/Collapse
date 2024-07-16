@@ -297,7 +297,13 @@ namespace Hi3Helper
         public static CancellationTokenSource? _preventSleepToken;
         private static bool _preventSleepRunning;
 
-        public static async void RestoreSleep() => await (_preventSleepToken?.CancelAsync() ?? Task.CompletedTask);
+        public static async void RestoreSleep()
+        {
+            // Return early if token is disposed/already cancelled
+            if (_preventSleepToken == null || _preventSleepToken.IsCancellationRequested)
+                return;
+            await (_preventSleepToken?.CancelAsync() ?? Task.CompletedTask);
+        }
 
         public static async void PreventSleep()
         {

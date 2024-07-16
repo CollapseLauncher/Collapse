@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Mettre en pause/Annuler",
     "DownloadBtn": "Télécharger",
 
+    "GameStatusPlaceholderComingSoonBtn": "Bientôt",
+    "GameStatusPlaceholderPreRegisterBtn": "Se pré-inscrire !",
+
     "GameSettingsBtn": "Réglages rapides",
     "GameSettings_Panel1": "Réglages rapides",
     "GameSettings_Panel1OpenGameFolder": "Ouvrir le dossier du jeu",
@@ -266,7 +269,13 @@
     "Graphics_ResCustom": "Utiliser une résolution personnalisée",
     "Graphics_ResCustomW": "L",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Plein écran",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Fenêtré",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "Taux d'IPS",
+    "Graphics_FPSUnlimited": "Illimité",
     "Graphics_FPSPanel": "Taux d'IPS maximum",
     "Graphics_FPSInCombat": "En combat",
     "Graphics_FPSInMenu": "Menu principal",
@@ -306,6 +315,7 @@
     "Graphics_Legacy_Subtitle": "Ces paramètres ne sont plus présents dans le jeu et peuvent n'avoir aucun effet.",
 
     "SpecDisabled": "Désactivé",
+    "SpecCustom": "Personnalisé",
     "SpecLow": "Faible",
     "SpecMedium": "Moyen",
     "SpecHigh": "Élevé",
@@ -607,6 +617,8 @@
     "DiscordRP_Default": "Pas d'activité",
     "DiscordRP_Ad": "- avec Collapse Launcher",
     "DiscordRP_Region": "Région :",
+
+    "DownloadModeLabelSophon": "Mode Sophon",
 
     "Taskbar_PopupHelp1": "Cliquer pour ramener Collapse au premier plan",
     "Taskbar_PopupHelp2": "Double clic pour changer la visibilité des fenêtres",
@@ -1030,6 +1042,8 @@
     "Graphics_BloomQuality": "Qualité du flou lumineux",
     "Graphics_AAMode": "Mode anti-aliasing",
     "Graphics_SFXQuality": "Qualité des effets spéciaux",
+    "Graphics_SelfShadow": "Ombre du personnage en temps réel lors de l'exploration",
+    "Graphics_HalfResTransparent": "Transparence semi-résolution",
 
     "Graphics_SpecPanel": "Paramètres graphiques globaux",
     "SpecEnabled": "Activé",
@@ -1280,5 +1294,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (inconnu)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Recommandé]"
+  },
+  
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Intensité du filtre de couleurs",
+    "Graphics_RenderRes": "Résolution du rendu",
+    "Graphics_EffectsQ": "Qualité des effets",
+    "Graphics_ShadingQ": "Qualité des ombres",
+    "Graphics_Distortion": "Distorsion",
+    "Audio_PlaybackDev": "Périphérique de sortie audio",
+    "Audio_PlaybackDev_Headphones": "Casque",
+    "Audio_PlaybackDev_Speakers": "Haut-parleurs",
+    "Audio_PlaybackDev_TV": "Téléviseur"
   }
 }

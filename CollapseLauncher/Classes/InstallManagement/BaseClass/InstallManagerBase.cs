@@ -79,6 +79,8 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Properties
+        const string PreloadVerifiedFileName = "preload.verified";
+
         protected readonly string _gamePersistentFolderBasePath;
         protected readonly string _gameStreamingAssetsFolderBasePath;
         protected RegionResourceGame _gameRegion { get => _gameVersionManager!.GameAPIProp!.data; }
@@ -89,6 +91,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual int _gameVoiceLanguageID { get => int.MinValue; }
         protected virtual string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
         protected virtual string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
+        protected virtual string _gameSophonChunkDir { get => Path.Combine(_gamePath, "chunk_collapse"); }
         protected virtual string _gameAudioLangListPath { get => null; }
         protected virtual string _gameAudioLangListPathStatic { get => null; }
         protected IRepair _gameRepairTool { get; set; }
@@ -108,6 +111,30 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected bool _isAllowExtractCorruptZip { get; set; }
         protected bool _isSophonDownloadCompleted { get; set; }
+        protected bool _isSophonPreloadCompleted
+        {
+            get => File.Exists(Path.Combine(_gameSophonChunkDir, PreloadVerifiedFileName));
+            set
+            {
+                string verifiedFile = EnsureCreationOfDirectory(Path.Combine(_gameSophonChunkDir, PreloadVerifiedFileName));
+                try
+                {
+                    FileInfo fileInfo = new FileInfo(verifiedFile);
+                    if (value)
+                    {
+                        fileInfo.Create().Dispose();
+                        return;
+                    }
+
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.Delete();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error while deleting/creating sophon preload completion file! {ex}", LogType.Warning, true);
+                }
+            }
+        }
         protected List<string> _sophonVOLanguageList { get; set; } = new();
 
         #endregion
@@ -615,11 +642,12 @@ namespace CollapseLauncher.InstallManager.Base
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThread = Math.Max((int)_threadCount, 2);
-            int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
-            maxHttpHandler = Math.Max(maxHttpHandler, maxThread);
+            int maxThreadSqrt = (int)Math.Sqrt(_threadCount);
+            int maxThread = Math.Min(maxThreadSqrt, 4);
+            int maxChunksThread = Math.Min(_threadCount / 2, 4);
+            int maxHttpHandler = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
-            LogWriteLine($"Initializing Sophon Chunk download method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
+            LogWriteLine($"Initializing Sophon Chunk download method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
 
             // Initialize the HTTP client
@@ -708,7 +736,12 @@ namespace CollapseLauncher.InstallManager.Base
                     var parallelOptions = new ParallelOptions
                     {
                         MaxDegreeOfParallelism = maxThread,
-                        CancellationToken      = _token.Token
+                        CancellationToken = _token.Token
+                    };
+                    var parallelChunksOptions = new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = maxChunksThread,
+                        CancellationToken = _token.Token
                     };
 
                     // Start over the stopwatch
@@ -720,34 +753,36 @@ namespace CollapseLauncher.InstallManager.Base
                     _status!.IsProgressTotalIndetermined   = false;
                     UpdateStatus();
 
+                    // Declare the download delegate
+                    Func<SophonAsset, CancellationToken, ValueTask> delegateAssetDownload = async (asset, _) =>
+                    await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
+
+                    // Declare the rename temp file delegate
+                    Func<SophonAsset, CancellationToken, ValueTask> delegateAssetRenameTempFile = async (asset, _) =>
+                    await Task.Run(() =>
+                    {
+                        // If the asset is a dictionary, then return
+                        if (asset.IsDirectory) return;
+
+                        // Get the file path and start the write process
+                        var assetName = asset.AssetName;
+                        var filePath =
+                            EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
+                            "_tempSophon";
+                        var origFilePath = Path.Combine(_gamePath, assetName);
+
+                        if (File.Exists(filePath))
+                            File.Move(filePath, origFilePath, true);
+                    });
+
                     // Enumerate the asset in parallel and start the download process
-                    foreach (var sophonDownloadInfoPair in sophonInfoPairList)
-                        await Parallel.ForEachAsync(
-                                                    SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
-                                                    parallelOptions,
-                                                    async (asset, _) =>
-                                                        await RunSophonAssetDownloadThread(httpClient, asset, parallelOptions));
+                    await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, delegateAssetDownload);
 
                     // Rename temporary files
-                    foreach (var sophonDownloadInfoPair in sophonInfoPairList)
-                        await Parallel.ForEachAsync(
-                                                    SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
-                                                    parallelOptions,
-                                                    async (asset, token) => await Task.Run(() =>
-                                                                 {
-                                                                     // If the asset is a dictionary, then return
-                                                                     if (asset.IsDirectory) return;
+                    await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, delegateAssetRenameTempFile);
 
-                                                                     // Get the file path and start the write process
-                                                                     var assetName = asset.AssetName;
-                                                                     var filePath =
-                                                                         EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
-                                                                         "_tempSophon";
-                                                                     var origFilePath = Path.Combine(_gamePath, assetName);
-
-                                                                     if (File.Exists(filePath))
-                                                                         File.Move(filePath, origFilePath, true);
-                                                                 }, token));
+                    // Remove sophon verified files
+                    CleanupTempSophonVerifiedFiles();
                 }
 
                 _isSophonDownloadCompleted = true;
@@ -760,6 +795,18 @@ namespace CollapseLauncher.InstallManager.Base
                 httpClientHandler.Dispose();
                 httpClient.Dispose();
             }
+
+            async Task RunTaskAction(HttpClient httpClient, List<SophonChunkManifestInfoPair> sophonInfoPairList,
+                ParallelOptions parallelOptions, Func<SophonAsset, CancellationToken, ValueTask> actionDelegate)
+            {
+                foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
+                {
+                    // Enumerate in parallel and process the assets
+                    await Parallel.ForEachAsync(SophonManifest.EnumerateAsync(httpClient, sophonDownloadInfoPair),
+                        parallelOptions,
+                        actionDelegate);
+                }
+            }
         }
 
         public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
@@ -768,11 +815,12 @@ namespace CollapseLauncher.InstallManager.Base
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThread = _threadCount;
-            int maxHttpHandler = Math.Max(_downloadThreadCount * 4, 128);
-            maxHttpHandler = Math.Max(maxHttpHandler, maxThread);
+            int maxThreadSqrt = (int)Math.Sqrt(_threadCount);
+            int maxThread = Math.Min(maxThreadSqrt, 4);
+            int maxChunksThread = Math.Min(_threadCount / 2, 4);
+            int maxHttpHandler = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
-            LogWriteLine($"Initializing Sophon Chunk update method with Thread: {maxThread} and Max HTTP handle: {maxHttpHandler}",
+            LogWriteLine($"Initializing Sophon Chunk update method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
 
             // Initialize the HTTP client
@@ -833,6 +881,11 @@ namespace CollapseLauncher.InstallManager.Base
                     MaxDegreeOfParallelism = maxThread,
                     CancellationToken = _token.Token
                 };
+                var parallelChunksOptions = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = maxChunksThread,
+                    CancellationToken = _token.Token
+                };
 
                 // Start over the stopwatch
                 RestartStopwatch();
@@ -844,34 +897,42 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Get the update source and destination, also where the staging chunk files will be stored
-                string sourcePath = _gamePath;
-                string targetPath = sourcePath;
-                string chunkPath = Path.Combine(sourcePath, "chunk_collapse");
+                string chunkPath = _gameSophonChunkDir;
 
                 // If the chunk directory is not exist, then create one.
                 if (!Directory.Exists(chunkPath))
                     Directory.CreateDirectory(chunkPath);
 
                 bool canDeleteChunks = _canDeleteZip;
+                bool isSophonPreloadCompleted = _isSophonPreloadCompleted;
+
+                // Set the delegate function for the download action
+                Func<SophonAsset, CancellationToken, ValueTask> action = async (asset, _) =>
+                {
+                    if (isPreloadMode)
+                    {
+                        // If preload mode, then only download the chunks
+                        await asset.DownloadDiffChunksAsync(httpClient, chunkPath, parallelChunksOptions,
+                            UpdateSophonDownloadProgress, UpdateSophonDownloadStatus,
+                            isSophonPreloadCompleted);
+                        return;
+                    }
+
+                    // Otherwise, start the patching process
+                    await asset.WriteUpdateAsync(httpClient, _gamePath, _gamePath, chunkPath,
+                        canDeleteChunks, parallelChunksOptions, UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
+                };
 
                 // Enumerate in parallel and process the assets
                 await Parallel.ForEachAsync(sophonUpdateAssetList.Where(x => !x.IsDirectory),
                     parallelOptions,
-                    async (asset, _) =>
-                    {
-                        if (isPreloadMode)
-                        {
-                            // If preload mode, then only download the chunks
-                            await asset.DownloadDiffChunksAsync(httpClient, chunkPath, parallelOptions,
-                                UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
-                            return;
-                        }
+                    action);
 
-                        // Otherwise, start the patching process
-                        await asset.WriteUpdateAsync(httpClient, sourcePath, targetPath, chunkPath,
-                            canDeleteChunks, parallelOptions, UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
-                    });
+                _isSophonPreloadCompleted = isPreloadMode;
 
+                // If it's in update mode, then clean up the temp sophon verified files
+                if (!isPreloadMode)
+                    CleanupTempSophonVerifiedFiles();
                 _isSophonDownloadCompleted = true;
             }
             finally
@@ -888,6 +949,19 @@ namespace CollapseLauncher.InstallManager.Base
                 string dxSetupDir = Path.Combine(_gamePath, "DXSETUP");
                 TryDeleteReadOnlyDir(dxSetupDir);
             }
+        }
+
+        protected virtual void CleanupTempSophonVerifiedFiles()
+        {
+            string filePath = _gameSophonChunkDir;
+            try
+            {
+                foreach (string file in Directory.EnumerateFiles(filePath, "*.verified", SearchOption.TopDirectoryOnly))
+                {
+                    File.Delete(file);
+                }
+            }
+            catch { }
         }
 
         private async Task AddSophonDiffAssetsToList(HttpClient httpClient,
@@ -1378,6 +1452,10 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
         {
+            // If the game uses sophon download method, then check directly for the status
+            if (IsUseSophon)
+                return _isSophonPreloadCompleted;
+
             // Get the latest package list and await
             await GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true);
             // Get the total size of the packages
