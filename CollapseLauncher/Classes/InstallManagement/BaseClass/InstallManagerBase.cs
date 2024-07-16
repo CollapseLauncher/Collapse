@@ -643,7 +643,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Set the max thread and httpHandler based on settings
             int maxThreadSqrt   = (int)Math.Sqrt(_threadCount);
-            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 4); //Clamp to AT LEAST 4
+            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 2); //Clamp to AT LEAST 2
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
             int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
@@ -816,7 +816,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Set the max thread and httpHandler based on settings
             int maxThreadSqrt   = (int)Math.Sqrt(_threadCount);
-            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 4); //Clamp to AT LEAST 4
+            int maxThread       = Math.Max(Math.Min(maxThreadSqrt, 4), 2); //Clamp to AT LEAST 2
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
             int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
