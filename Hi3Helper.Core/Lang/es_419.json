@@ -174,7 +174,11 @@
     "CommunityToolsBtn_CommunityText": "De la Comunidad",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Selecciona el Ejecutable: {0}",
 
-    "CreateShortcut_FolderPicker": "Selecciona donde crear el acceso directo"
+    "CreateShortcut_FolderPicker": "Selecciona donde crear el acceso directo",
+    
+    "Exception_DownloadTimeout1": "Se supero el tiempo de espera al intentar instalar {0}",
+    "Exception_DownloadTimeout2": "¡Verifica la estabilidad de tu conexión! Si la velocidad de tu internet es lenta, disminuye el numero de Hilos de Descarga.",
+    "Exception_DownloadTimeout3": "**ADVERTENCIA** ¡Cambiar el numero de hilos reiniciaran la descarga desde 0 y tendrás que eliminar manualmente las partes de archivos ya descargados!"
   },
 
   "_GameRepairPage": {
@@ -1175,7 +1179,7 @@
 
     "Audio_Output_Surround": "Usar Sonido Envolvente",
     "Audio_DynamicRange": "Rango Dinámico completo",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "Silenciar Audio al Minimizar",
 
     "Language": "Configuración de Idioma",
     "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
