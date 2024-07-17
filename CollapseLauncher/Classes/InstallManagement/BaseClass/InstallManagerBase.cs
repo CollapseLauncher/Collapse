@@ -63,7 +63,7 @@ namespace CollapseLauncher.InstallManager.Base
     public enum CompletenessStatus { Running, Completed, Cancelled, Idle }
 
     // ReSharper disable once UnusedTypeParameter
-    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage>, IGameInstallManager
+    internal partial class InstallManagerBase<T> : ProgressBase<GameInstallPackage>, IGameInstallManager
         where T : IGameVersionCheck
     {
         #region Internal Struct
@@ -917,6 +917,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get the update source and destination, also where the staging chunk files will be stored
                 string chunkPath = _gameSophonChunkDir;
+                string gamePath = _gamePath;
 
                 // If the chunk directory is not exist, then create one.
                 if (!Directory.Exists(chunkPath))
@@ -937,8 +938,12 @@ namespace CollapseLauncher.InstallManager.Base
                         return;
                     }
 
+                    // Ensure to remove the read-only attribute
+                    string currentAssetPath = Path.Combine(gamePath, asset.AssetName);
+                    TryUnassignReadOnlyFileSingle(currentAssetPath);
+
                     // Otherwise, start the patching process
-                    await asset.WriteUpdateAsync(httpClient, _gamePath, _gamePath, chunkPath,
+                    await asset.WriteUpdateAsync(httpClient, gamePath, gamePath, chunkPath,
                         canDeleteChunks, parallelChunksOptions, UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
                 };
 

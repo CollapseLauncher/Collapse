@@ -381,6 +381,13 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
+        protected void TryUnassignReadOnlyFileSingle(string path)
+        {
+            FileInfo fileInfo = new FileInfo(path);
+            if (fileInfo.Exists && fileInfo.IsReadOnly)
+                fileInfo.IsReadOnly = false;
+        }
+
         protected void TryDeleteReadOnlyDir(string dirPath)
         {
             if (!Directory.Exists(dirPath)) return;
