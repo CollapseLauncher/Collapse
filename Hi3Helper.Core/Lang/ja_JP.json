@@ -174,7 +174,11 @@
     "CommunityToolsBtn_CommunityText": "非公式便利ツール",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "ツールの.exeファイル: {0}",
 
-    "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択"
+    "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択",
+    
+    "Exception_DownloadTimeout1": "{0}のインストール中にタイムアウトが発生しました",
+    "Exception_DownloadTimeout2": "インターネット接続の安定性を確認してみてください！回線速度が遅い場合は、ダウンロードスレッドの値を小さくしてください。",
+    "Exception_DownloadTimeout3": "**警告** ダウンロードスレッドの値を変更すると、ダウンロードの進行度が0からになります。さらに、既存のダウンロードチャンクは手動で削除する必要があります！"
   },
 
   "_GameRepairPage": {
