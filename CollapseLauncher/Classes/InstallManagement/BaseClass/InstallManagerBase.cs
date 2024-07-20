@@ -136,6 +136,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
         protected List<string> _sophonVOLanguageList { get; set; } = new();
+        protected UninstallGameProperty? _uninstallGameProperty { get; set; }
 
         #endregion
 
@@ -1553,20 +1554,20 @@ namespace CollapseLauncher.InstallManager.Base
             {
             #nullable enable
                 // Assign UninstallProperty from each overrides
-                UninstallGameProperty UninstallProperty = AssignUninstallFolders();
+                _uninstallGameProperty ??= AssignUninstallFolders();
 
                 //Preparing paths
-                string _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
+                string _DataFolderFullPath = Path.Combine(GameFolder, _uninstallGameProperty?.gameDataFolderName ?? "");
 
                 string[]? foldersToKeepInDataFullPath;
-                if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0)
+                if (_uninstallGameProperty?.foldersToKeepInData != null && _uninstallGameProperty?.foldersToKeepInData.Length != 0)
                 {
-                    foldersToKeepInDataFullPath = new string[UninstallProperty.foldersToKeepInData.Length];
-                    for (int i = 0; i < UninstallProperty.foldersToKeepInData.Length; i++)
+                    foldersToKeepInDataFullPath = new string[_uninstallGameProperty?.foldersToKeepInData?.Length ?? 0];
+                    for (int i = 0; i < (_uninstallGameProperty?.foldersToKeepInData?.Length ?? 0); i++)
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
                         foldersToKeepInDataFullPath[i] =
-                            Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
+                            Path.Combine(_DataFolderFullPath, _uninstallGameProperty?.foldersToKeepInData[i] ?? "");
                     }
                 }
                 else foldersToKeepInDataFullPath = Array.Empty<string>();
@@ -1574,10 +1575,10 @@ namespace CollapseLauncher.InstallManager.Base
             #pragma warning disable CS8604 // Possible null reference argument.
                 LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName ?? string.Empty}\r\n" +
                              $"  GameFolder          : {GameFolder}\r\n" +
-                             $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
-                             $"  foldersToDelete     : {string.Join(", ", UninstallProperty.foldersToDelete)}\r\n" +
-                             $"  filesToDelete       : {string.Join(", ", UninstallProperty.filesToDelete)}\r\n" +
-                             $"  foldersToKeepInData : {string.Join(", ", UninstallProperty.foldersToKeepInData)}\r\n" +
+                             $"  gameDataFolderName  : {_uninstallGameProperty?.gameDataFolderName}\r\n" +
+                             $"  foldersToDelete     : {string.Join(", ", _uninstallGameProperty?.foldersToDelete)}\r\n" +
+                             $"  filesToDelete       : {string.Join(", ", _uninstallGameProperty?.filesToDelete)}\r\n" +
+                             $"  foldersToKeepInData : {string.Join(", ", _uninstallGameProperty?.foldersToKeepInData)}\r\n" +
                              $"  _Data folder path   : {_DataFolderFullPath}\r\n" +
                              $"  Excluded full paths : {string.Join(", ", foldersToKeepInDataFullPath)}",
                              LogType.Warning, true);
@@ -1589,8 +1590,8 @@ namespace CollapseLauncher.InstallManager.Base
                     try
                     {
                         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                        if (UninstallProperty.foldersToKeepInData != null &&
-                            UninstallProperty.foldersToKeepInData.Length != 0 &&
+                        if (_uninstallGameProperty?.foldersToKeepInData != null &&
+                            _uninstallGameProperty?.foldersToKeepInData.Length != 0 &&
                             !foldersToKeepInDataFullPath
                                .Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
                         {
@@ -1629,8 +1630,8 @@ namespace CollapseLauncher.InstallManager.Base
                 // Cleanup any folders in foldersToDelete
                 foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
                 {
-                    if (UninstallProperty.foldersToDelete.Length != 0 &&
-                        UninstallProperty.foldersToDelete.Contains(Path.GetFileName(folderNames)))
+                    if (_uninstallGameProperty?.foldersToDelete.Length != 0 &&
+                        (_uninstallGameProperty?.foldersToDelete.Contains(Path.GetFileName(folderNames)) ?? false))
                     {
                         try
                         {
@@ -1648,14 +1649,14 @@ namespace CollapseLauncher.InstallManager.Base
                 // Cleanup any files in filesToDelete
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
-                    if (UninstallProperty.filesToDelete.Length != 0 &&
-                        UninstallProperty.filesToDelete.Contains(Path.GetFileName(fileNames)) ||
-                        UninstallProperty.filesToDelete.Length != 0 &&
-                        UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames),
+                    if (_uninstallGameProperty?.filesToDelete.Length != 0 &&
+                        (_uninstallGameProperty?.filesToDelete.Contains(Path.GetFileName(fileNames)) ?? false) ||
+                        _uninstallGameProperty?.filesToDelete.Length != 0 &&
+                        (_uninstallGameProperty?.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames),
                                                                      pattern,
                                                                      RegexOptions.Compiled |
                                                                      RegexOptions.NonBacktracking
-                                                                )))
+                                                                )) ?? false))
                     {
                         TryDeleteReadOnlyFile(fileNames);
                         LogWriteLine($"Deleted {fileNames}", LogType.Default, true);

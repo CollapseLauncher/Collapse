@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
@@ -128,6 +129,65 @@ namespace CollapseLauncher.InstallManager.Honkai
             filesToDelete = new string[] { "ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini" },
             foldersToKeepInData = Array.Empty<string>()
         };
+        #endregion
+
+        #region Override Methods - CleanUpGameFiles
+        protected override bool IsCategorizedAsGameFile(FileInfo fileInfo, string gamePath, bool includeZipCheck, out LocalFileInfo localFileInfo)
+        {
+            // Convert to LocalFileInfo and get the relative path
+            localFileInfo = new LocalFileInfo(fileInfo, gamePath);
+            string relativePath = localFileInfo.RelativePath;
+            ReadOnlySpan<char> relativePathSpan = relativePath;
+            string fileName = localFileInfo.FileName;
+            string gameFolder = _uninstallGameProperty?.gameDataFolderName ?? string.Empty;
+
+            // 1st check: Ensure that the file is not a config or pkg_version file
+            if (relativePathSpan.EndsWith("config.ini", StringComparison.OrdinalIgnoreCase)
+             || relativePathSpan.EndsWith("pkg_version", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // 2nd check: Ensure that the file is not a web cache file
+            if (relativePathSpan.Contains("webCache", StringComparison.OrdinalIgnoreCase)
+             || relativePathSpan.Contains("SDKCache", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // 3rd check: Ensure that the file isn't in excluded list
+            if (_uninstallGameProperty?.foldersToKeepInData
+                .Any(x => relativePath
+                    .AsSpan() // As Span<T> since StartsWith() in it is typically faster
+                              // than the one from String primitive
+                    .Contains(x.AsSpan(), StringComparison.OrdinalIgnoreCase)) ?? false)
+                return false; // Return false if it's not actually in excluded list
+
+            // 4th check: Ensure that the file is not a StreamingAssets file
+            if (relativePathSpan.Contains("StreamingAssets", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // 5th check: Ensure if the path includes the folder name at start
+            if (!string.IsNullOrEmpty(gameFolder) && relativePathSpan
+                .StartsWith(gameFolder, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            // 6th check: Ensure that the file is one of the files included
+            //            in the Regex pattern list
+            if (_uninstallGameProperty?.filesToDelete
+                .Any(pattern => Regex.IsMatch(fileName,
+                         pattern,
+                         RegexOptions.Compiled |
+                         RegexOptions.NonBacktracking
+                    )) ?? false)
+                return true;
+
+            // 7th check: Ensure that the file is one of package files
+            if (includeZipCheck && Regex.IsMatch(fileName,
+                @"(\.[0-9][0-9][0-9]|zip|7z|patch)$",
+                RegexOptions.Compiled |
+                RegexOptions.NonBacktracking
+             )) return true;
+
+            // If all those matches failed, then return them as a non-game file
+            return false;
+        }
         #endregion
     }
 }

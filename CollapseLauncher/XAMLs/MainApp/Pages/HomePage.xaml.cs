@@ -10,6 +10,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.ShortcutUtils;
 using CollapseLauncher.Statics;
@@ -55,7 +56,6 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
-using CollapseLauncher.InstallManager.Base;
 
 namespace CollapseLauncher.Pages
 {
@@ -834,6 +834,7 @@ namespace CollapseLauncher.Pages
                         UninstallGameButton.IsEnabled = false;
                         RepairGameButton.IsEnabled = false;
                         OpenGameFolderButton.IsEnabled = false;
+                        CleanupFilesButton.IsEnabled = false;
                         OpenCacheFolderButton.IsEnabled = false;
                         ConvertVersionButton.IsEnabled = false;
                         CustomArgsTextBox.IsEnabled = false;
@@ -1918,6 +1919,13 @@ namespace CollapseLauncher.Pages
                     Arguments = ScreenshotFolder
                 }
             }.Start();
+        }
+
+        private async void CleanupFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameStartupSetting.Flyout.Hide();
+            if (CurrentGameProperty?._GameInstall != null)
+                await CurrentGameProperty._GameInstall.CleanUpGameFiles(true);
         }
         #endregion
 

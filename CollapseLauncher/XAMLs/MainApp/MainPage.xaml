@@ -1,4 +1,4 @@
-<!--  ReSharper disable Xaml.RedundantResource  -->
+﻿<!--  ReSharper disable Xaml.RedundantResource  -->
 <Page x:Class="CollapseLauncher.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -497,6 +497,7 @@
                 </Button>
             </Grid>
         </Grid>
-        <Frame x:Name="WebView2Frame" />
+        <Frame x:Name="WebView2Frame"
+               x:FieldModifier="internal" />
     </Grid>
 </Page>

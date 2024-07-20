@@ -1406,6 +1406,29 @@
                                         </Grid>
                                     </Button.Content>
                                 </Button>
+                                <Button x:Name="CleanupFilesButton"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="CleanupFilesButton_Click"
+                                        CornerRadius="14">
+                                    <Button.Content>
+                                        <Grid Margin="4,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="18" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                      FontSize="16"
+                                                      Glyph="" />
+                                            <TextBlock Grid.Column="1"
+                                                       Margin="8,-1,0,0"
+                                                       FontWeight="Medium"
+                                                       Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Button.Content>
+                                </Button>
                                 <TextBlock Margin="0,8,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" />

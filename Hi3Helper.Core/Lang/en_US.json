@@ -175,7 +175,7 @@
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}",
 
     "CreateShortcut_FolderPicker": "Select where to place the shortcut",
-    
+
     "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
     "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
     "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
@@ -473,7 +473,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
-    
+
     "LicenseType": "MIT License",
 
     "Disclaimer": "Disclaimer",
@@ -1262,6 +1262,27 @@
     "AgreementTitle": "Agreement:"
   },
 
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete"
+  },
+
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
       "Upper": [ "Welcome", " To" ],
@@ -1299,7 +1320,7 @@
     "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
   },
-  
+
   "_ZenlessGameSettingsPage": {
     "Graphics_ColorFilter": "Color Filter Strength",
     "Graphics_RenderRes": "Render Resolution",
