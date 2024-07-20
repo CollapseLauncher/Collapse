@@ -1268,6 +1268,8 @@
     "NoFilesToBeDeletedText": "No files need to be deleted!",
     "ListViewFieldFileName": "File Name",
     "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
     "BottomButtonDeleteAllFiles": "Delete All Files",
     "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
     "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",

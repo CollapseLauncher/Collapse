@@ -13,6 +13,8 @@ namespace Hi3Helper
                 public string NoFilesToBeDeletedText { get; set; } = LangFallback?._FileCleanupPage.NoFilesToBeDeletedText;
                 public string ListViewFieldFileName { get; set; } = LangFallback?._FileCleanupPage.ListViewFieldFileName;
                 public string ListViewFieldFileSize { get; set; } = LangFallback?._FileCleanupPage.ListViewFieldFileSize;
+                public string LoadingTitle { get; set; } = LangFallback?._FileCleanupPage.LoadingTitle;
+                public string LoadingSubtitle { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle;
                 public string BottomButtonDeleteAllFiles { get; set; } = LangFallback?._FileCleanupPage.BottomButtonDeleteAllFiles;
                 public string BottomButtonDeleteSelectedFiles { get; set; } = LangFallback?._FileCleanupPage.BottomButtonDeleteSelectedFiles;
                 public string BottomCheckboxFilesSelected { get; set; } = LangFallback?._FileCleanupPage.BottomCheckboxFilesSelected;

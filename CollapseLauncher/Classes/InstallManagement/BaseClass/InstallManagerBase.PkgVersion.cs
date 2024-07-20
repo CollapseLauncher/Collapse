@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -307,7 +308,12 @@ namespace CollapseLauncher.InstallManager.Base
                             Interlocked.Add(ref totalSize, fileInfo.Exists ? fileInfo.Length : 0);
                             Interlocked.Increment(ref count);
                             _parentUI.DispatcherQueue.TryEnqueue(() =>
-                            LoadingMessageHelper.SetMessage("Processing", $"Calculating Existing Files ({count} file(s) found - {ConverterTool.SummarizeSizeSimple(totalSize)} in total)..."));
+                            LoadingMessageHelper.SetMessage(
+                                Locale.Lang._FileCleanupPage.LoadingTitle,
+                                string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle,
+                                    count,
+                                    ConverterTool.SummarizeSizeSimple(totalSize))
+                            ));
                             lock (localFileInfoList)
                             {
                                 localFileInfoList.Add(localFileInfo);
