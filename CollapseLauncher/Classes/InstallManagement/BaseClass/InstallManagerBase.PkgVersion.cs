@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -152,44 +153,48 @@ namespace CollapseLauncher.InstallManager.Base
                 if (!_uninstallGameProperty.HasValue)
                     throw new NotSupportedException("Clean-up feature for this game is not yet supported!");
 
-                // Initialize and get game state, then get the latest package info
-                LoadingMessageHelper.SetMessage(
-                    Locale.Lang._FileCleanupPage.LoadingTitle,
-                    Locale.Lang._FileCleanupPage.LoadingSubtitle2);
-
-                using Http client = new Http();
-                GameInstallStateEnum gameStateEnum = await _gameVersionManager.GetGameState();
-                RegionResourceVersion? packageLatestBase = _gameVersionManager
-                    .GetGameLatestZip(gameStateEnum).FirstOrDefault();
-                string? packageExtractBasePath = packageLatestBase?.decompressed_path;
-
-                // Check Fail-safe: Download pkg_version files if not exist
-                string pkgVersionPath = Path.Combine(_gamePath, "pkg_version");
-                if (!string.IsNullOrEmpty(packageExtractBasePath))
+                // Do pkg_version check if Zip Check is used
+                if (includeZipCheck)
                 {
-                    // Check Fail-safe: Download main pkg_version file if not exist
-                    string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
-                        "pkg_version");
-                    await client.Download(mainPkgVersionUrl, pkgVersionPath, _downloadThreadCount, true);
-                    await client.Merge(default);
+                    // Initialize and get game state, then get the latest package info
+                    LoadingMessageHelper.SetMessage(
+                        Locale.Lang._FileCleanupPage.LoadingTitle,
+                        Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
-                    // Check Fail-safe: Download audio pkg_version file if not exist
-                    if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) && !string.IsNullOrEmpty(packageExtractBasePath))
+                    using Http client = new Http();
+                    GameInstallStateEnum gameStateEnum = await _gameVersionManager.GetGameState();
+                    RegionResourceVersion? packageLatestBase = _gameVersionManager
+                        .GetGameLatestZip(gameStateEnum).FirstOrDefault();
+                    string? packageExtractBasePath = packageLatestBase?.decompressed_path;
+
+                    // Check Fail-safe: Download pkg_version files if not exist
+                    string pkgVersionPath = Path.Combine(_gamePath, "pkg_version");
+                    if (!string.IsNullOrEmpty(packageExtractBasePath))
                     {
-                        if (!File.Exists(_gameAudioLangListPathStatic))
-                            throw new FileNotFoundException("Game does have audio lang index file but does not exist!"
-                                + $" Expecting location: {_gameAudioLangListPathStatic}");
+                        // Check Fail-safe: Download main pkg_version file
+                        string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
+                            "pkg_version");
+                        await client.Download(mainPkgVersionUrl, pkgVersionPath, _downloadThreadCount, true);
+                        await client.Merge(default);
 
-                        await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
-                            packageExtractBasePath,
-                            client);
+                        // Check Fail-safe: Download audio pkg_version files
+                        if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) && !string.IsNullOrEmpty(packageExtractBasePath))
+                        {
+                            if (!File.Exists(_gameAudioLangListPathStatic))
+                                throw new FileNotFoundException("Game does have audio lang index file but does not exist!"
+                                    + $" Expecting location: {_gameAudioLangListPathStatic}");
+
+                            await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
+                                packageExtractBasePath,
+                                client);
+                        }
                     }
-                }
 
-                // Check Fail-safe: If the main pkg_version still not exist, throw!
-                bool isMainPkgVersionExist = File.Exists(pkgVersionPath);
-                if (!isMainPkgVersionExist)
-                    throw new FileNotFoundException("Cannot get the file list due to pkg_version file not exist!");
+                    // Check Fail-safe: If the main pkg_version still not exist, throw!
+                    bool isMainPkgVersionExist = File.Exists(pkgVersionPath);
+                    if (!isMainPkgVersionExist)
+                        throw new FileNotFoundException("Cannot get the file list due to pkg_version file not exist!");
+                }
 
                 // Try parse the pkg_versions (including the audio one)
                 List<LocalFileInfo> pkgFileInfo = new List<LocalFileInfo>();
@@ -239,6 +244,12 @@ namespace CollapseLauncher.InstallManager.Base
                 string pkgFileName = $"Audio_{line.Trim()}_pkg_version";
                 string pkgPath = Path.Combine(_gamePath, pkgFileName);
                 string pkgUrl = ConverterTool.CombineURLFromString(baseExtractUrl, pkgFileName);
+
+                // Skip if URL is not found
+                if ((await FallbackCDNUtil.GetURLStatusCode(pkgUrl, default)).StatusCode == HttpStatusCode.NotFound)
+                    continue;
+
+                // Download the file
                 await client.Download(pkgUrl, pkgPath, _downloadThreadCount, true);
                 await client.Merge(default);
             }
