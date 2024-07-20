@@ -4,6 +4,8 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -150,6 +152,45 @@ namespace CollapseLauncher.InstallManager.Base
                 if (!_uninstallGameProperty.HasValue)
                     throw new NotSupportedException("Clean-up feature for this game is not yet supported!");
 
+                // Initialize and get game state, then get the latest package info
+                LoadingMessageHelper.SetMessage(
+                    Locale.Lang._FileCleanupPage.LoadingTitle,
+                    Locale.Lang._FileCleanupPage.LoadingSubtitle2);
+
+                using Http client = new Http();
+                GameInstallStateEnum gameStateEnum = await _gameVersionManager.GetGameState();
+                RegionResourceVersion? packageLatestBase = _gameVersionManager
+                    .GetGameLatestZip(gameStateEnum).FirstOrDefault();
+                string? packageExtractBasePath = packageLatestBase?.decompressed_path;
+
+                // Check Fail-safe: Download pkg_version files if not exist
+                string pkgVersionPath = Path.Combine(_gamePath, "pkg_version");
+                if (!string.IsNullOrEmpty(packageExtractBasePath))
+                {
+                    // Check Fail-safe: Download main pkg_version file if not exist
+                    string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
+                        "pkg_version");
+                    await client.Download(mainPkgVersionUrl, pkgVersionPath, _downloadThreadCount, true);
+                    await client.Merge(default);
+
+                    // Check Fail-safe: Download audio pkg_version file if not exist
+                    if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) && !string.IsNullOrEmpty(packageExtractBasePath))
+                    {
+                        if (!File.Exists(_gameAudioLangListPathStatic))
+                            throw new FileNotFoundException("Game does have audio lang index file but does not exist!"
+                                + $" Expecting location: {_gameAudioLangListPathStatic}");
+
+                        await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
+                            packageExtractBasePath,
+                            client);
+                    }
+                }
+
+                // Check Fail-safe: If the main pkg_version still not exist, throw!
+                bool isMainPkgVersionExist = File.Exists(pkgVersionPath);
+                if (!isMainPkgVersionExist)
+                    throw new FileNotFoundException("Cannot get the file list due to pkg_version file not exist!");
+
                 // Try parse the pkg_versions (including the audio one)
                 List<LocalFileInfo> pkgFileInfo = new List<LocalFileInfo>();
                 HashSet<string> pkgFileInfoHashSet = new HashSet<string>();
@@ -180,6 +221,26 @@ namespace CollapseLauncher.InstallManager.Base
             finally
             {
                 LoadingMessageHelper.HideLoadingFrame();
+            }
+        }
+
+        protected virtual async ValueTask DownloadOtherAudioPkgVersion(string audioListFilePath, string baseExtractUrl, Http client)
+        {
+            // Initialize reader
+            using StreamReader reader = new StreamReader(audioListFilePath);
+            // Read until EOF
+            while (!reader.EndOfStream)
+            {
+                // Read the line and skip if it's empty
+                string? line = await reader.ReadLineAsync();
+                if (string.IsNullOrEmpty(line)) continue;
+
+                // Get the pkg_version filename, url and then download it
+                string pkgFileName = $"Audio_{line.Trim()}_pkg_version";
+                string pkgPath = Path.Combine(_gamePath, pkgFileName);
+                string pkgUrl = ConverterTool.CombineURLFromString(baseExtractUrl, pkgFileName);
+                await client.Download(pkgUrl, pkgPath, _downloadThreadCount, true);
+                await client.Merge(default);
             }
         }
 
@@ -310,7 +371,7 @@ namespace CollapseLauncher.InstallManager.Base
                             _parentUI.DispatcherQueue.TryEnqueue(() =>
                             LoadingMessageHelper.SetMessage(
                                 Locale.Lang._FileCleanupPage.LoadingTitle,
-                                string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle,
+                                string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle1,
                                     count,
                                     ConverterTool.SummarizeSizeSimple(totalSize))
                             ));

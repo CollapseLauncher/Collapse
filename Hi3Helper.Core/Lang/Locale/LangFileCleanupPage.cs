@@ -14,7 +14,8 @@ namespace Hi3Helper
                 public string ListViewFieldFileName { get; set; } = LangFallback?._FileCleanupPage.ListViewFieldFileName;
                 public string ListViewFieldFileSize { get; set; } = LangFallback?._FileCleanupPage.ListViewFieldFileSize;
                 public string LoadingTitle { get; set; } = LangFallback?._FileCleanupPage.LoadingTitle;
-                public string LoadingSubtitle { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle;
+                public string LoadingSubtitle1 { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle1;
+                public string LoadingSubtitle2 { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle2;
                 public string BottomButtonDeleteAllFiles { get; set; } = LangFallback?._FileCleanupPage.BottomButtonDeleteAllFiles;
                 public string BottomButtonDeleteSelectedFiles { get; set; } = LangFallback?._FileCleanupPage.BottomButtonDeleteSelectedFiles;
                 public string BottomCheckboxFilesSelected { get; set; } = LangFallback?._FileCleanupPage.BottomCheckboxFilesSelected;

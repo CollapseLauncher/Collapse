@@ -1923,9 +1923,16 @@ namespace CollapseLauncher.Pages
 
         private async void CleanupFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            GameStartupSetting.Flyout.Hide();
-            if (CurrentGameProperty?._GameInstall != null)
-                await CurrentGameProperty._GameInstall.CleanUpGameFiles(true);
+            try
+            {
+                GameStartupSetting.Flyout.Hide();
+                if (CurrentGameProperty?._GameInstall != null)
+                    await CurrentGameProperty._GameInstall.CleanUpGameFiles(true);
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+            }
         }
         #endregion
 
