@@ -587,11 +587,12 @@ namespace CollapseLauncher
                 await SpawnPushAppNotification();
 
                 // Check Metadata Update in Background
-                await CheckMetadataUpdateInBackground();
+                if (await CheckMetadataUpdateInBackground())
+                    return; // Cancel any routine below to avoid conflict with app update
 
 #if !DEBUG
                 // Run the update check and trigger routine
-                LauncherUpdateHelper.RunUpdateCheckDetached();
+                await LauncherUpdateHelper.RunUpdateCheckDetached();
 #else 
                 LogWriteLine("Running debug build, stopping update checks!", LogType.Error);
 #endif
@@ -1102,7 +1103,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Metadata Update Method
-        private async Task CheckMetadataUpdateInBackground()
+        private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
             bool IsUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
             if (IsUpdate)
@@ -1175,6 +1176,7 @@ namespace CollapseLauncher
                     true
                     );
             }
+            return IsUpdate;
         }
         #endregion
 
