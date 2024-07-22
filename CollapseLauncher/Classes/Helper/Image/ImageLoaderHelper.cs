@@ -299,6 +299,7 @@ namespace CollapseLauncher.Helper.Image
                 Interpolation = InterpolationSettings.CubicSmoother,
                 Anchor = CropAnchor.Bottom | CropAnchor.Center
             };
+            settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
             await Task.Run(() =>
             {
