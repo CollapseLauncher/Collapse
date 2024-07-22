@@ -427,6 +427,15 @@
     "AppThreads_Help4": "0 (Auto-detect)",
     "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
     "AppThreads_Help6": "Note: This setting is no longer effective while installing Honkai Impact 3rd.",
+    
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
 
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Before you change the",

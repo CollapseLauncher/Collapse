@@ -364,7 +364,10 @@ namespace Hi3Helper.Shared.Region
             { "BackgroundAudioVolume", 0.5d },
             { "BackgroundAudioIsMute", true },
             { "UseInstantRegionChange", true },
-            { "IsIntroEnabled", true }
+            { "IsIntroEnabled", true },
+            { "IsEnableSophon", true},
+            { "SophonCpuThread", 0},
+            { "SophonHttpConnInt", 0}
         };
         #endregion
     }
