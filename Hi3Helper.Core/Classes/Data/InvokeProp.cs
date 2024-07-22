@@ -82,6 +82,19 @@ namespace Hi3Helper
             EsDisplayRequired = 0x00000002,
             EsSystemRequired = 0x00000001
         }
+        
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct SHFILEOPSTRUCT
+        {
+            public IntPtr hwnd;
+            public uint   wFunc;
+            public string pFrom;
+            public string pTo;
+            public ushort fFlags;
+            public int    fAnyOperationsAborted;
+            public IntPtr hNameMappings;
+            public string lpszProgressTitle;
+        }
         #endregion
 
         #region Kernel32
@@ -292,6 +305,40 @@ namespace Hi3Helper
             return false;
         }
         #endregion
+        
+        #region shell32
+        [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
+
+        public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
+        {
+            const uint    WM_SETICON = 0x0080;
+            const UIntPtr ICON_BIG   = 1;
+            const UIntPtr ICON_SMALL = 0;
+            SendMessage(hWnd, WM_SETICON, ICON_BIG,   hIconLarge);
+            SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
+        }
+        
+        [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+        private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
+        #endregion
+        
+        public static void MoveFileToRecycleBin(string filePath)
+        {
+            uint   FO_DELETE          = 0x0003;
+            ushort FOF_ALLOWUNDO      = 0x0040;
+            ushort FOF_NOCONFIRMATION = 0x0010;
+            
+            SHFILEOPSTRUCT fileOp = new SHFILEOPSTRUCT
+            {
+                wFunc  = FO_DELETE,
+                pFrom  = filePath + '\0' + '\0',
+                fFlags = (ushort)(FOF_ALLOWUNDO | FOF_NOCONFIRMATION)
+            };
+
+            SHFileOperation(ref fileOp);
+        }
 
 #nullable enable
         public static CancellationTokenSource? _preventSleepToken;
@@ -426,21 +473,6 @@ namespace Hi3Helper
             public void ShowWindowMaximized() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMAXIMIZED);
             public void HideWindow() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMINIMIZED);
         }
-
-        #region shell32
-        [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
-
-        public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
-        {
-            const uint WM_SETICON = 0x0080;
-            const UIntPtr ICON_BIG = 1;
-            const UIntPtr ICON_SMALL = 0;
-            SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
-            SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
-        }
-        #endregion
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
 

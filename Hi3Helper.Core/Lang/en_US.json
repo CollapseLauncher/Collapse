@@ -1283,7 +1283,9 @@
     "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
     "DialogDeleteSuccessTitle": "Files Deleted!",
     "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
-    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete"
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {

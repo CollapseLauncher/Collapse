@@ -149,13 +149,16 @@ namespace CollapseLauncher.Pages
                 this,
                 Locale.Lang._Misc.NoCancel,
                 Locale.Lang._Misc.YesContinue,
-                null,
+                Locale.Lang._FileCleanupPage.DialogMoveToRecycleBin,
                 ContentDialogButton.Close,
                 ContentDialogTheme.Warning);
-            if (ContentDialogResult.Primary != dialogResult) return;
+            
+            int  deleteSuccess = 0;
+            int  deleteFailed  = 0;
 
-            int deleteSuccess = 0;
-            int deleteFailed = 0;
+            bool isToRecycleBin = dialogResult == ContentDialogResult.Secondary;
+            if (dialogResult == ContentDialogResult.None) return;
+
             foreach (LocalFileInfo fileInfo in deletionSource)
             {
                 try
@@ -164,21 +167,28 @@ namespace CollapseLauncher.Pages
                     if (fileInfoN.Exists)
                     {
                         fileInfoN.IsReadOnly = false;
-                        fileInfoN.Delete();
+                        if (isToRecycleBin) 
+                            InvokeProp.MoveFileToRecycleBin(fileInfoN.FullName);
+                        else
+                            fileInfoN.Delete();
                     }
 
                     FileInfoSource.Remove(fileInfo);
-
                     ++deleteSuccess;
                 }
                 catch (Exception ex)
                 {
                     ++deleteFailed;
-                    Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}", LogType.Error, true);
+                    Logger.LogWriteLine($"Failed while moving this file to recycle bin: {fileInfo.FullPath}\r\n{ex}",
+                                        LogType.Error, true);
                 }
             }
 
-            await SimpleDialogs.SpawnDialog(Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle,
+            string diagTitle = dialogResult == ContentDialogResult.Primary
+                ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
+                : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
+                
+            await SimpleDialogs.SpawnDialog(diagTitle,
                 string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1, deleteSuccess)
                 + (deleteFailed == 0 ? string.Empty :
                    ' ' + string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2, deleteFailed)),

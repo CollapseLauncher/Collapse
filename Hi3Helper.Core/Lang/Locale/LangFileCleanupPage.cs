@@ -29,6 +29,8 @@ namespace Hi3Helper
                 public string DialogDeleteSuccessTitle { get; set; } = LangFallback?._FileCleanupPage.DialogDeleteSuccessTitle;
                 public string DialogDeleteSuccessSubtitle1 { get; set; } = LangFallback?._FileCleanupPage.DialogDeleteSuccessSubtitle1;
                 public string DialogDeleteSuccessSubtitle2 { get; set; } = LangFallback?._FileCleanupPage.DialogDeleteSuccessSubtitle2;
+                public string DialogMoveToRecycleBin { get; set; } = LangFallback?._FileCleanupPage.DialogMoveToRecycleBin;
+                public string DialogTitleMovedToRecycleBin { get; set; } = LangFallback?._FileCleanupPage.DialogTitleMovedToRecycleBin;
             }
         }
         #endregion
