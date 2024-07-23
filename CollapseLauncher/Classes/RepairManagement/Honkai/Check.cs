@@ -160,8 +160,13 @@ namespace CollapseLauncher
 
                 // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
-
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+                if (!file.Exists)
+                {
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found locally", LogType.Warning, true);
+                } else if (file.Exists && file.Length != asset.S && !asset.AudioPatchInfo.HasValue)
+                {
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true);
+                } // length mismatch
 
                 // Increment current Total Size
                 _progressTotalSizeCurrent += asset.S;
@@ -267,7 +272,13 @@ namespace CollapseLauncher
                 // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+                if (!file.Exists)
+                {
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
+                } else if (file.Exists && file.Length != asset.S)
+                {
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true);
+                }
                 return;
             }
 
@@ -438,9 +449,11 @@ namespace CollapseLauncher
             }
 
             // Check if the file exist or doesn't have proper size, then mark it.
-            bool isFileNotExistOrHasInproperSize = !file.Exists || (file.Exists && file.Length != asset.S);
+            bool isFileNotExistOrHasImproperSize = !file.Exists || (file.Exists && file.Length != asset.S);
+            bool isFileImproperSize                = (file.Exists && file.Length != asset.S);
+            bool isFileExist                     = !file.Exists; // invert operator to match logic below
 
-            if (isFileNotExistOrHasInproperSize)
+            if (isFileNotExistOrHasImproperSize)
             {
                 // Update the total progress and found counter
                 _progressTotalSizeFound += asset.S;
@@ -466,7 +479,13 @@ namespace CollapseLauncher
                 // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+                if (isFileImproperSize)
+                {
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true);
+                } else if (isFileExist)
+                {
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
+                }
 
                 return;
             }
