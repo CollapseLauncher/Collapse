@@ -923,6 +923,7 @@ namespace CollapseLauncher.GameVersioning
             }
 
             // If none of them passes, then return null.
+            Logger.LogWriteLine("[TryFindGamePathFromExecutableAndConfig] Fail!");
             return null;
         }
 

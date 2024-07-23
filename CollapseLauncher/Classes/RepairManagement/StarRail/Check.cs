@@ -156,7 +156,7 @@ namespace CollapseLauncher
                 ));
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
 
                 return;
             }
@@ -280,7 +280,6 @@ namespace CollapseLauncher
                     )
                 ));
                 targetAssetIndex.Add(asset);
-
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
 
                 return;

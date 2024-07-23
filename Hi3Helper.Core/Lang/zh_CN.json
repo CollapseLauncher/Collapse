@@ -174,7 +174,11 @@
     "CommunityToolsBtn_CommunityText": "社区工具",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "选择程序文件：{0}",
 
-    "CreateShortcut_FolderPicker": "选择放置快捷方式的位置"
+    "CreateShortcut_FolderPicker": "选择放置快捷方式的位置",
+    
+    "Exception_DownloadTimeout1": "尝试安装 {0} 时发生超时",
+    "Exception_DownloadTimeout2": "请检查您网络的可靠性！如果您的网速较慢，请降低下载线程数。",
+    "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！"
   },
 
   "_GameRepairPage": {
