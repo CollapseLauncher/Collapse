@@ -174,7 +174,11 @@
     "CommunityToolsBtn_CommunityText": "Alat Komunitas",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Pilih Executable Program: {0}",
 
-    "CreateShortcut_FolderPicker": "Pilih tempat untuk menyimpan pintasan"
+    "CreateShortcut_FolderPicker": "Pilih tempat untuk menyimpan pintasan",
+    
+    "Exception_DownloadTimeout1": "Masa tenggang telah terjadi saat mencoba untuk memasang {0}",
+    "Exception_DownloadTimeout2": "Pastikan internet kamu stabil! Coba turunkan thread unduhan apabila kamu punya koneksi lambat.",
+    "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!"
   },
 
   "_GameRepairPage": {
@@ -1251,7 +1255,8 @@
     "TW/HK/MO": "Tiongkok Tradisional",
     "Korea": "Korea",
     "Japan": "Jepang",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
