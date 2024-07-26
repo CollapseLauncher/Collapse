@@ -19,6 +19,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static Hi3Helper.Logger;
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
@@ -200,6 +201,20 @@ namespace CollapseLauncher.InstallManager.Base
                 List<LocalFileInfo> pkgFileInfo = new List<LocalFileInfo>();
                 HashSet<string> pkgFileInfoHashSet = new HashSet<string>();
                 await ParsePkgVersions2FileInfo(pkgFileInfo, pkgFileInfoHashSet, _token.Token);
+                
+                string[] ignoredFiles = [];
+                if (File.Exists(Path.Combine(_gamePath, "@IgnoredFiles")))
+                {
+                    try
+                    {
+                        ignoredFiles = File.ReadAllLines(Path.Combine(_gamePath, "@IgnoredFiles"));
+                        LogWriteLine("Found ignore file settings!");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
+                    }
+                }
 
                 // Get the list of the local file paths
                 List<LocalFileInfo> localFileInfo = new List<LocalFileInfo>();
@@ -216,7 +231,8 @@ namespace CollapseLauncher.InstallManager.Base
                             {
                                 lock (unusedFileInfo)
                                 {
-                                    unusedFileInfo.Add(asset);
+                                    if (!ignoredFiles.Contains(asset.ToFileInfo().Name, StringComparer.OrdinalIgnoreCase)) 
+                                        unusedFileInfo.Add(asset);
                                 }
                             }
                         }));
