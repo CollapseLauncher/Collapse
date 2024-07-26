@@ -109,6 +109,7 @@ namespace CollapseLauncher
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
         {
+            SubscribeEvents();
             try
             {
                 if (!IsShowRegionChangeWarning && IsInstantRegionChange)
@@ -143,7 +144,6 @@ namespace CollapseLauncher
                 if (WindowUtility.CurrentWindow is MainWindow)
                     m_actualMainFrameSize = new Size((float)WindowUtility.CurrentWindow.Bounds.Width, (float)WindowUtility.CurrentWindow.Bounds.Height);
 
-                SubscribeEvents();
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
                 await InitializeStartup();
