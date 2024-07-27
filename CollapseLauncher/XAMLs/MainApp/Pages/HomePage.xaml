@@ -302,7 +302,6 @@
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
                         </Grid.ChildrenTransitions>
-
                         <Grid x:Name="DownloadModeLabelPreload"
                               Padding="8,2"
                               HorizontalAlignment="Left"
@@ -896,7 +895,7 @@
                 <Grid x:Name="SophonProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
-                      Translation="1,1,48" />
+                      Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
@@ -1112,7 +1111,7 @@
                 <Grid x:Name="progressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
-                      Translation="1,1,48" />
+                      Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
