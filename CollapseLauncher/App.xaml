@@ -1705,6 +1705,11 @@
                                                                                     Value="{ThemeResource ButtonBorderBrushDisabled}"/>
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="BorderThickness">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="0"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource NewAccentButtonForegroundDisabled}"/>
