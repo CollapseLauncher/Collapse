@@ -21,7 +21,7 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            _status.IsProgressTotalIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
             _status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
@@ -84,10 +84,10 @@ namespace CollapseLauncher
         private void CheckAssetTypeVideo(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
         {
             // Increment current total count
-            // _progressTotalCountCurrent++;
+            // _progressAllCountCurrent++;
 
             // Increment current Total Size
-            // _progressTotalSizeCurrent += asset.S;
+            // _progressAllSizeCurrent += asset.S;
 
             // Get file path
             string filePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
@@ -97,8 +97,8 @@ namespace CollapseLauncher
             if (!file.Exists)
             {
                 // Increment progress count and size
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -126,10 +126,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get file path
@@ -142,8 +142,8 @@ namespace CollapseLauncher
             if (!file.Exists || (file.Exists && file.Length != asset.S && !asset.AudioPatchInfo.HasValue))
             {
                 // Increment progress count and size
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 _progressPerFileSizeCurrent = asset.S;
 
@@ -169,7 +169,7 @@ namespace CollapseLauncher
                 } // length mismatch
 
                 // Increment current Total Size
-                _progressTotalSizeCurrent += asset.S;
+                _progressAllSizeCurrent += asset.S;
                 return;
             }
 
@@ -192,7 +192,7 @@ namespace CollapseLauncher
                 // If pass the check above, then do MD5 Hash calculation
                 localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
-                // Get size difference for summarize the _progressTotalSizeCurrent
+                // Get size difference for summarize the _progressAllSizeCurrent
                 long sizeDifference = asset.S - file.Length;
 
                 // If the asset has patch info and the hash is matching with the old hash,
@@ -206,10 +206,10 @@ namespace CollapseLauncher
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
                     // Increment/decrement the size of the file based on size differences
-                    _progressTotalSizeCurrent += sizeDifference;
+                    _progressAllSizeCurrent += sizeDifference;
                     // Increment progress count and size
-                    _progressTotalSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
+                    _progressAllCountFound++;
 
                     // Add asset to Display
                     Dispatch(() => AssetEntry.Add(
@@ -239,10 +239,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get file path
@@ -252,9 +252,9 @@ namespace CollapseLauncher
             // If file doesn't exist or the file size doesn't match, then skip and update the progress
             if (!file.Exists || (file.Exists && file.Length != asset.S))
             {
-                _progressTotalSizeCurrent += asset.S;
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeCurrent += asset.S;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 _progressPerFileSizeCurrent = asset.S;
 
@@ -297,8 +297,8 @@ namespace CollapseLauncher
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.S;
+                    _progressAllCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
@@ -387,10 +387,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get original and old path (for patching)
@@ -415,14 +415,14 @@ namespace CollapseLauncher
                     if (IsArrayMatch(localOldCRC, patchInfo?.PatchPairs[0].OldHash))
                     {
                         // Update the total progress and found counter
-                        _progressTotalSizeFound += (long)patchInfo?.PatchPairs[0].PatchSize;
-                        _progressTotalCountFound++;
+                        _progressAllSizeFound += (long)patchInfo?.PatchPairs[0].PatchSize;
+                        _progressAllCountFound++;
 
                         // Set the per size progress
                         _progressPerFileSizeCurrent = asset.S;
 
                         // Increment the total current progress
-                        _progressTotalSizeCurrent += asset.S;
+                        _progressAllSizeCurrent += asset.S;
 
                         Dispatch(() => AssetEntry.Add(
                             new AssetProperty<RepairAssetType>(
@@ -456,14 +456,14 @@ namespace CollapseLauncher
             if (isFileNotExistOrHasImproperSize)
             {
                 // Update the total progress and found counter
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 // Set the per size progress
                 _progressPerFileSizeCurrent = asset.S;
 
                 // Increment the total current progress
-                _progressTotalSizeCurrent += asset.S;
+                _progressAllSizeCurrent += asset.S;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -506,8 +506,8 @@ namespace CollapseLauncher
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.S;
+                    _progressAllCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
@@ -665,7 +665,7 @@ namespace CollapseLauncher
                             )
                         ));
 
-                    _progressTotalCountFound++;
+                    _progressAllCountFound++;
 
                     LogWriteLine($"Unused file has been found: {n}", LogType.Warning, true);
                 }

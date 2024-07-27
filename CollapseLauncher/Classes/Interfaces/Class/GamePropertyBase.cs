@@ -46,6 +46,7 @@ namespace CollapseLauncher.Interfaces
         protected CancellationTokenSourceWrapper _token { get; set; }
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }
+        protected Stopwatch _downloadSpeedRefreshStopwatch { get; set; }
         protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : _gameVersionManager.GetGameExistingVersion().Value; }
         protected IGameVersionCheck _gameVersionManager { get; set; }
         protected IGameSettings _gameSettings { get; set; }

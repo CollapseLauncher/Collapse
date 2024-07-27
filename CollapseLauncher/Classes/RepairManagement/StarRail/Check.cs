@@ -68,7 +68,7 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            _status.IsProgressTotalIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
             _status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
@@ -122,10 +122,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get the file info
@@ -135,14 +135,14 @@ namespace CollapseLauncher
             if (!fileInfo.Exists)
             {
                 // Update the total progress and found counter
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 // Set the per size progress
                 _progressPerFileSizeCurrent = asset.S;
 
                 // Increment the total current progress
-                _progressTotalSizeCurrent += asset.S;
+                _progressAllSizeCurrent += asset.S;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -177,8 +177,8 @@ namespace CollapseLauncher
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.S;
+                    _progressAllCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
@@ -206,10 +206,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get persistent and streaming paths
@@ -229,7 +229,7 @@ namespace CollapseLauncher
             if (IsPersistentExist && IsStreamingExist)
             {
                 // Add the count and asset. Mark the type as "RepairAssetType.Unused"
-                _progressTotalCountFound++;
+                _progressAllCountFound++;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -260,14 +260,14 @@ namespace CollapseLauncher
              || (UsePersistent && !IsPersistentExist))
             {
                 // Update the total progress and found counter
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 // Set the per size progress
                 _progressPerFileSizeCurrent = asset.S;
 
                 // Increment the total current progress
-                _progressTotalSizeCurrent += asset.S;
+                _progressAllSizeCurrent += asset.S;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -328,8 +328,8 @@ namespace CollapseLauncher
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.S;
+                    _progressAllCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
                                                   new AssetProperty<RepairAssetType>(

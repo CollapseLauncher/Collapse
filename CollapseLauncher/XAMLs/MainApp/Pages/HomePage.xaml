@@ -878,6 +878,221 @@
                 </Grid>
             </StackPanel>
         </Grid>
+        <Grid x:Name="SophonProgressStatusGrid"
+              Grid.Row="1"
+              Grid.Column="0"
+              Margin="0,0,0,48"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center"
+              Shadow="{ThemeResource SharedShadow}"
+              Visibility="Collapsed">
+            <Grid.ChildrenTransitions>
+                <PopupThemeTransition />
+            </Grid.ChildrenTransitions>
+            <Grid>
+                <Grid.ChildrenTransitions>
+                    <PopupThemeTransition />
+                </Grid.ChildrenTransitions>
+                <Grid x:Name="SophonProgressRingShadow"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="1,1,48" />
+                <ProgressRing Width="Auto"
+                              Height="Auto"
+                              HorizontalAlignment="Stretch"
+                              IsIndeterminate="{Binding IsIndeterminate, ElementName=SophonProgressRing}"
+                              Maximum="{Binding Maximum, ElementName=SophonProgressRing}"
+                              Value="{Binding Value, ElementName=SophonProgressRing}" />
+                <Ellipse x:Name="SophonProgressRingBG"
+                         HorizontalAlignment="Stretch"
+                         Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
+                <ProgressRing x:Name="SophonProgressRing"
+                              Width="Auto"
+                              Height="Auto"
+                              Margin="-6"
+                              HorizontalAlignment="Stretch"
+                              IsIndeterminate="True"
+                              Maximum="100"
+                              Value="0" />
+                <Grid x:Name="SophonProgressPerFile"
+                      Margin="16"
+                      Visibility="Visible">
+                    <ProgressRing Width="Auto"
+                                  Height="Auto"
+                                  HorizontalAlignment="Stretch"
+                                  IsIndeterminate="{Binding IsIndeterminate, ElementName=SophonProgressRingPerFile}"
+                                  Maximum="{Binding Maximum, ElementName=SophonProgressRingPerFile}"
+                                  Value="{Binding Value, ElementName=SophonProgressRingPerFile}" />
+                    <Ellipse x:Name="SophonProgressRingBG2"
+                             Margin="4"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch"
+                             Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
+                    <ProgressRing x:Name="SophonProgressRingPerFile"
+                                  Width="Auto"
+                                  Height="Auto"
+                                  Margin="8"
+                                  HorizontalAlignment="Stretch"
+                                  IsIndeterminate="True"
+                                  Maximum="100"
+                                  Value="0" />
+                </Grid>
+            </Grid>
+            <StackPanel HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center">
+                <Grid Margin="0,0,0,8"
+                      Padding="8,4"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      ColumnSpacing="6"
+                      CornerRadius="4"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon x:Name="SophonProgressStatusTitleIcon"
+                              HorizontalAlignment="Center"
+                              FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              FontWeight="Bold"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusTitleText"
+                               Grid.Column="1"
+                               HorizontalAlignment="Center"
+                               FontSize="11"
+                               FontWeight="Medium"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="-" />
+                </Grid>
+                <Grid x:Name="SophonProgressStatusSizeTotalGrid"
+                      Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="14"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSizeTotalText"
+                               Grid.Column="1"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"
+                               TextAlignment="Left" />
+                </Grid>
+                <Grid x:Name="SophonProgressStatusSizeDownloadedGrid"
+                      Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="14"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSizeDownloadedText"
+                               Grid.Column="1"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"
+                               TextAlignment="Left" />
+                </Grid>
+                <StackPanel HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold"
+                               Text="{Binding Value, ElementName=SophonProgressRing}" />
+                    <TextBlock Margin="-1,0,0,0"
+                               FontWeight="Bold"
+                               Text="%" />
+                </StackPanel>
+                <StackPanel x:Name="SophonProgressStatusFooter"
+                            Margin="0,4"
+                            Padding="4,2"
+                            HorizontalAlignment="Center"
+                            Background="{ThemeResource AccentColorBrush}"
+                            CornerRadius="4"
+                            Orientation="Horizontal"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Spacing="4"
+                            Translation="0,0,16"
+                            Visibility="Visible">
+                    <FontIcon Grid.Column="2"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="10"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock FontSize="9"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="Speed"
+                               TextAlignment="Center" />
+                </StackPanel>
+                <Grid Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MaxWidth="72" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MaxWidth="72" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSpeedTotalText"
+                               Grid.Column="1"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="-"
+                               TextAlignment="Left" />
+                    <FontIcon Grid.Column="2"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="12"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSpeedDownloadedText"
+                               Grid.Column="3"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="-"
+                               TextAlignment="Left" />
+                </Grid>
+                <TextBlock x:Name="SophonProgressTimeLeft"
+                           HorizontalAlignment="Center"
+                           FontSize="10"
+                           FontWeight="Bold"
+                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+            </StackPanel>
+            <Button x:Name="SophonProgressSettingsButton"
+                    Width="32"
+                    Height="32"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Click="ProgressSettingsButton_OnClick"
+                    CornerRadius="16"
+                    Shadow="{ThemeResource SharedShadow}">
+                <Button.Content>
+                    <Grid Margin="-16"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{ThemeResource GameSettingsBtnBrush}">
+                        <AnimatedIcon Width="20">
+                            <AnimatedIcon.Source>
+                                <animatedvisuals:AnimatedSettingsVisualSource />
+                            </AnimatedIcon.Source>
+                            <AnimatedIcon.FallbackIconSource>
+                                <SymbolIconSource Symbol="Setting" />
+                            </AnimatedIcon.FallbackIconSource>
+                        </AnimatedIcon>
+                    </Grid>
+                </Button.Content>
+            </Button>
+        </Grid>
         <Grid x:Name="ProgressStatusGrid"
               Grid.Row="1"
               Grid.Column="0"

@@ -862,14 +862,25 @@ namespace CollapseLauncher.Pages
 
                 progressRing.Value = 0;
                 progressRing.IsIndeterminate = true;
-                ProgressStatusGrid.Visibility = Visibility.Visible;
+
                 InstallGameBtn.Visibility = Visibility.Collapsed;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
                 ProgressTimeLeft.Visibility = Visibility.Visible;
 
-                CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+                bool isUseSophon = CurrentGameProperty._GameInstall.IsUseSophon;
+                if (isUseSophon)
+                {
+                    SophonProgressStatusGrid.Visibility = Visibility.Visible;
+                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged += GameInstallSophon_StatusChanged;
+                }
+                else
+                {
+                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+                }
             }
         }
 
@@ -1148,17 +1159,17 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
-                string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
-                string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
-                string InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileDownload);
-                string DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-                string DownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeToDownload);
+                string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressAllSpeed);
+                string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeCurrent);
+                string InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeCurrent);
+                string DownloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeTotal);
+                string DownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeTotal);
 
                 ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
                 ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
                 ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
-                progressPreBar.Value = Math.Round(e.ProgressTotalPercentage, 2);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
+                progressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
                 progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
                 progressPreBar.IsIndeterminate = false;
                 progressPrePerFileBar.IsIndeterminate = false;
@@ -1169,6 +1180,7 @@ namespace CollapseLauncher.Pages
         #region Game Install
         private async void InstallGameDialog(object sender, RoutedEventArgs e)
         {
+            bool isUseSophon = CurrentGameProperty._GameInstall.IsUseSophon;
             try
             {
                 // Prevent device from sleep
@@ -1182,13 +1194,23 @@ namespace CollapseLauncher.Pages
 
                 progressRing.Value            = 0;
                 progressRing.IsIndeterminate  = true;
-                ProgressStatusGrid.Visibility = Visibility.Visible;
                 InstallGameBtn.Visibility     = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility  = Visibility.Visible;
                 ProgressTimeLeft.Visibility   = Visibility.Visible;
 
-                CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                CurrentGameProperty._GameInstall.StatusChanged   += GameInstall_StatusChanged;
+                if (isUseSophon)
+                {
+                    SophonProgressStatusGrid.Visibility = Visibility.Visible;
+                    SophonProgressStatusSizeDownloadedGrid.Visibility = Visibility.Collapsed;
+                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged += GameInstallSophon_StatusChanged;
+                }
+                else
+                {
+                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+                }
 
                 int dialogResult = await CurrentGameProperty._GameInstall.GetInstallationPath();
                 if (dialogResult < 0)
@@ -1288,8 +1310,14 @@ namespace CollapseLauncher.Pages
             {
                 IsSkippingUpdateCheck = false;
                 CurrentGameProperty._GameInstall.StartAfterInstall = false;
-                CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
-                CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+
+                CurrentGameProperty._GameInstall.ProgressChanged -= isUseSophon ?
+                    GameInstallSophon_ProgressChanged : 
+                    GameInstall_ProgressChanged;
+                CurrentGameProperty._GameInstall.StatusChanged   -= isUseSophon ? 
+                    GameInstallSophon_StatusChanged : 
+                    GameInstall_StatusChanged;
+
                 await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
@@ -1312,7 +1340,7 @@ namespace CollapseLauncher.Pages
             ProgressStatusTitle.Text = e.ActivityStatus;
             progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
 
-            progressRing.IsIndeterminate = e.IsProgressTotalIndetermined;
+            progressRing.IsIndeterminate = e.IsProgressAllIndetermined;
             progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
@@ -1326,11 +1354,50 @@ namespace CollapseLauncher.Pages
 
         private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
         {
-            progressRing.Value = e.ProgressTotalPercentage;
+            progressRing.Value = e.ProgressAllPercentage;
             progressRingPerFile.Value = e.ProgressPerFilePercentage;
-            ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressTotalDownload), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
-            ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressTotalSpeed));
-            ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
+            ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressAllSizeCurrent), SummarizeSizeSimple(e.ProgressAllSizeTotal));
+            ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressAllSpeed));
+            ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
+        }
+
+        private void GameInstallSophon_StatusChanged(object sender, TotalPerfileStatus e)
+        {
+            if (DispatcherQueue.HasThreadAccess)
+                GameInstallSophon_StatusChanged_Inner(sender, e);
+            else
+                DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(sender, e));
+        }
+
+        private void GameInstallSophon_ProgressChanged(object sender, TotalPerfileProgress e)
+        {
+            if (DispatcherQueue.HasThreadAccess)
+                GameInstallSophon_ProgressChanged_Inner(e);
+            else
+                DispatcherQueue?.TryEnqueue(() => GameInstallSophon_ProgressChanged_Inner(e));
+        }
+
+        private void GameInstallSophon_StatusChanged_Inner(object sender, TotalPerfileStatus e)
+        {
+            SophonProgressStatusTitleText.Text = e.ActivityStatus;
+            SophonProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+
+            SophonProgressRing.IsIndeterminate = e.IsProgressAllIndetermined;
+            SophonProgressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+        }
+
+        private void GameInstallSophon_ProgressChanged_Inner(TotalPerfileProgress e)
+        {
+            SophonProgressRing.Value = e.ProgressAllPercentage;
+            SophonProgressRingPerFile.Value = e.ProgressPerFilePercentage;
+
+            SophonProgressStatusSizeTotalText.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(Math.Max(e.ProgressAllSizeCurrent, 0)), SummarizeSizeSimple(e.ProgressAllSizeTotal));
+            SophonProgressStatusSizeDownloadedText.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(Math.Max(e.ProgressPerFileSizeCurrent, 0)), SummarizeSizeSimple(e.ProgressPerFileSizeTotal));
+            
+            SophonProgressStatusSpeedTotalText.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.ProgressAllSpeed));
+            SophonProgressStatusSpeedDownloadedText.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.ProgressPerFileSpeed));
+
+            SophonProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
         }
 
         private void CancelInstallationProcedure(object sender, RoutedEventArgs e)
@@ -1366,23 +1433,11 @@ namespace CollapseLauncher.Pages
         private void CancelUpdateDownload()
         {
             CurrentGameProperty._GameInstall.CancelRoutine();
-
-            /*
-            ProgressStatusGrid.Visibility = Visibility.Collapsed;
-            UpdateGameBtn.Visibility = Visibility.Visible;
-            CancelDownloadBtn.Visibility = Visibility.Collapsed;
-            */
         }
 
         private void CancelInstallationDownload()
         {
             CurrentGameProperty._GameInstall.CancelRoutine();
-
-            /*
-            ProgressStatusGrid.Visibility = Visibility.Collapsed;
-            InstallGameBtn.Visibility = Visibility.Visible;
-            CancelDownloadBtn.Visibility = Visibility.Collapsed;
-            */
         }
         #endregion
 
@@ -2154,8 +2209,7 @@ namespace CollapseLauncher.Pages
         #region Game Update Dialog
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
-            CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-            CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+            bool isUseSophon = CurrentGameProperty._GameInstall.IsUseSophon;
 
             HideImageCarousel(true);
 
@@ -2168,14 +2222,20 @@ namespace CollapseLauncher.Pages
 
                 IsSkippingUpdateCheck = true;
 
-                ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
 
-                if (CurrentGameProperty._GameInstall.IsUseSophon)
+                if (isUseSophon)
                 {
-                    DownloadModeLabel.Visibility = Visibility.Visible;
-                    DownloadModeLabelText.Text = Lang._Misc.DownloadModeLabelSophon;
+                    SophonProgressStatusGrid.Visibility = Visibility.Visible;
+                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged += GameInstallSophon_StatusChanged;
+                }
+                else
+                {
+                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
                 }
 
                 int verifResult;
@@ -2233,8 +2293,14 @@ namespace CollapseLauncher.Pages
             {
                 IsSkippingUpdateCheck = false;
                 CurrentGameProperty._GameInstall.StartAfterInstall = false;
-                CurrentGameProperty._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
-                CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+
+                CurrentGameProperty._GameInstall.ProgressChanged    -= isUseSophon ?
+                    GameInstallSophon_ProgressChanged :
+                    GameInstall_ProgressChanged;
+                CurrentGameProperty._GameInstall.StatusChanged      -= isUseSophon ?
+                    GameInstallSophon_StatusChanged :
+                    GameInstall_StatusChanged;
+
                 await Task.Delay(200);
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();

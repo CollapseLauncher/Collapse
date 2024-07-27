@@ -116,8 +116,9 @@
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#AA222222"
-                                          TintColor="#000000"
-                                          TintOpacity="0.33"/>
+                                          TintColor="#222222"
+                                          TintOpacity="0.2"
+                                          TintLuminosityOpacity="0.2"/>
                             <AcrylicBrush x:Key="DialogAcrylicBrush"
                                           FallbackColor="#FF222222"
                                           TintColor="#FF222222"

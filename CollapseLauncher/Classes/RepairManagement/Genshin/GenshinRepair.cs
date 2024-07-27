@@ -83,7 +83,7 @@ namespace CollapseLauncher
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 _assetIndex,
-                string.Format(Lang._GameRepairPage.Status3, _progressTotalCountFound, SummarizeSizeSimple(_progressTotalSizeFound)),
+                string.Format(Lang._GameRepairPage.Status3, _progressAllCountFound, SummarizeSizeSimple(_progressAllSizeFound)),
                 Lang._GameRepairPage.Status4);
         }
 

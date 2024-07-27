@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Http;
 using System;
 using System.IO;
 // ReSharper disable CheckNamespace
@@ -10,42 +9,50 @@ namespace CollapseLauncher
 {
     internal class TotalPerfileProgress
     {
-        private double _progressPerFilePercentage;
-        private double _progressTotalPercentage;
-        private double _progressTotalEntryCount;
-        private double _progressTotalSpeed;
+        private double  _progressPerFilePercentage;
+        private double  _progressPerFileSpeed;
+        private double  _progressAllPercentage;
+        private double  _progressAllSpeed;
+        private long    _progressPerFileEntryCountCurrent;
+        private long    _progressPerFileEntryCountTotal;
+        private long    _progressAllEntryCountCurrent;
+        private long    _progressAllEntryCountTotal;
 
         public double ProgressPerFilePercentage { get => _progressPerFilePercentage; set => _progressPerFilePercentage = value.UnNaNInfinity(); }
-        public double ProgressTotalPercentage { get => _progressTotalPercentage; set => _progressTotalPercentage = value.UnNaNInfinity(); }
-        public double ProgressTotalEntryCount { get => _progressTotalEntryCount; set => _progressTotalEntryCount = value.UnNaNInfinity(); }
-        public double ProgressTotalSpeed { get => _progressTotalSpeed; set => _progressTotalSpeed = value.UnNaNInfinity(); }
+        public double ProgressPerFileSpeed { get => _progressPerFileSpeed; set => _progressPerFileSpeed = value.UnNaNInfinity(); }
+        public double ProgressAllPercentage { get => _progressAllPercentage; set => _progressAllPercentage = value.UnNaNInfinity(); }
+        public double ProgressAllSpeed { get => _progressAllSpeed; set => _progressAllSpeed = value.UnNaNInfinity(); }
+
+        public long ProgressPerFileEntryCountCurrent { get => _progressPerFileEntryCountCurrent; set => _progressPerFileEntryCountCurrent = value; }
+        public long ProgressPerFileEntryCountTotal { get => _progressPerFileEntryCountTotal; set => _progressPerFileEntryCountTotal = value; }
+        public long ProgressAllEntryCountCurrent { get => _progressAllEntryCountCurrent; set => _progressAllEntryCountCurrent = value; }
+        public long ProgressAllEntryCountTotal { get => _progressAllEntryCountTotal; set => _progressAllEntryCountTotal = value; }
 
         // Extension for IGameInstallManager
-        public long ProgressPerFileDownload { get; set; }
-        public long ProgressPerFileSizeToDownload { get; set; }
-        public long ProgressTotalDownload { get; set; }
-        public long ProgressTotalSizeToDownload { get; set; }
-        public TimeSpan ProgressTotalTimeLeft;
-        public DownloadEvent DownloadEvent;
+        public double ProgressPerFileSizeCurrent { get; set; }
+        public double ProgressPerFileSizeTotal { get; set; }
+        public double ProgressAllSizeCurrent { get; set; }
+        public double ProgressAllSizeTotal { get; set; }
+        public TimeSpan ProgressAllTimeLeft { get; set; }
     }
 
     internal class TotalPerfileStatus
     {
-        public string ActivityStatus;
+        public string ActivityStatus { get; set; }
 
-        public string ActivityTotal;
-        public bool IsProgressTotalIndetermined;
+        public string ActivityAll { get; set; }
+        public bool IsProgressAllIndetermined { get; set; }
 
-        public string ActivityPerFile;
-        public bool IsProgressPerFileIndetermined;
+        public string ActivityPerFile { get; set; }
+        public bool IsProgressPerFileIndetermined { get; set; }
 
-        public bool IsAssetEntryPanelShow;
+        public bool IsAssetEntryPanelShow { get; set; }
 
-        public bool IsCompleted;
-        public bool IsCanceled;
-        public bool IsRunning;
+        public bool IsCompleted { get; set; }
+        public bool IsCanceled { get; set; }
+        public bool IsRunning { get; set; }
 
-        public bool IsIncludePerFileIndicator;
+        public bool IsIncludePerFileIndicator { get; set; }
     }
 
     internal struct GameVendorProp

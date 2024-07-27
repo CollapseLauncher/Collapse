@@ -586,6 +586,9 @@
     "LangNameKR": "Korean",
 
     "Downloading": "Downloading",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "Merging",
     "Idle": "Idle",
     "Change": "Change",
