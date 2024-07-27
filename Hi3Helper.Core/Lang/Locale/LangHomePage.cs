@@ -49,6 +49,7 @@
                 public string GameSettings_Panel4 { get; set; } = LangFallback?._HomePage.GameSettings_Panel4;
                 public string GameSettings_Panel4ShowEventsPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
                 public string GameSettings_Panel4ShowSocialMediaPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;
+                public string GameSettings_Panel4ShowPlaytimeButton { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowPlaytimeButton;
                 public string GameSettings_Panel4CreateShortcutBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4CreateShortcutBtn;
                 public string GameSettings_Panel4AddToSteamBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4AddToSteamBtn;
                 public string CreateShortcut_FolderPicker { get; set; } = LangFallback?._HomePage.CreateShortcut_FolderPicker;
