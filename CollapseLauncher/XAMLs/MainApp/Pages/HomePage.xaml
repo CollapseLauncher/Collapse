@@ -1791,6 +1791,14 @@
                                                   IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <TextBlock Margin="0,8,0,0"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowPlaytimeButton}"
+                                               TextWrapping="Wrap" />
+                                    <ToggleSwitch x:Name="PlaytimeVisibilityToggle"
+                                                  IsEnabled="True"
+                                                  IsOn="{x:Bind IsPlaytimeBtnVisible, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <Button x:Name="ShortcutButton"
                                             Margin="0,8"
                                             HorizontalAlignment="Stretch"

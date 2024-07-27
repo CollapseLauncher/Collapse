@@ -163,6 +163,9 @@ namespace CollapseLauncher.Pages
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
                     SocMedPanel.Visibility = Visibility.Collapsed;
 
+                if (!GetAppConfigValue("ShowGamePlaytime").ToBool())
+                    PlaytimeBtn.Visibility = Visibility.Collapsed;
+
                 TryLoadEventPanelImage();
 
                 SocMedPanel.Translation += Shadow48;
@@ -465,6 +468,27 @@ namespace CollapseLauncher.Pages
             await Task.Delay(100);
 
             SocMedPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private async void HidePlaytimeButton(bool hide)
+        {
+            if (!hide) PlaytimeBtn.Visibility = Visibility.Visible;
+
+            Storyboard      storyboard       = new Storyboard();
+            DoubleAnimation OpacityAnimation = new DoubleAnimation();
+            OpacityAnimation.From     = hide ? 1 : 0;
+            OpacityAnimation.To       = hide ? 0 : 1;
+            OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
+            
+            Storyboard.SetTarget(OpacityAnimation, PlaytimeBtn);
+            Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+            storyboard.Children.Add(OpacityAnimation);
+
+            storyboard.Begin();
+
+            await Task.Delay(100);
+
+            PlaytimeBtn.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void OpenSocMedLink(object sender, RoutedEventArgs e)

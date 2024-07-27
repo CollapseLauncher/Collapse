@@ -61,6 +61,22 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsPlaytimeBtnVisible
+        {
+            get
+            {
+                var v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
+                TogglePlaytimeBtn(v);
+
+                return v;
+            }
+            set
+            {
+                SetAndSaveConfigValue("ShowGamePlaytime", value);
+                TogglePlaytimeBtn(value);
+            }
+        }
+
         public string NoNewsSplashMascot
         {
             get
@@ -132,8 +148,9 @@ namespace CollapseLauncher.Pages
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
 
-        public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);
+        public void ToggleEventsPanel(bool      hide) => HideImageCarousel(!hide);
         public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
+        public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
     }
 
     public class NullVisibilityConverter : IValueConverter
