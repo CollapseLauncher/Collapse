@@ -27,5 +27,6 @@ namespace CollapseLauncher.Interfaces
 
         bool StartAfterInstall { get; set; }
         bool IsUseSophon { get; }
+        bool IsSophonInUpdateMode { get; }
     }
 }

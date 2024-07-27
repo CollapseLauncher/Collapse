@@ -164,8 +164,8 @@
                 RepairStatus.Text = e.ActivityStatus;
 
                 RepairPerFileStatus.Text = e.ActivityPerFile;
-                RepairTotalStatus.Text = e.ActivityTotal;
-                RepairTotalProgressBar.IsIndeterminate = e.IsProgressTotalIndetermined;
+                RepairTotalStatus.Text = e.ActivityAll;
+                RepairTotalProgressBar.IsIndeterminate = e.IsProgressAllIndetermined;
                 RepairPerFileProgressBar.IsIndeterminate = e.IsProgressPerFileIndetermined;
             });
         }
@@ -175,7 +175,7 @@
             DispatcherQueue?.TryEnqueue(() =>
             {
                 RepairPerFileProgressBar.Value = e.ProgressPerFilePercentage;
-                RepairTotalProgressBar.Value = e.ProgressTotalPercentage;
+                RepairTotalProgressBar.Value = e.ProgressAllPercentage;
             });
         }
 

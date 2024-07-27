@@ -162,8 +162,8 @@
                 CachesDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
                 CachesStatus.Text = e.ActivityStatus;
 
-                CachesTotalStatus.Text = e.ActivityTotal;
-                CachesTotalProgressBar.IsIndeterminate = e.IsProgressTotalIndetermined;
+                CachesTotalStatus.Text = e.ActivityAll;
+                CachesTotalProgressBar.IsIndeterminate = e.IsProgressAllIndetermined;
             });
         }
 
@@ -171,7 +171,7 @@
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
-                CachesTotalProgressBar.Value = e.ProgressTotalPercentage;
+                CachesTotalProgressBar.Value = e.ProgressAllPercentage;
             });
         }
 
