@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
+    "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
 
@@ -527,6 +528,7 @@
     "TimeRemainHMSFormat": "あと{0:%h}時間 {0:%m}分 {0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "あと--時間 --分 --秒",
     "Speed": "速度: {0}/秒",
+    "SpeedTextOnly": "速度",
     "SpeedPerSec": "{0}/秒",
     "SpeedPlaceholder": "速度: - /秒",
     "PerFromTo": "{0} / {1}",
@@ -577,6 +579,9 @@
     "LangNameKR": "韓国語",
 
     "Downloading": "ダウンロード中",
+    "Updating": "アップデート中",
+    "UpdatingAndApplying": "アップデート + パッチ中",
+    "Applying": "パッチ中",
     "Merging": "マージ中",
     "Idle": "待機",
     "Change": "変更",
@@ -1255,7 +1260,8 @@
     "TW/HK/MO": "台湾/香港/マカオ",
     "Korea": "韓国",
     "Japan": "日本",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
