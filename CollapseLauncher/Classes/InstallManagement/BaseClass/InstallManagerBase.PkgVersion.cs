@@ -149,6 +149,9 @@ namespace CollapseLauncher.InstallManager.Base
             LoadingMessageHelper.ShowLoadingFrame();
             try
             {
+                // Reset token
+                ResetStatusAndProgress();
+
                 // Initialize uninstall game property
                 _uninstallGameProperty ??= AssignUninstallFolders();
                 if (!_uninstallGameProperty.HasValue)
