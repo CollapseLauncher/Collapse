@@ -5,7 +5,9 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Microsoft.Win32;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -62,6 +64,9 @@ namespace CollapseLauncher.Helper.Metadata
     public class SophonChunkUrls
     {
         [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? BranchUrl { get; set; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? MainUrl { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
@@ -69,6 +74,106 @@ namespace CollapseLauncher.Helper.Metadata
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SdkUrl { get; set; }
+    }
+
+    internal static class PresetConfigExt
+    {
+        internal static string? AssociateGameAndLauncherId(this string? url, string? launcherId, string? gameId)
+        {
+            const string QueryLauncherIdHead = "launcher_id";
+            const string QueryGameIdHead = "game_ids[]";
+
+            if (string.IsNullOrEmpty(url))
+                return url;
+
+            if (string.IsNullOrEmpty(launcherId) || string.IsNullOrEmpty(gameId))
+                return url;
+
+            int urlLen = url.Length + (1 << 10);
+            bool isUseRent = urlLen > 4 << 10;
+            char[] urlBuffer = isUseRent ? ArrayPool<char>.Shared.Rent(urlLen) : new char[urlLen];
+            Span<char> urlSpanBuffer = urlBuffer;
+            ReadOnlySpan<char> urlSpan = url;
+
+            try
+            {
+                int urlSpanBufferLen = 0;
+                Span<Range> splitRanges = stackalloc Range[32];
+                int urlSplitRangesLen = urlSpan.Split(splitRanges, '?', StringSplitOptions.RemoveEmptyEntries);
+                if (urlSplitRangesLen < 2)
+                    return url;
+
+                ReadOnlySpan<char> urlPathSpan = urlSpan[splitRanges[0]];
+                ReadOnlySpan<char> querySpan = urlSpan[splitRanges[1]];
+
+                if (!urlPathSpan.TryCopyTo(urlSpanBuffer))
+                    throw new InvalidOperationException("Failed to copy url path string to buffer");
+                urlSpanBufferLen += splitRanges[0].End.Value - splitRanges[0].Start.Value;
+                urlSpanBuffer[urlSpanBufferLen++] = '?';
+
+                #region Parse and split queries - Sanitize the GameId and LauncherId query
+                int querySplitRangesLen = querySpan.Split(splitRanges, '&', StringSplitOptions.RemoveEmptyEntries);
+                int queryWritten = 0;
+                Span<char> querySpanBuffer = urlSpanBuffer.Slice(urlSpanBufferLen);
+                for (int i = querySplitRangesLen - 1; i > -1; i--)
+                {
+                    Range segmentRange = splitRanges[i];
+                    int segmentLen = segmentRange.End.Value - segmentRange.Start.Value;
+                    ReadOnlySpan<char> querySegment = querySpan[segmentRange];
+
+                    // Skip GameId or LauncherId query head
+                    if (querySegment.StartsWith(QueryLauncherIdHead, StringComparison.OrdinalIgnoreCase)
+                     || querySegment.StartsWith(QueryGameIdHead, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // Otherwise, add others
+                    if (!querySegment.TryCopyTo(querySpanBuffer.Slice(queryWritten)))
+                        throw new InvalidOperationException("Failed to copy query string to buffer");
+                    queryWritten += segmentLen;
+
+                    // Add trailing
+                    if (i > 0) querySpanBuffer[queryWritten++] = '&';
+                }
+
+                // Append '&'
+                if (queryWritten > 0 && querySpanBuffer[queryWritten - 1] != '&'
+                    && querySpanBuffer[queryWritten - 1] != '?')
+                    querySpanBuffer[queryWritten++] = '&';
+
+                urlSpanBufferLen += queryWritten;
+                #endregion
+
+                #region Append GameId and LauncherId query
+                if (!QueryLauncherIdHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy launcher id head string to buffer");
+                urlSpanBufferLen += QueryLauncherIdHead.Length;
+                urlSpanBuffer[urlSpanBufferLen++] = '=';
+                if (!launcherId.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy launcher id value string to buffer");
+                urlSpanBufferLen += launcherId.Length;
+
+                urlSpanBuffer[urlSpanBufferLen++] = '&';
+
+                if (!QueryGameIdHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy game id head string to buffer");
+                urlSpanBufferLen += QueryGameIdHead.Length;
+                urlSpanBuffer[urlSpanBufferLen++] = '=';
+                if (!gameId.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy game id value string to buffer");
+                urlSpanBufferLen += gameId.Length;
+
+                string returnString = new string(urlBuffer, 0, urlSpanBufferLen);
+#if DEBUG
+                LogWriteLine($"URL string's GameId and LauncherId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
+#endif
+                return returnString;
+                #endregion
+            }
+            finally
+            {
+                if (isUseRent) ArrayPool<char>.Shared.Return(urlBuffer);
+            }
+        }
     }
 
     internal class PresetConfig
@@ -138,25 +243,51 @@ namespace CollapseLauncher.Helper.Metadata
         public string? GameName { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherId { get; init; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGameId { get; init; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherBizName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherSpriteURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? LauncherGameInfoDisplayURL { get; init; }
-
-        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherSpriteURLMultiLangFallback { get; init; }
 
+        private string? _launcherPluginURL;
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? LauncherPluginURL { get; init; }
+        public string? LauncherPluginURL
+        {
+            get => _launcherPluginURL;
+            init => _launcherPluginURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+        }
 
+        private string? _launcherResourceURL;
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? LauncherResourceURL { get; init; }
+        public string? LauncherResourceURL
+        {
+            get => _launcherResourceURL;
+            init => _launcherResourceURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+        }
 
+        private string? _launcherGameChannelSDKURL;
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? LauncherGameChannelSDKURL { get; init; }
+        public string? LauncherGameChannelSDKURL
+        {
+            get => _launcherGameChannelSDKURL;
+            init => _launcherGameChannelSDKURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+        }
+
+        private string? _launcherGameInfoDisplayURL;
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGameInfoDisplayURL
+        {
+            get => _launcherGameInfoDisplayURL;
+            init => _launcherGameInfoDisplayURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+        }
 
         public SophonChunkUrls? LauncherResourceChunksURL { get; init; }
 
