@@ -168,7 +168,7 @@ namespace CollapseLauncher.Pages
                     {
                         fileInfoN.IsReadOnly = false;
                         if (isToRecycleBin) 
-                            InvokeProp.MoveFileToRecycleBin(fileInfoN.FullName);
+                            await Task.Run(() => InvokeProp.MoveFileToRecycleBin(fileInfoN.FullName));
                         else
                             fileInfoN.Delete();
                     }
