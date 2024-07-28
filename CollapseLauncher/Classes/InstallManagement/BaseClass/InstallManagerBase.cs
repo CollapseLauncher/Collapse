@@ -126,8 +126,11 @@ namespace CollapseLauncher.InstallManager.Base
                         return;
                     }
 
-                    fileInfo.IsReadOnly = false;
-                    fileInfo.Delete();
+                    if (fileInfo.Exists)
+                    {
+                        fileInfo.IsReadOnly = false;
+                        fileInfo.Delete();
+                    }
                 }
                 catch (Exception ex)
                 {
