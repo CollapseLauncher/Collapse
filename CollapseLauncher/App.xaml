@@ -1,4 +1,4 @@
-﻿<Application x:Class="CollapseLauncher.App"
+<Application x:Class="CollapseLauncher.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -456,8 +456,8 @@
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
                                           FallbackColor="#CCEEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.7"
-                                          TintOpacity="0.0"/>
+                                          TintLuminosityOpacity="0.6"
+                                          TintOpacity="0"/>
                             <AcrylicBrush x:Key="WebView2GridBackground"
                                           FallbackColor="#EEEAEAEA"
                                           TintColor="#FFFFFF"
@@ -527,7 +527,7 @@
                                                  StartPoint="0,0"
                                                  EndPoint="0.15,0">
                                 <GradientStop Offset="0"
-                                              Color="#66FFFFFF"/>
+                                              Color="#44FFFFFF"/>
                                 <GradientStop Offset="1"
                                               Color="#00FFFFFF"/>
                             </LinearGradientBrush>
