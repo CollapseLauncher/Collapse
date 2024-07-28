@@ -1,5 +1,7 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
@@ -7,12 +9,14 @@ using Microsoft.Win32;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 
 #nullable enable
@@ -63,6 +67,10 @@ namespace CollapseLauncher.Helper.Metadata
 
     public class SophonChunkUrls
     {
+        private bool IsReassociated = false;
+        private const string QueryPackageIdHead = "package_id";
+        private const string QueryPasswordHead = "password";
+
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BranchUrl { get; set; }
 
@@ -74,19 +82,81 @@ namespace CollapseLauncher.Helper.Metadata
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SdkUrl { get; set; }
+
+        public async ValueTask EnsureReassociated(HttpClient client, string? branchUrl, string bizName, CancellationToken token)
+        {
+            if (IsReassociated)
+                return;
+
+            if (string.IsNullOrEmpty(branchUrl))
+                return;
+
+            // Fetch branch info
+            ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
+                async innerToken =>
+                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(branchUrl, InternalAppJSONContext.Default, innerToken);
+
+            HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await hypLauncherBranchCallback.WaitForRetryAsync(
+                LauncherApiBase.ExecutionTimeout,
+                LauncherApiBase.ExecutionTimeoutStep,
+                LauncherApiBase.ExecutionTimeoutAttempt,
+                null, token);
+
+            // If branch info is null or empty, return
+            HoYoPlayGameInfoBranch? branch = hypLauncherBranchInfo?
+                .GameInfoData?
+                .GameBranchesInfo?
+                .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(bizName) ?? false);
+            if (branch == null)
+                return;
+
+            // Re-associate url if main field is exist
+            if (branch.GameMainField != null)
+            {
+                ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.PackageId);
+                ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.Password);
+
+                string packageIdValue = branch.GameMainField.PackageId;
+                string passwordValue = branch.GameMainField.Password;
+
+                MainUrl = MainUrl.AssociateGameAndLauncherId(
+                    QueryPasswordHead,
+                    QueryPackageIdHead,
+                    passwordValue,
+                    packageIdValue);
+            }
+
+            // Re-associate url if preload field is exist
+            if (branch.GamePreloadField != null)
+            {
+                ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.PackageId);
+                ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.Password);
+
+                string packageIdValue = branch.GamePreloadField.PackageId;
+                string passwordValue = branch.GamePreloadField.Password;
+
+                PreloadUrl = MainUrl.AssociateGameAndLauncherId(
+                    QueryPasswordHead,
+                    QueryPackageIdHead,
+                    passwordValue,
+                    packageIdValue);
+            }
+
+            // Mark as re-associated
+            IsReassociated = true;
+        }
     }
 
     internal static class PresetConfigExt
     {
-        internal static string? AssociateGameAndLauncherId(this string? url, string? launcherId, string? gameId)
+        internal static string? AssociateGameAndLauncherId(this string? url,
+            string launcherIdOrPasswordHead, string gameIdOrGamePackageIdHead,
+            string? launcherIdOrPassword, string? gameIdOrGamePackageId)
         {
-            const string QueryLauncherIdHead = "launcher_id";
-            const string QueryGameIdHead = "game_ids[]";
-
             if (string.IsNullOrEmpty(url))
                 return url;
 
-            if (string.IsNullOrEmpty(launcherId) || string.IsNullOrEmpty(gameId))
+            if (string.IsNullOrEmpty(launcherIdOrPassword) || string.IsNullOrEmpty(gameIdOrGamePackageId))
                 return url;
 
             int urlLen = url.Length + (1 << 10);
@@ -122,8 +192,8 @@ namespace CollapseLauncher.Helper.Metadata
                     ReadOnlySpan<char> querySegment = querySpan[segmentRange];
 
                     // Skip GameId or LauncherId query head
-                    if (querySegment.StartsWith(QueryLauncherIdHead, StringComparison.OrdinalIgnoreCase)
-                     || querySegment.StartsWith(QueryGameIdHead, StringComparison.OrdinalIgnoreCase))
+                    if (querySegment.StartsWith(launcherIdOrPasswordHead, StringComparison.OrdinalIgnoreCase)
+                     || querySegment.StartsWith(gameIdOrGamePackageIdHead, StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     // Otherwise, add others
@@ -144,27 +214,27 @@ namespace CollapseLauncher.Helper.Metadata
                 #endregion
 
                 #region Append GameId and LauncherId query
-                if (!QueryLauncherIdHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
-                    throw new InvalidOperationException("Failed to copy launcher id head string to buffer");
-                urlSpanBufferLen += QueryLauncherIdHead.Length;
+                if (!launcherIdOrPasswordHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy launcher id or password head string to buffer");
+                urlSpanBufferLen += launcherIdOrPasswordHead.Length;
                 urlSpanBuffer[urlSpanBufferLen++] = '=';
-                if (!launcherId.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
-                    throw new InvalidOperationException("Failed to copy launcher id value string to buffer");
-                urlSpanBufferLen += launcherId.Length;
+                if (!launcherIdOrPassword.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy launcher id or password value string to buffer");
+                urlSpanBufferLen += launcherIdOrPassword.Length;
 
                 urlSpanBuffer[urlSpanBufferLen++] = '&';
 
-                if (!QueryGameIdHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
-                    throw new InvalidOperationException("Failed to copy game id head string to buffer");
-                urlSpanBufferLen += QueryGameIdHead.Length;
+                if (!gameIdOrGamePackageIdHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy game id or package id head string to buffer");
+                urlSpanBufferLen += gameIdOrGamePackageIdHead.Length;
                 urlSpanBuffer[urlSpanBufferLen++] = '=';
-                if (!gameId.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
-                    throw new InvalidOperationException("Failed to copy game id value string to buffer");
-                urlSpanBufferLen += gameId.Length;
+                if (!gameIdOrGamePackageId.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                    throw new InvalidOperationException("Failed to copy game id or package id value string to buffer");
+                urlSpanBufferLen += gameIdOrGamePackageId.Length;
 
                 string returnString = new string(urlBuffer, 0, urlSpanBufferLen);
 #if DEBUG
-                LogWriteLine($"URL string's GameId and LauncherId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
+                LogWriteLine($"URL string's GameId or Password and LauncherId or PackageId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
 #endif
                 return returnString;
                 #endregion
@@ -179,14 +249,14 @@ namespace CollapseLauncher.Helper.Metadata
     internal class PresetConfig
     {
         #region Constants
-
         // ReSharper disable once UnusedMember.Local
         private const string PrefixRegInstallLocation =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
 
         private const string PrefixRegGameConfig       = "Software\\{0}\\{1}";
         private const string PrefixDefaultProgramFiles = "{1}Program Files\\{0}";
-
+        private const string QueryLauncherIdHead       = "launcher_id";
+        private const string QueryGameIdHead           = "game_ids[]";
         #endregion
 
         #region Config Propeties
@@ -262,7 +332,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherPluginURL
         {
             get => _launcherPluginURL;
-            init => _launcherPluginURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+            init => _launcherPluginURL = value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
         }
 
         private string? _launcherResourceURL;
@@ -270,7 +340,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherResourceURL
         {
             get => _launcherResourceURL;
-            init => _launcherResourceURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+            init => _launcherResourceURL = value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
         }
 
         private string? _launcherGameChannelSDKURL;
@@ -278,7 +348,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherGameChannelSDKURL
         {
             get => _launcherGameChannelSDKURL;
-            init => _launcherGameChannelSDKURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+            init => _launcherGameChannelSDKURL = value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
         }
 
         private string? _launcherGameInfoDisplayURL;
@@ -286,10 +356,24 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherGameInfoDisplayURL
         {
             get => _launcherGameInfoDisplayURL;
-            init => _launcherGameInfoDisplayURL = value.AssociateGameAndLauncherId(LauncherId, LauncherGameId);
+            init => _launcherGameInfoDisplayURL = value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
         }
 
-        public SophonChunkUrls? LauncherResourceChunksURL { get; init; }
+        private SophonChunkUrls? _launcherResourceChunksURL;
+        public SophonChunkUrls? LauncherResourceChunksURL
+        {
+            get => _launcherResourceChunksURL;
+            init
+            {
+                _launcherResourceChunksURL = value;
+                if (!string.IsNullOrEmpty(_launcherResourceChunksURL?.BranchUrl))
+                {
+                    string branchUrl = _launcherResourceChunksURL.BranchUrl;
+                    _launcherResourceChunksURL.BranchUrl = branchUrl
+                        .AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
+                }
+            }
+        }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherNewsURL { get; init; }

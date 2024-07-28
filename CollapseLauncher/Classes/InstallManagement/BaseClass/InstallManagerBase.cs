@@ -694,6 +694,24 @@ namespace CollapseLauncher.InstallManager.Base
                 if (_gameVersionManager.GamePreset
                                        .LauncherResourceChunksURL != null)
                 {
+#nullable enable
+                    // Reassociate the URL if branch url exist
+                    string? branchUrl = _gameVersionManager.GamePreset
+                                       .LauncherResourceChunksURL
+                                       .BranchUrl;
+                    if (!string.IsNullOrEmpty(branchUrl)
+                     && !string.IsNullOrEmpty(_gameVersionManager.GamePreset.LauncherBizName))
+                    {
+                        await _gameVersionManager.GamePreset
+                                           .LauncherResourceChunksURL
+                                           .EnsureReassociated(
+                                                httpClient,
+                                                branchUrl,
+                                                _gameVersionManager.GamePreset.LauncherBizName,
+                                                _token.Token);
+                    }
+#nullable restore
+
 #if SIMULATEAPPLYPRELOAD
                     string requestedUrl = gameState switch
                     {
@@ -887,6 +905,24 @@ namespace CollapseLauncher.InstallManager.Base
                 GameVersion? requestedVersionFrom = _gameVersionManager!.GetGameExistingVersion();
                 if (_gameVersionManager.GamePreset.LauncherResourceChunksURL != null)
                 {
+#nullable enable
+                    // Reassociate the URL if branch url exist
+                    string? branchUrl = _gameVersionManager.GamePreset
+                                       .LauncherResourceChunksURL
+                                       .BranchUrl;
+                    if (!string.IsNullOrEmpty(branchUrl)
+                     && !string.IsNullOrEmpty(_gameVersionManager.GamePreset.LauncherBizName))
+                    {
+                        await _gameVersionManager.GamePreset
+                                           .LauncherResourceChunksURL
+                                           .EnsureReassociated(
+                                                httpClient,
+                                                branchUrl,
+                                                _gameVersionManager.GamePreset.LauncherBizName,
+                                                _token.Token);
+                    }
+#nullable restore
+
                     string requestedBaseUrlFrom = isPreloadMode ? _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl
                         : _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl;
 #if SIMULATEAPPLYPRELOAD
