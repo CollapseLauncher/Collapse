@@ -704,15 +704,18 @@ namespace CollapseLauncher.Extension
                 if (xamlRoot is Border borderParent)
                     xamlRoot = borderParent.Child is Grid grid ? grid : borderParent.Child.FindAscendant<Grid>();
 
-                (xamlRoot as Panel).Children.Add(shadowPanel);
-                Canvas.SetZIndex(shadowPanel, -1);
-                if (shadowPanel is not Panel)
-                    throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
+                if (xamlRoot is Panel panel)
+                {
+                    panel.Children.Add(shadowPanel);
+                    Canvas.SetZIndex(shadowPanel, -1);
+                    if (shadowPanel is not Panel)
+                        throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
 
-                if (xamlRoot == null || xamlRoot is not Panel)
-                    throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
+                    if (xamlRoot == null || xamlRoot is not Panel)
+                        throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
 
-                thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                    thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                }
             }
         }
 

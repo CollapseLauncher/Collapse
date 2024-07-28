@@ -418,6 +418,8 @@ namespace CollapseLauncher.Pages
             Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
             Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
 
+            ElementScaleOutHoveredPointerEnteredInner(iconGrid, 0, -2);
+
             TimeSpan dur = TimeSpan.FromSeconds(0.25f);
             iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0.0f, delay: TimeSpan.FromSeconds(0.08f)));
             iconSecond.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
@@ -438,6 +440,8 @@ namespace CollapseLauncher.Pages
             Grid  iconGrid   = btn.FindDescendant<Grid>();
             Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
             Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+
+            ElementScaleInHoveredPointerExitedInner(iconGrid, 0, -2);
 
             TimeSpan dur = TimeSpan.FromSeconds(0.25f);
             iconFirst.StartAnimationDetached(dur, iconFirst.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1.0f));
@@ -2758,50 +2762,62 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void ElementScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
+        private void ElementScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (sender is FrameworkElement elementPanel)
             {
-                Compositor compositor = this.GetElementCompositor();
-
-                float toScale = 1.05f;
-                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
-                // ReSharper disable ConstantConditionalAccessQualifier
-                // ReSharper disable ConstantNullCoalescingCondition
-                Vector3 toTranslate = new Vector3(-((float)(elementPanel?.ActualWidth ?? 0) * (toScale - 1f) / 2),
-                                                  -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -4,
-                                                  elementPanel.Translation.Z);
-                // ReSharper restore ConstantConditionalAccessQualifier
-                // ReSharper restore ConstantNullCoalescingCondition
-                await elementPanel.StartAnimation(
-                    TimeSpan.FromSeconds(0.25),
-                    compositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate),
-                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale))
-                    );
+                ElementScaleOutHoveredPointerEnteredInner(elementPanel);
             }
         }
 
-        private async void ElementScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
+        private async void ElementScaleOutHoveredPointerEnteredInner(FrameworkElement element,
+            float xElevation = 0, float yElevation = -4)
+        {
+            Compositor compositor = this.GetElementCompositor();
+
+            float toScale = 1.05f;
+            Vector3 fromTranslate = new Vector3(0, 0, element.Translation.Z);
+            // ReSharper disable ConstantConditionalAccessQualifier
+            // ReSharper disable ConstantNullCoalescingCondition
+            Vector3 toTranslate = new Vector3(-((float)(element?.ActualWidth ?? 0) * (toScale - 1f) / 2) + xElevation,
+                                              -((float)(element?.ActualHeight ?? 0) * (toScale - 1f)) + yElevation,
+                                              element.Translation.Z);
+            // ReSharper restore ConstantConditionalAccessQualifier
+            // ReSharper restore ConstantNullCoalescingCondition
+            await element.StartAnimation(
+                TimeSpan.FromSeconds(0.25),
+                compositor.CreateVector3KeyFrameAnimation("Translation", toTranslate, fromTranslate),
+                compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(toScale))
+                );
+        }
+
+        private void ElementScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
         {
             if (sender is FrameworkElement elementPanel)
             {
-                Compositor compositor = this.GetElementCompositor();
-
-                float toScale = 1.05f;
-                // ReSharper disable ConstantConditionalAccessQualifier
-                // ReSharper disable ConstantNullCoalescingCondition
-                Vector3 fromTranslate = new Vector3(0, 0, elementPanel.Translation.Z);
-                Vector3 toTranslate = new Vector3(-((float)(elementPanel?.ActualWidth ?? 0) * (toScale - 1f) / 2),
-                                                  -((float)(elementPanel?.ActualHeight ?? 0) * (toScale - 1f)) + -4,
-                                                  elementPanel.Translation.Z);
-                // ReSharper restore ConstantConditionalAccessQualifier
-                // ReSharper restore ConstantNullCoalescingCondition
-                await elementPanel.StartAnimation(
-                    TimeSpan.FromSeconds(0.25),
-                    compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
-                    compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
-                    );
+                ElementScaleInHoveredPointerExitedInner(elementPanel);
             }
+        }
+
+        private async void ElementScaleInHoveredPointerExitedInner(FrameworkElement element,
+            float xElevation = 0, float yElevation = -4)
+        {
+            Compositor compositor = this.GetElementCompositor();
+
+            float toScale = 1.05f;
+            // ReSharper disable ConstantConditionalAccessQualifier
+            // ReSharper disable ConstantNullCoalescingCondition
+            Vector3 fromTranslate = new Vector3(0, 0, element.Translation.Z);
+            Vector3 toTranslate = new Vector3(-((float)(element?.ActualWidth ?? 0) * (toScale - 1f) / 2) + xElevation,
+                                              -((float)(element?.ActualHeight ?? 0) * (toScale - 1f)) + yElevation,
+                                              element.Translation.Z);
+            // ReSharper restore ConstantConditionalAccessQualifier
+            // ReSharper restore ConstantNullCoalescingCondition
+            await element.StartAnimation(
+                TimeSpan.FromSeconds(0.25),
+                compositor.CreateVector3KeyFrameAnimation("Translation", fromTranslate, toTranslate),
+                compositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(1.0f))
+                );
         }
 
         private async void SpawnPreloadDialogBox()

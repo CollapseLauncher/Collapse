@@ -347,7 +347,7 @@
                        Margin="-2,-2,0,-2"
                        VerticalAlignment="Stretch"
                        Opacity="0.8"
-                       Source="ms-appx:///Assets/CollapseLauncherLogo.png">
+                       Source="{ThemeResource AppLogo}">
                     <Image.OpacityTransition>
                         <ScalarTransition />
                     </Image.OpacityTransition>
