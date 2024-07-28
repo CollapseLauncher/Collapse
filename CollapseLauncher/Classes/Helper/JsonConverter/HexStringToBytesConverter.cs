@@ -21,7 +21,7 @@ namespace CollapseLauncher.Helper.JsonConverter
 
             int bufferAllocLen = charSpan.Length >> 1;
             bool useRent = charSpan.Length <= 64 << 10;
-            byte[] returnBuffer = GC.AllocateUninitializedArray<byte>(bufferAllocLen);
+            byte[] returnBuffer = GC.AllocateUninitializedArray<byte>(bufferAllocLen, true);
             char[] stringBuffer = useRent ? ArrayPool<char>.Shared.Rent(charSpan.Length) : new char[charSpan.Length];
 
             try
@@ -46,7 +46,7 @@ namespace CollapseLauncher.Helper.JsonConverter
                 throw new JsonException($"Bytes Array does not have an even length! (Length: {value.Length} characters)");
 
             int bufferAllocLen = value.Length << 1;
-            char[] stringBuffer = GC.AllocateUninitializedArray<char>(bufferAllocLen);
+            char[] stringBuffer = GC.AllocateUninitializedArray<char>(bufferAllocLen, true);
             if (!HexTool.TryBytesToHexUnsafe(value, stringBuffer))
                 throw new JsonException("Failed while converting bytes to hex");
 
