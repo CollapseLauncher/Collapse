@@ -501,7 +501,8 @@
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_2}"
                                                        TextWrapping="Wrap" />
                                             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" />
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
+                                                       Margin="0,16,0,0"/>
                                             <TextBlock Margin="0,8,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Thread}"
                                                        TextWrapping="Wrap" />
@@ -520,7 +521,8 @@
                                                      Text="0 - 64" />
                                             </TextBlock>
                                             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHttpNumberBox}" />
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHttpNumberBox}"
+                                                       Margin="0,16,0,0" />
                                             <TextBlock Margin="0,8,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Http}"
                                                        TextWrapping="Wrap" />
