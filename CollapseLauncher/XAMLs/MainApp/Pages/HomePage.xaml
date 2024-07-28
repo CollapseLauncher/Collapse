@@ -581,30 +581,33 @@
         <Grid x:Name="SidePanel"
               Grid.Row="1"
               Grid.Column="0"
-              Grid.ColumnSpan="2"
+              Grid.ColumnSpan="1"
+              Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
+              HorizontalAlignment="Left"
               VerticalAlignment="Bottom"
+              CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
-              PointerExited="SidePanelScaleInHoveredPointerExited">
+              PointerExited="SidePanelScaleInHoveredPointerExited"
+              Shadow="{ThemeResource SharedShadow}"
+              Translation="0,0,32">
             <Grid.RenderTransform>
                 <CompositeTransform />
             </Grid.RenderTransform>
             <StackPanel x:Name="ImageCarouselAndPostPanel"
-                        Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Bottom"
+                        VerticalAlignment="Stretch"
+                        Background="{ThemeResource PostAcrylicBrush}"
                         Orientation="Vertical">
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
                     <FlipView x:Name="ImageCarousel"
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
-                              MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}"
-                              Margin="0,0,0,0"
-                              HorizontalAlignment="Center"
-                              CornerRadius="8,8,0,0"
+                              HorizontalAlignment="Stretch"
+                              CornerRadius="4"
                               ItemsSource="{x:Bind GameNewsData.NewsCarousel}"
                               Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource CollapseFlipViewStyle}"
-                              Visibility="Collapsed">
+                              Translation="0,0,12">
                         <FlipView.ItemTemplate>
                             <DataTemplate>
                                 <imageex:ImageEx EnableLazyLoading="True"
@@ -625,7 +628,7 @@
                           Background="{ThemeResource CarouselPipsAcrylicBrush}"
                           CornerRadius="8,8,0,0"
                           Shadow="{ThemeResource SharedShadow}"
-                          Visibility="Collapsed">
+                          Translation="0,0,16">
                         <PipsPager VerticalAlignment="Center"
                                    NextButtonVisibility="Collapsed"
                                    NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
@@ -637,17 +640,13 @@
                 <Grid x:Name="PostPanel"
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
-                      Margin="0,0,0,-32"
                       Padding="8,6,8,0"
-                      Background="{ThemeResource PostAcrylicBrush}"
-                      CornerRadius="0,0,8,8"
-                      Shadow="{ThemeResource SharedShadow}"
-                      Visibility="Collapsed">
-                    <Pivot Margin="0,-12,-16,0"
+                      Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
+                    <Pivot Margin="0,-16,-16,0"
                            HorizontalAlignment="Left">
                         <PivotItem>
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
+                                <TextBlock Margin="0,0,0,-12"
                                            FontSize="14"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
@@ -699,12 +698,12 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Margin="0,-48,-48,0"
+                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostEventPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
-                                                   Margin="0,0,8,32"
+                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
@@ -714,6 +713,7 @@
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Source="{x:Bind NoNewsSplashMascot}" />
@@ -723,7 +723,7 @@
                         </PivotItem>
                         <PivotItem>
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
+                                <TextBlock Margin="0,0,0,-12"
                                            FontSize="14"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
@@ -775,12 +775,12 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Margin="0,-48,-48,0"
+                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostNoticePanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
-                                                   Margin="0,0,8,32"
+                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
@@ -790,6 +790,7 @@
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Source="{x:Bind NoNewsSplashMascot}" />
@@ -799,7 +800,7 @@
                         </PivotItem>
                         <PivotItem>
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
+                                <TextBlock Margin="0,0,0,-12"
                                            FontSize="14"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
@@ -851,12 +852,12 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Margin="0,-48,-48,0"
+                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostInfoPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
-                                                   Margin="0,0,8,32"
+                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
@@ -866,6 +867,7 @@
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Source="{x:Bind NoNewsSplashMascot}" />
@@ -1029,7 +1031,7 @@
                     <TextBlock FontSize="9"
                                FontWeight="Bold"
                                Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                               Text="Speed"
+                               Text="{x:Bind helper:Locale.Lang._Misc.SpeedTextOnly}"
                                TextAlignment="Center" />
                 </StackPanel>
                 <Grid Margin="0,2"
@@ -1155,10 +1157,33 @@
             </Grid>
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-                <TextBlock x:Name="ProgressStatusTitle"
-                           Margin="0,0,0,10"
-                           HorizontalAlignment="Center"
-                           Text="-" />
+                <Grid Margin="0,0,0,8"
+                      Padding="8,4"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      ColumnSpacing="6"
+                      CornerRadius="4"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon x:Name="ProgressStatusTitleIcon"
+                              HorizontalAlignment="Center"
+                              FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              FontWeight="Bold"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock x:Name="ProgressStatusTitle"
+                               Grid.Column="1"
+                               HorizontalAlignment="Center"
+                               FontSize="11"
+                               FontWeight="Medium"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="-" />
+                </Grid>
                 <TextBlock x:Name="ProgressStatusSubtitle"
                            HorizontalAlignment="Center"
                            Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
@@ -1170,12 +1195,44 @@
                                FontWeight="Bold"
                                Text="%" />
                 </StackPanel>
-                <TextBlock x:Name="ProgressStatusFooter"
-                           Margin="0,10,0,0"
-                           HorizontalAlignment="Center"
-                           FontSize="10"
-                           FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" />
+                <StackPanel Margin="0,4"
+                            Padding="4,2"
+                            HorizontalAlignment="Center"
+                            Background="{ThemeResource AccentColorBrush}"
+                            CornerRadius="4"
+                            Orientation="Horizontal"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Spacing="4"
+                            Translation="0,0,16"
+                            Visibility="Visible">
+                    <FontIcon Grid.Column="2"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="10"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock FontSize="9"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="{x:Bind helper:Locale.Lang._Misc.SpeedTextOnly}"
+                               TextAlignment="Center" />
+                </StackPanel>
+                <Grid Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MaxWidth="160" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              Glyph="" />
+                    <TextBlock x:Name="ProgressStatusFooter"
+                               Grid.Column="1"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="-"
+                               TextAlignment="Left" />
+                </Grid>
                 <TextBlock x:Name="ProgressTimeLeft"
                            HorizontalAlignment="Center"
                            FontSize="10"

@@ -420,7 +420,7 @@
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
                                           FallbackColor="#CCEEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.75"
+                                          TintLuminosityOpacity="0.6"
                                           TintOpacity="0"/>
                             <AcrylicBrush x:Key="WebView2GridBackground"
                                           FallbackColor="#EEEAEAEA"
@@ -490,7 +490,7 @@
                                                  StartPoint="0,0"
                                                  EndPoint="0.15,0">
                                 <GradientStop Offset="0"
-                                              Color="#2DFFFFFF"/>
+                                              Color="#44FFFFFF"/>
                                 <GradientStop Offset="1"
                                               Color="#00FFFFFF"/>
                             </LinearGradientBrush>
