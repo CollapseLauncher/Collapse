@@ -546,7 +546,7 @@
                             </Button>
                         </StackPanel>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.SophonToggle}"
-                                      IsOn="{x:Bind IsEnableSophon}"
+                                      IsOn="{x:Bind IsEnableSophon, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                         <StackPanel Margin="0,0,0,8"
