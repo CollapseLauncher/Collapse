@@ -18,6 +18,7 @@ namespace Hi3Helper
                 public string TimeRemainHMSFormatPlaceholder { get; set; } = LangFallback?._Misc.TimeRemainHMSFormatPlaceholder;
 
                 public string Speed                { get; set; } = LangFallback?._Misc.Speed;
+                public string SpeedTextOnly        { get; set; } = LangFallback?._Misc.SpeedTextOnly;
                 public string SpeedPerSec          { get; set; } = LangFallback?._Misc.SpeedPerSec;
                 public string SpeedPlaceholder     { get; set; } = LangFallback?._Misc.SpeedPlaceholder;
                 public string PerFromTo            { get; set; } = LangFallback?._Misc.PerFromTo;

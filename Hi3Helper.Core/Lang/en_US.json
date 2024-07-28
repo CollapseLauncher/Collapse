@@ -528,6 +528,7 @@
     "TimeRemainHMSFormat": "{0:%h}h{0:%m}m{0:%s}s left",
     "TimeRemainHMSFormatPlaceholder": "--h--m--s left",
     "Speed": "Speed: {0}/s",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Speed: - /s",
     "PerFromTo": "{0} / {1}",

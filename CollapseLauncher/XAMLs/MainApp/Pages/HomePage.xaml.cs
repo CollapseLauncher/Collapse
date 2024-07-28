@@ -177,8 +177,6 @@ namespace CollapseLauncher.Pages
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
-                    ImageCarousel.Translation += Shadow48;
-                    ImageCarouselPipsPager.Translation += Shadow16;
 
                     ShowEventsPanelToggle.IsEnabled = true;
                     PostPanel.Visibility = Visibility.Visible;
@@ -388,7 +386,7 @@ namespace CollapseLauncher.Pages
         private async void HideImageCarousel(bool hide)
         {
             if (!hide)
-                ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
+                SidePanel.Visibility = Visibility.Visible;
 
             HideImageEventImg(hide);
 
@@ -398,7 +396,7 @@ namespace CollapseLauncher.Pages
             OpacityAnimation.To       = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
-            Storyboard.SetTarget(OpacityAnimation, ImageCarouselAndPostPanel);
+            Storyboard.SetTarget(OpacityAnimation, SidePanel);
             Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
             storyboard.Children.Add(OpacityAnimation);
 
@@ -406,7 +404,7 @@ namespace CollapseLauncher.Pages
 
             await Task.Delay(100);
 
-            ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
+            SidePanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
         #endregion
 
