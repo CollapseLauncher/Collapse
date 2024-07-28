@@ -365,10 +365,11 @@ namespace CollapseLauncher.InstallManager.Base
 
             // 8th check: Ensure that the file is one of package files
             if (includeZipCheck && Regex.IsMatch(fileName,
-                @"(\.[0-9][0-9][0-9]|zip|7z|patch)$",
+                @"(\.\d\d\d|(zip|7z)|patch)|\.$",
                 RegexOptions.Compiled |
                 RegexOptions.NonBacktracking
-             )) return true;
+             ))
+                return true;
 
             // If all those matches failed, then return them as a non-game file
             return false;
