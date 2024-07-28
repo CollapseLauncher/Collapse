@@ -846,6 +846,7 @@ namespace CollapseLauncher.Pages
                     {
                         RepairGameButton.Visibility = RepairGameButtonVisible;
                         RepairGameButton.IsEnabled = false;
+                        CleanupFilesButton.IsEnabled = false;
                         UpdateGameBtn.Visibility = Visibility.Visible;
                         StartGameBtn.Visibility = Visibility.Collapsed;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
