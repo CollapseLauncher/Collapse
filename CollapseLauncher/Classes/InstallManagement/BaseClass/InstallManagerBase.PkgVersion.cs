@@ -157,6 +157,9 @@ namespace CollapseLauncher.InstallManager.Base
                 if (!_uninstallGameProperty.HasValue)
                     throw new NotSupportedException("Clean-up feature for this game is not yet supported!");
 
+                // Get game state
+                GameInstallStateEnum gameStateEnum = await _gameVersionManager.GetGameState();
+
                 // Do pkg_version check if Zip Check is used
                 if (includeZipCheck)
                 {
@@ -166,7 +169,6 @@ namespace CollapseLauncher.InstallManager.Base
                         Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
                     using Http client = new Http();
-                    GameInstallStateEnum gameStateEnum = await _gameVersionManager.GetGameState();
                     RegionResourceVersion? packageLatestBase = _gameVersionManager
                         .GetGameLatestZip(gameStateEnum).FirstOrDefault();
                     string? packageExtractBasePath = packageLatestBase?.decompressed_path;
@@ -221,7 +223,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get the list of the local file paths
                 List<LocalFileInfo> localFileInfo = new List<LocalFileInfo>();
-                await GetRelativeLocalFilePaths(localFileInfo, includeZipCheck, _token.Token);
+                await GetRelativeLocalFilePaths(localFileInfo, includeZipCheck, gameStateEnum, _token.Token);
 
                 // Get and filter the unused file from the pkg_versions
                 List<LocalFileInfo> unusedFileInfo = new List<LocalFileInfo>();
@@ -311,7 +313,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual bool IsCategorizedAsGameFile(FileInfo fileInfo, string gamePath, bool includeZipCheck, out LocalFileInfo localFileInfo)
+        protected virtual bool IsCategorizedAsGameFile(FileInfo fileInfo, string gamePath, bool includeZipCheck, GameInstallStateEnum gameState, out LocalFileInfo localFileInfo)
         {
             // Convert to LocalFileInfo and get the relative path
             localFileInfo = new LocalFileInfo(fileInfo, gamePath);
@@ -371,11 +373,17 @@ namespace CollapseLauncher.InstallManager.Base
              ))
                 return true;
 
+            // 9th check: Ensure that the file is Sophon Chunk file
+            // if game state is installed.
+            if (gameState == GameInstallStateEnum.Installed
+             && localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase))
+                return true;
+
             // If all those matches failed, then return them as a non-game file
             return false;
         }
 
-        protected virtual async Task GetRelativeLocalFilePaths(List<LocalFileInfo> localFileInfoList, bool includeZipCheck, CancellationToken token)
+        protected virtual async Task GetRelativeLocalFilePaths(List<LocalFileInfo> localFileInfoList, bool includeZipCheck, GameInstallStateEnum gameState, CancellationToken token)
         {
             await Task.Run(() =>
             {
@@ -395,7 +403,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                         // Do the check within the lambda function to possibly check the file
                         // condition in multithread
-                        if (IsCategorizedAsGameFile(fileInfo, gamePath, includeZipCheck, out LocalFileInfo localFileInfo))
+                        if (IsCategorizedAsGameFile(fileInfo, gamePath, includeZipCheck, gameState, out LocalFileInfo localFileInfo))
                         {
                             Interlocked.Add(ref totalSize, fileInfo.Exists ? fileInfo.Length : 0);
                             Interlocked.Increment(ref count);

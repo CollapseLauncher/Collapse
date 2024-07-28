@@ -3,6 +3,7 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -132,7 +133,7 @@ namespace CollapseLauncher.InstallManager.Honkai
         #endregion
 
         #region Override Methods - CleanUpGameFiles
-        protected override bool IsCategorizedAsGameFile(FileInfo fileInfo, string gamePath, bool includeZipCheck, out LocalFileInfo localFileInfo)
+        protected override bool IsCategorizedAsGameFile(FileInfo fileInfo, string gamePath, bool includeZipCheck, GameInstallStateEnum gameState, out LocalFileInfo localFileInfo)
         {
             // Convert to LocalFileInfo and get the relative path
             localFileInfo = new LocalFileInfo(fileInfo, gamePath);
@@ -180,10 +181,17 @@ namespace CollapseLauncher.InstallManager.Honkai
 
             // 7th check: Ensure that the file is one of package files
             if (includeZipCheck && Regex.IsMatch(fileName,
-                @"(\.[0-9][0-9][0-9]|zip|7z|patch)$",
+                @"(\.\d\d\d|(zip|7z)|patch)|\.$",
                 RegexOptions.Compiled |
                 RegexOptions.NonBacktracking
-             )) return true;
+             ))
+                return true;
+
+            // 8th check: Ensure that the file is Sophon Chunk file
+            // if game state is installed.
+            if (gameState == GameInstallStateEnum.Installed
+             && localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase))
+                return true;
 
             // If all those matches failed, then return them as a non-game file
             return false;
