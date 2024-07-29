@@ -2756,16 +2756,14 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Sanity Check: If the file is still missing even after the process, then throw
-                fileInfo = new FileInfo(inputPath);
-                if (!fileInfo.Exists)
+                var fileInfo = new FileInfo(inputPath);
+                if (fileInfo.Exists)
                 {
-                    throw new AccessViolationException($"File: {inputPath} isn't found!");
+                    // Move the file to the target directory
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.MoveTo(outputPath, true);
+                    LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
                 }
-
-                // Move the file to the target directory
-                fileInfo.IsReadOnly = false;
-                fileInfo.MoveTo(outputPath, true);
-                LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
             }
         }
 
