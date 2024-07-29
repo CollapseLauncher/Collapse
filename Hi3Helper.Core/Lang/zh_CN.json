@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "杂项",
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
+    "GameSettings_Panel4ShowPlaytimeButton": "显示游戏时间",
     "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
 
@@ -527,6 +528,7 @@
     "TimeRemainHMSFormat": "还剩{0:%h}时{0:%m}分{0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "还剩--时--分--秒",
     "Speed": "速度：{0}/s",
+    "SpeedTextOnly": "速度",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "速度：- /s",
     "PerFromTo": "{0} / {1}",
@@ -577,6 +579,9 @@
     "LangNameKR": "韩语",
 
     "Downloading": "下载中",
+    "Updating": "更新中",
+    "UpdatingAndApplying": "更新+应用中",
+    "Applying": "应用中",
     "Merging": "合并中",
     "Idle": "闲置",
     "Change": "更改",
