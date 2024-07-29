@@ -1190,8 +1190,6 @@ namespace CollapseLauncher
 
             IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty()._GameVersion;
 
-            FontFamily Fnt = FontCollections.FontAwesomeSolid;
-
             FontIcon IconLauncher = new FontIcon { Glyph = "" };
             FontIcon IconRepair = new FontIcon { Glyph = "" };
             FontIcon IconCaches = new FontIcon { Glyph = "" };

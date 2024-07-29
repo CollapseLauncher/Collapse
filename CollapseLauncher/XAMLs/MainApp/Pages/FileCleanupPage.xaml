@@ -86,7 +86,8 @@
                            Style="{ThemeResource TitleTextBlockStyle}"
                            Text="{x:Bind helper:Locale.Lang._FileCleanupPage.NoFilesToBeDeletedText}" />
             </Grid>
-            <ListView x:Name="ListViewTable"
+            <ListView Grid.Row="0"
+                      x:Name="ListViewTable"
                       IsMultiSelectCheckBoxEnabled="True"
                       ItemsSource="{x:Bind FileInfoSource}"
                       SelectionChanged="ListView_SelectionChanged"
@@ -157,7 +158,8 @@
                           Checked="ToggleCheckAll"
                           IsChecked="True"
                           Unchecked="ToggleCheckAll" />
-                <Button x:Name="DeleteSelectedFiles"
+                <Button Grid.Column="0"
+                        x:Name="DeleteSelectedFiles"
                         HorizontalAlignment="Right"
                         Click="DeleteSelectedFiles_Click">
                     <Button.Content>

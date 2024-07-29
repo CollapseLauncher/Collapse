@@ -1118,13 +1118,15 @@
                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="14"
                                           Glyph="" />
-                                <TextBlock Grid.Column="1"
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="1"
                                            Margin="0,0,8,0"
                                            VerticalAlignment="Center"
                                            FontSize="12"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator1}"
                                            TextWrapping="WrapWholeWords" />
                                 <FontIcon Grid.Row="1"
+                                          Grid.Column="0"
                                           VerticalAlignment="Center"
                                           FontFamily="{ThemeResource FontAwesome}"
                                           FontSize="14"

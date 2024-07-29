@@ -15,34 +15,38 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+// ReSharper disable CheckNamespace
+// ReSharper disable IdentifierTypo
+
 #nullable enable
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class FileCleanupPage : Page
+    public sealed partial class FileCleanupPage
     {
-        internal static FileCleanupPage? Current { get; set; }
-        internal ObservableCollection<LocalFileInfo> FileInfoSource = new ObservableCollection<LocalFileInfo>();
+        internal static FileCleanupPage?                    Current { get; set; }
+        internal        ObservableCollection<LocalFileInfo> FileInfoSource = [];
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public FileCleanupPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             Current = this;
             Loaded += (_, _) =>
-            {
-                foreach (LocalFileInfo asset in FileInfoSource)
-                    ListViewTable.SelectedItems.Add(asset);
+                      {
+                          foreach (LocalFileInfo asset in FileInfoSource)
+                          {
+                              ListViewTable.SelectedItems.Add(asset);
+                          }
 
-                FileInfoSource.CollectionChanged += UpdateUIOnCollectionChange;
-            };
+                          FileInfoSource.CollectionChanged += UpdateUIOnCollectionChange;
+                      };
         }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-        private bool? IsAllSelected;
-        private int SelectedAssetsCount;
-        private long AssetTotalSize;
-        private string AssetTotalSizeString = string.Empty;
-        private long AssetSelectedSize;
+        private int    _selectedAssetsCount;
+        private long   _assetTotalSize;
+        private string _assetTotalSizeString = string.Empty;
+        private long   _assetSelectedSize;
 
         public void InjectFileInfoSource(IEnumerable<LocalFileInfo> fileInfoList)
         {
@@ -50,72 +54,87 @@ namespace CollapseLauncher.Pages
             foreach (LocalFileInfo fileInfo in fileInfoList)
             {
                 FileInfoSource.Add(fileInfo);
-                AssetTotalSize += fileInfo.FileSize;
+                _assetTotalSize += fileInfo.FileSize;
             }
-            AssetTotalSizeString = ConverterTool.SummarizeSizeSimple(AssetTotalSize);
+
+            _assetTotalSizeString = ConverterTool.SummarizeSizeSimple(_assetTotalSize);
             UpdateUIOnCollectionChange(FileInfoSource, null);
         }
 
         private void UpdateUIOnCollectionChange(object? sender, NotifyCollectionChangedEventArgs? args)
         {
-            ObservableCollection<LocalFileInfo>? obj = (ObservableCollection<LocalFileInfo>?)sender;
-            int count = obj?.Count ?? 0;
-            bool isHasValue = count > 0;
-            ListViewTable.Opacity = isHasValue ? 1 : 0;
+            ObservableCollection<LocalFileInfo>? obj        = (ObservableCollection<LocalFileInfo>?)sender;
+            int                                  count      = obj?.Count ?? 0;
+            bool                                 isHasValue = count > 0;
+            ListViewTable.Opacity   = isHasValue ? 1 : 0;
             NoFilesTextGrid.Opacity = isHasValue ? 0 : 1;
 
             ToggleCheckAllCheckBox.IsEnabled = isHasValue;
-            DeleteAllFiles.IsEnabled = isHasValue;
-            DeleteSelectedFiles.IsEnabled = isHasValue && SelectedAssetsCount > 0;
+            DeleteAllFiles.IsEnabled         = isHasValue;
+            DeleteSelectedFiles.IsEnabled    = isHasValue && _selectedAssetsCount > 0;
         }
 
 
         private void ToggleCheckAll(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox checkBox)
+            if (sender is not CheckBox checkBox)
             {
-                bool toCheck = checkBox.IsChecked ?? false;
-                SelectAllToggle(toCheck);
+                return;
             }
+
+            bool toCheck = checkBox.IsChecked ?? false;
+            SelectAllToggle(toCheck);
         }
 
         private void SelectAllToggle(bool selectAll)
         {
             if (selectAll)
+            {
                 foreach (LocalFileInfo asset in FileInfoSource)
                 {
                     if (ListViewTable.SelectedItems.IndexOf(asset) < 0)
+                    {
                         ListViewTable.SelectedItems.Add(asset);
+                    }
                 }
+            }
             else
+            {
                 ListViewTable.SelectedItems.Clear();
+            }
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedAssetsCount -= e.RemovedItems.Count;
-            AssetSelectedSize -= e.RemovedItems.OfType<LocalFileInfo>().Sum(x => x.FileSize);
+            _selectedAssetsCount -= e.RemovedItems.Count;
+            _assetSelectedSize   -= e.RemovedItems.OfType<LocalFileInfo>().Sum(x => x.FileSize);
 
-            SelectedAssetsCount += e.AddedItems.Count;
-            AssetSelectedSize += e.AddedItems.OfType<LocalFileInfo>().Sum(x => x.FileSize);
+            _selectedAssetsCount += e.AddedItems.Count;
+            _assetSelectedSize   += e.AddedItems.OfType<LocalFileInfo>().Sum(x => x.FileSize);
 
-            ToggleCheckAllCheckBox.Content = SelectedAssetsCount > 0 ?
-                string.Format(Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
-                    SelectedAssetsCount, ConverterTool.SummarizeSizeSimple(AssetSelectedSize), AssetTotalSizeString) :
-                Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
-            DeleteSelectedFilesText.Text = string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, SelectedAssetsCount);
-            DeleteSelectedFiles.IsEnabled = SelectedAssetsCount > 0;
+            ToggleCheckAllCheckBox.Content = _selectedAssetsCount > 0
+                ? string.Format(Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
+                                _selectedAssetsCount, ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
+                                _assetTotalSizeString)
+                : Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
+            DeleteSelectedFilesText.Text =
+                string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, _selectedAssetsCount);
+            DeleteSelectedFiles.IsEnabled = _selectedAssetsCount > 0;
 
-            if (SelectedAssetsCount != 0 && SelectedAssetsCount != FileInfoSource.Count)
+            if (_selectedAssetsCount != 0 && _selectedAssetsCount != FileInfoSource.Count)
+            {
                 ToggleCheckAllCheckBox.IsChecked = null;
+            }
             else
-                ToggleCheckAllCheckBox.IsChecked = SelectedAssetsCount == FileInfoSource.Count;
+            {
+                ToggleCheckAllCheckBox.IsChecked = _selectedAssetsCount == FileInfoSource.Count;
+            }
         }
 
         private async void DeleteAllFiles_Click(object sender, RoutedEventArgs e)
         {
             IList<LocalFileInfo> fileInfoList = FileInfoSource
-                .ToList();
+               .ToList();
             long size = fileInfoList.Sum(x => x.FileSize);
             await PerformRemoval(fileInfoList, size);
         }
@@ -123,41 +142,52 @@ namespace CollapseLauncher.Pages
         private async void DeleteSelectedFiles_Click(object sender, RoutedEventArgs e)
         {
             IList<LocalFileInfo> fileInfoList = ListViewTable.SelectedItems
-                .OfType<LocalFileInfo>()
-                .ToList();
+                                                             .OfType<LocalFileInfo>()
+                                                             .ToList();
             long size = fileInfoList.Sum(x => x.FileSize);
             await PerformRemoval(fileInfoList, size);
         }
 
-        private async Task PerformRemoval(IList<LocalFileInfo> deletionSource, long totalSize)
+        private async Task PerformRemoval(ICollection<LocalFileInfo>? deletionSource, long totalSize)
         {
-            if (deletionSource == null) return;
+            if (deletionSource == null)
+            {
+                return;
+            }
 
-            TextBlock textBlockMsg = new TextBlock() {
-                TextAlignment = TextAlignment.Center,
-                TextWrapping = TextWrapping.WrapWholeWords
-            }.AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle1, true)
-             .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle2, deletionSource.Count), true, FontWeights.Medium)
-             .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle3, true)
-             .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle4, ConverterTool.SummarizeSizeSimple(totalSize)), FontWeights.Medium)
-             .AddTextBlockNewLine()
-             .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle5);
+            TextBlock textBlockMsg = new TextBlock
+                {
+                    TextAlignment = TextAlignment.Center,
+                    TextWrapping  = TextWrapping.WrapWholeWords
+                }.AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle1, true)
+                 .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle2, deletionSource.Count),
+                                   true, FontWeights.Medium)
+                 .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle3, true)
+                 .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle4, ConverterTool.SummarizeSizeSimple(totalSize)),
+                                   FontWeights.Medium)
+                 .AddTextBlockNewLine()
+                 .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle5);
 
             ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
-                Locale.Lang._FileCleanupPage.DialogDeletingFileTitle,
-                textBlockMsg,
-                this,
-                Locale.Lang._Misc.NoCancel,
-                Locale.Lang._Misc.YesContinue,
-                Locale.Lang._FileCleanupPage.DialogMoveToRecycleBin,
-                ContentDialogButton.Close,
-                ContentDialogTheme.Warning);
-            
-            int  deleteSuccess = 0;
-            int  deleteFailed  = 0;
+                                                                               Locale.Lang._FileCleanupPage
+                                                                                  .DialogDeletingFileTitle,
+                                                                               textBlockMsg,
+                                                                               this,
+                                                                               Locale.Lang._Misc.NoCancel,
+                                                                               Locale.Lang._Misc.YesContinue,
+                                                                               Locale.Lang._FileCleanupPage
+                                                                                  .DialogMoveToRecycleBin,
+                                                                               ContentDialogButton.Close,
+                                                                               ContentDialogTheme.Warning);
+
+            int deleteSuccess = 0;
+            int deleteFailed  = 0;
 
             bool isToRecycleBin = dialogResult == ContentDialogResult.Secondary;
-            if (dialogResult == ContentDialogResult.None) return;
+            if (dialogResult == ContentDialogResult.None)
+            {
+                return;
+            }
 
             foreach (LocalFileInfo fileInfo in deletionSource)
             {
@@ -167,10 +197,14 @@ namespace CollapseLauncher.Pages
                     if (fileInfoN.Exists)
                     {
                         fileInfoN.IsReadOnly = false;
-                        if (isToRecycleBin) 
+                        if (isToRecycleBin)
+                        {
                             await Task.Run(() => InvokeProp.MoveFileToRecycleBin(fileInfoN.FullName));
+                        }
                         else
+                        {
                             fileInfoN.Delete();
+                        }
                     }
 
                     FileInfoSource.Remove(fileInfo);
@@ -187,17 +221,22 @@ namespace CollapseLauncher.Pages
             string diagTitle = dialogResult == ContentDialogResult.Primary
                 ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
                 : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
-                
+
             await SimpleDialogs.SpawnDialog(diagTitle,
-                string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1, deleteSuccess)
-                + (deleteFailed == 0 ? string.Empty :
-                   ' ' + string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2, deleteFailed)),
-                this,
-                Locale.Lang._Misc.OkayHappy,
-                null,
-                null,
-                ContentDialogButton.Close,
-                ContentDialogTheme.Success);
+                                            string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1,
+                                                          deleteSuccess)
+                                            + (deleteFailed == 0
+                                                ? string.Empty
+                                                : ' ' +
+                                                  string
+                                                     .Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2,
+                                                             deleteFailed)),
+                                            this,
+                                            Locale.Lang._Misc.OkayHappy,
+                                            null,
+                                            null,
+                                            ContentDialogButton.Close,
+                                            ContentDialogTheme.Success);
         }
     }
 }
