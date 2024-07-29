@@ -2740,7 +2740,6 @@ namespace CollapseLauncher.InstallManager.Base
             }
             
             // Iterate the asset
-            FileInfo fileInfo;
             foreach (FilePropertiesRemote index in assetIndex)
             {
                 // Get the combined path from the asset name
