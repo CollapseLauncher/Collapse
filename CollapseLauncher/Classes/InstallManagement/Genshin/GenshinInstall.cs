@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
@@ -177,12 +177,13 @@ namespace CollapseLauncher.InstallManager.Genshin
         protected override UninstallGameProperty AssignUninstallFolders()
         {
             string execName = _gameVersionManager.GamePreset.ZoneName switch
-                              {
-                                  "Global" => "GenshinImpact",
-                                  "Mainland China" => "YuanShen",
-                                  _ => throw new
-                                      NotSupportedException($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}")
-                              };
+            {
+                "Global" => "GenshinImpact",
+                "Mainland China" => "YuanShen",
+                "Bilibili" => "YuanShen",
+                "Google Play" => "GenshinImpact",
+                _ => throw new NotSupportedException($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}")
+            };
 
             return new UninstallGameProperty
             {
