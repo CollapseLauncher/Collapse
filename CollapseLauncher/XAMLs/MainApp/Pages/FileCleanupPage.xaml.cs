@@ -72,6 +72,10 @@ namespace CollapseLauncher.Pages
             ToggleCheckAllCheckBox.IsEnabled = isHasValue;
             DeleteAllFiles.IsEnabled         = isHasValue;
             DeleteSelectedFiles.IsEnabled    = isHasValue && _selectedAssetsCount > 0;
+
+            ToggleCheckAllCheckBox.Visibility = isHasValue ? Visibility.Visible : Visibility.Collapsed;
+            DeleteSelectedFiles.Visibility    = isHasValue ? Visibility.Visible : Visibility.Collapsed;
+            DeleteAllFiles.Visibility         = isHasValue ? Visibility.Visible : Visibility.Collapsed;
         }
 
 

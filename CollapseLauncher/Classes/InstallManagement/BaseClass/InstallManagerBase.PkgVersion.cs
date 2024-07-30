@@ -259,7 +259,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 
                 if (ignoredFiles.Length > 0)
-                    LogWriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(",", ignoredFiles)}",
+                    LogWriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(", ", ignoredFiles)}",
                                  LogType.Scheme, true);
                 
                 // Get the list of the local file paths
