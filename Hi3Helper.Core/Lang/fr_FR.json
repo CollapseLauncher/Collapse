@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "Divers",
     "GameSettings_Panel4ShowEventsPanel": "Afficher le panneau des évènements",
     "GameSettings_Panel4ShowSocialMediaPanel": "Afficher le panneau des médias sociaux",
+    "GameSettings_Panel4ShowPlaytimeButton": "Afficher le compteur de temps de jeu",
     "GameSettings_Panel4CreateShortcutBtn": "Créer le raccourci",
     "GameSettings_Panel4AddToSteamBtn": "Ajouter à Steam",
 
@@ -174,7 +175,11 @@
     "CommunityToolsBtn_CommunityText": "Outils communautaires",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Sélectionnez l'emplacement de l'exécutable du programme : {0}",
 
-    "CreateShortcut_FolderPicker": "Sélectionnez où placer le raccourci"
+    "CreateShortcut_FolderPicker": "Sélectionnez où placer le raccourci",
+
+    "Exception_DownloadTimeout1": "Une requête n'a pas répondu à temps durant la tentative d'installation de {0}",
+    "Exception_DownloadTimeout2": "Veuillez vérifier la stabilité de votre connexion Internet. Si votre débit est lent, veuillez abaisser le nombre de threads de téléchargement.",
+    "Exception_DownloadTimeout3": "**ATTENTION** Modifier le nombre de threads de téléchargement aura pour conséquence de recommencer le téléchargement depuis le début, et vous devrez supprimer manuellement les anciens morceaux téléchargés !"
   },
 
   "_GameRepairPage": {
@@ -424,6 +429,20 @@
     "AppThreads_Help5": "Ce thread s'occupera du processus d'extraction/vérification lors de l'installation/réparation du jeu.",
     "AppThreads_Help6": "Note: Ce réglage n'est plus effectif lorsque Honkai Impact 3rd est en cours d'installation.",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
+
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Avant de modifier la valeur «",
     "AppThreads_Attention2": "», veuillez vous assurer de",
@@ -469,7 +488,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka et gablm",
     "About_Copyright3": "Sous",
     "About_Copyright4": ". Tous droits réservés.",
-    
+
     "LicenseType": "Licence MIT",
 
     "Disclaimer": "Clause de non-responsabilité",
@@ -523,6 +542,7 @@
     "TimeRemainHMSFormat": "{0:%h} h {0:%m} min {0:%s} sec restantes",
     "TimeRemainHMSFormatPlaceholder": "-- h -- min -- sec restantes",
     "Speed": "Vitesse : {0}/s",
+    "SpeedTextOnly": "Vitesse",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Vitesse : - /s",
     "PerFromTo": "{0} / {1}",
@@ -573,6 +593,9 @@
     "LangNameKR": "Coréen",
 
     "Downloading": "Téléchargement",
+    "Updating": "Mise à jour",
+    "UpdatingAndApplying": "MàJ & Application",
+    "Applying": "Application",
     "Merging": "Fusion",
     "Idle": "Inactif",
     "Change": "Changer",
@@ -1251,11 +1274,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Corée",
     "Japan": "Japon",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Accord :"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1295,7 +1345,7 @@
     "CDNCheckboxItemLatencyUnknownFormat": " (inconnu)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Recommandé]"
   },
-  
+
   "_ZenlessGameSettingsPage": {
     "Graphics_ColorFilter": "Intensité du filtre de couleurs",
     "Graphics_RenderRes": "Résolution du rendu",

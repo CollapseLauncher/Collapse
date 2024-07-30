@@ -67,8 +67,8 @@
     "Footer3": "чтобы попробовать снова.",
     "ShowErrorBtn": "Показать сообщение об ошибке",
     "GoToAppSettingsBtn": "Go to App Settings",
-    "GoBackOverlayFrameBtn": "Go Back",
-    "RegionChangerTitle": "Change the Game Region",
+    "GoBackOverlayFrameBtn": "Вернуться",
+    "RegionChangerTitle": "Сменить регион игры",
     "RegionChangerSubtitle": "In-case you're stuck in this page"
   },
 
@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Пауза/Отмена",
     "DownloadBtn": "Скачать игру",
 
+    "GameStatusPlaceholderComingSoonBtn": "Скоро",
+    "GameStatusPlaceholderPreRegisterBtn": "Предварительная регистрация доступна!",
+
     "GameSettingsBtn": "Быстрые Настройки",
     "GameSettings_Panel1": "Быстрые Настройки",
     "GameSettings_Panel1OpenGameFolder": "Открыть папку с игрой",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "Разное",
     "GameSettings_Panel4ShowEventsPanel": "Показать панель событий",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
+    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4CreateShortcutBtn": "Создать ярлык",
     "GameSettings_Panel4AddToSteamBtn": "Добавить в Steam",
 
@@ -171,7 +175,11 @@
     "CommunityToolsBtn_CommunityText": "Инструменты сообщества",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}",
 
-    "CreateShortcut_FolderPicker": "Выберите, где разместить ярлык"
+    "CreateShortcut_FolderPicker": "Выберите, где разместить ярлык",
+
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
   },
 
   "_GameRepairPage": {
@@ -266,7 +274,13 @@
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
     "Graphics_ResCustomW": "Ш",
     "Graphics_ResCustomH": "В",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "Максимальный FPS",
     "Graphics_FPSInCombat": "В бою",
     "Graphics_FPSInMenu": "Главное меню",
@@ -306,6 +320,7 @@
     "Graphics_Legacy_Subtitle": "Эти настройки не представлены в игре и могут не иметь никакого эффекта.",
 
     "SpecDisabled": "Отключено",
+    "SpecCustom": "Custom",
     "SpecLow": "Низкий",
     "SpecMedium": "Средний",
     "SpecHigh": "Высокий",
@@ -414,6 +429,20 @@
     "AppThreads_Help5": "Этот поток будет обрабатывать процесс извлечения/верификации во время установки/ремонта игры.",
     "AppThreads_Help6": "Примечание: Эта настройка во время установки Honkai Impact 3rd больше неэффективна.",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
+
     "AppThreads_Attention": "Внимание",
     "AppThreads_Attention1": "Перед тем как изменить",
     "AppThreads_Attention2": "значение, пожалуйста, подумайте о том, чтобы ",
@@ -459,7 +488,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\nshatyuka & gablm",
     "About_Copyright3": "защищённый",
     "About_Copyright4": "Все права защищены.",
-    
+
     "LicenseType": "лицензией MIT",
 
     "Disclaimer": "Дисклеймер",
@@ -513,6 +542,7 @@
     "TimeRemainHMSFormat": "осталось {0:%h}ч{0:%m}м{0:%s}с",
     "TimeRemainHMSFormatPlaceholder": "--ч--м--с осталось",
     "Speed": "Скорость: {0}/с",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/c",
     "SpeedPlaceholder": "Скорость: - /s",
     "PerFromTo": "{0} / {1}",
@@ -563,11 +593,14 @@
     "LangNameKR": "Корейский",
 
     "Downloading": "Загрузка",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "Объединение",
     "Idle": "В режиме ожидания",
     "Change": "Изменить",
     "Cancelled": "Отменено",
-    "FinishingUp": "Finishing Up",
+    "FinishingUp": "Завершение",
     "Extracting": "Распаковка",
     "Converting": "Конвертация",
     "Patching": "Патчинг",
@@ -607,6 +640,8 @@
     "DiscordRP_Default": "Нет активности",
     "DiscordRP_Ad": "С Collapse Лаунчера",
     "DiscordRP_Region": "Регион:",
+
+    "DownloadModeLabelSophon": "Sophon Mode",
 
     "Taskbar_PopupHelp1": "Нажмите, чтобы вывести Collapse на передний план",
     "Taskbar_PopupHelp2": "Нажмите дважды, чтобы переключить видимость окон",
@@ -1030,6 +1065,8 @@
     "Graphics_BloomQuality": "Качество растительности",
     "Graphics_AAMode": "Режим сглаживания",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "Общие настройки графики",
     "SpecEnabled": "Включено",
@@ -1237,11 +1274,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Кореи",
     "Japan": "Японии",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Соглашение:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1344,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} мс)",
     "CDNCheckboxItemLatencyUnknownFormat": " (неизвестно)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Рекомендуется]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

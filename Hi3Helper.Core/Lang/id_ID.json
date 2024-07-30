@@ -176,7 +176,7 @@
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Pilih Executable Program: {0}",
 
     "CreateShortcut_FolderPicker": "Pilih tempat untuk menyimpan pintasan",
-    
+
     "Exception_DownloadTimeout1": "Masa tenggang telah terjadi saat mencoba untuk memasang {0}",
     "Exception_DownloadTimeout2": "Pastikan internet kamu stabil! Coba turunkan thread unduhan apabila kamu punya koneksi lambat.",
     "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!"
@@ -429,6 +429,20 @@
     "AppThreads_Help5": "Utas ini akan bertanggungjawab untuk menangani utas-utas untuk proses ekstrak/verifikasi pada saat memasang/memulihkan game.",
     "AppThreads_Help6": "Catatan: Pengaturan ini tidak lagi berpengaruh pada saat memasang Honkai Impact 3.",
 
+    "SophonSettingsTitle": "Mode Setelan Sophon",
+    "SophonHelp_Title": "Apa itu Mode Unduhan Sophon?",
+    "SophonHelp_1": "\"Sophon\" adalah mekanisme unduhan yang diperkenalkan by HoYoverse, yang memperbolehkan file untuk diunduh dalam beberapa potongan \"chunk\" ketimbang diunduh dalam file .zip yang memiliki ukuran besar. Manfaat utamanya adalah rendahnya kebutuhan ruang disk yang dibutuhkan serta proses unduhan dan pembaruan yang lebih efisien.",
+    "SophonHelp_2": "Metode ini mungkin akan memakan waktu lebih lama apabila kamu menggunakan Hard Disk untuk penyimpanan game-mu.",
+    "SophonHelp_IndicatorTitle": "Ikon Indikator",
+    "SophonHelp_Indicator1": "Ukuran File untuk Ditulis pada Disk",
+    "SophonHelp_Indicator2": "Ukuran File untuk Diunduh",
+    "SophonHelp_Indicator3": "Kecepatan I/O Disk saat Menulis",
+    "SophonHelp_Indicator4": "Kecepatan I/O Jaringan saat Menulis",
+    "SophonHelp_Thread": "Bagian ini mengatur banyaknya chunks yang akan diunduh secara simultan secara bersamaan. Turunkan nilai ini apabila unduhan kamu macet.",
+    "SophonHttpNumberBox": "Jumlah Max. Koneksi HTTP",
+    "SophonHelp_Http": "Bagian ini mengatur banyaknya jumlah koneksi yang akan dipakai oleh Collapse saat mengunduh chunks secara bersamaan.",
+    "SophonToggle": "Gunakan Sophon pada Wilayah yang Didukung",
+
     "AppThreads_Attention": "Perhatian",
     "AppThreads_Attention1": "Sebelum kamu mengubah pengaturan",
     "AppThreads_Attention2": "dan apabila kamu masih memiliki download yang belum selesai, mohon untuk",
@@ -474,7 +488,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Di bawah lisensi",
     "About_Copyright4": ". Hak cipta dilindungi.",
-    
+
     "LicenseType": "Lisensi MIT",
 
     "Disclaimer": "Sanggahan",
@@ -1268,6 +1282,32 @@
     "AgreementTitle": "Perjanjian:"
   },
 
+  "_FileCleanupPage": {
+    "Title": "Pembersihan File",
+    "TopButtonRescan": "Periksa Ulang",
+    "NoFilesToBeDeletedText": "Tidak ada file yang perlu dihapus!",
+    "ListViewFieldFileName": "Nama File",
+    "ListViewFieldFileSize": "Ukuran File",
+    "LoadingTitle": "Memproses",
+    "LoadingSubtitle1": "Menghitung File yang Ada ({0} file ditemukan - dengan ukuran total {1})...",
+    "LoadingSubtitle2": "Memeriksa ketersediaan pkg_version...",
+    "BottomButtonDeleteAllFiles": "Hapus Semua File",
+    "BottomButtonDeleteSelectedFiles": "Hapus {0} File yang Dipilih",
+    "BottomCheckboxFilesSelected": "{0} File Terpilih ({1} / {2} Keseluruhan)",
+    "BottomCheckboxNoFileSelected": "Tidak Ada File yang Dipilih",
+    "DialogDeletingFileTitle": "Menghapus File",
+    "DialogDeletingFileSubtitle1": "Kamu akan",
+    "DialogDeletingFileSubtitle2": "menghapus {0} file",
+    "DialogDeletingFileSubtitle3": "dengan",
+    "DialogDeletingFileSubtitle4": "ukuran keseluruhan {0}.",
+    "DialogDeletingFileSubtitle5": "Apakah kamu yakin ingin menghapus file-file ini?",
+    "DialogDeleteSuccessTitle": "File Telah Terhapus!",
+    "DialogDeleteSuccessSubtitle1": "{0} file telah berhasil terhapus",
+    "DialogDeleteSuccessSubtitle2": "dengan {0} gagal terhapus",
+    "DialogMoveToRecycleBin": "Pindahkan ke Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "File telah dipindahkan ke Recycle Bin!"
+  },
+
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
       "Upper": [ "Selamat ", "Datang di" ],
@@ -1305,7 +1345,7 @@
     "CDNCheckboxItemLatencyUnknownFormat": "(Tidak diketahui)",
     "CDNCheckboxItemLatencyRecommendedFormat": "[Direkomendasikan]"
   },
-  
+
   "_ZenlessGameSettingsPage": {
     "Graphics_ColorFilter": "Penguatan Filter Warna",
     "Graphics_RenderRes": "Resolusi Render",

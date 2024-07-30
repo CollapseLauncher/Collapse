@@ -176,7 +176,7 @@
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "ツールの.exeファイル: {0}",
 
     "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択",
-    
+
     "Exception_DownloadTimeout1": "{0}のインストール中にタイムアウトが発生しました",
     "Exception_DownloadTimeout2": "インターネット接続の安定性を確認してみてください！回線速度が遅い場合は、ダウンロードスレッドの値を小さくしてください。",
     "Exception_DownloadTimeout3": "**警告** ダウンロードスレッドの値を変更すると、ダウンロードの進行度が0からになります。さらに、既存のダウンロードチャンクは手動で削除する必要があります！"
@@ -429,12 +429,19 @@
     "AppThreads_Help5": "このスレッドはゲームのインストール・修復中の解凍・整合性チェックプロセスを操作します。",
     "AppThreads_Help6": "注: 崩壊3rdのインストール中は、この設定が無効になります。",
 
-    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonSettingsTitle": "Sophonモードの設定",
     "SophonHelp_Title": "Sophonモードって何？",
     "SophonHelp_1": "Sophonとは、HoYoVerseが新しく導入したダウンロードシステムです。Sophonモードでは巨大なzipファイルをダウンロードする代わりに、ファイルを小さなチャンクに分割してダウンロードします。このモードを使うと必要なドライブの空き容量が減り、ダウンロードと更新がより効率的になります。",
+    "SophonHelp_2": "ゲームをHDDに保存している場合、Sophonモードを有効化するとダウンロード速度が逆に遅くなる可能性があります。",
+    "SophonHelp_IndicatorTitle": "アイコンの意味",
+    "SophonHelp_Indicator1": "ディスクに書き込むファイルサイズ",
+    "SophonHelp_Indicator2": "ダウンロードするファイルサイズ",
+    "SophonHelp_Indicator3": "書き込み時のディスクI/O速度",
+    "SophonHelp_Indicator4": "書き込み時のネットワークI/O速度",
     "SophonHelp_Thread": "Collapseが同時にダウンロードするチャンクの数を設定します。ゲームのダウンロード中にCollapseがクラッシュする場合は、この値を小さくしてください。",
     "SophonHttpNumberBox": "最大HTTP接続数",
     "SophonHelp_Http": "CollapseがチャンクをダウンロードするためにHoYoVerseのサーバーに対して確立するネットワーク接続の最大数を設定します。",
+    "SophonToggle": "サポート済みのゲームでSophonモードを使用する",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "既にダウンロード済みのパッケージがある場合は、",
@@ -481,7 +488,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
-    
+
     "LicenseType": "MIT License",
 
     "Disclaimer": "免責事項",
@@ -1275,6 +1282,32 @@
     "AgreementTitle": "利用規約："
   },
 
+  "_FileCleanupPage": {
+    "Title": "ファイル整理",
+    "TopButtonRescan": "再スキャン",
+    "NoFilesToBeDeletedText": "不要なファイルはありません！",
+    "ListViewFieldFileName": "ファイル名",
+    "ListViewFieldFileSize": "サイズ",
+    "LoadingTitle": "進行中",
+    "LoadingSubtitle1": "既存のファイルを計算しています({0}個のファイルを検出 - 合計{1})…",
+    "LoadingSubtitle2": "pkg_versionの可用性をチェックしています…",
+    "BottomButtonDeleteAllFiles": "全てのファイルを削除",
+    "BottomButtonDeleteSelectedFiles": "{0}個の選択したファイルを削除",
+    "BottomCheckboxFilesSelected": "{0}個のファイルを選択中({1} / 合計{2})",
+    "BottomCheckboxNoFileSelected": "ファイルが選択されていません",
+    "DialogDeletingFileTitle": "ファイルの削除",
+    "DialogDeletingFileSubtitle1": "​",
+    "DialogDeletingFileSubtitle2": "{0}個のファイル",
+    "DialogDeletingFileSubtitle3": "​",
+    "DialogDeletingFileSubtitle4": "(合計{0})を削除しようとしています。",
+    "DialogDeletingFileSubtitle5": "本当にファイルを削除しますか？",
+    "DialogDeleteSuccessTitle": "ファイルが削除されました！",
+    "DialogDeleteSuccessSubtitle1": "{0} 個のファイルを削除しました。",
+    "DialogDeleteSuccessSubtitle2": "{0} の削除に失敗しました。",
+    "DialogMoveToRecycleBin": "ごみ箱に移動させる",
+    "DialogTitleMovedToRecycleBin": "ファイルをごみ箱に移動しました！"
+  },
+
   "_OOBEStartUpMenu": {
     "WelcomeTitleString": {
       "Upper": [ "Collapse Launcher", "へ" ],
@@ -1312,7 +1345,7 @@
     "CDNCheckboxItemLatencyUnknownFormat": "（不明）",
     "CDNCheckboxItemLatencyRecommendedFormat": "[おすすめ]"
   },
-  
+
   "_ZenlessGameSettingsPage": {
     "Graphics_ColorFilter": "カラーフィルター",
     "Graphics_RenderRes": "レンダリング精度",
