@@ -165,14 +165,23 @@ namespace CollapseLauncher.Extension
             if (span > 0) Grid.SetColumnSpan(element, span);
         }
 
-        internal static void AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
+        internal static ref TextBlock AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
         {
             while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
+            return ref Unsafe.AsRef(ref textBlock);
         }
-        internal static void AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
+
+        internal static ref TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d)
+        {
+            message += ' ';
+            return ref textBlock.AddTextBlockLine(message, weight, size);
+        }
+
+        internal static ref TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
         {
             if (!weight.HasValue) weight = FontWeights.Normal;
             textBlock.Inlines.Add(new Run { Text = message, FontWeight = weight.Value, FontSize = size });
+            return ref Unsafe.AsRef(ref textBlock);
         }
 
         internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
@@ -695,15 +704,18 @@ namespace CollapseLauncher.Extension
                 if (xamlRoot is Border borderParent)
                     xamlRoot = borderParent.Child is Grid grid ? grid : borderParent.Child.FindAscendant<Grid>();
 
-                (xamlRoot as Panel).Children.Add(shadowPanel);
-                Canvas.SetZIndex(shadowPanel, -1);
-                if (shadowPanel is not Panel)
-                    throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
+                if (xamlRoot is Panel panel)
+                {
+                    panel.Children.Add(shadowPanel);
+                    Canvas.SetZIndex(shadowPanel, -1);
+                    if (shadowPanel is not Panel)
+                        throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
 
-                if (xamlRoot == null || xamlRoot is not Panel)
-                    throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
+                    if (xamlRoot == null || xamlRoot is not Panel)
+                        throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
 
-                thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                    thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                }
             }
         }
 

@@ -51,7 +51,7 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Loading Indexes..."
             _status!.ActivityStatus = Lang!._GameRepairPage!.Status2!;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
             // Initialize the Senadina File Identifier
@@ -366,7 +366,7 @@ namespace CollapseLauncher
 
             // Update the status
             _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
-            _status!.IsProgressTotalIndetermined = true;
+            _status!.IsProgressAllIndetermined = true;
             _status!.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
@@ -493,7 +493,7 @@ namespace CollapseLauncher
             // Update the status
             // TODO: Localize
             _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
-            _status!.IsProgressTotalIndetermined = true;
+            _status!.IsProgressAllIndetermined = true;
             _status!.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
@@ -760,11 +760,11 @@ namespace CollapseLauncher
             // Filter out video assets
             List<FilePropertiesRemote> assetIndexFiltered = assetIndex!.Where(x => x!.FT != FileType.Video).ToList();
 
-            // Sum the assetIndex size and assign to _progressTotalSize
-            _progressTotalSize = assetIndexFiltered.Sum(x => x!.S);
+            // Sum the assetIndex size and assign to _progressAllSize
+            _progressAllSizeTotal = assetIndexFiltered.Sum(x => x!.S);
 
-            // Assign the assetIndex count to _progressTotalCount
-            _progressTotalCount = assetIndexFiltered.Count;
+            // Assign the assetIndex count to _progressAllCount
+            _progressAllCountTotal = assetIndexFiltered.Count;
         }
         #endregion
     }

@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
+    "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
 
@@ -174,7 +175,11 @@
     "CommunityToolsBtn_CommunityText": "非公式便利ツール",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "ツールの.exeファイル: {0}",
 
-    "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択"
+    "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択",
+    
+    "Exception_DownloadTimeout1": "{0}のインストール中にタイムアウトが発生しました",
+    "Exception_DownloadTimeout2": "インターネット接続の安定性を確認してみてください！回線速度が遅い場合は、ダウンロードスレッドの値を小さくしてください。",
+    "Exception_DownloadTimeout3": "**警告** ダウンロードスレッドの値を変更すると、ダウンロードの進行度が0からになります。さらに、既存のダウンロードチャンクは手動で削除する必要があります！"
   },
 
   "_GameRepairPage": {
@@ -424,6 +429,13 @@
     "AppThreads_Help5": "このスレッドはゲームのインストール・修復中の解凍・整合性チェックプロセスを操作します。",
     "AppThreads_Help6": "注: 崩壊3rdのインストール中は、この設定が無効になります。",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "Sophonモードって何？",
+    "SophonHelp_1": "Sophonとは、HoYoVerseが新しく導入したダウンロードシステムです。Sophonモードでは巨大なzipファイルをダウンロードする代わりに、ファイルを小さなチャンクに分割してダウンロードします。このモードを使うと必要なドライブの空き容量が減り、ダウンロードと更新がより効率的になります。",
+    "SophonHelp_Thread": "Collapseが同時にダウンロードするチャンクの数を設定します。ゲームのダウンロード中にCollapseがクラッシュする場合は、この値を小さくしてください。",
+    "SophonHttpNumberBox": "最大HTTP接続数",
+    "SophonHelp_Http": "CollapseがチャンクをダウンロードするためにHoYoVerseのサーバーに対して確立するネットワーク接続の最大数を設定します。",
+
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "既にダウンロード済みのパッケージがある場合は、",
     "AppThreads_Attention2": "の値を",
@@ -523,6 +535,7 @@
     "TimeRemainHMSFormat": "あと{0:%h}時間 {0:%m}分 {0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "あと--時間 --分 --秒",
     "Speed": "速度: {0}/秒",
+    "SpeedTextOnly": "速度",
     "SpeedPerSec": "{0}/秒",
     "SpeedPlaceholder": "速度: - /秒",
     "PerFromTo": "{0} / {1}",
@@ -573,6 +586,9 @@
     "LangNameKR": "韓国語",
 
     "Downloading": "ダウンロード中",
+    "Updating": "アップデート中",
+    "UpdatingAndApplying": "アップデート + パッチ中",
+    "Applying": "パッチ中",
     "Merging": "マージ中",
     "Idle": "待機",
     "Change": "変更",
@@ -1251,7 +1267,8 @@
     "TW/HK/MO": "台湾/香港/マカオ",
     "Korea": "韓国",
     "Japan": "日本",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {

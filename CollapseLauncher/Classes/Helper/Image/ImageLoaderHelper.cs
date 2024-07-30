@@ -299,6 +299,7 @@ namespace CollapseLauncher.Helper.Image
                 Interpolation = InterpolationSettings.CubicSmoother,
                 Anchor = CropAnchor.Bottom | CropAnchor.Center
             };
+            settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
             await Task.Run(() =>
             {
@@ -427,7 +428,8 @@ namespace CollapseLauncher.Helper.Image
 #if !DEBUG
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex, ErrorType.Connection);
+                // ErrorSender.SendException(ex, ErrorType.Connection);
+                Logger.LogWriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
             }
 #endif
             finally

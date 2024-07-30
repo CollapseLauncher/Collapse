@@ -23,7 +23,7 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Loading Indexes..."
             _status.ActivityStatus = Lang._GameRepairPage.Status2;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
             // Initialize hashtable for duplicate keys checking
@@ -463,8 +463,8 @@ namespace CollapseLauncher
         #region Tools
         private void CountAssetIndex(List<PkgVersionProperties> assetIndex)
         {
-            _progressTotalSize = assetIndex.Sum(x => x.fileSize);
-            _progressTotalCount = assetIndex.Count;
+            _progressAllSizeTotal = assetIndex.Sum(x => x.fileSize);
+            _progressAllCountTotal = assetIndex.Count;
         }
 
         private void EnumerateManifestToAssetIndex(string path, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "", string acceptedExtension = "", string parentURL = "", bool forceStoreInStreaming = false)

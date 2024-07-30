@@ -18,6 +18,7 @@ namespace Hi3Helper
                 public string TimeRemainHMSFormatPlaceholder { get; set; } = LangFallback?._Misc.TimeRemainHMSFormatPlaceholder;
 
                 public string Speed                { get; set; } = LangFallback?._Misc.Speed;
+                public string SpeedTextOnly        { get; set; } = LangFallback?._Misc.SpeedTextOnly;
                 public string SpeedPerSec          { get; set; } = LangFallback?._Misc.SpeedPerSec;
                 public string SpeedPlaceholder     { get; set; } = LangFallback?._Misc.SpeedPlaceholder;
                 public string PerFromTo            { get; set; } = LangFallback?._Misc.PerFromTo;
@@ -59,6 +60,9 @@ namespace Hi3Helper
                 public string LangNameCN           { get; set; } = LangFallback?._Misc.LangNameCN;
                 public string LangNameKR           { get; set; } = LangFallback?._Misc.LangNameKR;
                 public string Downloading          { get; set; } = LangFallback?._Misc.Downloading;
+                public string Updating             { get; set; } = LangFallback?._Misc.Updating;
+                public string UpdatingAndApplying  { get; set; } = LangFallback?._Misc.UpdatingAndApplying;
+                public string Applying             { get; set; } = LangFallback?._Misc.Applying;
                 public string Merging              { get; set; } = LangFallback?._Misc.Merging;
                 public string Idle                 { get; set; } = LangFallback?._Misc.Idle;
                 public string Change               { get; set; } = LangFallback?._Misc.Change;

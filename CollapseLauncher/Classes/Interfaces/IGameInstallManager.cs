@@ -22,10 +22,12 @@ namespace CollapseLauncher.Interfaces
 
         ValueTask<bool> TryShowFailedDeltaPatchState();
         ValueTask<bool> TryShowFailedGameConversionState();
+        ValueTask CleanUpGameFiles(bool withDialog = true);
 
         void UpdateCompletenessStatus(CompletenessStatus status);
 
         bool StartAfterInstall { get; set; }
         bool IsUseSophon { get; }
+        bool IsSophonInUpdateMode { get; }
     }
 }

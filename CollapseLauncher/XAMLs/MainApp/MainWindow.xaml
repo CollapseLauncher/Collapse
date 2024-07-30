@@ -171,7 +171,7 @@
                         Click="MinimizeButton_Click"
                         Content="M 0 0 H 10"
                         CornerRadius="8"
-                        Style="{StaticResource WindowCaptionButton}" />
+                        Style="{ThemeResource WindowCaptionButton}" />
                 <Button x:Name="CloseButton"
                         Width="40"
                         Height="40"
@@ -182,7 +182,7 @@
                         Click="CloseButton_Click"
                         Content="M 0 0 L 10 10 M 10 0 L 0 10"
                         CornerRadius="8"
-                        Style="{StaticResource WindowCaptionButton}">
+                        Style="{ThemeResource WindowCaptionButton}">
                     <Button.Resources>
                         <ResourceDictionary>
                             <ResourceDictionary.ThemeDictionaries>

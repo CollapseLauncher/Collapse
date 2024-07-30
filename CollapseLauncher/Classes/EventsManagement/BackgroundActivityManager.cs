@@ -177,15 +177,15 @@ namespace CollapseLauncher
 
             EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
-                progressBar.Value = args!.ProgressTotalPercentage;
-                progressLeftSubtitle.Text = string.Format(Lang._Misc!.Speed!, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
-                progressRightTitle.Text = string.Format(Lang._Misc!.TimeRemainHMSFormat!, args.ProgressTotalTimeLeft);
-                progressRightSubtitle.Text = string.Format(Lang._UpdatePage!.UpdateHeader1! + " {0}%", args.ProgressTotalPercentage);
+                progressBar.Value = args!.ProgressAllPercentage;
+                progressLeftSubtitle.Text = string.Format(Lang._Misc!.Speed!, ConverterTool.SummarizeSizeSimple(args.ProgressAllSpeed));
+                progressRightTitle.Text = string.Format(Lang._Misc!.TimeRemainHMSFormat!, args.ProgressAllTimeLeft);
+                progressRightSubtitle.Text = string.Format(Lang._UpdatePage!.UpdateHeader1! + " {0}%", args.ProgressAllPercentage);
             });
 
             EventHandler<TotalPerfileStatus> StatusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
-                progressBar.IsIndeterminate = args!.IsProgressTotalIndetermined;
+                progressBar.IsIndeterminate = args!.IsProgressAllIndetermined;
                 progressLeftTitle.Text = args.ActivityStatus;
                 if (args.IsCanceled)
                 {

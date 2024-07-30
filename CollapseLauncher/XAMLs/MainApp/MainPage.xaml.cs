@@ -109,6 +109,7 @@ namespace CollapseLauncher
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
         {
+            SubscribeEvents();
             try
             {
                 if (!IsShowRegionChangeWarning && IsInstantRegionChange)
@@ -143,7 +144,6 @@ namespace CollapseLauncher
                 if (WindowUtility.CurrentWindow is MainWindow)
                     m_actualMainFrameSize = new Size((float)WindowUtility.CurrentWindow.Bounds.Width, (float)WindowUtility.CurrentWindow.Bounds.Height);
 
-                SubscribeEvents();
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
                 await InitializeStartup();
@@ -201,6 +201,7 @@ namespace CollapseLauncher
         private void UpdateBindingsEvent(object sender, EventArgs e)
         {
             NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.FooterMenuItems.Clear();
             Bindings.Update();
             UpdateLayout();
 
@@ -587,11 +588,12 @@ namespace CollapseLauncher
                 await SpawnPushAppNotification();
 
                 // Check Metadata Update in Background
-                await CheckMetadataUpdateInBackground();
+                if (await CheckMetadataUpdateInBackground())
+                    return; // Cancel any routine below to avoid conflict with app update
 
 #if !DEBUG
                 // Run the update check and trigger routine
-                LauncherUpdateHelper.RunUpdateCheckDetached();
+                await LauncherUpdateHelper.RunUpdateCheckDetached();
 #else 
                 LogWriteLine("Running debug build, stopping update checks!", LogType.Error);
 #endif
@@ -1102,7 +1104,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Metadata Update Method
-        private async Task CheckMetadataUpdateInBackground()
+        private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
             bool IsUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
             if (IsUpdate)
@@ -1175,6 +1177,7 @@ namespace CollapseLauncher
                     true
                     );
             }
+            return IsUpdate;
         }
         #endregion
 
@@ -1183,29 +1186,15 @@ namespace CollapseLauncher
         {
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.FooterMenuItems.Clear();
 
             IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty()._GameVersion;
 
-            FontFamily Fnt = FontCollections.FontAwesomeSolid;
-
-            FontIcon IconLauncher = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconRepair = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconCaches = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
-
-            IconLauncher.ApplyDropShadow(Colors.Gray, 20);
-            IconRepair.ApplyDropShadow(Colors.Gray, 20);
-            IconCaches.ApplyDropShadow(Colors.Gray, 20);
-            IconGameSettings.ApplyDropShadow(Colors.Gray, 20);
-            IconAppSettings.ApplyDropShadow(Colors.Gray, 20);
-
-            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
-            {
-                SettingsItem.Content = Lang._SettingsPage.PageTitle;
-                SettingsItem.Icon = IconAppSettings;
-                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
-            }
+            FontIcon IconLauncher = new FontIcon { Glyph = "" };
+            FontIcon IconRepair = new FontIcon { Glyph = "" };
+            FontIcon IconCaches = new FontIcon { Glyph = "" };
+            FontIcon IconGameSettings = new FontIcon { Glyph = "" };
+            FontIcon IconAppSettings = new FontIcon { Glyph = "" };
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
@@ -1237,27 +1226,53 @@ namespace CollapseLauncher
             switch (CurrentGameVersionCheck.GameType)
             {
                 case GameNameType.Honkai:
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "honkaigamesettings" });
                     break;
                 case GameNameType.StarRail:
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
                     { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
                     break;
                 case GameNameType.Genshin:
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem() 
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem() 
                     { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
                     break;
                 case GameNameType.Zenless:
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
                     {Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "zenlessgamesettings"});
                     break;
             }
+
+            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
+            {
+                SettingsItem.Content = Lang._SettingsPage.PageTitle;
+                SettingsItem.Icon = IconAppSettings;
+                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
+            }
+
+            foreach (var deps in NavigationViewControl.FindDescendants())
+            {
+                if (deps is FontIcon icon)
+                    AttachShadowNavigationPanelItem(icon);
+                if (deps is AnimatedIcon animIcon)
+                    AttachShadowNavigationPanelItem(animIcon);
+            }
+            AttachShadowNavigationPanelItem(IconAppSettings);
 
             if (ResetSelection)
             {
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             }
+        }
+
+        public static void AttachShadowNavigationPanelItem(FrameworkElement element)
+        {
+            bool isAppLight = IsAppThemeLight;
+            Windows.UI.Color shadowColor = isAppLight ? Colors.White : Colors.Black;
+            double shadowBlurRadius = isAppLight ? 20 : 15;
+            double shadowOpacity = isAppLight ? 0.5 : 0.3;
+
+            element.ApplyDropShadow(shadowColor, shadowBlurRadius, shadowOpacity);
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -1319,8 +1334,11 @@ namespace CollapseLauncher
             if (!IsLoadFrameCompleted) return;
             if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
 
-            NavigationViewItem item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+#nullable enable
+            NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+            item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
             if (item == null) return;
+#nullable restore
 
             string itemTag = (string)item.Tag;
 
@@ -1445,7 +1463,11 @@ namespace CollapseLauncher
                 if (lastPreviousTag.ToLower() == currentNavigationItemTag.ToLower())
                 {
                     string goLastPreviousTag = PreviousTagString[PreviousTagString.Count - 2];
-                    NavigationViewItem goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+
+#nullable enable
+                    NavigationViewItem? goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+                    goPreviousNavigationItem ??= sender.FooterMenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+#nullable restore
 
                     if (goLastPreviousTag == "settings")
                     {
@@ -1939,11 +1961,11 @@ namespace CollapseLauncher
             if (!(IsLoadRegionComplete) || CannotUseKbShortcuts)
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last())
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.FooterMenuItems.Last())
                 return;
 
             DisableKbShortcuts();
-            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
+            NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
             switch (CurrentGameProperty._GamePreset.GameType)
             {
                 case GameNameType.Honkai:

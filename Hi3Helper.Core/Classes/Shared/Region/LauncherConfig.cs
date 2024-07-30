@@ -340,6 +340,7 @@ namespace Hi3Helper.Shared.Region
             { "UseCustomBG", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
+            { "ShowGamePlaytime", true},
             { "CustomBGPath", "" },
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
@@ -364,7 +365,10 @@ namespace Hi3Helper.Shared.Region
             { "BackgroundAudioVolume", 0.5d },
             { "BackgroundAudioIsMute", true },
             { "UseInstantRegionChange", true },
-            { "IsIntroEnabled", true }
+            { "IsIntroEnabled", true },
+            { "IsEnableSophon", true},
+            { "SophonCpuThread", 0},
+            { "SophonHttpConnInt", 0}
         };
         #endregion
     }

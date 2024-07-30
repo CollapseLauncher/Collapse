@@ -750,7 +750,7 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Error
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, long partialLength, long contentLength) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, double partialLength, double contentLength) =>
             await SpawnDialog(
                         Lang._Dialogs.InstallDataDownloadResumeTitle,
                         string.Format(Lang._Dialogs.InstallDataDownloadResumeSubtitle,

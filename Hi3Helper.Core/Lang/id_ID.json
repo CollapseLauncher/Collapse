@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
+    "GameSettings_Panel4ShowPlaytimeButton": "Munculkan Tombol \"Waktu Main\"",
     "GameSettings_Panel4CreateShortcutBtn": "Buat pintasan",
     "GameSettings_Panel4AddToSteamBtn": "Tambahkan ke Steam",
 
@@ -174,7 +175,11 @@
     "CommunityToolsBtn_CommunityText": "Alat Komunitas",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Pilih Executable Program: {0}",
 
-    "CreateShortcut_FolderPicker": "Pilih tempat untuk menyimpan pintasan"
+    "CreateShortcut_FolderPicker": "Pilih tempat untuk menyimpan pintasan",
+    
+    "Exception_DownloadTimeout1": "Masa tenggang telah terjadi saat mencoba untuk memasang {0}",
+    "Exception_DownloadTimeout2": "Pastikan internet kamu stabil! Coba turunkan thread unduhan apabila kamu punya koneksi lambat.",
+    "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!"
   },
 
   "_GameRepairPage": {
@@ -215,9 +220,9 @@
     "RepairBtn2Quick": "Periksa Cepat",
     "RepairBtn2QuickDesc": "Metode ini hanya memeriksa ukuran dan ketersediaan file. Silahkan gunakan Periksa Penuh untuk memeriksa integritas file",
     "OverlayNotInstalledTitle": "Kamu tidak dapat menggunakan fitur ini karena game tidak terpasang/butuh diperbarui!",
-    "OverlayNotInstalledSubtitle": "Mohon unduh/perbaharui game terlebih dahulu!",
+    "OverlayNotInstalledSubtitle": "Silahkan unduh/perbaharui game terlebih dahulu!",
     "OverlayGameRunningTitle": "Game sedang berjalan!",
-    "OverlayGameRunningSubtitle": "Mohon tutup game terlebih dahulu sebelum menggunakan fitur ini!"
+    "OverlayGameRunningSubtitle": "Silahkan tutup game terlebih dahulu sebelum menggunakan fitur ini!"
   },
 
   "_CachesPage": {
@@ -246,9 +251,9 @@
     "CachesBtn2Quick": "Periksa Cepat",
     "CachesBtn2QuickDesc": "Metode ini hanya memeriksa ukuran dan ketersediaan cache. Silahkan gunakan Periksa Penuh untuk memeriksa integritas cache",
     "OverlayNotInstalledTitle": "Kamu tidak dapat menggunakan fitur ini karena game tidak terpasang/butuh diperbarui!",
-    "OverlayNotInstalledSubtitle": "Mohon unduh/perbaharui game terlebih dahulu!",
+    "OverlayNotInstalledSubtitle": "Silahkan unduh/perbaharui game terlebih dahulu!",
     "OverlayGameRunningTitle": "Game sedang berjalan!",
-    "OverlayGameRunningSubtitle": "Mohon tutup game terlebih dahulu sebelum menggunakan fitur ini!"
+    "OverlayGameRunningSubtitle": "Silahkan tutup game terlebih dahulu sebelum menggunakan fitur ini!"
   },
 
   "_CutscenesPage": {
@@ -495,7 +500,7 @@
     "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan",
 
     "AppBehavior_Title": "Perilaku Aplikasi",
-    "AppBehavior_PostGameLaunch": "Setelah Meluncurkan Permainan",
+    "AppBehavior_PostGameLaunch": "Setelah Memulai Game",
     "AppBehavior_PostGameLaunch_Minimize": "Sembunyikan",
     "AppBehavior_PostGameLaunch_ToTray": "Sembunyikan ke Tray",
     "AppBehavior_PostGameLaunch_Nothing": "Tidak melakukan apapun",
@@ -523,6 +528,7 @@
     "TimeRemainHMSFormat": "{0:%h}j{0:%m}m{0:%s}d tersisa",
     "TimeRemainHMSFormatPlaceholder": "--j--m--d tersisa",
     "Speed": "Kecepatan: {0}/d",
+    "SpeedTextOnly": "Kecepatan",
     "SpeedPerSec": "{0}/d",
     "SpeedPlaceholder": "Kecepatan: - /d",
     "PerFromTo": "{0} / {1}",
@@ -573,6 +579,9 @@
     "LangNameKR": "Korea",
 
     "Downloading": "Mengunduh",
+    "Updating": "Memperbarui",
+    "UpdatingAndApplying": "Perbarui + Menerapkan",
+    "Applying": "Menerapkan",
     "Merging": "Menggabung",
     "Idle": "Diam",
     "Change": "Ubah",
@@ -1157,7 +1166,7 @@
     "OverlayNotInstalledTitle": "Anda tidak dapat menggunakan fitur ini dikarenakan game belum dipasang atau perlu diperbaruhi!",
     "OverlayNotInstalledSubtitle": "Silahkan unduh/perbaharui game terlebih dahulu pada halaman utama!",
     "OverlayGameRunningTitle": "Game Sedang Berjalan!",
-    "OverlayGameRunningSubtitle": "Mohon tutup game terlebih dahulu untuk menggunakan fitur ini!",
+    "OverlayGameRunningSubtitle": "Silahkan tutup game terlebih dahulu untuk menggunakan fitur ini!",
     "OverlayFirstTimeTitle": "Anda belum pernah memainkan game ini sebelumnya!",
     "OverlayFirstTimeSubtitle": "Mohon jalankan game terlebih dahulu untuk generate file yang dibutuhkan, lalu kembali untuk menggunakan fitur ini.",
 
@@ -1251,7 +1260,8 @@
     "TW/HK/MO": "Tiongkok Tradisional",
     "Korea": "Korea",
     "Japan": "Jepang",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {

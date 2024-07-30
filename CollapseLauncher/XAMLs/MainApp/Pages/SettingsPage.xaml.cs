@@ -991,6 +991,24 @@ namespace CollapseLauncher.Pages
                 task.Dispose();
             }
         }
+
+        private bool IsEnableSophon
+        {
+            get => GetAppConfigValue("IsEnableSophon").ToBool();
+            set => SetAndSaveConfigValue("IsEnableSophon", value);
+        }
+
+        private int SophonDownThread
+        {
+            get => GetAppConfigValue("SophonCpuThread").ToInt();
+            set => SetAndSaveConfigValue("SophonCpuThread", value);
+        }
+
+        private int SophonHttpConn
+        {
+            get => GetAppConfigValue("SophonHttpConnInt").ToInt();
+            set => SetAndSaveConfigValue("SophonHttpConnInt", value);
+        }
         #endregion
 
         #region Keyboard Shortcuts

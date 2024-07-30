@@ -20,14 +20,20 @@ namespace CollapseLauncher
             Http httpClient = new Http(true, 5, 1000, _userAgent);
             try
             {
-                // Set IsProgressTotalIndetermined as false and update the status 
-                _status!.IsProgressTotalIndetermined = true;
+                // Set IsProgressAllIndetermined as false and update the status 
+                _status!.IsProgressAllIndetermined = true;
                 UpdateStatus();
 
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
                 // Iterate the asset index and do update operation
-                foreach (CacheAsset asset in updateAssetIndex!)
+                foreach (CacheAsset asset in
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex!)
+#else
+                    updateAssetIndex!
+#endif
+                    )
                 {
                     await UpdateCacheAsset(asset, httpClient, token);
                 }
@@ -76,7 +82,7 @@ namespace CollapseLauncher
         private async Task UpdateCacheAsset(CacheAsset asset, Http httpClient, CancellationToken token)
         {
             // Increment total count and update the status
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
             _status!.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.DataType, asset.N);
             UpdateAll();
 
@@ -130,22 +136,22 @@ namespace CollapseLauncher
         private async void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)
         {
             // Update current progress percentages and speed
-            _progress!.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
-                ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
+            _progress!.ProgressAllPercentage = _progressAllSizeCurrent != 0 ?
+                ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal) :
                 0;
 
             if (e!.State != DownloadState.Merging)
             {
-                _progressTotalSizeCurrent += e.Read;
+                _progressAllSizeCurrent += e.Read;
             }
-            long speed = (long)(_progressTotalSizeCurrent / _stopwatch!.Elapsed.TotalSeconds);
+            long speed = (long)(_progressAllSizeCurrent / _stopwatch!.Elapsed.TotalSeconds);
 
             if (await CheckIfNeedRefreshStopwatch())
             {
                 // Update current activity status
-                _status!.IsProgressTotalIndetermined = false;
-                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, ((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)).ToTimeSpanNormalized());
-                _status.ActivityTotal = string.Format(Lang!._Misc!.Downloading + ": {0}/{1} ", _progressTotalCountCurrent, _progressTotalCount)
+                _status!.IsProgressAllIndetermined = false;
+                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, ((_progressAllSizeCurrent - _progressAllSizeTotal) / ConverterTool.Unzeroed(speed)).ToTimeSpanNormalized());
+                _status.ActivityAll = string.Format(Lang!._Misc!.Downloading + ": {0}/{1} ", _progressAllCountCurrent, _progressAllCountTotal)
                                        + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(speed))
                                        + $" | {timeLeftString}";
 
