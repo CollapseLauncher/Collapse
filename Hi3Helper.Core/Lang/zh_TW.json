@@ -133,6 +133,9 @@
     "PauseCancelBtn": "暫停/取消",
     "DownloadBtn": "下載遊戲",
 
+    "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
+    "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",
+
     "GameSettingsBtn": "快速設定",
     "GameSettings_Panel1": "快速設定",
     "GameSettings_Panel1OpenGameFolder": "開啟遊戲資料夾",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "雜項",
     "GameSettings_Panel4ShowEventsPanel": "顯示活動面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "顯示社交媒體面板",
+    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4CreateShortcutBtn": "建立捷徑",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
 
@@ -171,7 +175,11 @@
     "CommunityToolsBtn_CommunityText": "社群工具",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "選擇執行檔: {0}",
 
-    "CreateShortcut_FolderPicker": "選擇放置快捷方式的位置"
+    "CreateShortcut_FolderPicker": "選擇放置快捷方式的位置",
+
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
   },
 
   "_GameRepairPage": {
@@ -266,7 +274,13 @@
     "Graphics_ResCustom": "使用自定義解析度",
     "Graphics_ResCustomW": "寬",
     "Graphics_ResCustomH": "高",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "最大 FPS",
     "Graphics_FPSInCombat": "戰鬥中",
     "Graphics_FPSInMenu": "主選單",
@@ -306,6 +320,7 @@
     "Graphics_Legacy_Subtitle": "這些設定不存在於遊戲中，並且可能不會產生任何效果。",
 
     "SpecDisabled": "已停用",
+    "SpecCustom": "Custom",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
@@ -414,6 +429,20 @@
     "AppThreads_Help5": "解壓縮執行緒數量決定安裝/修復遊戲的過程中，程式分成多少執行緒以解壓縮/驗證檔案。",
     "AppThreads_Help6": "注：此設定在安裝崩壞三時無效",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
+
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
     "AppThreads_Attention2": "之前，如果您有未完成的下載，請考慮",
@@ -459,7 +488,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": "。版權所有。",
-    
+
     "LicenseType": "MIT許可證",
 
     "Disclaimer": "免責聲明",
@@ -513,6 +542,7 @@
     "TimeRemainHMSFormat": "還剩{0:%h}時 {0:%m}分 {0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "還剩 -時 -分 -秒",
     "Speed": "速度：{0}/秒",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/秒",
     "SpeedPlaceholder": "速度：-/秒",
     "PerFromTo": "{0} / {1}",
@@ -563,6 +593,9 @@
     "LangNameKR": "韓文",
 
     "Downloading": "正在下載",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "正在合併",
     "Idle": "閒置",
     "Change": "更改",
@@ -607,6 +640,8 @@
     "DiscordRP_Default": "沒有活動",
     "DiscordRP_Ad": "- 使用 Collapse 啟動器",
     "DiscordRP_Region": "區域：",
+
+    "DownloadModeLabelSophon": "Sophon Mode",
 
     "Taskbar_PopupHelp1": "點擊將 Collapse 置頂",
     "Taskbar_PopupHelp2": "雙擊切換視窗可見性",
@@ -1030,6 +1065,8 @@
     "Graphics_BloomQuality": "泛光效果（Bloom）品質",
     "Graphics_AAMode": "反鋸齒模式",
     "Graphics_SFXQuality": "特效品質",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "全局圖像設定",
     "SpecEnabled": "已啟用",
@@ -1237,11 +1274,38 @@
     "TW/HK/MO": "臺港澳",
     "Korea": "韓國",
     "Japan": "日本",
-    "Bilibili": "嗶哩嗶哩"
+    "Bilibili": "嗶哩嗶哩",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "用戶協議："
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1344,17 @@
     "CDNCheckboxItemLatencyFormat": "（{0} ms）",
     "CDNCheckboxItemLatencyUnknownFormat": "（未知）",
     "CDNCheckboxItemLatencyRecommendedFormat": "[推薦]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }
