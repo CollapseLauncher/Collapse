@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "杂项",
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
+    "GameSettings_Panel4ShowPlaytimeButton": "显示游戏时间",
     "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
 
@@ -174,7 +175,11 @@
     "CommunityToolsBtn_CommunityText": "社区工具",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "选择程序文件：{0}",
 
-    "CreateShortcut_FolderPicker": "选择放置快捷方式的位置"
+    "CreateShortcut_FolderPicker": "选择放置快捷方式的位置",
+    
+    "Exception_DownloadTimeout1": "尝试安装 {0} 时发生超时",
+    "Exception_DownloadTimeout2": "请检查您网络的可靠性！如果您的网速较慢，请降低下载线程数。",
+    "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！"
   },
 
   "_GameRepairPage": {
@@ -523,6 +528,7 @@
     "TimeRemainHMSFormat": "还剩{0:%h}时{0:%m}分{0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "还剩--时--分--秒",
     "Speed": "速度：{0}/s",
+    "SpeedTextOnly": "速度",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "速度：- /s",
     "PerFromTo": "{0} / {1}",
@@ -573,6 +579,9 @@
     "LangNameKR": "韩语",
 
     "Downloading": "下载中",
+    "Updating": "更新中",
+    "UpdatingAndApplying": "更新+应用中",
+    "Applying": "应用中",
     "Merging": "合并中",
     "Idle": "闲置",
     "Change": "更改",
@@ -1251,7 +1260,8 @@
     "TW/HK/MO": "港澳台",
     "Korea": "韩国",
     "Japan": "日本",
-    "Bilibili": "哔哩哔哩"
+    "Bilibili": "哔哩哔哩",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {

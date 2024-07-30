@@ -17,7 +17,7 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Waiting for repair process to start..."
             _status.ActivityStatus = Lang._GameRepairPage.Status11;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             _status.IsProgressPerFileIndetermined = true;
 
             // Update status
@@ -63,11 +63,11 @@ namespace CollapseLauncher
         private async Task RepairAssetTypeGeneric(PkgVersionProperties asset, Http _httpClient, CancellationToken token)
         {
             // Increment total count current
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status8, asset.remoteName),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressAllCountCurrent, _progressAllCountTotal),
                 true);
 
             // If file is unused, then delete

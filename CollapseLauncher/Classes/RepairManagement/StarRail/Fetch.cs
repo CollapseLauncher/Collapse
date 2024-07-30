@@ -63,7 +63,7 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Loading Indexes..."
             _status.ActivityStatus = Lang._GameRepairPage.Status2;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             UpdateStatus();
             StarRailRepairExtension.ClearHashtable();
 
@@ -452,11 +452,11 @@ namespace CollapseLauncher
 
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            // Sum the assetIndex size and assign to _progressTotalSize
-            _progressTotalSize = assetIndex.Sum(x => x.S);
+            // Sum the assetIndex size and assign to _progressAllSize
+            _progressAllSizeTotal = assetIndex.Sum(x => x.S);
 
-            // Assign the assetIndex count to _progressTotalCount
-            _progressTotalCount = assetIndex.Count;
+            // Assign the assetIndex count to _progressAllCount
+            _progressAllCountTotal = assetIndex.Count;
         }
 
         private FileType ConvertFileTypeEnum(SRAssetType assetType) => assetType switch

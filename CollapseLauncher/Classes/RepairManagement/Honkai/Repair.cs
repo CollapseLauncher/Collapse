@@ -19,7 +19,7 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Waiting for repair process to start..."
             _status.ActivityStatus = Lang._GameRepairPage.Status11;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             _status.IsProgressPerFileIndetermined = true;
 
             // Update status
@@ -92,7 +92,7 @@ namespace CollapseLauncher
         private async Task RepairTypeAudioActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
             // Increment total count current
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Declare variables for patch file and URL and new file path
             string patchURL = ConverterTool.CombineURLFromString(string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AudioPatchInfo.Value.PatchFilename);
@@ -103,7 +103,7 @@ namespace CollapseLauncher
             // Set downloading patch status
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status12, asset.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             // Run patching task
@@ -121,11 +121,11 @@ namespace CollapseLauncher
         private async Task RepairAssetTypeGeneric(FilePropertiesRemote asset, Http _httpClient, CancellationToken token, string customURL = null)
         {
             // Increment total count current
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
                 string.Format(asset.FT == FileType.Blocks ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.FT == FileType.Blocks ? asset.CRC : asset.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             // Set URL of the asset
@@ -175,7 +175,7 @@ namespace CollapseLauncher
             if (asset.IsPatchApplicable)
             {
                 // Increment total count current and update the status
-                _progressTotalCountCurrent++;
+                _progressAllCountCurrent++;
 
                 // Do patching
                 await RepairTypeBlocksActionPatching(asset, _httpClient, token);
@@ -199,7 +199,7 @@ namespace CollapseLauncher
             // Set downloading patch status
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status13, asset.CRC),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             // Run patching task

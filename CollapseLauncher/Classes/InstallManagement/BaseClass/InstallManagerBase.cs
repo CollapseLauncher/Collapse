@@ -63,7 +63,7 @@ namespace CollapseLauncher.InstallManager.Base
     public enum CompletenessStatus { Running, Completed, Cancelled, Idle }
 
     // ReSharper disable once UnusedTypeParameter
-    internal abstract class InstallManagerBase<T> : ProgressBase<GameInstallPackage>, IGameInstallManager
+    internal partial class InstallManagerBase<T> : ProgressBase<GameInstallPackage>, IGameInstallManager
         where T : IGameVersionCheck
     {
         #region Internal Struct
@@ -149,6 +149,7 @@ namespace CollapseLauncher.InstallManager.Base
             && !File.Exists(Path.Combine(_gamePath, "@DisableSophon"))
             && (!_canDeltaPatch && !_forceIgnoreDeltaPatch);
 
+        public virtual bool IsSophonInUpdateMode { get => _isSophonInUpdateMode; }
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
@@ -235,7 +236,7 @@ namespace CollapseLauncher.InstallManager.Base
                     // Set the activity
                     _status!.ActivityStatus = string.Format(Lang!._GameRepairPage!.Status2!);
                     _status!.IsIncludePerFileIndicator = false;
-                    _status!.IsProgressTotalIndetermined = true;
+                    _status!.IsProgressAllIndetermined = true;
                     UpdateStatus();
 
                     // Start the check routine and get the state if download needed
@@ -244,9 +245,9 @@ namespace CollapseLauncher.InstallManager.Base
                     if (isDownloadNeeded)
                     {
                         _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status8!, "").Replace(": ", "");
-                        _progressTotalSizeCurrent = 0;
-                        _progressTotalCountCurrent = 1;
-                        _progressTotalReadCurrent = 0;
+                        _progressAllSizeCurrent = 0;
+                        _progressAllCountCurrent = 1;
+                        _progressAllIOReadCurrent = 0;
                         UpdateStatus();
 
                         // If download needed, then start the repair (download) routine
@@ -293,11 +294,11 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Get the sum of uncompressed size and
                     // Set progress count to beginning
-                    _progressTotalSize = localAssetIndex!.Sum(x => x!.S);
-                    _progressTotalSizeCurrent = 0;
-                    _progressTotalCountCurrent = 1;
+                    _progressAllSizeTotal = localAssetIndex!.Sum(x => x!.S);
+                    _progressAllSizeCurrent = 0;
+                    _progressAllCountCurrent = 1;
                     _status!.IsIncludePerFileIndicator = false;
-                    _status!.IsProgressTotalIndetermined = true;
+                    _status!.IsProgressAllIndetermined = true;
                     _status!.ActivityStatus = Lang!._Misc!.ApplyingPatch;
                     UpdateStatus();
                     RestartStopwatch();
@@ -422,18 +423,18 @@ namespace CollapseLauncher.InstallManager.Base
             // Set the progress bar to indetermined
             _status.IsIncludePerFileIndicator = gamePackage.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
             _status.IsProgressPerFileIndetermined = true;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
             // Start getting the size of the packages
             await GetPackagesRemoteSize(gamePackage, _token!.Token);
 
             // Get the remote total size and current total size
-            _progressTotalSize = gamePackage.Sum(x => x!.Size);
-            _progressTotalSizeCurrent = GetExistingDownloadPackageSize(gamePackage);
+            _progressAllSizeTotal = gamePackage.Sum(x => x!.Size);
+            _progressAllSizeCurrent = GetExistingDownloadPackageSize(gamePackage);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(_parentUI, gamePackage, _progressTotalSizeCurrent);
+            await CheckDriveFreeSpace(_parentUI, gamePackage, _progressAllSizeCurrent);
 
             // Check for the existing download
             await CheckExistingDownloadAsync(_parentUI, gamePackage);
@@ -441,14 +442,14 @@ namespace CollapseLauncher.InstallManager.Base
         StartDeltaPatchPreReqVerification:
             // Set progress bar to not indetermined
             _status!.IsProgressPerFileIndetermined = false;
-            _status!.IsProgressTotalIndetermined = false;
+            _status!.IsProgressAllIndetermined = false;
 
             // Start downloading process
             await InvokePackageDownloadRoutine(gamePackage, _token!.Token);
 
             // Reset the progress status
-            _progressTotalSizeCurrent = 0;
-            _progressTotalCountCurrent = 1;
+            _progressAllSizeCurrent = 0;
+            _progressAllCountCurrent = 1;
             RestartStopwatch();
 
             // Start the verification routine
@@ -532,18 +533,18 @@ namespace CollapseLauncher.InstallManager.Base
             _status!.IsIncludePerFileIndicator =
                 _assetIndex!.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
             _status!.IsProgressPerFileIndetermined = true;
-            _status!.IsProgressTotalIndetermined   = true;
+            _status!.IsProgressAllIndetermined   = true;
             UpdateStatus();
 
             // Start getting the size of the packages
             await GetPackagesRemoteSize(_assetIndex, _token!.Token);
 
             // Get the remote total size and current total size
-            _progressTotalSize        = _assetIndex!.Sum(x => x!.Size);
-            _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
+            _progressAllSizeTotal        = _assetIndex!.Sum(x => x!.Size);
+            _progressAllSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(_parentUI, _assetIndex, _progressTotalSizeCurrent);
+            await CheckDriveFreeSpace(_parentUI, _assetIndex, _progressAllSizeCurrent);
 
             // Sanitize Check: Show dialog for resuming/reset the existing download
             if (!skipDialog)
@@ -594,16 +595,16 @@ namespace CollapseLauncher.InstallManager.Base
             if (_canSkipVerif) return 1;
 
             // Set progress count to beginning
-            _progressTotalSize                 = gamePackage.Sum(x => x!.Size);
-            _progressTotalSizeCurrent          = 0;
-            _progressTotalCountCurrent         = 1;
-            _progressTotalCount                = assetCount;
+            _progressAllSizeTotal                 = gamePackage.Sum(x => x!.Size);
+            _progressAllSizeCurrent          = 0;
+            _progressAllCountCurrent         = 1;
+            _progressAllCountTotal                = assetCount;
             _status!.IsIncludePerFileIndicator = assetCount > 1;
             RestartStopwatch();
 
             // Set progress bar to not indetermined
             _status!.IsProgressPerFileIndetermined = false;
-            _status!.IsProgressTotalIndetermined   = false;
+            _status!.IsProgressAllIndetermined   = false;
 
             // Iterate the asset
             foreach (GameInstallPackage asset in gamePackage)
@@ -636,16 +637,17 @@ namespace CollapseLauncher.InstallManager.Base
             return 1;
         }
 
+        public virtual int SophonGetThreadNum => Math.Clamp((int)Math.Sqrt(_threadCount), 2, 64);
+
         public virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState)
         {
             // Set the flag to false
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThreadSqrt = (int)Math.Sqrt(_threadCount);
-            int maxThread = Math.Min(maxThreadSqrt, 4);
+            int maxThread       = SophonGetThreadNum;
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
-            int maxHttpHandler = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
+            int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
             LogWriteLine($"Initializing Sophon Chunk download method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
@@ -664,7 +666,7 @@ namespace CollapseLauncher.InstallManager.Base
             try
             {
                 // Reset status and progress properties
-                ResetStatusAndProgressProperty();
+                ResetStatusAndProgress();
 
                 // Clear the VO language list
                 _sophonVOLanguageList?.Clear();
@@ -676,26 +678,41 @@ namespace CollapseLauncher.InstallManager.Base
                 if (_gameVersionManager.GamePreset
                                        .LauncherResourceChunksURL != null)
                 {
+#if SIMULATEAPPLYPRELOAD
                     string requestedUrl = gameState switch
-                                       {
-                                           GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
-                                              .LauncherResourceChunksURL.PreloadUrl,
-                                           _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
-                                       };
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                           .LauncherResourceChunksURL.PreloadUrl,
+                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                    };
                     GameVersion? requestedVersion = gameState switch
-                                           {
-                                               GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
-                                                  .GetGameVersionAPIPreload(),
-                                               _ => _gameVersionManager!.GetGameVersionAPI()
-                                           } ?? _gameVersionManager!.GetGameVersionAPI();
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                           .GetGameVersionAPIPreload(),
+                        _ => _gameVersionManager!.GetGameVersionAPIPreload()
+                    } ?? _gameVersionManager!.GetGameVersionAPI();
+#else
+                    string requestedUrl = gameState switch
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                           .LauncherResourceChunksURL.PreloadUrl,
+                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                    };
+                    GameVersion? requestedVersion = gameState switch
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                           .GetGameVersionAPIPreload(),
+                        _ => _gameVersionManager!.GetGameVersionAPI()
+                    } ?? _gameVersionManager!.GetGameVersionAPI();
 
                     // Add the tag query to the Url
                     requestedUrl += $"&tag={requestedVersion.ToString()}";
+#endif
 
                     // Set the progress bar to indetermined
                     _status!.IsIncludePerFileIndicator     = false;
                     _status!.IsProgressPerFileIndetermined = false;
-                    _status!.IsProgressTotalIndetermined   = true;
+                    _status!.IsProgressAllIndetermined     = true;
                     UpdateStatus();
 
                     // Initialize the info pair list
@@ -728,9 +745,12 @@ namespace CollapseLauncher.InstallManager.Base
                     _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
 
                     // Get the remote total size and current total size
-                    _progressTotalCount       = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                    _progressTotalSize        = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                    _progressTotalSizeCurrent = 0;
+                    _progressAllCountTotal       = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                    _progressAllSizeTotal        = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                    _progressAllSizeCurrent      = 0;
+
+                    // Set the display to Install Mode
+                    _isSophonInUpdateMode = false;
 
                     // Get the parallel options
                     var parallelOptions = new ParallelOptions
@@ -750,7 +770,7 @@ namespace CollapseLauncher.InstallManager.Base
                     // Set the progress bar to indetermined
                     _status!.IsIncludePerFileIndicator     = false;
                     _status!.IsProgressPerFileIndetermined = false;
-                    _status!.IsProgressTotalIndetermined   = false;
+                    _status!.IsProgressAllIndetermined   = false;
                     UpdateStatus();
 
                     // Declare the download delegate
@@ -815,10 +835,9 @@ namespace CollapseLauncher.InstallManager.Base
             _isSophonDownloadCompleted = false;
 
             // Set the max thread and httpHandler based on settings
-            int maxThreadSqrt = (int)Math.Sqrt(_threadCount);
-            int maxThread = Math.Min(maxThreadSqrt, 4);
+            int maxThread       = SophonGetThreadNum;
             int maxChunksThread = Math.Min(_threadCount / 2, 4);
-            int maxHttpHandler = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
+            int maxHttpHandler  = Math.Max(maxThread * maxChunksThread, _downloadThreadCount);
 
             LogWriteLine($"Initializing Sophon Chunk update method with Main Thread: {maxThread}, Chunks Thread: {maxChunksThread} and Max HTTP handle: {maxHttpHandler}",
                                 LogType.Default, true);
@@ -837,7 +856,7 @@ namespace CollapseLauncher.InstallManager.Base
             try
             {
                 // Reset status and progress properties
-                ResetStatusAndProgressProperty();
+                ResetStatusAndProgress();
 
                 // Clear the VO language list
                 _sophonVOLanguageList?.Clear();
@@ -854,7 +873,11 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     string requestedBaseUrlFrom = isPreloadMode ? _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl
                         : _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl;
+#if SIMULATEAPPLYPRELOAD
+                    string requestedBaseUrlTo = _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl;
+#else
                     string requestedBaseUrlTo = requestedBaseUrlFrom;
+#endif
                     // Add the tag query to the previous version's Url
                     requestedBaseUrlFrom += $"&tag={requestedVersionFrom.ToString()}";
 
@@ -869,11 +892,15 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                 }
 
+                // Get the remote chunk size
+                _progressPerFileSizeTotal = sophonUpdateAssetList.GetCalculatedDiffSize(true);
+                _progressPerFileSizeCurrent = 0;
+
                 // Get the remote total size and current total size
-                _progressTotalCount = sophonUpdateAssetList.Count(x => !x.IsDirectory);
-                _progressTotalSize = !isPreloadMode ? sophonUpdateAssetList.Sum(x => x.AssetSize)
-                    : sophonUpdateAssetList.GetCalculatedDiffSize(false);
-                _progressTotalSizeCurrent = 0;
+                _progressAllCountTotal = sophonUpdateAssetList.Count(x => !x.IsDirectory);
+                _progressAllSizeTotal = !isPreloadMode ? sophonUpdateAssetList.Sum(x => x.AssetSize)
+                    : _progressPerFileSizeTotal;
+                _progressAllSizeCurrent = 0;
 
                 // Get the parallel options
                 var parallelOptions = new ParallelOptions
@@ -891,13 +918,18 @@ namespace CollapseLauncher.InstallManager.Base
                 RestartStopwatch();
 
                 // Set the progress bar to indetermined
-                _status!.IsIncludePerFileIndicator = false;
+                _isSophonInUpdateMode = !isPreloadMode;
+                _status!.IsIncludePerFileIndicator = !isPreloadMode;
                 _status!.IsProgressPerFileIndetermined = false;
-                _status!.IsProgressTotalIndetermined = false;
+                _status!.IsProgressAllIndetermined = false;
+                _status!.ActivityStatus = string.Format("{0}: {1}",
+                    _isSophonInUpdateMode && !isPreloadMode ? Lang._Misc.UpdatingAndApplying : Lang._Misc.Downloading,
+                    string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent, _progressAllCountTotal));
                 UpdateStatus();
 
                 // Get the update source and destination, also where the staging chunk files will be stored
                 string chunkPath = _gameSophonChunkDir;
+                string gamePath = _gamePath;
 
                 // If the chunk directory is not exist, then create one.
                 if (!Directory.Exists(chunkPath))
@@ -913,14 +945,18 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         // If preload mode, then only download the chunks
                         await asset.DownloadDiffChunksAsync(httpClient, chunkPath, parallelChunksOptions,
-                            UpdateSophonDownloadProgress, UpdateSophonDownloadStatus,
+                            UpdateSophonFileTotalProgress, null, UpdateSophonDownloadStatus,
                             isSophonPreloadCompleted);
                         return;
                     }
 
+                    // Ensure to remove the read-only attribute
+                    string currentAssetPath = Path.Combine(gamePath, asset.AssetName);
+                    TryUnassignReadOnlyFileSingle(currentAssetPath);
+
                     // Otherwise, start the patching process
-                    await asset.WriteUpdateAsync(httpClient, _gamePath, _gamePath, chunkPath,
-                        canDeleteChunks, parallelChunksOptions, UpdateSophonDownloadProgress, UpdateSophonDownloadStatus);
+                    await asset.WriteUpdateAsync(httpClient, gamePath, gamePath, chunkPath,
+                        canDeleteChunks, parallelChunksOptions, UpdateSophonFileTotalProgress, UpdateSophonFileDownloadProgress, UpdateSophonDownloadStatus);
                 };
 
                 // Enumerate in parallel and process the assets
@@ -1048,7 +1084,8 @@ namespace CollapseLauncher.InstallManager.Base
                                            () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
                                                                 FileShare.ReadWrite),
                                            parallelOptions,
-                                           UpdateSophonDownloadProgress,
+                                           UpdateSophonFileTotalProgress,
+                                           UpdateSophonFileDownloadProgress,
                                            UpdateSophonDownloadStatus
                                           );
         }
@@ -1062,8 +1099,8 @@ namespace CollapseLauncher.InstallManager.Base
             using (Stream fs = asset!.GetReadStream(_downloadThreadCount)!)
             {
                 // Reset the per file size
-                _progressPerFileSize = fs.Length;
-                _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Verifying, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
+                _progressPerFileSizeTotal = fs.Length;
+                _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Verifying, string.Format(Lang._Misc.PerFromTo!, _progressAllCountCurrent, _progressAllCountTotal));
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
@@ -1076,7 +1113,7 @@ namespace CollapseLauncher.InstallManager.Base
                 switch (await Dialog_GameInstallationFileCorrupt(_parentUI, asset.HashString, HexTool.BytesToHexUnsafe(hashLocal)))
                 {
                     case ContentDialogResult.Primary:
-                        _progressTotalSizeCurrent -= asset.Size;
+                        _progressAllSizeCurrent -= asset.Size;
                         DeleteDownloadedFile(asset.PathOutput, _downloadThreadCount);
                         return 0;
                     case ContentDialogResult.None:
@@ -1092,7 +1129,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Increment the total current count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Return 1 as OK
             return 1;
@@ -1146,7 +1183,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the sum of uncompressed size and
             // Set progress count to beginning
-            _progressTotalSize = GetAssetIndexTotalUncompressSize(gamePackage);
+            _progressAllSizeTotal = GetAssetIndexTotalUncompressSize(gamePackage);
 
             // Sanity Check: Check if the package list is empty or not
             if (gamePackage == null || gamePackage.Count == 0) return;
@@ -1154,9 +1191,9 @@ namespace CollapseLauncher.InstallManager.Base
             // If _canSkipExtract flag is true, then return (skip) the extraction
             if (_canSkipExtract) return;
 
-            _progressTotalSizeCurrent = 0;
-            _progressTotalCountCurrent = 1;
-            _progressTotalCount = gamePackage.Count;
+            _progressAllSizeCurrent = 0;
+            _progressAllCountCurrent = 1;
+            _progressAllCountTotal = gamePackage.Count;
             _status!.IsIncludePerFileIndicator = gamePackage.Count > 1;
             RestartStopwatch();
 
@@ -1171,9 +1208,9 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (GameInstallPackage asset in gamePackage)
             {
                 // Update the status
-                _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Extracting, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
+                _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.Extracting, string.Format(Lang._Misc.PerFromTo!, _progressAllCountCurrent, _progressAllCountTotal));
                 _status!.IsProgressPerFileIndetermined = false;
-                _status!.IsProgressTotalIndetermined = false;
+                _status!.IsProgressAllIndetermined = false;
                 UpdateStatus();
 
                 // Assign extractor
@@ -1218,9 +1255,9 @@ namespace CollapseLauncher.InstallManager.Base
                 if (!string.IsNullOrEmpty(asset.RunCommand))
                 {
                     // Update the status
-                    _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.FinishingUp, string.Format(Lang._Misc.PerFromTo!, _progressTotalCountCurrent, _progressTotalCount));
+                    _status!.ActivityStatus = string.Format("{0}: {1}", Lang!._Misc!.FinishingUp, string.Format(Lang._Misc.PerFromTo!, _progressAllCountCurrent, _progressAllCountTotal));
                     _status!.IsProgressPerFileIndetermined = true;
-                    _status!.IsProgressTotalIndetermined = true;
+                    _status!.IsProgressAllIndetermined = true;
                     UpdateStatus();
 
                     try
@@ -1279,7 +1316,7 @@ namespace CollapseLauncher.InstallManager.Base
                     DeleteSingleOrSegmentedDownloadStream(asset);
                 }
 
-                _progressTotalCountCurrent++;
+                _progressAllCountCurrent++;
             }
         }
 
@@ -1352,25 +1389,25 @@ namespace CollapseLauncher.InstallManager.Base
                     outputStream.Write(buffer, 0, read);
 
                     // Increment total size
-                    _progressTotalSizeCurrent   += read;
+                    _progressAllSizeCurrent   += read;
                     _progressPerFileSizeCurrent += read;
 
                     if (!await CheckIfNeedRefreshStopwatch()) continue;
 
                     // Assign local sizes to progress
-                    _progress.ProgressPerFileDownload       = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
-                    _progress.ProgressTotalDownload         = _progressTotalSizeCurrent;
-                    _progress.ProgressTotalSizeToDownload   = _progressTotalSize;
+                    _progress.ProgressPerFileSizeCurrent       = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent         = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal   = _progressAllSizeTotal;
 
                     // Calculate the speed
-                    _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
 
                     // Calculate percentage
-                    _progress.ProgressTotalPercentage   = Math.Round(((double)_progressTotalSizeCurrent / _progressTotalSize) * 100,     2);
-                    _progress.ProgressPerFilePercentage = Math.Round(((double)_progressPerFileSizeCurrent / _progressPerFileSize) * 100, 2);
+                    _progress.ProgressAllPercentage   = Math.Round(((double)_progressAllSizeCurrent / _progressAllSizeTotal) * 100,     2);
+                    _progress.ProgressPerFilePercentage = Math.Round(((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal) * 100, 2);
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+                    _progress.ProgressAllTimeLeft = ((_progressAllSizeTotal - _progressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
 
                     UpdateAll();
                 }
@@ -1774,18 +1811,18 @@ namespace CollapseLauncher.InstallManager.Base
         {
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
 
-            _progress.ProgressTotalSizeToDownload = hdiffEntry.Sum(x => x.fileSize);
-            _progress.ProgressTotalDownload = 0;
+            _progress.ProgressAllSizeTotal = hdiffEntry.Sum(x => x.fileSize);
+            _progress.ProgressAllSizeCurrent = 0;
             _status.IsIncludePerFileIndicator = false;
             RestartStopwatch();
 
-            _progressTotalCount = 1;
-            _progressTotalCountFound = hdiffEntry.Count;
+            _progressAllCountTotal = 1;
+            _progressAllCountFound = hdiffEntry.Count;
 
             HDiffPatch patcher = new HDiffPatch();
             foreach (PkgVersionProperties entry in hdiffEntry)
             {
-                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Patching, string.Format(Lang._Misc.PerFromTo, _progressTotalCount, _progressTotalCountFound));
+                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Patching, string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal, _progressAllCountFound));
 
                 string patchBasePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(entry.remoteName));
                 string sourceBasePath = GetBasePersistentDirectory(_gamePath, entry.remoteName);
@@ -1823,11 +1860,11 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning, true);
 
-                    _progress.ProgressTotalDownload += entry.fileSize;
-                    _progress.ProgressTotalPercentage = Math.Round(((double)_progress.ProgressTotalDownload / _progress.ProgressTotalSizeToDownload) * 100, 2);
-                    _progress.ProgressTotalSpeed = _progress.ProgressTotalDownload / _stopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSizeCurrent += entry.fileSize;
+                    _progress.ProgressAllPercentage = Math.Round(((double)_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal) * 100, 2);
+                    _progress.ProgressAllSpeed = _progress.ProgressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
 
-                    _progress.ProgressTotalTimeLeft = ((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+                    _progress.ProgressAllTimeLeft = ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
                     UpdateProgress();
                 }
                 finally
@@ -1843,7 +1880,7 @@ namespace CollapseLauncher.InstallManager.Base
                         LogWriteLine($"Failed while trying to delete temporary file: {destPath}, skipping!\r\n{ex}", LogType.Warning, true);
                     }
 
-                    _progressTotalCount++;
+                    _progressAllCountTotal++;
                     FileInfo patchFile = new FileInfo(patchPath);
 
                     patchFile.IsReadOnly = false;
@@ -1854,13 +1891,13 @@ namespace CollapseLauncher.InstallManager.Base
 
         private async void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            _progress.ProgressTotalDownload += e.Read;
+            _progress.ProgressAllSizeCurrent += e.Read;
             if (await CheckIfNeedRefreshStopwatch())
             {
-                _progress.ProgressTotalPercentage = Math.Round(((double)_progress.ProgressTotalDownload / _progress.ProgressTotalSizeToDownload) * 100, 2);
-                _progress.ProgressTotalSpeed = _progress.ProgressTotalDownload / _stopwatch.Elapsed.TotalSeconds;
+                _progress.ProgressAllPercentage = Math.Round(((double)_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal) * 100, 2);
+                _progress.ProgressAllSpeed = _progress.ProgressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
 
-                _progress.ProgressTotalTimeLeft = ((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+                _progress.ProgressAllTimeLeft = ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
                 UpdateProgress();
             }
         }
@@ -2703,7 +2740,6 @@ namespace CollapseLauncher.InstallManager.Base
             }
             
             // Iterate the asset
-            FileInfo fileInfo;
             foreach (FilePropertiesRemote index in assetIndex)
             {
                 // Get the combined path from the asset name
@@ -2719,16 +2755,14 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Sanity Check: If the file is still missing even after the process, then throw
-                fileInfo = new FileInfo(inputPath);
-                if (!fileInfo.Exists)
+                var fileInfo = new FileInfo(inputPath);
+                if (fileInfo.Exists)
                 {
-                    throw new AccessViolationException($"File: {inputPath} isn't found!");
+                    // Move the file to the target directory
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.MoveTo(outputPath, true);
+                    LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
                 }
-
-                // Move the file to the target directory
-                fileInfo.IsReadOnly = false;
-                fileInfo.MoveTo(outputPath, true);
-                LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
             }
         }
 
@@ -2770,8 +2804,8 @@ namespace CollapseLauncher.InstallManager.Base
             int packageCount = packageList.Sum(x => x.Segments != null ? x.Segments.Count : 1);
 
             // Set progress count to beginning
-            _progressTotalCountCurrent = 1;
-            _progressTotalCount = packageCount;
+            _progressAllCountCurrent = 1;
+            _progressAllCountTotal = packageCount;
             RestartStopwatch();
 
             // Subscribe the download progress to the event adapter
@@ -2808,8 +2842,8 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Set the activity status
             _status.IsIncludePerFileIndicator = packageCount > 1;
-            _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-            LogWriteLine($"Downloading package URL {_progressTotalCountCurrent}/{_progressTotalCount} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
+            _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent, _progressAllCountTotal));
+            LogWriteLine($"Downloading package URL {_progressAllCountCurrent}/{_progressAllCountTotal} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
 
             // Get the directory path
             string pathDir = Path.GetDirectoryName(package.PathOutput);
@@ -2834,7 +2868,7 @@ namespace CollapseLauncher.InstallManager.Base
                     await _httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
 
                 // Update status to merging
-                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent, _progressAllCountTotal));
                 UpdateStatus();
                 _stopwatch.Stop();
 
@@ -2846,18 +2880,18 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Increment the total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
         }
 
         private async ValueTask CheckExistingDownloadAsync(UIElement Content, List<GameInstallPackage> packageList)
         {
-            // If the _progressTotalSizeCurrent has the size, then
+            // If the _progressAllSizeCurrent has the size, then
             // display the reset or continue download dialog.
             // UPDATE: Ensure if the downloaded size is not the same as total. If no, then continue
             //         showing the dialog
-            if (_progressTotalSizeCurrent > 0 && _progressTotalSize != _progressTotalSizeCurrent)
+            if (_progressAllSizeCurrent > 0 && _progressAllSizeTotal != _progressAllSizeCurrent)
             {
-                switch (await Dialog_ExistingDownload(Content, _progressTotalSizeCurrent, _progressTotalSize))
+                switch (await Dialog_ExistingDownload(Content, _progressAllSizeCurrent, _progressAllSizeTotal))
                 {
                     case ContentDialogResult.Primary:
                         break;
@@ -2873,8 +2907,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void ResetDownload(List<GameInstallPackage> packageList)
         {
-            // Reset the _progressTotalSizeCurrent to 0
-            _progressTotalSizeCurrent = 0;
+            // Reset the _progressAllSizeCurrent to 0
+            _progressAllSizeCurrent = 0;
 
             // Iterate and start deleting the existing file
             for (int i = 0; i < packageList.Count; i++)
@@ -2939,7 +2973,7 @@ namespace CollapseLauncher.InstallManager.Base
             return totalSize;
         }
 
-        private async ValueTask CheckDriveFreeSpace(UIElement Content, List<GameInstallPackage> packageList, long sizeDownloaded)
+        private async ValueTask CheckDriveFreeSpace(UIElement Content, List<GameInstallPackage> packageList, double sizeDownloaded)
         {
             // Get the information about the disk
             DriveInfo driveInfo = new DriveInfo(_gamePath);
@@ -3056,7 +3090,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsCompleted = true;
                     _status.IsCanceled = false;
                     // HACK: Fix the progress not achieving 100% while completed
-                    _progress.ProgressTotalPercentage = 100f;
+                    _progress.ProgressAllPercentage = 100f;
                     _progress.ProgressPerFilePercentage = 100f;
                     break;
                 case CompletenessStatus.Cancelled:
@@ -3107,17 +3141,17 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async void DeltaPatchCheckProgress(object sender, PatchEvent e)
         {
-            _progress.ProgressTotalPercentage = e.ProgressPercentage;
+            _progress.ProgressAllPercentage = e.ProgressPercentage;
 
-            _progress.ProgressTotalTimeLeft = e.TimeLeft;
-            _progress.ProgressTotalSpeed = e.Speed;
+            _progress.ProgressAllTimeLeft = e.TimeLeft;
+            _progress.ProgressAllSpeed = e.Speed;
 
-            _progress.ProgressTotalSizeToDownload = e.TotalSizeToBePatched;
-            _progress.ProgressTotalDownload = e.CurrentSizePatched;
+            _progress.ProgressAllSizeTotal = e.TotalSizeToBePatched;
+            _progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
 
             if (await CheckIfNeedRefreshStopwatch())
             {
-                _status.IsProgressTotalIndetermined = false;
+                _status.IsProgressAllIndetermined = false;
                 UpdateProgressBase();
                 UpdateStatus();
             }
@@ -3148,17 +3182,17 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
         {
-            _progress.ProgressTotalPercentage = e.ProgressTotalPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressTotalPercentage;
+            _progress.ProgressAllPercentage = e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
 
-            _progress.ProgressTotalTimeLeft = e.ProgressTotalTimeLeft;
-            _progress.ProgressTotalSpeed = e.ProgressTotalSpeed;
+            _progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
+            _progress.ProgressAllSpeed = e.ProgressAllSpeed;
 
-            _progress.ProgressTotalSizeToDownload = e.ProgressTotalSizeToDownload;
-            _progress.ProgressTotalDownload = e.ProgressTotalDownload;
+            _progress.ProgressAllSizeTotal = e.ProgressAllSizeTotal;
+            _progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
 
             if (await CheckIfNeedRefreshStopwatch())
             {
-                _status.IsProgressTotalIndetermined = false;
+                _status.IsProgressAllIndetermined = false;
                 UpdateProgressBase();
                 UpdateStatus();
             }
@@ -3170,26 +3204,26 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Incrment current total size
                 long lastSize = GetLastSize((long)e.TotalRead);
-                _progressTotalSizeCurrent += lastSize;
+                _progressAllSizeCurrent += lastSize;
 
                 // Assign per file size
                 _progressPerFileSizeCurrent = (long)e.TotalRead;
-                _progressPerFileSize = (long)e.TotalSize;
+                _progressPerFileSizeTotal = (long)e.TotalSize;
 
                 // Assign local sizes to progress
-                _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
-                _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
-                _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
-                _progress.ProgressTotalSizeToDownload = _progressTotalSize;
+                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
+                _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
+                _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
 
                 // Calculate the speed
-                _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+                _progress.ProgressAllSpeed = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
 
                 // Calculate percentage
-                _progress.ProgressTotalPercentage = Math.Round(((double)_progressTotalSizeCurrent / _progressTotalSize) * 100, 2);
-                _progress.ProgressPerFilePercentage = Math.Round(((double)_progressPerFileSizeCurrent / _progressPerFileSize) * 100, 2);
+                _progress.ProgressAllPercentage = Math.Round(((double)_progressAllSizeCurrent / _progressAllSizeTotal) * 100, 2);
+                _progress.ProgressPerFilePercentage = Math.Round(((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal) * 100, 2);
                 // Calculate the timelapse
-                _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+                _progress.ProgressAllTimeLeft = ((_progressAllSizeTotal - _progressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
 
                 UpdateAll();
             }
@@ -3209,37 +3243,35 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Set the progress bar not indetermined
             _status.IsProgressPerFileIndetermined = false;
-            _status.IsProgressTotalIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
 
             if (e.State != DownloadState.Merging)
             {
                 // Increment the total current size if status is not merging
-                _progressTotalSizeCurrent += e.Read;
+                _progressAllSizeCurrent += e.Read;
                 // Increment the total last read
-                _progressTotalReadCurrent += e.Read;
+                _progressAllIOReadCurrent += e.Read;
             }
 
             if (await CheckIfNeedRefreshStopwatch())
             {
-                _progress.DownloadEvent = e;
-
                 if (e.State != DownloadState.Merging)
                 {
                     // Assign local sizes to progress
-                    _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
-                    _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
-                    _progress.ProgressTotalSizeToDownload = _progressTotalSize;
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
 
                     // Calculate the speed
-                    _progress.ProgressTotalSpeed = _progressTotalReadCurrent / _stopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed = _progressAllIOReadCurrent / _stopwatch.Elapsed.TotalSeconds;
 
                     // Calculate percentage
-                    _progress.ProgressPerFilePercentage = Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSize * 100, 2);
-                    _progress.ProgressTotalPercentage = Math.Round(_progressTotalSizeCurrent / (double)_progressTotalSize * 100, 2);
+                    _progress.ProgressPerFilePercentage = Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
+                    _progress.ProgressAllPercentage = Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
 
                     // Calculate the timelapse
-                    _progress.ProgressTotalTimeLeft = ((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed)).ToTimeSpanNormalized();
+                    _progress.ProgressAllTimeLeft = ((_progressAllSizeTotal - _progressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
                 }
                 else
                 {
@@ -3249,18 +3281,18 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // If status is merging, then use progress for speed and timelapse from Http client
                     // and set the rest from the base class
-                    _progress.ProgressTotalTimeLeft = e.TimeLeft;
-                    _progress.ProgressTotalSpeed = e.Speed;
-                    _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
-                    _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
-                    _progress.ProgressTotalSizeToDownload = _progressTotalSize;
-                    _progress.ProgressTotalPercentage = Math.Round(_progressTotalSizeCurrent / (double)_progressTotalSize * 100, 2);
+                    _progress.ProgressAllTimeLeft = e.TimeLeft;
+                    _progress.ProgressAllSpeed = e.Speed;
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
+                    _progress.ProgressAllPercentage = Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
                 }
 
                 // Update the status of per file size and current progress from Http client
                 _progressPerFileSizeCurrent = e.SizeDownloaded;
-                _progressPerFileSize = e.SizeToBeDownloaded;
+                _progressPerFileSizeTotal = e.SizeToBeDownloaded;
                 _progress.ProgressPerFilePercentage = e.ProgressPercentage;
 
                 // Update the status
@@ -3271,7 +3303,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected override void RestartStopwatch()
         {
             // Reset read count to 0
-            _progressTotalReadCurrent = 0;
+            _progressAllIOReadCurrent = 0;
 
             // Restart the stopwatch from base
             base.RestartStopwatch();

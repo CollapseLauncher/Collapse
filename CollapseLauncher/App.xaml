@@ -116,8 +116,9 @@
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#AA222222"
-                                          TintColor="#000000"
-                                          TintOpacity="0.33"/>
+                                          TintColor="#222222"
+                                          TintOpacity="0.2"
+                                          TintLuminosityOpacity="0.2"/>
                             <AcrylicBrush x:Key="DialogAcrylicBrush"
                                           FallbackColor="#FF222222"
                                           TintColor="#FF222222"
@@ -419,7 +420,7 @@
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
                                           FallbackColor="#CCEEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.75"
+                                          TintLuminosityOpacity="0.6"
                                           TintOpacity="0"/>
                             <AcrylicBrush x:Key="WebView2GridBackground"
                                           FallbackColor="#EEEAEAEA"
@@ -489,7 +490,7 @@
                                                  StartPoint="0,0"
                                                  EndPoint="0.15,0">
                                 <GradientStop Offset="0"
-                                              Color="#2DFFFFFF"/>
+                                              Color="#44FFFFFF"/>
                                 <GradientStop Offset="1"
                                               Color="#00FFFFFF"/>
                             </LinearGradientBrush>
@@ -1702,6 +1703,11 @@
                                                                                        Storyboard.TargetProperty="BorderBrush">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource ButtonBorderBrushDisabled}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="BorderThickness">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="0"/>
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="Foreground">

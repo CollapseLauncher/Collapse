@@ -340,6 +340,7 @@ namespace Hi3Helper.Shared.Region
             { "UseCustomBG", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
+            { "ShowGamePlaytime", true},
             { "CustomBGPath", "" },
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },

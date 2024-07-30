@@ -30,6 +30,10 @@ namespace CollapseLauncher.Pages
         public Visibility IsPostNoticePanelEmpty => (GameNewsData?.NewsPostTypeAnnouncement?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostInfoPanelVisible => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostInfoPanelEmpty => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelAllEmpty =>
+            IsPostEventPanelVisible == Visibility.Collapsed
+            && IsPostEventPanelVisible == Visibility.Collapsed
+            && IsPostEventPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
         public int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
 #nullable restore
 
@@ -58,6 +62,22 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("ShowSocialMediaPanel", value);
                 ToggleSocmedPanelPanel(value);
+            }
+        }
+
+        public bool IsPlaytimeBtnVisible
+        {
+            get
+            {
+                var v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
+                TogglePlaytimeBtn(v);
+
+                return v;
+            }
+            set
+            {
+                SetAndSaveConfigValue("ShowGamePlaytime", value);
+                TogglePlaytimeBtn(value);
             }
         }
 
@@ -132,8 +152,9 @@ namespace CollapseLauncher.Pages
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
 
-        public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);
+        public void ToggleEventsPanel(bool      hide) => HideImageCarousel(!hide);
         public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
+        public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
     }
 
     public class NullVisibilityConverter : IValueConverter
