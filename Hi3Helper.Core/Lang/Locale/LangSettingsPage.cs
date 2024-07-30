@@ -110,6 +110,19 @@
                 public string Waifu2X_Warning_D3DMappingLayers      { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
                 public string Waifu2X_Error_Loader                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Loader;
                 public string Waifu2X_Error_Output                  { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Output;
+                public string SophonSettingsTitle                   { get; set; } = LangFallback?._SettingsPage.SophonSettingsTitle;
+                public string SophonHelp_Title                      { get; set; } = LangFallback?._SettingsPage.SophonHelp_Title;
+                public string SophonHelp_1                          { get; set; } = LangFallback?._SettingsPage.SophonHelp_1;
+                public string SophonHelp_2                          { get; set; } = LangFallback?._SettingsPage.SophonHelp_2;
+                public string SophonHelp_IndicatorTitle             { get; set; } = LangFallback?._SettingsPage.SophonHelp_IndicatorTitle;
+                public string SophonHelp_Indicator1                 { get; set; } = LangFallback?._SettingsPage.SophonHelp_Indicator1;
+                public string SophonHelp_Indicator2                 { get; set; } = LangFallback?._SettingsPage.SophonHelp_Indicator2;
+                public string SophonHelp_Indicator3                 { get; set; } = LangFallback?._SettingsPage.SophonHelp_Indicator3;
+                public string SophonHelp_Indicator4                 { get; set; } = LangFallback?._SettingsPage.SophonHelp_Indicator4;
+                public string SophonHelp_Thread                     { get; set; } = LangFallback?._SettingsPage.SophonHelp_Thread;
+                public string SophonHttpNumberBox                   { get; set; } = LangFallback?._SettingsPage.SophonHttpNumberBox;
+                public string SophonHelp_Http                       { get; set; } = LangFallback?._SettingsPage.SophonHelp_Http;
+                public string SophonToggle                          { get; set; } = LangFallback?._SettingsPage.SophonToggle;
             }
         }
         #endregion

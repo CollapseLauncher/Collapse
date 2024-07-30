@@ -622,6 +622,22 @@ namespace CollapseLauncher
                 bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                     || filename.StartsWith("dxgi.dll", StringComparison.OrdinalIgnoreCase);
 
+                string[] ignoredFiles = [];
+                if (File.Exists(Path.Combine(_gamePath, "@IgnoredFiles")))
+                {
+                    try
+                    {
+                        ignoredFiles = File.ReadAllLines(Path.Combine(_gamePath, "@IgnoredFiles"));
+                        LogWriteLine("Found ignore file settings!");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
+                    }
+                }
+
+                if (ignoredFiles.Length > 0) _ignoredUnusedFileList.AddRange(ignoredFiles);
+
                 // Is file ignored
                 bool isFileIgnored = _ignoredUnusedFileList.Contains(asset, StringComparer.OrdinalIgnoreCase);
 

@@ -27,7 +27,13 @@ namespace CollapseLauncher
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
                 // Iterate the asset index and do update operation
-                foreach (CacheAsset asset in updateAssetIndex!)
+                foreach (CacheAsset asset in
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex!)
+#else
+                    updateAssetIndex!
+#endif
+                    )
                 {
                     await UpdateCacheAsset(asset, httpClient, token);
                 }

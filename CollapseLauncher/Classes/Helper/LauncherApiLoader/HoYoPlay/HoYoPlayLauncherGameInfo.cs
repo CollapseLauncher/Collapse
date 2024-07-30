@@ -16,7 +16,23 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
     public class HoYoPlayGameInfoData
     {
-        [JsonPropertyName("games")] public List<HoYoPlayGameInfoField>? Data { get; init; } 
+        [JsonPropertyName("games")] public List<HoYoPlayGameInfoField>? Data { get; init; }
+        [JsonPropertyName("game_branches")] public List<HoYoPlayGameInfoBranch>? GameBranchesInfo { get; init; }
+    }
+
+    public class HoYoPlayGameInfoBranch
+    {
+        [JsonPropertyName("game")] public HoYoPlayGameInfoField? GameInfo { get; init; }
+        [JsonPropertyName("main")] public HoYoPlayGameInfoBranchField? GameMainField { get; init; }
+        [JsonPropertyName("pre_download")] public HoYoPlayGameInfoBranchField? GamePreloadField { get; init; }
+    }
+
+    public class HoYoPlayGameInfoBranchField
+    {
+        [JsonPropertyName("package_id")] public string? PackageId { get; init; }
+        [JsonPropertyName("branch")] public string? Branch { get; init; }
+        [JsonPropertyName("password")] public string? Password { get; init; }
+        [JsonPropertyName("tag")] public string? Tag { get; init; }
     }
 
     public class HoYoPlayGameInfoField

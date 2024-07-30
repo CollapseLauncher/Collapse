@@ -374,7 +374,7 @@
                                 </Button.Content>
                                 <Button.Flyout>
                                     <Flyout>
-                                        <StackPanel Width="318">
+                                        <StackPanel MaxWidth="318">
                                             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" />
                                             <TextBlock Margin="0,8,0,0"
@@ -410,20 +410,20 @@
                                                      Foreground="{ThemeResource AccentColor}"
                                                      Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}" />
                                             </TextBlock>
-                                            <TextBlock Margin="0,0,0,0"
-                                                       TextWrapping="Wrap">
+                                            <TextBlock TextWrapping="Wrap">
                                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
                                                 <Run FontWeight="Bold"
                                                      Foreground="{ThemeResource AccentColor}"
                                                      Text="0 - 128" />
                                             </TextBlock>
-                                            <StackPanel Margin="0,16,0,0"
-                                                        Orientation="Horizontal">
+                                            <MenuFlyoutSeparator Margin="0,16" />
+                                            <StackPanel Orientation="Horizontal">
                                                 <FontIcon Margin="0,0,8,0"
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           Foreground="{ThemeResource SystemFillColorCautionBrush}"
                                                           Glyph="&#xf071;" />
-                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                <TextBlock Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                                           Style="{ThemeResource SubtitleTextBlockStyle}"
                                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention}" />
                                             </StackPanel>
                                             <TextBlock Margin="0,8,0,0"
@@ -472,6 +472,104 @@
                                       IsOn="{x:Bind IsUseDownloadChunksMerging, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <StackPanel Margin="0,16,0,8"
+                                    HorizontalAlignment="Left"
+                                    Orientation="Horizontal">
+                            <TextBlock Margin="0,0,0,8"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonSettingsTitle}" />
+                            <Button Width="24"
+                                    Height="24"
+                                    Margin="8,-12,0,0"
+                                    Padding="0"
+                                    HorizontalAlignment="Right"
+                                    CornerRadius="4">
+                                <Button.Content>
+                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                              FontSize="10"
+                                              Glyph="&#x3f;" />
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel MaxWidth="318">
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Title}" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_1}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_2}"
+                                                       TextWrapping="Wrap" />
+                                            <MenuFlyoutSeparator Margin="0,16" />
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Thread}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}" />
+                                            </TextBlock>
+                                            <TextBlock Margin="0,0,0,0"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="0 - 64" />
+                                            </TextBlock>
+                                            <TextBlock Margin="0,16,0,0"
+                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHttpNumberBox}" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Http}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}" />
+                                            </TextBlock>
+                                            <TextBlock Margin="0,0,0,0"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="0 - 128" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.SophonToggle}"
+                                      IsOn="{x:Bind IsEnableSophon, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <StackPanel Margin="0,0,0,8"
+                                    HorizontalAlignment="Left"
+                                    Orientation="Horizontal">
+                            <NumberBox x:Name="SophonCpuThreadsNumBox"
+                                       Width="128"
+                                       VerticalAlignment="Bottom"
+                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
+                                       Maximum="64"
+                                       Minimum="0"
+                                       SpinButtonPlacementMode="Compact"
+                                       Value="{x:Bind SophonDownThread, Mode=TwoWay}" />
+                            <NumberBox x:Name="SophonHttpConnNumBox"
+                                       Width="128"
+                                       Margin="16,0,0,0"
+                                       VerticalAlignment="Bottom"
+                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.SophonHttpNumberBox}"
+                                       Maximum="128"
+                                       Minimum="0"
+                                       SpinButtonPlacementMode="Compact"
+                                       Value="{x:Bind SophonHttpConn, Mode=TwoWay}" />
+                        </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" />

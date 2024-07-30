@@ -1,6 +1,7 @@
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
@@ -28,6 +29,7 @@ namespace CollapseLauncher
     [JsonSerializable(typeof(GeneralDataProp))]
     [JsonSerializable(typeof(MasterKeyConfig))]
     [JsonSerializable(typeof(AudioPCKType[]))]
+    [JsonSerializable(typeof(LocalFileInfo))]
     [JsonSerializable(typeof(PresetConfig))]
     [JsonSerializable(typeof(List<Stamp>))]
     [JsonSerializable(typeof(CacheAsset))]

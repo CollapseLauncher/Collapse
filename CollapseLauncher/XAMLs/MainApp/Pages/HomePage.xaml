@@ -1,4 +1,4 @@
-﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.HomePage"
@@ -1069,6 +1069,104 @@
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
             </StackPanel>
+            <Button x:Name="SophonProgressInformationButton"
+                    Width="32"
+                    Height="32"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    CornerRadius="16"
+                    Shadow="{ThemeResource SharedShadow}">
+                <Button.Content>
+                    <Grid Margin="-16"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{ThemeResource GameSettingsBtnBrush}">
+                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                  Glyph=""
+                                  Opacity="0.6" />
+                    </Grid>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout Placement="LeftEdgeAlignedBottom">
+                        <StackPanel MaxWidth="370">
+                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Title}" />
+                            <TextBlock Margin="0,8,0,0"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_1}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Margin="0,8,0,0"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_2}"
+                                       TextWrapping="Wrap" />
+                            <MenuFlyoutSeparator Margin="0,8" />
+                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_IndicatorTitle}" />
+                            <Grid Margin="0,8,0,0"
+                                  HorizontalAlignment="Stretch"
+                                  ColumnSpacing="8"
+                                  RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="1"
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator1}"
+                                           TextWrapping="WrapWholeWords" />
+                                <FontIcon Grid.Row="1"
+                                          Grid.Column="0"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesome}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="1"
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator2}"
+                                           TextWrapping="WrapWholeWords" />
+                                <FontIcon Grid.Row="0"
+                                          Grid.Column="2"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesome}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="3"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator3}"
+                                           TextWrapping="WrapWholeWords" />
+                                <FontIcon Grid.Row="1"
+                                          Grid.Column="2"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="3"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator4}"
+                                           TextWrapping="WrapWholeWords" />
+                            </Grid>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
             <Button x:Name="SophonProgressSettingsButton"
                     Width="32"
                     Height="32"
@@ -1673,6 +1771,29 @@
                                                        Margin="8,-1,0,0"
                                                        FontWeight="Medium"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Button.Content>
+                                </Button>
+                                <Button x:Name="CleanupFilesButton"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="CleanupFilesButton_Click"
+                                        CornerRadius="14">
+                                    <Button.Content>
+                                        <Grid Margin="4,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="18" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                      FontSize="16"
+                                                      Glyph="" />
+                                            <TextBlock Grid.Column="1"
+                                                       Margin="8,-1,0,0"
+                                                       FontWeight="Medium"
+                                                       Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>

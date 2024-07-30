@@ -33,7 +33,7 @@
         internal static string LauncherCurrentVersionString
             => _launcherCurrentVersionString;
 
-        internal static async void RunUpdateCheckDetached()
+        internal static async Task RunUpdateCheckDetached()
         {
             try
             {
