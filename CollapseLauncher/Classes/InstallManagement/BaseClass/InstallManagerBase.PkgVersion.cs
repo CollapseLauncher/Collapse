@@ -229,24 +229,32 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 
                 // Add pre-download zips into the ignored list 
-                RegionResourceVersion? packagePreDownloadList =
-                    _gameVersionManager.GetGamePreloadZip().FirstOrDefault();
+                var packagePreDownloadList = _gameVersionManager.GetGamePreloadZip().FirstOrDefault();
                 if (packagePreDownloadList != null)
                 {
-                    List<string> preDownloadZips = new List<string>();
-                    GameInstallPackage pkg = new GameInstallPackage(packagePreDownloadList, _gamePath)
-                        { PackageType = GameInstallPackageType.General };
+                    var preDownloadZips = new List<string>();
+                    var pkg = new GameInstallPackage(packagePreDownloadList, _gamePath) { PackageType = GameInstallPackageType.General };
                     if (!string.IsNullOrEmpty(pkg.Name)) preDownloadZips.Add($"{pkg.Name}*");
-                    if (packagePreDownloadList.voice_packs is { Count: > 0 })
-                        preDownloadZips.AddRange(from audioRes in packagePreDownloadList.voice_packs
-                                                 select new GameInstallPackage(audioRes, _gamePath)
-                                                     { PackageType = GameInstallPackageType.Audio }
-                                                 into pkgAudio
-                                                 where !string.IsNullOrEmpty(pkgAudio.Name)
-                                                 select $"{pkgAudio.Name}*");
-                    
+
+                    if (packagePreDownloadList.voice_packs?.Count > 0)
+                    {
+                        preDownloadZips.AddRange(packagePreDownloadList.voice_packs
+                                                                       .Select(audioRes =>
+                                                                                   new GameInstallPackage(audioRes,
+                                                                                       _gamePath)
+                                                                                   {
+                                                                                       PackageType =
+                                                                                           GameInstallPackageType.Audio
+                                                                                   })
+                                                                       .Where(pkgAudio =>
+                                                                                  !string.IsNullOrEmpty(pkgAudio.Name))
+                                                                       .Select(pkgAudio => $"{pkgAudio.Name}*"));
+                    }
+
                     if (preDownloadZips.Count > 0)
-                        ignoredFiles = ignoredFiles.Concat(preDownloadZips.ToArray()).ToArray();
+                    {
+                        ignoredFiles = ignoredFiles.Concat(preDownloadZips).ToArray();
+                    }
                 }
                 
             #if DEBUG
