@@ -233,7 +233,8 @@ namespace CollapseLauncher.InstallManager.Base
                 if (packagePreDownloadList != null)
                 {
                     var preDownloadZips = new List<string>();
-                    var pkg = new GameInstallPackage(packagePreDownloadList, _gamePath) { PackageType = GameInstallPackageType.General };
+                    var pkg = new GameInstallPackage(packagePreDownloadList, _gamePath)
+                        { PackageType = GameInstallPackageType.General };
                     if (!string.IsNullOrEmpty(pkg.Name)) preDownloadZips.Add($"{pkg.Name}*");
 
                     if (packagePreDownloadList.voice_packs?.Count > 0)
@@ -241,7 +242,7 @@ namespace CollapseLauncher.InstallManager.Base
                         preDownloadZips.AddRange(packagePreDownloadList.voice_packs
                                                                        .Select(audioRes =>
                                                                                    new GameInstallPackage(audioRes,
-                                                                                       _gamePath)
+                                                                                            _gamePath)
                                                                                    {
                                                                                        PackageType =
                                                                                            GameInstallPackageType.Audio
@@ -257,36 +258,28 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                 }
                 
-            #if DEBUG
                 if (ignoredFiles.Length > 0)
-                {
-                    LogWriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(",", ignoredFiles)}");
-                }
-            #endif 
+                    LogWriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(",", ignoredFiles)}",
+                                 LogType.Scheme, true);
+                
                 // Get the list of the local file paths
                 List<LocalFileInfo> localFileInfo = [];
                 await GetRelativeLocalFilePaths(localFileInfo, includeZipCheck, gameStateEnum, _token.Token);
 
-                // Get and filter the unused file from the pkg_versions
+                // Get and filter the unused file from the pkg_versions and ignoredFiles
                 List<LocalFileInfo> unusedFileInfo = [];
                 await Task.Run(() =>
                                    Parallel.ForEach(localFileInfo,
                                                     new ParallelOptions { CancellationToken = _token.Token },
                                                     (asset, _) =>
                                                     {
-                                                        if (pkgFileInfoHashSet.Contains(asset.RelativePath))
+                                                        if (pkgFileInfoHashSet.Contains(asset.RelativePath) ||
+                                                            PatternMatcher
+                                                               .MatchesAnyPattern(asset.ToFileInfo().Name,
+                                                                    ignoredFiles.ToList()))
                                                             return;
 
-                                                        lock (unusedFileInfo)
-                                                        {
-                                                            if
-                                                                (!PatternMatcher
-                                                                   .MatchesAnyPattern(asset.ToFileInfo().Name,
-                                                                        ignoredFiles.ToList()))
-                                                            {
-                                                                unusedFileInfo.Add(asset);
-                                                            }
-                                                        }
+                                                        lock (unusedFileInfo) unusedFileInfo.Add(asset);
                                                     }));
 
                 return unusedFileInfo;
