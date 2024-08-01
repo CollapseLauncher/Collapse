@@ -42,34 +42,11 @@ namespace CollapseLauncher.GameVersioning
                 { "exit_type", new IniValue(2) }
             };
 
-        private IniSection _defaultIniProfileBilibili =>
-            new()
-            {
-                { "cps", new IniValue("bilibili") },
-                { "channel", new IniValue(gameChannelID) },
-                { "sub_channel", new IniValue(gameSubChannelID) },
-                { "game_install_path", new IniValue(_defaultGameDirPath.Replace('\\', '/')) },
-                { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
-                { "is_first_exit", new IniValue(false) },
-                { "exit_type", new IniValue(2) }
-            };
-
         private IniSection _defaultIniVersion =>
             new()
             {
                 { "channel", new IniValue(gameChannelID) },
                 { "cps", new IniValue(GamePreset.LauncherCPSType) },
-                { "game_version", new IniValue() },
-                { "sub_channel", new IniValue(gameSubChannelID) },
-                { "sdk_version", new IniValue() },
-                { "uapc", GenerateUAPCValue() }
-            };
-
-        private IniSection _defaultIniVersionBilibili =>
-            new()
-            {
-                { "channel", new IniValue(gameChannelID) },
-                { "cps", new IniValue("bilibili") },
                 { "game_version", new IniValue() },
                 { "sub_channel", new IniValue(gameSubChannelID) },
                 { "sdk_version", new IniValue() },
@@ -881,20 +858,10 @@ namespace CollapseLauncher.GameVersioning
             GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName ?? string.Empty);
 
             // Initialize INIs
-            if (GamePreset.ZoneName == "Bilibili")
-            {
-                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfileBilibili,
-                                  _defaultIniProfileSection);
-                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersionBilibili,
-                                  _defaultIniVersionSection, true);
-            }
-            else
-            {
-                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile,
-                                  _defaultIniProfileSection);
-                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion,
-                                  _defaultIniVersionSection, true);
-            }
+            InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile,
+                              _defaultIniProfileSection);
+            InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion,
+                              _defaultIniVersionSection, true);
 
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath,
