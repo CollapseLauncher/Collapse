@@ -1070,6 +1070,36 @@
                                       Glyph="&#xf0ec;" />
                         </Grid>
                     </Button>
+                    <Button x:Name="OpenChangelogBtn"
+                            Margin="0,16,0,0"
+                            Padding="0,8"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Click="OpenChangelog"
+                            CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(OpenChangelogBtn)}"
+                            Style="{ThemeResource AccentButtonStyle}">
+                        <Grid Margin="16,0"
+                              HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid HorizontalAlignment="Left">
+                                <TextBlock x:Name="OpenChangelogBtnText"
+                                           Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_SeeChangelog}" />
+                            </Grid>
+                            <FontIcon Grid.Column="1"
+                                      HorizontalAlignment="Right"
+                                      FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="" />
+                        </Grid>
+                    </Button>
                 </StackPanel>
                 <NavigationViewItemSeparator Margin="16,16" />
                 <TextBlock Margin="0,0,0,16"

@@ -335,6 +335,13 @@ namespace CollapseLauncher.Pages
             LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
         }
 
+        private void OpenChangelog(object sender, RoutedEventArgs e)
+        {
+            var uri =
+                $"https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/blob/main/changelog_{(IsPreview ? "preview" : "stable")}.md";
+            SpawnWebView2.SpawnWebView2Window(uri, Content);
+        }
+
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
             if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
