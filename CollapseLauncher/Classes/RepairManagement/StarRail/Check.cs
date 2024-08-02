@@ -224,6 +224,34 @@ namespace CollapseLauncher
             // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
             asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
+            // Check if the file exist on both persistent and streaming path for non-patch file, then mark the
+            // persistent path as redundant (unused)
+            if (IsPersistentExist && IsStreamingExist && !asset.IsPatchApplicable)
+            {
+                // Add the count and asset. Mark the type as "RepairAssetType.Unused"
+                _progressAllCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(fileInfoPersistent.FullName),
+                        RepairAssetType.Unused,
+                        Path.GetDirectoryName(fileInfoPersistent.FullName),
+                        asset.S,
+                        null,
+                        null
+                    )
+                ));
+
+                // Fix the asset detected as a used file even though it's actually unused
+                asset.FT = FileType.Unused;
+                targetAssetIndex.Add(asset);
+
+                // Set the file to be used from Persistent one
+                UsePersistent = true;
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
+            }
+
             // If the file has Hash Mark or is persistent, then create the hash mark file
             if (IsHasMark) CreateHashMarkFile(asset.N, asset.CRC);
 
