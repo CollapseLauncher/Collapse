@@ -2133,6 +2133,41 @@ namespace CollapseLauncher.InstallManager.Base
             return inStreamingAssetsPath;
         }
 
+        private async ValueTask FileHdiffPatcherInner(string patchPath, string sourceBasePath, string destPath, CancellationToken token)
+        {
+            HDiffPatch patcher = new HDiffPatch();
+            patcher.Initialize(patchPath);
+            token.ThrowIfCancellationRequested();
+
+            Task task = Task.Run(() =>
+            {
+                try
+                {
+                    patcher.Patch(sourceBasePath, destPath, true, token, false, true);
+                    File.Move(destPath, sourceBasePath, true);
+                }
+                catch (InvalidDataException) when (!token.IsCancellationRequested)
+                {
+                    // ignored
+                    // Get the base and new target file size
+                    long newFileSize = HDiffPatch.GetHDiffNewSize(patchPath);
+                    FileInfo fileInfo = new FileInfo(sourceBasePath);
+                    long refFileSize = fileInfo.Exists ? fileInfo.Length : 0;
+
+                    // Check if the throw happened for different file, then rethrow
+                    if (newFileSize != refFileSize)
+                        throw;
+
+                    // Otherwise, log the error
+                    LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
+                }
+            }, token);
+            await task;
+
+            if (task.Exception != null)
+                throw task.Exception;
+        }
+
         public virtual async ValueTask ApplyHdiffListPatch()
         {
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
@@ -2145,8 +2180,15 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllCountTotal = 1;
             _progressAllCountFound = hdiffEntry.Count;
 
-            HDiffPatch patcher = new HDiffPatch();
-            foreach (PkgVersionProperties entry in hdiffEntry)
+            HDiffPatch.LogVerbosity = Verbosity.Verbose;
+            EventListener.LoggerEvent   += EventListener_PatchLogEvent;
+            EventListener.PatchEvent    += EventListener_PatchEvent;
+
+            Task parallelTask = Parallel.ForEachAsync(hdiffEntry, new ParallelOptions
+            {
+                CancellationToken = _token.Token,
+                MaxDegreeOfParallelism = _threadCount
+            }, async (entry, innerToken) =>
             {
                 _status.ActivityStatus =
                     $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal,
@@ -2159,23 +2201,13 @@ namespace CollapseLauncher.InstallManager.Base
 
                 try
                 {
-                    _token.Token.ThrowIfCancellationRequested();
-                    HDiffPatch.LogVerbosity   =  Verbosity.Verbose;
-                    EventListener.LoggerEvent += EventListener_PatchLogEvent;
-                    EventListener.PatchEvent  += EventListener_PatchEvent;
                     if (File.Exists(sourceBasePath) && File.Exists(patchPath))
                     {
                         LogWriteLine($"Patching file {entry.remoteName}...", LogType.Default, true);
                         UpdateProgressBase();
                         UpdateStatus();
 
-                        await Task.Run(() =>
-                                       {
-                                           patcher.Initialize(patchPath);
-                                           patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
-                                       }, _token.Token);
-
-                        File.Move(destPath, sourceBasePath, true);
+                        await FileHdiffPatcherInner(patchPath, sourceBasePath, destPath, innerToken);
                     }
                 }
                 catch (OperationCanceledException)
@@ -2189,7 +2221,10 @@ namespace CollapseLauncher.InstallManager.Base
                     LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning,
                                  true);
 
-                    _progress.ProgressAllSizeCurrent += entry.fileSize;
+                    lock (_progress)
+                    {
+                        _progress.ProgressAllSizeCurrent += entry.fileSize;
+                    }
                     _progress.ProgressAllPercentage =
                         Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
                     _progress.ProgressAllSpeed = _progress.ProgressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
@@ -2201,8 +2236,6 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 finally
                 {
-                    EventListener.PatchEvent  -= EventListener_PatchEvent;
-                    EventListener.LoggerEvent -= EventListener_PatchLogEvent;
                     try
                     {
                         if (File.Exists(destPath))
@@ -2216,7 +2249,7 @@ namespace CollapseLauncher.InstallManager.Base
                                      LogType.Warning, true);
                     }
 
-                    _progressAllCountTotal++;
+                    Interlocked.Increment(ref _progressAllCountTotal);
                     FileInfo patchFile = new FileInfo(patchPath)
                     {
                         IsReadOnly = false
@@ -2224,12 +2257,34 @@ namespace CollapseLauncher.InstallManager.Base
 
                     patchFile.Delete();
                 }
+                _token.Token.ThrowIfCancellationRequested();
+            });
+
+            try
+            {
+                await parallelTask;
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                EventListener.LoggerEvent   -= EventListener_PatchLogEvent;
+                EventListener.PatchEvent    -= EventListener_PatchEvent;
             }
         }
 
         private async void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            _progress.ProgressAllSizeCurrent += e.Read;
+            lock (_progress)
+            {
+                _progress.ProgressAllSizeCurrent += e.Read;
+            }
             if (await CheckIfNeedRefreshStopwatch())
             {
                 _progress.ProgressAllPercentage =
