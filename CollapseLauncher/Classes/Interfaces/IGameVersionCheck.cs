@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -167,6 +168,15 @@ namespace CollapseLauncher.Interfaces
         /// Returns the <c>List</c> of the Resource Version for the SDKs
         /// </summary>
         List<RegionResourcePlugin>? GetGameSdkZip();
+
+        /// <summary>
+        /// Ensure the validity of the game's config.ini file.
+        /// This method also being used to check + prompt the user to whether
+        /// repair the game's config.ini or ignore it.
+        /// </summary>
+        /// <param name="uiParentElement">The parent UI element where the dialog will be spawned (if needed)</param>
+        /// <returns><c>True</c> means the values within config.ini is valid or action is cancelled. <c>False</c> means config.ini has been repaired or changed.</returns>
+        ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement);
 
         /// <summary>
         /// Try find game installation path from the given path.

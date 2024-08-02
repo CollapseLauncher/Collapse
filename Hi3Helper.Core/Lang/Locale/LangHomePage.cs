@@ -76,6 +76,19 @@
                     LangFallback?._HomePage.Exception_DownloadTimeout2;
                 public string Exception_DownloadTimeout3 { get; set; } =
                     LangFallback?._HomePage.Exception_DownloadTimeout3;
+
+                public string GameStateInvalid_Title { get; set; } = LangFallback?._HomePage.GameStateInvalid_Title;
+                public string GameStateInvalid_Subtitle1 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle1;
+                public string GameStateInvalid_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle2;
+                public string GameStateInvalid_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle3;
+                public string GameStateInvalid_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle4;
+                public string GameStateInvalid_Subtitle5 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle5;
+
+                public string GameStateInvalidFixed_Title { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Title;
+                public string GameStateInvalidFixed_Subtitle1 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle1;
+                public string GameStateInvalidFixed_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle2;
+                public string GameStateInvalidFixed_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle3;
+                public string GameStateInvalidFixed_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle4;
             }
         }
         #endregion

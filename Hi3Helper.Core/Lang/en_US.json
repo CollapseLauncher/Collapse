@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
     "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
-    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {

@@ -211,7 +211,20 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                if (m_arguments.StartGame?.Play != true)
+                // Get game state
+                GameInstallStateEnum gameState = await CurrentGameProperty._GameVersion.GetGameState();
+
+                // Check if the game state returns NotInstalled, double-check by doing config.ini validation
+                if (!await CurrentGameProperty._GameVersion
+                          .EnsureGameConfigIniCorrectiveness(this))
+                {
+                    // If the EnsureGameConfigIniCorrectiveness() returns false,
+                    // means config.ini has been changed. Then reload and return to the HomePage
+                    ReturnToHomePage();
+                    return;
+                }
+
+                if (!(m_arguments.StartGame?.Play ?? false))
                     return;
 
                 m_arguments.StartGame.Play = false;
@@ -222,7 +235,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                switch (await CurrentGameProperty._GameVersion.GetGameState())
+                switch (gameState)
                 {
                     case GameInstallStateEnum.InstalledHavePreload:
                     case GameInstallStateEnum.Installed:
