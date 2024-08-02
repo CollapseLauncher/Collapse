@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
 using Microsoft.UI.Xaml;
@@ -21,11 +22,22 @@ namespace CollapseLauncher.GameVersioning
             // Initialize Star Rail metadata tool
             if (GamePreset.ProtoDispatchKey != null)
             {
+                string dispatchUrlTemplate = ('.' + GamePreset.GameDispatchURLTemplate).AssociateGameAndLauncherId(
+                    "channel_id",
+                    "sub_channel_id",
+                    $"{GamePreset.ChannelID}",
+                    $"{GamePreset.SubChannelID}").TrimStart('.');
+                string gatewayUrlTemplate = ('.' + GamePreset.GameGatewayURLTemplate).AssociateGameAndLauncherId(
+                    "channel_id",
+                    "sub_channel_id",
+                    $"{GamePreset.ChannelID}",
+                    $"{GamePreset.SubChannelID}").TrimStart('.');
+
                 StarRailMetadataTool = new SRMetadata(
                     GamePreset.GameDispatchArrayURL[0],
                     GamePreset.ProtoDispatchKey,
-                    GamePreset.GameDispatchURLTemplate,
-                    GamePreset.GameGatewayURLTemplate,
+                    dispatchUrlTemplate,
+                    gatewayUrlTemplate,
                     GamePreset.GameDispatchChannelName,
                     GameVersionAPI?.VersionString);
             }
