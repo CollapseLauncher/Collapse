@@ -4,7 +4,6 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -91,6 +90,7 @@ namespace CollapseLauncher
                     fileInfo.Delete();
                     LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} deleted!", LogType.Default, true);
                 }
+                RemoveHashMarkFile(asset.N, out _, out _);
             }
             else
             {

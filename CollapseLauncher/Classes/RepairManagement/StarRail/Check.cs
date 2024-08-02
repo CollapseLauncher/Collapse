@@ -353,23 +353,29 @@ namespace CollapseLauncher
 
         private void CreateHashMarkFile(string filePath, string hash)
         {
-            // Get the base path and name
-            string basePath = Path.GetDirectoryName(filePath);
-            string baseName = Path.GetFileNameWithoutExtension(filePath);
+            string basePath, baseName;
+            RemoveHashMarkFile(filePath, out basePath, out baseName);
 
             // Create base path if not exist
             if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+
+            // Re-create the hash file
+            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
+            if (File.Exists(toName)) return;
+            File.Create(toName).Dispose();
+        }
+
+        private static void RemoveHashMarkFile(string filePath, out string basePath, out string baseName)
+        {
+            // Get the base path and name
+            basePath = Path.GetDirectoryName(filePath);
+            baseName = Path.GetFileNameWithoutExtension(filePath);
 
             // Enumerate any possible existing hash path and delete it
             foreach (string existingPath in Directory.EnumerateFiles(basePath, $"{baseName}_*.hash"))
             {
                 File.Delete(existingPath);
             }
-
-            // Re-create the hash file
-            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
-            if (File.Exists(toName)) return;
-            File.Create(toName).Dispose();
         }
         #endregion
     }
