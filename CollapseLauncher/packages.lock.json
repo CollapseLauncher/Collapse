@@ -133,9 +133,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.61, )",
-        "resolved": "1.11.61",
-        "contentHash": "hqZASeEFHS9quHvfZSwaULoAJLWkOYVPiQjc3P9J4pQS8vSYzrP3bxe04Vm7vYYuxwbQhq9hCSVvZVLTyRaNaQ=="
+        "requested": "[1.11.62, )",
+        "resolved": "1.11.62",
+        "contentHash": "KS4h7ZjWsO6YixRfQgYdR+PZMbTaZod1LBPi+1Ph7dJCARzQm7DOKe5HPhP/o0EWX5l7QCgAZHa4VOa4pQa8JQ=="
       },
       "ImageEx": {
         "type": "Direct",
@@ -214,9 +214,9 @@
       },
       "Roman-Numerals": {
         "type": "Direct",
-        "requested": "[2.0.0, )",
-        "resolved": "2.0.0",
-        "contentHash": "OZP9ACtcxaJeyidhulsLFAG1OLq5OOozXeORg5Ol3pUCHb0Abz6EqQI6Sz38oJESP3dtz1lTNg8DHauVhbp7BA=="
+        "requested": "[2.0.1, )",
+        "resolved": "2.0.1",
+        "contentHash": "Xvhd0IPCKhdYppa9RhDr4fkwhoMMWfahwCfyVtRgt6TRlbUw0gOmSjJR/+L+/s0QNhLTK93C+2pSlrkDgsoY2w=="
       },
       "SharpCompress": {
         "type": "Direct",
@@ -229,9 +229,9 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
-        "requested": "[2.2.6, )",
-        "resolved": "2.2.6",
-        "contentHash": "x1h8deYRmDGIQDDGCcYNCqNm7J84zoBrIPqcdGSDoonZzlg/LpNDjeoXpR6ULywvR2Y51wiH8Za3K5H7+MZNlw==",
+        "requested": "[2.2.7, )",
+        "resolved": "2.2.7",
+        "contentHash": "rrvU2dpWXhxYcBtvd/nQJyoQFiZZ5YwB1oKQYA5JzNan1Iq1AZTJNnLuBCG4r56J6MAJpsDqB2o7ktJWYiAhrg==",
         "dependencies": {
           "Hi3Helper.ZstdNet": "1.6.2",
           "ZstdSharp.Port": "0.8.1"
@@ -365,8 +365,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.27.2",
-        "contentHash": "0wdgA3LO9mBS477jieBFs4pU1sWhVtwv/P+i9nAEiFDQyUA7PPHDBbJL1CeqYtV18jLiq9og4n7wSVCO171OBg=="
+        "resolved": "3.27.3",
+        "contentHash": "ld+oe1+Mc6no643d8otGm6Zylu7KBpGnAiqOW3nOpV8VxUuqhz70vRNKUU5grLaCeuUQVF8t9dm8TgmkTMr1Tg=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
