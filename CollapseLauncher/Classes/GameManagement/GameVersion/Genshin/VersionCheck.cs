@@ -1,10 +1,9 @@
-﻿using CollapseLauncher.Interfaces;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal class GameTypeGenshinVersion : GameVersionBase, IGameVersionCheck
+    internal class GameTypeGenshinVersion : GameVersionBase
     {
         #region Properties
         public readonly List<string> _audioVoiceLanguageList = new List<string> { "Chinese", "English(US)", "Japanese", "Korean" };

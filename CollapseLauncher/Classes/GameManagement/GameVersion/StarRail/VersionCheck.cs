@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Interfaces;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
 using Microsoft.UI.Xaml;
@@ -7,7 +6,7 @@ using System.Text;
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal class GameTypeStarRailVersion : GameVersionBase, IGameVersionCheck
+    internal class GameTypeStarRailVersion : GameVersionBase
     {
         #region Properties
         public SRMetadata StarRailMetadataTool { get; set; }
