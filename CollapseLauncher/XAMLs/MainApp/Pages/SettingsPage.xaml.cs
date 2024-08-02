@@ -18,6 +18,7 @@
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
+    using Microsoft.UI.Xaml.Media.Animation;
     using Microsoft.Win32.TaskScheduler;
     using System;
     using System.Collections.Generic;
@@ -335,11 +336,38 @@ namespace CollapseLauncher.Pages
             LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
         }
 
-        private void OpenChangelog(object sender, RoutedEventArgs e)
+        private async void OpenChangelog(object sender, RoutedEventArgs e)
         {
+            #nullable enable
             var uri =
                 $"https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/blob/main/changelog_{(IsPreview ? "preview" : "stable")}.md";
-            SpawnWebView2.SpawnWebView2Window(uri, Content);
+
+            var mdParam = new MarkdownFramePage.MarkdownFramePageParams
+            {
+                MarkdownUriCdn = $"changelog_{(IsPreview ? "preview" : "stable")}.md",
+                WebUri         = uri
+            };
+            
+            if (WindowUtility.CurrentWindow is MainWindow mainWindow)
+            {
+                mainWindow.overlayFrame.BackStack?.Clear();
+                mainWindow.overlayFrame.Navigate(typeof(NullPage));
+                mainWindow.overlayFrame.Navigate(typeof(MarkdownFramePage), mdParam,
+                                                 new DrillInNavigationTransitionInfo());
+            }
+
+            MarkdownFramePage.Current!.MarkdownCloseBtn.Click += ExitFromOverlay;
+            return;
+            
+            static void ExitFromOverlay(object? sender, RoutedEventArgs args)
+            {
+                if (WindowUtility.CurrentWindow is not MainWindow mainWindow)
+                    return;
+
+                mainWindow.overlayFrame.GoBack();
+                mainWindow.overlayFrame.BackStack?.Clear();
+            }
+            #nullable restore
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
