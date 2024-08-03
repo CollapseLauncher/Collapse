@@ -266,7 +266,7 @@ namespace Hi3Helper
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
 
-        private static byte[] NtQueryCachedBuffer = new byte[4 << 20];
+        private static byte[] NtQueryCachedBuffer = new byte[1 << 17];
         public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
         {
             // Get the pointer of the buffer
