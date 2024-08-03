@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -93,6 +94,8 @@ namespace CollapseLauncher.InstallManager.Base
 
     internal partial class InstallManagerBase
     {
+        [StringSyntax("Regex")]
+        protected const string NonGameFileRegexPattern = @"(\.\d\d\d|(zip|7z)|patch)|\.$";
         public virtual async ValueTask CleanUpGameFiles(bool withDialog = true)
         {
             // Get the unused file info asynchronously
@@ -434,7 +437,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // 8th check: Ensure that the file is one of package files
             if (includeZipCheck && Regex.IsMatch(fileName,
-                                                 @"(\.\d\d\d|(zip|7z)|patch)|\.$",
+                                                 NonGameFileRegexPattern,
                                                  RegexOptions.Compiled |
                                                  RegexOptions.NonBacktracking
                                                 ))
