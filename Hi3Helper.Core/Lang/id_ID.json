@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "Masa tenggang telah terjadi saat mencoba untuk memasang {0}",
     "Exception_DownloadTimeout2": "Pastikan internet kamu stabil! Coba turunkan thread unduhan apabila kamu punya koneksi lambat.",
-    "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!"
+    "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!",
+
+    "GameStateInvalid_Title": "Direktori Data Game/Nama Executable/Config.ini/File App.Info Tidak Valid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher telah mendeteksi bahwa properti pada file game tidak valid untuk wilayah:\r\n",
+    "GameStateInvalid_Subtitle2": "Langkah perbaikan dibutuhkan agar launcher dapat mendeteksi game dengan benar.",
+    "GameStateInvalid_Subtitle3": "Klik \"",
+    "GameStateInvalid_Subtitle4": "\" untuk memperbaiki properti game atau klik \"",
+    "GameStateInvalid_Subtitle5": "\" untuk membatalkan.",
+
+    "GameStateInvalidFixed_Title": "File Properti Game telah Berhasil Diperbaiki!",
+    "GameStateInvalidFixed_Subtitle1": "File Properti Game telah berhasil diperbaiki untuk region:",
+    "GameStateInvalidFixed_Subtitle2": "Silahkan lakukan \"",
+    "GameStateInvalidFixed_Subtitle3": "\" pada menu \"",
+    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi."
   },
 
   "_GameRepairPage": {
@@ -467,6 +480,8 @@
     "Update_NewVer1": "Pembaruan ke",
     "Update_NewVer2": "telah tersedia!",
     "Update_LatestVer": "Kamu telah menggunakan versi terbaru.",
+    "Update_SeeChangelog": "Lihat Perubahan Terbaru (EN)",
+    "Update_ChangelogTitle": "Perubahan Terbaru",
 
     "AppFiles": "Manajemen File Aplikasi",
     "AppFiles_OpenDataFolderBtn": "Buka Folder Data Aplikasi",
@@ -528,7 +543,34 @@
     "Waifu2X_Warning_CpuMode": "PERINGATAN: Kamu tidak memiliki GPU yang mendukung API Vulkan dan CPU kamu akan digunakan untuk memproses gambar. Proses pemrosesan akan menjadi lebih lama dari yang seharusnya.",
     "Waifu2X_Warning_D3DMappingLayers": "PERINGATAN: Kamu memiliki \"OpenCL™, OpenGL®, dan Vulkan® Compatibility Pack\" yang terpasang di komputermu. Dikabarkan bahwa program tersebut tidak kompatibel dengan Vulkan Loader pada fitur ini dan akan menyebabkan Crash pada beberapa GPU. Silahkan hapus program tersebut untuk menggunakan GPU pada fitur ini.",
     "Waifu2X_Error_Loader": "ERROR: Gagal dalam mempersiapkan Vulkan API. Pastikan bahwa kamu memiliki GPU yang mendukung Vulkan API dan memiliki driver yang sesuai.",
-    "Waifu2X_Error_Output": "ERROR: Gagal saat menjalankan Self-test pada Waifu2X, gambar test mengeluarkan output yang kosong."
+    "Waifu2X_Error_Output": "ERROR: Gagal saat menjalankan Self-test pada Waifu2X, gambar test mengeluarkan output yang kosong.",
+
+    "NetworkSettings_Title": "Pengaturan Jaringan",
+    "NetworkSettings_Proxy_Title": "Pengaturan Proxy",
+
+    "NetworkSettings_Proxy_Hostname": "Hostname Proxy",
+    "NetworkSettings_Proxy_HostnameHelp1": "Merepresentasikan URL dari Proxy yang akan digunakan.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse hanya mendukung tipe proxy",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS",
+    "NetworkSettings_Proxy_HostnameHelp4": "untuk saat ini.",
+
+    "NetworkSettings_Proxy_Username": "Hostname Proxy",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Masukkan Username Proxy",
+    "NetworkSettings_Proxy_UsernameHelp1": "Nilai Bawaan:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Kosong]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Kosongkan bagian ini apabila proxy tidak membutuhkan proses autentikasi.",
+
+    "NetworkSettings_Proxy_Password": "Kata Sandi Proxy",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Masukkan Kata Sandi Proxy",
+    "NetworkSettings_Proxy_PasswordHelp1": "Nilai Bawaan:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Kosong]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Kosongkan bagian ini apabila proxy tidak membutuhkan proses autentikasi.",
+
+    "NetworkSettings_Http_Title": "Pengaturan .NET HTTP Client",
+    "NetworkSettings_Http_Redirect": "Perbolehkan Pengalihan HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Perbolehkan Simuliasi Cookie pada HTTP",
+    "NetworkSettings_Http_UntrustedHttps": "Perbolehkan Sertifikat HTTPS Untrusted",
+    "NetworkSettings_Http_Timeout": "Masa Tenggang HTTP Client (dalam Detik)"
   },
 
   "_Misc": {
@@ -832,7 +874,10 @@
     "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini.",
 
     "DownloadSettingsTitle": "Pengaturan Unduhan",
-    "DownloadSettingsOption1": "Mulai game setelah proses pemasangan"
+    "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
+    
+    "OpenInExternalBrowser": "Buka di Browser Eksternal",
+    "CloseOverlay": "Tutup Overlay"
   },
 
   "_FileMigrationProcess": {
