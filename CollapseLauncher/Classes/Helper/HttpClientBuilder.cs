@@ -1,25 +1,22 @@
-﻿using CollapseLauncher.Helper.Metadata;
-using Hi3Helper.Shared.Region;
+﻿using Hi3Helper.Shared.Region;
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
-using System.Security;
 
 #nullable enable
 namespace CollapseLauncher.Helper
 {
-    internal class HttpClientBuilder
+    public class HttpClientBuilder
     {
         private const int _maxConnectionsDefault = 16;
         private const double _httpTimeoutDefault = 90; // in Seconds
 
         private bool IsUseProxy { get; set; } = false;
-        private bool IsUseSystemProxy { get; set; } = false;
-        private bool IsAllowHttpRedirections { get; set; } = true;
-        private bool IsAllowHttpCookies { get; set; } = true;
+        private bool IsUseSystemProxy { get; set; } = true;
+        private bool IsAllowHttpRedirections { get; set; } = false;
+        private bool IsAllowHttpCookies { get; set; } = false;
 
-        private int  MaxConnections { get; set; } = _maxConnectionsDefault;
+        private int MaxConnections { get; set; } = _maxConnectionsDefault;
         private DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
         private WebProxy? ExternalProxy { get; set; }
         private Version HttpProtocolVersion { get; set; } = HttpVersion.Version30;
@@ -114,13 +111,13 @@ namespace CollapseLauncher.Helper
             // Set the HttpClientHandler
             HttpClientHandler handler = new HttpClientHandler()
             {
-                UseProxy = IsUseProxy,
+                UseProxy = IsUseProxy || IsUseSystemProxy,
                 MaxConnectionsPerServer = MaxConnections,
                 AllowAutoRedirect = IsAllowHttpRedirections,
                 UseCookies = IsAllowHttpCookies,
                 AutomaticDecompression = DecompressionMethod
             };
-            
+
             // Set if the external proxy is set
             if (!IsUseSystemProxy && ExternalProxy != null)
                 handler.Proxy = ExternalProxy;
@@ -134,7 +131,7 @@ namespace CollapseLauncher.Helper
             };
         }
 
-        public HttpClient CreateBasedOnLauncherConfig()
+        public HttpClient CreateBasedOnLauncherConfig(int maxConnections)
         {
             bool lIsUseProxy = LauncherConfig.GetAppConfigValue("IsUseProxy").ToBool();
             bool lIsUseSystemProxy = LauncherConfig.GetAppConfigValue("IsUseSystemProxy").ToBool();
@@ -144,7 +141,7 @@ namespace CollapseLauncher.Helper
             string? lHttpProxyUrl = LauncherConfig.GetAppConfigValue("HttpProxyUrl").ToString();
             string? lHttpProxyUsername = LauncherConfig.GetAppConfigValue("HttpProxyUsername").ToString();
             string? lHttpProxyPassword = LauncherConfig.GetAppConfigValue("HttpProxyPassword").ToString();
-            int lHttpClientConnections = LauncherConfig.GetAppConfigValue("HttpClientConnections").ToInt();
+            int lHttpClientConnections = maxConnections;
 
             double lHttpClientTimeout = LauncherConfig.GetAppConfigValue("HttpClientTimeout").ToDouble();
 

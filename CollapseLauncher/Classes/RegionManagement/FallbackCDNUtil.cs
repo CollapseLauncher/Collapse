@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
@@ -98,28 +99,37 @@ namespace CollapseLauncher
 
     internal static class FallbackCDNUtil
     {
-        private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
+        private static HttpClient _client;
+
+        private static HttpClient _clientNoCompression;
+
+        static FallbackCDNUtil()
         {
-            AllowAutoRedirect = true,
-            MaxConnectionsPerServer = 16,
-            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli | DecompressionMethods.None
-        })
+            ReinitializeHttpClient();
+        }
+
+        public static void ReinitializeHttpClient()
         {
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version30,
-            Timeout = TimeSpan.FromMinutes(1)
-        };
-        private static readonly HttpClient _clientNoCompression = new HttpClient(new HttpClientHandler
-        {
-            AllowAutoRedirect = true,
-            MaxConnectionsPerServer = 16,
-            AutomaticDecompression = DecompressionMethods.None
-        })
-        {
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version30,
-            Timeout = TimeSpan.FromMinutes(1)
-        };
+            _client?.Dispose();
+            _clientNoCompression?.Dispose();
+
+            _client = new HttpClientBuilder()
+            .AllowRedirections()
+            .AllowCookies()
+            .SetAllowedDecompression(DecompressionMethods.All)
+            .SetTimeout(TimeSpan.FromMinutes(1))
+            .SetMaxConnection(32)
+            .Create();
+
+            _clientNoCompression = new HttpClientBuilder()
+            .AllowRedirections()
+            .AllowCookies()
+            .SetAllowedDecompression(DecompressionMethods.None)
+            .SetTimeout(TimeSpan.FromMinutes(1))
+            .SetMaxConnection(32)
+            .Create();
+        }
+
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
         public static async Task DownloadCDNFallbackContent(Http httpInstance, string outputPath, int parallelThread, string relativeURL, CancellationToken token)

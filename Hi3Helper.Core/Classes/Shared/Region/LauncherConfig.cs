@@ -377,7 +377,6 @@ namespace Hi3Helper.Shared.Region
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },
-            { "HttpClientConnections", 16 },
             { "HttpClientTimeout", 90 }
         };
         #endregion
