@@ -787,7 +787,13 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 MaxConnectionsPerServer = maxHttpHandler
             };
-            HttpClient httpClient = new HttpClient(httpClientHandler)
+
+            SocketsHttpHandler proxyHandler = new SocketsHttpHandler
+            {
+                MaxConnectionsPerServer = maxHttpHandler,
+                UseProxy = true
+            };
+            HttpClient httpClient = new HttpClient(proxyHandler)
             {
                 DefaultRequestVersion = HttpVersion.Version30,
                 DefaultVersionPolicy  = HttpVersionPolicy.RequestVersionOrLower

@@ -368,7 +368,17 @@ namespace Hi3Helper.Shared.Region
             { "IsIntroEnabled", true },
             { "IsEnableSophon", true},
             { "SophonCpuThread", 0},
-            { "SophonHttpConnInt", 0}
+            { "SophonHttpConnInt", 0},
+
+            { "IsUseProxy", false },
+            { "IsUseSystemProxy", true },
+            { "IsAllowHttpRedirections", true },
+            { "IsAllowHttpCookies", true },
+            { "HttpProxyUrl", string.Empty },
+            { "HttpProxyUsername", string.Empty },
+            { "HttpProxyPassword", string.Empty },
+            { "HttpClientConnections", 16 },
+            { "HttpClientTimeout", 90 }
         };
         #endregion
     }
