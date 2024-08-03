@@ -16,6 +16,7 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
@@ -783,21 +784,9 @@ namespace CollapseLauncher.InstallManager.Base
                          LogType.Default, true);
 
             // Initialize the HTTP client
-            HttpClientHandler httpClientHandler = new HttpClientHandler
-            {
-                MaxConnectionsPerServer = maxHttpHandler
-            };
-
-            SocketsHttpHandler proxyHandler = new SocketsHttpHandler
-            {
-                MaxConnectionsPerServer = maxHttpHandler,
-                UseProxy = true
-            };
-            HttpClient httpClient = new HttpClient(proxyHandler)
-            {
-                DefaultRequestVersion = HttpVersion.Version30,
-                DefaultVersionPolicy  = HttpVersionPolicy.RequestVersionOrLower
-            };
+            HttpClient httpClient = new HttpClientBuilder()
+                .UseLauncherConfig(maxHttpHandler)
+                .Create();
 
             try
             {
@@ -987,8 +976,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Unsubscribe the logger event
                 SophonLogger.LogHandler -= UpdateSophonLogHandler;
-
-                httpClientHandler.Dispose();
                 httpClient.Dispose();
             }
 
@@ -1022,15 +1009,9 @@ namespace CollapseLauncher.InstallManager.Base
                          LogType.Default, true);
 
             // Initialize the HTTP client
-            HttpClientHandler httpClientHandler = new HttpClientHandler
-            {
-                MaxConnectionsPerServer = maxHttpHandler
-            };
-            HttpClient httpClient = new HttpClient(httpClientHandler)
-            {
-                DefaultRequestVersion = HttpVersion.Version30,
-                DefaultVersionPolicy  = HttpVersionPolicy.RequestVersionOrLower
-            };
+            HttpClient httpClient = new HttpClientBuilder()
+                .UseLauncherConfig(maxHttpHandler)
+                .Create();
 
             try
             {
@@ -1183,8 +1164,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Unsubscribe the logger event
                 SophonLogger.LogHandler -= UpdateSophonLogHandler;
-
-                httpClientHandler.Dispose();
                 httpClient.Dispose();
 
                 // Check if the DXSETUP file is exist, then delete it.

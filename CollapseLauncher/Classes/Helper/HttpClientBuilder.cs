@@ -1,7 +1,10 @@
-﻿using Hi3Helper.Shared.Region;
+﻿using CollapseLauncher.Helper.Update;
+using Hi3Helper.Shared.Region;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -11,25 +14,39 @@ namespace CollapseLauncher.Helper
         private const int _maxConnectionsDefault = 16;
         private const double _httpTimeoutDefault = 90; // in Seconds
 
-        private bool IsUseProxy { get; set; } = false;
+        private bool IsUseProxy { get; set; } = true;
         private bool IsUseSystemProxy { get; set; } = true;
         private bool IsAllowHttpRedirections { get; set; } = false;
         private bool IsAllowHttpCookies { get; set; } = false;
+        private bool IsAllowUntrustedCert { get; set; } = false;
 
         private int MaxConnections { get; set; } = _maxConnectionsDefault;
         private DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
         private WebProxy? ExternalProxy { get; set; }
         private Version HttpProtocolVersion { get; set; } = HttpVersion.Version30;
+        private string? HttpUserAgent { get; set; } = GetDefaultUserAgent();
         private HttpVersionPolicy HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
         private TimeSpan HttpTimeout { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
 
         public HttpClientBuilder() { }
 
-        public HttpClientBuilder UseProxy(bool isUseSystemProxy = false)
+        public HttpClientBuilder UseProxy(bool isUseSystemProxy = true)
         {
             IsUseProxy = true;
             IsUseSystemProxy = isUseSystemProxy;
             return this;
+        }
+
+        private static string GetDefaultUserAgent()
+        {
+            bool isWindows10 = InnerLauncherConfig.m_isWindows11;
+            Version operatingSystemVer = Environment.OSVersion.Version;
+            FileVersionInfo winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
+
+            return $"Mozilla/5.0 (Windows NT {operatingSystemVer}; Win64; x64) "
+                + $"{RuntimeInformation.FrameworkDescription.ToString().Replace(' ', '/')} (KHTML, like Gecko) "
+                + $"Collapse/{LauncherUpdateHelper.LauncherCurrentVersionString}-{(LauncherConfig.IsPreview ? "Preview" : "Stable")} "
+                + $"WinAppSDK/{winAppSDKVer.ProductVersion}";
         }
 
         public HttpClientBuilder UseExternalProxy(string host, string? username = null, string? password = null)
@@ -48,8 +65,7 @@ namespace CollapseLauncher.Helper
 
         public HttpClientBuilder UseExternalProxy(Uri hostUri, string? username = null, string? password = null)
         {
-            // Throw if the proxy used is a default one
-            if (IsUseSystemProxy) throw new InvalidOperationException("To use an external proxy, please set the \"IsUseSystemProxy\" to false on UseProxy()");
+            IsUseSystemProxy = false;
 
             // Initialize the proxy host
             ExternalProxy =
@@ -85,6 +101,12 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
+        public HttpClientBuilder AllowUntrustedCert(bool allowUntrustedCert = false)
+        {
+            IsAllowUntrustedCert = allowUntrustedCert;
+            return this;
+        }
+
         public HttpClientBuilder SetHttpVersion(Version? version = null, HttpVersionPolicy versionPolicy = HttpVersionPolicy.RequestVersionOrLower)
         {
             if (version != null)
@@ -106,6 +128,12 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
+        public HttpClientBuilder SetUserAgent(string? userAgent = null)
+        {
+            HttpUserAgent = userAgent;
+            return this;
+        }
+
         public HttpClient Create()
         {
             // Set the HttpClientHandler
@@ -115,28 +143,39 @@ namespace CollapseLauncher.Helper
                 MaxConnectionsPerServer = MaxConnections,
                 AllowAutoRedirect = IsAllowHttpRedirections,
                 UseCookies = IsAllowHttpCookies,
-                AutomaticDecompression = DecompressionMethod
+                AutomaticDecompression = DecompressionMethod,
+                ClientCertificateOptions = ClientCertificateOption.Manual
             };
+
+            // Toggle for allowing untrusted cert
+            if (IsAllowUntrustedCert)
+                handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
             // Set if the external proxy is set
             if (!IsUseSystemProxy && ExternalProxy != null)
                 handler.Proxy = ExternalProxy;
 
             // Create the HttpClient instance
-            return new HttpClient(handler)
+            HttpClient client = new HttpClient(handler)
             {
                 Timeout = HttpTimeout,
                 DefaultRequestVersion = HttpProtocolVersion,
                 DefaultVersionPolicy = HttpProtocolVersionPolicy
             };
+
+            // Set User-agent
+            if (!string.IsNullOrEmpty(HttpUserAgent))
+                client.DefaultRequestHeaders.Add("User-Agent", HttpUserAgent);
+
+            return client;
         }
 
-        public HttpClient CreateBasedOnLauncherConfig(int maxConnections)
+        public HttpClientBuilder UseLauncherConfig(int maxConnections = 16)
         {
             bool lIsUseProxy = LauncherConfig.GetAppConfigValue("IsUseProxy").ToBool();
-            bool lIsUseSystemProxy = LauncherConfig.GetAppConfigValue("IsUseSystemProxy").ToBool();
             bool lIsAllowHttpRedirections = LauncherConfig.GetAppConfigValue("IsAllowHttpRedirections").ToBool();
             bool lIsAllowHttpCookies = LauncherConfig.GetAppConfigValue("IsAllowHttpCookies").ToBool();
+            bool lIsAllowUntrustedCert = LauncherConfig.GetAppConfigValue("IsAllowUntrustedCert").ToBool();
 
             string? lHttpProxyUrl = LauncherConfig.GetAppConfigValue("HttpProxyUrl").ToString();
             string? lHttpProxyUsername = LauncherConfig.GetAppConfigValue("HttpProxyUsername").ToString();
@@ -147,20 +186,19 @@ namespace CollapseLauncher.Helper
 
             bool isHttpProxyUrlValid = Uri.TryCreate(lHttpProxyUrl, UriKind.Absolute, out Uri? lProxyUri);
 
-            // lHttpProxyPassword = DataCooker.ServeV3Data(lHttpProxyPassword);
-            lIsUseSystemProxy = lIsUseSystemProxy && isHttpProxyUrlValid && !string.IsNullOrEmpty(lHttpProxyUsername)
-                    && !string.IsNullOrEmpty(lHttpProxyPassword);
+            this.UseProxy();
 
-            if (lIsUseProxy)
-                this.UseProxy(lIsUseSystemProxy);
-
-            if (lIsUseSystemProxy && lProxyUri != null)
+            if (lIsUseProxy && isHttpProxyUrlValid && lProxyUri != null)
                 this.UseExternalProxy(lProxyUri, lHttpProxyUsername, lHttpProxyPassword);
+
+            this.AllowUntrustedCert(lIsAllowUntrustedCert);
+            this.AllowCookies(lIsAllowHttpCookies);
+            this.AllowRedirections(lIsAllowHttpRedirections);
 
             this.SetTimeout(lHttpClientTimeout);
             this.SetMaxConnection(lHttpClientConnections);
 
-            return this.Create();
+            return this;
         }
     }
 }

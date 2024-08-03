@@ -105,29 +105,24 @@ namespace CollapseLauncher
 
         static FallbackCDNUtil()
         {
-            ReinitializeHttpClient();
+            InitializeHttpClient();
         }
 
-        public static void ReinitializeHttpClient()
+        public static void InitializeHttpClient()
         {
             _client?.Dispose();
             _clientNoCompression?.Dispose();
 
             _client = new HttpClientBuilder()
-            .AllowRedirections()
-            .AllowCookies()
-            .SetAllowedDecompression(DecompressionMethods.All)
-            .SetTimeout(TimeSpan.FromMinutes(1))
-            .SetMaxConnection(32)
-            .Create();
+                .UseLauncherConfig()
+                .Create();
 
             _clientNoCompression = new HttpClientBuilder()
-            .AllowRedirections()
-            .AllowCookies()
-            .SetAllowedDecompression(DecompressionMethods.None)
-            .SetTimeout(TimeSpan.FromMinutes(1))
-            .SetMaxConnection(32)
-            .Create();
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            LogWriteLine($"[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been succesfully initialized", LogType.Default, true);
         }
 
         public static event EventHandler<DownloadEvent> DownloadProgress;

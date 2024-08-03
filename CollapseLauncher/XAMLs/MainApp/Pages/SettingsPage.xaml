@@ -15,9 +15,11 @@
       CacheMode="BitmapCache"
       Loaded="Page_Loaded"
       NavigationCacheMode="Enabled"
+      Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
     </Page.Resources>
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
@@ -323,6 +325,123 @@
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                       Visibility="Collapsed" />
                         <TextBlock Margin="0,16,0,8"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Title}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="16"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Title}" />
+                            <Button Width="24"
+                                    Height="24"
+                                    Margin="8,0,0,0"
+                                    Padding="0"
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="4"
+                                    Style="{ThemeResource AcrylicButtonStyle}">
+                                <Button.Content>
+                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                              FontSize="10"
+                                              Glyph="&#x3f;" />
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout Placement="Right">
+                                        <StackPanel MaxWidth="340">
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Hostname}" />
+                                            <TextBlock Margin="0,8,0,16"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_HostnameHelp1}" />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_HostnameHelp2}" />
+                                                <Run FontWeight="Bold"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_HostnameHelp3}" />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_HostnameHelp4}" />
+                                            </TextBlock>
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Username}" />
+                                            <TextBlock Margin="0,4,0,0">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_UsernameHelp1}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_UsernameHelp2}" />
+                                            </TextBlock>
+                                            <TextBlock Margin="0,4,0,16"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_UsernameHelp3}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Password}" />
+                                            <TextBlock Margin="0,4,0,0">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordHelp1}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordHelp2}" />
+                                            </TextBlock>
+                                            <TextBlock Margin="0,4,0,0"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordHelp3}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Width="400"
+                                    MaxWidth="640"
+                                    HorizontalAlignment="Left">
+                            <ToggleSwitch x:Name="NetworkSettingsProxyToggle"
+                                          IsOn="{x:Bind IsUseProxy, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <TextBox Margin="0,8,0,8"
+                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Hostname}"
+                                     IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                     IsSpellCheckEnabled="False"
+                                     PlaceholderText="Example: https://127.0.0.1:8080"
+                                     Text="{x:Bind HttpProxyUrl, Mode=TwoWay}" />
+                            <Grid Margin="0,8,0,16"
+                                  ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Username}"
+                                         IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                         IsSpellCheckEnabled="False"
+                                         PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_UsernamePlaceholder}"
+                                         Text="{x:Bind HttpProxyUsername, Mode=TwoWay}" />
+                                <PasswordBox Grid.Column="1"
+                                             Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Password}"
+                                             IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                             Password="{x:Bind HttpProxyPassword, Mode=TwoWay}"
+                                             PasswordRevealMode="Peek"
+                                             PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordPlaceholder}" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,16"
+                                    Spacing="8">
+                            <TextBlock Margin="0,0,0,0"
+                                       FontSize="16"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_Title}" />
+                            <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_Redirect}"
+                                          IsOn="{x:Bind IsAllowHttpRedirections, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_SimulateCookies}"
+                                          IsOn="{x:Bind IsAllowHttpCookies, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_UntrustedHttps}"
+                                          IsOn="{x:Bind IsAllowUntrustedCert, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <NumberBox HorizontalAlignment="Left"
+                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_Timeout}"
+                                       Maximum="3600"
+                                       Minimum="10"
+                                       SpinButtonPlacementMode="Compact"
+                                       Value="{x:Bind HttpClientTimeout, Mode=TwoWay}" />
+                        </StackPanel>
+                        <TextBlock Margin="0,0,0,8"
+                                   FontSize="16"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}" />
                         <StackPanel Margin="0,0,0,16">

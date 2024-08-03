@@ -543,7 +543,34 @@
     "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
     "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
     "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
-    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image.",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_Proxy_Username": "Proxy Hostname",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {

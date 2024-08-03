@@ -37,6 +37,8 @@
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
     using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
+using System.Security.Cryptography;
+using System.Security;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleNullReferenceException
@@ -136,6 +138,10 @@ namespace CollapseLauncher.Pages
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
 #endif
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            FallbackCDNUtil.InitializeHttpClient();
         }
         #endregion
 
@@ -1045,6 +1051,67 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("SophonHttpConnInt").ToInt();
             set => SetAndSaveConfigValue("SophonHttpConnInt", value);
         }
+
+#nullable enable
+        private bool IsUseProxy
+        {
+            get => GetAppConfigValue("IsUseProxy").ToBool();
+            set => SetAndSaveConfigValue("IsUseProxy", value);
+        }
+        private bool IsAllowHttpRedirections
+        {
+            get => GetAppConfigValue("IsAllowHttpRedirections").ToBool();
+            set => SetAndSaveConfigValue("IsAllowHttpRedirections", value);
+        }
+        private bool IsAllowHttpCookies
+        {
+            get => GetAppConfigValue("IsAllowHttpCookies").ToBool();
+            set => SetAndSaveConfigValue("IsAllowHttpCookies", value);
+        }
+
+        private bool IsAllowUntrustedCert
+        {
+            get => GetAppConfigValue("IsAllowUntrustedCert").ToBool();
+            set => SetAndSaveConfigValue("IsAllowUntrustedCert", value);
+        }
+
+        private double HttpClientTimeout
+        {
+            get => GetAppConfigValue("HttpClientTimeout").ToDouble();
+            set => SetAndSaveConfigValue("HttpClientTimeout", value);
+        }
+
+        private string? HttpProxyUrl
+        {
+            get => GetAppConfigValue("HttpProxyUrl").ToString();
+            set => SetAndSaveConfigValue("HttpProxyUrl", value);
+        }
+
+        private string? HttpProxyUsername
+        {
+            get => GetAppConfigValue("HttpProxyUsername").ToString();
+            set => SetAndSaveConfigValue("HttpProxyUsername", value);
+        }
+
+        private string? HttpProxyPassword
+        {
+            get
+            {
+                string encData = GetAppConfigValue("HttpProxyPassword").ToString();
+                if (string.IsNullOrEmpty(encData))
+                    return null;
+
+                string? rawString = SimpleProtectData.UnprotectString(encData);
+                return rawString;
+            }
+            set
+            {
+                string? protectedString = SimpleProtectData.ProtectString(value);
+                SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
+            }
+        }
+
+#nullable restore
         #endregion
 
         #region Keyboard Shortcuts
@@ -1086,5 +1153,6 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
     }
 }

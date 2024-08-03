@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
+﻿using CollapseLauncher.Helper;
+using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -107,11 +108,11 @@ namespace CollapseLauncher
                 }
                 else if (markdownUri != null)
                 {
-                    // TODO: Pass proxy using FallbackCdnMethod
-                    _client             = new HttpClient();
+                    _client             = new HttpClientBuilder()
+                                            .UseLauncherConfig()
+                                            .SetUserAgent(GetAppConfigValue("UserAgent").ToString())
+                                            .Create();
                     _client.BaseAddress = new Uri(markdownUri);
-                    _client.DefaultRequestHeaders.Add("User-Agent",
-                                                      $"{GetAppConfigValue("UserAgent").ToString()}");
                     using HttpResponseMessage response = await _client.GetAsync(markdownUri);
 
                     LogWriteLine($"[MarkdownFramePage] Loading Markdown from URL {markdownUri}\r\n" +

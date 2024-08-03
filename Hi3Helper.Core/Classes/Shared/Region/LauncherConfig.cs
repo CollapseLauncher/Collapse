@@ -80,12 +80,13 @@ namespace Hi3Helper.Shared.Region
 
         public static bool IsConfigKeyExist(string key) => appIni.Profile![SectionName!]!.ContainsKey(key!);
         public static IniValue GetAppConfigValue(string key) => appIni.Profile![SectionName]![key!];
-        public static void SetAndSaveConfigValue(string key, IniValue value)
+        public static void SetAndSaveConfigValue(string key, IniValue value, bool doNotLog = false)
         {
             SetAppConfigValue(key, value);
             SaveAppConfig();
             #if DEBUG
-            Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
+            if (!doNotLog)
+                Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
             #endif
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
@@ -371,9 +372,9 @@ namespace Hi3Helper.Shared.Region
             { "SophonHttpConnInt", 0},
 
             { "IsUseProxy", false },
-            { "IsUseSystemProxy", true },
             { "IsAllowHttpRedirections", true },
-            { "IsAllowHttpCookies", true },
+            { "IsAllowHttpCookies", false },
+            { "IsAllowUntrustedCert", false },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -110,6 +110,7 @@
         <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
         <PackageReference Include="System.Text.Json" Version="8.0.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
