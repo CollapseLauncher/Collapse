@@ -366,7 +366,8 @@
                                     Margin="8,-12,0,0"
                                     Padding="0"
                                     HorizontalAlignment="Right"
-                                    CornerRadius="4">
+                                    CornerRadius="4"
+                                    Style="{ThemeResource AcrylicButtonStyle}">
                                 <Button.Content>
                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                               FontSize="10"
@@ -483,7 +484,8 @@
                                     Margin="8,-12,0,0"
                                     Padding="0"
                                     HorizontalAlignment="Right"
-                                    CornerRadius="4">
+                                    CornerRadius="4"
+                                    Style="{ThemeResource AcrylicButtonStyle}">
                                 <Button.Content>
                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
                                               FontSize="10"
