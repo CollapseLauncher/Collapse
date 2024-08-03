@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Controls;
+using Hi3Helper;
 using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -706,15 +707,22 @@ namespace CollapseLauncher.Extension
 
                 if (xamlRoot is Panel panel)
                 {
-                    panel.Children.Add(shadowPanel);
-                    Canvas.SetZIndex(shadowPanel, -1);
-                    if (shadowPanel is not Panel)
-                        throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
+                    try
+                    {
+                        panel.Children.Add(shadowPanel);
+                        Canvas.SetZIndex(shadowPanel, -1);
+                        if (shadowPanel is not Panel)
+                            throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
 
-                    if (xamlRoot == null || xamlRoot is not Panel)
-                        throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
+                        if (xamlRoot == null || xamlRoot is not Panel)
+                            throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
 
-                    thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                        thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWriteLine($"Failed while attaching shadow to an element\r\n{ex}", LogType.Warning, true);
+                    }
                 }
             }
         }
