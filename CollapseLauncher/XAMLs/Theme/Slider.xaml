@@ -10,285 +10,285 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <!--  ColorAnimation requires TargetProperty to be Color thus some resources point to the colour instead of brush  -->
-            <StaticResource x:Key="SliderContainerBackground"
+            <StaticResource x:Key="FatSliderContainerBackground"
                             ResourceKey="ControlFillColorTransparentBrush" />
-            <StaticResource x:Key="SliderContainerBackgroundPointerOver"
+            <StaticResource x:Key="FatSliderContainerBackgroundPointerOver"
                             ResourceKey="ControlFillColorTransparent" />
-            <StaticResource x:Key="SliderContainerBackgroundPressed"
+            <StaticResource x:Key="FatSliderContainerBackgroundPressed"
                             ResourceKey="ControlFillColorTransparent" />
-            <StaticResource x:Key="SliderContainerBackgroundDisabled"
+            <StaticResource x:Key="FatSliderContainerBackgroundDisabled"
                             ResourceKey="ControlFillColorTransparent" />
-            <StaticResource x:Key="SliderThumbBackground"
+            <StaticResource x:Key="FatSliderThumbBackground"
                             ResourceKey="AccentFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundPointerOver"
+            <StaticResource x:Key="FatSliderThumbBackgroundPointerOver"
                             ResourceKey="AccentFillColorSecondaryBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundPressed"
+            <StaticResource x:Key="FatSliderThumbBackgroundPressed"
                             ResourceKey="AccentFillColorTertiaryBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundDisabled"
+            <StaticResource x:Key="FatSliderThumbBackgroundDisabled"
                             ResourceKey="AccentFillColorDisabledBrush" />
-            <StaticResource x:Key="SliderThumbBorderBrush"
+            <StaticResource x:Key="FatSliderThumbBorderBrush"
                             ResourceKey="ControlElevationBorderBrush" />
-            <StaticResource x:Key="SliderOuterThumbBackground"
+            <StaticResource x:Key="FatSliderOuterThumbBackground"
                             ResourceKey="ControlSolidFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFill"
+            <StaticResource x:Key="FatSliderTrackFill"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFillPointerOver"
+            <StaticResource x:Key="FatSliderTrackFillPointerOver"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFillPressed"
+            <StaticResource x:Key="FatSliderTrackFillPressed"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFillDisabled"
+            <StaticResource x:Key="FatSliderTrackFillDisabled"
                             ResourceKey="ControlStrongFillColorDisabledBrush" />
-            <StaticResource x:Key="SliderTrackValueFill"
+            <StaticResource x:Key="FatSliderTrackValueFill"
                             ResourceKey="AccentFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackValueFillPointerOver"
+            <StaticResource x:Key="FatSliderTrackValueFillPointerOver"
                             ResourceKey="AccentFillColorSecondaryBrush" />
-            <StaticResource x:Key="SliderTrackValueFillPressed"
+            <StaticResource x:Key="FatSliderTrackValueFillPressed"
                             ResourceKey="AccentFillColorTertiaryBrush" />
-            <StaticResource x:Key="SliderTrackValueFillDisabled"
+            <StaticResource x:Key="FatSliderTrackValueFillDisabled"
                             ResourceKey="AccentFillColorDisabledBrush" />
-            <StaticResource x:Key="SliderHeaderForeground"
+            <StaticResource x:Key="FatSliderHeaderForeground"
                             ResourceKey="TextFillColorPrimaryBrush" />
-            <StaticResource x:Key="SliderHeaderForegroundDisabled"
+            <StaticResource x:Key="FatSliderHeaderForegroundDisabled"
                             ResourceKey="TextFillColorDisabled" />
-            <StaticResource x:Key="SliderTickBarFill"
+            <StaticResource x:Key="FatSliderTickBarFill"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTickBarFillDisabled"
+            <StaticResource x:Key="FatSliderTickBarFillDisabled"
                             ResourceKey="ControlStrongFillColorDisabled" />
-            <StaticResource x:Key="SliderInlineTickBarFill"
+            <StaticResource x:Key="FatSliderInlineTickBarFill"
                             ResourceKey="ControlFillColorInputActiveBrush" />
 
             <!--  Legacy Brushes  -->
-            <SolidColorBrush x:Key="SliderBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderBorderThemeBrush"
                              Color="Transparent" />
-            <SolidColorBrush x:Key="SliderDisabledBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderDisabledBorderThemeBrush"
                              Color="Transparent" />
-            <SolidColorBrush x:Key="SliderThumbBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbBackgroundThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbBorderThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbDisabledBackgroundThemeBrush"
                              Color="#FF7E7E7E" />
-            <SolidColorBrush x:Key="SliderThumbPointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPointerOverBackgroundThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbPointerOverBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPointerOverBorderThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbPressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPressedBackgroundThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbPressedBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPressedBorderThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderTickMarkInlineBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkInlineBackgroundThemeBrush"
                              Color="Black" />
-            <SolidColorBrush x:Key="SliderTickMarkInlineDisabledForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkInlineDisabledForegroundThemeBrush"
                              Color="Black" />
-            <SolidColorBrush x:Key="SliderTickmarkOutsideBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickmarkOutsideBackgroundThemeBrush"
                              Color="#80FFFFFF" />
-            <SolidColorBrush x:Key="SliderTickMarkOutsideDisabledForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkOutsideDisabledForegroundThemeBrush"
                              Color="#80FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackBackgroundThemeBrush"
                              Color="#29FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackDecreaseBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreaseBackgroundThemeBrush"
                              Color="#FF5B2EC5" />
-            <SolidColorBrush x:Key="SliderTrackDecreaseDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreaseDisabledBackgroundThemeBrush"
                              Color="#1FFFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackDecreasePointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreasePointerOverBackgroundThemeBrush"
                              Color="#FF724BCD" />
-            <SolidColorBrush x:Key="SliderTrackDecreasePressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreasePressedBackgroundThemeBrush"
                              Color="#FF8152EF" />
-            <SolidColorBrush x:Key="SliderTrackDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDisabledBackgroundThemeBrush"
                              Color="#29FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackPointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackPointerOverBackgroundThemeBrush"
                              Color="#46FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackPressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackPressedBackgroundThemeBrush"
                              Color="#59FFFFFF" />
-            <SolidColorBrush x:Key="SliderHeaderForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderHeaderForegroundThemeBrush"
                              Color="#FFFFFFFF" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="HighContrast">
-            <StaticResource x:Key="SliderContainerBackground"
+            <StaticResource x:Key="FatSliderContainerBackground"
                             ResourceKey="SystemControlTransparentBrush" />
-            <StaticResource x:Key="SliderContainerBackgroundPointerOver"
+            <StaticResource x:Key="FatSliderContainerBackgroundPointerOver"
                             ResourceKey="SystemControlTransparentBrush" />
-            <StaticResource x:Key="SliderContainerBackgroundPressed"
+            <StaticResource x:Key="FatSliderContainerBackgroundPressed"
                             ResourceKey="SystemControlTransparentBrush" />
-            <StaticResource x:Key="SliderContainerBackgroundDisabled"
+            <StaticResource x:Key="FatSliderContainerBackgroundDisabled"
                             ResourceKey="SystemControlTransparentBrush" />
-            <StaticResource x:Key="SliderThumbBackground"
+            <StaticResource x:Key="FatSliderThumbBackground"
                             ResourceKey="SystemControlForegroundAccentBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundPointerOver"
+            <StaticResource x:Key="FatSliderThumbBackgroundPointerOver"
                             ResourceKey="SystemAccentColorLight1" />
-            <StaticResource x:Key="SliderThumbBackgroundPressed"
+            <StaticResource x:Key="FatSliderThumbBackgroundPressed"
                             ResourceKey="SystemAccentColorDark1" />
-            <StaticResource x:Key="SliderThumbBackgroundDisabled"
+            <StaticResource x:Key="FatSliderThumbBackgroundDisabled"
                             ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
-            <StaticResource x:Key="SliderThumbBorderBrush"
+            <StaticResource x:Key="FatSliderThumbBorderBrush"
                             ResourceKey="SystemControlForegroundAccentBrush" />
-            <StaticResource x:Key="SliderOuterThumbBackground"
+            <StaticResource x:Key="FatSliderOuterThumbBackground"
                             ResourceKey="SystemControlForegroundAccentBrush" />
-            <StaticResource x:Key="SliderTrackFill"
+            <StaticResource x:Key="FatSliderTrackFill"
                             ResourceKey="SystemControlForegroundBaseMediumLowBrush" />
-            <StaticResource x:Key="SliderTrackFillPointerOver"
+            <StaticResource x:Key="FatSliderTrackFillPointerOver"
                             ResourceKey="SystemControlForegroundBaseMediumBrush" />
-            <StaticResource x:Key="SliderTrackFillPressed"
+            <StaticResource x:Key="FatSliderTrackFillPressed"
                             ResourceKey="SystemControlForegroundBaseMediumLowBrush" />
-            <StaticResource x:Key="SliderTrackFillDisabled"
+            <StaticResource x:Key="FatSliderTrackFillDisabled"
                             ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
-            <StaticResource x:Key="SliderTrackValueFill"
+            <StaticResource x:Key="FatSliderTrackValueFill"
                             ResourceKey="SystemControlHighlightAccentBrush" />
-            <StaticResource x:Key="SliderTrackValueFillPointerOver"
+            <StaticResource x:Key="FatSliderTrackValueFillPointerOver"
                             ResourceKey="SystemControlHighlightAccentBrush" />
-            <StaticResource x:Key="SliderTrackValueFillPressed"
+            <StaticResource x:Key="FatSliderTrackValueFillPressed"
                             ResourceKey="SystemControlHighlightAccentBrush" />
-            <StaticResource x:Key="SliderTrackValueFillDisabled"
+            <StaticResource x:Key="FatSliderTrackValueFillDisabled"
                             ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
-            <StaticResource x:Key="SliderHeaderForeground"
+            <StaticResource x:Key="FatSliderHeaderForeground"
                             ResourceKey="SystemControlForegroundBaseHighBrush" />
-            <StaticResource x:Key="SliderHeaderForegroundDisabled"
+            <StaticResource x:Key="FatSliderHeaderForegroundDisabled"
                             ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
-            <StaticResource x:Key="SliderTickBarFill"
+            <StaticResource x:Key="FatSliderTickBarFill"
                             ResourceKey="SystemControlForegroundBaseMediumLowBrush" />
-            <StaticResource x:Key="SliderTickBarFillDisabled"
+            <StaticResource x:Key="FatSliderTickBarFillDisabled"
                             ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
-            <StaticResource x:Key="SliderInlineTickBarFill"
+            <StaticResource x:Key="FatSliderInlineTickBarFill"
                             ResourceKey="SystemControlBackgroundAltHighBrush" />
 
-            <SolidColorBrush x:Key="SliderBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderBorderThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
-            <SolidColorBrush x:Key="SliderDisabledBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderDisabledBorderThemeBrush"
                              Color="{ThemeResource SystemColorGrayTextColor}" />
-            <SolidColorBrush x:Key="SliderThumbBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
-            <SolidColorBrush x:Key="SliderThumbBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbBorderThemeBrush"
                              Color="{ThemeResource SystemColorHighlightTextColor}" />
-            <SolidColorBrush x:Key="SliderThumbDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbDisabledBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorGrayTextColor}" />
-            <SolidColorBrush x:Key="SliderThumbPointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPointerOverBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorHighlightColor}" />
-            <SolidColorBrush x:Key="SliderThumbPointerOverBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPointerOverBorderThemeBrush"
                              Color="{ThemeResource SystemColorHighlightTextColor}" />
-            <SolidColorBrush x:Key="SliderThumbPressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPressedBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorHighlightTextColor}" />
-            <SolidColorBrush x:Key="SliderThumbPressedBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPressedBorderThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
-            <SolidColorBrush x:Key="SliderTickMarkInlineBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkInlineBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
-            <SolidColorBrush x:Key="SliderTickMarkInlineDisabledForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkInlineDisabledForegroundThemeBrush"
                              Color="{ThemeResource SystemColorGrayTextColor}" />
-            <SolidColorBrush x:Key="SliderTickmarkOutsideBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickmarkOutsideBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
-            <SolidColorBrush x:Key="SliderTickMarkOutsideDisabledForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkOutsideDisabledForegroundThemeBrush"
                              Color="{ThemeResource SystemColorGrayTextColor}" />
-            <SolidColorBrush x:Key="SliderTrackBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonFaceColor}" />
-            <SolidColorBrush x:Key="SliderTrackDecreaseBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreaseBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorHighlightColor}" />
-            <SolidColorBrush x:Key="SliderTrackDecreaseDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreaseDisabledBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonFaceColor}" />
-            <SolidColorBrush x:Key="SliderTrackDecreasePointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreasePointerOverBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorHighlightColor}" />
-            <SolidColorBrush x:Key="SliderTrackDecreasePressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreasePressedBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorHighlightColor}" />
-            <SolidColorBrush x:Key="SliderTrackDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDisabledBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonFaceColor}" />
-            <SolidColorBrush x:Key="SliderTrackPointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackPointerOverBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonFaceColor}" />
-            <SolidColorBrush x:Key="SliderTrackPressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackPressedBackgroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonFaceColor}" />
-            <SolidColorBrush x:Key="SliderHeaderForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderHeaderForegroundThemeBrush"
                              Color="{ThemeResource SystemColorButtonTextColor}" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
             <!--  ColorAnimation requires TargetProperty to be Color thus some resources point to the colour instead of brush  -->
-            <StaticResource x:Key="SliderContainerBackground"
+            <StaticResource x:Key="FatSliderContainerBackground"
                             ResourceKey="ControlFillColorTransparentBrush" />
-            <StaticResource x:Key="SliderContainerBackgroundPointerOver"
+            <StaticResource x:Key="FatSliderContainerBackgroundPointerOver"
                             ResourceKey="ControlFillColorTransparent" />
-            <StaticResource x:Key="SliderContainerBackgroundPressed"
+            <StaticResource x:Key="FatSliderContainerBackgroundPressed"
                             ResourceKey="ControlFillColorTransparent" />
-            <StaticResource x:Key="SliderContainerBackgroundDisabled"
+            <StaticResource x:Key="FatSliderContainerBackgroundDisabled"
                             ResourceKey="ControlFillColorTransparent" />
-            <StaticResource x:Key="SliderThumbBackground"
+            <StaticResource x:Key="FatSliderThumbBackground"
                             ResourceKey="AccentFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundPointerOver"
+            <StaticResource x:Key="FatSliderThumbBackgroundPointerOver"
                             ResourceKey="AccentFillColorSecondaryBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundPressed"
+            <StaticResource x:Key="FatSliderThumbBackgroundPressed"
                             ResourceKey="AccentFillColorTertiaryBrush" />
-            <StaticResource x:Key="SliderThumbBackgroundDisabled"
+            <StaticResource x:Key="FatSliderThumbBackgroundDisabled"
                             ResourceKey="AccentFillColorDisabledBrush" />
-            <StaticResource x:Key="SliderThumbBorderBrush"
+            <StaticResource x:Key="FatSliderThumbBorderBrush"
                             ResourceKey="ControlElevationBorderBrush" />
-            <StaticResource x:Key="SliderOuterThumbBackground"
+            <StaticResource x:Key="FatSliderOuterThumbBackground"
                             ResourceKey="ControlSolidFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFill"
+            <StaticResource x:Key="FatSliderTrackFill"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFillPointerOver"
+            <StaticResource x:Key="FatSliderTrackFillPointerOver"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFillPressed"
+            <StaticResource x:Key="FatSliderTrackFillPressed"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackFillDisabled"
+            <StaticResource x:Key="FatSliderTrackFillDisabled"
                             ResourceKey="ControlStrongFillColorDisabledBrush" />
-            <StaticResource x:Key="SliderTrackValueFill"
+            <StaticResource x:Key="FatSliderTrackValueFill"
                             ResourceKey="AccentFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTrackValueFillPointerOver"
+            <StaticResource x:Key="FatSliderTrackValueFillPointerOver"
                             ResourceKey="AccentFillColorSecondaryBrush" />
-            <StaticResource x:Key="SliderTrackValueFillPressed"
+            <StaticResource x:Key="FatSliderTrackValueFillPressed"
                             ResourceKey="AccentFillColorTertiaryBrush" />
-            <StaticResource x:Key="SliderTrackValueFillDisabled"
+            <StaticResource x:Key="FatSliderTrackValueFillDisabled"
                             ResourceKey="AccentFillColorDisabledBrush" />
-            <StaticResource x:Key="SliderHeaderForeground"
+            <StaticResource x:Key="FatSliderHeaderForeground"
                             ResourceKey="TextFillColorPrimaryBrush" />
-            <StaticResource x:Key="SliderHeaderForegroundDisabled"
+            <StaticResource x:Key="FatSliderHeaderForegroundDisabled"
                             ResourceKey="TextFillColorDisabled" />
-            <StaticResource x:Key="SliderTickBarFill"
+            <StaticResource x:Key="FatSliderTickBarFill"
                             ResourceKey="ControlStrongFillColorDefaultBrush" />
-            <StaticResource x:Key="SliderTickBarFillDisabled"
+            <StaticResource x:Key="FatSliderTickBarFillDisabled"
                             ResourceKey="ControlStrongFillColorDisabled" />
-            <StaticResource x:Key="SliderInlineTickBarFill"
+            <StaticResource x:Key="FatSliderInlineTickBarFill"
                             ResourceKey="ControlFillColorInputActiveBrush" />
 
             <!--  Legacy Brushes  -->
-            <SolidColorBrush x:Key="SliderBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderBorderThemeBrush"
                              Color="Transparent" />
-            <SolidColorBrush x:Key="SliderDisabledBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderDisabledBorderThemeBrush"
                              Color="Transparent" />
-            <SolidColorBrush x:Key="SliderThumbBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbBackgroundThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbBorderThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbDisabledBackgroundThemeBrush"
                              Color="#FF7E7E7E" />
-            <SolidColorBrush x:Key="SliderThumbPointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPointerOverBackgroundThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbPointerOverBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPointerOverBorderThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbPressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPressedBackgroundThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderThumbPressedBorderThemeBrush"
+            <SolidColorBrush x:Key="FatSliderThumbPressedBorderThemeBrush"
                              Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="SliderTickMarkInlineBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkInlineBackgroundThemeBrush"
                              Color="Black" />
-            <SolidColorBrush x:Key="SliderTickMarkInlineDisabledForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkInlineDisabledForegroundThemeBrush"
                              Color="Black" />
-            <SolidColorBrush x:Key="SliderTickmarkOutsideBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickmarkOutsideBackgroundThemeBrush"
                              Color="#80FFFFFF" />
-            <SolidColorBrush x:Key="SliderTickMarkOutsideDisabledForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTickMarkOutsideDisabledForegroundThemeBrush"
                              Color="#80FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackBackgroundThemeBrush"
                              Color="#29FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackDecreaseBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreaseBackgroundThemeBrush"
                              Color="#FF5B2EC5" />
-            <SolidColorBrush x:Key="SliderTrackDecreaseDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreaseDisabledBackgroundThemeBrush"
                              Color="#1FFFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackDecreasePointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreasePointerOverBackgroundThemeBrush"
                              Color="#FF724BCD" />
-            <SolidColorBrush x:Key="SliderTrackDecreasePressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDecreasePressedBackgroundThemeBrush"
                              Color="#FF8152EF" />
-            <SolidColorBrush x:Key="SliderTrackDisabledBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackDisabledBackgroundThemeBrush"
                              Color="#29FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackPointerOverBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackPointerOverBackgroundThemeBrush"
                              Color="#46FFFFFF" />
-            <SolidColorBrush x:Key="SliderTrackPressedBackgroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderTrackPressedBackgroundThemeBrush"
                              Color="#59FFFFFF" />
-            <SolidColorBrush x:Key="SliderHeaderForegroundThemeBrush"
+            <SolidColorBrush x:Key="FatSliderHeaderForegroundThemeBrush"
                              Color="#FFFFFFFF" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
@@ -296,58 +296,58 @@
     <conv:DoubleRound2Converter x:Key="DoubleRound2Converter" />
     <conv:DoubleRound3Converter x:Key="DoubleRound3Converter" />
 
-    <Thickness x:Key="SliderTopHeaderMargin">0,0,0,4</Thickness>
-    <CornerRadius x:Key="SliderTrackCornerRadius">4</CornerRadius>
-    <x:Double x:Key="SliderTrackBackgroundCornerRadiusX">4</x:Double>
-    <x:Double x:Key="SliderTrackBackgroundCornerRadiusY">4</x:Double>
-    <x:Double x:Key="SliderTrackForegroundCornerRadiusX">6</x:Double>
-    <x:Double x:Key="SliderTrackForegroundCornerRadiusY">6</x:Double>
-    <CornerRadius x:Key="SliderThumbCornerRadius">8</CornerRadius>
-    <ThemeShadow x:Key="SliderThumbShadow" />
-    <x:Double x:Key="SliderPreContentMargin">14</x:Double>
-    <x:Double x:Key="SliderPostContentMargin">14</x:Double>
-    <x:Double x:Key="SliderHorizontalHeight">32</x:Double>
-    <x:Double x:Key="SliderVerticalWidth">32</x:Double>
-    <x:Double x:Key="SliderHorizontalThumbWidth">18</x:Double>
-    <x:Double x:Key="SliderHorizontalThumbHeight">18</x:Double>
-    <x:Double x:Key="SliderVerticalThumbWidth">18</x:Double>
-    <x:Double x:Key="SliderVerticalThumbHeight">18</x:Double>
-    <x:Double x:Key="SliderInnerThumbWidth">48</x:Double>
-    <x:Double x:Key="SliderInnerThumbHeight">32</x:Double>
+    <Thickness x:Key="FatSliderTopHeaderMargin">0,0,0,4</Thickness>
+    <CornerRadius x:Key="FatSliderTrackCornerRadius">4</CornerRadius>
+    <x:Double x:Key="FatSliderTrackBackgroundCornerRadiusX">4</x:Double>
+    <x:Double x:Key="FatSliderTrackBackgroundCornerRadiusY">4</x:Double>
+    <x:Double x:Key="FatSliderTrackForegroundCornerRadiusX">6</x:Double>
+    <x:Double x:Key="FatSliderTrackForegroundCornerRadiusY">6</x:Double>
+    <CornerRadius x:Key="FatSliderThumbCornerRadius">8</CornerRadius>
+    <ThemeShadow x:Key="FatSliderThumbShadow" />
+    <x:Double x:Key="FatSliderPreContentMargin">14</x:Double>
+    <x:Double x:Key="FatSliderPostContentMargin">14</x:Double>
+    <x:Double x:Key="FatSliderHorizontalHeight">32</x:Double>
+    <x:Double x:Key="FatSliderVerticalWidth">32</x:Double>
+    <x:Double x:Key="FatSliderHorizontalThumbWidth">18</x:Double>
+    <x:Double x:Key="FatSliderHorizontalThumbHeight">18</x:Double>
+    <x:Double x:Key="FatSliderVerticalThumbWidth">18</x:Double>
+    <x:Double x:Key="FatSliderVerticalThumbHeight">18</x:Double>
+    <x:Double x:Key="FatSliderInnerThumbWidth">48</x:Double>
+    <x:Double x:Key="FatSliderInnerThumbHeight">32</x:Double>
 
-    <x:Double x:Key="HorizontalOutlineTickBarHeight">3</x:Double>
-    <x:Double x:Key="HorizontalInlineTickBarHeight">4</x:Double>
+    <x:Double x:Key="FatSliderHorizontalOutlineTickBarHeight">3</x:Double>
+    <x:Double x:Key="FatSliderHorizontalInlineTickBarHeight">4</x:Double>
 
-    <x:Double x:Key="SliderOutsideTickBarThemeHeight">10</x:Double>
-    <x:Double x:Key="SliderTrackBackgroundThemeHeight">14</x:Double>
-    <x:Double x:Key="SliderTrackThemeHeight">20</x:Double>
-    <Thickness x:Key="SliderBorderThemeThickness">0</Thickness>
-    <Thickness x:Key="SliderHeaderThemeMargin">0,0,0,4</Thickness>
-    <text:FontWeight x:Key="SliderHeaderThemeFontWeight"><![CDATA[Normal]]></text:FontWeight>
+    <x:Double x:Key="FatSliderOutsideTickBarThemeHeight">10</x:Double>
+    <x:Double x:Key="FatSliderTrackBackgroundThemeHeight">14</x:Double>
+    <x:Double x:Key="FatSliderTrackThemeHeight">20</x:Double>
+    <Thickness x:Key="FatSliderBorderThemeThickness">0</Thickness>
+    <Thickness x:Key="FatSliderHeaderThemeMargin">0,0,0,4</Thickness>
+    <text:FontWeight x:Key="FatSliderHeaderThemeFontWeight"><![CDATA[Normal]]></text:FontWeight>
 
     <Style x:Key="FatSliderStyle"
            TargetType="Slider">
-        <Setter Property="Background" Value="{ThemeResource SliderTrackFill}" />
-        <Setter Property="BorderThickness" Value="{ThemeResource SliderBorderThemeThickness}" />
-        <Setter Property="BorderBrush" Value="{ThemeResource SliderThumbBorderBrush}" />
-        <Setter Property="Foreground" Value="{ThemeResource SliderTrackValueFill}" />
+        <Setter Property="Background" Value="{ThemeResource FatSliderTrackFill}" />
+        <Setter Property="BorderThickness" Value="{ThemeResource FatSliderBorderThemeThickness}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource FatSliderThumbBorderBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource FatSliderTrackValueFill}" />
         <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
         <Setter Property="ManipulationMode" Value="None" />
         <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
         <Setter Property="FocusVisualMargin" Value="-7,0,-7,0" />
         <Setter Property="IsFocusEngagementEnabled" Value="True" />
-        <Setter Property="CornerRadius" Value="{ThemeResource SliderTrackCornerRadius}" />
+        <Setter Property="CornerRadius" Value="{ThemeResource FatSliderTrackCornerRadius}" />
         <Setter Property="IsThumbToolTipEnabled" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
                     <Grid Margin="{TemplateBinding Padding}">
                         <Grid.Resources>
-                            <Style x:Key="SliderThumbStyle"
+                            <Style x:Key="FatSliderThumbStyle"
                                    TargetType="Thumb">
                                 <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="Background" Value="{ThemeResource SliderThumbBackground}" />
+                                <Setter Property="Background" Value="{ThemeResource FatSliderThumbBackground}" />
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Thumb">
@@ -357,14 +357,14 @@
                                                     <VisualStateGroup x:Name="CommonStates">
                                                         <VisualState x:Name="Normal">
                                                             <Storyboard>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)">
                                                                     <!--  0.86 is relative scale from 14px to 12px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                                           KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                                           Value="0.86" />
                                                                 </DoubleAnimationUsingKeyFrames>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)">
                                                                     <!--  0.86 is relative scale from 14px to 12px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
@@ -375,14 +375,14 @@
                                                         </VisualState>
                                                         <VisualState x:Name="PointerOver">
                                                             <Storyboard>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)">
                                                                     <!--  1.167 is relative scale from 12px to 14px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                                           KeyTime="{StaticResource ControlNormalAnimationDuration}"
                                                                                           Value="1" />
                                                                 </DoubleAnimationUsingKeyFrames>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)">
                                                                     <!--  1.167 is relative scale from 12px to 14px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
@@ -393,14 +393,14 @@
                                                         </VisualState>
                                                         <VisualState x:Name="Pressed">
                                                             <Storyboard>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)">
                                                                     <!--  0.71 is relative scale from 14px to 10px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                                           KeyTime="{StaticResource ControlNormalAnimationDuration}"
                                                                                           Value="0.70" />
                                                                 </DoubleAnimationUsingKeyFrames>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)">
                                                                     <!--  0.71 is relative scale from 14px to 10px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
@@ -411,14 +411,14 @@
                                                         </VisualState>
                                                         <VisualState x:Name="Disabled">
                                                             <Storyboard>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)">
                                                                     <!--  1.167 is relative scale from 12px to 14px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
                                                                                           KeyTime="{StaticResource ControlFastAnimationDuration}"
                                                                                           Value="1.167" />
                                                                 </DoubleAnimationUsingKeyFrames>
-                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SliderInnerThumb"
+                                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FatSliderInnerThumb"
                                                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)">
                                                                     <!--  1.167 is relative scale from 12px to 14px  -->
                                                                     <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
@@ -429,19 +429,19 @@
                                                         </VisualState>
                                                     </VisualStateGroup>
                                                 </VisualStateManager.VisualStateGroups>
-                                                <Grid x:Name="SliderInnerThumb"
+                                                <Grid x:Name="FatSliderInnerThumb"
                                                       Width="Auto"
-                                                      Height="{ThemeResource SliderInnerThumbHeight}"
-                                                      MinWidth="{ThemeResource SliderInnerThumbWidth}"
+                                                      Height="{ThemeResource FatSliderInnerThumbHeight}"
+                                                      MinWidth="{ThemeResource FatSliderInnerThumbWidth}"
                                                       Background="White"
-                                                      CornerRadius="{ThemeResource SliderThumbCornerRadius}"
+                                                      CornerRadius="{ThemeResource FatSliderThumbCornerRadius}"
                                                       RenderTransformOrigin="0.5, 0.5"
-                                                      Shadow="{ThemeResource SliderThumbShadow}"
+                                                      Shadow="{ThemeResource FatSliderThumbShadow}"
                                                       Translation="0,0,16">
                                                     <Grid.RenderTransform>
                                                         <CompositeTransform />
                                                     </Grid.RenderTransform>
-                                                    <TextBlock x:Name="SliderInnerThumbValue"
+                                                    <TextBlock x:Name="FatSliderInnerThumbValue"
                                                                Margin="8,-4,8,0"
                                                                VerticalAlignment="Center"
                                                                FontSize="16"
@@ -469,17 +469,17 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackground}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackground}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackground}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackground}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SliderContainer"
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FatSliderContainer"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderContainerBackground}" />
+                                                                    Value="{ThemeResource FatSliderContainerBackground}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -488,37 +488,37 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalTrackRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackFillPointerOver}" />
+                                                                    Value="{ThemeResource FatSliderTrackFillPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalTrackRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackFillPointerOver}" />
+                                                                    Value="{ThemeResource FatSliderTrackFillPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackgroundPointerOver}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackgroundPointerOver}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="SliderContainer"
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="FatSliderContainer"
                                                                       Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderContainerBackgroundPointerOver}" />
+                                                                 Value="{ThemeResource FatSliderContainerBackgroundPointerOver}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalDecreaseRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackValueFillPointerOver}" />
+                                                                    Value="{ThemeResource FatSliderTrackValueFillPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalDecreaseRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackValueFillPointerOver}" />
+                                                                    Value="{ThemeResource FatSliderTrackValueFillPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -527,37 +527,37 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalTrackRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackFillPressed}" />
+                                                                    Value="{ThemeResource FatSliderTrackFillPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalTrackRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackFillPressed}" />
+                                                                    Value="{ThemeResource FatSliderTrackFillPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackgroundPressed}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackgroundPressed}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="SliderContainer"
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="FatSliderContainer"
                                                                       Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderContainerBackgroundPressed}" />
+                                                                 Value="{ThemeResource FatSliderContainerBackgroundPressed}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalDecreaseRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackValueFillPressed}" />
+                                                                    Value="{ThemeResource FatSliderTrackValueFillPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalDecreaseRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackValueFillPressed}" />
+                                                                    Value="{ThemeResource FatSliderTrackValueFillPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -566,62 +566,62 @@
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="HeaderContentPresenter"
                                                                       Storyboard.TargetProperty="(Panel.Foreground).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderHeaderForegroundDisabled}" />
+                                                                 Value="{ThemeResource FatSliderHeaderForegroundDisabled}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalDecreaseRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackValueFillDisabled}" />
+                                                                    Value="{ThemeResource FatSliderTrackValueFillDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalTrackRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackFillDisabled}" />
+                                                                    Value="{ThemeResource FatSliderTrackFillDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalDecreaseRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackValueFillDisabled}" />
+                                                                    Value="{ThemeResource FatSliderTrackValueFillDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalTrackRect"
                                                                        Storyboard.TargetProperty="Fill">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderTrackFillDisabled}" />
+                                                                    Value="{ThemeResource FatSliderTrackFillDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HorizontalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackgroundDisabled}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackgroundDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="VerticalThumb"
                                                                        Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SliderThumbBackgroundDisabled}" />
+                                                                    Value="{ThemeResource FatSliderThumbBackgroundDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="TopTickBar"
                                                                       Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderTickBarFillDisabled}" />
+                                                                 Value="{ThemeResource FatSliderTickBarFillDisabled}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="BottomTickBar"
                                                                       Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderTickBarFillDisabled}" />
+                                                                 Value="{ThemeResource FatSliderTickBarFillDisabled}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="LeftTickBar"
                                                                       Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderTickBarFillDisabled}" />
+                                                                 Value="{ThemeResource FatSliderTickBarFillDisabled}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="RightTickBar"
                                                                       Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderTickBarFillDisabled}" />
+                                                                 Value="{ThemeResource FatSliderTickBarFillDisabled}" />
                                         </ColorAnimationUsingKeyFrames>
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="SliderContainer"
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="FatSliderContainer"
                                                                       Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="0:0:0.083"
-                                                                 Value="{ThemeResource SliderContainerBackgroundDisabled}" />
+                                                                 Value="{ThemeResource FatSliderContainerBackgroundDisabled}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -661,12 +661,12 @@
 
                         <ContentPresenter x:Name="HeaderContentPresenter"
                                           Grid.Row="0"
-                                          Margin="{ThemeResource SliderTopHeaderMargin}"
+                                          Margin="{ThemeResource FatSliderTopHeaderMargin}"
                                           x:DeferLoadStrategy="Lazy"
                                           Content="{TemplateBinding Header}"
                                           ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                          FontWeight="{ThemeResource SliderHeaderThemeFontWeight}"
-                                          Foreground="{ThemeResource SliderHeaderForeground}"
+                                          FontWeight="{ThemeResource FatSliderHeaderThemeFontWeight}"
+                                          Foreground="{ThemeResource FatSliderHeaderForeground}"
                                           TextWrapping="Wrap"
                                           Visibility="Collapsed" />
 
@@ -676,11 +676,11 @@
                                 Control.IsTemplateFocusTarget="True"
                                 CornerRadius="{ThemeResource ControlCornerRadius}" />
 
-                        <Grid x:Name="SliderContainer"
+                        <Grid x:Name="FatSliderContainer"
                               Grid.Row="1"
-                              Background="{ThemeResource SliderContainerBackground}">
+                              Background="{ThemeResource FatSliderContainerBackground}">
                             <Grid x:Name="HorizontalTemplate"
-                                  MinHeight="{ThemeResource SliderHorizontalHeight}">
+                                  MinHeight="{ThemeResource FatSliderHorizontalHeight}">
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -689,66 +689,66 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="{ThemeResource SliderPreContentMargin}" />
+                                    <RowDefinition Height="{ThemeResource FatSliderPreContentMargin}" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="{ThemeResource SliderPostContentMargin}" />
+                                    <RowDefinition Height="{ThemeResource FatSliderPostContentMargin}" />
                                 </Grid.RowDefinitions>
 
                                 <Rectangle x:Name="HorizontalTrackRect"
                                            Grid.Row="1"
                                            Grid.ColumnSpan="3"
-                                           Height="{ThemeResource SliderTrackBackgroundThemeHeight}"
+                                           Height="{ThemeResource FatSliderTrackBackgroundThemeHeight}"
                                            Fill="{TemplateBinding Background}"
-                                           RadiusX="{ThemeResource SliderTrackBackgroundCornerRadiusX}"
-                                           RadiusY="{ThemeResource SliderTrackBackgroundCornerRadiusY}" />
+                                           RadiusX="{ThemeResource FatSliderTrackBackgroundCornerRadiusX}"
+                                           RadiusY="{ThemeResource FatSliderTrackBackgroundCornerRadiusY}" />
                                 <Rectangle x:Name="HorizontalDecreaseRect"
                                            Grid.Row="1"
                                            Grid.Column="0"
-                                           Height="{ThemeResource SliderTrackThemeHeight}"
+                                           Height="{ThemeResource FatSliderTrackThemeHeight}"
                                            Fill="{TemplateBinding Foreground}"
-                                           RadiusX="{ThemeResource SliderTrackForegroundCornerRadiusX}"
-                                           RadiusY="{ThemeResource SliderTrackForegroundCornerRadiusY}"
-                                           Shadow="{ThemeResource SliderThumbShadow}"
+                                           RadiusX="{ThemeResource FatSliderTrackForegroundCornerRadiusX}"
+                                           RadiusY="{ThemeResource FatSliderTrackForegroundCornerRadiusY}"
+                                           Shadow="{ThemeResource FatSliderThumbShadow}"
                                            Translation="0,0,8" />
                                 <TickBar x:Name="TopTickBar"
                                          Grid.Row="0"
                                          Grid.Column="0"
                                          Grid.ColumnSpan="3"
-                                         Height="{ThemeResource HorizontalOutlineTickBarHeight}"
+                                         Height="{ThemeResource FatSliderHorizontalOutlineTickBarHeight}"
                                          Margin="0,0,0,4"
                                          VerticalAlignment="Bottom"
-                                         Fill="{ThemeResource SliderTickBarFill}"
+                                         Fill="{ThemeResource FatSliderTickBarFill}"
                                          Visibility="Collapsed" />
-                                <TickBar x:Name="HorizontalInlineTickBar"
+                                <TickBar x:Name="FatSliderHorizontalInlineTickBar"
                                          Grid.Row="1"
                                          Grid.Column="0"
                                          Grid.ColumnSpan="3"
-                                         Height="{ThemeResource HorizontalInlineTickBarHeight}"
-                                         Fill="{ThemeResource SliderInlineTickBarFill}"
+                                         Height="{ThemeResource FatSliderHorizontalInlineTickBarHeight}"
+                                         Fill="{ThemeResource FatSliderInlineTickBarFill}"
                                          Visibility="Collapsed" />
                                 <TickBar x:Name="BottomTickBar"
                                          Grid.Row="2"
                                          Grid.Column="0"
                                          Grid.ColumnSpan="3"
-                                         Height="{ThemeResource HorizontalOutlineTickBarHeight}"
+                                         Height="{ThemeResource FatSliderHorizontalOutlineTickBarHeight}"
                                          Margin="0,4,0,0"
                                          VerticalAlignment="Top"
-                                         Fill="{ThemeResource SliderTickBarFill}"
+                                         Fill="{ThemeResource FatSliderTickBarFill}"
                                          Visibility="Collapsed" />
                                 <Thumb x:Name="HorizontalThumb"
                                        Grid.Row="0"
                                        Grid.RowSpan="3"
                                        Grid.Column="1"
-                                       Width="{ThemeResource SliderHorizontalThumbWidth}"
-                                       Height="{ThemeResource SliderHorizontalThumbHeight}"
+                                       Width="{ThemeResource FatSliderHorizontalThumbWidth}"
+                                       Height="{ThemeResource FatSliderHorizontalThumbHeight}"
                                        AutomationProperties.AccessibilityView="Raw"
                                        CornerRadius="{StaticResource ControlCornerRadius}"
                                        DataContext="{TemplateBinding Value}"
                                        FocusVisualMargin="-14,-6,-14,-6"
-                                       Style="{StaticResource SliderThumbStyle}" />
+                                       Style="{StaticResource FatSliderThumbStyle}" />
                             </Grid>
                             <Grid x:Name="VerticalTemplate"
-                                  MinWidth="{ThemeResource SliderVerticalWidth}"
+                                  MinWidth="{ThemeResource FatSliderVerticalWidth}"
                                   Visibility="Collapsed">
 
                                 <Grid.RowDefinitions>
@@ -758,15 +758,15 @@
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="{ThemeResource SliderPreContentMargin}" />
+                                    <ColumnDefinition Width="{ThemeResource FatSliderPreContentMargin}" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="{ThemeResource SliderPostContentMargin}" />
+                                    <ColumnDefinition Width="{ThemeResource FatSliderPostContentMargin}" />
                                 </Grid.ColumnDefinitions>
 
                                 <Rectangle x:Name="VerticalTrackRect"
                                            Grid.RowSpan="3"
                                            Grid.Column="1"
-                                           Width="{ThemeResource SliderTrackThemeHeight}"
+                                           Width="{ThemeResource FatSliderTrackThemeHeight}"
                                            Fill="{TemplateBinding Background}"
                                            RadiusX="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopLeftCornerRadiusDoubleValueConverter}}"
                                            RadiusY="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BottomRightCornerRadiusDoubleValueConverter}}" />
@@ -780,38 +780,38 @@
                                          Grid.Row="0"
                                          Grid.RowSpan="3"
                                          Grid.Column="0"
-                                         Width="{ThemeResource SliderOutsideTickBarThemeHeight}"
+                                         Width="{ThemeResource FatSliderOutsideTickBarThemeHeight}"
                                          Margin="0,0,4,0"
                                          HorizontalAlignment="Right"
-                                         Fill="{ThemeResource SliderTickBarFill}"
+                                         Fill="{ThemeResource FatSliderTickBarFill}"
                                          Visibility="Collapsed" />
                                 <TickBar x:Name="VerticalInlineTickBar"
                                          Grid.Row="0"
                                          Grid.RowSpan="3"
                                          Grid.Column="1"
-                                         Width="{ThemeResource SliderTrackThemeHeight}"
-                                         Fill="{ThemeResource SliderInlineTickBarFill}"
+                                         Width="{ThemeResource FatSliderTrackThemeHeight}"
+                                         Fill="{ThemeResource FatSliderInlineTickBarFill}"
                                          Visibility="Collapsed" />
                                 <TickBar x:Name="RightTickBar"
                                          Grid.Row="0"
                                          Grid.RowSpan="3"
                                          Grid.Column="2"
-                                         Width="{ThemeResource SliderOutsideTickBarThemeHeight}"
+                                         Width="{ThemeResource FatSliderOutsideTickBarThemeHeight}"
                                          Margin="4,0,0,0"
                                          HorizontalAlignment="Left"
-                                         Fill="{ThemeResource SliderTickBarFill}"
+                                         Fill="{ThemeResource FatSliderTickBarFill}"
                                          Visibility="Collapsed" />
                                 <Thumb x:Name="VerticalThumb"
                                        Grid.Row="1"
                                        Grid.Column="0"
                                        Grid.ColumnSpan="3"
-                                       Width="{ThemeResource SliderVerticalThumbWidth}"
-                                       Height="{ThemeResource SliderVerticalThumbHeight}"
+                                       Width="{ThemeResource FatSliderVerticalThumbWidth}"
+                                       Height="{ThemeResource FatSliderVerticalThumbHeight}"
                                        AutomationProperties.AccessibilityView="Raw"
                                        CornerRadius="{StaticResource ControlCornerRadius}"
                                        DataContext="{TemplateBinding Value}"
                                        FocusVisualMargin="-6,-14,-6,-14"
-                                       Style="{StaticResource SliderThumbStyle}" />
+                                       Style="{StaticResource FatSliderThumbStyle}" />
                             </Grid>
 
                         </Grid>
