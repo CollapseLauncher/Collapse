@@ -345,7 +345,8 @@ namespace CollapseLauncher.Pages
             var mdParam = new MarkdownFramePage.MarkdownFramePageParams
             {
                 MarkdownUriCdn = $"changelog_{(IsPreview ? "preview" : "stable")}.md",
-                WebUri         = uri
+                WebUri         = uri,
+                Title          = Lang._SettingsPage.Update_ChangelogTitle
             };
             
             if (WindowUtility.CurrentWindow is MainWindow mainWindow)

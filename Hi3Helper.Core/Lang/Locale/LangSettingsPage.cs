@@ -62,6 +62,7 @@
                 public string Update_NewVer2                        { get; set; } = LangFallback?._SettingsPage.Update_NewVer2;
                 public string Update_LatestVer                      { get; set; } = LangFallback?._SettingsPage.Update_LatestVer;
                 public string Update_SeeChangelog                   { get; set; } = LangFallback?._SettingsPage.Update_SeeChangelog;
+                public string Update_ChangelogTitle                 { get; set; } = LangFallback?._SettingsPage.Update_ChangelogTitle;
                 public string AppFiles                              { get; set; } = LangFallback?._SettingsPage.AppFiles;
                 public string AppFiles_OpenDataFolderBtn            { get; set; } = LangFallback?._SettingsPage.AppFiles_OpenDataFolderBtn;
                 public string AppFiles_RelocateDataFolderBtn        { get; set; } = LangFallback?._SettingsPage.AppFiles_RelocateDataFolderBtn;

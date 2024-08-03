@@ -481,6 +481,7 @@
     "Update_NewVer2": "is available!",
     "Update_LatestVer": "You are using the latest version.",
     "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "App Files Management",
     "AppFiles_OpenDataFolderBtn": "Open App Data Folder",
@@ -846,7 +847,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {
