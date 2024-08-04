@@ -20,6 +20,7 @@
     <Page.Resources>
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </Page.Resources>
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
@@ -390,18 +391,31 @@
                                           IsOn="{x:Bind IsUseProxy, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                            <TextBox Margin="0,8,0,8"
+                            <TextBox x:Name="ProxyHostnameTextbox"
+                                     Margin="0,8,0,8"
                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Hostname}"
+                                     InputScope="Url"
                                      IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
                                      IsSpellCheckEnabled="False"
                                      PlaceholderText="Example: https://127.0.0.1:8080"
                                      Text="{x:Bind HttpProxyUrl, Mode=TwoWay}" />
+                            <TextBlock x:Name="ProxyHostnameTextboxError"
+                                       FontWeight="Medium"
+                                       Text="Error"
+                                       TextWrapping="Wrap"
+                                       Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                       Visibility="Collapsed" />
                             <Grid Margin="0,8,0,16"
-                                  ColumnSpacing="8">
+                                  ColumnSpacing="8"
+                                  RowSpacing="16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
                                 <TextBox Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Username}"
                                          IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
                                          IsSpellCheckEnabled="False"
@@ -413,6 +427,110 @@
                                              Password="{x:Bind HttpProxyPassword, Mode=TwoWay}"
                                              PasswordRevealMode="Peek"
                                              PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordPlaceholder}" />
+                                <Button x:Name="ProxyConnectivityTestButton"
+                                        Click="ProxyConnectivityTestButton_Click"
+                                        Grid.Row="1"
+                                        Grid.ColumnSpan="2"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Style="{ThemeResource AcrylicButtonStyle}"
+                                        IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                        Visibility="{Binding Text, ElementName=ProxyHostnameTextbox, Converter={StaticResource StringToVisibilityConverter}}">
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid HorizontalAlignment="Left">
+                                            <TextBlock HorizontalAlignment="Left"
+                                                       VerticalAlignment="Center"
+                                                       FontWeight="Medium"
+                                                       HorizontalTextAlignment="Left"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_Button}" />
+                                        </Grid>
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  FontSize="18"
+                                                  Glyph="" />
+                                    </Grid>
+                                </Button>
+                                <Grid Grid.Row="2"
+                                      Grid.ColumnSpan="2"
+                                      x:Name="ProxyConnectivityTestTextChecking"
+                                      Padding="12,8"
+                                      HorizontalAlignment="Stretch"
+                                      Background="{ThemeResource AccentAcrylicInAppFillColorBaseBrush}"
+                                      CornerRadius="4"
+                                      Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               Margin="0,-2,0,0"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_ButtonChecking}" />
+                                    <ProgressRing Grid.Column="1"
+                                                  Width="18"
+                                                  Height="18"
+                                                  VerticalAlignment="Center"
+                                                  IsIndeterminate="False" />
+                                </Grid>
+                                <Grid Grid.Row="2"
+                                      Grid.ColumnSpan="2"
+                                      x:Name="ProxyConnectivityTestTextSuccess"
+                                      Padding="12,8"
+                                      HorizontalAlignment="Stretch"
+                                      Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                      CornerRadius="4"
+                                      Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               Margin="0,-2,0,0"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_ButtonSuccess}" />
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="18"
+                                              Foreground="{ThemeResource SystemFillColorSuccess}"
+                                              Glyph="" />
+                                </Grid>
+                                <Grid Grid.Row="2"
+                                      Grid.ColumnSpan="2"
+                                      x:Name="ProxyConnectivityTestTextFailed"
+                                      Padding="12,8"
+                                      HorizontalAlignment="Stretch"
+                                      Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                      CornerRadius="4"
+                                      Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               Margin="0,-2,0,0"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_ButtonFailed}" />
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="18"
+                                              Foreground="{ThemeResource SystemFillColorCritical}"
+                                              Glyph="" />
+                                </Grid>
                             </Grid>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,16"

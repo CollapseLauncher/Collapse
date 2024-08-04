@@ -45,6 +45,12 @@ namespace CollapseLauncher.Pages
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
+    public class StringToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string input) => (value is string asString) && !string.IsNullOrEmpty(asString) ? Visibility.Visible : Visibility.Collapsed;
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+    }
+
     public class FileSizeToStringLiteralConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => ConverterTool.SummarizeSizeSimple((long)value);

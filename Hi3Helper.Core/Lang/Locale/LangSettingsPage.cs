@@ -132,6 +132,8 @@
                 public string NetworkSettings_Proxy_HostnameHelp2       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_HostnameHelp2;
                 public string NetworkSettings_Proxy_HostnameHelp3       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_HostnameHelp3;
                 public string NetworkSettings_Proxy_HostnameHelp4       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_HostnameHelp4;
+                public string NetworkSettings_ProxyWarn_UrlInvalid      { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyWarn_UrlInvalid;
+                public string NetworkSettings_ProxyWarn_NotSupported    { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyWarn_NotSupported;
                 public string NetworkSettings_Proxy_Username            { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_Username;
                 public string NetworkSettings_Proxy_UsernamePlaceholder { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_UsernamePlaceholder;
                 public string NetworkSettings_Proxy_UsernameHelp1       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_UsernameHelp1;
@@ -147,6 +149,10 @@
                 public string NetworkSettings_Http_SimulateCookies      { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Http_SimulateCookies;
                 public string NetworkSettings_Http_UntrustedHttps       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Http_UntrustedHttps;
                 public string NetworkSettings_Http_Timeout              { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Http_Timeout;
+                public string NetworkSettings_ProxyTest_Button          { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_Button;
+                public string NetworkSettings_ProxyTest_ButtonChecking  { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_ButtonChecking;
+                public string NetworkSettings_ProxyTest_ButtonSuccess   { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_ButtonSuccess;
+                public string NetworkSettings_ProxyTest_ButtonFailed    { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_ButtonFailed;
             }
         }
         #endregion

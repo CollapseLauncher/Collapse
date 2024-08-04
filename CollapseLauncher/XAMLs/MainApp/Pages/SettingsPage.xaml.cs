@@ -861,17 +861,17 @@ namespace CollapseLauncher.Pages
         {
             Bindings.Update();
             UpdateLayout();
-            int lastAppBehavSelected = GameLaunchedBehaviorSelector.SelectedIndex;
-            GameLaunchedBehaviorSelector.SelectedIndex = -1;
-            GameLaunchedBehaviorSelector.SelectedIndex = lastAppBehavSelected;
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
             
-            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
                 string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
                 string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
+
+            string url = GetAppConfigValue("HttpProxyUrl").ToString();
+            ValidateHttpProxyUrl(url);
         }
 
         private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -1110,8 +1110,136 @@ namespace CollapseLauncher.Pages
 
         private string? HttpProxyUrl
         {
-            get => GetAppConfigValue("HttpProxyUrl").ToString();
-            set => SetAndSaveConfigValue("HttpProxyUrl", value);
+            get
+            {
+                string url = GetAppConfigValue("HttpProxyUrl").ToString();
+                ValidateHttpProxyUrl(url);
+                return url;
+            }
+            set
+            {
+                ValidateHttpProxyUrl(value);
+                SetAndSaveConfigValue("HttpProxyUrl", value);
+            }
+        }
+
+        private void ValidateHttpProxyUrl(string? url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? urlResult)
+                || string.IsNullOrEmpty(urlResult.Host)
+                || urlResult.Port > 65535)
+                {
+                    Brush brush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBackgroundBrush");
+                    Brush fgbrush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBrush");
+                    ProxyHostnameTextbox.SetForeground(fgbrush);
+                    ProxyHostnameTextbox.SetBackground(brush);
+                    ProxyHostnameTextboxError.Visibility = Visibility.Visible;
+                    ProxyHostnameTextboxError.Text = Lang._SettingsPage.NetworkSettings_ProxyWarn_UrlInvalid;
+                    return;
+                }
+
+                if (!(urlResult.Scheme.Equals("http")
+                || urlResult.Scheme.Equals("https")
+                || urlResult.Scheme.Equals("socks4")
+                || urlResult.Scheme.Equals("socks4a")
+                || urlResult.Scheme.Equals("socks5")))
+                {
+                    Brush brush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBackgroundBrush");
+                    Brush fgbrush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBrush");
+                    ProxyHostnameTextbox.SetForeground(fgbrush);
+                    ProxyHostnameTextbox.SetBackground(brush);
+                    ProxyHostnameTextboxError.Visibility = Visibility.Visible;
+                    ProxyHostnameTextboxError.Text = Lang._SettingsPage.NetworkSettings_ProxyWarn_NotSupported;
+                    return;
+                }
+            }
+
+            ProxyHostnameTextboxError.Visibility = Visibility.Collapsed;
+            ProxyHostnameTextbox.SetForeground(CollapseUIExt.GetApplicationResource<SolidColorBrush>("TextControlForeground"));
+            ProxyHostnameTextbox.SetBackground(CollapseUIExt.GetApplicationResource<Brush>("TextControlBackground"));
+        }
+
+        private async void ProxyConnectivityTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                button.IsEnabled = false;
+                ProxyConnectivityTestTextChecking.Visibility = Visibility.Visible;
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+
+                ProgressRing? progressRing = ProxyConnectivityTestTextChecking.Children
+                    .OfType<ProgressRing>()
+                    .FirstOrDefault();
+
+                FallbackCDNUtil.InitializeHttpClient();
+
+                try
+                {
+                    if (progressRing != null)
+                        progressRing.IsIndeterminate = true;
+                    UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode("https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE", default);
+                    if (!urlStatus.IsSuccessStatusCode)
+                    {
+                        InvokeError();
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    InvokeError();
+                    return;
+                }
+
+                InvokeSuccess();
+            }
+
+            return;
+
+            async void InvokeError()
+            {
+                ProxyConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Visible;
+
+                await Task.Delay(2000);
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+                RestoreButtonState();
+            }
+
+            async void InvokeSuccess()
+            {
+                ProxyConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Visible;
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+
+                await Task.Delay(2000);
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                RestoreButtonState();
+            }
+
+            void RestoreButtonBinding()
+            {
+                BindingOperations.SetBinding(button, IsEnabledProperty, new Binding()
+                {
+                    Source = NetworkSettingsProxyToggle,
+                    Path = new PropertyPath("IsOn"),
+                    Mode = BindingMode.OneWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                });
+            }
+
+            void RestoreButtonState()
+            {
+                RestoreButtonBinding();
+                ProgressRing? progressRing = ProxyConnectivityTestTextChecking.Children
+                    .OfType<ProgressRing>()
+                    .FirstOrDefault();
+                if (progressRing != null)
+                    progressRing.IsIndeterminate = false;
+            }
         }
 
         private string? HttpProxyUsername
@@ -1180,6 +1308,5 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
-
     }
 }
