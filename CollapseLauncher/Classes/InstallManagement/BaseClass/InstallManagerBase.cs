@@ -3376,8 +3376,6 @@ namespace CollapseLauncher.InstallManager.Base
             // Initialize new proxy-aware HttpClient
             using HttpClient httpClientNew = new HttpClientBuilder()
                 .UseLauncherConfig()
-                .SetUserAgent(_userAgent)
-                .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
             using Http _httpClient = new Http(true, customHttpClient: httpClientNew);
@@ -3885,13 +3883,22 @@ namespace CollapseLauncher.InstallManager.Base
                     // If status is merging, then use progress for speed and timelapse from Http client
                     // and set the rest from the base class
                     _progress.ProgressAllTimeLeft        = e.TimeLeft;
-                    _progress.ProgressAllSpeed           = e.Speed;
+
+                    double speedWithReset                = _progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed           = speedWithReset;
+
                     _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                     _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                     _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                     _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
                     _progress.ProgressAllPercentage =
                         Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+
+                    if (_downloadSpeedRefreshInterval < _downloadSpeedRefreshStopwatch!.ElapsedMilliseconds)
+                    {
+                        _progressAllIOReadCurrent = 0;
+                        _downloadSpeedRefreshStopwatch.Restart();
+                    }
                 }
 
                 // Update the status of per file size and current progress from Http client
