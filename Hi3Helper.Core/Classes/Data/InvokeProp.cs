@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -265,42 +266,63 @@ namespace Hi3Helper
         [DllImport("ntdll.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
-
-        private static byte[] NtQueryCachedBuffer = new byte[1 << 17];
         public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
         {
-            // Get the pointer of the buffer
-            fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
+            ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
+            byte[] NtQueryCachedBuffer = arrayPool.Rent(4 << 17);
+            bool isReallocate = false;
+            uint length = 0;
+
+        StartOver:
+            try
             {
-                // Get the query of the current running process and store it to the buffer
-                NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out uint length);
+                if (length > (2 << 20))
+                    return false;
 
-                // If the required length of the data is exceeded, return false
-                if (length > NtQueryCachedBuffer.Length) return false;
+                if (isReallocate)
+                    NtQueryCachedBuffer = arrayPool.Rent((int)length);
 
-                // Start reading data from the buffer
-                int currentOffset = 0;
-            ReadQueryData:
-                // Get the current position of the pointer based on its offset
-                byte* curPosPtr = dataBufferPtr + currentOffset;
+                // Get the pointer of the buffer
+                fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
+                {
+                    // Get the query of the current running process and store it to the buffer
+                    NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out length);
 
-                // Get the increment of the next entry offset
-                // and get the struct from the given pointer offset + 56 bytes ahead
-                // to obtain the process name.
-                int nextEntryOffset = *(int*)curPosPtr;
-                UNICODE_STRING* unicodeString = (UNICODE_STRING*)(curPosPtr + 56);
+                    // If the required length of the data is exceeded, return false
+                    if (length > NtQueryCachedBuffer.Length)
+                    {
+                        isReallocate = true;
+                        goto StartOver;
+                    }
 
-                // Use the struct buffer into the ReadOnlySpan<char> to be compared with
-                // the input from "processName" argument.
-                ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
-                if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
-                    return true; // If equals, then return true
+                    // Start reading data from the buffer
+                    int currentOffset = 0;
+                ReadQueryData:
+                    // Get the current position of the pointer based on its offset
+                    byte* curPosPtr = dataBufferPtr + currentOffset;
 
-                // Otherwise, if the next entry offset is not 0 (not ended), then read
-                // the next data and move forward based on the given offset.
-                currentOffset += nextEntryOffset;
-                if (nextEntryOffset != 0)
-                    goto ReadQueryData;
+                    // Get the increment of the next entry offset
+                    // and get the struct from the given pointer offset + 56 bytes ahead
+                    // to obtain the process name.
+                    int nextEntryOffset = *(int*)curPosPtr;
+                    UNICODE_STRING* unicodeString = (UNICODE_STRING*)(curPosPtr + 56);
+
+                    // Use the struct buffer into the ReadOnlySpan<char> to be compared with
+                    // the input from "processName" argument.
+                    ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
+                    if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
+                        return true; // If equals, then return true
+
+                    // Otherwise, if the next entry offset is not 0 (not ended), then read
+                    // the next data and move forward based on the given offset.
+                    currentOffset += nextEntryOffset;
+                    if (nextEntryOffset != 0)
+                        goto ReadQueryData;
+                }
+            }
+            finally
+            {
+                arrayPool.Return(NtQueryCachedBuffer);
             }
 
             return false;
