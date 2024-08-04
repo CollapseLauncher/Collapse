@@ -16,9 +16,9 @@ namespace CollapseLauncher.Helper
 
         private bool IsUseProxy { get; set; } = true;
         private bool IsUseSystemProxy { get; set; } = true;
-        private bool IsAllowHttpRedirections { get; set; } = false;
-        private bool IsAllowHttpCookies { get; set; } = false;
-        private bool IsAllowUntrustedCert { get; set; } = false;
+        private bool IsAllowHttpRedirections { get; set; }
+        private bool IsAllowHttpCookies { get; set; }
+        private bool IsAllowUntrustedCert { get; set; }
 
         private int MaxConnections { get; set; } = _maxConnectionsDefault;
         private DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
@@ -27,8 +27,6 @@ namespace CollapseLauncher.Helper
         private string? HttpUserAgent { get; set; } = GetDefaultUserAgent();
         private HttpVersionPolicy HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
         private TimeSpan HttpTimeout { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
-
-        public HttpClientBuilder() { }
 
         public HttpClientBuilder UseProxy(bool isUseSystemProxy = true)
         {
@@ -39,19 +37,18 @@ namespace CollapseLauncher.Helper
 
         private static string GetDefaultUserAgent()
         {
-            bool isWindows10 = InnerLauncherConfig.m_isWindows11;
             Version operatingSystemVer = Environment.OSVersion.Version;
             FileVersionInfo winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
 
             return $"Mozilla/5.0 (Windows NT {operatingSystemVer}; Win64; x64) "
-                + $"{RuntimeInformation.FrameworkDescription.ToString().Replace(' ', '/')} (KHTML, like Gecko) "
+                + $"{RuntimeInformation.FrameworkDescription.Replace(' ', '/')} (KHTML, like Gecko) "
                 + $"Collapse/{LauncherUpdateHelper.LauncherCurrentVersionString}-{(LauncherConfig.IsPreview ? "Preview" : "Stable")} "
                 + $"WinAppSDK/{winAppSDKVer.ProductVersion}";
         }
 
         public HttpClientBuilder UseExternalProxy(string host, string? username = null, string? password = null)
         {
-            // Try create the Uri
+            // Try to create the Uri
             if (!Uri.TryCreate(host, UriKind.Absolute, out Uri? hostUri))
             {
                 IsUseProxy = false;
@@ -202,4 +199,3 @@ namespace CollapseLauncher.Helper
         }
     }
 }
-#nullable restore

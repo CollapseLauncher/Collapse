@@ -354,10 +354,7 @@ namespace Hi3Helper
         #endregion
         
         public static void MoveFileToRecycleBin(IList<string> filePaths)
-        {
-            int successCount;
-            int failedCount;
-            
+        { 
             uint   FO_DELETE          = 0x0003;
             ushort FOF_ALLOWUNDO      = 0x0040;
             ushort FOF_NOCONFIRMATION = 0x0010;

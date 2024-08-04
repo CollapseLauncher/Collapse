@@ -189,7 +189,7 @@ namespace CollapseLauncher
                 // If isFirst flag set to true, then get the _gameSalt.
                 if (isFirst)
                 {
-                    _gameSalt = GetAssetIndexSalt(line.ToString());
+                    _gameSalt = GetAssetIndexSalt(line);
                     isFirst = false;
                     continue;
                 }
@@ -210,7 +210,7 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                CacheAsset content = null;
+                CacheAsset content;
                 try
                 {
                     // Deserialize the line and set the type
@@ -248,14 +248,16 @@ namespace CollapseLauncher
 
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            bool isFirst = type == CacheAssetType.Data;
-            bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
+            
+            // Unused as of Aug 4th 2024, bonk @bagusnl if not true
+            // bool isFirst = type == CacheAssetType.Data;
+            // bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
             BundleFile bundleFile = new BundleFile(stream);
             SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 
-            // Try get the asset index file as byte[] and load it as TextAsset
+            // Try to get the asset index file as byte[] and load it as TextAsset
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 

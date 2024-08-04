@@ -19,7 +19,6 @@
       mc:Ignorable="d">
     <Page.Resources>
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
-        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </Page.Resources>
     <ScrollViewer>
@@ -44,10 +43,10 @@
                             <ComboBox x:Name="LanguageSelector"
                                       MinWidth="256"
                                       CornerRadius="14"
-                                      SelectionChanged="LanguageSelector_SelectionChanged"
                                       ItemsSource="{x:Bind LanguageList}"
                                       MaxDropDownHeight="200"
-                                      SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=OneTime}" />
+                                      SelectedIndex="{x:Bind LanguageSelectedIndex}"
+                                      SelectionChanged="LanguageSelector_SelectionChanged" />
                             <TextBlock x:Name="AppLangSelectionWarning"
                                        Margin="0,12,0,0"
                                        FontWeight="Bold"
@@ -332,6 +331,7 @@
                             <TextBlock FontSize="16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Title}" />
+                            <!--  ReSharper disable once Xaml.RedundantStyledValue  -->
                             <Button Width="24"
                                     Height="24"
                                     Margin="8,0,0,0"
@@ -401,9 +401,9 @@
                                      Text="{x:Bind HttpProxyUrl, Mode=TwoWay}" />
                             <TextBlock x:Name="ProxyHostnameTextboxError"
                                        FontWeight="Medium"
+                                       Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                        Text="Error"
                                        TextWrapping="Wrap"
-                                       Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                        Visibility="Collapsed" />
                             <Grid Margin="0,8,0,16"
                                   ColumnSpacing="8"
@@ -415,26 +415,29 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
                                     <RowDefinition />
+                                    <RowDefinition />
                                 </Grid.RowDefinitions>
                                 <TextBox Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Username}"
                                          IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
                                          IsSpellCheckEnabled="False"
                                          PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_UsernamePlaceholder}"
                                          Text="{x:Bind HttpProxyUsername, Mode=TwoWay}" />
-                                <PasswordBox Grid.Column="1"
+                                <PasswordBox Grid.Row="0"
+                                             Grid.Column="1"
                                              Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Password}"
                                              IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
                                              Password="{x:Bind HttpProxyPassword, Mode=TwoWay}"
                                              PasswordRevealMode="Peek"
                                              PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordPlaceholder}" />
                                 <Button x:Name="ProxyConnectivityTestButton"
-                                        Click="ProxyConnectivityTestButton_Click"
                                         Grid.Row="1"
+                                        Grid.Column="0"
                                         Grid.ColumnSpan="2"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch"
-                                        Style="{ThemeResource AcrylicButtonStyle}"
+                                        Click="ProxyConnectivityTestButton_Click"
                                         IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                        Style="{ThemeResource AcrylicButtonStyle}"
                                         Visibility="{Binding Text, ElementName=ProxyHostnameTextbox, Converter={StaticResource StringToVisibilityConverter}}">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.ColumnDefinitions>
@@ -455,9 +458,10 @@
                                                   Glyph="" />
                                     </Grid>
                                 </Button>
-                                <Grid Grid.Row="2"
+                                <Grid x:Name="ProxyConnectivityTestTextChecking"
+                                      Grid.Row="2"
+                                      Grid.Column="0"
                                       Grid.ColumnSpan="2"
-                                      x:Name="ProxyConnectivityTestTextChecking"
                                       Padding="12,8"
                                       HorizontalAlignment="Stretch"
                                       Background="{ThemeResource AccentAcrylicInAppFillColorBaseBrush}"
@@ -467,9 +471,9 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock HorizontalAlignment="Left"
+                                    <TextBlock Margin="0,-2,0,0"
+                                               HorizontalAlignment="Left"
                                                VerticalAlignment="Center"
-                                               Margin="0,-2,0,0"
                                                FontWeight="Medium"
                                                HorizontalTextAlignment="Left"
                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_ButtonChecking}" />
@@ -479,9 +483,10 @@
                                                   VerticalAlignment="Center"
                                                   IsIndeterminate="False" />
                                 </Grid>
-                                <Grid Grid.Row="2"
+                                <Grid x:Name="ProxyConnectivityTestTextSuccess"
+                                      Grid.Row="2"
+                                      Grid.Column="0"
                                       Grid.ColumnSpan="2"
-                                      x:Name="ProxyConnectivityTestTextSuccess"
                                       Padding="12,8"
                                       HorizontalAlignment="Stretch"
                                       Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
@@ -491,9 +496,9 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock HorizontalAlignment="Left"
+                                    <TextBlock Margin="0,-2,0,0"
+                                               HorizontalAlignment="Left"
                                                VerticalAlignment="Center"
-                                               Margin="0,-2,0,0"
                                                FontWeight="Medium"
                                                HorizontalTextAlignment="Left"
                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_ButtonSuccess}" />
@@ -505,9 +510,10 @@
                                               Foreground="{ThemeResource SystemFillColorSuccess}"
                                               Glyph="" />
                                 </Grid>
-                                <Grid Grid.Row="2"
+                                <Grid x:Name="ProxyConnectivityTestTextFailed"
+                                      Grid.Row="2"
+                                      Grid.Column="0"
                                       Grid.ColumnSpan="2"
-                                      x:Name="ProxyConnectivityTestTextFailed"
                                       Padding="12,8"
                                       HorizontalAlignment="Stretch"
                                       Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
@@ -517,9 +523,9 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock HorizontalAlignment="Left"
+                                    <TextBlock Margin="0,-2,0,0"
+                                               HorizontalAlignment="Left"
                                                VerticalAlignment="Center"
-                                               Margin="0,-2,0,0"
                                                FontWeight="Medium"
                                                HorizontalTextAlignment="Left"
                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_ProxyTest_ButtonFailed}" />

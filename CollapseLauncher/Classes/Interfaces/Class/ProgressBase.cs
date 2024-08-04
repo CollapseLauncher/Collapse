@@ -1060,6 +1060,7 @@ namespace CollapseLauncher.Interfaces
         #region HandlerUpdaters
         public void Dispatch(DispatcherQueueHandler handler) => _parentUI!.DispatcherQueue!.TryEnqueue(handler);
 
+        #nullable enable
         protected virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)
         {
             try
@@ -1094,6 +1095,7 @@ namespace CollapseLauncher.Interfaces
                 // pipe to parent
             }
         }
+        #nullable restore
 
         protected async Task<bool> CheckIfNeedRefreshStopwatch()
         {
