@@ -13,6 +13,7 @@ namespace Hi3Helper
         #region Properties
         private FileStream _logStream { get; set; }
         private StreamWriter _logWriter { get; set; }
+        private bool _isWriterOnDispose { get; set; }
         private object _lockObject = new object();
         private string _logFolder { get; set; }
 #if !APPLYUPDATE
@@ -115,11 +116,17 @@ namespace Hi3Helper
         public virtual async void LogWriteLine(string line, LogType type) { }
         public virtual async void LogWriteLine(string line, LogType type, bool writeToLog) { }
         public virtual async void LogWrite(string line, LogType type, bool writeToLog, bool fromStart) { }
-        public async void WriteLog(string line, LogType type)
+        public void WriteLog(string line, LogType type)
         {
             // Always seek to the end of the file.
-            _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
-            _logWriter?.WriteLine(GetLine(line, type, false, true));
+            lock(_lockObject)
+            {
+                if (!_isWriterOnDispose)
+                {
+                    _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
+                    _logWriter?.WriteLine(GetLine(line, type, false, true));
+                }
+            }
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 #endregion
@@ -173,6 +180,7 @@ namespace Hi3Helper
 
         protected void DisposeBase()
         {
+            _isWriterOnDispose = true;
             _logWriter?.Dispose();
             _logStream?.Dispose();
         }
@@ -202,6 +210,7 @@ namespace Hi3Helper
 
             // Initialize the StreamWriter
             _logWriter = new StreamWriter(_logStream, logEncoding) { AutoFlush = true };
+            _isWriterOnDispose = false;
         }
 
         private int GetTotalInstance() => InvokeProp.EnumerateInstances();
