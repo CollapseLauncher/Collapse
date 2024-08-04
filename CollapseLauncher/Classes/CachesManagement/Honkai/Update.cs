@@ -152,7 +152,7 @@ namespace CollapseLauncher
                 }
 
 #if !DEBUG
-                LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.AssetIndex.Default, true);
+                LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);
 #endif
             }
 
