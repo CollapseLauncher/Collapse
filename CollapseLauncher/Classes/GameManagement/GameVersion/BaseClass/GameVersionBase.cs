@@ -395,31 +395,33 @@ namespace CollapseLauncher.GameVersioning
             return returnList;
         }
 
-        public virtual List<RegionResourceVersion> GetGamePreloadZip()
+#nullable enable
+        public virtual List<RegionResourceVersion>? GetGamePreloadZip()
         {
             // Initialize the return list
             List<RegionResourceVersion> returnList = new();
 
             // If the preload is not exist, then return null
-            if (GameAPIProp.data?.pre_download_game == null)
+            if (GameAPIProp.data?.pre_download_game == null
+           || ((GameAPIProp.data?.pre_download_game?.diffs?.Count ?? 0) == 0
+             && GameAPIProp.data?.pre_download_game?.latest == null))
             {
                 return null;
             }
 
             // Try get the diff file  by the first or default (null)
-            RegionResourceVersion diff = GameAPIProp.data.pre_download_game?.diffs?
+            RegionResourceVersion? diff = GameAPIProp.data?.pre_download_game?.diffs?
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
             // If the single entry of the diff is null, then return null
             // If the diff is null, then get the latest.
             // If diff is found, then add the diff one.
-            returnList.Add(diff ?? GameAPIProp.data.pre_download_game?.latest);
+            returnList.Add(diff ?? GameAPIProp.data?.pre_download_game?.latest ?? throw new NullReferenceException($"Preload neither have diff or latest package!"));
 
             // Return the list
             return returnList;
         }
 
-#nullable enable
         public virtual List<RegionResourcePlugin>? GetGamePluginZip()
         {
             // Check if the plugin is not empty, then add it

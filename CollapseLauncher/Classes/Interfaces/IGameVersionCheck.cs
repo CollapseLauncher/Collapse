@@ -156,7 +156,7 @@ namespace CollapseLauncher.Interfaces
         /// Returns the <c>List</c> of the Resource Version for the Pre-load Zip.
         /// If the Pre-load doesn't exist, then it will return a null.
         /// </summary>
-        List<RegionResourceVersion> GetGamePreloadZip();
+        List<RegionResourceVersion>? GetGamePreloadZip();
 
 #nullable enable
         /// <summary>

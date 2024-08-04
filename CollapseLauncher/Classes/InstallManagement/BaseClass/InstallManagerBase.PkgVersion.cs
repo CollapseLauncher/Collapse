@@ -239,7 +239,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 
                 // Add pre-download zips into the ignored list 
-                var packagePreDownloadList = _gameVersionManager.GetGamePreloadZip().FirstOrDefault();
+                RegionResourceVersion? packagePreDownloadList = _gameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
                 if (packagePreDownloadList != null)
                 {
                     var preDownloadZips = new List<string>();
