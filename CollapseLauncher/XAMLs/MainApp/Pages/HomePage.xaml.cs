@@ -5,9 +5,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
-using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Zenless.Context;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -54,7 +52,6 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
-using GeneralData = CollapseLauncher.GameSettings.Zenless.GeneralData;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
@@ -1515,6 +1512,9 @@ namespace CollapseLauncher.Pages
                     if (delay > 0)
                         await Task.Delay(delay);
                 }
+                
+                int? height = _Settings.SettingsScreen.height;
+                int? width  = _Settings.SettingsScreen.width;
 
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
@@ -1536,6 +1536,12 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
 
+                if (CurrentGameProperty._GamePreset.GameType == GameNameType.Zenless &&
+                    _Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
+                {
+                    SetBackScreenSettings(_Settings, (int)height, (int)width);
+                }
+
                 // Stop update check
                 IsSkippingUpdateCheck = true;
 
@@ -1543,7 +1549,7 @@ namespace CollapseLauncher.Pages
                 StartResizableWindowPayload(
                     _gamePreset.GameExecutableName,
                     _Settings,
-                    _gamePreset.GameType);
+                    _gamePreset.GameType, height, width);
                 GameRunningWatcher(_Settings);
 
                 if (GetAppConfigValue("EnableConsole").ToBool())
@@ -1657,7 +1663,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Resizable Window Payload
-        internal async void StartResizableWindowPayload(string executableName, IGameSettingsUniversal settings, GameNameType gameType)
+        internal async void StartResizableWindowPayload(string       executableName, IGameSettingsUniversal settings,
+                                                        GameNameType gameType,       int? height, int? width)
         {
             try
             {
@@ -1667,16 +1674,6 @@ namespace CollapseLauncher.Pages
 
                 executableName = Path.GetFileNameWithoutExtension(executableName);
                 ResizableWindowHook resizableWindowHook = new ResizableWindowHook();
-
-                int?  height = null;
-                int?  width = null;
-                bool isZenless = gameType == GameNameType.Zenless;
-                if (isZenless && settings.SettingsCollapseScreen.UseCustomResolution)
-                {
-                    height = settings.SettingsScreen.height;
-                    width  = settings.SettingsScreen.width;
-                    SetBackScreenSettings(settings, (int)height, (int)width);
-                }
 
                 // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
                 // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
@@ -1693,8 +1690,9 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width)
+        private async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width)
         {
+            await Task.Delay(20000);
             try
             {
                 settingsUniversal.SettingsScreen.height = height;

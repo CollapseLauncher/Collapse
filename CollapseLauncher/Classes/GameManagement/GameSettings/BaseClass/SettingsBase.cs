@@ -42,7 +42,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
-        public SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
+        protected SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
 
         public virtual void InitializeSettings()
         {
