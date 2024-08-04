@@ -3395,7 +3395,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Iterate the segment list
                         for (int i = 0; i < package.Segments.Count; i++)
                         {
-                            await RunPackageDownloadRoutine(package.Segments[i], token, packageCount);
+                            await RunPackageDownloadRoutine(_httpClient, package.Segments[i], token, packageCount);
                         }
 
                         // Skip action below and continue to the next segment
@@ -3403,7 +3403,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Else, run the routine as normal
-                    await RunPackageDownloadRoutine(package, token, packageCount);
+                    await RunPackageDownloadRoutine(_httpClient, package, token, packageCount);
                 }
             }
             finally
@@ -3413,7 +3413,8 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async ValueTask RunPackageDownloadRoutine(GameInstallPackage package, CancellationToken token,
+        private async ValueTask RunPackageDownloadRoutine(Http               httpClient,
+                                                          GameInstallPackage package, CancellationToken token,
                                                           int                packageCount)
         {
             // Set the activity status
@@ -3437,15 +3438,6 @@ namespace CollapseLauncher.InstallManager.Base
             long existingPackageFileSize    = package.GetStreamLength(_downloadThreadCount);
             bool isExistingPackageFileExist = package.IsReadStreamExist(_downloadThreadCount);
 
-            // Initialize new proxy-aware HttpClient
-            using HttpClient httpClientNew = new HttpClientBuilder()
-                .UseLauncherConfig()
-                .SetUserAgent(_userAgent)
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
-
-            using Http _httpClient = new Http(true, customHttpClient: httpClientNew);
-
             if (!isExistingPackageFileExist
                 || existingPackageFileSize != package.Size)
             {
@@ -3454,11 +3446,11 @@ namespace CollapseLauncher.InstallManager.Base
                 bool isCanMultiSession = package.Size >= 10 << 20;
                 if (isCanMultiSession)
                 {
-                    await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
+                    await httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
                 }
                 else
                 {
-                    await _httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
+                    await httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
                 }
 
                 // Update status to merging
@@ -3472,7 +3464,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // then do merge.
                 if (_canMergeDownloadChunks && isCanMultiSession)
                 {
-                    await _httpClient.Merge(token);
+                    await httpClient.Merge(token);
                 }
 
                 _stopwatch.Start();
