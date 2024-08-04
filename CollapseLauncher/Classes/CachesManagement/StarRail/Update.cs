@@ -5,6 +5,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
@@ -39,8 +40,23 @@ namespace CollapseLauncher
 
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
-
                 // Iterate the asset index and do update operation
+                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
+#else
+                    updateAssetIndex
+#endif
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _threadCount },
+                    async (asset, innerToken) =>
+                    {
+                        await UpdateCacheAsset(asset, httpClient, innerToken);
+                    });
+                
+                /*
                 foreach (SRAsset asset in
 #if ENABLEHTTPREPAIR
                     EnforceHTTPSchemeToAssetIndex(updateAssetIndex!)
@@ -51,6 +67,7 @@ namespace CollapseLauncher
                 {
                     await UpdateCacheAsset(asset, httpClient, token);
                 }
+                */
 
                 return true;
             }
@@ -69,37 +86,37 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task UpdateCacheAsset(SRAsset asset, Http httpClient, CancellationToken token)
+        private async Task UpdateCacheAsset((SRAsset AssetIndex, IAssetProperty AssetProperty) asset, Http httpClient, CancellationToken token)
         {
             // Increment total count and update the status
             _progressAllCountCurrent++;
-            _status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetType, Path.GetFileName(asset.LocalName));
+            _status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetIndex.AssetType, Path.GetFileName(asset.AssetIndex.LocalName));
             UpdateAll();
 
             // Assign and check the path of the asset directory
-            string assetDir = Path.GetDirectoryName(asset.LocalName);
+            string assetDir = Path.GetDirectoryName(asset.AssetIndex.LocalName);
             if (!Directory.Exists(assetDir))
             {
                 Directory.CreateDirectory(assetDir);
             }
 
             // Do multi-session download for asset that has applicable size
-            if (asset.Size >= _sizeForMultiDownload)
+            if (asset.AssetIndex.Size >= _sizeForMultiDownload)
             {
-                await httpClient.Download(asset.RemoteURL, asset.LocalName, _downloadThreadCount, true, token);
+                await httpClient.Download(asset.AssetIndex.RemoteURL, asset.AssetIndex.LocalName, _downloadThreadCount, true, token);
                 await httpClient.Merge(token);
             }
             // Do single-session download for others
             else
             {
-                await httpClient.Download(asset.RemoteURL, asset.LocalName, true, null, null, token);
+                await httpClient.Download(asset.AssetIndex.RemoteURL, asset.AssetIndex.LocalName, true, null, null, token);
             }
 
-            LogWriteLine($"Downloaded cache [T: {asset.AssetType}]: {Path.GetFileName(asset.LocalName)}", LogType.Default, true);
+            LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.AssetType}]: {Path.GetFileName(asset.AssetIndex.LocalName)}", LogType.Default, true);
 
 
             // Remove Asset Entry display
-            Dispatch(() => { if (AssetEntry.Count != 0) AssetEntry.RemoveAt(0); });
+            PopRepairAssetEntry(asset.AssetProperty);
         }
 
         private async void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)

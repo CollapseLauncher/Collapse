@@ -4,6 +4,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -46,6 +47,32 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
 
                 // Iterate repair asset and check it using different method for each type
+                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _threadCount },
+                    async (asset, innerToken) =>
+                    {
+                        // Assign a task depends on the asset type
+                        Task assetTask = asset.AssetIndex.FT switch
+                        {
+                            FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
+                            FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
+                            FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
+                            _ => RepairAssetTypeGeneric(asset, _httpClient, innerToken)
+                        };
+
+                        // Await the task
+                        await assetTask;
+                    });
+
+                /*
                 foreach (FilePropertiesRemote asset in
 #if ENABLEHTTPREPAIR
                     EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
@@ -66,6 +93,7 @@ namespace CollapseLauncher
                     // Await the task
                     await assetTask;
                 }
+                */
 
                 return true;
             }
@@ -77,37 +105,37 @@ namespace CollapseLauncher
         }
 
         #region GenericRepair
-        private async Task RepairAssetTypeGeneric(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
+        private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, Http _httpClient, CancellationToken token)
         {
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status8, Path.GetFileName(asset.N)),
+                string.Format(Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             // If asset type is unused, then delete it
-            if (asset.FT == FileType.Unused)
+            if (asset.AssetIndex.FT == FileType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.N);
+                FileInfo fileInfo = new FileInfo(asset.AssetIndex.N);
                 if (fileInfo.Exists)
                 {
                     fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
-                    LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} deleted!", LogType.Default, true);
+                    LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Blocks ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
-                RemoveHashMarkFile(asset.N, out _, out _);
+                RemoveHashMarkFile(asset.AssetIndex.N, out _, out _);
             }
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.S, asset.N, asset.RN, _httpClient, token);
-                LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} has been downloaded!", LogType.Default, true);
+                await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N, asset.AssetIndex.RN, _httpClient, token);
+                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Blocks ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
-            PopRepairAssetEntry();
+            PopRepairAssetEntry(asset.AssetProperty);
         }
         #endregion
     }

@@ -5,6 +5,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -37,6 +38,22 @@ namespace CollapseLauncher
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
                 // Iterate the asset index and do update operation
+                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
+#else
+                    updateAssetIndex
+#endif
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _threadCount },
+                    async (asset, innerToken) =>
+                    {
+                        await UpdateCacheAsset(asset, httpClient, innerToken);
+                    });
+
+                /*
                 foreach (CacheAsset asset in
 #if ENABLEHTTPREPAIR
                     EnforceHTTPSchemeToAssetIndex(updateAssetIndex!)
@@ -47,6 +64,7 @@ namespace CollapseLauncher
                 {
                     await UpdateCacheAsset(asset, httpClient, token);
                 }
+                */
 
                 // Reindex the asset index in Verify.txt
                 UpdateCacheVerifyList(assetIndex);
@@ -88,17 +106,17 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task UpdateCacheAsset(CacheAsset asset, Http httpClient, CancellationToken token)
+        private async Task UpdateCacheAsset((CacheAsset AssetIndex, IAssetProperty AssetProperty) asset, Http httpClient, CancellationToken token)
         {
             // Increment total count and update the status
             _progressAllCountCurrent++;
-            _status!.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.DataType, asset.N);
+            _status!.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
             UpdateAll();
 
             // This is a action for Unused asset.
-            if (asset.DataType == CacheAssetType.Unused)
+            if (asset.AssetIndex.DataType == CacheAssetType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.ConcatPath!);
+                FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!);
                 if (fileInfo.Exists)
                 {
                     fileInfo.IsReadOnly = false;
@@ -111,35 +129,35 @@ namespace CollapseLauncher
             else
             {
                 // Assign and check the path of the asset directory
-                string assetDir = Path.GetDirectoryName(asset.ConcatPath);
+                string assetDir = Path.GetDirectoryName(asset.AssetIndex.ConcatPath);
                 if (!Directory.Exists(assetDir))
                 {
                     Directory.CreateDirectory(assetDir!);
                 }
 
 #if DEBUG
-                LogWriteLine($"Downloading cache [T: {asset.DataType}]: {asset.N} at URL: {asset.ConcatURL}", LogType.Debug, true);
+                LogWriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
 #endif
 
                 // Do multi-session download for asset that has applicable size
-                if (asset.CS >= _sizeForMultiDownload)
+                if (asset.AssetIndex.CS >= _sizeForMultiDownload)
                 {
-                    await httpClient!.Download(asset.ConcatURL, asset.ConcatPath, _downloadThreadCount, true, token);
+                    await httpClient!.Download(asset.AssetIndex.ConcatURL, asset.AssetIndex.ConcatPath, _downloadThreadCount, true, token);
                     await httpClient.Merge(token);
                 }
                 // Do single-session download for others
                 else
                 {
-                    await httpClient!.Download(asset.ConcatURL, asset.ConcatPath, true, null, null, token);
+                    await httpClient!.Download(asset.AssetIndex.ConcatURL, asset.AssetIndex.ConcatPath, true, null, null, token);
                 }
 
 #if !DEBUG
-                LogWriteLine($"Downloaded cache [T: {asset.DataType}]: {asset.N}", LogType.Default, true);
+                LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.AssetIndex.Default, true);
 #endif
             }
 
             // Remove Asset Entry display
-            Dispatch(() => { if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0); });
+            PopRepairAssetEntry(asset.AssetProperty);
         }
 
         private async void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)

@@ -62,6 +62,22 @@ namespace CollapseLauncher
                         await RepairAssetTypeGeneric(asset, _httpClient, innerToken);
                     });
 
+                /*
+                foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset
+                    in
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    , assetProperty)
+                    )
+                {
+                    await RepairAssetTypeGeneric(asset, _httpClient, token);
+                }
+                */
+
                 return true;
             }
             finally
