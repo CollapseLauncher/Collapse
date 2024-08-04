@@ -14,6 +14,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -166,12 +167,18 @@ namespace CollapseLauncher.InstallManager.Base
                 // Do pkg_version check if Zip Check is used
                 if (includeZipCheck)
                 {
+                    // Initialize new proxy-aware HttpClient
+                    using HttpClient httpClient = new HttpClientBuilder()
+                        .UseLauncherConfig()
+                        .SetAllowedDecompression(DecompressionMethods.None)
+                        .Create();
+
                     // Initialize and get game state, then get the latest package info
                     LoadingMessageHelper.SetMessage(
                                                     Locale.Lang._FileCleanupPage.LoadingTitle,
                                                     Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
-                    using Http client = new Http();
+                    using Http client = new Http(httpClient);
                     RegionResourceVersion? packageLatestBase = _gameVersionManager
                                                               .GetGameLatestZip(gameStateEnum).FirstOrDefault();
                     string? packageExtractBasePath = packageLatestBase?.decompressed_path;

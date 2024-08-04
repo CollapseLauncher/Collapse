@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
@@ -6,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -19,8 +22,15 @@ namespace CollapseLauncher
         // ReSharper disable once UnusedParameter.Local
         private async Task<bool> Update(List<SRAsset> updateAssetIndex, List<SRAsset> assetIndex, CancellationToken token)
         {
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Assign Http client
-            Http httpClient = new Http(true, 5, 1000, _userAgent);
+            Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
             try
             {
                 // Set IsProgressAllIndetermined as false and update the status 

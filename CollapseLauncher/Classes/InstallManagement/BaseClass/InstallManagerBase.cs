@@ -125,7 +125,6 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual string _gameAudioLangListPath => null;
         protected virtual string _gameAudioLangListPathStatic => null;
         protected IRepair _gameRepairTool { get; set; }
-        protected Http _httpClient { get; }
         protected bool _canDeleteHdiffReference => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteHdiffReference"));
         protected bool _canDeleteZip => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteZip"));
         protected bool _canSkipVerif => File.Exists(Path.Combine(_gamePath!, "@NoVerification"));
@@ -219,7 +218,6 @@ namespace CollapseLauncher.InstallManager.Base
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
             : base(parentUI, GameVersionManager, "", "", null)
         {
-            _httpClient         = new Http(true);
             _gameVersionManager = GameVersionManager;
             _gamePersistentFolderBasePath =
                 $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent";
@@ -245,7 +243,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         public void Dispose()
         {
-            _httpClient?.Dispose();
             _gameRepairTool?.Dispose();
             _token?.Cancel();
             IsRunning = false;
@@ -3376,6 +3373,15 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllCountTotal   = packageCount;
             RestartStopwatch();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            using Http _httpClient = new Http(true, customHttpClient: httpClientNew);
+
             // Subscribe the download progress to the event adapter
             _httpClient.DownloadProgress += HttpClientDownloadProgressAdapter;
             try
@@ -3430,6 +3436,15 @@ namespace CollapseLauncher.InstallManager.Base
             // then start downloading
             long existingPackageFileSize    = package.GetStreamLength(_downloadThreadCount);
             bool isExistingPackageFileExist = package.IsReadStreamExist(_downloadThreadCount);
+
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            using Http _httpClient = new Http(true, customHttpClient: httpClientNew);
 
             if (!isExistingPackageFileExist
                 || existingPackageFileSize != package.Size)
@@ -3524,7 +3539,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Delete the file of the chunk file too
-            _httpClient.DeleteMultisessionFiles(FileOutput, Thread);
+            Http.DeleteMultisessionFiles(FileOutput, Thread);
         }
 
         private long GetExistingDownloadPackageSize(List<GameInstallPackage> packageList)
@@ -3541,7 +3556,7 @@ namespace CollapseLauncher.InstallManager.Base
                     for (int j = 0; j < packageList[i].Segments.Count; j++)
                     {
                         long segmentDownloaded =
-                            _httpClient
+                            Http
                                .CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput,
                                     _downloadThreadCount, packageList[i].Segments[j].Size);
                         totalSize                                 += segmentDownloaded;
@@ -3554,7 +3569,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 packageList[i].SizeDownloaded =
-                    _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput,
+                    Http.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput,
                         _downloadThreadCount, packageList[i].Size);
                 totalSize += packageList[i].SizeDownloaded;
             }
@@ -3679,7 +3694,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
         {
-            asset.Size = await _httpClient.TryGetContentLength(asset.URL, token) ?? 0;
+            asset.Size = await FallbackCDNUtil.GetContentLength(asset.URL, token);
 
             LogWriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",
                          LogType.Default, true);
@@ -3690,7 +3705,7 @@ namespace CollapseLauncher.InstallManager.Base
             long totalSize = 0;
             for (int i = 0; i < asset.Segments.Count; i++)
             {
-                long segmentSize = await _httpClient.TryGetContentLength(asset.Segments[i].URL, token) ?? 0;
+                long segmentSize = await FallbackCDNUtil.GetContentLength(asset.Segments[i].URL, token);
                 totalSize              += segmentSize;
                 asset.Segments[i].Size =  segmentSize;
                 LogWriteLine($"Package Segment: [T: {asset.PackageType}] {asset.Segments[i].Name} has {ConverterTool.SummarizeSizeSimple(segmentSize)} in size",

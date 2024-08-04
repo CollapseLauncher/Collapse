@@ -1,4 +1,5 @@
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -17,6 +18,7 @@ using System.Data;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -60,8 +62,15 @@ namespace CollapseLauncher
             // Clear the _ignoredUnusedFileList
             _ignoredUnusedFileList.Clear();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
             try
             {
                 // Subscribe the fetching progress and subscribe cacheUtil progress to adapter
@@ -161,7 +170,6 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
                 _cacheUtil!.ProgressChanged -= _innerObject_ProgressAdapter;
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
-                _httpClient.Dispose();
                 senadinaFileIdentifier?.Clear();
             }
         }

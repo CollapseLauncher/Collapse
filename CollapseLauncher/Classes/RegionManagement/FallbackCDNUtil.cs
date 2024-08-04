@@ -24,7 +24,13 @@ namespace CollapseLauncher
     {
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
         {
-            Http _httpClient = new Http(true);
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            using Http _httpClient = new Http(true, customHttpClient: client);
             EventHandler<DownloadEvent> progressEvent = (_, b) => progress((int)b.ProgressPercentage);
             try
             {
@@ -35,7 +41,6 @@ namespace CollapseLauncher
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= progressEvent;
-                _httpClient?.Dispose();
             }
         }
 
@@ -452,6 +457,14 @@ namespace CollapseLauncher
             }
 
             return latencies;
+        }
+
+        public static async ValueTask<long> GetContentLength(string url, CancellationToken token)
+        {
+            using HttpRequestMessage message = new HttpRequestMessage() { RequestUri = new Uri(url) };
+            using HttpResponseMessage response = await _clientNoCompression.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, token);
+            long Length = response.Content.Headers.ContentLength ?? 0;
+            return Length;
         }
 
         public static string TryGetAbsoluteToRelativeCDNURL(string URL, string searchIndexStr)

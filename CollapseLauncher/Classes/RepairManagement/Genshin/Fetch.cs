@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -9,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -29,8 +32,16 @@ namespace CollapseLauncher
             // Initialize hashtable for duplicate keys checking
             Dictionary<string, PkgVersionProperties> hashtableManifest = new Dictionary<string, PkgVersionProperties>();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+
             try
             {
                 // Subscribe the progress update
@@ -60,7 +71,6 @@ namespace CollapseLauncher
             {
                 // Unsubscribe and dispose the _httpClient
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
-                _httpClient.Dispose();
             }
         }
 

@@ -15,6 +15,7 @@ namespace CollapseLauncher
         #region Properties
         private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
         private List<SRAsset> _updateAssetIndex { get; set; }
+        protected override string _userAgent { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
         public StarRailCache(UIElement parentUI, IGameVersionCheck GameVersionManager)

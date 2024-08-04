@@ -1,9 +1,12 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -26,8 +29,15 @@ namespace CollapseLauncher
             // Reset stopwatch
             RestartStopwatch();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
 
             // Try running instance
             try
@@ -51,9 +61,6 @@ namespace CollapseLauncher
             }
             finally
             {
-                // Dispose _httpClient
-                _httpClient.Dispose();
-
                 // Unassign downloader event
                 _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
             }

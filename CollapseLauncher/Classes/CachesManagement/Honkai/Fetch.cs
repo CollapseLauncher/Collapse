@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,8 +27,15 @@ namespace CollapseLauncher
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
             try
             {
                 // Subscribe the event listener
@@ -69,7 +78,6 @@ namespace CollapseLauncher
             {
                 // Unsubscribe the event listener and dispose Http client
                 httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
-                httpClient.Dispose();
             }
 
             // Return asset index

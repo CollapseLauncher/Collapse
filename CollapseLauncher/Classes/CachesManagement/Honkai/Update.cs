@@ -1,10 +1,13 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -16,8 +19,15 @@ namespace CollapseLauncher
     {
         private async Task<bool> Update(List<CacheAsset> updateAssetIndex, List<CacheAsset> assetIndex, CancellationToken token)
         {
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Assign Http client
-            Http httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
             try
             {
                 // Set IsProgressAllIndetermined as false and update the status 
@@ -54,7 +64,6 @@ namespace CollapseLauncher
             {
                 // Unsubscribe the event listener and dispose Http client
                 httpClient.DownloadProgress -= _httpClient_UpdateAssetProgress;
-                httpClient.Dispose();
             }
         }
 
@@ -65,18 +74,18 @@ namespace CollapseLauncher
 
             // Initialize listFile File Stream
             using (FileStream fs = new FileStream(listFile, FileMode.Create, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                // Iterate asset index and generate the path for the cache path
+                foreach (CacheAsset asset in assetIndex!)
                 {
-                    // Iterate asset index and generate the path for the cache path
-                    foreach (CacheAsset asset in assetIndex!)
-                    {
-                        // Yes, the path is written in this way. Idk why miHoYo did this...
-                        // Update 6.8: They finally notices that they use "//" instead of "/"
-                        string basePath = GetAssetBasePathByType(asset!.DataType)!.Replace('\\', '/');
-                        string path     = basePath + "/" + asset.ConcatN;
-                        sw.WriteLine(path);
-                    }
+                    // Yes, the path is written in this way. Idk why miHoYo did this...
+                    // Update 6.8: They finally notices that they use "//" instead of "/"
+                    string basePath = GetAssetBasePathByType(asset!.DataType)!.Replace('\\', '/');
+                    string path = basePath + "/" + asset.ConcatN;
+                    sw.WriteLine(path);
                 }
+            }
         }
 
         private async Task UpdateCacheAsset(CacheAsset asset, Http httpClient, CancellationToken token)
