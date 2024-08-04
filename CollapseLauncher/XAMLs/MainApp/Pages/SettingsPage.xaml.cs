@@ -342,7 +342,7 @@ namespace CollapseLauncher.Pages
             LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
         }
 
-        private async void OpenChangelog(object sender, RoutedEventArgs e)
+        private void OpenChangelog(object sender, RoutedEventArgs e)
         {
             #nullable enable
             var uri =

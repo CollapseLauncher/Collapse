@@ -9,6 +9,7 @@
       xmlns:markdown="using:CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="{ThemeResource WebView2GridBackground}"
+      Unloaded="MarkdownFramePage_OnUnloaded"
       mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />

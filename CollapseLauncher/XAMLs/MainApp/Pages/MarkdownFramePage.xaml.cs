@@ -169,5 +169,11 @@ namespace CollapseLauncher
                 }
             }.Start();
         }
+
+        private void MarkdownFramePage_OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+            Current = null;
+        }
     }
 }
