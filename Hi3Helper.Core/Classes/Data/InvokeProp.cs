@@ -268,6 +268,7 @@ namespace Hi3Helper
         private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
         public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
         {
+            // Initialize the first buffer to 512 KiB
             ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
             byte[] NtQueryCachedBuffer = arrayPool.Rent(4 << 17);
             bool isReallocate = false;
@@ -276,9 +277,12 @@ namespace Hi3Helper
         StartOver:
             try
             {
+                // If the buffer request is more than 2 MiB, then return false
                 if (length > (2 << 20))
                     return false;
 
+                // If buffer reallocation is requested, then re-rent the buffer
+                // from ArrayPool<T>.Shared
                 if (isReallocate)
                     NtQueryCachedBuffer = arrayPool.Rent((int)length);
 
@@ -288,7 +292,8 @@ namespace Hi3Helper
                     // Get the query of the current running process and store it to the buffer
                     NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out length);
 
-                    // If the required length of the data is exceeded, return false
+                    // If the required length of the data is exceeded than the current buffer,
+                    // then try to reallocate and start over to the top.
                     if (length > NtQueryCachedBuffer.Length)
                     {
                         isReallocate = true;
@@ -322,6 +327,7 @@ namespace Hi3Helper
             }
             finally
             {
+                // Return the buffer to the ArrayPool<T>.Shared
                 arrayPool.Return(NtQueryCachedBuffer);
             }
 
