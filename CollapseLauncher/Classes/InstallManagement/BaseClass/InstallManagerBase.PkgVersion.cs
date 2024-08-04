@@ -169,7 +169,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // Initialize new proxy-aware HttpClient
                     using HttpClient httpClient = new HttpClientBuilder()
-                        .UseLauncherConfig()
+                        .UseLauncherConfig(_downloadThreadCount + 16)
                         .SetAllowedDecompression(DecompressionMethods.None)
                         .Create();
 

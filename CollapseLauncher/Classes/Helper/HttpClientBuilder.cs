@@ -11,7 +11,7 @@ namespace CollapseLauncher.Helper
 {
     public class HttpClientBuilder
     {
-        private const int _maxConnectionsDefault = 16;
+        private const int _maxConnectionsDefault = 32;
         private const double _httpTimeoutDefault = 90; // in Seconds
 
         private bool IsUseProxy { get; set; } = true;
@@ -170,7 +170,7 @@ namespace CollapseLauncher.Helper
             return client;
         }
 
-        public HttpClientBuilder UseLauncherConfig(int maxConnections = 16)
+        public HttpClientBuilder UseLauncherConfig(int maxConnections = _maxConnectionsDefault)
         {
             bool lIsUseProxy = LauncherConfig.GetAppConfigValue("IsUseProxy").ToBool();
             bool lIsAllowHttpRedirections = LauncherConfig.GetAppConfigValue("IsAllowHttpRedirections").ToBool();
