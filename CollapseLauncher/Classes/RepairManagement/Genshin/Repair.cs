@@ -4,6 +4,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -46,16 +47,20 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
 
                 // Iterate repair asset
-                foreach (PkgVersionProperties asset in
+                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
                     EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
 #else
                     repairAssetIndex
 #endif
-                    )
-                {
-                    await RepairAssetTypeGeneric(asset, _httpClient, token);
-                }
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _threadCount },
+                    async (asset, innerToken) =>
+                    {
+                        await RepairAssetTypeGeneric(asset, _httpClient, innerToken);
+                    });
 
                 return true;
             }
@@ -67,35 +72,35 @@ namespace CollapseLauncher
         }
 
         #region GenericRepair
-        private async Task RepairAssetTypeGeneric(PkgVersionProperties asset, Http _httpClient, CancellationToken token)
+        private async Task RepairAssetTypeGeneric((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset, Http _httpClient, CancellationToken token)
         {
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status8, asset.remoteName),
+                string.Format(Lang._GameRepairPage.Status8, asset.AssetIndex.remoteName),
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressAllCountCurrent, _progressAllCountTotal),
                 true);
 
             // If file is unused, then delete
-            if (asset.type == "Unused")
+            if (asset.AssetIndex.type == "Unused")
             {
-                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.localName));
+                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.localName));
 
                 // Delete the file
                 TryDeleteReadOnlyFile(assetPath);
             }
             else
             {
-                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.remoteName));
 
                 // or start asset download task
-                await RunDownloadTask(asset.fileSize, assetPath, asset.remoteURL, _httpClient, token);
-                LogWriteLine($"File [T: {RepairAssetType.General}] {asset.remoteName} has been downloaded!", LogType.Default, true);
+                await RunDownloadTask(asset.AssetIndex.fileSize, assetPath, asset.AssetIndex.remoteURL, _httpClient, token);
+                LogWriteLine($"File [T: {RepairAssetType.General}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
-            PopRepairAssetEntry();
+            PopRepairAssetEntry(asset.AssetProperty);
         }
         #endregion
     }
