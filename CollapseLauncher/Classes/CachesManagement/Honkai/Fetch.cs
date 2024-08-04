@@ -260,7 +260,11 @@ namespace CollapseLauncher
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
             // Initialize local HTTP client
-            using HttpClient client = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = _threadCount });
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + 16)
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
 
             // Iterate lines of the TextAsset in parallel
             await Parallel.ForEachAsync(EnumerateCacheTextAsset(type, dataTextAsset.GetStringList(), baseURL),
