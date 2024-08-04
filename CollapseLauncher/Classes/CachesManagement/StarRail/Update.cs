@@ -50,7 +50,7 @@ namespace CollapseLauncher
                     updateAssetIndex
 #endif
                     , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _threadCount },
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCountSqrt },
                     async (asset, innerToken) =>
                     {
                         await UpdateCacheAsset(asset, httpClient, innerToken);

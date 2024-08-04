@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -43,6 +44,7 @@ namespace CollapseLauncher.Interfaces
         protected bool _isVersionOverride { get; init; }
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
+        protected int _downloadThreadCountSqrt { get => (int)Math.Max(Math.Sqrt(_downloadThreadCount), 4); }
         protected CancellationTokenSourceWrapper _token { get; set; }
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }

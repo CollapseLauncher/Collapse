@@ -56,7 +56,7 @@ namespace CollapseLauncher
                     repairAssetIndex
 #endif
                     , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _threadCount },
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCountSqrt },
                     async (asset, innerToken) =>
                     {
                         await RepairAssetTypeGeneric(asset, _httpClient, innerToken);
