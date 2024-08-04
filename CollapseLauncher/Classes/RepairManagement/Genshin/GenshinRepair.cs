@@ -32,6 +32,7 @@ namespace CollapseLauncher
 
         #region Properties
         private bool _isParsePersistentManifestSuccess { get; set; }
+        protected override string _userAgent { get; set; } = "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         #endregion
 
         public GenshinRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, string gameRepoURL)

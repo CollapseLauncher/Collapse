@@ -16,6 +16,7 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
@@ -124,7 +125,6 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual string _gameAudioLangListPath => null;
         protected virtual string _gameAudioLangListPathStatic => null;
         protected IRepair _gameRepairTool { get; set; }
-        protected Http _httpClient { get; }
         protected bool _canDeleteHdiffReference => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteHdiffReference"));
         protected bool _canDeleteZip => !File.Exists(Path.Combine(_gamePath!, "@NoDeleteZip"));
         protected bool _canSkipVerif => File.Exists(Path.Combine(_gamePath!, "@NoVerification"));
@@ -218,7 +218,6 @@ namespace CollapseLauncher.InstallManager.Base
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
             : base(parentUI, GameVersionManager, "", "", null)
         {
-            _httpClient         = new Http(true);
             _gameVersionManager = GameVersionManager;
             _gamePersistentFolderBasePath =
                 $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent";
@@ -244,7 +243,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         public void Dispose()
         {
-            _httpClient?.Dispose();
             _gameRepairTool?.Dispose();
             _token?.Cancel();
             IsRunning = false;
@@ -783,15 +781,9 @@ namespace CollapseLauncher.InstallManager.Base
                          LogType.Default, true);
 
             // Initialize the HTTP client
-            HttpClientHandler httpClientHandler = new HttpClientHandler
-            {
-                MaxConnectionsPerServer = maxHttpHandler
-            };
-            HttpClient httpClient = new HttpClient(httpClientHandler)
-            {
-                DefaultRequestVersion = HttpVersion.Version30,
-                DefaultVersionPolicy  = HttpVersionPolicy.RequestVersionOrLower
-            };
+            HttpClient httpClient = new HttpClientBuilder()
+                .UseLauncherConfig(maxHttpHandler)
+                .Create();
 
             try
             {
@@ -981,8 +973,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Unsubscribe the logger event
                 SophonLogger.LogHandler -= UpdateSophonLogHandler;
-
-                httpClientHandler.Dispose();
                 httpClient.Dispose();
             }
 
@@ -1016,15 +1006,9 @@ namespace CollapseLauncher.InstallManager.Base
                          LogType.Default, true);
 
             // Initialize the HTTP client
-            HttpClientHandler httpClientHandler = new HttpClientHandler
-            {
-                MaxConnectionsPerServer = maxHttpHandler
-            };
-            HttpClient httpClient = new HttpClient(httpClientHandler)
-            {
-                DefaultRequestVersion = HttpVersion.Version30,
-                DefaultVersionPolicy  = HttpVersionPolicy.RequestVersionOrLower
-            };
+            HttpClient httpClient = new HttpClientBuilder()
+                .UseLauncherConfig(maxHttpHandler)
+                .Create();
 
             try
             {
@@ -1177,8 +1161,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Unsubscribe the logger event
                 SophonLogger.LogHandler -= UpdateSophonLogHandler;
-
-                httpClientHandler.Dispose();
                 httpClient.Dispose();
 
                 // Check if the DXSETUP file is exist, then delete it.
@@ -2133,6 +2115,41 @@ namespace CollapseLauncher.InstallManager.Base
             return inStreamingAssetsPath;
         }
 
+        private async ValueTask FileHdiffPatcherInner(string patchPath, string sourceBasePath, string destPath, CancellationToken token)
+        {
+            HDiffPatch patcher = new HDiffPatch();
+            patcher.Initialize(patchPath);
+            token.ThrowIfCancellationRequested();
+
+            Task task = Task.Run(() =>
+            {
+                try
+                {
+                    patcher.Patch(sourceBasePath, destPath, true, token, false, true);
+                    File.Move(destPath, sourceBasePath, true);
+                }
+                catch (InvalidDataException) when (!token.IsCancellationRequested)
+                {
+                    // ignored
+                    // Get the base and new target file size
+                    long newFileSize = HDiffPatch.GetHDiffNewSize(patchPath);
+                    FileInfo fileInfo = new FileInfo(sourceBasePath);
+                    long refFileSize = fileInfo.Exists ? fileInfo.Length : 0;
+
+                    // Check if the throw happened for different file, then rethrow
+                    if (newFileSize != refFileSize)
+                        throw;
+
+                    // Otherwise, log the error
+                    LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
+                }
+            }, token);
+            await task;
+
+            if (task.Exception != null)
+                throw task.Exception;
+        }
+
         public virtual async ValueTask ApplyHdiffListPatch()
         {
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
@@ -2145,8 +2162,15 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllCountTotal = 1;
             _progressAllCountFound = hdiffEntry.Count;
 
-            HDiffPatch patcher = new HDiffPatch();
-            foreach (PkgVersionProperties entry in hdiffEntry)
+            HDiffPatch.LogVerbosity = Verbosity.Verbose;
+            EventListener.LoggerEvent   += EventListener_PatchLogEvent;
+            EventListener.PatchEvent    += EventListener_PatchEvent;
+
+            Task parallelTask = Parallel.ForEachAsync(hdiffEntry, new ParallelOptions
+            {
+                CancellationToken = _token.Token,
+                MaxDegreeOfParallelism = _threadCount
+            }, async (entry, innerToken) =>
             {
                 _status.ActivityStatus =
                     $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal,
@@ -2159,23 +2183,13 @@ namespace CollapseLauncher.InstallManager.Base
 
                 try
                 {
-                    _token.Token.ThrowIfCancellationRequested();
-                    HDiffPatch.LogVerbosity   =  Verbosity.Verbose;
-                    EventListener.LoggerEvent += EventListener_PatchLogEvent;
-                    EventListener.PatchEvent  += EventListener_PatchEvent;
                     if (File.Exists(sourceBasePath) && File.Exists(patchPath))
                     {
                         LogWriteLine($"Patching file {entry.remoteName}...", LogType.Default, true);
                         UpdateProgressBase();
                         UpdateStatus();
 
-                        await Task.Run(() =>
-                                       {
-                                           patcher.Initialize(patchPath);
-                                           patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
-                                       }, _token.Token);
-
-                        File.Move(destPath, sourceBasePath, true);
+                        await FileHdiffPatcherInner(patchPath, sourceBasePath, destPath, innerToken);
                     }
                 }
                 catch (OperationCanceledException)
@@ -2189,7 +2203,10 @@ namespace CollapseLauncher.InstallManager.Base
                     LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning,
                                  true);
 
-                    _progress.ProgressAllSizeCurrent += entry.fileSize;
+                    lock (_progress)
+                    {
+                        _progress.ProgressAllSizeCurrent += entry.fileSize;
+                    }
                     _progress.ProgressAllPercentage =
                         Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
                     _progress.ProgressAllSpeed = _progress.ProgressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
@@ -2201,8 +2218,6 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 finally
                 {
-                    EventListener.PatchEvent  -= EventListener_PatchEvent;
-                    EventListener.LoggerEvent -= EventListener_PatchLogEvent;
                     try
                     {
                         if (File.Exists(destPath))
@@ -2216,7 +2231,7 @@ namespace CollapseLauncher.InstallManager.Base
                                      LogType.Warning, true);
                     }
 
-                    _progressAllCountTotal++;
+                    Interlocked.Increment(ref _progressAllCountTotal);
                     FileInfo patchFile = new FileInfo(patchPath)
                     {
                         IsReadOnly = false
@@ -2224,12 +2239,34 @@ namespace CollapseLauncher.InstallManager.Base
 
                     patchFile.Delete();
                 }
+                _token.Token.ThrowIfCancellationRequested();
+            });
+
+            try
+            {
+                await parallelTask;
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.Flatten().InnerExceptions.First();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                EventListener.LoggerEvent   -= EventListener_PatchLogEvent;
+                EventListener.PatchEvent    -= EventListener_PatchEvent;
             }
         }
 
         private async void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            _progress.ProgressAllSizeCurrent += e.Read;
+            lock (_progress)
+            {
+                _progress.ProgressAllSizeCurrent += e.Read;
+            }
             if (await CheckIfNeedRefreshStopwatch())
             {
                 _progress.ProgressAllPercentage =
@@ -3336,6 +3373,14 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllCountTotal   = packageCount;
             RestartStopwatch();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + 16)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            using Http _httpClient = new Http(true, customHttpClient: httpClientNew);
+
             // Subscribe the download progress to the event adapter
             _httpClient.DownloadProgress += HttpClientDownloadProgressAdapter;
             try
@@ -3349,7 +3394,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Iterate the segment list
                         for (int i = 0; i < package.Segments.Count; i++)
                         {
-                            await RunPackageDownloadRoutine(package.Segments[i], token, packageCount);
+                            await RunPackageDownloadRoutine(_httpClient, package.Segments[i], token, packageCount);
                         }
 
                         // Skip action below and continue to the next segment
@@ -3357,7 +3402,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Else, run the routine as normal
-                    await RunPackageDownloadRoutine(package, token, packageCount);
+                    await RunPackageDownloadRoutine(_httpClient, package, token, packageCount);
                 }
             }
             finally
@@ -3367,7 +3412,8 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async ValueTask RunPackageDownloadRoutine(GameInstallPackage package, CancellationToken token,
+        private async ValueTask RunPackageDownloadRoutine(Http               httpClient,
+                                                          GameInstallPackage package, CancellationToken token,
                                                           int                packageCount)
         {
             // Set the activity status
@@ -3399,11 +3445,11 @@ namespace CollapseLauncher.InstallManager.Base
                 bool isCanMultiSession = package.Size >= 10 << 20;
                 if (isCanMultiSession)
                 {
-                    await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
+                    await httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
                 }
                 else
                 {
-                    await _httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
+                    await httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
                 }
 
                 // Update status to merging
@@ -3417,7 +3463,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // then do merge.
                 if (_canMergeDownloadChunks && isCanMultiSession)
                 {
-                    await _httpClient.Merge(token);
+                    await httpClient.Merge(token);
                 }
 
                 _stopwatch.Start();
@@ -3484,7 +3530,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Delete the file of the chunk file too
-            _httpClient.DeleteMultisessionFiles(FileOutput, Thread);
+            Http.DeleteMultisessionFiles(FileOutput, Thread);
         }
 
         private long GetExistingDownloadPackageSize(List<GameInstallPackage> packageList)
@@ -3501,7 +3547,7 @@ namespace CollapseLauncher.InstallManager.Base
                     for (int j = 0; j < packageList[i].Segments.Count; j++)
                     {
                         long segmentDownloaded =
-                            _httpClient
+                            Http
                                .CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput,
                                     _downloadThreadCount, packageList[i].Segments[j].Size);
                         totalSize                                 += segmentDownloaded;
@@ -3514,7 +3560,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 packageList[i].SizeDownloaded =
-                    _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput,
+                    Http.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput,
                         _downloadThreadCount, packageList[i].Size);
                 totalSize += packageList[i].SizeDownloaded;
             }
@@ -3639,7 +3685,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
         {
-            asset.Size = await _httpClient.TryGetContentLength(asset.URL, token) ?? 0;
+            asset.Size = await FallbackCDNUtil.GetContentLength(asset.URL, token);
 
             LogWriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",
                          LogType.Default, true);
@@ -3650,7 +3696,7 @@ namespace CollapseLauncher.InstallManager.Base
             long totalSize = 0;
             for (int i = 0; i < asset.Segments.Count; i++)
             {
-                long segmentSize = await _httpClient.TryGetContentLength(asset.Segments[i].URL, token) ?? 0;
+                long segmentSize = await FallbackCDNUtil.GetContentLength(asset.Segments[i].URL, token);
                 totalSize              += segmentSize;
                 asset.Segments[i].Size =  segmentSize;
                 LogWriteLine($"Package Segment: [T: {asset.PackageType}] {asset.Segments[i].Name} has {ConverterTool.SummarizeSizeSimple(segmentSize)} in size",
@@ -3838,13 +3884,22 @@ namespace CollapseLauncher.InstallManager.Base
                     // If status is merging, then use progress for speed and timelapse from Http client
                     // and set the rest from the base class
                     _progress.ProgressAllTimeLeft        = e.TimeLeft;
-                    _progress.ProgressAllSpeed           = e.Speed;
+
+                    double speedWithReset                = _progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed           = speedWithReset;
+
                     _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                     _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                     _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                     _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
                     _progress.ProgressAllPercentage =
                         Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+
+                    if (_downloadSpeedRefreshInterval < _downloadSpeedRefreshStopwatch!.ElapsedMilliseconds)
+                    {
+                        _progressAllIOReadCurrent = 0;
+                        _downloadSpeedRefreshStopwatch.Restart();
+                    }
                 }
 
                 // Update the status of per file size and current progress from Http client

@@ -249,7 +249,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
             // 7th check: Ensure that the file is one of package files
             if (includeZipCheck && Regex.IsMatch(fileName,
-                                                 @"(\.\d\d\d|(zip|7z)|patch)|\.$",
+                                                 NonGameFileRegexPattern,
                                                  RegexOptions.Compiled |
                                                  RegexOptions.NonBacktracking
                                                 ))

@@ -686,6 +686,20 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
+        protected IEnumerable<(T1 AssetIndex, T2 AssetProperty)> PairEnumeratePropertyAndAssetIndexPackage<T2>
+            (IEnumerable<T1> assetIndex, IEnumerable<T2> assetProperty)
+            where T2 : IAssetProperty
+        {
+            using IEnumerator<T1> assetIndexEnumerator = assetIndex.GetEnumerator();
+            using IEnumerator<T2> assetPropertyEnumerator = assetProperty.GetEnumerator();
+
+            while (assetIndexEnumerator.MoveNext()
+                && assetPropertyEnumerator.MoveNext())
+            {
+                yield return (assetIndexEnumerator.Current, assetPropertyEnumerator.Current);
+            }
+        }
+
         protected IEnumerable<T1> EnforceHTTPSchemeToAssetIndex(IEnumerable<T1> assetIndex)
         {
             const string HTTPSScheme = "https://";
@@ -1046,26 +1060,42 @@ namespace CollapseLauncher.Interfaces
         #region HandlerUpdaters
         public void Dispatch(DispatcherQueueHandler handler) => _parentUI!.DispatcherQueue!.TryEnqueue(handler);
 
-        protected virtual void PopRepairAssetEntry()
+        #nullable enable
+        protected virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)
         {
             try
             {
                 if (_parentUI!.DispatcherQueue!.HasThreadAccess)
                 {
-                    if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
+                    if (assetProperty == null)
+                    {
+                        if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
+                    }
+                    else
+                    {
+                        AssetEntry.Remove(assetProperty);
+                    }
                     return;
                 }
 
                 Dispatch(() =>
-                         {
-                             if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
-                         });
+                {
+                    if (assetProperty == null)
+                    {
+                        if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
+                    }
+                    else
+                    {
+                        AssetEntry.Remove(assetProperty);
+                    }
+                });
             }
             catch
             {
                 // pipe to parent
             }
         }
+        #nullable restore
 
         protected async Task<bool> CheckIfNeedRefreshStopwatch()
         {

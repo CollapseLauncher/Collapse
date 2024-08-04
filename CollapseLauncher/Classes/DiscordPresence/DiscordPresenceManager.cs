@@ -34,10 +34,10 @@
 
             private RichPresence                _presence;
             private ActivityType                _activityType;
-            private ActivityType                _lastAttemptedActivityType;
+            //private ActivityType                _lastAttemptedActivityType;
             private DateTime?                   _lastPlayTime;
             private bool                        _firstTimeConnect = true;
-            private ActionBlock<RichPresence>   _presenceUpdateQueue = null;
+            private ActionBlock<RichPresence>   _presenceUpdateQueue;
 
             private bool _cachedIsIdleEnabled = true;
 
@@ -95,13 +95,14 @@
                 // Initialize Discord RPC client
                 _client = new DiscordRpcClient(applicationId.ToString());
                 _presenceUpdateQueue = new ActionBlock<RichPresence>(
-                    presence => _client?.SetPresence(_presence),
-                    new ExecutionDataflowBlockOptions
-                    {
-                        MaxMessagesPerTask      = 1,
-                        MaxDegreeOfParallelism  = 1,
-                        EnsureOrdered           = true
-                    });
+                                            // ReSharper disable once UnusedParameter.Local
+                                            presence => _client?.SetPresence(_presence),
+                                                        new ExecutionDataflowBlockOptions
+                                                        {
+                                                            MaxMessagesPerTask      = 1,
+                                                            MaxDegreeOfParallelism  = 1,
+                                                            EnsureOrdered           = true
+                                                        });
 
                 _client.OnReady += (_, msg) =>
                                    {
@@ -189,7 +190,7 @@
             {
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool())
                 {
-                    _lastAttemptedActivityType = activity;
+                    //_lastAttemptedActivityType = activity;
                     _activityType              = activity;
 
                     switch (activity)

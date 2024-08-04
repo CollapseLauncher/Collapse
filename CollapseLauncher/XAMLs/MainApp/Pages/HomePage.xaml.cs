@@ -211,7 +211,20 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                if (m_arguments.StartGame?.Play != true)
+                // Get game state
+                GameInstallStateEnum gameState = await CurrentGameProperty._GameVersion.GetGameState();
+
+                // Check if the game state returns NotInstalled, double-check by doing config.ini validation
+                if (!await CurrentGameProperty._GameVersion
+                          .EnsureGameConfigIniCorrectiveness(this))
+                {
+                    // If the EnsureGameConfigIniCorrectiveness() returns false,
+                    // means config.ini has been changed. Then reload and return to the HomePage
+                    ReturnToHomePage();
+                    return;
+                }
+
+                if (!(m_arguments.StartGame?.Play ?? false))
                     return;
 
                 m_arguments.StartGame.Play = false;
@@ -222,7 +235,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                switch (await CurrentGameProperty._GameVersion.GetGameState())
+                switch (gameState)
                 {
                     case GameInstallStateEnum.InstalledHavePreload:
                     case GameInstallStateEnum.Installed:
@@ -1499,6 +1512,9 @@ namespace CollapseLauncher.Pages
                     if (delay > 0)
                         await Task.Delay(delay);
                 }
+                
+                int? height = _Settings.SettingsScreen.height;
+                int? width  = _Settings.SettingsScreen.width;
 
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
@@ -1520,6 +1536,12 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
 
+                if (CurrentGameProperty._GamePreset.GameType == GameNameType.Zenless &&
+                    _Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
+                {
+                    SetBackScreenSettings(_Settings, (int)height, (int)width);
+                }
+
                 // Stop update check
                 IsSkippingUpdateCheck = true;
 
@@ -1527,7 +1549,7 @@ namespace CollapseLauncher.Pages
                 StartResizableWindowPayload(
                     _gamePreset.GameExecutableName,
                     _Settings,
-                    _gamePreset.GameType);
+                    _gamePreset.GameType, height, width);
                 GameRunningWatcher(_Settings);
 
                 if (GetAppConfigValue("EnableConsole").ToBool())
@@ -1641,7 +1663,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Resizable Window Payload
-        internal async void StartResizableWindowPayload(string executableName, IGameSettingsUniversal settings, GameNameType gameType)
+        internal async void StartResizableWindowPayload(string       executableName, IGameSettingsUniversal settings,
+                                                        GameNameType gameType,       int? height, int? width)
         {
             try
             {
@@ -1657,13 +1680,37 @@ namespace CollapseLauncher.Pages
                 // it impossible to use custom resolution (but since you are using Collapse, it's now
                 // possible :teriStare:)
                 bool isNeedToResetPos = gameType == GameNameType.StarRail;
-                await resizableWindowHook.StartHook(executableName, ResizableWindowHookToken.Token, isNeedToResetPos);
+                await resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+                                                    isNeedToResetPos);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
                 ErrorSender.SendException(ex, ErrorType.GameError);
             }
+        }
+
+        private async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width)
+        {
+            await Task.Delay(20000);
+            try
+            {
+                settingsUniversal.SettingsScreen.height = height;
+                settingsUniversal.SettingsScreen.width  = width;
+                settingsUniversal.SettingsScreen.Save();
+                
+                var screenManager = GameSettings.Zenless.ScreenManager.Load();
+                screenManager.width  = width;
+                screenManager.height = height;
+                screenManager.Save();
+                
+                LogWriteLine($"[SetBackScreenSettings] Completed task! {width}x{height}", LogType.Scheme, true);
+            }
+            catch(Exception ex)
+            {
+                LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
+            }
+
         }
         #endregion
 

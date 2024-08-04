@@ -193,32 +193,65 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            foreach (LocalFileInfo fileInfo in deletionSource)
+            if (isToRecycleBin)
             {
-                try
+                IList<string> toBeDeleted = new List<string>();
+
+                foreach (LocalFileInfo fileInfo in deletionSource)
                 {
-                    FileInfo fileInfoN = fileInfo.ToFileInfo();
-                    if (fileInfoN.Exists)
+                    try
                     {
-                        fileInfoN.IsReadOnly = false;
-                        if (isToRecycleBin)
+                        FileInfo fileInfoN = fileInfo.ToFileInfo();
+                        if (fileInfoN.Exists)
                         {
-                            await Task.Run(() => InvokeProp.MoveFileToRecycleBin(fileInfoN.FullName));
-                        }
-                        else
-                        {
-                            fileInfoN.Delete();
+                            fileInfoN.IsReadOnly = false;
+                            toBeDeleted.Add(fileInfoN.FullName);
                         }
                     }
-
-                    FileInfoSource.Remove(fileInfo);
-                    ++deleteSuccess;
+                    catch (Exception ex)
+                    {
+                        ++deleteFailed;
+                        Logger.LogWriteLine($"Failed to remove read only attribute from this file: {fileInfo.FullPath}\r\n{ex}",
+                                            LogType.Error, true);
+                    }
                 }
-                catch (Exception ex)
+
+                await Task.Run(() => InvokeProp.MoveFileToRecycleBin(toBeDeleted));
+                DispatcherQueue.TryEnqueue(() =>
+                                           {
+                                               for (int i = FileInfoSource.Count - 1; i >= 0; i--)
+                                               {
+                                                   if (toBeDeleted.Contains(FileInfoSource[i].ToFileInfo().FullName))
+                                                   {
+                                                       FileInfoSource.RemoveAt(i);
+                                                   }
+                                               }
+                                           });
+                
+                deleteSuccess = toBeDeleted.Count;
+            }
+            else
+            {
+                foreach (LocalFileInfo fileInfo in deletionSource)
                 {
-                    ++deleteFailed;
-                    Logger.LogWriteLine($"Failed while moving this file to recycle bin: {fileInfo.FullPath}\r\n{ex}",
-                                        LogType.Error, true);
+                    try
+                    {
+                        FileInfo fileInfoN = fileInfo.ToFileInfo();
+                        if (fileInfoN.Exists)
+                        {
+                            fileInfoN.IsReadOnly = false;
+                            fileInfoN.Delete();
+                        }
+
+                        FileInfoSource.Remove(fileInfo);
+                        ++deleteSuccess;
+                    }
+                    catch (Exception ex)
+                    {
+                        ++deleteFailed;
+                        Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                            LogType.Error, true);
+                    }
                 }
             }
 

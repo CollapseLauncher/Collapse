@@ -224,18 +224,18 @@ namespace CollapseLauncher
             // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
             asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
-            // Check if the file exist on both persistent and streaming path, then mark the
-            // streaming path as redundant (unused)
-            if (IsPersistentExist && IsStreamingExist)
+            // Check if the file exist on both persistent and streaming path for non-patch file, then mark the
+            // persistent path as redundant (unused)
+            if (IsPersistentExist && IsStreamingExist && !asset.IsPatchApplicable)
             {
                 // Add the count and asset. Mark the type as "RepairAssetType.Unused"
                 _progressAllCountFound++;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(fileInfoStreaming.FullName),
+                        Path.GetFileName(fileInfoPersistent.FullName),
                         RepairAssetType.Unused,
-                        Path.GetDirectoryName(fileInfoStreaming.FullName),
+                        Path.GetDirectoryName(fileInfoPersistent.FullName),
                         asset.S,
                         null,
                         null
@@ -353,23 +353,29 @@ namespace CollapseLauncher
 
         private void CreateHashMarkFile(string filePath, string hash)
         {
-            // Get the base path and name
-            string basePath = Path.GetDirectoryName(filePath);
-            string baseName = Path.GetFileNameWithoutExtension(filePath);
+            string basePath, baseName;
+            RemoveHashMarkFile(filePath, out basePath, out baseName);
 
             // Create base path if not exist
             if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+
+            // Re-create the hash file
+            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
+            if (File.Exists(toName)) return;
+            File.Create(toName).Dispose();
+        }
+
+        private static void RemoveHashMarkFile(string filePath, out string basePath, out string baseName)
+        {
+            // Get the base path and name
+            basePath = Path.GetDirectoryName(filePath);
+            baseName = Path.GetFileNameWithoutExtension(filePath);
 
             // Enumerate any possible existing hash path and delete it
             foreach (string existingPath in Directory.EnumerateFiles(basePath, $"{baseName}_*.hash"))
             {
                 File.Delete(existingPath);
             }
-
-            // Re-create the hash file
-            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
-            if (File.Exists(toName)) return;
-            File.Create(toName).Dispose();
         }
         #endregion
     }

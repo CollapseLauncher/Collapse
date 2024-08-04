@@ -6,7 +6,7 @@ namespace CollapseLauncher.Extension
     public class CancellationTokenSourceWrapper : CancellationTokenSource
     {
         public bool IsDisposed;
-        public bool IsCancelled = false;
+        public bool IsCancelled;
 
         public new void Cancel()
         {

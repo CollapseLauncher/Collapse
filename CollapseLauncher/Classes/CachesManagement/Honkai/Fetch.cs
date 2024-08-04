@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,8 +27,15 @@ namespace CollapseLauncher
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient httpClientNew = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + 16)
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
             try
             {
                 // Subscribe the event listener
@@ -69,7 +78,6 @@ namespace CollapseLauncher
             {
                 // Unsubscribe the event listener and dispose Http client
                 httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
-                httpClient.Dispose();
             }
 
             // Return asset index
@@ -181,7 +189,7 @@ namespace CollapseLauncher
                 // If isFirst flag set to true, then get the _gameSalt.
                 if (isFirst)
                 {
-                    _gameSalt = GetAssetIndexSalt(line.ToString());
+                    _gameSalt = GetAssetIndexSalt(line);
                     isFirst = false;
                     continue;
                 }
@@ -202,7 +210,7 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                CacheAsset content = null;
+                CacheAsset content;
                 try
                 {
                     // Deserialize the line and set the type
@@ -240,19 +248,25 @@ namespace CollapseLauncher
 
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            bool isFirst = type == CacheAssetType.Data;
-            bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
+            
+            // Unused as of Aug 4th 2024, bonk @bagusnl if not true
+            // bool isFirst = type == CacheAssetType.Data;
+            // bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
             BundleFile bundleFile = new BundleFile(stream);
             SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 
-            // Try get the asset index file as byte[] and load it as TextAsset
+            // Try to get the asset index file as byte[] and load it as TextAsset
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
             // Initialize local HTTP client
-            using HttpClient client = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = _threadCount });
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + 16)
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
 
             // Iterate lines of the TextAsset in parallel
             await Parallel.ForEachAsync(EnumerateCacheTextAsset(type, dataTextAsset.GetStringList(), baseURL),

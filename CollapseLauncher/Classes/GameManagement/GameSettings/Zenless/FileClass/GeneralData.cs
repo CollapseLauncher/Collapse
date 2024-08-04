@@ -108,6 +108,27 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
         set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageVoiceType", value, JsonEnumStoreType.AsNumber);
     }
 
+    [JsonPropertyName("LocalUILayoutPlatform ")]
+    public int LocalUILayoutPlatform
+    {
+        get => SettingsJsonNode.GetNodeValue("LocalUILayoutPlatform", 3);
+        set => SettingsJsonNode.SetNodeValue("LocalUILayoutPlatform", value);
+    }
+
+    [JsonPropertyName("UILayoutManualSetRecordState")]
+    public int UILayoutManualSetRecordState
+    {
+        get => SettingsJsonNode.GetNodeValue("UILayoutManualSetRecordState", 1);
+        set => SettingsJsonNode.SetNodeValue("UILayoutManualSetRecordState", value);
+    }
+
+    [JsonPropertyName("ControlChoosePopWindowRecordState")]
+    public int ControlChoosePopWindowRecordState
+    {
+        get => SettingsJsonNode.GetNodeValue("ControlChoosePopWindowRecordState", 0);
+        set => SettingsJsonNode.SetNodeValue("ControlChoosePopWindowRecordState", value);
+    }
+    
     [JsonPropertyName("selectServerName")]
     public string? SelectedServerName
     {

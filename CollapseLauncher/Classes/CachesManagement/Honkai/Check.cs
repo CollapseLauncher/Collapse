@@ -52,10 +52,6 @@ namespace CollapseLauncher
             {
                 throw ex.Flatten().InnerExceptions.First();
             }
-            catch (Exception)
-            {
-                throw;
-            }
 
             // Return the asset index
             return returnAsset;

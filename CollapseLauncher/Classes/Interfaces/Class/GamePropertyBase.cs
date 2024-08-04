@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -38,11 +39,12 @@ namespace CollapseLauncher.Interfaces
         protected const int _bufferMediumLength = 512 << 10;
         protected const int _bufferBigLength = 1 << 20;
         protected const int _sizeForMultiDownload = 10 << 20;
-        protected const string _userAgent = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
+        protected virtual string _userAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
 
         protected bool _isVersionOverride { get; init; }
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
+        protected int _downloadThreadCountSqrt { get => (int)Math.Max(Math.Sqrt(_downloadThreadCount), 4); }
         protected CancellationTokenSourceWrapper _token { get; set; }
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }

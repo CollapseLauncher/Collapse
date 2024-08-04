@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -13,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -147,7 +150,13 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<string> FetchDataIntegrityURL(PresetConfig Profile)
         {
-            Http _Http = new Http();
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            Http _Http = new Http(client);
             Dictionary<string, string> _RepoList;
 
             try

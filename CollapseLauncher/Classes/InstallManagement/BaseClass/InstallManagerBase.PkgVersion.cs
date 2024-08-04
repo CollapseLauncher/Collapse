@@ -10,9 +10,11 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -93,6 +95,8 @@ namespace CollapseLauncher.InstallManager.Base
 
     internal partial class InstallManagerBase
     {
+        [StringSyntax("Regex")]
+        protected const string NonGameFileRegexPattern = @"(\.\d\d\d|(zip|7z)|patch)|\.$";
         public virtual async ValueTask CleanUpGameFiles(bool withDialog = true)
         {
             // Get the unused file info asynchronously
@@ -163,12 +167,18 @@ namespace CollapseLauncher.InstallManager.Base
                 // Do pkg_version check if Zip Check is used
                 if (includeZipCheck)
                 {
+                    // Initialize new proxy-aware HttpClient
+                    using HttpClient httpClient = new HttpClientBuilder()
+                        .UseLauncherConfig(_downloadThreadCount + 16)
+                        .SetAllowedDecompression(DecompressionMethods.None)
+                        .Create();
+
                     // Initialize and get game state, then get the latest package info
                     LoadingMessageHelper.SetMessage(
                                                     Locale.Lang._FileCleanupPage.LoadingTitle,
                                                     Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
-                    using Http client = new Http();
+                    using Http client = new Http(httpClient);
                     RegionResourceVersion? packageLatestBase = _gameVersionManager
                                                               .GetGameLatestZip(gameStateEnum).FirstOrDefault();
                     string? packageExtractBasePath = packageLatestBase?.decompressed_path;
@@ -229,7 +239,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 
                 // Add pre-download zips into the ignored list 
-                var packagePreDownloadList = _gameVersionManager.GetGamePreloadZip().FirstOrDefault();
+                RegionResourceVersion? packagePreDownloadList = _gameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
                 if (packagePreDownloadList != null)
                 {
                     var preDownloadZips = new List<string>();
@@ -434,7 +444,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // 8th check: Ensure that the file is one of package files
             if (includeZipCheck && Regex.IsMatch(fileName,
-                                                 @"(\.\d\d\d|(zip|7z)|patch)|\.$",
+                                                 NonGameFileRegexPattern,
                                                  RegexOptions.Compiled |
                                                  RegexOptions.NonBacktracking
                                                 ))

@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
@@ -10,6 +11,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -27,6 +30,7 @@ namespace CollapseLauncher
         private List<FileProperties> SourceFileManifest;
         private List<FileProperties> TargetFileManifest;
         private Http _http;
+        private HttpClient _client;
 
         string BaseURL;
         string GameVersion;
@@ -40,7 +44,12 @@ namespace CollapseLauncher
         internal GameConversionManagement(PresetConfig SourceProfile, PresetConfig TargetProfile,
             string BaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
         {
-            this._http = new Http();
+            // Initialize new proxy-aware HttpClient
+            this._client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+            this._http = new Http(this._client);
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
             this.BaseURL = BaseURL;
@@ -52,7 +61,11 @@ namespace CollapseLauncher
 
         ~GameConversionManagement() => Dispose();
 
-        public void Dispose() => this._http?.Dispose();
+        public void Dispose()
+        {
+            this._client?.Dispose();
+            this._http?.Dispose();
+        }
 
         public async Task StartPreparation()
         {

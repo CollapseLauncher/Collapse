@@ -42,7 +42,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
-        public SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
+        protected SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
 
         public virtual void InitializeSettings()
         {
@@ -52,7 +52,7 @@ namespace CollapseLauncher.GameSettings.Base
         }
 
 #nullable disable
-        protected static IGameVersionCheck _gameVersionManager { get; set; }
+        public static IGameVersionCheck _gameVersionManager { get; set; }
 
         public virtual void ReloadSettings() => InitializeSettings();
 

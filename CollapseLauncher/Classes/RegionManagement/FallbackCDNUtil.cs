@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
@@ -23,7 +24,13 @@ namespace CollapseLauncher
     {
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
         {
-            Http _httpClient = new Http(true);
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            using Http _httpClient = new Http(true, customHttpClient: client);
             EventHandler<DownloadEvent> progressEvent = (_, b) => progress((int)b.ProgressPercentage);
             try
             {
@@ -34,7 +41,6 @@ namespace CollapseLauncher
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= progressEvent;
-                _httpClient?.Dispose();
             }
         }
 
@@ -98,28 +104,32 @@ namespace CollapseLauncher
 
     internal static class FallbackCDNUtil
     {
-        private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
+        private static HttpClient _client;
+
+        private static HttpClient _clientNoCompression;
+
+        static FallbackCDNUtil()
         {
-            AllowAutoRedirect = true,
-            MaxConnectionsPerServer = 16,
-            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli | DecompressionMethods.None
-        })
+            InitializeHttpClient();
+        }
+
+        public static void InitializeHttpClient()
         {
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version30,
-            Timeout = TimeSpan.FromMinutes(1)
-        };
-        private static readonly HttpClient _clientNoCompression = new HttpClient(new HttpClientHandler
-        {
-            AllowAutoRedirect = true,
-            MaxConnectionsPerServer = 16,
-            AutomaticDecompression = DecompressionMethods.None
-        })
-        {
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version30,
-            Timeout = TimeSpan.FromMinutes(1)
-        };
+            _client?.Dispose();
+            _clientNoCompression?.Dispose();
+
+            _client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .Create();
+
+            _clientNoCompression = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            LogWriteLine($"[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been succesfully initialized", LogType.Default, true);
+        }
+
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
         public static async Task DownloadCDNFallbackContent(Http httpInstance, string outputPath, int parallelThread, string relativeURL, CancellationToken token)
@@ -447,6 +457,14 @@ namespace CollapseLauncher
             }
 
             return latencies;
+        }
+
+        public static async ValueTask<long> GetContentLength(string url, CancellationToken token)
+        {
+            using HttpRequestMessage message = new HttpRequestMessage() { RequestUri = new Uri(url) };
+            using HttpResponseMessage response = await _clientNoCompression.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, token);
+            long Length = response.Content.Headers.ContentLength ?? 0;
+            return Length;
         }
 
         public static string TryGetAbsoluteToRelativeCDNURL(string URL, string searchIndexStr)

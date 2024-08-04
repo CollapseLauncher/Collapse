@@ -298,7 +298,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? GameDispatchDefaultName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? GameDispatchURLTemplate { get; init; }
+        public string? GameDispatchURLTemplate { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameExecutableName { get; init; }
@@ -307,7 +307,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? GameGatewayDefault { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? GameGatewayURLTemplate { get; init; }
+        public string? GameGatewayURLTemplate { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameName { get; set; }
