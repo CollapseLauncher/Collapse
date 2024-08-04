@@ -5,7 +5,9 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameSettings.Zenless.Context;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -52,6 +54,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
+using GeneralData = CollapseLauncher.GameSettings.Zenless.GeneralData;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
@@ -1665,18 +1668,51 @@ namespace CollapseLauncher.Pages
                 executableName = Path.GetFileNameWithoutExtension(executableName);
                 ResizableWindowHook resizableWindowHook = new ResizableWindowHook();
 
+                int?  height = null;
+                int?  width = null;
+                bool isZenless = gameType == GameNameType.Zenless;
+                if (isZenless && settings.SettingsCollapseScreen.UseCustomResolution)
+                {
+                    height = settings.SettingsScreen.height;
+                    width  = settings.SettingsScreen.width;
+                    SetBackScreenSettings(settings, (int)height, (int)width);
+                }
+
                 // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
                 // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
                 // it impossible to use custom resolution (but since you are using Collapse, it's now
                 // possible :teriStare:)
                 bool isNeedToResetPos = gameType == GameNameType.StarRail;
-                await resizableWindowHook.StartHook(executableName, ResizableWindowHookToken.Token, isNeedToResetPos);
+                await resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+                                                    isNeedToResetPos);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Error while initializing Resizable Window payload!\r\n{ex}");
                 ErrorSender.SendException(ex, ErrorType.GameError);
             }
+        }
+
+        private void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width)
+        {
+            try
+            {
+                settingsUniversal.SettingsScreen.height = height;
+                settingsUniversal.SettingsScreen.width  = width;
+                settingsUniversal.SettingsScreen.Save();
+                
+                var screenManager = GameSettings.Zenless.ScreenManager.Load();
+                screenManager.width  = width;
+                screenManager.height = height;
+                screenManager.Save();
+                
+                LogWriteLine($"[SetBackScreenSettings] Completed task! {width}x{height}", LogType.Scheme, true);
+            }
+            catch(Exception ex)
+            {
+                LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
+            }
+
         }
         #endregion
 
