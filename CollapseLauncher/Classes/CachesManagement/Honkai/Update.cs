@@ -38,6 +38,7 @@ namespace CollapseLauncher
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
                 // Iterate the asset index and do update operation
+                /*
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
                 await Parallel.ForEachAsync(
                     PairEnumeratePropertyAndAssetIndexPackage(
@@ -52,8 +53,8 @@ namespace CollapseLauncher
                     {
                         await UpdateCacheAsset(asset, httpClient, innerToken);
                     });
+                */
 
-                /*
                 foreach (CacheAsset asset in
 #if ENABLEHTTPREPAIR
                     EnforceHTTPSchemeToAssetIndex(updateAssetIndex!)
@@ -64,7 +65,6 @@ namespace CollapseLauncher
                 {
                     await UpdateCacheAsset(asset, httpClient, token);
                 }
-                */
 
                 // Reindex the asset index in Verify.txt
                 UpdateCacheVerifyList(assetIndex);
