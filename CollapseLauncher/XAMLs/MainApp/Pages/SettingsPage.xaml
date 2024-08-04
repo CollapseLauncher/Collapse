@@ -43,10 +43,10 @@
                             <ComboBox x:Name="LanguageSelector"
                                       MinWidth="256"
                                       CornerRadius="14"
-                                      DropDownClosed="UpdateEveryComboBoxLayout"
+                                      SelectionChanged="LanguageSelector_SelectionChanged"
                                       ItemsSource="{x:Bind LanguageList}"
                                       MaxDropDownHeight="200"
-                                      SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}" />
+                                      SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=OneTime}" />
                             <TextBlock x:Name="AppLangSelectionWarning"
                                        Margin="0,12,0,0"
                                        FontWeight="Bold"

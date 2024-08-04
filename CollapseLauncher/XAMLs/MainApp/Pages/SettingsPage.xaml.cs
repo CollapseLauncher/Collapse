@@ -10,12 +10,14 @@
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
     using CollapseLauncher.Pages.OOBE;
+    using CommunityToolkit.WinUI;
     using Hi3Helper;
     using Hi3Helper.Data;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Data;
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.UI.Xaml.Media.Animation;
@@ -34,11 +36,10 @@
     using static Hi3Helper.Locale;
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
+    using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
     using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
-using System.Security.Cryptography;
-using System.Security;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleNullReferenceException
@@ -828,7 +829,33 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void UpdateEveryComboBoxLayout(object sender, object e) => UpdateBindings.Update();
+        private int lastLanguageSelectedIndex = -1;
+
+        private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox combobox)
+            {
+                if (lastLanguageSelectedIndex == combobox.SelectedIndex
+                || combobox.SelectedIndex == -1)
+                    return;
+
+                LanguageSelectedIndex = combobox.SelectedIndex;
+                lastLanguageSelectedIndex = LanguageSelectedIndex;
+                Bindings.Update();
+
+                foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
+                {
+                    if (comboBoxOthers == combobox)
+                        continue;
+
+                    int lastSelected = comboBoxOthers.SelectedIndex;
+                    comboBoxOthers.SelectedIndex = -1;
+                    comboBoxOthers.SelectedIndex = lastSelected;
+                }
+
+                UpdateBindingsEvents(this, null);
+            }
+        }
 
         private void UpdateBindingsEvents(object sender, EventArgs e)
         {
