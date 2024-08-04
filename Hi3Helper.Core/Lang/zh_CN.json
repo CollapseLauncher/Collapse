@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "尝试安装 {0} 时发生超时",
     "Exception_DownloadTimeout2": "请检查您网络的可靠性！如果您的网速较慢，请降低下载线程数。",
-    "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！"
+    "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！",
+
+    "GameStateInvalid_Title": "游戏数据目录/可执行文件名称/Config.ini/App.Info 文件是无效的！",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher 检测到游戏文件中的属性对于区域无效：\r\n",
+    "GameStateInvalid_Subtitle2": "建议执行修复，以便启动器能够正确检测游戏",
+    "GameStateInvalid_Subtitle3": "点击 “",
+    "GameStateInvalid_Subtitle4": "” 以修复游戏属性或点击 “",
+    "GameStateInvalid_Subtitle5": "” 以取消操作。",
+
+    "GameStateInvalidFixed_Title": "游戏文件属性已成功修复！",
+    "GameStateInvalidFixed_Subtitle1": "已为如下区域修复游戏文件属性：",
+    "GameStateInvalidFixed_Subtitle2": "请执行 “",
+    "GameStateInvalidFixed_Subtitle3": "” 在 “",
+    "GameStateInvalidFixed_Subtitle4": "” 菜单以确保所有文件都经过验证。"
   },
 
   "_GameRepairPage": {
@@ -429,19 +442,19 @@
     "AppThreads_Help5": "这个线程将在 安装/修复 游戏时处理 解压/验证 过程。",
     "AppThreads_Help6": "注：在安装崩坏3时，该设置无效。",
 
-    "SophonSettingsTitle": "Sophon Mode Settings",
-    "SophonHelp_Title": "What is Sophon Downloader Mode?",
-    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
-    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
-    "SophonHelp_IndicatorTitle": "Indicator Icons",
-    "SophonHelp_Indicator1": "File Size to Write on Disk",
-    "SophonHelp_Indicator2": "File Size to Download",
-    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
-    "SophonHelp_Indicator4": "Network I/O Speed on Write",
-    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
-    "SophonHttpNumberBox": "Maximum HTTP Connections",
-    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
-    "SophonToggle": "Enable Sophon on Supported Regions",
+    "SophonSettingsTitle": "Sophon模式设置",
+    "SophonHelp_Title": "什么是 Sophon 下载器模式？",
+    "SophonHelp_1": "Sophon（智子）是米哈游最近推出的一种将文件按“区块”下载而非下载一个大的 ZIP 压缩包的新的下载机制。其优点主要是降低了对硬盘空间的要求和提高了下载和更新的效率。",
+    "SophonHelp_2": "对于那些使用硬盘进行游戏的人来说，此方法可能会更慢。",
+    "SophonHelp_IndicatorTitle": "指示器标志",
+    "SophonHelp_Indicator1": "要写入磁盘的文件大小",
+    "SophonHelp_Indicator2": "要下载的文件大小",
+    "SophonHelp_Indicator3": "写入时的磁盘 I/O 速度",
+    "SophonHelp_Indicator4": "写入时的网络 I/O 速度",
+    "SophonHelp_Thread": "这决定了 Collapse 正在执行的同时的下载块的数量。如果您在下载时突然卡住，请降低这个值。",
+    "SophonHttpNumberBox": "最大 HTTP 连接数",
+    "SophonHelp_Http": "这控制 Collapse 建立的用于下载块的最大网络连接数。",
+    "SophonToggle": "在受支持的区域启用 Sophon",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
@@ -467,6 +480,8 @@
     "Update_NewVer1": "可更新至",
     "Update_NewVer2": "！",
     "Update_LatestVer": "您正在使用最新的版本。",
+    "Update_SeeChangelog": "查看最新变更 （英语）",
+    "Update_ChangelogTitle": "最新变更",
 
     "AppFiles": "应用文件管理",
     "AppFiles_OpenDataFolderBtn": "打开应用数据文件夹",
@@ -528,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系统安装了“OpenCL™、OpenGL® 和 Vulkan® 兼容包”。该软件包被报告与 Vulkan Loader 不兼容，并且会在某些 GPU 上崩溃。请移除此软件包以启用 GPU 模式。",
     "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
-    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。"
+    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。",
+
+    "NetworkSettings_Title": "网络设置",
+    "NetworkSettings_Proxy_Title": "代理设置",
+
+    "NetworkSettings_Proxy_Hostname": "代理主机名",
+    "NetworkSettings_Proxy_HostnameHelp1": "展示要使用的代理的 URL",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse 仅能支持",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS 和 SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "目前的代理类型",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "输入的URL不合法！",
+    "NetworkSettings_ProxyWarn_NotSupported": "代理格式不受支持！ Collapse 仅支持 http://、https://、socks4://、socks4a:// 和socks5://",
+
+    "NetworkSettings_Proxy_Username": "代理用户名",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "输入代理用户名",
+    "NetworkSettings_Proxy_UsernameHelp1": "默认：",
+    "NetworkSettings_Proxy_UsernameHelp2": "[空]",
+    "NetworkSettings_Proxy_UsernameHelp3": "如果您的代理不需要身份验证，请将此字段留空。",
+
+    "NetworkSettings_Proxy_Password": "代理密码",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "输入代理密码",
+    "NetworkSettings_Proxy_PasswordHelp1": "默认：",
+    "NetworkSettings_Proxy_PasswordHelp2": "[空]",
+    "NetworkSettings_Proxy_PasswordHelp3": "如果您的代理不需要身份验证，请将此字段留空。",
+
+    "NetworkSettings_ProxyTest_Button": "测试代理可联通性",
+    "NetworkSettings_ProxyTest_ButtonChecking": "检查可联通性中……",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "代理可联通性测试成功！",
+    "NetworkSettings_ProxyTest_ButtonFailed": "测试失败！代理无法访问",
+
+    "NetworkSettings_Http_Title": ".NET HTTP 客户端设置",
+    "NetworkSettings_Http_Redirect": "允许HTTP重定向",
+    "NetworkSettings_Http_SimulateCookies": "允许模拟HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "允许不受信任的HTTPS证书",
+    "NetworkSettings_Http_Timeout": "HTTP 客户端超时（以秒为单位）"
   },
 
   "_Misc": {
@@ -832,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。",
 
     "DownloadSettingsTitle": "下载设置",
-    "DownloadSettingsOption1": "安装后启动游戏"
+    "DownloadSettingsOption1": "安装后启动游戏",
+    
+    "OpenInExternalBrowser": "在外部浏览器中打开",
+    "CloseOverlay": "关闭叠加层"
   },
 
   "_FileMigrationProcess": {
@@ -1283,29 +1336,29 @@
   },
 
   "_FileCleanupPage": {
-    "Title": "Files Clean-up",
-    "TopButtonRescan": "Re-Scan",
-    "NoFilesToBeDeletedText": "No files need to be deleted!",
-    "ListViewFieldFileName": "File Name",
-    "ListViewFieldFileSize": "File Size",
-    "LoadingTitle": "Processing",
-    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
-    "LoadingSubtitle2": "Checking pkg_version's availability...",
-    "BottomButtonDeleteAllFiles": "Delete All Files",
-    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
-    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
-    "BottomCheckboxNoFileSelected": "No File Selected",
-    "DialogDeletingFileTitle": "Deleting Files",
-    "DialogDeletingFileSubtitle1": "You're about to",
-    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
-    "DialogDeletingFileSubtitle3": "which contains",
-    "DialogDeletingFileSubtitle4": "{0} in size.",
-    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
-    "DialogDeleteSuccessTitle": "Files Deleted!",
-    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
-    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
-    "DialogMoveToRecycleBin": "Move to Recycle Bin",
-    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
+    "Title": "文件清理",
+    "TopButtonRescan": "重新扫描",
+    "NoFilesToBeDeletedText": "没有文件需要删除！",
+    "ListViewFieldFileName": "文件名",
+    "ListViewFieldFileSize": "文件大小",
+    "LoadingTitle": "处理中……",
+    "LoadingSubtitle1": "正在计算现有文件（找到 {0} 个文件 - 总共 {1} 个）...",
+    "LoadingSubtitle2": "检查pkg_version的版本可用性中……",
+    "BottomButtonDeleteAllFiles": "删除所有文件",
+    "BottomButtonDeleteSelectedFiles": "删除 {0} 个选中的文件",
+    "BottomCheckboxFilesSelected": "选中了{0}个文件（总计 {1}/{2}）",
+    "BottomCheckboxNoFileSelected": "没有选中文件",
+    "DialogDeletingFileTitle": "删除文件中",
+    "DialogDeletingFileSubtitle1": " ",
+    "DialogDeletingFileSubtitle2": "您即将删除{0}个",
+    "DialogDeletingFileSubtitle3": " ",
+    "DialogDeletingFileSubtitle4": "大小总计有{0}的文件",
+    "DialogDeletingFileSubtitle5": "您确定要删除这些文件吗？",
+    "DialogDeleteSuccessTitle": "文件已删除！",
+    "DialogDeleteSuccessSubtitle1": "{0}个文件已成功被删除",
+    "DialogDeleteSuccessSubtitle2": "且有{0}个删除失败",
+    "DialogMoveToRecycleBin": "移动到回收站",
+    "DialogTitleMovedToRecycleBin": "文件已移动到回收站！"
   },
 
   "_OOBEStartUpMenu": {
