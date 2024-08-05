@@ -1536,10 +1536,9 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
 
-                if (CurrentGameProperty._GamePreset.GameType == GameNameType.Zenless &&
-                    _Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
+                if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
                 {
-                    SetBackScreenSettings(_Settings, (int)height, (int)width);
+                    SetBackScreenSettings(_Settings, (int)height, (int)width, CurrentGameProperty);
                 }
 
                 // Stop update check
@@ -1690,19 +1689,35 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width)
+        private async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width,
+                                                 GamePresetProperty     gameProp)
         {
+            // Wait for the game to fully initialize
             await Task.Delay(20000);
             try
             {
                 settingsUniversal.SettingsScreen.height = height;
                 settingsUniversal.SettingsScreen.width  = width;
                 settingsUniversal.SettingsScreen.Save();
-                
-                var screenManager = GameSettings.Zenless.ScreenManager.Load();
-                screenManager.width  = width;
-                screenManager.height = height;
-                screenManager.Save();
+
+                // For those stubborn game
+                // Kinda unneeded but :FRICK:
+                switch (gameProp._GamePreset.GameType)
+                {
+                    case GameNameType.Zenless:
+                        var screenManagerZ = GameSettings.Zenless.ScreenManager.Load();
+                        screenManagerZ.width  = width;
+                        screenManagerZ.height = height;
+                        screenManagerZ.Save();
+                        break;
+                    
+                    case GameNameType.Honkai:
+                        var screenManagerH = GameSettings.Honkai.ScreenSettingData.Load();
+                        screenManagerH.width  = width;
+                        screenManagerH.height = height;
+                        screenManagerH.Save();
+                        break;
+                }
                 
                 LogWriteLine($"[SetBackScreenSettings] Completed task! {width}x{height}", LogType.Scheme, true);
             }
