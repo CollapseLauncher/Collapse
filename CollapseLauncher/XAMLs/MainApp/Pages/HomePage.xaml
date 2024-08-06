@@ -612,6 +612,7 @@
                             <DataTemplate>
                                 <imageex:ImageEx EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
+                                                 Stretch="Fill"
                                                  Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
