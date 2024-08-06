@@ -551,13 +551,13 @@
     "NetworkSettings_Proxy_Hostname": "Hostname Proxy",
     "NetworkSettings_Proxy_HostnameHelp1": "Merepresentasikan URL dari Proxy yang akan digunakan.",
     "NetworkSettings_Proxy_HostnameHelp2": "Collapse hanya mendukung tipe proxy",
-    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS dan SOCKS4/4a/5",
     "NetworkSettings_Proxy_HostnameHelp4": "untuk saat ini.",
 
-    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
-    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+    "NetworkSettings_ProxyWarn_UrlInvalid": "URL yang dimasukkan tidak valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "Skema proxy tidak didukung! Collapse hanya mendukung http://, https://, socks4://, socks4a:// dan socks5://",
 
-    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_Username": "Username Proxy",
     "NetworkSettings_Proxy_UsernamePlaceholder": "Masukkan Username Proxy",
     "NetworkSettings_Proxy_UsernameHelp1": "Nilai Bawaan:",
     "NetworkSettings_Proxy_UsernameHelp2": "[Kosong]",
@@ -569,10 +569,10 @@
     "NetworkSettings_Proxy_PasswordHelp2": "[Kosong]",
     "NetworkSettings_Proxy_PasswordHelp3": "Kosongkan bagian ini apabila proxy tidak membutuhkan proses autentikasi.",
 
-    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
-    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
-    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
-    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+    "NetworkSettings_ProxyTest_Button": "Test Konektivitas Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Memeriksa Konektivitas...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Test Konektivitas Proxy telah Berhasil!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Gagal! Proxy tidak dapat Dihubungi",
 
     "NetworkSettings_Http_Title": "Pengaturan .NET HTTP Client",
     "NetworkSettings_Http_Redirect": "Perbolehkan Pengalihan HTTP",
