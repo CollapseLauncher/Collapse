@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 
@@ -864,12 +865,9 @@ namespace CollapseLauncher.GameVersioning
             if (!string.IsNullOrEmpty(appInfoFileDir) && !Directory.Exists(appInfoFileDir))
                 Directory.CreateDirectory(appInfoFileDir);
 
-            string[] strings = [
-                GamePreset.VendorType.ToString(),
-                GamePreset.InternalGameNameInConfig!
-                ];
-
-            File.WriteAllLines(appInfoFilePath, strings, System.Text.Encoding.UTF8);
+            string appInfoString = $"{GamePreset.VendorType.ToString()}\n{GamePreset.InternalGameNameInConfig!}";
+            byte[] buffer = Encoding.UTF8.GetBytes(appInfoString);
+            File.WriteAllBytes(appInfoFilePath, buffer);
         }
 
         protected virtual void FixInvalidGameExecDataDir(string? executableName)
