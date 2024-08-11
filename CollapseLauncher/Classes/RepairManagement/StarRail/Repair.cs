@@ -31,7 +31,7 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder()
+            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
                 .UseLauncherConfig(_downloadThreadCount + 16)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
@@ -48,52 +48,56 @@ namespace CollapseLauncher
 
                 // Iterate repair asset and check it using different method for each type
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                await Parallel.ForEachAsync(
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+                if (_isBurstDownloadEnabled)
+                {
+                    await Parallel.ForEachAsync(
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR    
+                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
 #else
-                    repairAssetIndex
+                        repairAssetIndex
 #endif
-                    , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCountSqrt },
-                    async (asset, innerToken) =>
+                        , assetProperty),
+                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                        async (asset, innerToken) =>
+                        {
+                            // Assign a task depends on the asset type
+                            Task assetTask = asset.AssetIndex.FT switch
+                            {
+                                FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
+                                FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
+                                FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
+                                _ => RepairAssetTypeGeneric(asset, _httpClient, innerToken)
+                            };
+
+                            // Await the task
+                            await assetTask;
+                        });
+                }
+                else
+                {
+                    foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                        repairAssetIndex
+#endif
+                        , assetProperty))
                     {
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
-                            FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
-                            FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
-                            FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
-                            _ => RepairAssetTypeGeneric(asset, _httpClient, innerToken)
+                            FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, token),
+                            FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, token),
+                            FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, token),
+                            _ => RepairAssetTypeGeneric(asset, _httpClient, token)
                         };
 
                         // Await the task
                         await assetTask;
-                    });
-
-                /*
-                foreach (FilePropertiesRemote asset in
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
-#else
-                    repairAssetIndex
-#endif
-                    )
-                {
-                    // Assign a task depends on the asset type
-                    Task assetTask = (asset.FT switch
-                    {
-                        FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, token),
-                        FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, token),
-                        FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, token),
-                        _ => RepairAssetTypeGeneric(asset, _httpClient, token)
-                    });
-
-                    // Await the task
-                    await assetTask;
+                    }
                 }
-                */
 
                 return true;
             }

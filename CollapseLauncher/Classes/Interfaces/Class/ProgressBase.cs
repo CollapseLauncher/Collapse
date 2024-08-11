@@ -825,7 +825,7 @@ namespace CollapseLauncher.Interfaces
             }
 
             // Start downloading asset
-            if (assetSize >= _sizeForMultiDownload)
+            if (assetSize >= _sizeForMultiDownload && !_isBurstDownloadEnabled)
             {
                 await _httpClient!.Download(assetURL, assetPath, _downloadThreadCount, true, token);
                 await _httpClient.Merge(token);
