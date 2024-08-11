@@ -2684,8 +2684,8 @@ namespace CollapseLauncher.InstallManager.Base
                 // If the option is applying to the current directory
                 if (migrationOptionReturn == 0)
                 {
-                    await StartSteamMigration(pathOnSteam);
                     _gameVersionManager.UpdateGamePath(pathOnSteam, false);
+                    await StartSteamMigration(pathOnSteam);
                     _gameVersionManager.UpdateGameVersionToLatest(false);
                     return 0;
                 }
