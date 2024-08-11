@@ -2775,7 +2775,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 SimpleDialogs.QueueAndSpawnDialog(contentDialog);
                 await gameRepairInstance.StartCheckRoutine();
-
                 statusActivity.Text = Lang._InstallMigrateSteam.Step4Title;
                 await gameRepairInstance.StartRepairRoutine(false);
                 contentDialog.Hide();

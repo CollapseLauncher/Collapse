@@ -49,7 +49,6 @@ namespace CollapseLauncher
 
                 // Iterate repair asset and check it using different method for each type
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                /*
                 if (_isBurstDownloadEnabled)
                 {
                     await Parallel.ForEachAsync(
@@ -77,7 +76,6 @@ namespace CollapseLauncher
                         });
                 }
                 else
-                */
                 {
                     foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
                         PairEnumeratePropertyAndAssetIndexPackage(
