@@ -35,6 +35,7 @@ namespace CollapseLauncher.GameVersioning
 
         private int gameChannelID    => GamePreset.ChannelID ?? 0;
         private int gameSubChannelID => GamePreset.SubChannelID ?? 0;
+        private string gameCps => GamePreset.LauncherCPSType;
 
         private IniSection _defaultIniProfile =>
             new()
@@ -843,9 +844,9 @@ namespace CollapseLauncher.GameVersioning
         }
 
         protected virtual bool IsGameHasBilibiliStatus(string? executableName)
-        {
+            {
             bool isBilibili = GamePreset.LauncherCPSType?
-                .Equals("bilibili", StringComparison.OrdinalIgnoreCase) ?? false;
+                .IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0;
 
             if (isBilibili)
                 return true;
@@ -893,7 +894,7 @@ namespace CollapseLauncher.GameVersioning
         protected virtual void FixInvalidGameBilibiliStatus(string? executableName)
         {
             bool isBilibili = GamePreset.LauncherCPSType?
-                .Equals("bilibili", StringComparison.OrdinalIgnoreCase) ?? false;
+               .IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0;
 
             executableName = Path.GetFileNameWithoutExtension(executableName);
             string sdkDllPath = Path.Combine(GameDirPath, $"{executableName}_Data", "Plugins", "PCGameSDK.dll");
@@ -991,19 +992,15 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
-            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
             GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
-
-            if (isBilibili)
-            {
-                GameIniVersion[_defaultIniVersionSection]["cps"] = "bilibili";
-            }
+            GameIniVersion[_defaultIniVersionSection]["cps"]         = gameCps;
+            
             // Remove the contains section if the client is not Bilibili and it does have the value.
             // This to avoid an issue with HSR config.ini detection
-            else if (GameIniVersion.ContainsSection(_defaultIniVersionSection)
-                          && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
-                          && GameIniVersion[_defaultIniVersionSection]["cps"].ToString() == "bilibili")
+            if (GameIniVersion.ContainsSection(_defaultIniVersionSection)
+                && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
+                && GameIniVersion[_defaultIniVersionSection]["cps"].ToString().IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 GameIniVersion[_defaultIniVersionSection].Remove("cps");
             }
