@@ -3372,9 +3372,9 @@ namespace CollapseLauncher.InstallManager.Base
                 if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
                 {
                     // Check if the existing package is already exist or not.
-                    RegionResourceVersion outResDup =
-                        packs.FirstOrDefault(x => x.language != null &&
-                                                  x.language.Equals(outRes.language,
+                    GameInstallPackage outResDup =
+                        packageList.FirstOrDefault(x => x.LanguageID != null &&
+                                                   x.LanguageID.Equals(outRes.language,
                                                                     StringComparison.OrdinalIgnoreCase));
                     if (outResDup != null)
                     {
