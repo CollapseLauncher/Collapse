@@ -2704,12 +2704,18 @@ namespace CollapseLauncher.InstallManager.Base
                     string langStr = await sw.ReadLineAsync();
                     string localeCode = GetLanguageLocaleCodeByLanguageString(langStr);
 
-                    // Try get the voice over resource
-                    if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
+                // Try get the voice over resource
+                if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
+                {
+                    // Check if the existing package is already exist or not.
+                    GameInstallPackage outResDup =
+                        packageList.FirstOrDefault(x => x.LanguageID != null &&
+                                                   x.LanguageID.Equals(outRes.language,
+                                                                    StringComparison.OrdinalIgnoreCase));
+                    if (outResDup != null)
                     {
-                        // Check if the existing package is already exist or not.
-                        RegionResourceVersion outResDup = packs.FirstOrDefault(x => x.language != null && x.language.Equals(outRes.language, StringComparison.OrdinalIgnoreCase));
-                        if (outResDup != null) continue;
+                        continue;
+                    }
 
                         GameInstallPackage package = new GameInstallPackage(outRes, _gamePath, assetVersion) { LanguageID = localeCode, PackageType = GameInstallPackageType.Audio };
                         packageList.Add(package);
@@ -2940,7 +2946,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Delete the file of the chunk file too
-            _httpClient.DeleteMultisessionFiles(FileOutput, Thread);
+            Http.DeleteMultisessionFiles(FileOutput, Thread);
         }
 
         private long GetExistingDownloadPackageSize(List<GameInstallPackage> packageList)
@@ -2956,7 +2962,7 @@ namespace CollapseLauncher.InstallManager.Base
                     long totalSegmentDownloaded = 0;
                     for (int j = 0; j < packageList[i].Segments.Count; j++)
                     {
-                        long segmentDownloaded = _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput, _downloadThreadCount, packageList[i].Segments[j].Size);
+                        long segmentDownloaded = Http.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput, _downloadThreadCount, packageList[i].Segments[j].Size);
                         totalSize += segmentDownloaded;
                         totalSegmentDownloaded += segmentDownloaded;
                         packageList[i].Segments[j].SizeDownloaded = segmentDownloaded;
@@ -2965,7 +2971,7 @@ namespace CollapseLauncher.InstallManager.Base
                     continue;
                 }
 
-                packageList[i].SizeDownloaded = _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput, _downloadThreadCount, packageList[i].Size);
+                packageList[i].SizeDownloaded = Http.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput, _downloadThreadCount, packageList[i].Size);
                 totalSize += packageList[i].SizeDownloaded;
             }
 
