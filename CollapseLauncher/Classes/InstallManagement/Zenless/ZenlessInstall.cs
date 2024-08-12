@@ -1,3 +1,5 @@
+using CollapseLauncher.GameSettings.Zenless;
+using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
