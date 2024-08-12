@@ -992,13 +992,15 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
+            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
             GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
             GameIniVersion[_defaultIniVersionSection]["cps"]         = gameCps;
             
             // Remove the contains section if the client is not Bilibili and it does have the value.
             // This to avoid an issue with HSR config.ini detection
-            if (GameIniVersion.ContainsSection(_defaultIniVersionSection)
+            if ( !isBilibili
+                && GameIniVersion.ContainsSection(_defaultIniVersionSection)
                 && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
                 && GameIniVersion[_defaultIniVersionSection]["cps"].ToString().IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0)
             {
