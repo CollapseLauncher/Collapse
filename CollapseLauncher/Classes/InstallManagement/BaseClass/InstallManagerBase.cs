@@ -1137,19 +1137,17 @@ namespace CollapseLauncher.InstallManager.Base
 
         private long GetAssetIndexTotalUncompressSize(List<GameInstallPackage> assetIndex)
         {
-            long returnSize = 0;
             ArgumentNullException.ThrowIfNull(assetIndex);
 
-            foreach (GameInstallPackage asset in assetIndex)
-            {
-                using (Stream stream = GetSingleOrSegmentedDownloadStream(asset))
-                    using (ArchiveFile archiveFile = new ArchiveFile(stream!))
-                    {
-                        returnSize += archiveFile.Entries.Sum(x => (long)x!.Size);
-                    }
-            }
-
+            long returnSize = assetIndex.Sum(GetSingleOrSegmentedUncompressedSize);
             return returnSize;
+        }
+
+        private long GetSingleOrSegmentedUncompressedSize(GameInstallPackage asset)
+        {
+            using Stream      stream      = GetSingleOrSegmentedDownloadStream(asset);
+            using ArchiveFile archiveFile = new ArchiveFile(stream!);
+            return archiveFile.Entries.Sum(x => (long)x!.Size);
         }
 
         private Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
@@ -1212,6 +1210,9 @@ namespace CollapseLauncher.InstallManager.Base
                 _status!.IsProgressPerFileIndetermined = false;
                 _status!.IsProgressAllIndetermined = false;
                 UpdateStatus();
+
+                _progressPerFileSizeCurrent = 0;
+                _progressPerFileSizeTotal = GetSingleOrSegmentedUncompressedSize(asset);
 
                 // Assign extractor
                 string packageExtension = Path.GetExtension(asset!.PathOutput).ToLower();
