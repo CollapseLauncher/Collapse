@@ -381,7 +381,7 @@ namespace Hi3Helper.Shared.Region
             { "IsAllowHttpRedirections", true },
             { "IsAllowHttpCookies", false },
             { "IsAllowUntrustedCert", false },
-            { "IsBurstDownloadModeEnabled", true },
+            { "IsBurstDownloadModeEnabled", false },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },
