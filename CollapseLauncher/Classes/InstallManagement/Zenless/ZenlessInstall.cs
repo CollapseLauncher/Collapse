@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -79,6 +80,26 @@ namespace CollapseLauncher.InstallManager.Zenless
         {
             ZenlessSettings = zenlessSettings;
         }
+
+        #region Override Methods - StartPackageInstallationInner
+        protected override async Task StartPackageInstallationInner(List<GameInstallPackage>? gamePackage = null,
+                                                                    bool isOnlyInstallPackage = false,
+                                                                    bool doNotDeleteZipExplicit = false)
+        {
+            // Run the base installation process
+            await base.StartPackageInstallationInner(gamePackage, isOnlyInstallPackage, doNotDeleteZipExplicit);
+
+            // Then start on processing hdifffiles list and deletefiles list
+            await ApplyHdiffListPatch();
+            ApplyDeleteFileAction();
+
+            // Update the audio lang list if not in isOnlyInstallPackage mode
+            if (!isOnlyInstallPackage)
+            {
+                WriteAudioLangList(_assetIndex);
+            }
+        }
+        #endregion
 
         #region Override Methods - Audio Lang List
         protected override void WriteAudioLangList(List<GameInstallPackage> gamePackage)
