@@ -181,18 +181,18 @@
     "Exception_DownloadTimeout2": "¡Verifica la estabilidad de tu conexión! Si la velocidad de tu internet es lenta, disminuye el numero de Hilos de Descarga.",
     "Exception_DownloadTimeout3": "**ADVERTENCIA** ¡Cambiar el numero de hilos reiniciaran la descarga desde 0 y tendrás que eliminar manualmente las partes de archivos ya descargados!",
 
-    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
-    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
-    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
-    "GameStateInvalid_Subtitle3": "Click \"",
-    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
-    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+    "GameStateInvalid_Title": "¡Directorio de Datos de Juego/Nombre del Ejecutable/Config.ini/App.Info es inválido!",
+    "GameStateInvalid_Subtitle1": "Collapse detectó que las propiedades de archivo del juego son inválidas para la región:\r\n",
+    "GameStateInvalid_Subtitle2": "Es recomendado hacer una reparación para que el launcher detecte el juego correctamente",
+    "GameStateInvalid_Subtitle3": "Haz clic en \"",
+    "GameStateInvalid_Subtitle4": "\" para reparar las propiedades o clic en \"",
+    "GameStateInvalid_Subtitle5": "\" para cancelar la operación.",
 
-    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
-    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
-    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
-    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
-    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
+    "GameStateInvalidFixed_Title": "¡Se han corregido con éxito los archivos de juego!",
+    "GameStateInvalidFixed_Subtitle1": "Se han corregido las propiedades para la región:",
+    "GameStateInvalidFixed_Subtitle2": "Por Favor, realiza un \"",
+    "GameStateInvalidFixed_Subtitle3": "\" en el menú de \"",
+    "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados."
   },
 
   "_GameRepairPage": {
@@ -481,7 +481,7 @@
     "Update_NewVer2": "Actualización disponible!",
     "Update_LatestVer": "Estás usando la última versión.",
     "Update_SeeChangelog": "Ver los Últimos Cambios (Ingles)",
-    "Update_ChangelogTitle": "Latest Changes",
+    "Update_ChangelogTitle": "Últimos Cambios",
 
     "AppFiles": "Gestión de Archivos",
     "AppFiles_OpenDataFolderBtn": "Abrir Carpeta de Datos de la Aplicación",
@@ -545,40 +545,40 @@
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
     "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida.",
 
-    "NetworkSettings_Title": "Network Settings",
-    "NetworkSettings_Proxy_Title": "Proxy Settings",
+    "NetworkSettings_Title": "Ajustes de Red",
+    "NetworkSettings_Proxy_Title": "Ajustes de Proxy",
 
-    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
-    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
-    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
-    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
-    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+    "NetworkSettings_Proxy_Hostname": "Hostname de Proxy",
+    "NetworkSettings_Proxy_HostnameHelp1": "Representa la URL del Proxy a utilizar.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse solo soporta proxy de tipo ",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS y SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "por el momento.",
 
-    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
-    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+    "NetworkSettings_ProxyWarn_UrlInvalid": "¡La URL ingresada no es valida!",
+    "NetworkSettings_ProxyWarn_NotSupported": "¡El formato de Proxy no es soportado! Collapse solo soporta http://, https://, socks4://, socks4a:// y socks5://",
 
-    "NetworkSettings_Proxy_Username": "Proxy Username",
-    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
-    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
-    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
-    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+    "NetworkSettings_Proxy_Username": "Nombre de Usuario de Proxy",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Ingresar Nombre de Usuario",
+    "NetworkSettings_Proxy_UsernameHelp1": "Por Defecto:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Vacío]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
 
-    "NetworkSettings_Proxy_Password": "Proxy Password",
-    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
-    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
-    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
-    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+    "NetworkSettings_Proxy_Password": "Contraseña de Proxy",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Ingresar Contraseña de Proxy",
+    "NetworkSettings_Proxy_PasswordHelp1": "Por Defecto:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Vacío]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
 
-    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
-    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
-    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
-    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+    "NetworkSettings_ProxyTest_Button": "Probar Conectividad del Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Comprobando Conectividad...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "¡Prueba de Conectividad fue exitosa!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "¡Prueba fallida! No se puede alcanzar el proxy",
 
-    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
-    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
-    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
-    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
-    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
+    "NetworkSettings_Http_Title": "Ajustes Cliente .NET HTTP",
+    "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Permitir Simular HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Permitir Certificados HTTPS que no son de confianza",
+    "NetworkSettings_Http_Timeout": "Tiempo de espera del cliente HTTP (en segundos)"
   },
 
   "_Misc": {
@@ -884,8 +884,8 @@
     "DownloadSettingsTitle": "Descargando Configuración",
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
     
-    "OpenInExternalBrowser": "Open in External Browser",
-    "CloseOverlay": "Close Overlay"
+    "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
+    "CloseOverlay": "Cerrar Superposición (Overlay)"
   },
 
   "_FileMigrationProcess": {
