@@ -727,11 +727,11 @@ namespace CollapseLauncher.GameVersioning
                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle1, true)
                 .AddTextBlockLine(gameNameTranslated, FontWeights.Bold).AddTextBlockNewLine(2)
                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle2).AddTextBlockNewLine(2)
-                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle3, null, 10)
-                .AddTextBlockLine(Locale.Lang._Misc.YesContinue, FontWeights.SemiBold, 10)
-                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle4, null, 10)
-                .AddTextBlockLine(Locale.Lang._Misc.NoCancel, FontWeights.SemiBold, 10)
-                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle5, null, 10);
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle3)
+                .AddTextBlockLine(Locale.Lang._Misc.YesContinue, FontWeights.SemiBold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle4)
+                .AddTextBlockLine(Locale.Lang._Misc.NoCancel, FontWeights.SemiBold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle5);
 
                 ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
                     Locale.Lang._HomePage.GameStateInvalid_Title,
