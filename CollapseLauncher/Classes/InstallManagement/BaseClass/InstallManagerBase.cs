@@ -2704,12 +2704,18 @@ namespace CollapseLauncher.InstallManager.Base
                     string langStr = await sw.ReadLineAsync();
                     string localeCode = GetLanguageLocaleCodeByLanguageString(langStr);
 
-                    // Try get the voice over resource
-                    if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
+                // Try get the voice over resource
+                if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
+                {
+                    // Check if the existing package is already exist or not.
+                    GameInstallPackage outResDup =
+                        packageList.FirstOrDefault(x => x.LanguageID != null &&
+                                                   x.LanguageID.Equals(outRes.language,
+                                                                    StringComparison.OrdinalIgnoreCase));
+                    if (outResDup != null)
                     {
-                        // Check if the existing package is already exist or not.
-                        RegionResourceVersion outResDup = packs.FirstOrDefault(x => x.language != null && x.language.Equals(outRes.language, StringComparison.OrdinalIgnoreCase));
-                        if (outResDup != null) continue;
+                        continue;
+                    }
 
                         GameInstallPackage package = new GameInstallPackage(outRes, _gamePath, assetVersion) { LanguageID = localeCode, PackageType = GameInstallPackageType.Audio };
                         packageList.Add(package);

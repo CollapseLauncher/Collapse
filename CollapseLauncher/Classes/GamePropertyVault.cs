@@ -60,7 +60,7 @@ namespace CollapseLauncher.Statics
                         _GameSettings = new ZenlessSettings(_GameVersion);
                         _GameCache    = null;
                         _GameRepair   = null;
-                        _GameInstall  = new ZenlessInstall(UIElementParent, _GameVersion);
+                        _GameInstall  = new ZenlessInstall(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
                         break;
                     default:
                         throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
