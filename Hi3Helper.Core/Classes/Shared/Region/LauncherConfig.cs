@@ -294,6 +294,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("IsIntroEnabled", value);
         }
 
+        public static bool IsBurstDownloadModeEnabled
+        {
+            get => GetAppConfigValue("IsBurstDownloadModeEnabled").ToBoolNullable() ?? true;
+            set => SetAndSaveConfigValue("IsBurstDownloadModeEnabled", value);
+        }
+
         private static bool? _cachedIsInstantRegionChange = null;
         public static bool IsInstantRegionChange
         {
@@ -375,6 +381,7 @@ namespace Hi3Helper.Shared.Region
             { "IsAllowHttpRedirections", true },
             { "IsAllowHttpCookies", false },
             { "IsAllowUntrustedCert", false },
+            { "IsBurstDownloadModeEnabled", false },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },

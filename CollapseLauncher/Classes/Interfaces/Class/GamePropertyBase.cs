@@ -42,6 +42,7 @@ namespace CollapseLauncher.Interfaces
         protected virtual string _userAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
 
         protected bool _isVersionOverride { get; init; }
+        protected bool _isBurstDownloadEnabled { get => IsBurstDownloadModeEnabled; }
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
         protected int _downloadThreadCountSqrt { get => (int)Math.Max(Math.Sqrt(_downloadThreadCount), 4); }

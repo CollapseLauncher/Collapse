@@ -138,7 +138,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
     </tr>
     <tr>
-      <td rowspan="3">Genshin Impact</td>
+      <td rowspan="4">Genshin Impact</td>
       <td>Global</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -160,6 +160,16 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
     </tr>
     <tr>
       <td>Bilibili</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Google Play (Global)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -207,7 +217,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
       <td>N/A</td>
-      <td>N/A</td>
+      <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
     <tr>
@@ -217,7 +227,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
       <td>N/A</td>
-      <td>N/A</td>
+      <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
   </tbody>
@@ -231,8 +241,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.17/CL-1.80.17-stable_Installer.exe)
 > **Note**: The version for this build is `1.80.17` (Released on: July 31st, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.81.0-pre/CL-1.81-preview_Installer.exe)
-> **Note**: The version for this build is `1.81.0` (Released on: July 31st, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.81.1-pre/CL-1.81.1-preview_Installer.exe)
+> **Note**: The version for this build is `1.81.1` (Released on: July 31st, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 

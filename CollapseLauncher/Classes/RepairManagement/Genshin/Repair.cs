@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
+using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -31,7 +32,7 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder()
+            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
                 .UseLauncherConfig(_downloadThreadCount + 16)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
@@ -48,35 +49,36 @@ namespace CollapseLauncher
 
                 // Iterate repair asset
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                await Parallel.ForEachAsync(
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
-#else
-                    repairAssetIndex
-#endif
-                    , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCountSqrt },
-                    async (asset, innerToken) =>
-                    {
-                        await RepairAssetTypeGeneric(asset, _httpClient, innerToken);
-                    });
-
-                /*
-                foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset
-                    in
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
-#else
-                    repairAssetIndex
-#endif
-                    , assetProperty)
-                    )
+                if (_isBurstDownloadEnabled)
                 {
-                    await RepairAssetTypeGeneric(asset, _httpClient, token);
+                    await Parallel.ForEachAsync(
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                        repairAssetIndex
+#endif
+                        , assetProperty),
+                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                        async (asset, innerToken) =>
+                        {
+                            await RepairAssetTypeGeneric(asset, _httpClient, innerToken);
+                        });
                 }
-                */
+                else
+                {
+                    foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset in
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                        repairAssetIndex
+#endif
+                        , assetProperty))
+                    {
+                        await RepairAssetTypeGeneric(asset, _httpClient, token);
+                    }
+                }
 
                 return true;
             }

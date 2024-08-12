@@ -80,7 +80,7 @@
     "UnhandledTitle3": "游戏已崩溃",
     "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
     "UnhandledTitle4": "警告",
-    "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470.\n给您带来的不便我们深表歉意，感谢您的理解。",
+    "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470。\n给您带来的不便我们深表歉意，感谢您的理解。",
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页"
@@ -95,7 +95,7 @@
     "RegionLoadingTitle": "正在加载区服",
     "RegionLoadingAPITitle1": "正在加载",
     "RegionLoadingAPITitle2": "启动器API",
-    "RegionLoadingSubtitleTimeOut": "操作已超时（>{1}秒）。正在重新尝试加载区服{0}……",
+    "RegionLoadingSubtitleTimeOut": "操作已超时（> {1} 秒）。正在重新尝试加载区服 {0}……",
     "RegionLoadingSubtitleTooLong": "重试的时间比预期的长一些……请确保您的网络连接稳定！",
     "NavCtrlTitleSettings": "程序设置",
     "NotifNeverAsk": "不再显示",
@@ -181,18 +181,18 @@
     "Exception_DownloadTimeout2": "请检查您网络的可靠性！如果您的网速较慢，请降低下载线程数。",
     "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！",
 
-    "GameStateInvalid_Title": "游戏数据目录/可执行文件名称/Config.ini/App.Info 文件是无效的！",
-    "GameStateInvalid_Subtitle1": "Collapse Launcher 检测到游戏文件中的属性对于区域无效：\r\n",
+    "GameStateInvalid_Title": "游戏数据目录/可执行文件名/Config.ini/App.Info 文件无效！",
+    "GameStateInvalid_Subtitle1": "Collapse 启动器检测到游戏文件中的属性对于区服无效：\r\n",
     "GameStateInvalid_Subtitle2": "建议执行修复，以便启动器能够正确检测游戏",
-    "GameStateInvalid_Subtitle3": "点击 “",
-    "GameStateInvalid_Subtitle4": "” 以修复游戏属性或点击 “",
-    "GameStateInvalid_Subtitle5": "” 以取消操作。",
+    "GameStateInvalid_Subtitle3": "点击“",
+    "GameStateInvalid_Subtitle4": "”以修复游戏属性或点击“",
+    "GameStateInvalid_Subtitle5": "”以取消操作。",
 
     "GameStateInvalidFixed_Title": "游戏文件属性已成功修复！",
     "GameStateInvalidFixed_Subtitle1": "已为如下区域修复游戏文件属性：",
-    "GameStateInvalidFixed_Subtitle2": "请执行 “",
-    "GameStateInvalidFixed_Subtitle3": "” 在 “",
-    "GameStateInvalidFixed_Subtitle4": "” 菜单以确保所有文件都经过验证。"
+    "GameStateInvalidFixed_Subtitle2": "请执行“",
+    "GameStateInvalidFixed_Subtitle3": "”（在“",
+    "GameStateInvalidFixed_Subtitle4": "”菜单内）以确保所有文件都经过验证。"
   },
 
   "_GameRepairPage": {
@@ -439,22 +439,22 @@
     "AppThreads_Help2": "默认值：",
     "AppThreads_Help3": "取值范围：",
     "AppThreads_Help4": "0（自动检测）",
-    "AppThreads_Help5": "这个线程将在 安装/修复 游戏时处理 解压/验证 过程。",
-    "AppThreads_Help6": "注：在安装崩坏3时，该设置无效。",
+    "AppThreads_Help5": "这个线程将在安装或修复游戏的同时处理解压和验证过程。",
+    "AppThreads_Help6": "注：在安装 崩坏3 时，该设置无效。",
 
-    "SophonSettingsTitle": "Sophon模式设置",
+    "SophonSettingsTitle": "Sophon 模式设置",
     "SophonHelp_Title": "什么是 Sophon 下载器模式？",
-    "SophonHelp_1": "Sophon（智子）是米哈游最近推出的一种将文件按“区块”下载而非下载一个大的 ZIP 压缩包的新的下载机制。其优点主要是降低了对硬盘空间的要求和提高了下载和更新的效率。",
-    "SophonHelp_2": "对于那些使用硬盘进行游戏的人来说，此方法可能会更慢。",
-    "SophonHelp_IndicatorTitle": "指示器标志",
-    "SophonHelp_Indicator1": "要写入磁盘的文件大小",
+    "SophonHelp_1": "Sophon（智子）是米哈游最近推出的一种新的下载机制，允许将文件下载成“分块”，而不是下载一个大的 ZIP 压缩包。其优点主要是降低了对硬盘空间的要求，提高了下载和更新的效率。",
+    "SophonHelp_2": "对于使用机械硬盘进行游戏的用户来说，此方法可能会更慢。",
+    "SophonHelp_IndicatorTitle": "指示器图标",
+    "SophonHelp_Indicator1": "要写入硬盘的文件大小",
     "SophonHelp_Indicator2": "要下载的文件大小",
-    "SophonHelp_Indicator3": "写入时的磁盘 I/O 速度",
-    "SophonHelp_Indicator4": "写入时的网络 I/O 速度",
-    "SophonHelp_Thread": "这决定了 Collapse 正在执行的同时的下载块的数量。如果您在下载时突然卡住，请降低这个值。",
+    "SophonHelp_Indicator3": "磁盘 I/O 写入速度",
+    "SophonHelp_Indicator4": "网络 I/O 写入速度",
+    "SophonHelp_Thread": "该值控制 Collapse 可同时下载分块的数量。如果您下载时突然卡住，请降低该值。",
     "SophonHttpNumberBox": "最大 HTTP 连接数",
-    "SophonHelp_Http": "这控制 Collapse 建立的用于下载块的最大网络连接数。",
-    "SophonToggle": "在受支持的区域启用 Sophon",
+    "SophonHelp_Http": "该值控制 Collapse 建立的用于下载分块的最大网络连接数。",
+    "SophonToggle": "在受支持的区服启用 Sophon",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
@@ -480,8 +480,8 @@
     "Update_NewVer1": "可更新至",
     "Update_NewVer2": "！",
     "Update_LatestVer": "您正在使用最新的版本。",
-    "Update_SeeChangelog": "查看最新变更 （英语）",
-    "Update_ChangelogTitle": "最新变更",
+    "Update_SeeChangelog": "查看更新日志（英文）",
+    "Update_ChangelogTitle": "更新日志",
 
     "AppFiles": "应用文件管理",
     "AppFiles_OpenDataFolderBtn": "打开应用数据文件夹",
@@ -549,13 +549,13 @@
     "NetworkSettings_Proxy_Title": "代理设置",
 
     "NetworkSettings_Proxy_Hostname": "代理主机名",
-    "NetworkSettings_Proxy_HostnameHelp1": "展示要使用的代理的 URL",
-    "NetworkSettings_Proxy_HostnameHelp2": "Collapse 仅能支持",
+    "NetworkSettings_Proxy_HostnameHelp1": "表示要使用的代理 URL。",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse 目前仅支持",
     "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS 和 SOCKS4/4a/5",
-    "NetworkSettings_Proxy_HostnameHelp4": "目前的代理类型",
+    "NetworkSettings_Proxy_HostnameHelp4": "类型的代理。",
 
-    "NetworkSettings_ProxyWarn_UrlInvalid": "输入的URL不合法！",
-    "NetworkSettings_ProxyWarn_NotSupported": "代理格式不受支持！ Collapse 仅支持 http://、https://、socks4://、socks4a:// 和socks5://",
+    "NetworkSettings_ProxyWarn_UrlInvalid": "输入的 URL 不合法！",
+    "NetworkSettings_ProxyWarn_NotSupported": "代理格式不受支持！Collapse 仅支持 http://、https://、socks4://、socks4a:// 和socks5://",
 
     "NetworkSettings_Proxy_Username": "代理用户名",
     "NetworkSettings_Proxy_UsernamePlaceholder": "输入代理用户名",
@@ -575,10 +575,10 @@
     "NetworkSettings_ProxyTest_ButtonFailed": "测试失败！代理无法访问",
 
     "NetworkSettings_Http_Title": ".NET HTTP 客户端设置",
-    "NetworkSettings_Http_Redirect": "允许HTTP重定向",
-    "NetworkSettings_Http_SimulateCookies": "允许模拟HTTP Cookies",
-    "NetworkSettings_Http_UntrustedHttps": "允许不受信任的HTTPS证书",
-    "NetworkSettings_Http_Timeout": "HTTP 客户端超时（以秒为单位）"
+    "NetworkSettings_Http_Redirect": "允许 HTTP 重定向",
+    "NetworkSettings_Http_SimulateCookies": "允许模拟 HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "允许不受信任的 HTTPS 证书",
+    "NetworkSettings_Http_Timeout": "HTTP 客户端超时（秒）"
   },
 
   "_Misc": {
@@ -885,7 +885,7 @@
     "DownloadSettingsOption1": "安装后启动游戏",
     
     "OpenInExternalBrowser": "在外部浏览器中打开",
-    "CloseOverlay": "关闭叠加层"
+    "CloseOverlay": "关闭"
   },
 
   "_FileMigrationProcess": {
@@ -951,7 +951,7 @@
     "Step1Title": "检查文件夹权限",
     "Step1Subtitle": "检查文件夹权限",
     "Step2Title": "迁移游戏位置",
-    "Step2Subtitle1": "迁移过程将在  秒钟后运行。",
+    "Step2Subtitle1": "迁移过程将在 5 秒钟后运行。",
     "Step2Subtitle2": "运行中……",
     "Step3Title": "比较游戏数据的完整性以进行转换",
     "Step3Subtitle": "获取参考 API……",
@@ -980,7 +980,7 @@
 
   "_InstallMigrate": {
     "PageTitle": "游戏迁移",
-    "Step1Title": "进程将在 5 秒后开始。请接受 UAC（管理员权限）的提示后开始迁移。",
+    "Step1Title": "进程将在 5 秒后启动。请接受 UAC（管理员权限）的提示后开始迁移。",
     "Step2Title": "迁移正在进行中。您可能会看到一个控制台窗口弹出。请等待直到该过程完成",
     "Step3Title": "迁移已完成！正在返回……",
     "StepCancelledTitle": "迁移已取消！正在返回……",
@@ -1009,7 +1009,7 @@
     "UpdateHeader4": "速度：",
     "UpdateHeader5PlaceHolder": "正在下载更新 [- / -]：",
 
-    "UpdateForcedHeader": "由于紧急的变更，启动器将被强制更新以确保启动器正常工作。",
+    "UpdateForcedHeader": "由于紧急的变更，启动器将被强制更新以确保正常工作。",
 
     "UpdateStatus1": "正在获取更新：",
     "UpdateMessage1": "正在连接到更新仓库……",
@@ -1338,25 +1338,25 @@
   "_FileCleanupPage": {
     "Title": "文件清理",
     "TopButtonRescan": "重新扫描",
-    "NoFilesToBeDeletedText": "没有文件需要删除！",
+    "NoFilesToBeDeletedText": "没有需要删除的文件！",
     "ListViewFieldFileName": "文件名",
     "ListViewFieldFileSize": "文件大小",
     "LoadingTitle": "处理中……",
-    "LoadingSubtitle1": "正在计算现有文件（找到 {0} 个文件 - 总共 {1} 个）...",
-    "LoadingSubtitle2": "检查pkg_version的版本可用性中……",
+    "LoadingSubtitle1": "正在计算现有文件（找到 {0} 个文件 - 总共 {1} 个）……",
+    "LoadingSubtitle2": "正在检查 pkg_version 的可用性……",
     "BottomButtonDeleteAllFiles": "删除所有文件",
     "BottomButtonDeleteSelectedFiles": "删除 {0} 个选中的文件",
-    "BottomCheckboxFilesSelected": "选中了{0}个文件（总计 {1}/{2}）",
+    "BottomCheckboxFilesSelected": "选中了 {0} 个文件（总计 {1}/{2}）",
     "BottomCheckboxNoFileSelected": "没有选中文件",
     "DialogDeletingFileTitle": "删除文件中",
-    "DialogDeletingFileSubtitle1": " ",
-    "DialogDeletingFileSubtitle2": "您即将删除{0}个",
-    "DialogDeletingFileSubtitle3": " ",
-    "DialogDeletingFileSubtitle4": "大小总计有{0}的文件",
+    "DialogDeletingFileSubtitle1": "您将要",
+    "DialogDeletingFileSubtitle2": "删除 {0} 个文件",
+    "DialogDeletingFileSubtitle3": "，",
+    "DialogDeletingFileSubtitle4": "大小总计 {0}。",
     "DialogDeletingFileSubtitle5": "您确定要删除这些文件吗？",
     "DialogDeleteSuccessTitle": "文件已删除！",
-    "DialogDeleteSuccessSubtitle1": "{0}个文件已成功被删除",
-    "DialogDeleteSuccessSubtitle2": "且有{0}个删除失败",
+    "DialogDeleteSuccessSubtitle1": "成功删除 {0} 个文件",
+    "DialogDeleteSuccessSubtitle2": "，且有 {0} 个删除失败",
     "DialogMoveToRecycleBin": "移动到回收站",
     "DialogTitleMovedToRecycleBin": "文件已移动到回收站！"
   },

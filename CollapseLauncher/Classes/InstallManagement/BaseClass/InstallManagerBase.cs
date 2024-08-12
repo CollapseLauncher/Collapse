@@ -59,6 +59,7 @@ using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 using SophonManifest = Hi3Helper.Sophon.SophonManifest;
+using CollapseLauncher.Dialogs;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -77,6 +78,14 @@ namespace CollapseLauncher.InstallManager.Base
         Idle
     }
 
+    public enum MigrateFromLauncherType
+    {
+        Official,
+        BetterHi3Launcher,
+        Steam,
+        Unknown
+    }
+
     // ReSharper disable once UnusedTypeParameter
     internal partial class InstallManagerBase : ProgressBase<GameInstallPackage>, IGameInstallManager
     {
@@ -88,14 +97,6 @@ namespace CollapseLauncher.InstallManager.Base
             public string[] filesToDelete;
             public string[] foldersToDelete;
             public string[] foldersToKeepInData;
-        }
-
-        protected enum MigrateFromLauncherType
-        {
-            Official,
-            BetterHi3Launcher,
-            Steam,
-            Unknown
         }
 
         protected delegate Task InstallPackageExtractorDelegate(GameInstallPackage asset);
@@ -567,6 +568,10 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
         }
+
+#nullable enable
+        protected virtual IRepair? GetGameRepairInstance(string? sourceVer) => null;
+#nullable restore
 
         // Bool:  0      -> Indicates that the action is completed and no need to step further
         //        1      -> Continue to the next step
@@ -2674,33 +2679,138 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
                 // If not, then return the migrationOptionReturn value.
-                int migrationOptionReturn =
-                    await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation,
-                                                 MigrateFromLauncherType.Official);
-                if (migrationOptionReturn != 1)
+                int migrationOptionReturn = await PerformMigrationOption(pathOnSteam, MigrateFromLauncherType.Steam);
+
+                // If the option is applying to the current directory
+                if (migrationOptionReturn == 0)
                 {
-                    return migrationOptionReturn;
+                    _gameVersionManager.UpdateGamePath(pathOnSteam, false);
+                    await StartSteamMigration(pathOnSteam);
+                    _gameVersionManager.UpdateGameVersionToLatest(false);
+                    return 0;
                 }
 
-                switch (await Dialog_ExistingInstallationSteam(_parentUI))
-                {
-                    // If action to migrate was taken, then update the game path (but don't save it to the config file)
-                    // After that, return 0
-                    case ContentDialogResult.Primary:
-                        _gameVersionManager.UpdateGamePath(pathOnSteam, false);
-                        return 0;
-                    // If action to fresh install was taken, then return 2 (selecting path)
-                    case ContentDialogResult.Secondary:
-                        return 2;
-                    // If action to cancel was taken, then return -1 (go back)
-                    case ContentDialogResult.None:
-                        return -1;
-                }
+                if (migrationOptionReturn != 0)
+                    return migrationOptionReturn;
             }
 
             // Return 1 to continue to another check
             return 1;
         }
+
+#nullable enable
+        private async Task StartSteamMigration(string gamePath)
+        {
+            // Get game repair instance and if it's null, then return;
+            string? latestGameVersionString = _gameVersionManager.GetGameVersionAPI()?.VersionString;
+            if (string.IsNullOrEmpty(latestGameVersionString))
+                return;
+
+            using IRepair? gameRepairInstance = GetGameRepairInstance(latestGameVersionString);
+            if (gameRepairInstance == null)
+                return;
+
+            // Build the UI
+            Grid mainGrid = UIElementExtensions.CreateGrid()
+                .WithWidth(590)
+                .WithColumns([
+                    new GridLength(1, GridUnitType.Star),
+                    new GridLength(1, GridUnitType.Auto)
+                    ])
+                .WithRows([
+                    new GridLength(1, GridUnitType.Star),
+                    new GridLength(1, GridUnitType.Star),
+                    new GridLength(1, GridUnitType.Star),
+                    new GridLength(1, GridUnitType.Star),
+                    new GridLength(1, GridUnitType.Star)
+                    ])
+                .WithColumnSpacing(16);
+
+            TextBlock statusActivity = mainGrid.AddElementToGridRowColumn(
+                new TextBlock() {
+                    FontWeight = FontWeights.Medium,
+                    FontSize = 18,
+                    Text = Lang._InstallMigrateSteam.Step3Title,
+                    TextWrapping = TextWrapping.Wrap }
+                               .WithHorizontalAlignment(HorizontalAlignment.Left),
+                0, 0, 0, 2)
+                .WithMargin(0, 0, 0, 8);
+            TextBlock fileActivityStatus = mainGrid.AddElementToGridRowColumn(
+                new TextBlock() { Text = "-", TextTrimming = TextTrimming.CharacterEllipsis }
+                               .WithHorizontalAlignment(HorizontalAlignment.Left),
+                1, 0, 0, 2);
+            TextBlock speedStatus = mainGrid.AddElementToGridRowColumn(
+                new TextBlock() { FontWeight = FontWeights.Bold, Text = Lang._Misc.SpeedPlaceholder, TextTrimming = TextTrimming.CharacterEllipsis }
+                               .WithHorizontalAlignment(HorizontalAlignment.Left),
+                2, 0, 0, 2);
+            TextBlock timeRemainStatus = mainGrid.AddElementToGridRowColumn(
+                new TextBlock() { FontWeight = FontWeights.Bold, Text = Lang._Misc.TimeRemainHMSFormatPlaceholder, TextTrimming = TextTrimming.CharacterEllipsis }
+                               .WithHorizontalAlignment(HorizontalAlignment.Left),
+                3, 0, 0, 2);
+            TextBlock percentageStatus = mainGrid.AddElementToGridRowColumn(
+                new TextBlock() { FontWeight = FontWeights.Bold, Text = "0.00%" }
+                               .WithHorizontalAlignment(HorizontalAlignment.Right),
+                3, 1, 0, 0);
+            ProgressBar progressBar = mainGrid.AddElementToGridRowColumn(
+                new ProgressBar { IsIndeterminate = true },
+                4, 0, 0, 2)
+                .WithMargin(0, 16, 0, 0);
+
+            gameRepairInstance.ProgressChanged += StartSteamMigration_ProgressChanged;
+            gameRepairInstance.StatusChanged += StartSteamMigration_StatusChanged;
+            ContentDialogCollapse contentDialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
+            {
+                Title = Lang._InstallMigrateSteam.PageTitle,
+                Content = mainGrid,
+                XamlRoot = _parentUI.XamlRoot,
+                CloseButtonText = Lang._Misc.Cancel
+            };
+
+            contentDialog.CloseButtonClick += (_, _) =>
+            {
+                gameRepairInstance.CancelRoutine();
+            };
+
+            try
+            {
+                SimpleDialogs.QueueAndSpawnDialog(contentDialog);
+                await gameRepairInstance.StartCheckRoutine();
+                statusActivity.Text = Lang._InstallMigrateSteam.Step4Title;
+                await gameRepairInstance.StartRepairRoutine(false);
+                contentDialog.Hide();
+            }
+            catch (Exception)
+            {
+                contentDialog.Hide();
+                throw;
+            }
+            finally
+            {
+                gameRepairInstance.ProgressChanged -= StartSteamMigration_ProgressChanged;
+                gameRepairInstance.StatusChanged -= StartSteamMigration_StatusChanged;
+            }
+
+            void StartSteamMigration_ProgressChanged(object? sender, TotalPerfileProgress e)
+            {
+                Dispatch(() =>
+                {
+                    progressBar.IsIndeterminate = false;
+                    progressBar.Value = e.ProgressAllPercentage;
+                    percentageStatus.Text = string.Format("{0}%", Math.Round(e.ProgressAllPercentage, 2));
+                });
+            }
+
+            void StartSteamMigration_StatusChanged(object? sender, TotalPerfileStatus e)
+            {
+                Dispatch(() =>
+                {
+                    fileActivityStatus.Text = e.ActivityStatus;
+                    speedStatus.Text = e.ActivityPerFile;
+                    timeRemainStatus.Text = e.ActivityAll;
+                });
+            }
+        }
+#nullable restore
 
         private async ValueTask<int> CheckExistingBHI3LInstallation()
         {
@@ -2709,27 +2819,17 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
                 // If not, then return the migrationOptionReturn value.
-                int migrationOptionReturn =
-                    await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation,
-                                                 MigrateFromLauncherType.Official);
-                if (migrationOptionReturn != 1)
+                int migrationOptionReturn = await PerformMigrationOption(pathOnBHi3L, MigrateFromLauncherType.BetterHi3Launcher);
+
+                // If the option is applying to the current directory
+                if (migrationOptionReturn == 0)
                 {
-                    return migrationOptionReturn;
+                    _gameVersionManager.UpdateGamePath(pathOnBHi3L, false);
+                    return 0;
                 }
 
-                switch (await Dialog_ExistingInstallationBetterLauncher(_parentUI, pathOnBHi3L))
-                {
-                    // If action to migrate was taken, then update the game path (but don't save it to the config file)
-                    case ContentDialogResult.Primary:
-                        _gameVersionManager.UpdateGamePath(pathOnBHi3L, false);
-                        return 0;
-                    // If action to fresh install was taken, then return 2 (selecting path)
-                    case ContentDialogResult.Secondary:
-                        return 2;
-                    // If action to cancel was taken, then return -1 (go back)
-                    case ContentDialogResult.None:
-                        return -1;
-                }
+                if (migrationOptionReturn != 0)
+                    return migrationOptionReturn;
             }
 
             // Return 1 to continue to another check
@@ -2790,11 +2890,27 @@ namespace CollapseLauncher.InstallManager.Base
                  pathIfUseExistingSelected,
                  _gameVersionManager.GamePreset.GameName,
                  _gameVersionManager.GamePreset.ZoneName,
-                 launcherName);
+                 launcherName,
+                 launcherType);
 
                 if (dialogResult == ContentDialogResult.None)
                 {
                     return -1; // Cancel the installation
+                }
+
+                // This will continue to other routines if non-official migration
+                // is detected.
+                if (launcherType != MigrateFromLauncherType.Official
+                && dialogResult == ContentDialogResult.Primary)
+                {
+                    return 0;
+                }
+
+                // This will use the "No, Keep Install It" option instead of migrating.
+                if (launcherType != MigrateFromLauncherType.Official
+                && dialogResult == ContentDialogResult.Secondary)
+                {
+                    return 2;
                 }
 
                 if (dialogResult == ContentDialogResult.Primary)
@@ -3256,9 +3372,9 @@ namespace CollapseLauncher.InstallManager.Base
                 if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
                 {
                     // Check if the existing package is already exist or not.
-                    RegionResourceVersion outResDup =
-                        packs.FirstOrDefault(x => x.language != null &&
-                                                  x.language.Equals(outRes.language,
+                    GameInstallPackage outResDup =
+                        packageList.FirstOrDefault(x => x.LanguageID != null &&
+                                                   x.LanguageID.Equals(outRes.language,
                                                                     StringComparison.OrdinalIgnoreCase));
                     if (outResDup != null)
                     {

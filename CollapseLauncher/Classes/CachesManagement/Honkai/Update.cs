@@ -21,14 +21,14 @@ namespace CollapseLauncher
         private async Task<bool> Update(List<CacheAsset> updateAssetIndex, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Initialize new proxy-aware HttpClient
-            using HttpClient httpClientNew = new HttpClientBuilder()
+            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
                 .UseLauncherConfig(_downloadThreadCount + 16)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
             // Assign Http client
-            using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
+            Http httpClient = new Http(true, 5, 1000, _userAgent, client);
             try
             {
                 // Set IsProgressAllIndetermined as false and update the status 
@@ -39,33 +39,35 @@ namespace CollapseLauncher
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
                 // Iterate the asset index and do update operation
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                /*
-                await Parallel.ForEachAsync(
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
-#else
-                    updateAssetIndex
-#endif
-                    , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCountSqrt },
-                    async (asset, innerToken) =>
-                    {
-                        await UpdateCacheAsset(asset, httpClient, innerToken);
-                    });
-                */
-
-                foreach (var asset in
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
-#else
-                    updateAssetIndex
-#endif
-                    , assetProperty
-                    ))
+                if (_isBurstDownloadEnabled)
                 {
-                    await UpdateCacheAsset(asset, httpClient, token);
+                    await Parallel.ForEachAsync(
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR    
+                        EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
+#else
+                        updateAssetIndex
+#endif
+                        , assetProperty),
+                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                        async (asset, innerToken) =>
+                        {
+                            await UpdateCacheAsset(asset, httpClient, innerToken);
+                        });
+                }
+                else
+                {
+                    foreach ((CacheAsset, IAssetProperty) asset in
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR    
+                        EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
+#else
+                        updateAssetIndex
+#endif
+                        , assetProperty))
+                    {
+                        await UpdateCacheAsset(asset, httpClient, token);
+                    }
                 }
 
                 // Reindex the asset index in Verify.txt
@@ -142,7 +144,7 @@ namespace CollapseLauncher
 #endif
 
                 // Do multi-session download for asset that has applicable size
-                if (asset.AssetIndex.CS >= _sizeForMultiDownload)
+                if (asset.AssetIndex.CS >= _sizeForMultiDownload && !_isBurstDownloadEnabled)
                 {
                     await httpClient!.Download(asset.AssetIndex.ConcatURL, asset.AssetIndex.ConcatPath, _downloadThreadCount, true, token);
                     await httpClient.Merge(token);

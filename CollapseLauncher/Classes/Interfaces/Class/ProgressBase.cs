@@ -23,6 +23,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -819,13 +820,12 @@ namespace CollapseLauncher.Interfaces
         protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL, Http _httpClient, CancellationToken token)
         {
             // Check for directory availability
-            if (!Directory.Exists(Path.GetDirectoryName(assetPath)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(assetPath)!);
-            }
+            string dirPath = Path.GetDirectoryName(assetPath);
+            if (!Directory.Exists(dirPath))
+                Directory.CreateDirectory(dirPath);
 
             // Start downloading asset
-            if (assetSize >= _sizeForMultiDownload)
+            if (assetSize >= _sizeForMultiDownload && !_isBurstDownloadEnabled)
             {
                 await _httpClient!.Download(assetURL, assetPath, _downloadThreadCount, true, token);
                 await _httpClient.Merge(token);

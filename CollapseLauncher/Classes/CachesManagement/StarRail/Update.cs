@@ -24,14 +24,14 @@ namespace CollapseLauncher
         private async Task<bool> Update(List<SRAsset> updateAssetIndex, List<SRAsset> assetIndex, CancellationToken token)
         {
             // Initialize new proxy-aware HttpClient
-            using HttpClient httpClientNew = new HttpClientBuilder()
+            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
                 .UseLauncherConfig(_downloadThreadCount + 16)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
             // Assign Http client
-            Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
+            Http httpClient = new Http(true, 5, 1000, _userAgent, client);
             try
             {
                 // Set IsProgressAllIndetermined as false and update the status 
@@ -42,32 +42,36 @@ namespace CollapseLauncher
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
                 // Iterate the asset index and do update operation
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                await Parallel.ForEachAsync(
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
-#else
-                    updateAssetIndex
-#endif
-                    , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCountSqrt },
-                    async (asset, innerToken) =>
-                    {
-                        await UpdateCacheAsset(asset, httpClient, innerToken);
-                    });
-                
-                /*
-                foreach (SRAsset asset in
-#if ENABLEHTTPREPAIR
-                    EnforceHTTPSchemeToAssetIndex(updateAssetIndex!)
-#else
-                    updateAssetIndex!
-#endif
-                    )
+                if (_isBurstDownloadEnabled)
                 {
-                    await UpdateCacheAsset(asset, httpClient, token);
+                    await Parallel.ForEachAsync(
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR    
+                        EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
+#else
+                        updateAssetIndex
+#endif
+                        , assetProperty),
+                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                        async (asset, innerToken) =>
+                        {
+                            await UpdateCacheAsset(asset, httpClient, innerToken);
+                        });
                 }
-                */
+                else
+                {
+                    foreach ((SRAsset, IAssetProperty) asset in
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR    
+                        EnforceHTTPSchemeToAssetIndex(updateAssetIndex)
+#else
+                        updateAssetIndex
+#endif
+                        , assetProperty))
+                    {
+                        await UpdateCacheAsset(asset, httpClient, token);
+                    }
+                }
 
                 return true;
             }
@@ -101,7 +105,7 @@ namespace CollapseLauncher
             }
 
             // Do multi-session download for asset that has applicable size
-            if (asset.AssetIndex.Size >= _sizeForMultiDownload)
+            if (asset.AssetIndex.Size >= _sizeForMultiDownload && !_isBurstDownloadEnabled)
             {
                 await httpClient.Download(asset.AssetIndex.RemoteURL, asset.AssetIndex.LocalName, _downloadThreadCount, true, token);
                 await httpClient.Merge(token);
