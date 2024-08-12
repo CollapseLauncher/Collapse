@@ -819,9 +819,12 @@ namespace CollapseLauncher.GameVersioning
             || GamePreset.SubChannelID == null)
                 return true;
 
-            if (!GameIniVersion[_defaultIniVersionSection].ContainsKey(ChannelIdKeyName)
-             || !GameIniVersion[_defaultIniVersionSection].ContainsKey(SubChannelIdKeyName)
-             || !GameIniVersion[_defaultIniVersionSection].ContainsKey(CpsKeyName))
+            bool isContainsChannelId = GameIniVersion[_defaultIniVersionSection].ContainsKey(ChannelIdKeyName);
+            bool isContainsSubChannelId = GameIniVersion[_defaultIniVersionSection].ContainsKey(SubChannelIdKeyName);
+            bool isCps = GameIniVersion[_defaultIniVersionSection].ContainsKey(CpsKeyName);
+            if (!isContainsChannelId
+             || !isContainsSubChannelId
+             || !isCps)
                 return false;
 
             string? channelIdCurrent = GameIniVersion[_defaultIniVersionSection][ChannelIdKeyName].ToString();
@@ -992,13 +995,16 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
-            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
             GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
             GameIniVersion[_defaultIniVersionSection]["cps"]         = gameCps;
-            
+
+            /* Disable these lines as these will trigger some bugs (like Endless "Broken config.ini" dialog)
+             * and causes the cps field to be missing for other non-Bilibili games
+             * 
             // Remove the contains section if the client is not Bilibili and it does have the value.
             // This to avoid an issue with HSR config.ini detection
+            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             if ( !isBilibili
                 && GameIniVersion.ContainsSection(_defaultIniVersionSection)
                 && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
@@ -1006,6 +1012,7 @@ namespace CollapseLauncher.GameVersioning
             {
                 GameIniVersion[_defaultIniVersionSection].Remove("cps");
             }
+            */
 
             if (saveValue)
             {
