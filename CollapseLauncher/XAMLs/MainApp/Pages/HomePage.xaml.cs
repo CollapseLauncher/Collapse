@@ -1897,7 +1897,37 @@ namespace CollapseLauncher.Pages
         public bool UseCustomArgs
         {
             get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
-            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            set
+            {
+                if (CustomStartupArgsSwitch.IsOn)
+                {
+                    CustomArgsTextBox.IsEnabled = true;   
+                }
+                else
+                {
+                    CustomArgsTextBox.IsEnabled = false;
+                }
+                
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            } 
+            
+        }
+        
+        public bool UseCustomBGRegion
+        {
+            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG;
+            set
+            {
+                if (UseCustomBGParamsSwitch.IsOn)
+                {
+                    ChangeGameBGButton.IsEnabled = true;
+                }
+                else
+                {
+                    ChangeGameBGButton.IsEnabled = false;
+                }
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;
+            } 
         }
         #endregion
 
@@ -2126,7 +2156,7 @@ namespace CollapseLauncher.Pages
             //     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
             //     SetAndSaveConfigValue("CustomBGPath", file);
             //     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, true);
-            await SimpleDialogs.Dialog_QuickSettingsChangeBG(this);
+            // await SimpleDialogs.Dialog_QuickSettingsChangeBG(this);
         // }
         }
 

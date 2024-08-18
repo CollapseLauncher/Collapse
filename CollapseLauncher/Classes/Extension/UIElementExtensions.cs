@@ -79,8 +79,6 @@ namespace CollapseLauncher.Extension
             return contentPanel;
         }
 
-        internal static CheckBox CreateCheckBox() => new();
-
         internal static Grid CreateGrid() => new Grid();
         internal static StackPanel CreateStackPanel(Orientation orientation = Orientation.Vertical) => new StackPanel() { Orientation = orientation };
 

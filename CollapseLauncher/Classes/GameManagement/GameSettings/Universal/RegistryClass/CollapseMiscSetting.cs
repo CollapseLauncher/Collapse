@@ -17,6 +17,8 @@ namespace CollapseLauncher.GameSettings.Universal
         private const string _ValueName = "CollapseLauncher_Misc";
 
         private bool _UseCustomArguments = true;
+        
+        private bool _UseCustomRegionBG  = true;
 
         private static bool _IsDeserializing;
         #endregion
@@ -88,6 +90,19 @@ namespace CollapseLauncher.GameSettings.Universal
         /// Use mobile layout. Currently only available for Genshin and StarRail.
         /// </summary>
         public bool LaunchMobileMode { get; set; } = false;
+
+        /// <summary>
+        /// Set custom background for given region for given game.
+        /// </summary>
+        public bool UseCustomRegionBG
+        {
+            get => _UseCustomRegionBG;
+            set
+            {
+                _UseCustomRegionBG = value;
+                if (!_IsDeserializing) Save();
+            }
+        }
         #endregion
 
         #region Methods

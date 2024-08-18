@@ -112,9 +112,6 @@ namespace Hi3Helper
                 public string CannotUseAppLocationForGameDirTitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirTitle;
                 public string CannotUseAppLocationForGameDirSubtitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirSubtitle;
                 public string LocateExePathSubtitle { get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
-                public string QuickSettingsChangeBGTitle { get; set; } = LangFallback?._Dialogs.QuickSettingsChangeBGTitle;
-                public string QuickSettingsChangeBGSubtitle { get; set; } = LangFallback?._Dialogs.QuickSettingsChangeBGSubtitle;
-                public string QuickSettingsChangeBGSelectImgDialogTitle { get; set; } = LangFallback?._Dialogs.QuickSettingsChangeBGSelectImgDialogTitle;
                 public string StopGameTitle { get; set; } = LangFallback?._Dialogs.StopGameTitle;
                 public string StopGameSubtitle { get; set; } = LangFallback?._Dialogs.StopGameSubtitle;
                 public string MeteredConnectionWarningTitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningTitle;
