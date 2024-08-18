@@ -1919,7 +1919,7 @@
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="Test" /><!-- Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" /> -->
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle}" />
                                     <ToggleSwitch Margin="0,0,0,8"
                                                   x:Name="UseCustomBGParamsSwitch"
                                                   IsOn="{x:Bind UseCustomBGRegion, Mode=TwoWay}"
