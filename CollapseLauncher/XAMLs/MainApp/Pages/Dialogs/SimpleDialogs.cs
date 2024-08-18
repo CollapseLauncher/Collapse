@@ -987,64 +987,6 @@ namespace CollapseLauncher.Dialogs
                 ContentDialogTheme.Warning
                 );
         }
-        
-        // public static async Task<ContentDialogResult> Dialog_QuickSettingsChangeBG(UIElement Content)
-        // {
-        //     StackPanel mainStack        = CollapseUIExt.CreateStackPanel();
-        //     StackPanel mainStackContent = CollapseUIExt.CreateStackPanel();
-        //
-        //     CheckBox enableBG     = new CheckBox();
-        //     Button   selectBGPath = new Button();
-        //     
-        //     enableBG.Content     = Lang._SettingsPage.AppBG_Checkbox;
-        //     enableBG.IsChecked   = false;
-        //     selectBGPath.Content = Lang._Misc.Select;
-        //
-        //     selectBGPath.Visibility = Visibility.Collapsed;
-        //
-        //     string bgPathLocation = "";
-        //
-        //     enableBG.Checked += (sender, _) =>
-        //       {
-        //           if (sender is CheckBox enableBgCheckBox)
-        //           {
-        //               selectBGPath.Visibility = Visibility.Visible;
-        //           }
-        //       };
-        //
-        //     enableBG.Unchecked += (sender, _) =>
-        //       {
-        //           if (sender is CheckBox enableBgCheckBox)
-        //           {
-        //               selectBGPath.Visibility = Visibility.Collapsed;
-        //           }
-        //       };
-        //
-        //     mainStack.AddElementToStackPanel(mainStackContent);
-        //     mainStackContent.AddElementToStackPanel(enableBG, selectBGPath);
-        //     
-        //     selectBGPath.Click += async (_, _) =>
-        //                           {
-        //                               bgPathLocation =
-        //                                   await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats, Lang._Dialogs
-        //                                                                           .QuickSettingsChangeBGSelectImgDialogTitle);
-        //                               if (!string.IsNullOrEmpty(bgPathLocation))
-        //                               {
-        //                                   // Load image
-        //                                   ImageLoaderHelper.LoadImage(bgPathLocation);
-        //                                   // FIXME: This will crash if the user loads a video
-        //                                   
-        //                               }
-        //                           };
-        //     
-        //     return await SpawnDialog(
-        //                              Lang._Dialogs.QuickSettingsChangeBGTitle,
-        //                              mainStack,
-        //                              Content,
-        //                              Lang._Misc.NoCancel,
-        //                              Lang._Misc.OkayHappy
-        //                             );
-        // }
 
         public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
         {
