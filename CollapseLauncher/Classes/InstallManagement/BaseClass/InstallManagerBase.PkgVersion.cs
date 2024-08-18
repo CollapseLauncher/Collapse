@@ -190,8 +190,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Check Fail-safe: Download main pkg_version file
                         string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
                             "pkg_version");
-                        await client.Download(mainPkgVersionUrl, pkgVersionPath, _downloadThreadCount, true);
-                        await client.Merge(default);
+                        await client.Download(mainPkgVersionUrl, pkgVersionPath, true);
 
                         // Check Fail-safe: Download audio pkg_version files
                         if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) &&
@@ -327,8 +326,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Download the file
-                await client.Download(pkgUrl, pkgPath, _downloadThreadCount, true);
-                await client.Merge(default);
+                await client.Download(pkgUrl, pkgPath, true);
             }
         }
 
