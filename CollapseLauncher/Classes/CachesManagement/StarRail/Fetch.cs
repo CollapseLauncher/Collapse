@@ -80,32 +80,28 @@ namespace CollapseLauncher
             _status!.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
-            try
+            // Start reading the metadata and build the asset index of each type
+            SRAssetProperty assetProperty;
+            switch (type)
             {
-                // Start reading the metadata and build the asset index of each type
-                SRAssetProperty assetProperty;
-                switch (type)
-                {
-                    case SRAssetType.IFix:
-                        await _innerGameVersionManager!.StarRailMetadataTool!.ReadIFixMetadataInformation(token);
-                        assetProperty = _innerGameVersionManager!.StarRailMetadataTool!.MetadataIFix!.GetAssets();
-                        assetIndex!.AddRange(assetProperty!.AssetList!);
-                        return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
-                    case SRAssetType.DesignData:
-                        await _innerGameVersionManager!.StarRailMetadataTool!.ReadDesignMetadataInformation(token);
-                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataDesign!.GetAssets();
-                        assetIndex!.AddRange(assetProperty!.AssetList!);
-                        return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
-                    case SRAssetType.Lua:
-                        await _innerGameVersionManager!.StarRailMetadataTool!.ReadLuaMetadataInformation(token);
-                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataLua!.GetAssets();
-                        assetIndex!.AddRange(assetProperty!.AssetList!);
-                        return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
-                }
-
-                return (0, 0);
+                case SRAssetType.IFix:
+                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadIFixMetadataInformation(token);
+                    assetProperty = _innerGameVersionManager!.StarRailMetadataTool!.MetadataIFix!.GetAssets();
+                    assetIndex!.AddRange(assetProperty!.AssetList!);
+                    return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
+                case SRAssetType.DesignData:
+                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadDesignMetadataInformation(token);
+                    assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataDesign!.GetAssets();
+                    assetIndex!.AddRange(assetProperty!.AssetList!);
+                    return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
+                case SRAssetType.Lua:
+                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadLuaMetadataInformation(token);
+                    assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataLua!.GetAssets();
+                    assetIndex!.AddRange(assetProperty!.AssetList!);
+                    return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
             }
-            catch { throw; }
+
+            return (0, 0);
         }
 
         #region Utilities

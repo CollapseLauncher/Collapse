@@ -19,7 +19,7 @@ namespace CollapseLauncher.GameSettings.Genshin.Enums
         };
     }
 
-    enum FPSOption : int
+    enum FPSOption
     {
         f30,
         f60,

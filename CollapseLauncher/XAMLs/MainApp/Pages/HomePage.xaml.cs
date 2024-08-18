@@ -1167,7 +1167,7 @@ namespace CollapseLauncher.Pages
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Pre-Download paused!", LogType.Warning);
+                LogWriteLine("Pre-Download paused!", LogType.Warning);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }

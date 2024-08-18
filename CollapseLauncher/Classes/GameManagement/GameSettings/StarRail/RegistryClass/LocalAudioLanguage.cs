@@ -90,7 +90,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 string data = LocalAudioLang + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                RegistryRoot?.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved StarRail Settings: {_ValueName} : {data}", LogType.Debug, true);
 #endif

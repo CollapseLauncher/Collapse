@@ -164,7 +164,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Options: true, false <br/>
         /// Default: false
         /// </summary>
-        public bool EnableVSync { get; set; } = false;
+        public bool EnableVSync { get; set; }
 
         /// <summary>
         /// This defines "<c>Render Scale</c>" combobox In-game settings. <br/>

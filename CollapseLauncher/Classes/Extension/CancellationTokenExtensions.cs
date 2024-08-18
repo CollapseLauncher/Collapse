@@ -10,7 +10,7 @@ namespace CollapseLauncher.Extension
 
         public new void Cancel()
         {
-            if (!base.IsCancellationRequested) base.Cancel();
+            if (!IsCancellationRequested) base.Cancel();
             IsCancelled = true;
         }
 
