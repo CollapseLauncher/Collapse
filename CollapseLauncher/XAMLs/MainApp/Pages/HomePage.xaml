@@ -1,4 +1,4 @@
-﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.HomePage"
@@ -100,7 +100,8 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
+                                    <StackPanel Grid.Column="0"
+                                                Grid.ColumnSpan="2">
                                         <StackPanel HorizontalAlignment="Left"
                                                     Orientation="Horizontal">
                                             <TextBlock x:Name="ProgressPrePerFileStatusFooter"
@@ -195,6 +196,104 @@
                             </StackPanel>
                         </Grid>
                     </Grid>
+                    <Grid x:Name="ProgressPreSophonStatusGrid"
+                          Visibility="Collapsed">
+                        <Grid.ChildrenTransitions>
+                            <PopupThemeTransition />
+                        </Grid.ChildrenTransitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0"
+                              HorizontalAlignment="Stretch">
+                            <StackPanel HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0"
+                                                Grid.ColumnSpan="2">
+                                        <StackPanel HorizontalAlignment="Left"
+                                                    Orientation="Horizontal">
+                                            <TextBlock FontSize="12"
+                                                       FontWeight="Bold"
+                                                       Text="{Binding Text, ElementName=ProgressPrePerFileStatusFooter}" />
+                                        </StackPanel>
+                                        <TextBlock Margin="0,4,0,0"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Text="{Binding Text, ElementName=ProgressPreStatusFooter}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="0"
+                              Grid.ColumnSpan="3"
+                              Margin="0,0,0,8"
+                              HorizontalAlignment="Stretch"
+                              ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Bottom">
+                                <TextBlock HorizontalAlignment="Right"
+                                           FontSize="12"
+                                           Text="{Binding Text, ElementName=ProgressPreStatusSubtitle}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Orientation="Horizontal">
+                                <TextBlock FontSize="12"
+                                           FontWeight="Bold"
+                                           Text="{Binding Value, ElementName=progressPreBar}" />
+                                <TextBlock FontSize="12"
+                                           FontWeight="Bold"
+                                           Text="%" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="2"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Bottom">
+                            <StackPanel HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                <Grid Margin="0,0,0,8">
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" />
+                                        <TextBlock Margin="0,4,0,0"
+                                                   HorizontalAlignment="Right"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Text="{Binding Text, ElementName=ProgressPreTimeLeft}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <ProgressBar Grid.Row="1"
+                                     Grid.ColumnSpan="3"
+                                     Margin="0,8,0,24"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Bottom"
+                                     IsIndeterminate="{Binding IsIndeterminate, ElementName=progressPreBar}"
+                                     Maximum="{Binding Maximum, ElementName=progressPreBar}"
+                                     Value="{Binding Value, ElementName=progressPreBar}" />
+                    </Grid>
                     <Grid x:Name="ProgressPreButtonGrid"
                           Margin="0,-8,0,16"
                           HorizontalAlignment="Stretch"
@@ -203,6 +302,22 @@
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
                         </Grid.ChildrenTransitions>
+                        <Grid x:Name="DownloadModeLabelPreload"
+                              Padding="8,2"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Background="{ThemeResource AccentColorBrush}"
+                              CornerRadius="8"
+                              Shadow="{ThemeResource SharedShadow}"
+                              Translation="0,0,16"
+                              Visibility="Collapsed">
+                            <TextBlock x:Name="DownloadModeLabelPreloadText"
+                                       FontSize="10"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                       HorizontalTextAlignment="Center"
+                                       Text="" />
+                        </Grid>
                         <Button x:Name="PauseDownloadPreBtn"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Stretch"
@@ -466,34 +581,38 @@
         <Grid x:Name="SidePanel"
               Grid.Row="1"
               Grid.Column="0"
-              Grid.ColumnSpan="2"
+              Grid.ColumnSpan="1"
+              Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
+              HorizontalAlignment="Left"
               VerticalAlignment="Bottom"
+              CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
-              PointerExited="SidePanelScaleInHoveredPointerExited">
+              PointerExited="SidePanelScaleInHoveredPointerExited"
+              Shadow="{ThemeResource SharedShadow}"
+              Translation="0,0,32">
             <Grid.RenderTransform>
                 <CompositeTransform />
             </Grid.RenderTransform>
             <StackPanel x:Name="ImageCarouselAndPostPanel"
-                        Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Bottom"
+                        VerticalAlignment="Stretch"
+                        Background="{ThemeResource PostAcrylicBrush}"
                         Orientation="Vertical">
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
                     <FlipView x:Name="ImageCarousel"
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
-                              MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}"
-                              Margin="0,0,0,0"
-                              HorizontalAlignment="Center"
-                              CornerRadius="8,8,0,0"
+                              HorizontalAlignment="Stretch"
+                              CornerRadius="4"
                               ItemsSource="{x:Bind GameNewsData.NewsCarousel}"
                               Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource CollapseFlipViewStyle}"
-                              Visibility="Collapsed">
+                              Translation="0,0,12">
                         <FlipView.ItemTemplate>
                             <DataTemplate>
                                 <imageex:ImageEx EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
+                                                 Stretch="Fill"
                                                  Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
@@ -510,7 +629,7 @@
                           Background="{ThemeResource CarouselPipsAcrylicBrush}"
                           CornerRadius="8,8,0,0"
                           Shadow="{ThemeResource SharedShadow}"
-                          Visibility="Collapsed">
+                          Translation="0,0,16">
                         <PipsPager VerticalAlignment="Center"
                                    NextButtonVisibility="Collapsed"
                                    NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
@@ -522,17 +641,13 @@
                 <Grid x:Name="PostPanel"
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
-                      Margin="0,0,0,-32"
                       Padding="8,6,8,0"
-                      Background="{ThemeResource PostAcrylicBrush}"
-                      CornerRadius="0,0,8,8"
-                      Shadow="{ThemeResource SharedShadow}"
-                      Visibility="Collapsed">
-                    <Pivot Margin="0,-12,-16,0"
+                      Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
+                    <Pivot Margin="0,-16,-16,0"
                            HorizontalAlignment="Left">
                         <PivotItem>
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
+                                <TextBlock Margin="0,0,0,-12"
                                            FontSize="14"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
@@ -584,12 +699,12 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Margin="0,-48,-48,0"
+                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostEventPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
-                                                   Margin="0,0,8,32"
+                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
@@ -599,6 +714,7 @@
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Source="{x:Bind NoNewsSplashMascot}" />
@@ -608,7 +724,7 @@
                         </PivotItem>
                         <PivotItem>
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
+                                <TextBlock Margin="0,0,0,-12"
                                            FontSize="14"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
@@ -660,12 +776,12 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Margin="0,-48,-48,0"
+                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostNoticePanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
-                                                   Margin="0,0,8,32"
+                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
@@ -675,6 +791,7 @@
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Source="{x:Bind NoNewsSplashMascot}" />
@@ -684,7 +801,7 @@
                         </PivotItem>
                         <PivotItem>
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
+                                <TextBlock Margin="0,0,0,-12"
                                            FontSize="14"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
@@ -736,12 +853,12 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Margin="0,-48,-48,0"
+                                <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostInfoPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
-                                                   Margin="0,0,8,32"
+                                                   Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextSize}"
@@ -751,6 +868,7 @@
                                                    TextAlignment="Right"
                                                    TextWrapping="Wrap" />
                                         <Image Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Source="{x:Bind NoNewsSplashMascot}" />
@@ -761,6 +879,319 @@
                     </Pivot>
                 </Grid>
             </StackPanel>
+        </Grid>
+        <Grid x:Name="SophonProgressStatusGrid"
+              Grid.Row="1"
+              Grid.Column="0"
+              Margin="0,0,0,48"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center"
+              Shadow="{ThemeResource SharedShadow}"
+              Visibility="Collapsed">
+            <Grid.ChildrenTransitions>
+                <PopupThemeTransition />
+            </Grid.ChildrenTransitions>
+            <Grid>
+                <Grid.ChildrenTransitions>
+                    <PopupThemeTransition />
+                </Grid.ChildrenTransitions>
+                <Grid x:Name="SophonProgressRingShadow"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,48" />
+                <ProgressRing Width="Auto"
+                              Height="Auto"
+                              HorizontalAlignment="Stretch"
+                              IsIndeterminate="{Binding IsIndeterminate, ElementName=SophonProgressRing}"
+                              Maximum="{Binding Maximum, ElementName=SophonProgressRing}"
+                              Value="{Binding Value, ElementName=SophonProgressRing}" />
+                <Ellipse x:Name="SophonProgressRingBG"
+                         HorizontalAlignment="Stretch"
+                         Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
+                <ProgressRing x:Name="SophonProgressRing"
+                              Width="Auto"
+                              Height="Auto"
+                              Margin="-6"
+                              HorizontalAlignment="Stretch"
+                              IsIndeterminate="True"
+                              Maximum="100"
+                              Value="0" />
+                <Grid x:Name="SophonProgressPerFile"
+                      Margin="16"
+                      Visibility="Visible">
+                    <ProgressRing Width="Auto"
+                                  Height="Auto"
+                                  HorizontalAlignment="Stretch"
+                                  IsIndeterminate="{Binding IsIndeterminate, ElementName=SophonProgressRingPerFile}"
+                                  Maximum="{Binding Maximum, ElementName=SophonProgressRingPerFile}"
+                                  Value="{Binding Value, ElementName=SophonProgressRingPerFile}" />
+                    <Ellipse x:Name="SophonProgressRingBG2"
+                             Margin="4"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch"
+                             Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
+                    <ProgressRing x:Name="SophonProgressRingPerFile"
+                                  Width="Auto"
+                                  Height="Auto"
+                                  Margin="8"
+                                  HorizontalAlignment="Stretch"
+                                  IsIndeterminate="True"
+                                  Maximum="100"
+                                  Value="0" />
+                </Grid>
+            </Grid>
+            <StackPanel HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center">
+                <Grid Margin="0,0,0,8"
+                      Padding="8,4"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      ColumnSpacing="6"
+                      CornerRadius="4"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon x:Name="SophonProgressStatusTitleIcon"
+                              HorizontalAlignment="Center"
+                              FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              FontWeight="Bold"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusTitleText"
+                               Grid.Column="1"
+                               HorizontalAlignment="Center"
+                               FontSize="11"
+                               FontWeight="Medium"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="-" />
+                </Grid>
+                <Grid x:Name="SophonProgressStatusSizeTotalGrid"
+                      Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="14"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSizeTotalText"
+                               Grid.Column="1"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"
+                               TextAlignment="Left" />
+                </Grid>
+                <Grid x:Name="SophonProgressStatusSizeDownloadedGrid"
+                      Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="14"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSizeDownloadedText"
+                               Grid.Column="1"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}"
+                               TextAlignment="Left" />
+                </Grid>
+                <StackPanel HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold"
+                               Text="{Binding Value, ElementName=SophonProgressRing}" />
+                    <TextBlock Margin="-1,0,0,0"
+                               FontWeight="Bold"
+                               Text="%" />
+                </StackPanel>
+                <StackPanel x:Name="SophonProgressStatusFooter"
+                            Margin="0,4"
+                            Padding="4,2"
+                            HorizontalAlignment="Center"
+                            Background="{ThemeResource AccentColorBrush}"
+                            CornerRadius="4"
+                            Orientation="Horizontal"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Spacing="4"
+                            Translation="0,0,16"
+                            Visibility="Visible">
+                    <FontIcon Grid.Column="2"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="10"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock FontSize="9"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="{x:Bind helper:Locale.Lang._Misc.SpeedTextOnly}"
+                               TextAlignment="Center" />
+                </StackPanel>
+                <Grid Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MaxWidth="72" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MaxWidth="72" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSpeedTotalText"
+                               Grid.Column="1"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="-"
+                               TextAlignment="Left" />
+                    <FontIcon Grid.Column="2"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="12"
+                              Glyph="" />
+                    <TextBlock x:Name="SophonProgressStatusSpeedDownloadedText"
+                               Grid.Column="3"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="-"
+                               TextAlignment="Left" />
+                </Grid>
+                <TextBlock x:Name="SophonProgressTimeLeft"
+                           HorizontalAlignment="Center"
+                           FontSize="10"
+                           FontWeight="Bold"
+                           Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" />
+            </StackPanel>
+            <Button x:Name="SophonProgressInformationButton"
+                    Width="32"
+                    Height="32"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    CornerRadius="16"
+                    Shadow="{ThemeResource SharedShadow}">
+                <Button.Content>
+                    <Grid Margin="-16"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{ThemeResource GameSettingsBtnBrush}">
+                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                  Glyph=""
+                                  Opacity="0.6" />
+                    </Grid>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout Placement="LeftEdgeAlignedBottom">
+                        <StackPanel MaxWidth="370">
+                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Title}" />
+                            <TextBlock Margin="0,8,0,0"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_1}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Margin="0,8,0,0"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_2}"
+                                       TextWrapping="Wrap" />
+                            <MenuFlyoutSeparator Margin="0,8" />
+                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_IndicatorTitle}" />
+                            <Grid Margin="0,8,0,0"
+                                  HorizontalAlignment="Stretch"
+                                  ColumnSpacing="8"
+                                  RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="1"
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator1}"
+                                           TextWrapping="WrapWholeWords" />
+                                <FontIcon Grid.Row="1"
+                                          Grid.Column="0"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesome}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="1"
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator2}"
+                                           TextWrapping="WrapWholeWords" />
+                                <FontIcon Grid.Row="0"
+                                          Grid.Column="2"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesome}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="3"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator3}"
+                                           TextWrapping="WrapWholeWords" />
+                                <FontIcon Grid.Row="1"
+                                          Grid.Column="2"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="14"
+                                          Glyph="" />
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="3"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.SophonHelp_Indicator4}"
+                                           TextWrapping="WrapWholeWords" />
+                            </Grid>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <Button x:Name="SophonProgressSettingsButton"
+                    Width="32"
+                    Height="32"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Click="ProgressSettingsButton_OnClick"
+                    CornerRadius="16"
+                    Shadow="{ThemeResource SharedShadow}">
+                <Button.Content>
+                    <Grid Margin="-16"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{ThemeResource GameSettingsBtnBrush}">
+                        <AnimatedIcon Width="20">
+                            <AnimatedIcon.Source>
+                                <animatedvisuals:AnimatedSettingsVisualSource />
+                            </AnimatedIcon.Source>
+                            <AnimatedIcon.FallbackIconSource>
+                                <SymbolIconSource Symbol="Setting" />
+                            </AnimatedIcon.FallbackIconSource>
+                        </AnimatedIcon>
+                    </Grid>
+                </Button.Content>
+            </Button>
         </Grid>
         <Grid x:Name="ProgressStatusGrid"
               Grid.Row="1"
@@ -781,7 +1212,7 @@
                 <Grid x:Name="progressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
-                      Translation="1,1,48" />
+                      Translation="0,0,48" />
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
@@ -825,10 +1256,33 @@
             </Grid>
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-                <TextBlock x:Name="ProgressStatusTitle"
-                           Margin="0,0,0,10"
-                           HorizontalAlignment="Center"
-                           Text="-" />
+                <Grid Margin="0,0,0,8"
+                      Padding="8,4"
+                      HorizontalAlignment="Center"
+                      Background="{ThemeResource AccentColorBrush}"
+                      ColumnSpacing="6"
+                      CornerRadius="4"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon x:Name="ProgressStatusTitleIcon"
+                              HorizontalAlignment="Center"
+                              FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              FontWeight="Bold"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock x:Name="ProgressStatusTitle"
+                               Grid.Column="1"
+                               HorizontalAlignment="Center"
+                               FontSize="11"
+                               FontWeight="Medium"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="-" />
+                </Grid>
                 <TextBlock x:Name="ProgressStatusSubtitle"
                            HorizontalAlignment="Center"
                            Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" />
@@ -840,12 +1294,44 @@
                                FontWeight="Bold"
                                Text="%" />
                 </StackPanel>
-                <TextBlock x:Name="ProgressStatusFooter"
-                           Margin="0,10,0,0"
-                           HorizontalAlignment="Center"
-                           FontSize="10"
-                           FontWeight="Bold"
-                           Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" />
+                <StackPanel Margin="0,4"
+                            Padding="4,2"
+                            HorizontalAlignment="Center"
+                            Background="{ThemeResource AccentColorBrush}"
+                            CornerRadius="4"
+                            Orientation="Horizontal"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Spacing="4"
+                            Translation="0,0,16"
+                            Visibility="Visible">
+                    <FontIcon Grid.Column="2"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="10"
+                              Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                              Glyph="" />
+                    <TextBlock FontSize="9"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                               Text="{x:Bind helper:Locale.Lang._Misc.SpeedTextOnly}"
+                               TextAlignment="Center" />
+                </StackPanel>
+                <Grid Margin="0,2"
+                      HorizontalAlignment="Center"
+                      ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MaxWidth="160" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                              FontSize="12"
+                              Glyph="" />
+                    <TextBlock x:Name="ProgressStatusFooter"
+                               Grid.Column="1"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Text="-"
+                               TextAlignment="Left" />
+                </Grid>
                 <TextBlock x:Name="ProgressTimeLeft"
                            HorizontalAlignment="Center"
                            FontSize="10"
@@ -1290,6 +1776,29 @@
                                         </Grid>
                                     </Button.Content>
                                 </Button>
+                                <Button x:Name="CleanupFilesButton"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="CleanupFilesButton_Click"
+                                        CornerRadius="14">
+                                    <Button.Content>
+                                        <Grid Margin="4,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="18" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                      FontSize="16"
+                                                      Glyph="" />
+                                            <TextBlock Grid.Column="1"
+                                                       Margin="8,-1,0,0"
+                                                       FontWeight="Medium"
+                                                       Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Button.Content>
+                                </Button>
                                 <TextBlock Margin="0,8,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" />
@@ -1458,6 +1967,14 @@
                                     <ToggleSwitch x:Name="ShowSocialMediaPanelToggle"
                                                   IsEnabled="True"
                                                   IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <TextBlock Margin="0,8,0,0"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowPlaytimeButton}"
+                                               TextWrapping="Wrap" />
+                                    <ToggleSwitch x:Name="PlaytimeVisibilityToggle"
+                                                  IsEnabled="True"
+                                                  IsOn="{x:Bind IsPlaytimeBtnVisible, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <Button x:Name="ShortcutButton"

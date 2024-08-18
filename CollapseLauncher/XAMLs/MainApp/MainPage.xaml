@@ -126,22 +126,22 @@
                                       MinWidth="167"
                                       Canvas.ZIndex="2"
                                       CornerRadius="15,0,0,15"
+                                      DropDownClosed="GameComboBox_OnDropDownClosed"
+                                      DropDownOpened="GameComboBox_OnDropDownOpened"
                                       ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
                                       SelectionChanged="SetGameCategoryChange"
-                                      Style="{ThemeResource AcrylicComboBoxStyle}"
-                                      DropDownOpened="GameComboBox_OnDropDownOpened"
-                                      DropDownClosed="GameComboBox_OnDropDownClosed" />
+                                      Style="{ThemeResource AcrylicComboBoxStyle}" />
                             <ComboBox x:Name="ComboBoxGameRegion"
                                       Grid.Column="1"
                                       MinWidth="148"
                                       Canvas.ZIndex="2"
                                       CornerRadius="0,15,15,0"
+                                      DropDownClosed="GameComboBox_OnDropDownClosed"
+                                      DropDownOpened="GameComboBox_OnDropDownOpened"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
                                       SelectionChanged="EnableRegionChangeButton"
-                                      Style="{ThemeResource AcrylicComboBoxStyle}"
-                                      DropDownOpened="GameComboBox_OnDropDownOpened"
-                                      DropDownClosed="GameComboBox_OnDropDownClosed" />
+                                      Style="{ThemeResource AcrylicComboBoxStyle}" />
                         </Grid>
                         <Grid x:Name="ChangeGameBtnGridShadow"
                               Grid.Column="1"
@@ -347,7 +347,7 @@
                        Margin="-2,-2,0,-2"
                        VerticalAlignment="Stretch"
                        Opacity="0.8"
-                       Source="ms-appx:///Assets/CollapseLauncherLogo.png">
+                       Source="{ThemeResource AppLogo}">
                     <Image.OpacityTransition>
                         <ScalarTransition />
                     </Image.OpacityTransition>
@@ -497,6 +497,7 @@
                 </Button>
             </Grid>
         </Grid>
-        <Frame x:Name="WebView2Frame" />
+        <Frame x:Name="WebView2Frame"
+               x:FieldModifier="internal" />
     </Grid>
 </Page>

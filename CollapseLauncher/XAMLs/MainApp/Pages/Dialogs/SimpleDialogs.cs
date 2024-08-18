@@ -5,6 +5,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
@@ -618,10 +619,10 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Informational
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content, string gamePath) =>
             await SpawnDialog(
                         Lang._Dialogs.ExistingInstallSteamTitle,
-                        string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, GamePathOnSteam),
+                        string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, gamePath),
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
@@ -631,8 +632,22 @@ namespace CollapseLauncher.Dialogs
             );
 
 
-        public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName)
+        public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName,
+            MigrateFromLauncherType migrateFromLauncherType)
         {
+            if (migrateFromLauncherType != MigrateFromLauncherType.Official)
+            {
+                switch (migrateFromLauncherType)
+                {
+                    case MigrateFromLauncherType.BetterHi3Launcher:
+                        return await Dialog_ExistingInstallationBetterLauncher(Content, existingGamePath);
+                    case MigrateFromLauncherType.Steam:
+                        return await Dialog_ExistingInstallationSteam(Content, existingGamePath);
+                    default:
+                        throw new InvalidOperationException($"Dialog is not supported for unknown migration!");
+                }
+            }
+
             string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
 
             TextBlock contentTextBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
@@ -751,7 +766,7 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Error
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, long partialLength, long contentLength) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, double partialLength, double contentLength) =>
             await SpawnDialog(
                         Lang._Dialogs.InstallDataDownloadResumeTitle,
                         string.Format(Lang._Dialogs.InstallDataDownloadResumeSubtitle,

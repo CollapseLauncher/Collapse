@@ -6,6 +6,8 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
@@ -66,7 +68,13 @@ public sealed partial class UpdaterWindow
                 await metadataStream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
             NewVersionLabel.Text = updateInfo!.VersionString;
 
-            using (var _httpClient = new Http(true))
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig()
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
+            using (var _httpClient = new Http(true, customHttpClient: client))
             {
                 FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath,

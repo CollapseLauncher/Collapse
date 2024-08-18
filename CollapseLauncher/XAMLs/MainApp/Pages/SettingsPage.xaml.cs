@@ -10,14 +10,17 @@
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
     using CollapseLauncher.Pages.OOBE;
+    using CommunityToolkit.WinUI;
     using Hi3Helper;
     using Hi3Helper.Data;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Data;
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
+    using Microsoft.UI.Xaml.Media.Animation;
     using Microsoft.Win32.TaskScheduler;
     using System;
     using System.Collections.Generic;
@@ -28,16 +31,17 @@
     using static CollapseLauncher.Dialogs.SimpleDialogs;
     using static CollapseLauncher.Helper.Image.Waifu2X;
     using static CollapseLauncher.InnerLauncherConfig;
-    using static CollapseLauncher.RegionResourceListHelper;
     using static CollapseLauncher.WindowSize.WindowSize;
     using static CollapseLauncher.FileDialogCOM.FileDialogNative;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
+    using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
     using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
 
+// ReSharper disable CheckNamespace
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -66,7 +70,7 @@ namespace CollapseLauncher.Pages
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             LoadAppConfig();
-            this.DataContext = this;
+            DataContext = this;
 
             string Version = $" {LauncherUpdateHelper.LauncherCurrentVersionString}";
 #if DEBUG
@@ -136,6 +140,10 @@ namespace CollapseLauncher.Pages
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
 #endif
         }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            FallbackCDNUtil.InitializeHttpClient();
+        }
         #endregion
 
         #region Settings Methods
@@ -171,7 +179,7 @@ namespace CollapseLauncher.Pages
                     try
                     {
                         var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
-                        if (collapsePath == null || LauncherMetadataHelper.LauncherMetadataFolder == null) return;
+                        if (collapsePath == null) return;
                         Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
                         Process.Start(collapsePath);
                         (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
@@ -191,9 +199,9 @@ namespace CollapseLauncher.Pages
 
         private void OpenAppDataFolder(object sender, RoutedEventArgs e)
         {
-            new Process()
+            new Process
             {
-                StartInfo = new ProcessStartInfo()
+                StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
                     FileName = "explorer.exe",
@@ -227,14 +235,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (Directory.Exists(AppGameLogsFolder))
-                {
-                    _log.Dispose();
-                    Directory.Delete(AppGameLogsFolder, true);
-                    _log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
-                }
-
-                Directory.CreateDirectory(AppGameLogsFolder);
+                _log?.ResetLogFiles(AppGameLogsFolder, Encoding.UTF8);
                 (sender as Button).IsEnabled = false;
             }
             catch (Exception ex)
@@ -302,11 +303,18 @@ namespace CollapseLauncher.Pages
 
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
                 bool isUpdateAvailable = await LauncherUpdateHelper.IsUpdateAvailable(true);
-                LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = isUpdateAvailable, NewVersionName = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value });
+                if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+                {
+                    LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
+                    {
+                        IsUpdateAvailable = isUpdateAvailable,
+                        NewVersionName    = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
+                    });
+                }
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
                 UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableStatus.Visibility = Visibility.Collapsed;
                 UpToDateStatus.Visibility = Visibility.Collapsed;
@@ -333,6 +341,41 @@ namespace CollapseLauncher.Pages
                 UpToDateStatus.Visibility = Visibility.Visible;
             }
             LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
+        }
+
+        private void OpenChangelog(object sender, RoutedEventArgs e)
+        {
+            #nullable enable
+            var uri =
+                $"https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/blob/main/changelog_{(IsPreview ? "preview" : "stable")}.md";
+
+            var mdParam = new MarkdownFramePage.MarkdownFramePageParams
+            {
+                MarkdownUriCdn = $"changelog_{(IsPreview ? "preview" : "stable")}.md",
+                WebUri         = uri,
+                Title          = Lang._SettingsPage.Update_ChangelogTitle
+            };
+            
+            if (WindowUtility.CurrentWindow is MainWindow mainWindow)
+            {
+                mainWindow.overlayFrame.BackStack?.Clear();
+                mainWindow.overlayFrame.Navigate(typeof(NullPage));
+                mainWindow.overlayFrame.Navigate(typeof(MarkdownFramePage), mdParam,
+                                                 new DrillInNavigationTransitionInfo());
+            }
+
+            MarkdownFramePage.Current!.MarkdownCloseBtn.Click += ExitFromOverlay;
+            return;
+            
+            static void ExitFromOverlay(object? sender, RoutedEventArgs args)
+            {
+                if (WindowUtility.CurrentWindow is not MainWindow mainWindow)
+                    return;
+
+                mainWindow.overlayFrame.GoBack();
+                mainWindow.overlayFrame.BackStack?.Clear();
+            }
+            #nullable restore
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
@@ -413,7 +456,7 @@ namespace CollapseLauncher.Pages
             taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
             taskDefinition.Settings.Enabled             = false;
             taskDefinition.Triggers.Add(new LogonTrigger());
-            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
+            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget));
 
             TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
@@ -497,7 +540,7 @@ namespace CollapseLauncher.Pages
                         }
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
-                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, false);
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
                     AppBGCustomizer.Visibility       = Visibility.Visible;
                     AppBGCustomizerNote.Visibility   = Visibility.Visible;
                         
@@ -786,23 +829,49 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void UpdateEveryComboBoxLayout(object sender, object e) => UpdateBindings.Update();
+        private int lastLanguageSelectedIndex = -1;
+
+        private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox combobox)
+            {
+                if (lastLanguageSelectedIndex == combobox.SelectedIndex
+                || combobox.SelectedIndex == -1)
+                    return;
+
+                LanguageSelectedIndex = combobox.SelectedIndex;
+                lastLanguageSelectedIndex = LanguageSelectedIndex;
+                Bindings.Update();
+
+                foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
+                {
+                    if (comboBoxOthers == combobox)
+                        continue;
+
+                    int lastSelected = comboBoxOthers.SelectedIndex;
+                    comboBoxOthers.SelectedIndex = -1;
+                    comboBoxOthers.SelectedIndex = lastSelected;
+                }
+
+                UpdateBindingsEvents(this, null);
+            }
+        }
 
         private void UpdateBindingsEvents(object sender, EventArgs e)
         {
             Bindings.Update();
             UpdateLayout();
-            int lastAppBehavSelected = GameLaunchedBehaviorSelector.SelectedIndex;
-            GameLaunchedBehaviorSelector.SelectedIndex = -1;
-            GameLaunchedBehaviorSelector.SelectedIndex = lastAppBehavSelected;
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
             
-            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
                 string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
                 string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
+
+            string url = GetAppConfigValue("HttpProxyUrl").ToString();
+            ValidateHttpProxyUrl(url);
         }
 
         private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -986,11 +1055,218 @@ namespace CollapseLauncher.Pages
 
                 TaskSched task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Actions.Clear();
-                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null, null));
+                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null));
                 task.RegisterChanges();
                 task.Dispose();
             }
         }
+
+        private bool IsEnableSophon
+        {
+            get => GetAppConfigValue("IsEnableSophon").ToBool();
+            set => SetAndSaveConfigValue("IsEnableSophon", value);
+        }
+
+        private int SophonDownThread
+        {
+            get => GetAppConfigValue("SophonCpuThread").ToInt();
+            set => SetAndSaveConfigValue("SophonCpuThread", value);
+        }
+
+        private int SophonHttpConn
+        {
+            get => GetAppConfigValue("SophonHttpConnInt").ToInt();
+            set => SetAndSaveConfigValue("SophonHttpConnInt", value);
+        }
+
+#nullable enable
+        private bool IsUseProxy
+        {
+            get => GetAppConfigValue("IsUseProxy").ToBool();
+            set => SetAndSaveConfigValue("IsUseProxy", value);
+        }
+        private bool IsAllowHttpRedirections
+        {
+            get => GetAppConfigValue("IsAllowHttpRedirections").ToBool();
+            set => SetAndSaveConfigValue("IsAllowHttpRedirections", value);
+        }
+        private bool IsAllowHttpCookies
+        {
+            get => GetAppConfigValue("IsAllowHttpCookies").ToBool();
+            set => SetAndSaveConfigValue("IsAllowHttpCookies", value);
+        }
+
+        private bool IsAllowUntrustedCert
+        {
+            get => GetAppConfigValue("IsAllowUntrustedCert").ToBool();
+            set => SetAndSaveConfigValue("IsAllowUntrustedCert", value);
+        }
+
+        private double HttpClientTimeout
+        {
+            get => GetAppConfigValue("HttpClientTimeout").ToDouble();
+            set => SetAndSaveConfigValue("HttpClientTimeout", value);
+        }
+
+        private string? HttpProxyUrl
+        {
+            get
+            {
+                string url = GetAppConfigValue("HttpProxyUrl").ToString();
+                ValidateHttpProxyUrl(url);
+                return url;
+            }
+            set
+            {
+                ValidateHttpProxyUrl(value);
+                SetAndSaveConfigValue("HttpProxyUrl", value);
+            }
+        }
+
+        private void ValidateHttpProxyUrl(string? url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? urlResult)
+                || string.IsNullOrEmpty(urlResult.Host)
+                || urlResult.Port > 65535)
+                {
+                    Brush brush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBackgroundBrush");
+                    Brush fgbrush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBrush");
+                    ProxyHostnameTextbox.SetForeground(fgbrush);
+                    ProxyHostnameTextbox.SetBackground(brush);
+                    ProxyHostnameTextboxError.Visibility = Visibility.Visible;
+                    ProxyHostnameTextboxError.Text = Lang._SettingsPage.NetworkSettings_ProxyWarn_UrlInvalid;
+                    return;
+                }
+
+                if (!(urlResult.Scheme.Equals("http")
+                || urlResult.Scheme.Equals("https")
+                || urlResult.Scheme.Equals("socks4")
+                || urlResult.Scheme.Equals("socks4a")
+                || urlResult.Scheme.Equals("socks5")))
+                {
+                    Brush brush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBackgroundBrush");
+                    Brush fgbrush = CollapseUIExt.GetApplicationResource<Brush>("SystemFillColorCriticalBrush");
+                    ProxyHostnameTextbox.SetForeground(fgbrush);
+                    ProxyHostnameTextbox.SetBackground(brush);
+                    ProxyHostnameTextboxError.Visibility = Visibility.Visible;
+                    ProxyHostnameTextboxError.Text = Lang._SettingsPage.NetworkSettings_ProxyWarn_NotSupported;
+                    return;
+                }
+            }
+
+            ProxyHostnameTextboxError.Visibility = Visibility.Collapsed;
+            ProxyHostnameTextbox.SetForeground(CollapseUIExt.GetApplicationResource<SolidColorBrush>("TextControlForeground"));
+            ProxyHostnameTextbox.SetBackground(CollapseUIExt.GetApplicationResource<Brush>("TextControlBackground"));
+        }
+
+        private async void ProxyConnectivityTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                button.IsEnabled = false;
+                ProxyConnectivityTestTextChecking.Visibility = Visibility.Visible;
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+
+                ProgressRing? progressRing = ProxyConnectivityTestTextChecking.Children
+                    .OfType<ProgressRing>()
+                    .FirstOrDefault();
+
+                FallbackCDNUtil.InitializeHttpClient();
+
+                try
+                {
+                    if (progressRing != null)
+                        progressRing.IsIndeterminate = true;
+                    UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode("https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE", default);
+                    if (!urlStatus.IsSuccessStatusCode)
+                    {
+                        InvokeError();
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    InvokeError();
+                    return;
+                }
+
+                InvokeSuccess();
+            }
+
+            return;
+
+            async void InvokeError()
+            {
+                ProxyConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Visible;
+
+                await Task.Delay(2000);
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+                RestoreButtonState();
+            }
+
+            async void InvokeSuccess()
+            {
+                ProxyConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Visible;
+                ProxyConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+
+                await Task.Delay(2000);
+                ProxyConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                RestoreButtonState();
+            }
+
+            void RestoreButtonBinding()
+            {
+                BindingOperations.SetBinding(button, IsEnabledProperty, new Binding()
+                {
+                    Source = NetworkSettingsProxyToggle,
+                    Path = new PropertyPath("IsOn"),
+                    Mode = BindingMode.OneWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                });
+            }
+
+            void RestoreButtonState()
+            {
+                RestoreButtonBinding();
+                ProgressRing? progressRing = ProxyConnectivityTestTextChecking.Children
+                    .OfType<ProgressRing>()
+                    .FirstOrDefault();
+                if (progressRing != null)
+                    progressRing.IsIndeterminate = false;
+            }
+        }
+
+        private string? HttpProxyUsername
+        {
+            get => GetAppConfigValue("HttpProxyUsername").ToString();
+            set => SetAndSaveConfigValue("HttpProxyUsername", value);
+        }
+
+        private string? HttpProxyPassword
+        {
+            get
+            {
+                string encData = GetAppConfigValue("HttpProxyPassword").ToString();
+                if (string.IsNullOrEmpty(encData))
+                    return null;
+
+                string? rawString = SimpleProtectData.UnprotectString(encData);
+                return rawString;
+            }
+            set
+            {
+                string? protectedString = SimpleProtectData.ProtectString(value);
+                SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
+            }
+        }
+
+#nullable restore
         #endregion
 
         #region Keyboard Shortcuts

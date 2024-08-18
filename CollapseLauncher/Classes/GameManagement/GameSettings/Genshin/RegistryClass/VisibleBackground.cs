@@ -19,7 +19,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Range: 0 - 1
         /// Default: 0
         /// </summary>
-        public int borderless { get; set; } = 0;
+        public int borderless { get; set; }
 
         /// <summary>
         /// Converted value from borderless integer inside UnityVisibleBackground registry to usable boolean.
@@ -64,7 +64,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot?.SetValue(_ValueName, borderless, RegistryValueKind.DWord);
+                RegistryRoot.SetValue(_ValueName, borderless, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueName} : {borderless}", LogType.Debug, true);
 #endif

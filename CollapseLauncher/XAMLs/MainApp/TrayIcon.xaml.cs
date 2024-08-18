@@ -1,9 +1,11 @@
 using CollapseLauncher.Helper;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
+using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Drawing;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -38,12 +40,16 @@ namespace CollapseLauncher
             InitializeComponent();
 
             var instanceIndicator = "";
-            var instanceCount = MainEntryPoint.InstanceCount;
+            var instanceCount     = MainEntryPoint.InstanceCount;
+            var guid              = LauncherConfig.GetGuid(instanceCount);
+            LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
+                         $"GUID: {guid}\r\n\t" +
+                         $"Instance Count: {instanceCount}", LogType.Scheme, true);
+            CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, guid);
 
             if (instanceCount > 1)
             {
                 instanceIndicator = $" - #{instanceCount}";
-                CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, new Guid());
                 CollapseTaskbar.SetValue(TaskbarIcon.CustomNameProperty, $"Collapse Launcher{instanceIndicator}");
             }
             
@@ -156,6 +162,7 @@ namespace CollapseLauncher
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 LogWriteLine("Main window is hidden!");
+                ShowNotification("Main window is hidden!", "a");
             }
             else
             {
@@ -252,6 +259,56 @@ namespace CollapseLauncher
             if (isMainWindowVisible) MainTaskbarToggle.Text = _hideApp;
             else MainTaskbarToggle.Text                     = _showApp;
         }
+
+        /// <summary>
+        /// Displays a balloon notification with the specified title,
+        /// text, and predefined icon or custom icon in the taskbar for the specified time period.
+        /// <remarks>This method currently does not support callback. Clicking notification will not do anything.</remarks>
+        /// </summary>
+        /// <param name="title">The title to display on the balloon tip.</param>
+        /// <param name="message">The text to display on the balloon tip.</param>
+        /// <param name="icon">A symbol that indicates the severity.</param>
+        /// <param name="customIconHandle">A custom icon.</param>
+        /// <param name="largeIcon">True to allow large icons (Windows Vista and later).</param>
+        /// <param name="sound">If false do not play the associated sound.</param>
+        /// <param name="respectQuietTime">
+        /// Do not display the balloon notification if the current user is in "quiet time", 
+        /// which is the first hour after a new user logs into his or her account for the first time. 
+        /// During this time, most notifications should not be sent or shown. 
+        /// This lets a user become accustomed to a new computer system without those distractions. 
+        /// Quiet time also occurs for each user after an operating system upgrade or clean installation. 
+        /// A notification sent with this flag during quiet time is not queued; 
+        /// it is simply dismissed unshown. The application can resend the notification later 
+        /// if it is still valid at that time. <br/>
+        /// Because an application cannot predict when it might encounter quiet time, 
+        /// we recommended that this flag always be set on all appropriate notifications 
+        /// by any application that means to honor quiet time. <br/>
+        /// During quiet time, certain notifications should still be sent because 
+        /// they are expected by the user as feedback in response to a user action, 
+        /// for instance when he or she plugs in a USB device or prints a document.<br/>
+        /// If the current user is not in quiet time, this flag has no effect.
+        /// </param>
+        /// <param name="realtime">
+        /// Windows Vista and later. <br/>
+        /// If the balloon notification cannot be displayed immediately, discard it. 
+        /// Use this flag for notifications that represent real-time information 
+        /// which would be meaningless or misleading if displayed at a later time.  <br/>
+        /// For example, a message that states "Your telephone is ringing."
+        /// </param>
+        // Taken from H.NotifyIcon.TrayIcon.ShowNotification docs
+        // https://github.com/HavenDV/H.NotifyIcon/blob/89356c52bedae45b1fd451531e8ac8cfe8b13086/src/libs/H.NotifyIcon.Shared/TaskbarIcon.Notifications.cs#L14
+        public void ShowNotification(string           title,
+                                     string           message,
+                                     NotificationIcon icon             = NotificationIcon.None,
+                                     IntPtr?          customIconHandle = null,
+                                     bool             largeIcon        = false,
+                                     bool             sound            = true,
+                                     bool             respectQuietTime = true,
+                                     bool             realtime         = false)
+        {
+            CollapseTaskbar.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
+        }
+        
         #endregion
     }
 }

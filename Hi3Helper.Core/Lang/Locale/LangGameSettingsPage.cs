@@ -20,9 +20,14 @@
                 public string Graphics_ResCustom              { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResCustom;
                 public string Graphics_ResCustomW             { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResCustomW;
                 public string Graphics_ResCustomH             { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResCustomH;
+                public string Graphics_ResPrefixFullscreen    { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResPrefixFullscreen;
+                public string Graphics_ResPrefixWindowed      { get; set; } = LangFallback?._GameSettingsPage.Graphics_ResPrefixWindowed;
+                public string Graphics_VSync                  { get; set; } = LangFallback?._GameSettingsPage.Graphics_VSync;
+                public string Graphics_FPS                    { get; set; } = LangFallback?._GameSettingsPage.Graphics_FPS;
                 public string Graphics_FPSPanel               { get; set; } = LangFallback?._GameSettingsPage.Graphics_FPSPanel;
                 public string Graphics_FPSInCombat            { get; set; } = LangFallback?._GameSettingsPage.Graphics_FPSInCombat;
                 public string Graphics_FPSInMenu              { get; set; } = LangFallback?._GameSettingsPage.Graphics_FPSInMenu;
+                public string Graphics_FPSUnlimited           { get; set; } = LangFallback?._GameSettingsPage.Graphics_FPSUnlimited;
                 public string Graphics_APIPanel               { get; set; } = LangFallback?._GameSettingsPage.Graphics_APIPanel;
                 public string Graphics_APIHelp1               { get; set; } = LangFallback?._GameSettingsPage.Graphics_APIHelp1;
                 public string Graphics_APIHelp2               { get; set; } = LangFallback?._GameSettingsPage.Graphics_APIHelp2;
@@ -53,6 +58,7 @@
                 public string Graphics_Legacy_Title           { get; set; } = LangFallback?._GameSettingsPage.Graphics_Legacy_Title;
                 public string Graphics_Legacy_Subtitle        { get; set; } = LangFallback?._GameSettingsPage.Graphics_Legacy_Subtitle;
                 public string SpecDisabled                    { get; set; } = LangFallback?._GameSettingsPage.SpecDisabled;
+                public string SpecCustom                      { get; set; } = LangFallback?._GameSettingsPage.SpecCustom;
                 public string SpecLow                         { get; set; } = LangFallback?._GameSettingsPage.SpecLow;
                 public string SpecMedium                      { get; set; } = LangFallback?._GameSettingsPage.SpecMedium;
                 public string SpecHigh                        { get; set; } = LangFallback?._GameSettingsPage.SpecHigh;

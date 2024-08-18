@@ -133,6 +133,9 @@
     "PauseCancelBtn": "暫停/取消",
     "DownloadBtn": "下載遊戲",
 
+    "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
+    "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",
+
     "GameSettingsBtn": "快速設定",
     "GameSettings_Panel1": "快速設定",
     "GameSettings_Panel1OpenGameFolder": "開啟遊戲資料夾",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "雜項",
     "GameSettings_Panel4ShowEventsPanel": "顯示活動面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "顯示社交媒體面板",
+    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4CreateShortcutBtn": "建立捷徑",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
 
@@ -171,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "社群工具",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "選擇執行檔: {0}",
 
-    "CreateShortcut_FolderPicker": "選擇放置快捷方式的位置"
+    "CreateShortcut_FolderPicker": "選擇放置快捷方式的位置",
+
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -266,7 +287,13 @@
     "Graphics_ResCustom": "使用自定義解析度",
     "Graphics_ResCustomW": "寬",
     "Graphics_ResCustomH": "高",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "最大 FPS",
     "Graphics_FPSInCombat": "戰鬥中",
     "Graphics_FPSInMenu": "主選單",
@@ -306,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "這些設定不存在於遊戲中，並且可能不會產生任何效果。",
 
     "SpecDisabled": "已停用",
+    "SpecCustom": "Custom",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
@@ -414,6 +442,20 @@
     "AppThreads_Help5": "解壓縮執行緒數量決定安裝/修復遊戲的過程中，程式分成多少執行緒以解壓縮/驗證檔案。",
     "AppThreads_Help6": "注：此設定在安裝崩壞三時無效",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
+
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
     "AppThreads_Attention2": "之前，如果您有未完成的下載，請考慮",
@@ -438,6 +480,8 @@
     "Update_NewVer1": "更新至",
     "Update_NewVer2": "可用！",
     "Update_LatestVer": "你正在使用最新版本。",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "應用程式檔案管理",
     "AppFiles_OpenDataFolderBtn": "打開 AppData 資料夾",
@@ -459,7 +503,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": "。版權所有。",
-    
+
     "LicenseType": "MIT許可證",
 
     "Disclaimer": "免責聲明",
@@ -499,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的Vulkan GPU設備，將使用CPU模式。 這將極大新增圖像處理時間。",
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系統安裝了“OpenCL ™、 OpenGL®和Vulkan ® 相容包”。 該套裝軟體被報告與Vulkan Loader不相容，並且會在某些GPU上崩潰。 請移除此套裝軟體以啟用GPU模式。",
     "Waifu2X_Error_Loader": "錯誤：初始化Vulkan Loader失敗。 請確保您擁有相容Vulkan的GPU並安裝了正確的GPU驅動程序。",
-    "Waifu2X_Error_Output": "錯誤：未能通過Waifu2X自檢，輸出影像為空。"
+    "Waifu2X_Error_Output": "錯誤：未能通過Waifu2X自檢，輸出影像為空。",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -513,6 +592,7 @@
     "TimeRemainHMSFormat": "還剩{0:%h}時 {0:%m}分 {0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "還剩 -時 -分 -秒",
     "Speed": "速度：{0}/秒",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/秒",
     "SpeedPlaceholder": "速度：-/秒",
     "PerFromTo": "{0} / {1}",
@@ -563,6 +643,9 @@
     "LangNameKR": "韓文",
 
     "Downloading": "正在下載",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "正在合併",
     "Idle": "閒置",
     "Change": "更改",
@@ -607,6 +690,8 @@
     "DiscordRP_Default": "沒有活動",
     "DiscordRP_Ad": "- 使用 Collapse 啟動器",
     "DiscordRP_Region": "區域：",
+
+    "DownloadModeLabelSophon": "Sophon Mode",
 
     "Taskbar_PopupHelp1": "點擊將 Collapse 置頂",
     "Taskbar_PopupHelp2": "雙擊切換視窗可見性",
@@ -797,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {
@@ -1030,6 +1118,8 @@
     "Graphics_BloomQuality": "泛光效果（Bloom）品質",
     "Graphics_AAMode": "反鋸齒模式",
     "Graphics_SFXQuality": "特效品質",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "全局圖像設定",
     "SpecEnabled": "已啟用",
@@ -1237,11 +1327,38 @@
     "TW/HK/MO": "臺港澳",
     "Korea": "韓國",
     "Japan": "日本",
-    "Bilibili": "嗶哩嗶哩"
+    "Bilibili": "嗶哩嗶哩",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "用戶協議："
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": "（{0} ms）",
     "CDNCheckboxItemLatencyUnknownFormat": "（未知）",
     "CDNCheckboxItemLatencyRecommendedFormat": "[推薦]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

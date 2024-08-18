@@ -125,9 +125,8 @@ namespace CollapseLauncher
                 TextBlock     gameRegionTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = region });
                 TextBlock? gameRegionTranslatedTextBlock =
                     GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Lang._GameClientRegions);
-
                 panel.AddElementToStackPanel(gameRegionTranslatedTextBlock);
-
+    
                 if (config != null && config.Channel != GameChannel.Stable)
                 {
                     Grid expTag = UIElementExtensions.CreateGrid()
@@ -176,11 +175,12 @@ namespace CollapseLauncher
                 return null;
             }
 
-            // Check if the translation is available. If not, then return null
+            // Check if the translation is available. If not, then return original
             if (translationDictionary != null && (translationDictionary.Count == 0
                                                   || !translationDictionary.ContainsKey(originalString)))
             {
-                return null;
+                originalTextBlock.Visibility = Visibility.Collapsed;
+                return new TextBlock { Text = originalString };
             }
 
             // If it exists in the translation, then return the TextBlock and set the original

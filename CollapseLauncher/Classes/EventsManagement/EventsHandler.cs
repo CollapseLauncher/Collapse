@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable CheckNamespace
+// ReSharper disable AssignNullToNotNullAttribute
 
 namespace CollapseLauncher
 {
@@ -302,11 +303,11 @@ namespace CollapseLauncher
     {
         public static event EventHandler<BackgroundImgProperty> ImgEvent;
         public static event EventHandler<bool> IsImageHide;
-        BackgroundImgProperty property;
+
         public void ChangeBackground(string ImgPath, Action ActionAfterLoaded,
-            bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false)
+                                     bool IsCustom, bool IsForceRecreateCache = false, bool IsRequestInit = false)
         {
-            ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit, ActionAfterLoaded));
+            ImgEvent?.Invoke(this, new BackgroundImgProperty(ImgPath, IsCustom, IsForceRecreateCache, IsRequestInit, ActionAfterLoaded));
         }
 
         public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);

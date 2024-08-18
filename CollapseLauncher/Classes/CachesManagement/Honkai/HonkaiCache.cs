@@ -62,7 +62,7 @@ namespace CollapseLauncher
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 _updateAssetIndex,
-                string.Format(Lang!._CachesPage!.CachesStatusNeedUpdate!, _progressTotalCountFound, ConverterTool.SummarizeSizeSimple(_progressTotalSizeFound)),
+                string.Format(Lang!._CachesPage!.CachesStatusNeedUpdate!, _progressAllCountFound, ConverterTool.SummarizeSizeSimple(_progressAllSizeFound)),
                 Lang._CachesPage.CachesStatusUpToDate);
         }
 

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -9,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -23,14 +26,22 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Loading Indexes..."
             _status.ActivityStatus = Lang._GameRepairPage.Status2;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
             // Initialize hashtable for duplicate keys checking
             Dictionary<string, PkgVersionProperties> hashtableManifest = new Dictionary<string, PkgVersionProperties>();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + 16)
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+
             try
             {
                 // Subscribe the progress update
@@ -60,7 +71,6 @@ namespace CollapseLauncher
             {
                 // Unsubscribe and dispose the _httpClient
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
-                _httpClient.Dispose();
             }
         }
 
@@ -463,8 +473,8 @@ namespace CollapseLauncher
         #region Tools
         private void CountAssetIndex(List<PkgVersionProperties> assetIndex)
         {
-            _progressTotalSize = assetIndex.Sum(x => x.fileSize);
-            _progressTotalCount = assetIndex.Count;
+            _progressAllSizeTotal = assetIndex.Sum(x => x.fileSize);
+            _progressAllCountTotal = assetIndex.Count;
         }
 
         private void EnumerateManifestToAssetIndex(string path, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "", string acceptedExtension = "", string parentURL = "", bool forceStoreInStreaming = false)

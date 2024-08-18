@@ -61,9 +61,9 @@ namespace CollapseLauncher
 
         public long GetNewSize() => _newSize;
         public event EventHandler<BinaryPatchProgress> ProgressChanged;
-        private void UpdateProgress(long SizePatched, long SizeToBePatched, long Read)
+        private void UpdateProgress(long sizePatched, long sizeToBePatched, long read)
         {
-            _progress.UpdatePatchEvent(SizePatched, SizeToBePatched, Read, _progressStopwatch.Elapsed.TotalSeconds);
+            _progress.UpdatePatchEvent(sizePatched, sizeToBePatched, read, _progressStopwatch.Elapsed.TotalSeconds);
             ProgressChanged?.Invoke(this, _progress);
         }
 
@@ -75,6 +75,7 @@ namespace CollapseLauncher
         /// This stream must support reading and seeking, and <paramref name="patchStream"/> must allow multiple streams on
         /// the patch to be opened concurrently.</param>
         /// <param name="outputStream">A <see cref="Stream"/> to which the patched data is written.</param>
+        /// <param name="leaveOpen">Leave the stream open.</param>
         public void Initialize(Stream inputStream, Func<Stream> patchStream, Stream outputStream, bool leaveOpen = true)
         {
             _inputStream = inputStream;
@@ -100,6 +101,7 @@ namespace CollapseLauncher
         private void ReadHeader()
         {
             // check arguments
+            // ReSharper disable NotResolvedInText
             if (_inputStream == null)
             {
                 throw new ArgumentNullException("Input Stream cannot be null!");
@@ -112,7 +114,7 @@ namespace CollapseLauncher
             {
                 throw new ArgumentNullException("Output Stream cannot be null!");
             }
-
+            // ReSharper restore NotResolvedInText
             /*
 			File format:
 				0	8	"BSDIFF40"
@@ -130,6 +132,7 @@ namespace CollapseLauncher
             using (Stream patchStream = _patchStream())
             {
                 // check patch stream capabilities
+                // ReSharper disable NotResolvedInText
                 if (!patchStream.CanRead)
                 {
                     throw new ArgumentException("Patch stream must be readable.", "_patchStream");
@@ -138,6 +141,7 @@ namespace CollapseLauncher
                 {
                     throw new ArgumentException("Patch stream must be seekable.", "_patchStream");
                 }
+                // ReSharper restore NotResolvedInText
 
                 Span<byte> header = stackalloc byte[c_headerSize];
                 patchStream.ReadExactly(header);
@@ -237,7 +241,7 @@ namespace CollapseLauncher
         /// <exception cref="InvalidDataException"></exception>
         public unsafe void Apply(CancellationToken token = default)
         {
-            // check if the apply can be proceed
+            // check if apply can proceed
             if (!_canContinueApply)
             {
                 throw new InvalidOperationException($"You must initialize the patch before applying!");
@@ -256,107 +260,109 @@ namespace CollapseLauncher
 
             // decompress each part (to read it)
             using (Stream controlCompStream = _patchStream())
-            using (Stream diffCompStream = _patchStream())
-            using (Stream extraCompStream = _patchStream())
-            using (Stream controlStream = TryGetCompressionStream(controlCompStream, c_headerSize))
-            using (Stream diffStream = TryGetCompressionStream(diffCompStream, c_headerSize + _controlLength))
-            using (Stream extraStream = TryGetCompressionStream(extraCompStream, c_headerSize + _controlLength + _diffLength))
-            {
-                Span<long> control = stackalloc long[3];
-                Span<byte> buffer = stackalloc byte[8];
+                using (Stream diffCompStream = _patchStream())
+                    using (Stream extraCompStream = _patchStream())
+                        using (Stream controlStream = TryGetCompressionStream(controlCompStream, c_headerSize))
+                            using (Stream diffStream = TryGetCompressionStream(diffCompStream, c_headerSize + _controlLength))
+                                using (Stream extraStream = TryGetCompressionStream(extraCompStream, c_headerSize + _controlLength + _diffLength))
+                                {
+                                    // ReSharper disable once RedundantAssignment
+                                    Span<long> control = stackalloc long[3];
+                                    // ReSharper disable once UnusedVariable
+                                    Span<byte> buffer  = stackalloc byte[8];
+                                    
+                                    long oldPosition = 0;
+                                    long newPosition = 0;
+                                    while (newPosition < _newSize)
+                                    {
+                                        // Get the control array
+                                        control = ReadControlNumbers(controlStream, newPosition, _newSize);
 
-                long oldPosition = 0;
-                long newPosition = 0;
-                while (newPosition < _newSize)
-                {
-                    // Get the control array
-                    control = ReadControlNumbers(controlStream, newPosition, _newSize);
+                                        // Get the size to copy
+                                        long bytesToCopy = control[0];
 
-                    // Get the size to copy
-                    long bytesToCopy = control[0];
+                                        // Seek old file to the position that the new data is diffed against
+                                        _inputStream.Position = oldPosition;
 
-                    // Seek old file to the position that the new data is diffed against
-                    _inputStream.Position = oldPosition;
+                                        // Start the copy process
+                                        while (bytesToCopy > 0)
+                                        {
+                                            // Throw if cancelation is called
+                                            token.ThrowIfCancellationRequested();
 
-                    // Start the copy process
-                    while (bytesToCopy > 0)
-                    {
-                        // Throw if cancelation is called
-                        token.ThrowIfCancellationRequested();
+                                            // Get minimum size to copy
+                                            int actualBytesToCopy = (int)Math.Min(bytesToCopy, c_bufferSize);
+                                            // Get the minimum size from old data to copy
+                                            int availableInputBytes = (int)Math.Min(actualBytesToCopy, _inputStream.Length - _inputStream.Position);
 
-                        // Get minimum size to copy
-                        int actualBytesToCopy = (int)Math.Min(bytesToCopy, c_bufferSize);
-                        // Get the minimum size from old data to copy
-                        int availableInputBytes = (int)Math.Min(actualBytesToCopy, _inputStream.Length - _inputStream.Position);
+                                            // Read diff and old data
+                                            diffStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
+                                            _inputStream.ReadExactly(oldData.Slice(0, availableInputBytes));
 
-                        // Read diff and old data
-                        diffStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
-                        _inputStream.ReadExactly(oldData.Slice(0, availableInputBytes));
+                                            // Add the old with new data in vectors
+                                            fixed (byte* newDataPtr = &newData[0])
+                                                fixed (byte* oldDataPtr = &oldData[0])
+                                                {
+                                                    // Get the offset and remained offset
+                                                    int  offset;
+                                                    long offsetRemained = c_bufferSize % Vector128<byte>.Count;
+                                                    for (offset = 0; offset < c_bufferSize - offsetRemained; offset += Vector128<byte>.Count)
+                                                    {
+                                                        Vector128<byte> newVector = Sse2.LoadVector128(newDataPtr + offset);
+                                                        Vector128<byte> oldVector = Sse2.LoadVector128(oldDataPtr + offset);
+                                                        Vector128<byte> resultVector = Sse2.Add(newVector, oldVector);
 
-                        // Add the old with new data in vectors
-                        fixed (byte* newDataPtr = &newData[0])
-                        fixed (byte* oldDataPtr = &oldData[0])
-                        {
-                            // Get the offset and remained offset
-                            int offset;
-                            long offsetRemained = c_bufferSize % Vector128<byte>.Count;
-                            for (offset = 0; offset < c_bufferSize - offsetRemained; offset += Vector128<byte>.Count)
-                            {
-                                Vector128<byte> newVector = Sse2.LoadVector128(newDataPtr + offset);
-                                Vector128<byte> oldVector = Sse2.LoadVector128(oldDataPtr + offset);
-                                Vector128<byte> resultVector = Sse2.Add(newVector, oldVector);
+                                                        Sse2.Store(newDataPtr + offset, resultVector);
+                                                    }
 
-                                Sse2.Store(newDataPtr + offset, resultVector);
-                            }
+                                                    // Process the remained data by the last offset
+                                                    while (offset < c_bufferSize) *(newDataPtr + offset) += *(oldDataPtr + offset++);
 
-                            // Process the remained data by the last offset
-                            while (offset < c_bufferSize) *(newDataPtr + offset) += *(oldDataPtr + offset++);
+                                                    // Write the data into the output
+                                                    _outputStream.Write(newData.Slice(0, actualBytesToCopy));
 
-                            // Write the data into the output
-                            _outputStream.Write(newData.Slice(0, actualBytesToCopy));
+                                                    // Adjust counters
+                                                    newPosition += actualBytesToCopy;
+                                                    oldPosition += actualBytesToCopy;
+                                                    bytesToCopy -= actualBytesToCopy;
 
-                            // Adjust counters
-                            newPosition += actualBytesToCopy;
-                            oldPosition += actualBytesToCopy;
-                            bytesToCopy -= actualBytesToCopy;
+                                                    // Update progress
+                                                    UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
+                                                }
+                                        }
 
-                            // Update progress
-                            UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
-                        }
-                    }
+                                        // SANITY CHECK: Check if the new position + Additional/new data has more size than _newSize.
+                                        //               If yes, then throw.
+                                        if (newPosition + control[1] > _newSize)
+                                        {
+                                            throw new InvalidDataException($"The patch file is corrupted! newPosition + control[1] ({newPosition} + {control[1]}) > newSize ({_newSize})");
+                                        }
 
-                    // SANITY CHECK: Check if the new position + Additional/new data has more size than _newSize.
-                    //               If yes, then throw.
-                    if (newPosition + control[1] > _newSize)
-                    {
-                        throw new InvalidDataException($"The patch file is corrupted! newPosition + control[1] ({newPosition} + {control[1]}) > newSize ({_newSize})");
-                    }
+                                        // Get the bytes to copy for the additional data (new data)
+                                        bytesToCopy = (int)control[1];
+                                        while (bytesToCopy > 0)
+                                        {
+                                            // Throw if cancelation is called
+                                            token.ThrowIfCancellationRequested();
 
-                    // Get the bytes to copy for the additional data (new data)
-                    bytesToCopy = (int)control[1];
-                    while (bytesToCopy > 0)
-                    {
-                        // Throw if cancelation is called
-                        token.ThrowIfCancellationRequested();
+                                            // Get the size of the additional data to copy
+                                            int actualBytesToCopy = (int)Math.Min(bytesToCopy, c_bufferSize);
 
-                        // Get the size of the additional data to copy
-                        int actualBytesToCopy = (int)Math.Min(bytesToCopy, c_bufferSize);
+                                            // Read the new data from extra stream and write it to output
+                                            extraStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
+                                            _outputStream.Write(newData.Slice(0,     actualBytesToCopy));
 
-                        // Read the new data from extra stream and write it to output
-                        extraStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
-                        _outputStream.Write(newData.Slice(0, actualBytesToCopy));
+                                            newPosition += actualBytesToCopy;
+                                            bytesToCopy -= actualBytesToCopy;
 
-                        newPosition += actualBytesToCopy;
-                        bytesToCopy -= actualBytesToCopy;
+                                            // Update progress
+                                            UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
+                                        }
 
-                        // Update progress
-                        UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
-                    }
-
-                    // Adjust the position (either move it towards or behind the current position)
-                    oldPosition = oldPosition + control[2];
-                }
-            }
+                                        // Adjust the position (either move it towards or behind the current position)
+                                        oldPosition = oldPosition + control[2];
+                                    }
+                                }
 
             if (!_leaveOpenStream)
             {
@@ -406,12 +412,12 @@ namespace CollapseLauncher
             this.Read = 0;
         }
 
-        public void UpdatePatchEvent(long SizePatched, long SizeToBePatched, long Read, double TotalSecond)
+        public void UpdatePatchEvent(long sizePatched, long sizeToBePatched, long read, double totalSecond)
         {
-            this.Speed = (SizePatched / TotalSecond);
-            this.SizePatched = SizePatched;
-            this.SizeToBePatched = SizeToBePatched;
-            this.Read = Read;
+            this.Speed = (sizePatched / totalSecond);
+            this.SizePatched = sizePatched;
+            this.SizeToBePatched = sizeToBePatched;
+            this.Read = read;
         }
 
         public long SizePatched { get; private set; }

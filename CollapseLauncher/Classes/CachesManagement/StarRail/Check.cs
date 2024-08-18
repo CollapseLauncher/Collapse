@@ -20,7 +20,7 @@ namespace CollapseLauncher
             List<SRAsset> returnAsset = new List<SRAsset>();
 
             // Set Indetermined status as false
-            _status!.IsProgressTotalIndetermined = false;
+            _status!.IsProgressAllIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
@@ -66,10 +66,6 @@ namespace CollapseLauncher
             {
                 throw ex.Flatten().InnerExceptions.First();
             }
-            catch (Exception)
-            {
-                throw;
-            }
 
             // Return the asset index
             return returnAsset;
@@ -80,9 +76,9 @@ namespace CollapseLauncher
             // Increment the count and update the status
             lock (this)
             {
-                _progressTotalCountCurrent++;
+                _progressAllCountCurrent++;
                 _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.AssetType, asset.LocalName);
-                _status.ActivityTotal = string.Format(Lang!._CachesPage!.CachesTotalStatusChecking!, _progressTotalCountCurrent, _progressTotalCount);
+                _status.ActivityAll = string.Format(Lang!._CachesPage!.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
             }
 
             // Get persistent and streaming paths
@@ -127,9 +123,9 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status!.IsProgressTotalIndetermined = false;
-                _progressTotalCountFound++;
-                _progressTotalSizeFound += asset!.Size;
+                _status!.IsProgressAllIndetermined = false;
+                _progressAllCountFound++;
+                _progressAllSizeFound += asset!.Size;
             }
 
             // Add file into asset index

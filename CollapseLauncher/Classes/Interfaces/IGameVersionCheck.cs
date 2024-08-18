@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -151,13 +152,13 @@ namespace CollapseLauncher.Interfaces
         /// <param name="gameState">The state of the game</param>
         List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState);
 
+        #nullable enable
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Pre-load Zip.
         /// If the Pre-load doesn't exist, then it will return a null.
         /// </summary>
-        List<RegionResourceVersion> GetGamePreloadZip();
-
-#nullable enable
+        List<RegionResourceVersion>? GetGamePreloadZip();
+        
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Plugins
         /// </summary>
@@ -169,7 +170,16 @@ namespace CollapseLauncher.Interfaces
         List<RegionResourcePlugin>? GetGameSdkZip();
 
         /// <summary>
-        /// Try find game installation path from the given path.
+        /// Ensure the validity of the game's config.ini file.
+        /// This method also being used to check + prompt the user to whether
+        /// repair the game's config.ini or ignore it.
+        /// </summary>
+        /// <param name="uiParentElement">The parent UI element where the dialog will be spawned (if needed)</param>
+        /// <returns><c>True</c> means the values within config.ini is valid or action is cancelled. <c>False</c> means config.ini has been repaired or changed.</returns>
+        ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement);
+
+        /// <summary>
+        /// Try to find game installation path from the given path.
         /// If it returns null, then there's no game installation found.
         /// </summary>
         string? FindGameInstallationPath(string path);

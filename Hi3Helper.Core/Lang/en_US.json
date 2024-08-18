@@ -152,6 +152,7 @@
     "GameSettings_Panel4": "Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
     "GameSettings_Panel4ShowSocialMediaPanel": "Show Social Media Panel",
+    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4CreateShortcutBtn": "Create shortcut",
     "GameSettings_Panel4AddToSteamBtn": "Add to Steam",
 
@@ -175,7 +176,24 @@
     "CommunityToolsBtn_CommunityText": "Community Tools",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}",
 
-    "CreateShortcut_FolderPicker": "Select where to place the shortcut"
+    "CreateShortcut_FolderPicker": "Select where to place the shortcut",
+
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -270,7 +288,13 @@
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "Maximum FPS",
     "Graphics_FPSInCombat": "In-Combat",
     "Graphics_FPSInMenu": "Main Menu",
@@ -310,6 +334,7 @@
     "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
 
     "SpecDisabled": "Disabled",
+    "SpecCustom": "Custom",
     "SpecLow": "Low",
     "SpecMedium": "Medium",
     "SpecHigh": "High",
@@ -418,6 +443,20 @@
     "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
     "AppThreads_Help6": "Note: This setting is no longer effective while installing Honkai Impact 3rd.",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
+
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Before you change the",
     "AppThreads_Attention2": "value, please consider to",
@@ -442,6 +481,8 @@
     "Update_NewVer1": "Update to",
     "Update_NewVer2": "is available!",
     "Update_LatestVer": "You are using the latest version.",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "App Files Management",
     "AppFiles_OpenDataFolderBtn": "Open App Data Folder",
@@ -463,7 +504,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
-    
+
     "LicenseType": "MIT License",
 
     "Disclaimer": "Disclaimer",
@@ -503,7 +544,42 @@
     "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
     "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
     "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
-    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
+    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image.",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -517,6 +593,7 @@
     "TimeRemainHMSFormat": "{0:%h}h{0:%m}m{0:%s}s left",
     "TimeRemainHMSFormatPlaceholder": "--h--m--s left",
     "Speed": "Speed: {0}/s",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Speed: - /s",
     "PerFromTo": "{0} / {1}",
@@ -567,6 +644,9 @@
     "LangNameKR": "Korean",
 
     "Downloading": "Downloading",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "Merging",
     "Idle": "Idle",
     "Change": "Change",
@@ -807,7 +887,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {
@@ -1249,11 +1332,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Korea",
     "Japan": "Japan",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Agreement:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1292,5 +1402,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (unknown)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Recommended]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

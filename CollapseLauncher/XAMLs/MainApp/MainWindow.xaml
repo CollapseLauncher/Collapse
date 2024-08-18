@@ -1,11 +1,10 @@
-﻿<Window x:Class="CollapseLauncher.MainWindow"
+<Window x:Class="CollapseLauncher.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:customcontrol="using:CollapseLauncher.CustomControls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:helper="using:Hi3Helper"
         xmlns:local="using:CollapseLauncher"
-        xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:uiextension="using:CollapseLauncher.Extension"
         SizeChanged="MainWindow_OnSizeChanged"
@@ -42,8 +41,8 @@
                 </Frame.ContentTransitions>
             </Frame>
         </Grid>
-        <Grid Grid.Row="0"
-              x:Name="IntroAnimationGrid"
+        <Grid x:Name="IntroAnimationGrid"
+              Grid.Row="0"
               Grid.RowSpan="3"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
@@ -161,7 +160,8 @@
                         x:FieldModifier="internal" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
-            <Grid x:Name="AppTitleBar" x:FieldModifier="internal">
+            <Grid x:Name="AppTitleBar"
+                  x:FieldModifier="internal">
                 <Button x:Name="MinimizeButton"
                         Width="40"
                         Height="40"
@@ -171,7 +171,7 @@
                         Click="MinimizeButton_Click"
                         Content="M 0 0 H 10"
                         CornerRadius="8"
-                        Style="{StaticResource WindowCaptionButton}" />
+                        Style="{ThemeResource WindowCaptionButton}" />
                 <Button x:Name="CloseButton"
                         Width="40"
                         Height="40"
@@ -182,7 +182,7 @@
                         Click="CloseButton_Click"
                         Content="M 0 0 L 10 10 M 10 0 L 0 10"
                         CornerRadius="8"
-                        Style="{StaticResource WindowCaptionButton}">
+                        Style="{ThemeResource WindowCaptionButton}">
                     <Button.Resources>
                         <ResourceDictionary>
                             <ResourceDictionary.ThemeDictionaries>

@@ -133,6 +133,9 @@
     "PauseCancelBtn": "일시 중지/취소",
     "DownloadBtn": "게임 다운로드",
 
+    "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
+    "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",
+
     "GameSettingsBtn": "빠른 설정",
     "GameSettings_Panel1": "빠른 설정",
     "GameSettings_Panel1OpenGameFolder": "게임 폴더 열기",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "기타",
     "GameSettings_Panel4ShowEventsPanel": "이벤트 패널 표시",
     "GameSettings_Panel4ShowSocialMediaPanel": "소셜 미디어 패널 표시",
+    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4CreateShortcutBtn": "바로가기 만들기",
     "GameSettings_Panel4AddToSteamBtn": "Steam에 추가",
 
@@ -171,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "커뮤니티 도구",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}",
 
-    "CreateShortcut_FolderPicker": "바로가기 경로 설정"
+    "CreateShortcut_FolderPicker": "바로가기 경로 설정",
+
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -266,7 +287,13 @@
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
     "Graphics_ResCustomW": "너비",
     "Graphics_ResCustomH": "높이",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "최대 FPS",
     "Graphics_FPSInCombat": "전투 중",
     "Graphics_FPSInMenu": "메인 메뉴",
@@ -306,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "이 설정들은 게임 내에 존재하지 않고 아무 영향도 미치지 않을 수 있어요.",
 
     "SpecDisabled": "꺼짐",
+    "SpecCustom": "Custom",
     "SpecLow": "낮음",
     "SpecMedium": "중간",
     "SpecHigh": "높음",
@@ -355,7 +383,7 @@
     "CustomArgs_Footer3": "참조해 더 많은 인수를 확인하세요.",
 
     "GameBoost": "게임 우선 순위 올리기 [실험 기능]",
-    "MobileLayout": "Use Mobile Layout",
+    "MobileLayout": "모바일 레이아웃 사용하기",
 
     "Advanced_Title": "고급 설정",
     "Advanced_Subtitle1": "Collapse Launcher Team",
@@ -414,6 +442,20 @@
     "AppThreads_Help5": "이 스레드는 게임을 설치/복구하는 동안 압축 해제/무결성 검사 작업을 처리해요.",
     "AppThreads_Help6": "참고: 이 설정은 더 이상 붕괴3rd 설치와 작동하지 않아요.",
 
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
+
     "AppThreads_Attention": "주의",
     "AppThreads_Attention1": "​",
     "AppThreads_Attention2": "값을 변경하기 전에, 기존 다운로드가 있는 경우 값을",
@@ -438,6 +480,8 @@
     "Update_NewVer1": "버전",
     "Update_NewVer2": "(으)로 업데이트 할 수 있어요!",
     "Update_LatestVer": "최신 버전을 사용하고 있어요.",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "앱 파일 관리",
     "AppFiles_OpenDataFolderBtn": "앱 데이터 폴더 열기",
@@ -459,7 +503,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "​",
     "About_Copyright4": "하에. All rights reserved.",
-    
+
     "LicenseType": "MIT 허가서",
 
     "Disclaimer": "면책 조항",
@@ -499,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "경고: 사용 가능한 Vulkan GPU 장치를 찾을 수 없어 CPU 모드를 사용할 거예요. 이렇게 되면 이미지 처리 시간이 크게 늘어날 거예요.",
     "Waifu2X_Warning_D3DMappingLayers": "경고: 시스템에 \"OpenCL™, OpenGL®, Vulkan® 호환 팩\"이 설치되어 있어요. Vulkan 로더와 호환되지 않아서 일부 GPU에서 충돌이 발생할 수 있다고 해요. GPU 모드를 사용하려면 이 팩을 제거해 주세요.",
     "Waifu2X_Error_Loader": "에러: Vulkan 로더 설정에 실패했어요. 적절한 GPU 드라이버가 설치된 Vulkan 호환 GPU를 사용하고 있는지 확인해 주세요.",
-    "Waifu2X_Error_Output": "에러: Waifu2X 자체 테스트를 통과하지 못했어요. 비어있는 출력 이미지를 받았어요."
+    "Waifu2X_Error_Output": "에러: Waifu2X 자체 테스트를 통과하지 못했어요. 비어있는 출력 이미지를 받았어요.",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -513,6 +592,7 @@
     "TimeRemainHMSFormat": "{0:%h}시간 {0:%m}분 {0:%s}초 남음",
     "TimeRemainHMSFormatPlaceholder": "--시간 --분 --초 남음",
     "Speed": "속도: {0}/초",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/초",
     "SpeedPlaceholder": "속도: - /초",
     "PerFromTo": "{0} / {1}",
@@ -563,6 +643,9 @@
     "LangNameKR": "한국어",
 
     "Downloading": "다운로드 중",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "병합 중",
     "Idle": "대기 중",
     "Change": "변경",
@@ -582,7 +665,7 @@
     "ApplyingPatch": "패치 적용 중",
     "Disabled": "꺼짐",
     "Enabled": "켜짐",
-    "UseAsDefault": "Use as Default",
+    "UseAsDefault": "기본으로 사용",
 
     "BuildChannelPreview": "미리 보기",
     "BuildChannelStable": "안정",
@@ -607,6 +690,8 @@
     "DiscordRP_Default": "활동 없음",
     "DiscordRP_Ad": "- Collapse Launcher",
     "DiscordRP_Region": "서버:",
+
+    "DownloadModeLabelSophon": "Sophon Mode",
 
     "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
     "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
@@ -797,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {
@@ -1030,6 +1118,8 @@
     "Graphics_BloomQuality": "광원 품질",
     "Graphics_AAMode": "안티앨리어싱 모드",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "전역 그래픽 설정",
     "SpecEnabled": "켜짐",
@@ -1237,11 +1327,38 @@
     "TW/HK/MO": "대만/홍콩/마카오",
     "Korea": "한국",
     "Japan": "일본",
-    "Bilibili": "빌리빌리"
+    "Bilibili": "빌리빌리",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "약관:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (알 수 없음)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [권장]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

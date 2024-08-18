@@ -20,7 +20,7 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = new List<CacheAsset>();
 
             // Set Indetermined status as false
-            _status!.IsProgressTotalIndetermined = false;
+            _status!.IsProgressAllIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
@@ -52,10 +52,6 @@ namespace CollapseLauncher
             {
                 throw ex.Flatten().InnerExceptions.First();
             }
-            catch (Exception)
-            {
-                throw;
-            }
 
             // Return the asset index
             return returnAsset;
@@ -72,7 +68,7 @@ namespace CollapseLauncher
                  && !assetIndex!.Exists(x => x!.ConcatPath == filePath))
                 {
                     // Increment the total found count
-                    _progressTotalCountFound++;
+                    _progressAllCountFound++;
 
                     // Add asset to the returnAsset
                     FileInfo fileInfo = new FileInfo(filePath);
@@ -107,9 +103,9 @@ namespace CollapseLauncher
         private async ValueTask CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, CancellationToken token)
         {
             // Increment the count and update the status
-            Interlocked.Add(ref _progressTotalCountCurrent, 1);
+            Interlocked.Add(ref _progressAllCountCurrent, 1);
             _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
-            _status!.ActivityTotal = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressTotalCountCurrent, _progressTotalCount);
+            _status!.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
 
             // Assign the file info.
             FileInfo fileInfo = new FileInfo(asset.ConcatPath!);
@@ -154,9 +150,9 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status!.IsProgressTotalIndetermined = false;
-                _progressTotalCountFound++;
-                _progressTotalSizeFound += asset!.CS;
+                _status!.IsProgressAllIndetermined = false;
+                _progressAllCountFound++;
+                _progressAllSizeFound += asset!.CS;
             }
 
             // Add file into asset index

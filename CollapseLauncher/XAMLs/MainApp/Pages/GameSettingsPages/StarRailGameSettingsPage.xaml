@@ -77,8 +77,8 @@
                                             </CheckBox>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
                                                     <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
                                                 <CheckBox x:Name="GameWindowResizable"
                                                           HorizontalAlignment="Stretch"
@@ -89,15 +89,20 @@
                                                                TextWrapping="Wrap" />
                                                 </CheckBox>
                                                 <Button Grid.Column="1"
-                                                        Margin="8,-4,0,0"
-                                                        Style="{ThemeResource ButtonRevealStyle}">
+                                                        Width="24"
+                                                        Height="24"
+                                                        Margin="16,0,8,0"
+                                                        Padding="0"
+                                                        HorizontalAlignment="Left"
+                                                        CornerRadius="4"
+                                                        Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
                                                         <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                                  FontSize="12"
+                                                                  FontSize="10"
                                                                   Glyph="&#x3f;" />
                                                     </Button.Content>
                                                     <Button.Flyout>
-                                                        <Flyout AllowFocusOnInteraction="True">
+                                                        <Flyout>
                                                             <TextBlock MaxWidth="360"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResizableWindowTooltip}"
@@ -148,11 +153,11 @@
                                               HorizontalAlignment="Stretch"
                                               VerticalAlignment="Center">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
                                                 <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <CheckBox x:Name="GameCustomResolutionCheckbox"
-                                                      Margin="16,0,0,0"
+                                                      Margin="16,0,16,0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"
                                                       IsEnabled="{x:Bind IsCanCustomResolution, Mode=OneWay}">
@@ -160,15 +165,20 @@
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                             <Button Grid.Column="1"
-                                                    Margin="8,-4,0,0"
-                                                    Style="{ThemeResource ButtonRevealStyle}">
+                                                    Width="24"
+                                                    Height="24"
+                                                    Margin="0,0,8,0"
+                                                    Padding="0"
+                                                    HorizontalAlignment="Left"
+                                                    CornerRadius="4"
+                                                    Style="{ThemeResource AcrylicButtonStyle}">
                                                 <Button.Content>
                                                     <FontIcon FontFamily="{ThemeResource FontAwesome}"
-                                                              FontSize="12"
+                                                              FontSize="10"
                                                               Glyph="&#x3f;" />
                                                 </Button.Content>
                                                 <Button.Flyout>
-                                                    <Flyout AllowFocusOnInteraction="True">
+                                                    <Flyout>
                                                         <TextBlock MaxWidth="360"
                                                                    FontWeight="SemiBold"
                                                                    Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomTooltip}"
@@ -237,22 +247,19 @@
                                        Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SpecPanel}"
                                        TextWrapping="Wrap" />
                             <StackPanel>
-                                <StackPanel Margin="0,0,56,8">
+                                <StackPanel Margin="0,0,16,8">
                                     <Grid x:Name="RenderScaleGrid">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                    Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}"
-                                                   TextWrapping="Wrap" />
-                                        <TextBlock HorizontalAlignment="Right"
-                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{Binding Value, ElementName=RenderScaleSlider}"
                                                    TextWrapping="Wrap" />
                                     </Grid>
                                     <Slider x:Name="RenderScaleSlider"
                                             Maximum="2.0"
                                             Minimum="0.6"
                                             StepFrequency="0.2"
+                                            Style="{ThemeResource FatSliderStyle}"
                                             TickFrequency="0.2"
-                                            TickPlacement="Outside"
+                                            TickPlacement="Inline"
                                             Value="{x:Bind RenderScale, Mode=TwoWay}" />
                                 </StackPanel>
                                 <Grid>
@@ -487,7 +494,7 @@
                                 </Grid>
                             </StackPanel>
                             <StackPanel>
-                                <Grid>
+                                <Grid ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition />
@@ -534,17 +541,9 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioMasterVolumeSlider}"
-                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioMasterVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
                                                     Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
@@ -557,17 +556,9 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioSFXVolumeSlider}"
-                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioSFXVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
                                                     Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
@@ -587,17 +578,9 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioBGMVolumeSlider}"
-                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioBGMVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
                                                     Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
@@ -610,17 +593,9 @@
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40px" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                       Text="{Binding Value, ElementName=AudioVOVolumeSlider}"
-                                                       TextWrapping="Wrap" />
                                             <Slider x:Name="AudioVOVolumeSlider"
-                                                    Grid.Column="1"
                                                     Maximum="10"
+                                                    Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="1"
                                                     TickPlacement="Outside"
                                                     Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />

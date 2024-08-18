@@ -15,7 +15,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.80.14</Version>
+        <Version>1.81.3</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -90,28 +90,29 @@
         <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         
         <PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
-        <PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.131" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+        <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.2" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.63" />
         <PackageReference Include="ImageEx" Version="2.1.1" />
         <PackageReference Include="Markdig.Signed" Version="0.37.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
-        <PackageReference Include="Roman-Numerals" Version="2.0.0" />
+        <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="SharpCompress" Version="0.37.2" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-        <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.6" />
+        <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.7" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
-        <PackageReference Include="System.Text.Json" Version="8.0.3" />
+        <PackageReference Include="System.Text.Json" Version="8.0.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
         <PackageReference Include="TaskScheduler" Version="2.11.0" />
     </ItemGroup>

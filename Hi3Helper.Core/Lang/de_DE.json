@@ -103,9 +103,9 @@
     "NotifClearAll": "Alle Benachrichtigungen entfernen",
     "NavigationMenu": "Menü",
     "NavigationUtilities": "Werkzeuge",
-    "Initializing": "Initializing",
-    "LoadingLauncherMetadata": "Loading Launcher Metadata",
-    "LoadingGameConfiguration": "Loading Game Configuration"
+    "Initializing": "Initialisierung",
+    "LoadingLauncherMetadata": "Lade Launcher-Metadaten",
+    "LoadingGameConfiguration": "Lade Spielkonfigurationen"
   },
 
   "_HomePage": {
@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Pausieren/Abbrechen",
     "DownloadBtn": "Spiel herunterladen",
 
+    "GameStatusPlaceholderComingSoonBtn": "Demnächst verfügbar",
+    "GameStatusPlaceholderPreRegisterBtn": "Jetzt vorregistrieren!",
+
     "GameSettingsBtn": "Schnelleinstellungen",
     "GameSettings_Panel1": "Schnelleinstellungen",
     "GameSettings_Panel1OpenGameFolder": "Spiel Ordner öffnen",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "Andere Einstellungen",
     "GameSettings_Panel4ShowEventsPanel": "Aktionspanel anzeigen",
     "GameSettings_Panel4ShowSocialMediaPanel": "Social Media Panel anzeigen",
+    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4CreateShortcutBtn": "Verknüpfung erstellen",
     "GameSettings_Panel4AddToSteamBtn": "Zu Steam hinzufügen",
 
@@ -158,7 +162,7 @@
     "GamePlaytime_Idle_ChangeBtn": "Ändern",
     "GamePlaytime_Running_Info1": "Eine Instanz des Spiels wird derzeit ausgeführt, daher kann die Spielzeit nicht bearbeitet werden.",
     "GamePlaytime_Running_Info2": "Bitte beachte, dass das vollständige Schließen von Collapse die Aufzeichnung der Spielzeit beendet (und die bis dahin gespielte Zeit speichert) und nur die mit Collapse begonnenen Sitzungen aufgezeichnet werden.",
-    "GamePlaytime_Display": "{0}h {1}m",
+    "GamePlaytime_Display": "{0} Std. {1} Min.",
     "GamePlaytime_ToolTipDisplay": "Zuletzt geöffnet am {0:00}.{1:00}.{2:0000} um {3:00}:{4:00}",
 
     "PostPanel_Events": "Aktionen",
@@ -171,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "Community-Werkzeuge",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Anwendung auswählen: {0}",
 
-    "CreateShortcut_FolderPicker": "Wähle aus, wo die Verknüpfung platziert werden soll"
+    "CreateShortcut_FolderPicker": "Wähle aus, wo die Verknüpfung platziert werden soll",
+
+    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
+    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -195,8 +216,8 @@
     "Status11": "Warte bis der Reparaturprozess beginnt...",
     "Status12": "Aktualisiere Audio: {0}",
     "Status13": "Aktualisiere Block: {0}",
-    "Status14": "Trying to determine CG asset availability: {0}",
-    "Status15": "Trying to determine audio asset availability: {0}",
+    "Status14": "Versuche, die Verfügbarkeit von CG-Assets zu ermitteln: {0}",
+    "Status15": "Versuche, die Verfügbarkeit von Audio-Assets zu ermitteln: {0}",
     "StatusNone": "Nichts",
     "PerProgressTitle1": "Fortschritt pro Datei",
     "PerProgressSubtitle1": "Warte...",
@@ -227,7 +248,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Status",
     "Status1": "Klicke auf \"Schnellüberprüfung\" oder \"Vollständige Überprüfung\" um den Cache auf Updates zu überprüfen",
-    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
+    "Status2": "Versuche, die Verfügbarkeit von \"{0}\" Cache-Assets zu ermitteln: {1}",
     "CachesStatusHeader1": "Insgesamter Fortschritt",
     "CachesStatusCancelled": "Der Vorgang wurde abgebrochen!",
     "CachesStatusFetchingType": "Caches werden abgerufen: {0}",
@@ -266,7 +287,13 @@
     "Graphics_ResCustom": "Benutzerdefinierte Auflösung verwenden",
     "Graphics_ResCustomW": "B",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Unlimited",
     "Graphics_FPSPanel": "Maximale FPS",
     "Graphics_FPSInCombat": "Im Kampf",
     "Graphics_FPSInMenu": "Hauptmenü",
@@ -306,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "Diese Optionen sind im Spiel nicht vorhanden und haben möglicherweise keine Auswirkungen.",
 
     "SpecDisabled": "Deaktiviert",
+    "SpecCustom": "Custom",
     "SpecLow": "Niedrig",
     "SpecMedium": "Mittel",
     "SpecHigh": "Hoch",
@@ -355,7 +383,7 @@
     "CustomArgs_Footer3": "um weitere Parameter zu erhalten.",
 
     "GameBoost": "Boost Game Priority [Experimental]",
-    "MobileLayout": "Use Mobile Layout",
+    "MobileLayout": "Mobiles Layout verwenden",
 
     "Advanced_Title": "Erweiterte Einstellungen",
     "Advanced_Subtitle1": "Das Collapse Launcher Team",
@@ -392,7 +420,7 @@
     "AppThemes_Dark": "Dunkel",
     "AppThemes_ApplyNeedRestart": "*Du musst die Anwendung neu starten, damit diese Einstellung wirksam wird.",
 
-    "IntroSequenceToggle": "Use Intro Animation Sequence",
+    "IntroSequenceToggle": "Startanimationssequenz verwenden",
 
     "AppWindowSize": "Fenstergröße",
     "AppWindowSize_Normal": "Normal",
@@ -413,6 +441,20 @@
     "AppThreads_Help4": "0 (Automatisch erkennen)",
     "AppThreads_Help5": "Dieser Thread wird den Extraktions-/Verifizierungsprozess während der Installation/Reparatur des Spiels durchführen.",
     "AppThreads_Help6": "Hinweis: Diese Einstellung ist bei der Installation von Honkai Impact 3rd nicht mehr wirksam.",
+
+    "SophonSettingsTitle": "Sophon Mode Settings",
+    "SophonHelp_Title": "What is Sophon Downloader Mode?",
+    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
+    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
+    "SophonHelp_IndicatorTitle": "Indicator Icons",
+    "SophonHelp_Indicator1": "File Size to Write on Disk",
+    "SophonHelp_Indicator2": "File Size to Download",
+    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
+    "SophonHelp_Indicator4": "Network I/O Speed on Write",
+    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
+    "SophonHttpNumberBox": "Maximum HTTP Connections",
+    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
+    "SophonToggle": "Enable Sophon on Supported Regions",
 
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Before you change the",
@@ -438,6 +480,8 @@
     "Update_NewVer1": "Aktualisieren auf",
     "Update_NewVer2": "ist verfügbar!",
     "Update_LatestVer": "Du benutzt die neuste Version.",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "App Dateien-Management",
     "AppFiles_OpenDataFolderBtn": "App-Datenordner öffnen",
@@ -459,7 +503,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Unter der",
     "About_Copyright4": ". Alle Rechte vorbehalten.",
-    
+
     "LicenseType": "MIT-Lizenz",
 
     "Disclaimer": "Haftungsausschluss",
@@ -499,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "WARNUNG: Es wurde keine verfügbare Vulkan-GPU gefunden und der CPU-Modus wird verwendet. Dies wird die Bildverarbeitungszeit stark erhöhen.",
     "Waifu2X_Warning_D3DMappingLayers": "WARNUNG: Auf dem System ist das \"OpenCL™, OpenGL® und Vulkan® Kompatibilitätspaket\" installiert. Es ist Berichten zufolge nicht mit dem Vulkan Loader kompatibel und führt bei einigen GPUs zu Abstürzen. Bitte entferne dieses Paket, um den GPU-Modus zu aktivieren.",
     "Waifu2X_Error_Loader": "FEHLER: Vulkan Loader konnte nicht initialisiert werden. Stelle sicher, dass du einen Vulkan-kompatiblen Grafikprozessor mit einem geeigneten GPU-Treiber installiert hast.",
-    "Waifu2X_Error_Output": "FEHLER: Waifu2X-Selbsttest nicht bestanden, leeres Ausgabebild erhalten."
+    "Waifu2X_Error_Output": "FEHLER: Waifu2X-Selbsttest nicht bestanden, leeres Ausgabebild erhalten.",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -513,6 +592,7 @@
     "TimeRemainHMSFormat": "{0:%h}S{0:%m}m{0:%s}s übrig",
     "TimeRemainHMSFormatPlaceholder": "--S--m--s left",
     "Speed": "Geschwindigkeit: {0}/s",
+    "SpeedTextOnly": "Speed",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Geschwindigkeit: - /s",
     "PerFromTo": "{0} / {1}",
@@ -563,6 +643,9 @@
     "LangNameKR": "Koreanisch",
 
     "Downloading": "Herunterladen",
+    "Updating": "Updating",
+    "UpdatingAndApplying": "Update + Applying",
+    "Applying": "Applying",
     "Merging": "Zusammenführen",
     "Idle": "Inaktiv",
     "Change": "Ändern",
@@ -608,6 +691,8 @@
     "DiscordRP_Ad": "- mit Collapse Launcher",
     "DiscordRP_Region": "Region:",
 
+    "DownloadModeLabelSophon": "Sophon-Modus",
+
     "Taskbar_PopupHelp1": "Klicken, um Collapse in den Vordergrund zu bringen",
     "Taskbar_PopupHelp2": "Doppelklick zum Umschalten der Fenstersichtbarkeit",
     "Taskbar_ShowApp": "Collapse-Fenster einblenden",
@@ -619,7 +704,7 @@
     "LauncherNameOfficial": "Offizieller Launcher",
     "LauncherNameBHI3L": "BetterHi3Launcher",
     "LauncherNameSteam": "Steam",
-    "LauncherNameUnknown": "(Launcher Name is Unknown)",
+    "LauncherNameUnknown": "(Launcher-Name ist unbekannt)",
 
     "ImageCropperTitle": "Bild zuschneiden"
   },
@@ -641,10 +726,10 @@
     "DeltaPatchDetectedSubtitle": "Delta-Patch wird genutzt, um dein Spiel von {0} zu {1} zu aktualisieren.\nDenke daran, dass du möglicherweise noch Spieldateien im Spiel herunterladen musst.\n\nWillst du fortfahren?",
     "DeltaPatchPrevFailedTitle": "Der letzte Delta-Patch wurde falsch angewendet oder konnte nicht vollständig beendet werden!",
     "DeltaPatchPrevFailedSubtitle": "Der vorherige Delta-Patch konnte nicht angewendet werden. Möchtest du dein Spiel wiederherstellen, um einen erneuten Download zu vermeiden?",
-    "DeltaPatchPreReqTitle": "Additional File Download is Required for Delta Patch!",
+    "DeltaPatchPreReqTitle": "Für den Delta-Patch ist ein zusätzlicher Dateidownload erforderlich!",
     "DeltaPatchPreReqSubtitle1": "Additional file download is required for this game before applying delta patch. Around ",
     "DeltaPatchPreReqSubtitle2": " is required to be downloaded and some of these files might contains audio package deltas.",
-    "DeltaPatchPreReqSubtitle3": "Do you want to continue?",
+    "DeltaPatchPreReqSubtitle3": "Möchtest du fortfahren?",
     "DeltaPatchPreReqSubtitle4": "(Click \"",
     "DeltaPatchPreReqSubtitle5": "\" to continue or \"",
     "DeltaPatchPreReqSubtitle6": "\" to use normal update or \"",
@@ -797,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {
@@ -921,7 +1009,7 @@
     "UpdateHeader4": "Geschwindigkeit:",
     "UpdateHeader5PlaceHolder": "Herunterladen von Updates [- / -]:",
 
-    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
+    "UpdateForcedHeader": "Der Launcher wird aufgrund von dringenden Änderungen zwangsweise aktualisiert, um sicherzustellen, dass er ordnungsgemäß funktioniert.",
 
     "UpdateStatus1": "Update abrufen:",
     "UpdateMessage1": "Verbinde zum Update Repository...",
@@ -936,25 +1024,25 @@
     "UpdateCountdownMessage2": "(Klicke",
     "UpdateCountdownMessage3": "um den Countdown abzubrechen)",
 
-    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle1": "Wir aktualisieren",
     "ApplyUpdateTitle2": "Collapse Launcher",
-    "ApplyUpdateCDNSelectorTitle": "Select your CDN for update",
-    "ApplyUpdateCDNSelectorSubtitle": "Select the CDN options and click \"{0}\" to start the update!",
-    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
-    "ApplyUpdateUpdateNowBtn": "Update Now!",
+    "ApplyUpdateCDNSelectorTitle": "Wähle einen CDN für das Update",
+    "ApplyUpdateCDNSelectorSubtitle": "Wähle eine CDN-Option aus und klicke auf \"{0}\", um das Update zu starten!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "Das CDN wird automatisch ausgewählt in: {0}",
+    "ApplyUpdateUpdateNowBtn": "Jetzt aktualisieren!",
 
     "ApplyUpdateUpdateVersionTitle": "Update:",
-    "ApplyUpdateUpdateChannelTitle": "Channel:",
-    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
+    "ApplyUpdateUpdateChannelTitle": "Kanal:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unbekannt",
     "ApplyUpdateUpdateStatusTitle": "Status:",
-    "ApplyUpdateMiscIdle": "Idle",
-    "ApplyUpdateMiscNone": "None",
-    "ApplyUpdateVersionSeparator": "to",
+    "ApplyUpdateMiscIdle": "Untätig",
+    "ApplyUpdateMiscNone": "Keine",
+    "ApplyUpdateVersionSeparator": "zu",
 
-    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
-    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
-    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
-    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+    "ApplyUpdateErrCollapseRunTitle": "Bitte schließe Collapse, bevor du das Update anwendest!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Warte auf Schließung von Collapse...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "FEHLER:\n\"release\"-Datei enthält keine \"stable\"- oder \"preview\"-Angabe",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Bitte überprüfe die \"release\"-Datei und versuche es erneut.",
 
     "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
     "ApplyUpdateDownloadSpeed": "{0}/s",
@@ -976,10 +1064,10 @@
     "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
     "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
 
-    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
-    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher wurde aktualisiert auf: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Starte Collapse in {0}...",
 
-    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
+    "ApplyUpdateTaskError": "FEHLER:\nBeim Anwenden des Updates ist ein Fehler aufgetreten!\n{0}"
   },
 
   "_AppNotification": {
@@ -997,9 +1085,9 @@
     "NotifPreviewBuildUsedSubtitle": "Du nutzt derzeit ein [PREVIEW] Build, das noch getestet wird. Sollten Probleme auftreten, melde diese bitte über den \"{0}\" Button unten. Danke!",
     "NotifPreviewBuildUsedBtn": "Ein Problem melden",
 
-    "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
-    "NotifKbShortcutBtn": "Show all shortcuts"
+    "NotifKbShortcutTitle": "Eine neue Funktion ist da!",
+    "NotifKbShortcutSubtitle": "Wir führen eine neue Art der Navigation in Collapse ein: Tastaturkürzel.\nDu kannst jetzt deine Tastatur benutzen, um schnelleren Zugriff auf einige Funktionen zu haben!\n\nMöchtest du mehr wissen?\nVersuche es mit STRG + Tab oder klicke unten auf die Schaltfläche.",
+    "NotifKbShortcutBtn": "Alle Tastenkombinationen anzeigen"
   },
 
   "_StarRailGameSettingsPage": {
@@ -1011,15 +1099,15 @@
     "Graphics_ExclusiveFullscreen": "Exklusiven Vollbildmodus verwenden",
     "Graphics_ResSelectPlaceholder": "Wähle",
     "Graphics_ResCustom": "Benutzerdefinierte Auflösung verwenden",
-    "Graphics_ResCustomTooltip": "Custom Resolution can only be used with Resizable Window enabled",
+    "Graphics_ResCustomTooltip": "Benutzerdefinierte Auflösung kann nur bei aktiviertem größenveränderbarem Fenster verwendet werden",
     "Graphics_ResCustomW": "B",
     "Graphics_ResCustomH": "H",
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS ist EXPERIMENTELL! Bitte mit Vorsicht verwenden, da Honkai: Star Rail dies nicht offiziell unterstützt!",
-    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
+    "Graphics_FPS_Help2": "Das Setzen des FPS-Werts auf 120 führt nicht mehr zum Absturz des Menüs, jedoch kann die Einstellung der FPS im Spiel nicht mehr auf einen niedrigeren Wert geändert werden.\nWenn du die 120 FPS-Option verwendest, ändere die Grafikeinstellungen des Spiels mit Collapse.",
     "Graphics_VSync": "VSync",
-    "Graphics_VSync_Help": "VSync is not available on 120 FPS",
+    "Graphics_VSync_Help": "VSync ist bei 120 FPS nicht verfügbar",
     "Graphics_RenderScale": "Render-Skalierung",
     "Graphics_ResolutionQuality": "Auflösungsqualität",
     "Graphics_ShadowQuality": "Schattenqualität",
@@ -1030,6 +1118,8 @@
     "Graphics_BloomQuality": "Bloom-Effekt",
     "Graphics_AAMode": "Anti-Aliasing-Modus",
     "Graphics_SFXQuality": "SFX-Qualität",
+    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "Allgemeine Grafikeinstellungen",
     "SpecEnabled": "Aktiviert",
@@ -1112,11 +1202,11 @@
     "Graphics_DynamicCharacterResolution": "Dynamic Character Resolution",
     "Graphics_DynamicCharacterResolution_Tooltip": "Only for supported hardware!",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
-    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
+    "Graphics_HDR_Enable": "HDR aktivieren",
+    "Graphics_HDR_NotSupported1": "Dein Bildschirm unterstützt HDR nicht.",
+    "Graphics_HDR_NotSupported2": "Ein HDR-fähiger Monitor ist erforderlich!",
+    "Graphics_HDR_NotEnabled1": "Dein Gerät unterstützt HDR, aber es ist nicht aktiviert.",
+    "Graphics_HDR_NotEnabled2": "Die Option \"HDR verwenden\" sollte in den Einstellungen von Windows aktiviert werden.",
     "Graphics_HDR_Help_Link": "More information",
     "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
     "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
@@ -1237,11 +1327,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Korea",
     "Japan": "Japan",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Vereinbarung:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Files Clean-up",
+    "TopButtonRescan": "Re-Scan",
+    "NoFilesToBeDeletedText": "No files need to be deleted!",
+    "ListViewFieldFileName": "File Name",
+    "ListViewFieldFileSize": "File Size",
+    "LoadingTitle": "Processing",
+    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
+    "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "BottomButtonDeleteAllFiles": "Delete All Files",
+    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
+    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "No File Selected",
+    "DialogDeletingFileTitle": "Deleting Files",
+    "DialogDeletingFileSubtitle1": "You're about to",
+    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
+    "DialogDeletingFileSubtitle3": "which contains",
+    "DialogDeletingFileSubtitle4": "{0} in size.",
+    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
+    "DialogDeleteSuccessTitle": "Files Deleted!",
+    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
+    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
+    "DialogMoveToRecycleBin": "Move to Recycle Bin",
+    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": "(unbekannt)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Empfohlen]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Color Filter Strength",
+    "Graphics_RenderRes": "Render Resolution",
+    "Graphics_EffectsQ": "Effects Quality",
+    "Graphics_ShadingQ": "Shading Quality",
+    "Graphics_Distortion": "Distortion",
+    "Audio_PlaybackDev": "Audio Playback Device",
+    "Audio_PlaybackDev_Headphones": "Headphones",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

@@ -1,7 +1,7 @@
-﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.GameSettings.Genshin;
+﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
+using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
@@ -19,6 +19,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.Statics
 {
@@ -26,42 +27,44 @@ namespace CollapseLauncher.Statics
     {
         internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
         {
-            PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
-
-            _APIResouceProp = APIResouceProp!.Copy();
-            switch (GamePreset!.GameType)
+            if (LauncherMetadataHelper.LauncherMetadataConfig != null)
             {
-                case GameNameType.Honkai:
-                    _GameVersion = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                    _GameSettings = new HonkaiSettings(_GameVersion);
-                    _GameCache = new HonkaiCache(UIElementParent, _GameVersion);
-                    _GameRepair = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                    _GameInstall = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                    break;
-                case GameNameType.StarRail:
-                    _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                    _GameSettings = new StarRailSettings(_GameVersion);
-                    _GameCache = new StarRailCache(UIElementParent, _GameVersion);
-                    _GameRepair = new StarRailRepair(UIElementParent, _GameVersion);
-                    _GameInstall = new StarRailInstall(UIElementParent, _GameVersion);
-                    break;
-                case GameNameType.Genshin:
-                    _GameVersion = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                    _GameSettings = new GenshinSettings(_GameVersion);
-                    _GameCache = null;
-                    _GameRepair = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
-                    _GameInstall = new GenshinInstall(UIElementParent, _GameVersion);
-                    break;
-                case GameNameType.Zenless:
-                    _GameVersion = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                    _GameSettings = new SettingsBase(_GameVersion);
-                    _GameSettings.InitializeSettings(); // TODO: Remove this call if we already find a way to do game settings for ZZZ
-                    _GameCache = null;
-                    _GameRepair = null;
-                    _GameInstall = new ZenlessInstall(UIElementParent, _GameVersion);
-                    break;
-                default:
-                    throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
+                PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
+
+                _APIResouceProp = APIResouceProp!.Copy();
+                switch (GamePreset!.GameType)
+                {
+                    case GameNameType.Honkai:
+                        _GameVersion  = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                        _GameSettings = new HonkaiSettings(_GameVersion);
+                        _GameCache    = new HonkaiCache(UIElementParent, _GameVersion);
+                        _GameRepair   = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
+                        _GameInstall  = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
+                        break;
+                    case GameNameType.StarRail:
+                        _GameVersion  = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                        _GameSettings = new StarRailSettings(_GameVersion);
+                        _GameCache    = new StarRailCache(UIElementParent, _GameVersion);
+                        _GameRepair   = new StarRailRepair(UIElementParent, _GameVersion);
+                        _GameInstall  = new StarRailInstall(UIElementParent, _GameVersion);
+                        break;
+                    case GameNameType.Genshin:
+                        _GameVersion  = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                        _GameSettings = new GenshinSettings(_GameVersion);
+                        _GameCache    = null;
+                        _GameRepair   = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
+                        _GameInstall  = new GenshinInstall(UIElementParent, _GameVersion);
+                        break;
+                    case GameNameType.Zenless:
+                        _GameVersion  = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                        _GameSettings = new ZenlessSettings(_GameVersion);
+                        _GameCache    = null;
+                        _GameRepair   = null;
+                        _GameInstall  = new ZenlessInstall(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
+                        break;
+                    default:
+                        throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
+                }
             }
         }
 
@@ -104,9 +107,9 @@ namespace CollapseLauncher.Statics
         // returns a null if something goes wrong. If not, then pass it to .Where(x) method which will select the given value with the certain logic.
         // (in this case, we need to ensure that the MainWindowHandle is not a non-zero pointer) and then piped into null-break operator.
         internal Process? GetGameProcessWithActiveWindow() =>
-            Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset!.GameExecutableName))?
-                .Where(x => x.MainWindowHandle != IntPtr.Zero)?
-                .FirstOrDefault();
+            Process
+               .GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset!.GameExecutableName))
+               .FirstOrDefault(x => x.MainWindowHandle != IntPtr.Zero);
 #nullable disable
 
         /*
@@ -147,33 +150,41 @@ namespace CollapseLauncher.Statics
 
         public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
         {
-            PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
+            if (LauncherMetadataHelper.LauncherMetadataConfig != null)
+            {
+                PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
 
-            LastGameHashID = LastGameHashID == 0 ? GamePreset!.HashID : LastGameHashID;
-            CurrentGameHashID = GamePreset!.HashID;
+                LastGameHashID    = LastGameHashID == 0 ? GamePreset!.HashID : LastGameHashID;
+                CurrentGameHashID = GamePreset!.HashID;
+            }
+
             RegisterGameProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
         }
 
         private static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
         {
-            PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
-
-            CleanupUnusedGameProperty();
-            if (Vault!.ContainsKey(GamePreset!.HashID))
+            if (LauncherMetadataHelper.LauncherMetadataConfig != null)
             {
+                PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
+
+                CleanupUnusedGameProperty();
+                if (Vault!.ContainsKey(GamePreset!.HashID))
+                {
+                #if DEBUG
+                    Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
+                #endif
+                    // Try reinitialize the config file on reloading cached game property
+                    Vault[GamePreset!.HashID]?._GameVersion?.Reinitialize();
+                    return;
+                }
+
+                GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
+                Vault.Add(GamePreset.HashID, Property);
 #if DEBUG
-                Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
+                Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
 #endif
-                // Try reinitialize the config file on reloading cached game property
-                Vault[GamePreset!.HashID]?._GameVersion?.Reinitialize();
-                return;
             }
 
-            GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
-            Vault.Add(GamePreset.HashID, Property);
-#if DEBUG
-            Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
-#endif
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -183,9 +194,9 @@ namespace CollapseLauncher.Statics
             if (Vault == null || Vault.Count == 0) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
-                .Where(x => !x!._GameInstall!.IsRunning && !x.IsGameRunning && x._GamePreset!.HashID != CurrentGameHashID)?
-                .Select(x => x._GamePreset.HashID)?
-                .ToArray();
+                .Where(x => !x!._GameInstall!.IsRunning && !x.IsGameRunning && x._GamePreset!.HashID != CurrentGameHashID)
+                                                  .Select(x => x._GamePreset.HashID)
+                                                  .ToArray();
 
             foreach (int key in unusedGamePropertyHashID)
             {
