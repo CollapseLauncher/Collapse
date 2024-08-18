@@ -2140,24 +2140,24 @@ namespace CollapseLauncher.Pages
 
         private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
         {
-            // string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
-            // if (!string.IsNullOrEmpty(file))
-            // {
-            //     var currentMediaType = GetMediaType(file);
-            //
-            //     if (currentMediaType == MediaType.StillImage)
-            //     {
-            //         FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
-            //
-            //         if (croppedImage == null) return;
-            //         SetAlternativeFileStream(croppedImage);
-            //     }
-            //
-            //     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
-            //     SetAndSaveConfigValue("CustomBGPath", file);
-            //     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, true, true);
+            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            if (!string.IsNullOrEmpty(file))
+            {
+                var currentMediaType = GetMediaType(file);
+            
+                if (currentMediaType == MediaType.StillImage)
+                {
+                    FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            
+                    if (croppedImage == null) return;
+                    SetAlternativeFileStream(croppedImage);
+                }
+            
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
+                SetAndSaveConfigValue("CustomBGPath", file);
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
             // await SimpleDialogs.Dialog_QuickSettingsChangeBG(this);
-        // }
+            }
         }
 
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
