@@ -43,7 +43,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -53,6 +52,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
+using Point = Windows.Foundation.Point;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
@@ -69,8 +69,8 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
-        public static int RefreshRateDefault { get; } = 500;
-        public static int RefreshRateSlow { get; } = 1000;
+        public static int RefreshRateDefault => 500;
+        public static int RefreshRateSlow    => 1000;
 
         private static int _refreshRate;
 

@@ -5,9 +5,9 @@ using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.InvokeProp;
@@ -69,17 +69,41 @@ namespace CollapseLauncher
 #endif
             CloseButton.Text = _exitApp;
 
-            // Switch toggle text to see if its started with Start
+            // Switch toggle text to see if it's started with Start
             MainTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showApp : _hideApp;
             ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
 
             CollapseTaskbar.Icon = Icon.FromHandle(LauncherConfig.AppIconSmall);
             CollapseTaskbar.Visibility = Visibility.Visible;
+            
+            CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
         }
 
         public void Dispose()
         {
             CollapseTaskbar.Dispose();
+        }
+
+        private void BalloonChangedEvent(object o, MessageWindow.BalloonToolTipChangedEventArgs args)
+        {
+            // Subscribe to the event when the Balloon is visible, and unsub when it's not.
+            // Due to bug, this MouseEvent is not available when the notification already went to the tray.
+            if (args.IsVisible)
+                CollapseTaskbar.TrayIcon.MessageWindow.MouseEventReceived += NotificationOnMouseEventReceived;
+            else
+                CollapseTaskbar.TrayIcon.MessageWindow.MouseEventReceived -= NotificationOnMouseEventReceived;
+        }
+
+        private bool _mouseEventProcessing;
+        private async void NotificationOnMouseEventReceived(object o, MessageWindow.MouseEventReceivedEventArgs args)
+        {
+            if (_mouseEventProcessing) return;
+            if (args.MouseEvent != MouseEvent.BalloonToolTipClicked) return;
+            
+            _mouseEventProcessing = true;
+            BringToForeground();
+            await Task.Delay(250);
+            _mouseEventProcessing = false;
         }
         #endregion
 
@@ -97,7 +121,7 @@ namespace CollapseLauncher
         private void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
 
         /// <summary>
-        /// Toggle both main and console visibility while avoiding flip flop condition
+        /// Toggle both main and console visibility while avoiding flip-flop condition
         /// </summary>
         [RelayCommand]
         private void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
@@ -125,6 +149,7 @@ namespace CollapseLauncher
         /// <summary>
         /// Toggle console window visibility
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void ToggleConsoleVisibility(bool forceShow = false)
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
@@ -162,7 +187,7 @@ namespace CollapseLauncher
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 LogWriteLine("Main window is hidden!");
-                ShowNotification("Main window is hidden!", "a");
+                WindowUtility.Tray_ShowNotification("test1", "neon stinki");
             }
             else
             {
@@ -204,6 +229,7 @@ namespace CollapseLauncher
         /// <summary>
         /// Bring all windows into foreground, also brought all windows if they were hidden in taskbar.
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void BringToForeground()
         {
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
@@ -233,6 +259,7 @@ namespace CollapseLauncher
         /// <summary>
         /// Update tray context menu
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void UpdateContextMenu()
         {
             // Enable visibility toggle for console if the console is enabled
@@ -253,11 +280,8 @@ namespace CollapseLauncher
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
             bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);
 
-            if (isConsoleVisible) ConsoleTaskbarToggle.Text = _hideConsole;
-            else ConsoleTaskbarToggle.Text                  = _showConsole;
-
-            if (isMainWindowVisible) MainTaskbarToggle.Text = _hideApp;
-            else MainTaskbarToggle.Text                     = _showApp;
+            ConsoleTaskbarToggle.Text = isConsoleVisible ? _hideConsole : _showConsole;
+            MainTaskbarToggle.Text    = isMainWindowVisible ? _hideApp : _showApp;
         }
 
         /// <summary>
