@@ -1930,7 +1930,7 @@
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
                                             Click="ChangeGameBGButton_Click"
-                                            IsEnabled="False"
+                                            IsEnabled="{x:Bind UseCustomBGParamsSwitch.IsOn, Mode=OneWay}"
                                             CornerRadius="14">
                                         <Button.Content>
                                             <Grid Margin="4,0">
