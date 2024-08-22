@@ -81,13 +81,13 @@ namespace CollapseLauncher.Interfaces
         protected void _innerObject_ProgressAdapter(object sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
         protected void _innerObject_StatusAdapter(object sender, TotalPerfileStatus e) => StatusChanged?.Invoke(sender, e);
 
-        protected virtual async void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadData)
+        protected virtual async void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadProgress)
         {
             if (await CheckIfNeedRefreshStopwatch())
             {
-                double speed = downloadData.BytesDownloaded / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
-                TimeSpan timeLeftSpan = ((downloadData.BytesTotal - downloadData.BytesDownloaded) / speed).ToTimeSpanNormalized();
-                double percentage = ConverterTool.GetPercentageNumber(downloadData.BytesDownloaded, downloadData.BytesTotal, 2);
+                double speed = downloadProgress.BytesDownloaded / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
+                TimeSpan timeLeftSpan = ((downloadProgress.BytesTotal - downloadProgress.BytesDownloaded) / speed).ToTimeSpanNormalized();
+                double percentage = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal, 2);
 
                 lock (_status!)
                 {
@@ -101,8 +101,8 @@ namespace CollapseLauncher.Interfaces
                 {
                     // Update fetch progress
                     _progress.ProgressPerFilePercentage = percentage;
-                    _progress.ProgressAllSizeCurrent = downloadData.BytesDownloaded;
-                    _progress.ProgressAllSizeTotal = downloadData.BytesTotal;
+                    _progress.ProgressAllSizeCurrent = downloadProgress.BytesDownloaded;
+                    _progress.ProgressAllSizeTotal = downloadProgress.BytesTotal;
                     _progress.ProgressAllSpeed = speed;
                     _progress.ProgressAllTimeLeft = timeLeftSpan;
                 }
@@ -144,11 +144,11 @@ namespace CollapseLauncher.Interfaces
         {
             lock (_progress!)
             {
-                _progress.ProgressPerFilePercentage     = e!.ProgressPercentage;
-                _progress.ProgressPerFileSizeCurrent       = e!.SizeDownloaded;
+                _progress.ProgressPerFilePercentage = e!.ProgressPercentage;
+                _progress.ProgressPerFileSizeCurrent = e!.SizeDownloaded;
                 _progress.ProgressPerFileSizeTotal = e!.SizeToBeDownloaded;
-                _progress.ProgressAllSizeCurrent         = _progressAllSizeCurrent;
-                _progress.ProgressAllSizeTotal   = _progressAllSizeTotal;
+                _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
+                _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
 
                 // Calculate speed
                 long speed = (long)(_progressAllSizeCurrent / _stopwatch!.Elapsed.TotalSeconds);
@@ -179,8 +179,8 @@ namespace CollapseLauncher.Interfaces
                     string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress!.ProgressAllTimeLeft);
 
                     _status.ActivityPerFile = string.Format(Lang._Misc.Speed!, ConverterTool.SummarizeSizeSimple(_progress.ProgressAllSpeed));
-                    _status.ActivityAll = string.Format(Lang._GameRepairPage!.PerProgressSubtitle2!, 
-                                                          ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), 
+                    _status.ActivityAll = string.Format(Lang._GameRepairPage!.PerProgressSubtitle2!,
+                                                          ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent),
                                                           ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}";
 
                     // Trigger update
