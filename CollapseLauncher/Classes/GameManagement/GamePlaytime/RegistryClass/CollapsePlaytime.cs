@@ -97,7 +97,7 @@ namespace CollapseLauncher.GamePlaytime
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])stats;
 #if DEBUG
-                    LogWriteLine($"Loaded Playtime:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
+                    LogWriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
                     playtime = byteStr.Deserialize<CollapsePlaytime>(UniversalPlaytimeJSONContext.Default) ?? new CollapsePlaytime();
                 }
@@ -144,7 +144,7 @@ namespace CollapseLauncher.GamePlaytime
                 
                 double? lastPlayed = (LastPlayed?.ToUniversalTime() - BaseDate)?.TotalSeconds;
                 if (lastPlayed != null)
-                    _registryRoot.SetValue(_LastPlayedValueName, lastPlayed);
+                    _registryRoot.SetValue(_LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
@@ -201,7 +201,7 @@ namespace CollapseLauncher.GamePlaytime
             TotalPlaytime = TotalPlaytime.Add(minute);
             LastSession   = LastSession.Add(minute);
             
-            if (today == DateTime.Today)
+            if (ControlDate == today)
             {
                 DailyPlaytime   = DailyPlaytime.Add(minute);
                 WeeklyPlaytime  = WeeklyPlaytime.Add(minute);

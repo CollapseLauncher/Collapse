@@ -19,6 +19,7 @@ namespace CollapseLauncher.GamePlaytime
 #nullable enable
         public CollapsePlaytime CollapsePlaytime => _playtime;
 
+        public  bool              IsSessionRunning { get; protected set; }
         private RegistryKey?      _registryRoot;
         private CollapsePlaytime  _playtime;
         private IGameVersionCheck _gameVersionManager;
@@ -39,6 +40,13 @@ namespace CollapseLauncher.GamePlaytime
         }
 #nullable disable
 
+        public void Reload()
+        {
+            if (IsSessionRunning) return;
+
+            _playtime = CollapsePlaytime.Load(_registryRoot!, _gameVersionManager.GamePreset.HashID);
+        }
+
         public void Update(TimeSpan timeSpan)
         {
             TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
@@ -46,7 +54,7 @@ namespace CollapseLauncher.GamePlaytime
             _playtime.Update(timeSpan);
             PlaytimeUpdated?.Invoke(this, _playtime);
 
-            LogWriteLine($"Playtime counter changed to {TimeSpanToString(timeSpan)}m. (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
+            LogWriteLine($"Playtime counter changed to {TimeSpanToString(timeSpan)}. (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
         }
 
         public void Reset()
@@ -61,6 +69,11 @@ namespace CollapseLauncher.GamePlaytime
 
         public async void StartSession(Process proc)
         {
+            if (IsSessionRunning) return;
+
+            Reload();
+            IsSessionRunning = true;
+
             DateTime begin          = DateTime.Now;
             TimeSpan initialTimeSpan = _playtime.TotalPlaytime;
 
@@ -109,6 +122,8 @@ namespace CollapseLauncher.GamePlaytime
             
             _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false);
             PlaytimeUpdated?.Invoke(this, _playtime);
+
+            IsSessionRunning = false;
         }
 
         private static string TimeSpanToString(TimeSpan timeSpan)
