@@ -4,7 +4,6 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
-using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using System;
@@ -84,8 +83,7 @@ namespace CollapseLauncher
             try
             {
                 // Get the primary manifest
-                using Http httpClient = new Http(client);
-                await GetPrimaryManifest(httpClient, token, assetIndex);
+                await GetPrimaryManifest(downloadClient, token, assetIndex);
 
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
                 if (this._isOnlyRecoverMain && base._isVersionOverride)
@@ -153,7 +151,7 @@ namespace CollapseLauncher
         }
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(Http client, CancellationToken token, List<FilePropertiesRemote> assetIndex)
+        private async Task GetPrimaryManifest(DownloadClient downloadClient, CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Initialize pkgVersion list
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
@@ -221,8 +219,7 @@ namespace CollapseLauncher
                     // Try get the data
                     using MemoryStream ms = new MemoryStream();
                     using StreamReader sr = new StreamReader(ms);
-                    client.DownloadProgress += _httpClient_FetchAssetProgress;
-                    await client.Download(basePkgVersionUrl, ms, null, null, token);
+                    await downloadClient.DownloadAsync(basePkgVersionUrl, ms, false, _httpClient_FetchAssetProgress);
 
                     // Read the stream and deserialize the JSON
                     pkgVersion.Clear();
@@ -235,11 +232,6 @@ namespace CollapseLauncher
                     }
                 }
                 catch { throw; }
-                finally
-                {
-                    // Unsubscribe the event
-                    client.DownloadProgress -= _httpClient_FetchAssetProgress;
-                }
             }
 
             // Convert the pkg version list to asset index
