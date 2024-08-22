@@ -5,7 +5,6 @@ using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Http;
-using Hi3Helper.Http.Legacy;
 using Hi3Helper.UABT;
 using System;
 using System.Collections.Generic;
@@ -38,50 +37,37 @@ namespace CollapseLauncher
             // Use a new DownloadClient for fetching
             DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
 
-            // Use HttpClient instance on fetching
-            using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
-            try
+            // Build _gameRepoURL from loading Dispatcher and Gateway
+            await BuildGameRepoURL(downloadClient, token);
+
+            // Iterate type and do fetch
+            foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
             {
-                // Subscribe the event listener
-                httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
-
-                // Build _gameRepoURL from loading Dispatcher and Gateway
-                await BuildGameRepoURL(downloadClient, token);
-
-                // Iterate type and do fetch
-                foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
+                // Skip for unused type
+                switch (type)
                 {
-                    // Skip for unused type
-                    switch (type)
-                    {
-                        case CacheAssetType.Unused:
-                        case CacheAssetType.Dispatcher:
-                        case CacheAssetType.Gateway:
-                        case CacheAssetType.General:
-                        case CacheAssetType.IFix:
-                        case CacheAssetType.DesignData:
-                        case CacheAssetType.Lua:
-                            continue;
-                    }
-
-                    // uint = Count of the assets available
-                    // long = Total size of the assets available
-                    (int, long) count = await FetchByType(type, downloadClient, returnAsset, token);
-
-                    // Write a log about the metadata
-                    LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
-                    LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
-                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
-
-                    // Increment the Total Size and Count
-                    _progressAllCountTotal += count.Item1;
-                    _progressAllSizeTotal += count.Item2;
+                    case CacheAssetType.Unused:
+                    case CacheAssetType.Dispatcher:
+                    case CacheAssetType.Gateway:
+                    case CacheAssetType.General:
+                    case CacheAssetType.IFix:
+                    case CacheAssetType.DesignData:
+                    case CacheAssetType.Lua:
+                        continue;
                 }
-            }
-            finally
-            {
-                // Unsubscribe the event listener and dispose Http client
-                httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
+
+                // uint = Count of the assets available
+                // long = Total size of the assets available
+                (int, long) count = await FetchByType(type, downloadClient, returnAsset, token);
+
+                // Write a log about the metadata
+                LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
+                LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
+                LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
+
+                // Increment the Total Size and Count
+                _progressAllCountTotal += count.Item1;
+                _progressAllSizeTotal += count.Item2;
             }
 
             // Return asset index
@@ -149,7 +135,7 @@ namespace CollapseLauncher
 
             // Get a direct HTTP Stream
             await using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(
-                downloadClient.GetHttpClient(), assetIndexURL, null, null, token);
+                downloadClient.GetHttpClient(), assetIndexURL, null, null, null, null, null, token);
 
             using XORStream stream = new XORStream(remoteStream);
 

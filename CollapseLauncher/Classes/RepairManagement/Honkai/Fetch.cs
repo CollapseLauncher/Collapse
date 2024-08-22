@@ -9,7 +9,6 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Http;
-using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Win32;
 using System;
@@ -73,12 +72,9 @@ namespace CollapseLauncher
             // Get the instance of a new DownloadClient
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            // Use HttpClient instance on fetching
-            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
             try
             {
                 // Subscribe the fetching progress and subscribe cacheUtil progress to adapter
-                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
                 _cacheUtil!.ProgressChanged += _innerObject_ProgressAdapter;
                 _cacheUtil!.StatusChanged += _innerObject_StatusAdapter;
 
@@ -88,7 +84,7 @@ namespace CollapseLauncher
 
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
-                Dictionary<string, string> manifestDict = await FetchMetadata(_httpClient, token);
+                Dictionary<string, string> manifestDict = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!manifestDict.ContainsKey(_gameVersion.VersionString!))
@@ -168,7 +164,6 @@ namespace CollapseLauncher
             finally
             {
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
                 _cacheUtil!.ProgressChanged -= _innerObject_ProgressAdapter;
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 senadinaFileIdentifier?.Clear();
@@ -178,7 +173,7 @@ namespace CollapseLauncher
         private async Task<Dictionary<string, SenadinaFileIdentifier>?> GetSenadinaIdentifierDictionary(HttpClient client, string mainUrl, CancellationToken token)
         {
             string identifierUrl = CombineURLFromString(mainUrl, $"daftar-pustaka")!;
-            using Stream fileIdentifierStream = await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, token);
+            using Stream fileIdentifierStream = (await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, null, null, null, token))!;
             using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
 
             await ThrowIfFileIsNotSenadina(fileIdentifierStream, token);
@@ -210,7 +205,7 @@ namespace CollapseLauncher
             }
 
             SenadinaFileIdentifier identifier = dict[origFileRelativePath];
-            Stream networkStream = await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, 0, null, token);
+            using Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
 
             await ThrowIfFileIsNotSenadina(networkStream, token);
             identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
@@ -539,7 +534,7 @@ namespace CollapseLauncher
 
         #region XMFAndAssetIndex
         // ReSharper disable once UnusedParameter.Local
-        private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
+        private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
         {
             // Set metadata URL
             string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gameVersionManager!.GamePreset!.ProfileName);

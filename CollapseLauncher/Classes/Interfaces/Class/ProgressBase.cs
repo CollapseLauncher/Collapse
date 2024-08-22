@@ -24,7 +24,6 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -1052,7 +1051,7 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region PatchTools
-        protected virtual async ValueTask RunPatchTask(Http _httpClient, CancellationToken token, long patchSize, Memory<byte> patchHash,
+        protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, long patchSize, Memory<byte> patchHash,
             string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false)
         {
             ArgumentNullException.ThrowIfNull(patchOutputFile);
@@ -1066,7 +1065,7 @@ namespace CollapseLauncher.Interfaces
             if (!patchInfo.Exists || patchInfo.Length != patchSize)
             {
                 // Download patch File first
-                await RunDownloadTask(patchSize, patchOutputFile, patchURL, _httpClient, token)!;
+                await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token)!;
             }
 
             // Always do loop if patch doesn't get downloaded properly
@@ -1082,7 +1081,7 @@ namespace CollapseLauncher.Interfaces
                         _progressAllSizeCurrent -= patchSize;
 
                         // Redownload the patch file
-                        await RunDownloadTask(patchSize, patchOutputFile, patchURL, _httpClient, token)!;
+                        await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token)!;
                         continue;
                     }
                 }
