@@ -88,24 +88,9 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetIndex.AssetType, Path.GetFileName(asset.AssetIndex.LocalName));
             UpdateAll();
 
-            // Assign and check the path of the asset directory
-            string assetDir = Path.GetDirectoryName(asset.AssetIndex.LocalName);
-            if (!Directory.Exists(assetDir))
-            {
-                Directory.CreateDirectory(assetDir);
-            }
-
-            // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
-            await downloadClient.DownloadAsync(
-                asset.AssetIndex.RemoteURL,
-                asset.AssetIndex.LocalName,
-                true,
-                progressDelegateAsync: downloadProgress,
-                cancelToken: token
-                );
-
+            // Run download task
+            await RunDownloadTask(asset.AssetIndex.Size, asset.AssetIndex.LocalName, asset.AssetIndex.RemoteURL, downloadClient, downloadProgress, token);
             LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.AssetType}]: {Path.GetFileName(asset.AssetIndex.LocalName)}", LogType.Default, true);
-
 
             // Remove Asset Entry display
             PopRepairAssetEntry(asset.AssetProperty);
