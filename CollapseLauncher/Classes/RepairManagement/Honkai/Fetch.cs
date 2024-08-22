@@ -205,7 +205,7 @@ namespace CollapseLauncher
             }
 
             SenadinaFileIdentifier identifier = dict[origFileRelativePath];
-            using Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
+            Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
 
             await ThrowIfFileIsNotSenadina(networkStream, token);
             identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
