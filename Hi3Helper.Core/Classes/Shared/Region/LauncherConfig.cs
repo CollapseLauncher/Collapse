@@ -80,12 +80,13 @@ namespace Hi3Helper.Shared.Region
 
         public static bool IsConfigKeyExist(string key) => appIni.Profile![SectionName!]!.ContainsKey(key!);
         public static IniValue GetAppConfigValue(string key) => appIni.Profile![SectionName]![key!];
-        public static void SetAndSaveConfigValue(string key, IniValue value)
+        public static void SetAndSaveConfigValue(string key, IniValue value, bool doNotLog = false)
         {
             SetAppConfigValue(key, value);
             SaveAppConfig();
             #if DEBUG
-            Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
+            if (!doNotLog)
+                Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
             #endif
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
@@ -202,20 +203,52 @@ namespace Hi3Helper.Shared.Region
             set => SetAppConfigValue("GameFolder", value);
         }
         public static string[] AppCurrentArgument;
+        private static string _appExecutablePath;
         public static string AppExecutablePath
         {
             get
             {
-                string execName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule!.FileName);
-                string dirPath = AppFolder;
-                return Path.Combine(dirPath!, execName + ".exe");
+                if (string.IsNullOrEmpty(_appExecutablePath))
+                {
+                    using Process currentProcess = Process.GetCurrentProcess();
+                    string execName = Path.GetFileNameWithoutExtension(currentProcess.MainModule?.FileName);
+                    string dirPath = AppFolder;
+                    return _appExecutablePath = Path.Combine(dirPath!, execName + ".exe");
+                }
+                return _appExecutablePath;
             }
         }
-        public static string AppExecutableName      { get => Path.GetFileName(AppExecutablePath); }
-        public static string AppGameImgFolder       { get => Path.Combine(AppGameFolder!,    "_img"); }
-        public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder!, "cached"); }
-        public static string AppGameLogsFolder      { get => Path.Combine(AppGameFolder!,    "_logs"); }
-        
+        public static string AppExecutableName       { get => Path.GetFileName(AppExecutablePath); }
+        public static string AppGameImgFolder        { get => Path.Combine(AppGameFolder!,    "_img"); }
+        public static string AppGameImgCachedFolder  { get => Path.Combine(AppGameImgFolder!, "cached"); }
+        public static string AppGameLogsFolder       { get => Path.Combine(AppGameFolder!,    "_logs"); }
+
+        private static string _appCurrentVersionString;
+        public static string AppCurrentVersionString
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_appCurrentVersionString))
+                {
+                    string executablePath = AppExecutablePath;
+                    if (string.IsNullOrEmpty(executablePath))
+                        return "Unknown";
+
+                    try
+                    {
+                        FileVersionInfo verInfo = FileVersionInfo.GetVersionInfo(executablePath);
+                        string version = $"{verInfo.FileMajorPart}.{verInfo.FileMinorPart}.{verInfo.FileBuildPart}";
+                        return _appCurrentVersionString = version;
+                    }
+                    catch
+                    {
+                        return "Unknown";
+                    }
+                }
+                return _appCurrentVersionString;
+            }
+        }
+
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder!, "config.ini");
         public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder,  "ignore_notif_ids.json");
         
@@ -261,6 +294,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("IsIntroEnabled", value);
         }
 
+        public static bool IsBurstDownloadModeEnabled
+        {
+            get => GetAppConfigValue("IsBurstDownloadModeEnabled").ToBoolNullable() ?? true;
+            set => SetAndSaveConfigValue("IsBurstDownloadModeEnabled", value);
+        }
+
         private static bool? _cachedIsInstantRegionChange = null;
         public static bool IsInstantRegionChange
         {
@@ -274,6 +313,18 @@ namespace Hi3Helper.Shared.Region
 
         public static bool                 ForceInvokeUpdate     = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
+
+        public static Guid GetGuid(int sessionNum)
+        {
+            var guidString = GetAppConfigValue($"sessionGuid{sessionNum}").ToString();
+            if (string.IsNullOrEmpty(guidString))
+            {
+                var g = Guid.NewGuid();
+                SetAndSaveConfigValue($"sessionGuid{sessionNum}", g.ToString());
+                return g;
+            }
+            return Guid.Parse(guidString);
+        }
         #endregion
 
         #region App Settings Template
@@ -296,6 +347,7 @@ namespace Hi3Helper.Shared.Region
             { "UseCustomBG", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
+            { "ShowGamePlaytime", true},
             { "CustomBGPath", "" },
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
@@ -320,7 +372,20 @@ namespace Hi3Helper.Shared.Region
             { "BackgroundAudioVolume", 0.5d },
             { "BackgroundAudioIsMute", true },
             { "UseInstantRegionChange", true },
-            { "IsIntroEnabled", true }
+            { "IsIntroEnabled", true },
+            { "IsEnableSophon", true},
+            { "SophonCpuThread", 0},
+            { "SophonHttpConnInt", 0},
+
+            { "IsUseProxy", false },
+            { "IsAllowHttpRedirections", true },
+            { "IsAllowHttpCookies", false },
+            { "IsAllowUntrustedCert", false },
+            { "IsBurstDownloadModeEnabled", false },
+            { "HttpProxyUrl", string.Empty },
+            { "HttpProxyUsername", string.Empty },
+            { "HttpProxyPassword", string.Empty },
+            { "HttpClientTimeout", 90 }
         };
         #endregion
     }

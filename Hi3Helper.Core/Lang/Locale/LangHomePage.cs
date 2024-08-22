@@ -49,6 +49,7 @@
                 public string GameSettings_Panel4 { get; set; } = LangFallback?._HomePage.GameSettings_Panel4;
                 public string GameSettings_Panel4ShowEventsPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
                 public string GameSettings_Panel4ShowSocialMediaPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;
+                public string GameSettings_Panel4ShowPlaytimeButton { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowPlaytimeButton;
                 public string GameSettings_Panel4CreateShortcutBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4CreateShortcutBtn;
                 public string GameSettings_Panel4AddToSteamBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4AddToSteamBtn;
                 public string CreateShortcut_FolderPicker { get; set; } = LangFallback?._HomePage.CreateShortcut_FolderPicker;
@@ -75,6 +76,25 @@
                 public string CommunityToolsBtn_OfficialText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OfficialText;
                 public string CommunityToolsBtn_CommunityText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_CommunityText;
                 public string CommunityToolsBtn_OpenExecutableAppDialogTitle { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle;
+                public string Exception_DownloadTimeout1 { get; set; } =
+                    LangFallback?._HomePage.Exception_DownloadTimeout1;
+                public string Exception_DownloadTimeout2 { get; set; } =
+                    LangFallback?._HomePage.Exception_DownloadTimeout2;
+                public string Exception_DownloadTimeout3 { get; set; } =
+                    LangFallback?._HomePage.Exception_DownloadTimeout3;
+
+                public string GameStateInvalid_Title { get; set; } = LangFallback?._HomePage.GameStateInvalid_Title;
+                public string GameStateInvalid_Subtitle1 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle1;
+                public string GameStateInvalid_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle2;
+                public string GameStateInvalid_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle3;
+                public string GameStateInvalid_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle4;
+                public string GameStateInvalid_Subtitle5 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle5;
+
+                public string GameStateInvalidFixed_Title { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Title;
+                public string GameStateInvalidFixed_Subtitle1 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle1;
+                public string GameStateInvalidFixed_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle2;
+                public string GameStateInvalidFixed_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle3;
+                public string GameStateInvalidFixed_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle4;
             }
         }
         #endregion

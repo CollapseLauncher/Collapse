@@ -1,4 +1,4 @@
-﻿<Application x:Class="CollapseLauncher.App"
+<Application x:Class="CollapseLauncher.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -19,6 +19,8 @@
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default">
                             <!--  For dark theme  -->
+                            <x:String x:Key="AppLogo">ms-appx:///Assets/CollapseLauncherLogo.png</x:String>
+                            <x:String x:Key="AppLogoOutline">ms-appx:///Assets/CollapseLauncherLogoOutlineLight.png</x:String>
                             <!--  Base accent color  -->
                             <ui:Color x:Key="TemplateAccentColor">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColor">#ffd52a</ui:Color>
@@ -27,6 +29,9 @@
                             <ui:Color x:Key="SystemAccentColorLight3">#ffd52a</ui:Color>
                             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent" Color="#00FFFFFF"/>
                             <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent" Color="#00222222"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundHover" Color="#55222222"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundPressed" Color="#77222222"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundDisabled" Color="#11222222"/>
                             <AcrylicBrush x:Key="AccentColorBrush"
                                           TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor"
@@ -116,8 +121,9 @@
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="ProgressBackgroundAcrylicBrush"
                                           FallbackColor="#AA222222"
-                                          TintColor="#000000"
-                                          TintOpacity="0.33"/>
+                                          TintColor="#222222"
+                                          TintOpacity="0.2"
+                                          TintLuminosityOpacity="0.2"/>
                             <AcrylicBrush x:Key="DialogAcrylicBrush"
                                           FallbackColor="#FF222222"
                                           TintColor="#FF222222"
@@ -152,6 +158,8 @@
                                           FallbackColor="{ThemeResource SystemAccentColorLight1}"
                                           TintColor="{ThemeResource SystemAccentColorLight1}"
                                           TintOpacity="1"/>
+                            
+                            <!-- For Navigation View -->
                             <AcrylicBrush x:Key="NavigationViewContentBackground"
                                           FallbackColor="Transparent"
                                           TintColor="Transparent"
@@ -172,10 +180,34 @@
                                                  StartPoint="0,0"
                                                  EndPoint="0.15,0">
                                 <GradientStop Offset="0"
-                                              Color="#2D000000"/>
+                                              Color="#40000000"/>
                                 <GradientStop Offset="1"
                                               Color="#00000000"/>
                             </LinearGradientBrush>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackground"
+                                             Color="#00000000"/>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackgroundPointerOver"
+                                             Color="#22000000"/>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackgroundPressed"
+                                             Color="#11000000"/>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackgroundDisabled"
+                                             Color="#0A000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundPointerOver"
+                                             Color="#22000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundPressed"
+                                             Color="#11000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundDisabled"
+                                             Color="#0A000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelected"
+                                             Color="#44000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPointerOver"
+                                             Color="#55000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPressed"
+                                             Color="#33000000"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedDisabled"
+                                             Color="#22000000"/>
+
+
                             <LinearGradientBrush x:Key="LoadingGradientBG"
                                                  StartPoint="0.5,0"
                                                  EndPoint="0.5,1">
@@ -337,6 +369,8 @@
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="Light">
                             <!--  For light theme  -->
+                            <x:String x:Key="AppLogo">ms-appx:///Assets/CollapseLauncherLogo.png</x:String>
+                            <x:String x:Key="AppLogoOutline">ms-appx:///Assets/CollapseLauncherLogoOutlineDark.png</x:String>
                             <!--  Base accent color  -->
                             <ui:Color x:Key="TemplateAccentColor">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColor">#693758</ui:Color>
@@ -345,6 +379,9 @@
                             <ui:Color x:Key="SystemAccentColorDark3">#693758</ui:Color>
                             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent" Color="#00000000"/>
                             <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent" Color="#00FFFFFF"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundHover" Color="#55FFFFFF"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundPressed" Color="#77FFFFFF"/>
+                            <SolidColorBrush x:Key="SolidColorBrushBackgroundDisabled" Color="#11FFFFFF"/>
                             <AcrylicBrush x:Key="AccentColorBrush"
                                           TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor"
@@ -419,7 +456,7 @@
                             <AcrylicBrush x:Key="SocMedPanelAcrylicBrush"
                                           FallbackColor="#CCEEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.75"
+                                          TintLuminosityOpacity="0.6"
                                           TintOpacity="0"/>
                             <AcrylicBrush x:Key="WebView2GridBackground"
                                           FallbackColor="#EEEAEAEA"
@@ -469,6 +506,7 @@
                                           FallbackColor="{ThemeResource SystemAccentColorDark1}"
                                           TintColor="{ThemeResource SystemAccentColorDark1}"
                                           TintOpacity="1"/>
+                            <!-- Navigation View Styles -->
                             <AcrylicBrush x:Key="NavigationViewContentBackground"
                                           FallbackColor="Transparent"
                                           TintColor="Transparent"
@@ -478,21 +516,44 @@
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground"
                                           FallbackColor="#FFEEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="1"
+                                          TintLuminosityOpacity="0.6"
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="NavigationViewUnfoldedPaneBackground"
                                           FallbackColor="#D0EEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="1"
+                                          TintLuminosityOpacity="0.6"
                                           TintOpacity="0.0"/>
                             <LinearGradientBrush x:Key="NavigationViewExpandedPaneBackground"
                                                  StartPoint="0,0"
                                                  EndPoint="0.15,0">
                                 <GradientStop Offset="0"
-                                              Color="#2DFFFFFF"/>
+                                              Color="#44FFFFFF"/>
                                 <GradientStop Offset="1"
                                               Color="#00FFFFFF"/>
                             </LinearGradientBrush>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackground"
+                                             Color="#00FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackgroundPointerOver"
+                                             Color="#66FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackgroundPressed"
+                                             Color="#44FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewButtonBackgroundDisabled"
+                                             Color="#22FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundPointerOver"
+                                             Color="#66FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundPressed"
+                                             Color="#44FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundDisabled"
+                                             Color="#22FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelected"
+                                             Color="#88FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPointerOver"
+                                             Color="#55FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPressed"
+                                             Color="#44FFFFFF"/>
+                            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedDisabled"
+                                             Color="#22FFFFFF"/>
+
                             <LinearGradientBrush x:Key="LoadingGradientBG"
                                                  StartPoint="0.5,0"
                                                  EndPoint="0.5,1">
@@ -612,24 +673,24 @@
                             <SolidColorBrush x:Key="NewAccentButtonForeground"
                                              Color="#FFFFFF"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackground"
-                                          FallbackColor="#D0FFFFFF"
-                                          TintColor="#FFFFFF"
+                                          FallbackColor="#D0EEEEEE"
+                                          TintColor="#EEEEEE"
                                           TintLuminosityOpacity="0.8"
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="AcrylicSemiButtonBackground"
-                                          FallbackColor="#D0FFFFFF"
-                                          TintColor="#FFFFFF"
+                                          FallbackColor="#D0EEEEEE"
+                                          TintColor="#EEEEEE"
                                           TintLuminosityOpacity="0.8"
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundFocused"
-                                          FallbackColor="#FFFFFFFF"
+                                          FallbackColor="#EEEEEE"
                                           TintColor="#FFFFFF"
                                           TintLuminosityOpacity="0.70"
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundPointerOver"
-                                          FallbackColor="#FFFFFFFF"
+                                          FallbackColor="#FFEEEEEE"
                                           TintColor="#FFFFFF"
-                                          TintLuminosityOpacity="0.8"
+                                          TintLuminosityOpacity="0.9"
                                           TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundPressed"
                                           FallbackColor="#FFFFFFFF"
@@ -1520,7 +1581,7 @@
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="Background">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource ButtonBackgroundPointerOver}"/>
+                                                                                    Value="{ThemeResource SolidColorBrushBackgroundHover}"/>
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="BorderBrush">
@@ -1543,7 +1604,7 @@
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="Background">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource ButtonBackgroundPressed}"/>
+                                                                                    Value="{ThemeResource SolidColorBrushBackgroundPressed}"/>
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="BorderBrush">
@@ -1566,7 +1627,7 @@
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="Background">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                    Value="{ThemeResource ButtonDisabledBrush}"/>
+                                                                                    Value="{ThemeResource SolidColorBrushBackgroundDisabled}"/>
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="BorderBrush">
@@ -1702,6 +1763,11 @@
                                                                                        Storyboard.TargetProperty="BorderBrush">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource ButtonBorderBrushDisabled}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="BorderThickness">
+                                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                    Value="0"/>
                                                         </ObjectAnimationUsingKeyFrames>
                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                                                        Storyboard.TargetProperty="Foreground">
@@ -2790,6 +2856,7 @@
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/RadioButton.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Slider.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/ImageEx/ImageEx.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml"/>

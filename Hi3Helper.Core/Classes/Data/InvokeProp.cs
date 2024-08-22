@@ -1,4 +1,6 @@
 using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -81,6 +83,19 @@ namespace Hi3Helper
             EsContinuous = 0x80000000,
             EsDisplayRequired = 0x00000002,
             EsSystemRequired = 0x00000001
+        }
+        
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct SHFILEOPSTRUCT
+        {
+            public IntPtr hwnd;
+            public uint   wFunc;
+            public string pFrom;
+            public string pTo;
+            public ushort fFlags;
+            public int    fAnyOperationsAborted;
+            public IntPtr hNameMappings;
+            public string lpszProgressTitle;
         }
         #endregion
 
@@ -251,53 +266,122 @@ namespace Hi3Helper
         [DllImport("ntdll.dll", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
-
-        private static byte[] NtQueryCachedBuffer = new byte[4 << 20];
         public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
         {
-            // Get the pointer of the buffer
-            fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
+            // Initialize the first buffer to 512 KiB
+            ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
+            byte[] NtQueryCachedBuffer = arrayPool.Rent(4 << 17);
+            bool isReallocate = false;
+            uint length = 0;
+
+        StartOver:
+            try
             {
-                // Get the query of the current running process and store it to the buffer
-                NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out uint length);
+                // If the buffer request is more than 2 MiB, then return false
+                if (length > (2 << 20))
+                    return false;
 
-                // If the required length of the data is exceeded, return false
-                if (length > NtQueryCachedBuffer.Length) return false;
+                // If buffer reallocation is requested, then re-rent the buffer
+                // from ArrayPool<T>.Shared
+                if (isReallocate)
+                    NtQueryCachedBuffer = arrayPool.Rent((int)length);
 
-                // Start reading data from the buffer
-                int currentOffset = 0;
-            ReadQueryData:
-                // Get the current position of the pointer based on its offset
-                byte* curPosPtr = dataBufferPtr + currentOffset;
+                // Get the pointer of the buffer
+                fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
+                {
+                    // Get the query of the current running process and store it to the buffer
+                    NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out length);
 
-                // Get the increment of the next entry offset
-                // and get the struct from the given pointer offset + 56 bytes ahead
-                // to obtain the process name.
-                int nextEntryOffset = *(int*)curPosPtr;
-                UNICODE_STRING* unicodeString = (UNICODE_STRING*)(curPosPtr + 56);
+                    // If the required length of the data is exceeded than the current buffer,
+                    // then try to reallocate and start over to the top.
+                    if (length > NtQueryCachedBuffer.Length)
+                    {
+                        isReallocate = true;
+                        goto StartOver;
+                    }
 
-                // Use the struct buffer into the ReadOnlySpan<char> to be compared with
-                // the input from "processName" argument.
-                ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
-                if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
-                    return true; // If equals, then return true
+                    // Start reading data from the buffer
+                    int currentOffset = 0;
+                ReadQueryData:
+                    // Get the current position of the pointer based on its offset
+                    byte* curPosPtr = dataBufferPtr + currentOffset;
 
-                // Otherwise, if the next entry offset is not 0 (not ended), then read
-                // the next data and move forward based on the given offset.
-                currentOffset += nextEntryOffset;
-                if (nextEntryOffset != 0)
-                    goto ReadQueryData;
+                    // Get the increment of the next entry offset
+                    // and get the struct from the given pointer offset + 56 bytes ahead
+                    // to obtain the process name.
+                    int nextEntryOffset = *(int*)curPosPtr;
+                    UNICODE_STRING* unicodeString = (UNICODE_STRING*)(curPosPtr + 56);
+
+                    // Use the struct buffer into the ReadOnlySpan<char> to be compared with
+                    // the input from "processName" argument.
+                    ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
+                    if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
+                        return true; // If equals, then return true
+
+                    // Otherwise, if the next entry offset is not 0 (not ended), then read
+                    // the next data and move forward based on the given offset.
+                    currentOffset += nextEntryOffset;
+                    if (nextEntryOffset != 0)
+                        goto ReadQueryData;
+                }
+            }
+            finally
+            {
+                // Return the buffer to the ArrayPool<T>.Shared
+                arrayPool.Return(NtQueryCachedBuffer);
             }
 
             return false;
         }
         #endregion
+        
+        #region shell32
+        [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
+
+        public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
+        {
+            const uint    WM_SETICON = 0x0080;
+            const UIntPtr ICON_BIG   = 1;
+            const UIntPtr ICON_SMALL = 0;
+            SendMessage(hWnd, WM_SETICON, ICON_BIG,   hIconLarge);
+            SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
+        }
+        
+        [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+        private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
+        #endregion
+        
+        public static void MoveFileToRecycleBin(IList<string> filePaths)
+        { 
+            uint   FO_DELETE          = 0x0003;
+            ushort FOF_ALLOWUNDO      = 0x0040;
+            ushort FOF_NOCONFIRMATION = 0x0010;
+
+            var concat = string.Join('\0', filePaths) + '\0' + '\0';
+            
+            SHFILEOPSTRUCT fileOp = new SHFILEOPSTRUCT
+            {
+                wFunc  = FO_DELETE,
+                pFrom  = concat,
+                fFlags = (ushort)(FOF_ALLOWUNDO | FOF_NOCONFIRMATION)
+            };
+
+            SHFileOperation(ref fileOp);
+        }
 
 #nullable enable
         public static CancellationTokenSource? _preventSleepToken;
         private static bool _preventSleepRunning;
 
-        public static async void RestoreSleep() => await (_preventSleepToken?.CancelAsync() ?? Task.CompletedTask);
+        public static async void RestoreSleep()
+        {
+            // Return early if token is disposed/already cancelled
+            if (_preventSleepToken == null || _preventSleepToken.IsCancellationRequested)
+                return;
+            await (_preventSleepToken?.CancelAsync() ?? Task.CompletedTask);
+        }
 
         public static async void PreventSleep()
         {
@@ -420,21 +504,6 @@ namespace Hi3Helper
             public void ShowWindowMaximized() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMAXIMIZED);
             public void HideWindow() => ShowWindowAsync(m_WindowPtr, (int)HandleEnum.SW_SHOWMINIMIZED);
         }
-
-        #region shell32
-        [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
-
-        public static void SetWindowIcon(IntPtr hWnd, IntPtr hIconLarge, IntPtr hIconSmall)
-        {
-            const uint WM_SETICON = 0x0080;
-            const UIntPtr ICON_BIG = 1;
-            const UIntPtr ICON_SMALL = 0;
-            SendMessage(hWnd, WM_SETICON, ICON_BIG, hIconLarge);
-            SendMessage(hWnd, WM_SETICON, ICON_SMALL, hIconSmall);
-        }
-        #endregion
 
         public delegate bool HandlerRoutine(uint dwCtrlType);
 

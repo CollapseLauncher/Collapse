@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #nullable enable
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using HtmlAgilityPack;
 using Markdig.Syntax.Inlines;
@@ -100,7 +101,9 @@ internal class MyImage : IAddChild
             }
             else
             {
-                HttpClient client = new HttpClient();
+                HttpClient client = new HttpClientBuilder()
+                    .UseLauncherConfig()
+                    .Create();
 
                 // Download data from URL
                 HttpResponseMessage response = await client.GetAsync(_uri);

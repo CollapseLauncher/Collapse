@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
+    "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
 
@@ -174,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "非公式便利ツール",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "ツールの.exeファイル: {0}",
 
-    "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択"
+    "CreateShortcut_FolderPicker": "ショートカットを作成する位置を選択",
+
+    "Exception_DownloadTimeout1": "{0}のインストール中にタイムアウトが発生しました",
+    "Exception_DownloadTimeout2": "インターネット接続の安定性を確認してみてください！回線速度が遅い場合は、ダウンロードスレッドの値を小さくしてください。",
+    "Exception_DownloadTimeout3": "**警告** ダウンロードスレッドの値を変更すると、ダウンロードの進行度が0からになります。さらに、既存のダウンロードチャンクは手動で削除する必要があります！",
+
+    "GameStateInvalid_Title": "ゲームデータのディレクトリ/実行ファイル名/Config.ini/App.Info が無効です！",
+    "GameStateInvalid_Subtitle1": "Collapse Launcherは以下のサーバーの無効なゲームファイルのプロパティを検出しました:\r\n",
+    "GameStateInvalid_Subtitle2": "ランチャーがゲームと適切に紐づけできるように、プロパティの修復を行うことをお勧めします。",
+    "GameStateInvalid_Subtitle3": "\"",
+    "GameStateInvalid_Subtitle4": "\"を押してプロパティを修復するか、\"",
+    "GameStateInvalid_Subtitle5": "\"を押してキャンセルします。",
+
+    "GameStateInvalidFixed_Title": "ゲームファイルのプロパティが修復されました！",
+    "GameStateInvalidFixed_Subtitle1": "以下のサーバーのゲームファイルのプロパティが修復されました:",
+    "GameStateInvalidFixed_Subtitle2": "全てのファイルの整合性を確認するために、\"",
+    "GameStateInvalidFixed_Subtitle3": "\"を\"",
+    "GameStateInvalidFixed_Subtitle4": "\"メニューから実行してください。"
   },
 
   "_GameRepairPage": {
@@ -269,7 +287,13 @@
     "Graphics_ResCustom": "カスタム解像度を使用",
     "Graphics_ResCustomW": "横",
     "Graphics_ResCustomH": "縦",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} フルスクリーン",
+    "Graphics_ResPrefixWindowed": "{0}x{1} ウィンドウモード",
 
+    "Graphics_VSync": "垂直同期",
+
+    "Graphics_FPS": "フレームレート",
+    "Graphics_FPSUnlimited": "無制限",
     "Graphics_FPSPanel": "最大FPS",
     "Graphics_FPSInCombat": "戦闘フレーム",
     "Graphics_FPSInMenu": "その他",
@@ -309,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "これらの設定項目はゲーム内に存在しないため、変更しても効果がない可能性があります。",
 
     "SpecDisabled": "OFF",
+    "SpecCustom": "カスタム",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
@@ -417,6 +442,20 @@
     "AppThreads_Help5": "このスレッドはゲームのインストール・修復中の解凍・整合性チェックプロセスを操作します。",
     "AppThreads_Help6": "注: 崩壊3rdのインストール中は、この設定が無効になります。",
 
+    "SophonSettingsTitle": "Sophonモードの設定",
+    "SophonHelp_Title": "Sophonモードって何？",
+    "SophonHelp_1": "Sophonとは、HoYoVerseが新しく導入したダウンロードシステムです。Sophonモードでは巨大なzipファイルをダウンロードする代わりに、ファイルを小さなチャンクに分割してダウンロードします。このモードを使うと必要なドライブの空き容量が減り、ダウンロードと更新がより効率的になります。",
+    "SophonHelp_2": "ゲームをHDDに保存している場合、Sophonモードを有効化するとダウンロード速度が逆に遅くなる可能性があります。",
+    "SophonHelp_IndicatorTitle": "アイコンの意味",
+    "SophonHelp_Indicator1": "ディスクに書き込むファイルサイズ",
+    "SophonHelp_Indicator2": "ダウンロードするファイルサイズ",
+    "SophonHelp_Indicator3": "書き込み時のディスクI/O速度",
+    "SophonHelp_Indicator4": "書き込み時のネットワークI/O速度",
+    "SophonHelp_Thread": "Collapseが同時にダウンロードするチャンクの数を設定します。ゲームのダウンロード中にCollapseがクラッシュする場合は、この値を小さくしてください。",
+    "SophonHttpNumberBox": "最大HTTP接続数",
+    "SophonHelp_Http": "CollapseがチャンクをダウンロードするためにHoYoVerseのサーバーに対して確立するネットワーク接続の最大数を設定します。",
+    "SophonToggle": "サポート済みのゲームでSophonモードを使用する",
+
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "既にダウンロード済みのパッケージがある場合は、",
     "AppThreads_Attention2": "の値を",
@@ -441,6 +480,8 @@
     "Update_NewVer1": "バージョン",
     "Update_NewVer2": "に更新できます！",
     "Update_LatestVer": "最新バージョンです。",
+    "Update_SeeChangelog": "最新の更新履歴（英語）",
+    "Update_ChangelogTitle": "更新履歴",
 
     "AppFiles": "ランチャーのファイル管理",
     "AppFiles_OpenDataFolderBtn": "ランチャーのデータフォルダーを開く",
@@ -462,7 +503,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
-    
+
     "LicenseType": "MIT License",
 
     "Disclaimer": "免責事項",
@@ -502,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",
     "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
-    "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。"
+    "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。",
+
+    "NetworkSettings_Title": "ネットワークの設定",
+    "NetworkSettings_Proxy_Title": "プロキシの設定",
+
+    "NetworkSettings_Proxy_Hostname": "プロキシのホスト名",
+    "NetworkSettings_Proxy_HostnameHelp1": "使用するプロキシのURLを指定します。",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapseは現在、",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS と SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "タイプのプロキシのみをサポートしています。",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "無効なURLが入力されています！",
+    "NetworkSettings_ProxyWarn_NotSupported": "Collapseはプロキシスキームに対応していません！http://、https://、socks4://、socks4a://、socks5://のみ対応しています。",
+
+    "NetworkSettings_Proxy_Username": "プロキシのユーザー名",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "プロキシのユーザー名を入力",
+    "NetworkSettings_Proxy_UsernameHelp1": "デフォルト:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[空欄]",
+    "NetworkSettings_Proxy_UsernameHelp3": "プロキシの認証が不要な場合は、空欄のままにしてください。",
+
+    "NetworkSettings_Proxy_Password": "プロキシのパスワード",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "プロキシのパスワードを入力",
+    "NetworkSettings_Proxy_PasswordHelp1": "デフォルト:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[空欄]",
+    "NetworkSettings_Proxy_PasswordHelp3": "プロキシの認証が不要な場合は、空欄のままにしてください。",
+
+    "NetworkSettings_ProxyTest_Button": "プロキシの接続テスト",
+    "NetworkSettings_ProxyTest_ButtonChecking": "接続をテストしています…",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "プロキシの接続テストに成功しました！",
+    "NetworkSettings_ProxyTest_ButtonFailed": "テストに失敗しました！プロキシにアクセスできません",
+
+    "NetworkSettings_Http_Title": ".NET HTTPクライアントの設定",
+    "NetworkSettings_Http_Redirect": "HTTPリダイレクトを許可",
+    "NetworkSettings_Http_SimulateCookies": "HTTP Cookieのシミュレートを許可",
+    "NetworkSettings_Http_UntrustedHttps": "信頼されていないHTTP証明書を許可",
+    "NetworkSettings_Http_Timeout": "HTTPクライアントのタイムアウト（秒単位）"
   },
 
   "_Misc": {
@@ -516,6 +592,7 @@
     "TimeRemainHMSFormat": "あと{0:%h}時間 {0:%m}分 {0:%s}秒",
     "TimeRemainHMSFormatPlaceholder": "あと--時間 --分 --秒",
     "Speed": "速度: {0}/秒",
+    "SpeedTextOnly": "速度",
     "SpeedPerSec": "{0}/秒",
     "SpeedPlaceholder": "速度: - /秒",
     "PerFromTo": "{0} / {1}",
@@ -566,6 +643,9 @@
     "LangNameKR": "韓国語",
 
     "Downloading": "ダウンロード中",
+    "Updating": "アップデート中",
+    "UpdatingAndApplying": "アップデート + パッチ中",
+    "Applying": "パッチ中",
     "Merging": "マージ中",
     "Idle": "待機",
     "Change": "変更",
@@ -802,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。",
 
     "DownloadSettingsTitle": "ダウンロード設定",
-    "DownloadSettingsOption1": "インストール完了後にゲームを起動"
+    "DownloadSettingsOption1": "インストール完了後にゲームを起動",
+    
+    "OpenInExternalBrowser": "外部ブラウザで開く",
+    "CloseOverlay": "閉じる"
   },
 
   "_FileMigrationProcess": {
@@ -1244,11 +1327,38 @@
     "TW/HK/MO": "台湾/香港/マカオ",
     "Korea": "韓国",
     "Japan": "日本",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "利用規約："
+  },
+
+  "_FileCleanupPage": {
+    "Title": "ファイル整理",
+    "TopButtonRescan": "再スキャン",
+    "NoFilesToBeDeletedText": "不要なファイルはありません！",
+    "ListViewFieldFileName": "ファイル名",
+    "ListViewFieldFileSize": "サイズ",
+    "LoadingTitle": "読み込み中",
+    "LoadingSubtitle1": "既存のファイルを計算しています({0}個のファイルを検出 - 合計{1})…",
+    "LoadingSubtitle2": "pkg_versionの可用性をチェックしています…",
+    "BottomButtonDeleteAllFiles": "全てのファイルを削除",
+    "BottomButtonDeleteSelectedFiles": "{0}個の選択したファイルを削除",
+    "BottomCheckboxFilesSelected": "{0}個のファイルを選択中({1} / 合計{2})",
+    "BottomCheckboxNoFileSelected": "ファイルが選択されていません",
+    "DialogDeletingFileTitle": "ファイルの削除",
+    "DialogDeletingFileSubtitle1": "​",
+    "DialogDeletingFileSubtitle2": "{0}個のファイル",
+    "DialogDeletingFileSubtitle3": "​",
+    "DialogDeletingFileSubtitle4": "(合計{0})を削除しようとしています。",
+    "DialogDeletingFileSubtitle5": "本当にファイルを削除しますか？",
+    "DialogDeleteSuccessTitle": "ファイルが削除されました！",
+    "DialogDeleteSuccessSubtitle1": "{0} 個のファイルを削除しました。",
+    "DialogDeleteSuccessSubtitle2": "{0} の削除に失敗しました。",
+    "DialogMoveToRecycleBin": "ごみ箱に移動させる",
+    "DialogTitleMovedToRecycleBin": "ファイルをごみ箱に移動しました！"
   },
 
   "_OOBEStartUpMenu": {
@@ -1287,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": "（{0}ms）",
     "CDNCheckboxItemLatencyUnknownFormat": "（不明）",
     "CDNCheckboxItemLatencyRecommendedFormat": "[おすすめ]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "カラーフィルター",
+    "Graphics_RenderRes": "レンダリング精度",
+    "Graphics_EffectsQ": "SFX品質",
+    "Graphics_ShadingQ": "シェーディング",
+    "Graphics_Distortion": "ディストーション",
+    "Audio_PlaybackDev": "再生デバイス",
+    "Audio_PlaybackDev_Headphones": "ヘッドホン",
+    "Audio_PlaybackDev_Speakers": "スピーカー",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

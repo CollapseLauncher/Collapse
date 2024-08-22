@@ -71,7 +71,6 @@ namespace CollapseLauncher.GameSettings.Universal
 
             return comparedTo.CustomArgumentValue == this.CustomArgumentValue;
         }
-#nullable disable
         #endregion
     }
 }

@@ -45,7 +45,7 @@ namespace CollapseLauncher.Extension
                 catch (Exception ex)
                 {
                     lastException = ex;
-                    actionOnRetry?.Invoke(retryAttemptCurrent, retryAttempt ?? 0, timeout ?? 0, timeoutStep ?? 0);
+                    actionOnRetry?.Invoke(retryAttemptCurrent, (int)retryAttempt, timeout ?? 0, timeoutStep ?? 0);
 
                     if (ex is TimeoutException)
                     {
@@ -60,7 +60,6 @@ namespace CollapseLauncher.Extension
 
                     retryAttemptCurrent++;
                     timeout += timeoutStep;
-                    continue;
                 }
                 finally
                 {

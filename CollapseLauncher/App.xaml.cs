@@ -49,18 +49,19 @@ namespace CollapseLauncher
         {
             try
             {
-                ThemeChangerInvoker.ThemeEvent += (_, _) => {
-                    WindowUtility.ApplyWindowTitlebarLegacyColor();
-                    bool isThemeLight = IsAppThemeLight;
-                    Color color = isThemeLight ? Colors.Black : Colors.White;
-                    Current!.Resources!["WindowCaptionForeground"] = color;
+                ThemeChangerInvoker.ThemeEvent += (_, _) => 
+                  {
+                      WindowUtility.ApplyWindowTitlebarLegacyColor();
+                      bool  isThemeLight = IsAppThemeLight;
+                      Color color        = isThemeLight ? Colors.Black : Colors.White;
+                      Current!.Resources!["WindowCaptionForeground"] = color;
 
-                    WindowUtility.CurrentAppWindow!.TitleBar!.ButtonForegroundColor = color;
-                    WindowUtility.CurrentAppWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
+                      WindowUtility.CurrentAppWindow!.TitleBar!.ButtonForegroundColor = color;
+                      WindowUtility.CurrentAppWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
 
-                    if (WindowUtility.CurrentWindow!.Content is not null and FrameworkElement frameworkElement)
-                        frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
-                };
+                      if (WindowUtility.CurrentWindow!.Content is not null and FrameworkElement frameworkElement)
+                          frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+                  };
 
                 Window toInitializeWindow = null;
                 switch (m_appMode)

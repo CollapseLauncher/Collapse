@@ -5,8 +5,8 @@
     using Squirrel;
     using Squirrel.Sources;
     using System;
-    using System.Reflection;
     using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
     namespace CollapseLauncher.Helper.Update
 {
@@ -14,27 +14,26 @@
     {
         static LauncherUpdateHelper()
         {
-            Version? version = Assembly.GetExecutingAssembly().GetName().Version;
-            if (version == null)
+            string? versionString = LauncherConfig.AppCurrentVersionString;
+            if (string.IsNullOrEmpty(versionString))
                 throw new NullReferenceException("App cannot retrieve the current version of the executable!");
 
-            _launcherCurrentVersion = new GameVersion(version);
+            _launcherCurrentVersion = new GameVersion(versionString);
             _launcherCurrentVersionString = _launcherCurrentVersion.VersionString;
-            LoggerBase.CurrentLauncherVersion = _launcherCurrentVersion.VersionString;
         }
 
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
         internal static bool IsLauncherUpdateAvailable;
 
-        private static GameVersion _launcherCurrentVersion;
+        private static readonly GameVersion _launcherCurrentVersion;
         internal static GameVersion? LauncherCurrentVersion
             => _launcherCurrentVersion;
 
-        private static string _launcherCurrentVersionString;
+        private static readonly string _launcherCurrentVersionString;
         internal static string LauncherCurrentVersionString
             => _launcherCurrentVersionString;
 
-        internal static async void RunUpdateCheckDetached()
+        internal static async Task RunUpdateCheckDetached()
         {
             try
             {
@@ -68,7 +67,7 @@
                 IsLauncherUpdateAvailable = LauncherCurrentVersion.Compare(remoteVersion);
 
                 bool isUserIgnoreUpdate = (LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false) && !isForceCheckUpdate;
-                bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !(AppUpdateVersionProp?.IsForceUpdate ?? false);
+                bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !AppUpdateVersionProp.IsForceUpdate;
 
                 return IsLauncherUpdateAvailable && !isUpdateRoutineSkipped;
             }
@@ -77,7 +76,7 @@
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)
         {
             string relativePath = ConverterTool.CombineURLFromString(updateChannel, "fileindex.json");
-            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
+            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
             return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
         }
     }

@@ -8,6 +8,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -137,7 +139,13 @@ public class Updater : IDisposable
 
     private async Task StartLegacyUpdate()
     {
-        using (var _httpClient = new Http(true))
+        // Initialize new proxy-aware HttpClient
+        using HttpClient client = new HttpClientBuilder()
+            .UseLauncherConfig()
+            .SetAllowedDecompression(DecompressionMethods.None)
+            .Create();
+
+        using (var _httpClient = new Http(true, customHttpClient: client))
         {
             UpdateStopwatch = Stopwatch.StartNew();
 

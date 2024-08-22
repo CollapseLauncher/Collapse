@@ -44,7 +44,8 @@ namespace CollapseLauncher
         private const uint                           LoadTimeoutStep            = 5; // Step 5 seconds for each timeout retries
 
         private static  string        RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
-        private         List<object>  LastNavigationItem;
+        private         List<object>  LastMenuNavigationItem;
+        private         List<object>  LastFooterNavigationItem;
         internal static string        PreviousTag = string.Empty;
 
         internal async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfig preset, string gameName, string gameRegion)
@@ -111,12 +112,17 @@ namespace CollapseLauncher
                 await tokenSource.CancelAsync();
 
                 // If explicit cancel was triggered, restore the navigation menu item then return false
-                foreach (object item in LastNavigationItem)
+                foreach (object item in LastMenuNavigationItem)
                 {
                     NavigationViewControl.MenuItems.Add(item);
                 }
+                foreach (object item in LastFooterNavigationItem)
+                {
+                    NavigationViewControl.FooterMenuItems.Add(item);
+                }
                 NavigationViewControl.IsSettingsVisible = true;
-                LastNavigationItem.Clear();
+                LastMenuNavigationItem.Clear();
+                LastFooterNavigationItem.Clear();
                 if (m_arguments.StartGame != null)
                     m_arguments.StartGame.Play = false;
 
@@ -143,8 +149,10 @@ namespace CollapseLauncher
         public void ClearMainPageState()
         {
             // Clear NavigationViewControl Items and Reset Region props
-            LastNavigationItem = [..NavigationViewControl.MenuItems];
+            LastMenuNavigationItem = [..NavigationViewControl.MenuItems];
+            LastFooterNavigationItem = [..NavigationViewControl.FooterMenuItems];
             NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.FooterMenuItems.Clear();
             NavigationViewControl.IsSettingsVisible = false;
             PreviousTag = "launcher";
             PreviousTagString.Clear();

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CollapseLauncher.GameSettings.Base;
+using System;
+using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Interfaces
 {
@@ -6,5 +9,13 @@ namespace CollapseLauncher.Interfaces
     {
         abstract static T Load();
         void Save();
+    }
+
+    internal interface IGameSettingsValueMagic<T> : IGameSettingsValue<T>
+    {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        byte[] Magic { get; }
+
+        abstract static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context);
     }
 }

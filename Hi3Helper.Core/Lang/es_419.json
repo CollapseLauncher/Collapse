@@ -151,6 +151,7 @@
     "GameSettings_Panel4": "Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
+    "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
     "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
     "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
 
@@ -174,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "De la Comunidad",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Selecciona el Ejecutable: {0}",
 
-    "CreateShortcut_FolderPicker": "Selecciona donde crear el acceso directo"
+    "CreateShortcut_FolderPicker": "Selecciona donde crear el acceso directo",
+
+    "Exception_DownloadTimeout1": "Se supero el tiempo de espera al intentar instalar {0}",
+    "Exception_DownloadTimeout2": "¡Verifica la estabilidad de tu conexión! Si la velocidad de tu internet es lenta, disminuye el numero de Hilos de Descarga.",
+    "Exception_DownloadTimeout3": "**ADVERTENCIA** ¡Cambiar el numero de hilos reiniciaran la descarga desde 0 y tendrás que eliminar manualmente las partes de archivos ya descargados!",
+
+    "GameStateInvalid_Title": "¡Directorio de Datos de Juego/Nombre del Ejecutable/Config.ini/App.Info es inválido!",
+    "GameStateInvalid_Subtitle1": "Collapse detectó que las propiedades de archivo del juego son inválidas para la región:\r\n",
+    "GameStateInvalid_Subtitle2": "Es recomendado hacer una reparación para que el launcher detecte el juego correctamente",
+    "GameStateInvalid_Subtitle3": "Haz clic en \"",
+    "GameStateInvalid_Subtitle4": "\" para reparar las propiedades o clic en \"",
+    "GameStateInvalid_Subtitle5": "\" para cancelar la operación.",
+
+    "GameStateInvalidFixed_Title": "¡Se han corregido con éxito los archivos de juego!",
+    "GameStateInvalidFixed_Subtitle1": "Se han corregido las propiedades para la región:",
+    "GameStateInvalidFixed_Subtitle2": "Por Favor, realiza un \"",
+    "GameStateInvalidFixed_Subtitle3": "\" en el menú de \"",
+    "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados."
   },
 
   "_GameRepairPage": {
@@ -269,7 +287,13 @@
     "Graphics_ResCustom": "Usar Resolución Personalizada",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Pantalla Completa",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Ventana",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Sin Límite",
     "Graphics_FPSPanel": "FPS máximo",
     "Graphics_FPSInCombat": "En Combate",
     "Graphics_FPSInMenu": "Menú Principal",
@@ -309,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "Estos ajustes no están presentes en el juego y puede que no tengan ningún efecto.",
 
     "SpecDisabled": "Deshabilitado",
+    "SpecCustom": "Personalizada",
     "SpecLow": "Bajo",
     "SpecMedium": "Medio",
     "SpecHigh": "Alto",
@@ -417,6 +442,20 @@
     "AppThreads_Help5": "Este thread manejará el proceso de extracción/verificación mientras se instala/repara el juego.",
     "AppThreads_Help6": "Aviso: Esta configuración ya no funciona al instalar Honkai Impact 3rd.",
 
+    "SophonSettingsTitle": "Ajustes Modo Sophon",
+    "SophonHelp_Title": "¿Qué es el modo de descarga Sophon?",
+    "SophonHelp_1": "\"Sophon\" es el nuevo modo de descarga introducido por HoYoVerse que permite descargar archivos en \"partes\" en vez de un gran archivo ZIP. Las ventajas son principalmente para las descargas y actualizaciones, al ser mas eficientes y necesitar menos espacio en disco.",
+    "SophonHelp_2": "Este método puede ser lento para usuarios que tengan el juego en Discos Duros.",
+    "SophonHelp_IndicatorTitle": "Iconos indicadores",
+    "SophonHelp_Indicator1": "Tamaño de archivo a escribir en disco",
+    "SophonHelp_Indicator2": "Tamaño de archivo a descargar",
+    "SophonHelp_Indicator3": "Velocidad E/S del disco en escritura",
+    "SophonHelp_Indicator4": "Velocidad E/S de red en escritura",
+    "SophonHelp_Thread": "Controla el número de \"partes\" simultáneas que descarga Collapse. Reduzca el valor si la descarga se detiene repentinamente.",
+    "SophonHttpNumberBox": "Conexiones HTTP máximas",
+    "SophonHelp_Http": "Controla el número máximo de conexiones de red que Collapse establece para descargar las partes.",
+    "SophonToggle": "Habilitar Sophon en Regiones Soportadas",
+
     "AppThreads_Attention": "Precaución",
     "AppThreads_Attention1": "Antes de cambiar el valor de los",
     "AppThreads_Attention2": ", por favor considera ",
@@ -441,6 +480,8 @@
     "Update_NewVer1": "¡Nueva",
     "Update_NewVer2": "Actualización disponible!",
     "Update_LatestVer": "Estás usando la última versión.",
+    "Update_SeeChangelog": "Ver los Últimos Cambios (Ingles)",
+    "Update_ChangelogTitle": "Últimos Cambios",
 
     "AppFiles": "Gestión de Archivos",
     "AppFiles_OpenDataFolderBtn": "Abrir Carpeta de Datos de la Aplicación",
@@ -462,7 +503,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
-    
+
     "LicenseType": "Licencia MIT",
 
     "Disclaimer": "Aviso",
@@ -502,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
     "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
-    "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida."
+    "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida.",
+
+    "NetworkSettings_Title": "Ajustes de Red",
+    "NetworkSettings_Proxy_Title": "Ajustes de Proxy",
+
+    "NetworkSettings_Proxy_Hostname": "Hostname de Proxy",
+    "NetworkSettings_Proxy_HostnameHelp1": "Representa la URL del Proxy a utilizar.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse solo soporta proxy de tipo ",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS y SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "por el momento.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "¡La URL ingresada no es valida!",
+    "NetworkSettings_ProxyWarn_NotSupported": "¡El formato de Proxy no es soportado! Collapse solo soporta http://, https://, socks4://, socks4a:// y socks5://",
+
+    "NetworkSettings_Proxy_Username": "Nombre de Usuario de Proxy",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Ingresar Nombre de Usuario",
+    "NetworkSettings_Proxy_UsernameHelp1": "Por Defecto:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Vacío]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
+
+    "NetworkSettings_Proxy_Password": "Contraseña de Proxy",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Ingresar Contraseña de Proxy",
+    "NetworkSettings_Proxy_PasswordHelp1": "Por Defecto:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Vacío]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
+
+    "NetworkSettings_ProxyTest_Button": "Probar Conectividad del Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Comprobando Conectividad...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "¡Prueba de Conectividad fue exitosa!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "¡Prueba fallida! No se puede alcanzar el proxy",
+
+    "NetworkSettings_Http_Title": "Ajustes Cliente .NET HTTP",
+    "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Permitir Simular HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Permitir Certificados HTTPS que no son de confianza",
+    "NetworkSettings_Http_Timeout": "Tiempo de espera del cliente HTTP (en segundos)"
   },
 
   "_Misc": {
@@ -516,6 +592,7 @@
     "TimeRemainHMSFormat": "{0:%h}h{0:%m}m{0:%s}s restantes",
     "TimeRemainHMSFormatPlaceholder": "restantes",
     "Speed": "Velocidad: {0}/s",
+    "SpeedTextOnly": "Velocidad:",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Velocidad: - /s",
     "PerFromTo": "{0} / {1}",
@@ -566,6 +643,9 @@
     "LangNameKR": "Coreano",
 
     "Downloading": "Descargando",
+    "Updating": "Actualizando",
+    "UpdatingAndApplying": "Actualizando y Aplicando",
+    "Applying": "Aplicando",
     "Merging": "Combinando",
     "Idle": "Inactivo",
     "Change": "Cambiar",
@@ -802,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
 
     "DownloadSettingsTitle": "Descargando Configuración",
-    "DownloadSettingsOption1": "Iniciar el juego después de instalar "
+    "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
+    
+    "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
+    "CloseOverlay": "Cerrar Superposición (Overlay)"
   },
 
   "_FileMigrationProcess": {
@@ -1168,7 +1251,7 @@
 
     "Audio_Output_Surround": "Usar Sonido Envolvente",
     "Audio_DynamicRange": "Rango Dinámico completo",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "Silenciar Audio al Minimizar",
 
     "Language": "Configuración de Idioma",
     "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
@@ -1244,11 +1327,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Korea",
     "Japan": "Japan",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Acuerdo:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Limpieza de Archivos",
+    "TopButtonRescan": "Volver a Escanear",
+    "NoFilesToBeDeletedText": "¡Ningún archivo debe ser eliminado!",
+    "ListViewFieldFileName": "Nombre del Archivo",
+    "ListViewFieldFileSize": "Tamaño del Archivo",
+    "LoadingTitle": "Procesando",
+    "LoadingSubtitle1": "Calculando Archivos Existentes ({0} archivo(s) encontrados - {1} en total)...",
+    "LoadingSubtitle2": "Comprobando disponibilidad de pkg_version...",
+    "BottomButtonDeleteAllFiles": "Eliminar todos los archivos",
+    "BottomButtonDeleteSelectedFiles": "Eliminar {0} Archivo(s) seleccionado(s)",
+    "BottomCheckboxFilesSelected": "{0} Archivo(s) seleccionado(s) ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "Ningún archivo seleccionado",
+    "DialogDeletingFileTitle": "Eliminando Archivos",
+    "DialogDeletingFileSubtitle1": "Estas a punto de",
+    "DialogDeletingFileSubtitle2": "eliminar {0} archivo(s)",
+    "DialogDeletingFileSubtitle3": "que contiene(n)",
+    "DialogDeletingFileSubtitle4": "{0} en tamaño.",
+    "DialogDeletingFileSubtitle5": "¿Estas seguro que quieres eliminar los archivos?",
+    "DialogDeleteSuccessTitle": "¡Archivos Eliminados!",
+    "DialogDeleteSuccessSubtitle1": "{0} Archivo(s) fueron eliminados exitosamente",
+    "DialogDeleteSuccessSubtitle2": ", {0} no se pudieron eliminar",
+    "DialogMoveToRecycleBin": "Mover a la Papelera",
+    "DialogTitleMovedToRecycleBin": "Archivos movidos a la Papelera de reciclaje"
   },
 
   "_OOBEStartUpMenu": {
@@ -1287,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": "(Desconocido)",
     "CDNCheckboxItemLatencyRecommendedFormat": "[Recomendado]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Fuerza Filtro de Color",
+    "Graphics_RenderRes": "Calidad de Renderizado",
+    "Graphics_EffectsQ": "Calidad del Efectos",
+    "Graphics_ShadingQ": "Calidad Sombreado",
+    "Graphics_Distortion": "Distorción",
+    "Audio_PlaybackDev": "Dispositivo de Audio",
+    "Audio_PlaybackDev_Headphones": "Auriculares",
+    "Audio_PlaybackDev_Speakers": "Altavoces",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

@@ -51,7 +51,6 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
             return data;
         }
-#nullable disable
         #endregion
     }
 }

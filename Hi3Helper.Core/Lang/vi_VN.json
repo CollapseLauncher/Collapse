@@ -66,10 +66,10 @@
     "Footer2": "Paimon",
     "Footer3": "để thử lại.",
     "ShowErrorBtn": "Hiển thị thông báo lỗi",
-    "GoToAppSettingsBtn": "Go to App Settings",
-    "GoBackOverlayFrameBtn": "Go Back",
-    "RegionChangerTitle": "Change the Game Region",
-    "RegionChangerSubtitle": "In-case you're stuck in this page"
+    "GoToAppSettingsBtn": "Đi tới trang Cài đặt",
+    "GoBackOverlayFrameBtn": "Quay lại",
+    "RegionChangerTitle": "Đổi Server Trò chơi",
+    "RegionChangerSubtitle": "Nếu bạn bị mắc kệt ở trang này"
   },
 
   "_UnhandledExceptionPage": {
@@ -103,9 +103,9 @@
     "NotifClearAll": "Xoá mọi thông báo",
     "NavigationMenu": "Menu",
     "NavigationUtilities": "Tiện ích",
-    "Initializing": "Initializing",
-    "LoadingLauncherMetadata": "Loading Launcher Metadata",
-    "LoadingGameConfiguration": "Loading Game Configuration"
+    "Initializing": "Khởi động",
+    "LoadingLauncherMetadata": "Đang tải dữ liệu Launcher",
+    "LoadingGameConfiguration": "Đang tải dữ liệu thiết lập Game"
   },
 
   "_HomePage": {
@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Tạm dừng/Huỷ",
     "DownloadBtn": "Tải trò chơi",
 
+    "GameStatusPlaceholderComingSoonBtn": "Sắp ra mắt",
+    "GameStatusPlaceholderPreRegisterBtn": "Đăng Ký Trước Ngay",
+
     "GameSettingsBtn": "Cài đặt nhanh trò chơi",
     "GameSettings_Panel1": "Cài đặt nhanh",
     "GameSettings_Panel1OpenGameFolder": "Mở thư mục trò chơi",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "Cài đặt khác",
     "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
     "GameSettings_Panel4ShowSocialMediaPanel": "Hiển thị bảng mạng xã hội",
+    "GameSettings_Panel4ShowPlaytimeButton": "Hiển thị thời gian chơi",
     "GameSettings_Panel4CreateShortcutBtn": "Tạo lối tắt",
     "GameSettings_Panel4AddToSteamBtn": "Thêm vào Steam",
 
@@ -171,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "Công cụ cộng đồng",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Chọn chương trình có thể thực thi: {0}",
 
-    "CreateShortcut_FolderPicker": "Chọn nơi để lối tắt"
+    "CreateShortcut_FolderPicker": "Chọn nơi để lối tắt",
+
+    "Exception_DownloadTimeout1": "Hết thời gian chờ khi cố gắng cài đặt {0}",
+    "Exception_DownloadTimeout2": "Kiểm tra sự ổn định của Internet! Nếu tốc độ tải chặm, hãy hạ số lượng luồng tải xuống.",
+    "Exception_DownloadTimeout3": "**CẢNH BÁO**: Thay đổi số lượng luồng tải xuống SẼ đặt lại tiến độ tải xuống về 0 và bạn phải tự tay xóa những khối đã được tải xuống trước đó!",
+
+    "GameStateInvalid_Title": "Thư mục Trò chơi/Tên thực thi/tập tin config.ini/app.info không hợp lệ",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher đã phát hiện thuộc tính tệp trò chơi không hợp lệ đối với khu vực:\r\n",
+    "GameStateInvalid_Subtitle2": "Nên thực hiện sửa lỗi để launcher có thể phát hiện trò chơi đúng cách",
+    "GameStateInvalid_Subtitle3": "Chọn \"",
+    "GameStateInvalid_Subtitle4": "\" để sữa thuộc tính trò chơi hoặc nhấn chọn \"",
+    "GameStateInvalid_Subtitle5": "\" để hủy quá trình này.",
+
+    "GameStateInvalidFixed_Title": "Tệp thuộc tín trò chơi đã được sữa thành công",
+    "GameStateInvalidFixed_Subtitle1": "Tệp thuộc tính trò chơi đã được sữa cho khu vực:",
+    "GameStateInvalidFixed_Subtitle2": "Vui lòng thực hiện \"",
+    "GameStateInvalidFixed_Subtitle3": "\" trong mục \"",
+    "GameStateInvalidFixed_Subtitle4": "\" để đảm bảo tất cả tài nguyên được xác minh."
   },
 
   "_GameRepairPage": {
@@ -266,7 +287,13 @@
     "Graphics_ResCustom": "Chọn độ phân giải khác",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Toàn Màn Hình",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Cửa Sổ",
 
+    "Graphics_VSync": "VSync",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPSUnlimited": "Không Giới Hạn",
     "Graphics_FPSPanel": "FPS tối đa",
     "Graphics_FPSInCombat": "Chiến đấu",
     "Graphics_FPSInMenu": "Khác",
@@ -306,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "Các cài đặt này không có trong trò chơi và có thể không có bất kỳ tác động nào.",
 
     "SpecDisabled": "Tắt",
+    "SpecCustom": "Tuỳ chọn",
     "SpecLow": "Thấp",
     "SpecMedium": "Trung bình",
     "SpecHigh": "Cao",
@@ -355,7 +383,7 @@
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
     "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
-    "MobileLayout": "Use Mobile Layout",
+    "MobileLayout": "Sử dụng Layout Cảm Ứng",
 
     "Advanced_Title": "Cài đặt Nâng cao",
     "Advanced_Subtitle1": "Collapse Launcher Team",
@@ -365,7 +393,7 @@
     "Advanced_GLC_PreLaunch_Title": "Lệnh trước khi khởi động",
     "Advanced_GLC_PreLaunch_Subtitle": "Các lệnh được chạy trước khi trò chơi khởi động",
     "Advanced_GLC_PreLaunch_Exit": "Buộc đóng tiến trình đã chạy khi trò chơi bị đóng/dừng lại",
-    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
+    "Advanced_GLC_PreLaunch_Delay": "Trì hoãn mở trò chơi (ms)",
     "Advanced_GLC_PostExit_Title": "Lệnh sau khi thoát",
     "Advanced_GLC_PostExit_Subtitle": "Các lệnh được chạy sau khi trò chơi bị đóng"
   },
@@ -392,7 +420,7 @@
     "AppThemes_Dark": "Tối",
     "AppThemes_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi giao diện.",
 
-    "IntroSequenceToggle": "Use Intro Animation Sequence",
+    "IntroSequenceToggle": "Sử dụng hoạt ảnh giới thiệu",
 
     "AppWindowSize": "Kích thước cửa sổ",
     "AppWindowSize_Normal": "Bình thường",
@@ -413,6 +441,20 @@
     "AppThreads_Help4": "0 (Tự động)",
     "AppThreads_Help5": "Tuỳ chọn này sẽ giới hạn số tệp để giải nén/xác thực tài nguyên khi tải/sửa tài nguyên trò chơi.",
     "AppThreads_Help6": "Lưu ý: Tuỳ chọn này không có tác dụng với Honkai Impact 3rd.",
+
+    "SophonSettingsTitle": "Cài đặt chế độ Sophon",
+    "SophonHelp_Title": "Chế độ tải Sophon là gì?",
+    "SophonHelp_1": "\"Sophon\" là một cơ chế tải xuống mới được giới thiệu bởi HoYoVerse gần đây và cho phép các tệp được tải xuống thành những \"khối dữ liệu nhỏ\" thay vì phải tải xuống một file ZIP lớn. Lợi ích chủ yêu là yêu cầu dung lượng đỉa thắp hơn và tăng hiệu quả khi tải xuống và cặp nhật. ",
+    "SophonHelp_2": "Cách này có thể chặm hơn đối với ai dùng ổ cứng HDD cho game.",
+    "SophonHelp_IndicatorTitle": "Biểu tượng chỉ bảo",
+    "SophonHelp_Indicator1": "Dung lượng tệp cần ghi lên ổ đĩa",
+    "SophonHelp_Indicator2": "Dung lượng tệp cần phải tải xuống",
+    "SophonHelp_Indicator3": "Tốc độ Đọc/Ghi dữ liệu vào ổ đĩa",
+    "SophonHelp_Indicator4": "Tốc độ Đọc/Ghi dữ liệu qua mạng",
+    "SophonHelp_Thread": "Cài đặt này điều chỉnh số lượng các khối dữ liệu nhỏ mà Collapse có thể tải xuống cùng một lúc. Hạ thấp giá trị này nếu Collapse bị kẹt trong lúc tải game.",
+    "SophonHttpNumberBox": "Số lượng kết nối HTTP tối đa",
+    "SophonHelp_Http": "Tùy chọn này kiểm soát số lượng kết nối được thiết lập bởi Collapse tới máy chủ cặp nhật của HoYoVerse để có thể tải những khối dữ liệu nhỏ.",
+    "SophonToggle": "Kích hoạt Sophon cho những vùng hỗ trợ",
 
     "AppThreads_Attention": "Chú ý",
     "AppThreads_Attention1": "Trước khi bạn thay đổi giá trị",
@@ -438,6 +480,8 @@
     "Update_NewVer1": "Cập nhật",
     "Update_NewVer2": "đã có sẵn!",
     "Update_LatestVer": "Bạn đang sử dụng phiên bản mới nhất.",
+    "Update_SeeChangelog": "Xem những thay đổi mới (EN)",
+    "Update_ChangelogTitle": "Những thay đổi mới",
 
     "AppFiles": "Quản lí tệp ứng dụng",
     "AppFiles_OpenDataFolderBtn": "Mở thư mục dữ liệu ứng dụng",
@@ -459,7 +503,7 @@
     "About_Copyright2": "neon-nyan, Cry0, bagusnl,\r\nshatyuka & gablm",
     "About_Copyright3": "Được dùng bởi bản quyền của",
     "About_Copyright4": ". Đã đăng ký Bản quyền.",
-    
+
     "LicenseType": "Giấy phép MIT",
 
     "Disclaimer": "Trách nhiệm và pháp lí",
@@ -499,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "CẢNH BÁO: Không tìm thấy thiết bị GPU Vulcan có sẵn và sẽ sử dụng chế độ CPU. Điều này sẽ làm tăng đáng kể thời gian xử lý hình ảnh.",
     "Waifu2X_Warning_D3DMappingLayers": "CẢNH BÁO: Hệ thống của bạn có cài đặt \"Gói tương thích OpenCL™, OpenGL®, và Vulkan®\". Nó được cho là không tương thích với Vulkan Loader và sẽ crash trên một số GPU. Vui lòng gỡ bỏ gói này để bật chế độ GPU.",
     "Waifu2X_Error_Loader": "LỖI: Khởi tạo Vulkan Loader thất bại. Đảm bảo rằng GPU của bạn tương thích với Vulkan và đã cài đặt driver GPU cần thiết.",
-    "Waifu2X_Error_Output": "LỖI: Không vượt qua bài tự kiểm tra Waifu2X, nhận ảnh đầu ra rỗng."
+    "Waifu2X_Error_Output": "LỖI: Không vượt qua bài tự kiểm tra Waifu2X, nhận ảnh đầu ra rỗng.",
+
+    "NetworkSettings_Title": "Cài đặt mạng",
+    "NetworkSettings_Proxy_Title": "Cài đặt proxy",
+
+    "NetworkSettings_Proxy_Hostname": "Tên miền Proxy",
+    "NetworkSettings_Proxy_HostnameHelp1": "Đại diện cho URL của Proxy để sử dụng.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse chỉ hỗ trợ loại",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS và SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "Proxy tại thời điểm hiện tại",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "URL được nhập không hợp lệ",
+    "NetworkSettings_ProxyWarn_NotSupported": "Lược đồ proxy không được hỗ trợ! Collapse chỉ hổ trợ http://, https://, socks4://, socks4a:// và socks5://",
+
+    "NetworkSettings_Proxy_Username": "Người dùng Proxy",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Nhập tên người dùng Proxy",
+    "NetworkSettings_Proxy_UsernameHelp1": "Mặc định: ",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Trống]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Để trống ô này nếu proxy của bạn không yêu cầu xác thực.",
+
+    "NetworkSettings_Proxy_Password": "Mật khẩu Proxy",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Nhập mật khẩu Proxy",
+    "NetworkSettings_Proxy_PasswordHelp1": "Mặc định",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Trống]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Để trống ô này nếu proxy của bạn không yêu cầu xác thực.",
+
+    "NetworkSettings_ProxyTest_Button": "Kiểm tra kết nối đến Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Đang kiểm tra kết nối",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Kiểm tra kết nối Proxy hoàn thành!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Thất bại! Proxy không thể kết nối.",
+
+    "NetworkSettings_Http_Title": "Cài đặt .NET HTTP",
+    "NetworkSettings_Http_Redirect": "Cho phép Chuyển hướng HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Cho phép mô phổng HTTP Cookie",
+    "NetworkSettings_Http_UntrustedHttps": "Cho phép chứng chỉ HTTPS không tin cậy",
+    "NetworkSettings_Http_Timeout": "Thời gian chờ HTTP Client (bằng giây)"
   },
 
   "_Misc": {
@@ -513,6 +592,7 @@
     "TimeRemainHMSFormat": "Còn lại {0:%h}h{0:%m}m{0:%s}s",
     "TimeRemainHMSFormatPlaceholder": "Còn lại --h--m--s",
     "Speed": "Tốc độ: {0}/s",
+    "SpeedTextOnly": "Tốc độ",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Tốc độ: - /s",
     "PerFromTo": "{0} / {1}",
@@ -563,11 +643,14 @@
     "LangNameKR": "Tiếng Hàn",
 
     "Downloading": "Đang tải",
+    "Updating": "Đang cặp nhật",
+    "UpdatingAndApplying": "Đang cập nhật + áp dụng",
+    "Applying": "Đang áp dụng",
     "Merging": "Đang gộp",
     "Idle": "Chờ",
     "Change": "Thay đổi",
     "Cancelled": "Đã huỷ",
-    "FinishingUp": "Finishing Up",
+    "FinishingUp": "Đang hoàn tất",
     "Extracting": "Đang giải nén",
     "Converting": "Đang chuyển đổi",
     "Patching": "Đang vá",
@@ -582,7 +665,7 @@
     "ApplyingPatch": "Đang áp dụng bản vá",
     "Disabled": "Tắt",
     "Enabled": "Bật",
-    "UseAsDefault": "Use as Default",
+    "UseAsDefault": "Đặt Làm Mặc Định",
 
     "BuildChannelPreview": "Xem trước",
     "BuildChannelStable": "Ổn định",
@@ -590,8 +673,8 @@
     "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
     "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
+    "CDNDescription_GitLab": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên GitLab",
+    "CDNDescription_Coding": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Coding",
 
     "LocateExecutable": "Vị trí thực thi",
     "OpenDownloadPage": "Mở trang Tải xuống",
@@ -607,6 +690,8 @@
     "DiscordRP_Default": "Không có hoạt động",
     "DiscordRP_Ad": "- Với trình khởi chạy Collapse",
     "DiscordRP_Region": "Khu vực:",
+
+    "DownloadModeLabelSophon": "Chế độ Sophon",
 
     "Taskbar_PopupHelp1": "Nhấp để đưa Collapse lên nền trước",
     "Taskbar_PopupHelp2": "Nhấn hai lần để hiện hoặc ẩn cửa sổ",
@@ -694,7 +779,7 @@
     "InstallDataDownloadResumeTitle": "Tiếp tục tải?",
     "InstallDataDownloadResumeSubtitle": "Bạn đã tải {0}/{1} trước đó.\r\n\r\nBạn có muốn tiếp tục tải?",
     "InsufficientDiskTitle": "Dung lượng ổ cứng không đủ",
-    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
+    "InsufficientDiskSubtitle": "Bạn không có đủ dung lượng để thực hiện thao tác trên ổ {2} của bạn!\r\n\r\nDung lượng trống: {0}\r\nYêu cầu còn trống: {1}.\r\n\r\nHãy bảo đảm rằng bạn có đủ dung lượng đĩa trước khi tiếp tục.",
     "RelocateFolderTitle": "Chọn lại vị trí lưu dữ liệu thư mục",
     "RelocateFolderSubtitle": "Bạn đang sử dụng thư mục này làm nơi lưu dữ liệu thư mục:\r\n\r\n {0}\r\n\r\nBạn có muốn thay đổi không?",
     "UninstallGameTitle": "Gỡ cài đặt trò chơi: {0}",
@@ -797,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "Không thể tìm thấy thư mục userdata hợp lệ.\n\nVui lòng nhớ đăng nhập vào phần mềm Steam ít nhất một lần trước khi sử dụng chức năng này.",
 
     "DownloadSettingsTitle": "Cài đặt tải xuống",
-    "DownloadSettingsOption1": "Khởi động trò chơi sau khi cài đặt"
+    "DownloadSettingsOption1": "Khởi động trò chơi sau khi cài đặt",
+    
+    "OpenInExternalBrowser": "Mở trong trình duyệt",
+    "CloseOverlay": "Đóng cửa sổ phủ"
   },
 
   "_FileMigrationProcess": {
@@ -807,8 +895,8 @@
     "LocateFolderSubtitle": "Chọn vị trí để di chuyển tệp/thư mục tới.",
     "ChoosePathTextBoxPlaceholder": "Chọn đường đẫn đích:",
     "ChoosePathButton": "Chọn đích",
-    "ChoosePathErrorTitle": "Error has Occured!",
-    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
+    "ChoosePathErrorTitle": "Đã xảy ra lỗi!",
+    "ChoosePathErrorPathIdentical": "Đường dẫn đầu ra bạn chọn nằm trong hoặc giống hệt với vị trí hiện tại!\r\nVui lòng chọn vị trí khác",
     "ChoosePathErrorPathUnselected": "Vui lòng chọn đường dẫn trước khi tiếp tục!",
     "ChoosePathErrorPathNotExist": "Đường đẫn không tồn tại!",
     "ChoosePathErrorPathNoPermission": "Bạn không có quyền truy cập vào vị trí này. Vui lòng chọn vị trí khác!"
@@ -1017,7 +1105,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS vẫn đang được THỬ NGHIỆM! Vui lòng sử dụng cẩn thận và hãy tự chịu trách nhiệm (DWYOR).",
-    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
+    "Graphics_FPS_Help2": "Đặt gía trị FPS ở 120 FPS sẽ không làm hỏng menu, nhưng đặt giá trị FPS trong game sẽ không còn hoạt động nữa. \r\nNếu bạn cần chỉnh 120 FPS, vui lòng dùng cài đặt game trong Collapse để chỉnh cài đặt đồ họa",
     "Graphics_VSync": "VSync",
     "Graphics_VSync_Help": "VSync không khả dụng ở 120 FPS",
     "Graphics_RenderScale": "Kết xuất đồ hoạ",
@@ -1030,6 +1118,8 @@
     "Graphics_BloomQuality": "Hiệu ứng toả sáng",
     "Graphics_AAMode": "Khử răng cưa",
     "Graphics_SFXQuality": "Chất lượng SFX",
+    "Graphics_SelfShadow": "Bóng nhân vật trong bản đồ",
+    "Graphics_HalfResTransparent": "Độ Phân Giải Một Nữa Trong Suốt",
 
     "Graphics_SpecPanel": "Thiết lập đồ hoạ",
     "SpecEnabled": "Bật",
@@ -1237,11 +1327,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Hàn Quốc",
     "Japan": "Nhật Bản",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Điều khoản:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Dọn dẹp các tệp",
+    "TopButtonRescan": "Quét lại",
+    "NoFilesToBeDeletedText": "Không có tệp nào cần xóa!",
+    "ListViewFieldFileName": "Tên tệp",
+    "ListViewFieldFileSize": "Kích thước tệp",
+    "LoadingTitle": "Đang xử lý",
+    "LoadingSubtitle1": "Tính toán các tập hiện có (tìm thấy {0} tệp - tổng cộng {1})",
+    "LoadingSubtitle2": "Kiểm tra tính khả dụng của pkg_version",
+    "BottomButtonDeleteAllFiles": "Xóa tất cả tệp",
+    "BottomButtonDeleteSelectedFiles": "Xóa {0} (các) tệp đã chọn",
+    "BottomCheckboxFilesSelected": "{0} tệp đã chọn (Tổng cộng {1} / {2})",
+    "BottomCheckboxNoFileSelected": "Không có tệp nào được chọn",
+    "DialogDeletingFileTitle": "Đang xóa các tệp",
+    "DialogDeletingFileSubtitle1": "Bạn đang định",
+    "DialogDeletingFileSubtitle2": "xóa {0} tệp",
+    "DialogDeletingFileSubtitle3": "với tổng kích thước",
+    "DialogDeletingFileSubtitle4": "là {0}",
+    "DialogDeletingFileSubtitle5": "Bạn có chắc chắn muốn xóa các tệp này?",
+    "DialogDeleteSuccessTitle": "Các tệp đã được xóa!",
+    "DialogDeleteSuccessSubtitle1": "{0} (các) tệp đã được xóa",
+    "DialogDeleteSuccessSubtitle2": "với {0} không thể xóa",
+    "DialogMoveToRecycleBin": "Di chuyển vào Thùng Rác",
+    "DialogTitleMovedToRecycleBin": "Các tệp đã di chuyển vào Thùng Rác"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": "(không rõ)",
     "CDNCheckboxItemLatencyRecommendedFormat": "[Khuyến nghị]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Cường độ bộ lọc màu",
+    "Graphics_RenderRes": "Độ hiển thị chính xác",
+    "Graphics_EffectsQ": "Chất lượng hiệu ứng",
+    "Graphics_ShadingQ": "Chất lượng bóng",
+    "Graphics_Distortion": "Bóp méo",
+    "Audio_PlaybackDev": "Thiết bị phát",
+    "Audio_PlaybackDev_Headphones": "Tai Nghe",
+    "Audio_PlaybackDev_Speakers": "Loa",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

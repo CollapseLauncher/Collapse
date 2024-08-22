@@ -152,6 +152,8 @@ namespace Hi3Helper
                 public string OperationWarningNotCancellableMsg5 { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableMsg5;
                 public string DownloadSettingsTitle { get; set; } = LangFallback?._Dialogs.DownloadSettingsTitle;
                 public string DownloadSettingsOption1 { get; set; } = LangFallback?._Dialogs.DownloadSettingsOption1;
+                public string OpenInExternalBrowser { get; set; } = LangFallback?._Dialogs.OpenInExternalBrowser;
+                public string CloseOverlay { get; set; } = LangFallback?._Dialogs.CloseOverlay;
             }
         }
         #endregion

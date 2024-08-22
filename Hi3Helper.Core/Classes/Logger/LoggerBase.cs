@@ -2,9 +2,8 @@
 using System.IO;
 using System.Text;
 #if !APPLYUPDATE
-using System.Diagnostics;
-using System.Linq;
 using Hi3Helper.Shared.Region;
+// ReSharper disable CheckNamespace
 #endif
 
 namespace Hi3Helper
@@ -12,9 +11,10 @@ namespace Hi3Helper
     public class LoggerBase
     {
         #region Properties
-        public static string CurrentLauncherVersion = "vUnknown";
         private FileStream _logStream { get; set; }
         private StreamWriter _logWriter { get; set; }
+        private bool _isWriterOnDispose { get; set; }
+        private object _lockObject = new object();
         private string _logFolder { get; set; }
 #if !APPLYUPDATE
         private string _logPath { get; set; }
@@ -41,30 +41,72 @@ namespace Hi3Helper
 
 #if !APPLYUPDATE
             // Check if the directory exist. If not, then create.
-            if (!Directory.Exists(_logFolder))
+            if (!string.IsNullOrEmpty(_logFolder) && !Directory.Exists(_logFolder))
             {
                 Directory.CreateDirectory(_logFolder);
             }
 #endif
 
-            // Try dispose the _logWriter even though it's not initialized.
-            // This will be used if the program need to change the log folder to another location.
-            _logWriter?.Dispose();
-            _logStream?.Dispose();
+            lock (_lockObject)
+            {
+                // Try dispose the _logWriter even though it's not initialized.
+                // This will be used if the program need to change the log folder to another location.
+                DisposeBase();
 
 #if !APPLYUPDATE
-            try
-            {
-                // Initialize writer and the path of the log file.
-                InitializeWriter(false, logEncoding);
-            }
-            catch
-            {
-                // If the initialization above fails, then use fallback.
-                InitializeWriter(true, logEncoding);
-            }
+                try
+                {
+                    // Initialize writer and the path of the log file.
+                    InitializeWriter(false, logEncoding);
+                }
+                catch
+                {
+                    // If the initialization above fails, then use fallback.
+                    InitializeWriter(true, logEncoding);
+                }
 #endif
+            }
         }
+
+#nullable enable
+        public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
+        {
+            lock (_lockObject)
+            {
+                DisposeBase();
+
+                if (!string.IsNullOrEmpty(_logFolder) && Directory.Exists(_logFolder))
+                    DeleteLogFilesInner(_logFolder);
+
+                if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
+                    Directory.CreateDirectory(reloadToPath);
+
+                if (!string.IsNullOrEmpty(reloadToPath))
+                    _logFolder = reloadToPath;
+
+                encoding ??= Encoding.UTF8;
+
+                SetFolderPathAndInitialize(_logFolder, encoding);
+            }
+        }
+
+        private void DeleteLogFilesInner(string folderPath)
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
+            foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("log-*-id*.log", SearchOption.TopDirectoryOnly))
+            {
+                try
+                {
+                    fileInfo.Delete();
+                    LogWriteLine($"Removed log file: {fileInfo.FullName}", LogType.Default);
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
+                }
+            }
+        }
+#nullable restore
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public virtual async void LogWriteLine() { }
@@ -74,11 +116,17 @@ namespace Hi3Helper
         public virtual async void LogWriteLine(string line, LogType type) { }
         public virtual async void LogWriteLine(string line, LogType type, bool writeToLog) { }
         public virtual async void LogWrite(string line, LogType type, bool writeToLog, bool fromStart) { }
-        public async void WriteLog(string line, LogType type)
+        public void WriteLog(string line, LogType type)
         {
             // Always seek to the end of the file.
-            _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
-            _logWriter?.WriteLine(GetLine(line, type, false, true));
+            lock(_lockObject)
+            {
+                if (!_isWriterOnDispose)
+                {
+                    _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
+                    _logWriter?.WriteLine(GetLine(line, type, false, true));
+                }
+            }
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 #endregion
@@ -132,6 +180,7 @@ namespace Hi3Helper
 
         protected void DisposeBase()
         {
+            _isWriterOnDispose = true;
             _logWriter?.Dispose();
             _logStream?.Dispose();
         }
@@ -147,31 +196,24 @@ namespace Hi3Helper
             // Append the build name
             fallbackString += LauncherConfig.IsPreview ? "-pre" : "-sta";
             // Append current app version
-            fallbackString += CurrentLauncherVersion;
+            fallbackString += LauncherConfig.AppCurrentVersionString;
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
             _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}.log");
 
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
-            // to warm-restart itself in rare occassion (like update mechanism with Squirrel).
-            _logStream = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-            _logWriter = new StreamWriter(_logStream, logEncoding, -1, false) { AutoFlush = true };
+            // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
+            _logStream = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            // Seek the file to the EOF
+            _logStream.Seek(0, SeekOrigin.End);
+
+            // Initialize the StreamWriter
+            _logWriter = new StreamWriter(_logStream, logEncoding) { AutoFlush = true };
+            _isWriterOnDispose = false;
         }
 
-        private int GetTotalInstance()
-        {
-            // Get this app's process name
-            string currentProcName = Path.GetFileNameWithoutExtension(LauncherConfig.AppExecutablePath);
-
-            // Get the process count
-            int procCount = Process.GetProcesses()
-                .Where(x => x.ProcessName == currentProcName)
-                .Select(x => x.ProcessName).Count();
-
-            // If the procCount > 0, then procCount - 1. Else, 0
-            return procCount > 0 ? procCount - 1 : 0;
-        }
+        private int GetTotalInstance() => InvokeProp.EnumerateInstances();
 #endif
 
         private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, NoTag or Empty!");

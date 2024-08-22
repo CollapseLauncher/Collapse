@@ -32,6 +32,7 @@ namespace CollapseLauncher
 
         #region Properties
         private bool _isParsePersistentManifestSuccess { get; set; }
+        protected override string _userAgent { get; set; } = "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         #endregion
 
         public GenshinRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, string gameRepoURL)
@@ -83,7 +84,7 @@ namespace CollapseLauncher
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 _assetIndex,
-                string.Format(Lang._GameRepairPage.Status3, _progressTotalCountFound, SummarizeSizeSimple(_progressTotalSizeFound)),
+                string.Format(Lang._GameRepairPage.Status3, _progressAllCountFound, SummarizeSizeSimple(_progressAllSizeFound)),
                 Lang._GameRepairPage.Status4);
         }
 

@@ -68,7 +68,7 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            _status.IsProgressTotalIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
             _status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
@@ -122,10 +122,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get the file info
@@ -135,14 +135,14 @@ namespace CollapseLauncher
             if (!fileInfo.Exists)
             {
                 // Update the total progress and found counter
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 // Set the per size progress
                 _progressPerFileSizeCurrent = asset.S;
 
                 // Increment the total current progress
-                _progressTotalSizeCurrent += asset.S;
+                _progressAllSizeCurrent += asset.S;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -156,7 +156,7 @@ namespace CollapseLauncher
                 ));
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
 
                 return;
             }
@@ -177,8 +177,8 @@ namespace CollapseLauncher
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.S;
+                    _progressAllCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
@@ -206,10 +206,10 @@ namespace CollapseLauncher
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
-            _progressTotalCountCurrent++;
+            _progressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSize = asset.S;
+            _progressPerFileSizeTotal = asset.S;
             _progressPerFileSizeCurrent = 0;
 
             // Get persistent and streaming paths
@@ -224,18 +224,18 @@ namespace CollapseLauncher
             // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
             asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
-            // Check if the file exist on both persistent and streaming path, then mark the
-            // streaming path as redundant (unused)
-            if (IsPersistentExist && IsStreamingExist)
+            // Check if the file exist on both persistent and streaming path for non-patch file, then mark the
+            // persistent path as redundant (unused)
+            if (IsPersistentExist && IsStreamingExist && !asset.IsPatchApplicable)
             {
                 // Add the count and asset. Mark the type as "RepairAssetType.Unused"
-                _progressTotalCountFound++;
+                _progressAllCountFound++;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(fileInfoStreaming.FullName),
+                        Path.GetFileName(fileInfoPersistent.FullName),
                         RepairAssetType.Unused,
-                        Path.GetDirectoryName(fileInfoStreaming.FullName),
+                        Path.GetDirectoryName(fileInfoPersistent.FullName),
                         asset.S,
                         null,
                         null
@@ -260,14 +260,14 @@ namespace CollapseLauncher
              || (UsePersistent && !IsPersistentExist))
             {
                 // Update the total progress and found counter
-                _progressTotalSizeFound += asset.S;
-                _progressTotalCountFound++;
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
                 // Set the per size progress
                 _progressPerFileSizeCurrent = asset.S;
 
                 // Increment the total current progress
-                _progressTotalSizeCurrent += asset.S;
+                _progressAllSizeCurrent += asset.S;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -280,7 +280,6 @@ namespace CollapseLauncher
                     )
                 ));
                 targetAssetIndex.Add(asset);
-
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
 
                 return;
@@ -329,8 +328,8 @@ namespace CollapseLauncher
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
                 {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
+                    _progressAllSizeFound += asset.S;
+                    _progressAllCountFound++;
 
                     Dispatch(() => AssetEntry.Add(
                                                   new AssetProperty<RepairAssetType>(
@@ -354,23 +353,29 @@ namespace CollapseLauncher
 
         private void CreateHashMarkFile(string filePath, string hash)
         {
-            // Get the base path and name
-            string basePath = Path.GetDirectoryName(filePath);
-            string baseName = Path.GetFileNameWithoutExtension(filePath);
+            string basePath, baseName;
+            RemoveHashMarkFile(filePath, out basePath, out baseName);
 
             // Create base path if not exist
             if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+
+            // Re-create the hash file
+            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
+            if (File.Exists(toName)) return;
+            File.Create(toName).Dispose();
+        }
+
+        private static void RemoveHashMarkFile(string filePath, out string basePath, out string baseName)
+        {
+            // Get the base path and name
+            basePath = Path.GetDirectoryName(filePath);
+            baseName = Path.GetFileNameWithoutExtension(filePath);
 
             // Enumerate any possible existing hash path and delete it
             foreach (string existingPath in Directory.EnumerateFiles(basePath, $"{baseName}_*.hash"))
             {
                 File.Delete(existingPath);
             }
-
-            // Re-create the hash file
-            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
-            if (File.Exists(toName)) return;
-            File.Create(toName).Dispose();
         }
         #endregion
     }

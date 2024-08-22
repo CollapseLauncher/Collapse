@@ -1,4 +1,5 @@
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -17,6 +18,7 @@ using System.Data;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -51,7 +53,7 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Loading Indexes..."
             _status!.ActivityStatus = Lang!._GameRepairPage!.Status2!;
-            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
             // Initialize the Senadina File Identifier
@@ -60,8 +62,15 @@ namespace CollapseLauncher
             // Clear the _ignoredUnusedFileList
             _ignoredUnusedFileList.Clear();
 
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + 16)
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
+
             // Use HttpClient instance on fetching
-            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
             try
             {
                 // Subscribe the fetching progress and subscribe cacheUtil progress to adapter
@@ -161,7 +170,6 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
                 _cacheUtil!.ProgressChanged -= _innerObject_ProgressAdapter;
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
-                _httpClient.Dispose();
                 senadinaFileIdentifier?.Clear();
             }
         }
@@ -366,7 +374,7 @@ namespace CollapseLauncher
 
             // Update the status
             _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
-            _status!.IsProgressTotalIndetermined = true;
+            _status!.IsProgressAllIndetermined = true;
             _status!.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
@@ -493,7 +501,7 @@ namespace CollapseLauncher
             // Update the status
             // TODO: Localize
             _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
-            _status!.IsProgressTotalIndetermined = true;
+            _status!.IsProgressAllIndetermined = true;
             _status!.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
@@ -760,11 +768,11 @@ namespace CollapseLauncher
             // Filter out video assets
             List<FilePropertiesRemote> assetIndexFiltered = assetIndex!.Where(x => x!.FT != FileType.Video).ToList();
 
-            // Sum the assetIndex size and assign to _progressTotalSize
-            _progressTotalSize = assetIndexFiltered.Sum(x => x!.S);
+            // Sum the assetIndex size and assign to _progressAllSize
+            _progressAllSizeTotal = assetIndexFiltered.Sum(x => x!.S);
 
-            // Assign the assetIndex count to _progressTotalCount
-            _progressTotalCount = assetIndexFiltered.Count;
+            // Assign the assetIndex count to _progressAllCount
+            _progressAllCountTotal = assetIndexFiltered.Count;
         }
         #endregion
     }

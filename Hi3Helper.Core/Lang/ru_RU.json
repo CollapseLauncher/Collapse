@@ -66,10 +66,10 @@
     "Footer2": "на Паймон",
     "Footer3": "чтобы попробовать снова.",
     "ShowErrorBtn": "Показать сообщение об ошибке",
-    "GoToAppSettingsBtn": "Go to App Settings",
-    "GoBackOverlayFrameBtn": "Go Back",
-    "RegionChangerTitle": "Change the Game Region",
-    "RegionChangerSubtitle": "In-case you're stuck in this page"
+    "GoToAppSettingsBtn": "Перейти в настройки приложения",
+    "GoBackOverlayFrameBtn": "Вернуться",
+    "RegionChangerTitle": "Сменить регион игры",
+    "RegionChangerSubtitle": "На случай, если вы застряли на этой странице"
   },
 
   "_UnhandledExceptionPage": {
@@ -133,6 +133,9 @@
     "PauseCancelBtn": "Пауза/Отмена",
     "DownloadBtn": "Скачать игру",
 
+    "GameStatusPlaceholderComingSoonBtn": "Скоро",
+    "GameStatusPlaceholderPreRegisterBtn": "Предварительная регистрация доступна!",
+
     "GameSettingsBtn": "Быстрые Настройки",
     "GameSettings_Panel1": "Быстрые Настройки",
     "GameSettings_Panel1OpenGameFolder": "Открыть папку с игрой",
@@ -148,6 +151,7 @@
     "GameSettings_Panel4": "Разное",
     "GameSettings_Panel4ShowEventsPanel": "Показать панель событий",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
+    "GameSettings_Panel4ShowPlaytimeButton": "Показать время в игре",
     "GameSettings_Panel4CreateShortcutBtn": "Создать ярлык",
     "GameSettings_Panel4AddToSteamBtn": "Добавить в Steam",
 
@@ -171,7 +175,24 @@
     "CommunityToolsBtn_CommunityText": "Инструменты сообщества",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Выберите исполняемый файл программы: {0}",
 
-    "CreateShortcut_FolderPicker": "Выберите, где разместить ярлык"
+    "CreateShortcut_FolderPicker": "Выберите, где разместить ярлык",
+
+    "Exception_DownloadTimeout1": "Время ожидания истекло при попытке установить {0}",
+    "Exception_DownloadTimeout2": "Проверьте стабильность вашего интернета! Если у вас низкая скорость интернета, уменьшите количество загружаемых потоков.",
+    "Exception_DownloadTimeout3": "**ПРЕДУПРЕЖДЕНИЕ** Изменение количества потоков загрузки СБРОСИТ вашу загрузку с 0, и вам придется удалить существующие части загрузки вручную!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -266,7 +287,13 @@
     "Graphics_ResCustom": "Использовать пользовательское разрешение",
     "Graphics_ResCustomW": "Ш",
     "Graphics_ResCustomH": "В",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} Полноэкранный режим",
+    "Graphics_ResPrefixWindowed": "{0}x{1} В окне",
 
+    "Graphics_VSync": "Вертикальная синхронизация",
+
+    "Graphics_FPS": "Кадров/сек",
+    "Graphics_FPSUnlimited": "Бесконечно",
     "Graphics_FPSPanel": "Максимальный FPS",
     "Graphics_FPSInCombat": "В бою",
     "Graphics_FPSInMenu": "Главное меню",
@@ -306,6 +333,7 @@
     "Graphics_Legacy_Subtitle": "Эти настройки не представлены в игре и могут не иметь никакого эффекта.",
 
     "SpecDisabled": "Отключено",
+    "SpecCustom": "Собственный",
     "SpecLow": "Низкий",
     "SpecMedium": "Средний",
     "SpecHigh": "Высокий",
@@ -414,6 +442,20 @@
     "AppThreads_Help5": "Этот поток будет обрабатывать процесс извлечения/верификации во время установки/ремонта игры.",
     "AppThreads_Help6": "Примечание: Эта настройка во время установки Honkai Impact 3rd больше неэффективна.",
 
+    "SophonSettingsTitle": "Настройки режима Sophon",
+    "SophonHelp_Title": "Что такое режим загрузчика Sophon?",
+    "SophonHelp_1": "\"Sophon\" - это новый механизм загрузки, недавно представленный HoYoVerse, который позволяет загружать файлы \"частями\", а не скачивать большой ZIP-архив. Преимущества заключаются в основном в меньших требованиях к дисковому пространству и повышении эффективности загрузки и обновлений.",
+    "SophonHelp_2": "Этот метод может быть медленнее для тех, кто использует жесткие диски для своей игры.",
+    "SophonHelp_IndicatorTitle": "Иконки индикаторов",
+    "SophonHelp_Indicator1": "Размер файла для записи на диск",
+    "SophonHelp_Indicator2": "Размер файла для загрузки",
+    "SophonHelp_Indicator3": "Скорость дискового ввода-вывода при записи",
+    "SophonHelp_Indicator4": "Скорость сетевого ввода-вывода при записи",
+    "SophonHelp_Thread": "Это контролирует количество одновременных частей загрузки Collapse. Уменьшите это значение, если вы внезапно застряли при загрузке.",
+    "SophonHttpNumberBox": "Максимальное количество HTTP-соединений",
+    "SophonHelp_Http": "Это контролирует максимальное количество сетевых подключений, устанавливаемых Collapse для загрузки частей.",
+    "SophonToggle": "Включить Sophon в поддерживаемых регионах",
+
     "AppThreads_Attention": "Внимание",
     "AppThreads_Attention1": "Перед тем как изменить",
     "AppThreads_Attention2": "значение, пожалуйста, подумайте о том, чтобы ",
@@ -438,6 +480,8 @@
     "Update_NewVer1": "Обновить до",
     "Update_NewVer2": "доступно!",
     "Update_LatestVer": "Вы используете самую последнюю версию.",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "Управление файлами приложения",
     "AppFiles_OpenDataFolderBtn": "Открыть папку с данными приложения",
@@ -459,7 +503,7 @@
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\nshatyuka & gablm",
     "About_Copyright3": "защищённый",
     "About_Copyright4": "Все права защищены.",
-    
+
     "LicenseType": "лицензией MIT",
 
     "Disclaimer": "Дисклеймер",
@@ -499,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "ВНИМАНИЕ: Доступное графическое устройство Vulkan не найдено, и будет использоваться режим CPU. Это значительно увеличит время обработки изображения.",
     "Waifu2X_Warning_D3DMappingLayers": "ПРЕДУПРЕЖДЕНИЕ: В вашей системе установлен \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\". Сообщается, что он несовместим с загрузчиком Vulkan и приведет к сбою на некоторых графических процессорах. Пожалуйста, удалите этот пакет, чтобы включить режим графического процессора.",
     "Waifu2X_Error_Loader": "ОШИБКА: Не удалось определить Загрузчик Vulkan. Удостоверьтесь, что ваша видеокарта поддерживает технологию Vulkan, и необходимый драйвер установлен.",
-    "Waifu2X_Error_Output": "ОШИБКА: Не удалось пройти самопроверку Waifu2X, получено пустое выходное изображение."
+    "Waifu2X_Error_Output": "ОШИБКА: Не удалось пройти самопроверку Waifu2X, получено пустое выходное изображение.",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -513,6 +592,7 @@
     "TimeRemainHMSFormat": "осталось {0:%h}ч{0:%m}м{0:%s}с",
     "TimeRemainHMSFormatPlaceholder": "--ч--м--с осталось",
     "Speed": "Скорость: {0}/с",
+    "SpeedTextOnly": "Скорость",
     "SpeedPerSec": "{0}/c",
     "SpeedPlaceholder": "Скорость: - /s",
     "PerFromTo": "{0} / {1}",
@@ -563,11 +643,14 @@
     "LangNameKR": "Корейский",
 
     "Downloading": "Загрузка",
+    "Updating": "Обновление",
+    "UpdatingAndApplying": "Обновление + Применение",
+    "Applying": "Применение",
     "Merging": "Объединение",
     "Idle": "В режиме ожидания",
     "Change": "Изменить",
     "Cancelled": "Отменено",
-    "FinishingUp": "Finishing Up",
+    "FinishingUp": "Завершение",
     "Extracting": "Распаковка",
     "Converting": "Конвертация",
     "Patching": "Патчинг",
@@ -607,6 +690,8 @@
     "DiscordRP_Default": "Нет активности",
     "DiscordRP_Ad": "С Collapse Лаунчера",
     "DiscordRP_Region": "Регион:",
+
+    "DownloadModeLabelSophon": "Режим Sophon",
 
     "Taskbar_PopupHelp1": "Нажмите, чтобы вывести Collapse на передний план",
     "Taskbar_PopupHelp2": "Нажмите дважды, чтобы переключить видимость окон",
@@ -797,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "Не удалось найти корректную папку userdata.\n\nПожалуйста, убедитесь, что вы хотя бы раз вошли в клиент Steam, прежде чем пытаться использовать эту функцию.",
 
     "DownloadSettingsTitle": "Настройки загрузки",
-    "DownloadSettingsOption1": "Запустить игру после установки"
+    "DownloadSettingsOption1": "Запустить игру после установки",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {
@@ -1030,6 +1118,8 @@
     "Graphics_BloomQuality": "Качество растительности",
     "Graphics_AAMode": "Режим сглаживания",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_SelfShadow": "Тень персонажа в режиме «Исследование карты»",
+    "Graphics_HalfResTransparent": "Half Resolution Transparency",
 
     "Graphics_SpecPanel": "Общие настройки графики",
     "SpecEnabled": "Включено",
@@ -1237,11 +1327,38 @@
     "TW/HK/MO": "TW/HK/MO",
     "Korea": "Кореи",
     "Japan": "Японии",
-    "Bilibili": "Bilibili"
+    "Bilibili": "Bilibili",
+    "Google Play": "Google Play"
   },
 
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Соглашение:"
+  },
+
+  "_FileCleanupPage": {
+    "Title": "Очистка файлов",
+    "TopButtonRescan": "Повторное сканирование",
+    "NoFilesToBeDeletedText": "Никаких файлов удалять не нужно!",
+    "ListViewFieldFileName": "Название файла",
+    "ListViewFieldFileSize": "Размер файла",
+    "LoadingTitle": "Обработка",
+    "LoadingSubtitle1": "Расчет существующих файлов (найдено {0} файлов - всего {1})...",
+    "LoadingSubtitle2": "Проверка доступности pkg_version...",
+    "BottomButtonDeleteAllFiles": "Удалить все файлы",
+    "BottomButtonDeleteSelectedFiles": "Удалить {0} выбранных файлов",
+    "BottomCheckboxFilesSelected": "{0} Выбран файл(ы) ({1} / {2} всего)",
+    "BottomCheckboxNoFileSelected": "Файл не выбран",
+    "DialogDeletingFileTitle": "Удаление файлов",
+    "DialogDeletingFileSubtitle1": "Вы собираетесь",
+    "DialogDeletingFileSubtitle2": "удалить {0} файла(ов)",
+    "DialogDeletingFileSubtitle3": "которые содержат",
+    "DialogDeletingFileSubtitle4": "{0} по размеру.",
+    "DialogDeletingFileSubtitle5": "Вы уверены, что удалите файлы?",
+    "DialogDeleteSuccessTitle": "Файлы удалены!",
+    "DialogDeleteSuccessSubtitle1": "{0} файла(ов) были успешно удалены",
+    "DialogDeleteSuccessSubtitle2": "с {0} не удалось удалить",
+    "DialogMoveToRecycleBin": "Переместить в корзину",
+    "DialogTitleMovedToRecycleBin": "Файлы перемещены в корзину!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1280,5 +1397,17 @@
     "CDNCheckboxItemLatencyFormat": " ({0} мс)",
     "CDNCheckboxItemLatencyUnknownFormat": " (неизвестно)",
     "CDNCheckboxItemLatencyRecommendedFormat": " [Рекомендуется]"
+  },
+
+  "_ZenlessGameSettingsPage": {
+    "Graphics_ColorFilter": "Сила цветного фильтра",
+    "Graphics_RenderRes": "Рендеринг",
+    "Graphics_EffectsQ": "Качество эффектов",
+    "Graphics_ShadingQ": "Тени",
+    "Graphics_Distortion": "Деформация",
+    "Audio_PlaybackDev": "Устройство воспроизведения звука",
+    "Audio_PlaybackDev_Headphones": "Наушники",
+    "Audio_PlaybackDev_Speakers": "Speakers",
+    "Audio_PlaybackDev_TV": "TV"
   }
 }

@@ -8,8 +8,6 @@ using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -117,12 +115,6 @@ namespace CollapseLauncher.GameSettings.StarRail
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    JsonSerializerOptions options = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = StarRailSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                    };
-
                     return byteStr.Deserialize<PCResolution>(StarRailSettingsJSONContext.Default) ?? new PCResolution();
                 }
             }

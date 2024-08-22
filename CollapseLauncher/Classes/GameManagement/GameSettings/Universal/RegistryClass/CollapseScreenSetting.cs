@@ -101,7 +101,6 @@ namespace CollapseLauncher.GameSettings.Universal
         }
 
         public bool Equals(CollapseScreenSetting? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
-#nullable disable
         #endregion
     }
 }

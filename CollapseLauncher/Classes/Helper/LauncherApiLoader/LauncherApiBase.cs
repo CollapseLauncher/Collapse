@@ -20,9 +20,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
     internal class LauncherApiBase
     {
-        protected const int           ExecutionTimeout        = 10;
-        protected const int           ExecutionTimeoutStep    = 5;
-        protected const int           ExecutionTimeoutAttempt = 5;
+        public const int           ExecutionTimeout        = 10;
+        public const int           ExecutionTimeoutStep    = 5;
+        public const int           ExecutionTimeoutAttempt = 5;
         protected       PresetConfig? PresetConfig { get; }
 
         public bool    IsLoadingCompleted     { get; private set; }

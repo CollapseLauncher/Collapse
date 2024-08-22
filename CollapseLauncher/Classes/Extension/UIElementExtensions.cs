@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Controls;
+using Hi3Helper;
 using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -100,10 +101,11 @@ namespace CollapseLauncher.Extension
             if (columnWidths.Length == 0)
                 throw new IndexOutOfRangeException($"\"columnWidth\" cannot be empty!");
 
-            for (int i = 0; i < columnWidths.Length; i++) grid.ColumnDefinitions.Add(new ColumnDefinition()
-            {
-                Width = columnWidths[i]
-            });
+            for (int i = 0; i < columnWidths.Length; i++) 
+                grid.ColumnDefinitions.Add(new ColumnDefinition()
+                {
+                    Width = columnWidths[i]
+                });
         }
 
         internal static void AddGridColumns(this Grid grid, int count, GridLength? columnWidth = null)
@@ -165,14 +167,23 @@ namespace CollapseLauncher.Extension
             if (span > 0) Grid.SetColumnSpan(element, span);
         }
 
-        internal static void AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
+        internal static ref TextBlock AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
         {
             while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
+            return ref Unsafe.AsRef(ref textBlock);
         }
-        internal static void AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
+
+        internal static ref TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d)
+        {
+            message += ' ';
+            return ref textBlock.AddTextBlockLine(message, weight, size);
+        }
+
+        internal static ref TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
         {
             if (!weight.HasValue) weight = FontWeights.Normal;
             textBlock.Inlines.Add(new Run { Text = message, FontWeight = weight.Value, FontSize = size });
+            return ref Unsafe.AsRef(ref textBlock);
         }
 
         internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
@@ -211,11 +222,15 @@ namespace CollapseLauncher.Extension
         internal static CornerRadius AttachRoundedKindCornerRadius(FrameworkElement element)
         {
             CornerRadius initialRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
-            element.SizeChanged += (sender, _) => InnerSetCornerRadius(element, GetElementCornerRadius(element, CornerRadiusKind.Rounded));
+            element.SizeChanged += (_, _) => InnerSetCornerRadius(element, GetElementCornerRadius(element, CornerRadiusKind.Rounded));
             return initialRadius;
         }
 
-        internal static void FindAndSetTextBlockWrapping(this UIElement element, TextWrapping wrap = TextWrapping.Wrap, HorizontalAlignment posAlign = HorizontalAlignment.Center, TextAlignment textAlign = TextAlignment.Center, bool recursiveAssignment = false, bool isParentAButton = false)
+        internal static void FindAndSetTextBlockWrapping(this UIElement element,
+                                                         TextWrapping wrap = TextWrapping.Wrap,
+                                                         HorizontalAlignment posAlign = HorizontalAlignment.Center,
+                                                         TextAlignment textAlign = TextAlignment.Center,
+                                                         bool recursiveAssignment = false, bool isParentAButton = false)
         {
             if (element is not null && element is TextBlock textBlock)
             {
@@ -232,28 +247,28 @@ namespace CollapseLauncher.Extension
             if (element is ButtonBase button)
             {
                 if (button.Content is UIElement buttonContent)
-                    buttonContent.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, true);
+                    buttonContent.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, true);
                 else if (button.Content is string buttonString)
                     button.Content = new TextBlock { Text = buttonString, TextWrapping = wrap, HorizontalAlignment = HorizontalAlignment.Center };
             }
 
             if (element is Panel panel)
                 foreach (UIElement childrenElement in panel.Children!)
-                    childrenElement.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                    childrenElement.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
 
             if (element is ScrollViewer scrollViewer && scrollViewer.Content is UIElement elementInner)
-                elementInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                elementInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
 
             if (element is ContentControl contentControl && (element is SettingsCard || element is Expander) && contentControl.Content is UIElement contentControlInner)
             {
-                contentControlInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                contentControlInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
 
                 if (contentControl is Expander expander && expander.Header is UIElement expanderHeader)
-                    expanderHeader.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                    expanderHeader.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
             }
 
             if (element is InfoBar infoBar && infoBar.Content is UIElement infoBarInner)
-                infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
         }
 
         internal static ref TElement WithWidthAndHeight<TElement>(this TElement element, double uniform)
@@ -647,9 +662,7 @@ namespace CollapseLauncher.Extension
         internal static void ApplyDropShadow(this FrameworkElement element, Color? shadowColor = null,
             double blurRadius = 10, double opacity = 0.25, bool isMasked = true, Vector3? offset = null)
         {
-            FrameworkElement shadowPanel = null;
-
-            shadowPanel = element.FindDescendant("ShadowGrid");
+            var shadowPanel = element.FindDescendant("ShadowGrid");
             if (shadowPanel == null)
             {
                 shadowPanel = CreateGrid()
@@ -688,22 +701,32 @@ namespace CollapseLauncher.Extension
                 }
             }
 
-            void AttachShadow(FrameworkElement thisElement, bool innerMask, Vector3? offset)
+            void AttachShadow(FrameworkElement thisElement, bool innerMask, Vector3? _offset)
             {
                 FrameworkElement xamlRoot = (thisElement.Parent as FrameworkElement) ?? thisElement.FindDescendant<Grid>();
 
                 if (xamlRoot is Border borderParent)
                     xamlRoot = borderParent.Child is Grid grid ? grid : borderParent.Child.FindAscendant<Grid>();
 
-                (xamlRoot as Panel).Children.Add(shadowPanel);
-                Canvas.SetZIndex(shadowPanel, -1);
-                if (shadowPanel is not Panel)
-                    throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
+                if (xamlRoot is Panel panel)
+                {
+                    try
+                    {
+                        panel.Children.Add(shadowPanel);
+                        Canvas.SetZIndex(shadowPanel, -1);
+                        if (shadowPanel is not Panel)
+                            throw new NotSupportedException("The ShadowGrid must be at least a Grid or StackPanel or any \"Panel\" elements");
 
-                if (xamlRoot == null || xamlRoot is not Panel)
-                    throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
+                        if (xamlRoot == null || xamlRoot is not Panel)
+                            throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
 
-                thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                        thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, _offset);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWriteLine($"Failed while attaching shadow to an element\r\n{ex}", LogType.Warning, true);
+                    }
+                }
             }
         }
 
@@ -711,7 +734,9 @@ namespace CollapseLauncher.Extension
             double blurRadius = 10, double opacity = 0.25, bool isMasked = false, Vector3? offset = null)
         {
             offset ??= Vector3.Zero;
-            string passedValue = $"{offset?.X ?? 0},{offset?.Y ?? 0},{offset?.Z ?? 0}";
+            // ReSharper disable ConstantConditionalAccessQualifier
+            string passedValue = $"{offset?.X},{offset?.Y},{offset?.Z}";
+            // ReSharper restore ConstantConditionalAccessQualifier
 
             AttachedDropShadow shadow = new AttachedDropShadow()
             {

@@ -28,7 +28,7 @@ namespace CollapseLauncher
                 // Initialize metadata
                 // Set total activity string as "Fetching Caches Type: Dispatcher"
                 _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, CacheAssetType.Dispatcher);
-                _status!.IsProgressTotalIndetermined = true;
+                _status!.IsProgressAllIndetermined = true;
                 _status!.IsIncludePerFileIndicator = false;
                 UpdateStatus();
 
@@ -58,8 +58,8 @@ namespace CollapseLauncher
                     LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
 
                     // Increment the Total Size and Count
-                    _progressTotalCount += count.Item1;
-                    _progressTotalSize += count.Item2;
+                    _progressAllCountTotal += count.Item1;
+                    _progressAllSizeTotal += count.Item2;
                 }
             }
             finally
@@ -76,36 +76,32 @@ namespace CollapseLauncher
         {
             // Set total activity string as "Fetching Caches Type: <type>"
             _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
-            _status!.IsProgressTotalIndetermined = true;
+            _status!.IsProgressAllIndetermined = true;
             _status!.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
-            try
+            // Start reading the metadata and build the asset index of each type
+            SRAssetProperty assetProperty;
+            switch (type)
             {
-                // Start reading the metadata and build the asset index of each type
-                SRAssetProperty assetProperty;
-                switch (type)
-                {
-                    case SRAssetType.IFix:
-                        await _innerGameVersionManager!.StarRailMetadataTool!.ReadIFixMetadataInformation(token);
-                        assetProperty = _innerGameVersionManager!.StarRailMetadataTool!.MetadataIFix!.GetAssets();
-                        assetIndex!.AddRange(assetProperty!.AssetList!);
-                        return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
-                    case SRAssetType.DesignData:
-                        await _innerGameVersionManager!.StarRailMetadataTool!.ReadDesignMetadataInformation(token);
-                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataDesign!.GetAssets();
-                        assetIndex!.AddRange(assetProperty!.AssetList!);
-                        return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
-                    case SRAssetType.Lua:
-                        await _innerGameVersionManager!.StarRailMetadataTool!.ReadLuaMetadataInformation(token);
-                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataLua!.GetAssets();
-                        assetIndex!.AddRange(assetProperty!.AssetList!);
-                        return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
-                }
-
-                return (0, 0);
+                case SRAssetType.IFix:
+                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadIFixMetadataInformation(token);
+                    assetProperty = _innerGameVersionManager!.StarRailMetadataTool!.MetadataIFix!.GetAssets();
+                    assetIndex!.AddRange(assetProperty!.AssetList!);
+                    return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
+                case SRAssetType.DesignData:
+                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadDesignMetadataInformation(token);
+                    assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataDesign!.GetAssets();
+                    assetIndex!.AddRange(assetProperty!.AssetList!);
+                    return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
+                case SRAssetType.Lua:
+                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadLuaMetadataInformation(token);
+                    assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataLua!.GetAssets();
+                    assetIndex!.AddRange(assetProperty!.AssetList!);
+                    return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
             }
-            catch { throw; }
+
+            return (0, 0);
         }
 
         #region Utilities

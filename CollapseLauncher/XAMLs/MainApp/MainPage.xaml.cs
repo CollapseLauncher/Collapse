@@ -44,6 +44,10 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
+// ReSharper disable CheckNamespace
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Local
 
 namespace CollapseLauncher
 {
@@ -65,8 +69,8 @@ namespace CollapseLauncher
         internal static List<string> PreviousTagString       = new();
 
 #nullable enable
-        internal static BackgroundMediaUtility? CurrentBackgroundHandler = null;
-        private         BackgroundMediaUtility? LocalBackgroundHandler = null;
+        internal static BackgroundMediaUtility? CurrentBackgroundHandler;
+        private         BackgroundMediaUtility? _localBackgroundHandler;
 #nullable restore
         #endregion
 
@@ -75,8 +79,8 @@ namespace CollapseLauncher
         {
             try
             {
-                LogWriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
-                LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
+                LogWriteLine($"Welcome to Collapse Launcher v{LauncherUpdateHelper.LauncherCurrentVersionString} - {MainEntryPoint.GetVersionString()}");
+                LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}");
                 InitializeComponent();
                 m_mainPage                             =  this;
                 ToggleNotificationPanelBtn.Translation += Shadow16;
@@ -97,14 +101,15 @@ namespace CollapseLauncher
         {
             UnsubscribeEvents();
 #if !DISABLEDISCORD
-            AppDiscordPresence.Dispose();
+            AppDiscordPresence?.Dispose();
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
-            LocalBackgroundHandler?.Dispose();
+            _localBackgroundHandler?.Dispose();
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
         {
+            SubscribeEvents();
             try
             {
                 if (!IsShowRegionChangeWarning && IsInstantRegionChange)
@@ -123,7 +128,7 @@ namespace CollapseLauncher
                 if (!await CheckForAdminAccess(this))
                 {
                     if (WindowUtility.CurrentWindow is MainWindow mainWindow)
-                        mainWindow?.CloseApp();
+                        mainWindow.CloseApp();
                     return;
                 }
 
@@ -139,7 +144,6 @@ namespace CollapseLauncher
                 if (WindowUtility.CurrentWindow is MainWindow)
                     m_actualMainFrameSize = new Size((float)WindowUtility.CurrentWindow.Bounds.Width, (float)WindowUtility.CurrentWindow.Bounds.Height);
 
-                SubscribeEvents();
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
                 await InitializeStartup();
@@ -157,7 +161,7 @@ namespace CollapseLauncher
 
             // Initialize the background image utility
             CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-            LocalBackgroundHandler = CurrentBackgroundHandler;
+            _localBackgroundHandler = CurrentBackgroundHandler;
 
             Type Page = typeof(HomePage);
 
@@ -197,6 +201,7 @@ namespace CollapseLauncher
         private void UpdateBindingsEvent(object sender, EventArgs e)
         {
             NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.FooterMenuItems.Clear();
             Bindings.Update();
             UpdateLayout();
 
@@ -334,7 +339,7 @@ namespace CollapseLauncher
         {
             UpdateLayout();
 
-            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId.Value);
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId ?? throw new NullReferenceException());
             WindowUtility.EnableWindowNonClientArea();
             WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
 
@@ -447,34 +452,50 @@ namespace CollapseLauncher
 
         private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
-            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
-            IsCustomBG                        = e.IsCustom;
-
-            if (e.IsCustom)
-                SetAndSaveConfigValue("CustomBGPath", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-
-            if (!File.Exists(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal))
+            if (LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
             {
-                LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
+                IsCustomBG                                                                          = e.IsCustom;
+
+                if (e.IsCustom)
+                    SetAndSaveConfigValue("CustomBGPath",
+                                          LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
+                                                                .GameBackgroundImgLocal);
+
+                if (!File.Exists(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal))
+                {
+                    LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                }
+
+                CurrentBackgroundHandler
+                  ?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
+                                   e.IsRequestInit, e.IsForceRecreateCache, ex =>
+                                                                            {
+                                                                                LauncherMetadataHelper
+                                                                                       .CurrentMetadataConfig
+                                                                                       .GameLauncherApi
+                                                                                       .GameBackgroundImgLocal =
+                                                                                    AppDefaultBG;
+                                                                                LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
+                                                                                    LogType.Error, true);
+                                                                                ErrorSender.SendException(ex);
+                                                                            }, e.ActionAfterLoaded);
             }
-
-            CurrentBackgroundHandler?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit, e.IsForceRecreateCache, (Exception ex) =>
-            {
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
-                LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }, e.ActionAfterLoaded);
         }
 
         internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
-            bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
+            bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+                if (LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
+                {
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal =
+                        string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+                }
             }
             else if (isAPIBackgroundAvailable)
             {
@@ -491,10 +512,10 @@ namespace CollapseLauncher
             }
 
             // Use default background if the API background is empty (in-case HoYo did something catchy)
-            if (!isAPIBackgroundAvailable && !IsCustomBG)
+            if (!isAPIBackgroundAvailable && !IsCustomBG && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
 
-            if (!IsCustomBG || IsFirstStartup)
+            if ((!IsCustomBG || IsFirstStartup) && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
             {
                 BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
                     () =>
@@ -567,13 +588,14 @@ namespace CollapseLauncher
                 await SpawnPushAppNotification();
 
                 // Check Metadata Update in Background
-                await CheckMetadataUpdateInBackground();
+                if (await CheckMetadataUpdateInBackground())
+                    return; // Cancel any routine below to avoid conflict with app update
 
 #if !DEBUG
                 // Run the update check and trigger routine
-                LauncherUpdateHelper.RunUpdateCheckDetached();
+                await LauncherUpdateHelper.RunUpdateCheckDetached();
 #else 
-                LogWriteLine("Running debug build, stopping update checks!", LogType.Error, false);
+                LogWriteLine("Running debug build, stopping update checks!", LogType.Error);
 #endif
             }
             catch (JsonException ex)
@@ -622,7 +644,7 @@ namespace CollapseLauncher
                 NotificationData = await networkStream.DeserializeAsync<NotificationPush>(InternalAppJSONContext.Default, TokenSource.Token);
                 IsLoadNotifComplete = true;
 
-                NotificationData.EliminatePushList();
+                NotificationData?.EliminatePushList();
             }
             catch (Exception ex)
             {
@@ -632,7 +654,7 @@ namespace CollapseLauncher
 
         private void GenerateLocalAppNotification()
         {
-            NotificationData.AppPush.Add(new NotificationProp
+            NotificationData?.AppPush.Add(new NotificationProp
             {
                 Show = true,
                 MsgId = 0,
@@ -648,7 +670,7 @@ namespace CollapseLauncher
 
             if (IsPreview)
             {
-                NotificationData.AppPush.Add(new NotificationProp
+                NotificationData?.AppPush.Add(new NotificationProp
                 {
                     Show = true,
                     MsgId = -1,
@@ -671,7 +693,7 @@ namespace CollapseLauncher
 
         private Button GenerateNotificationButtonStartProcess(string IconGlyph, string PathOrURL, string Text, bool IsUseShellExecute = true)
         {
-            return NotificationPush.GenerateNotificationButton(IconGlyph, Text, (s, e) =>
+            return NotificationPush.GenerateNotificationButton(IconGlyph, Text, (_, _) =>
             {
                 new Process
                 {
@@ -696,8 +718,8 @@ namespace CollapseLauncher
 
         private async Task SpawnPushAppNotification()
         {
-            TypedEventHandler<InfoBar, object> ClickCloseAction = null;
-            if (NotificationData.AppPush == null) return;
+            TypedEventHandler<InfoBar, object> ClickCloseAction;
+            if (NotificationData?.AppPush == null) return;
             foreach (NotificationProp Entry in NotificationData.AppPush)
             {
                 // Check for Close Action for certain MsgIds
@@ -705,11 +727,11 @@ namespace CollapseLauncher
                 {
                     case 0:
                         {
-                            ClickCloseAction = new TypedEventHandler<InfoBar, object>((sender, args) =>
-                            {
-                                NotificationData.AddIgnoredMsgIds(0);
-                                SaveLocalNotificationData();
-                            });
+                            ClickCloseAction = (_, _) =>
+                                               {
+                                                   NotificationData?.AddIgnoredMsgIds(0);
+                                                   SaveLocalNotificationData();
+                                               };
                         }
                         break;
                     default:
@@ -743,17 +765,17 @@ namespace CollapseLauncher
             {
                 string UpdateNotifFile = Path.Combine(AppDataFolder, "_NewVer");
                 string NeedInnoUpdateFile = Path.Combine(AppDataFolder, "_NeedInnoLogUpdate");
-                TypedEventHandler<InfoBar, object> ClickClose = new TypedEventHandler<InfoBar, object>((sender, args) =>
-                {
-                    File.Delete(UpdateNotifFile);
-                });
+                TypedEventHandler<InfoBar, object> ClickClose = (_, _) =>
+                                                                {
+                                                                    File.Delete(UpdateNotifFile);
+                                                                };
 
                 // If the update was handled by squirrel and it needs Inno Setup Log file to get updated, then do the routine
                 if (File.Exists(NeedInnoUpdateFile))
                 {
                     try
                     {
-                        string InnoLogPath = Path.Combine(Path.GetDirectoryName(AppFolder), "unins000.dat");
+                        string InnoLogPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "unins000.dat");
                         if (File.Exists(InnoLogPath)) InnoSetupLogUpdate.UpdateInnoSetupLog(InnoLogPath);
                         File.Delete(NeedInnoUpdateFile);
                     }
@@ -798,7 +820,10 @@ namespace CollapseLauncher
                     }
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         private InfoBarSeverity NotifSeverity2InfoBarSeverity(NotifSeverity inp)
@@ -816,16 +841,16 @@ namespace CollapseLauncher
             }
         }
 
-        private void SpawnNotificationPush(string Title, string Content, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
+        private void SpawnNotificationPush(string Title, string TextContent, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
             bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, FrameworkElement OtherContent = null, bool IsAppNotif = true,
             bool? Show = false, bool ForceShowNotificationPanel = false)
         {
             if (!(Show ?? false)) return;
-            if (NotificationData.CurrentShowMsgIds.Contains(MsgId)) return;
+            if (NotificationData?.CurrentShowMsgIds.Contains(MsgId) ?? false) return;
 
-            if (NotificationData.IsMsgIdIgnored(MsgId)) return;
+            if (NotificationData?.IsMsgIdIgnored(MsgId) ?? false) return;
 
-            NotificationData.CurrentShowMsgIds.Add(MsgId);
+            NotificationData?.CurrentShowMsgIds.Add(MsgId);
 
             DispatcherQueue?.TryEnqueue(() =>
             {
@@ -833,13 +858,13 @@ namespace CollapseLauncher
 
                 InfoBar Notification = new InfoBar
                 {
-                    Title = Title,
-                    Message = Content,
-                    Severity = NotifSeverity2InfoBarSeverity(Severity),
-                    IsClosable = IsClosable,
+                    Title         = Title,
+                    Message       = TextContent,
+                    Severity      = NotifSeverity2InfoBarSeverity(Severity),
+                    IsClosable    = IsClosable,
                     IsIconVisible = true,
-                    Shadow = SharedShadow,
-                    IsOpen = true
+                    Shadow        = SharedShadow,
+                    IsOpen        = true
                 }
                 .WithMargin(4d, 4d, 4d, 0d).WithWidth(600)
                 .WithCornerRadius(8).WithHorizontalAlignment(HorizontalAlignment.Right);
@@ -879,7 +904,7 @@ namespace CollapseLauncher
         private void SpawnNotificationoUI(int tagID, InfoBar Notification)
         {
             Grid Container = UIElementExtensions.CreateGrid().WithTag(tagID);
-            Notification.Loaded += (a, b) =>
+            Notification.Loaded += (_, _) =>
             {
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
                 NewNotificationCountBadge.Visibility = Visibility.Visible;
@@ -888,16 +913,16 @@ namespace CollapseLauncher
                 NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
-            Notification.Closed += (s, a) =>
+            Notification.Closed += (s, _) =>
             {
                 s.Translation -= Shadow32;
                 s.SetHeight(0d);
                 s.SetMargin(0d);
                 int msg = (int)s.Tag;
 
-                if (NotificationData.CurrentShowMsgIds.Contains(msg))
+                if (NotificationData?.CurrentShowMsgIds.Contains(msg) ?? false)
                 {
-                    NotificationData.CurrentShowMsgIds.Remove(msg);
+                    NotificationData?.CurrentShowMsgIds.Remove(msg);
                 }
                 NotificationContainer.Children.Remove(Container);
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
@@ -917,11 +942,11 @@ namespace CollapseLauncher
 
         private void RemoveNotificationUI(int tagID)
         {
-            Grid notif = NotificationContainer.Children.OfType<Grid>().Where(x => (int)x.Tag == tagID).FirstOrDefault();
+            Grid notif = NotificationContainer.Children.OfType<Grid>().FirstOrDefault(x => (int)x.Tag == tagID);
             if (notif != null)
             {
                 NotificationContainer.Children.Remove(notif);
-                InfoBar notifBar = notif.Children.OfType<InfoBar>()?.FirstOrDefault();
+                InfoBar notifBar = notif.Children.OfType<InfoBar>().FirstOrDefault();
                 if (notifBar != null && notifBar.IsClosable)
                     notifBar.IsOpen = false;
             }
@@ -936,8 +961,8 @@ namespace CollapseLauncher
             for (; stackIndex < NotificationContainer.Children.Count;)
             {
                 if (NotificationContainer.Children[stackIndex] is not Grid container
-                 || container.Children == null || container.Children.Count == 0
-                 || container.Children[0] is not InfoBar notifBar || notifBar == null
+                    || container.Children == null || container.Children.Count == 0
+                    || container.Children[0] is not InfoBar notifBar
                  || !notifBar.IsClosable)
                 {
                     ++stackIndex;
@@ -962,16 +987,22 @@ namespace CollapseLauncher
 
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
-            string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
-            NotificationData.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
-            SaveLocalNotificationData();
+            string[] Data = (sender as CheckBox)?.Tag.ToString()?.Split(',');
+            if (Data != null)
+            {
+                NotificationData?.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+                SaveLocalNotificationData();
+            }
         }
 
         private void NeverAskNotif_Unchecked(object sender, RoutedEventArgs e)
         {
-            string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
-            NotificationData.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
-            SaveLocalNotificationData();
+            string[] Data = (sender as CheckBox)?.Tag.ToString()?.Split(',');
+            if (Data != null)
+            {
+                NotificationData?.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+                SaveLocalNotificationData();
+            }
         }
 
         private async void ForceShowNotificationPanel()
@@ -1073,7 +1104,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Metadata Update Method
-        private async Task CheckMetadataUpdateInBackground()
+        private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
             bool IsUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
             if (IsUpdate)
@@ -1087,7 +1118,7 @@ namespace CollapseLauncher
                         )
                     .WithMargin(0d, 0d, 0d, 16d);
 
-                UpdateMetadatabtn.Loaded += async (a, b) =>
+                UpdateMetadatabtn.Loaded += async (a, _) =>
                 {
                     TextBlock Text = new TextBlock
                     {
@@ -1102,8 +1133,12 @@ namespace CollapseLauncher
                     StackPanel StackPane = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                     StackPane.AddElementToStackPanel(LoadBar);
                     StackPane.AddElementToStackPanel(Text);
-                    (a as Button).Content = StackPane;
-                    (a as Button).IsEnabled = false;
+                    Button aButton = a as Button;
+                    if (aButton != null)
+                    {
+                        aButton.Content   = StackPane;
+                        aButton.IsEnabled = false;
+                    }
 
                     // Put 2 seconds delay before updating
                     int i = 2;
@@ -1125,7 +1160,7 @@ namespace CollapseLauncher
                     catch (Exception ex)
                     {
                         LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
-                        ErrorSender.SendException(ex, ErrorType.Unhandled);
+                        ErrorSender.SendException(ex);
                     }
                 };
                 SpawnNotificationPush(
@@ -1142,6 +1177,7 @@ namespace CollapseLauncher
                     true
                     );
             }
+            return IsUpdate;
         }
         #endregion
 
@@ -1150,29 +1186,15 @@ namespace CollapseLauncher
         {
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.FooterMenuItems.Clear();
 
             IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty()._GameVersion;
 
-            FontFamily Fnt = FontCollections.FontAwesomeSolid;
-
-            FontIcon IconLauncher = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconRepair = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconCaches = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
-            FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
-
-            IconLauncher.ApplyDropShadow(Colors.Gray, 20);
-            IconRepair.ApplyDropShadow(Colors.Gray, 20);
-            IconCaches.ApplyDropShadow(Colors.Gray, 20);
-            IconGameSettings.ApplyDropShadow(Colors.Gray, 20);
-            IconAppSettings.ApplyDropShadow(Colors.Gray, 20);
-
-            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
-            {
-                SettingsItem.Content = Lang._SettingsPage.PageTitle;
-                SettingsItem.Icon = IconAppSettings;
-                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
-            }
+            FontIcon IconLauncher = new FontIcon { Glyph = "" };
+            FontIcon IconRepair = new FontIcon { Glyph = "" };
+            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
+            FontIcon IconGameSettings = new FontIcon { Glyph = "" };
+            FontIcon IconAppSettings = new FontIcon { Glyph = "" };
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
@@ -1204,25 +1226,53 @@ namespace CollapseLauncher
             switch (CurrentGameVersionCheck.GameType)
             {
                 case GameNameType.Honkai:
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "honkaigamesettings" });
                     break;
                 case GameNameType.StarRail:
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
                     { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                    break;
+                case GameNameType.Genshin:
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem() 
+                    { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+                    break;
+                case GameNameType.Zenless:
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
+                    {Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "zenlessgamesettings"});
                     break;
             }
 
-            if (CurrentGameVersionCheck.GameType == GameNameType.Genshin)
+            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+                SettingsItem.Content = Lang._SettingsPage.PageTitle;
+                SettingsItem.Icon = IconAppSettings;
+                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
             }
+
+            foreach (var deps in NavigationViewControl.FindDescendants())
+            {
+                if (deps is FontIcon icon)
+                    AttachShadowNavigationPanelItem(icon);
+                if (deps is AnimatedIcon animIcon)
+                    AttachShadowNavigationPanelItem(animIcon);
+            }
+            AttachShadowNavigationPanelItem(IconAppSettings);
 
             if (ResetSelection)
             {
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             }
+        }
+
+        public static void AttachShadowNavigationPanelItem(FrameworkElement element)
+        {
+            bool isAppLight = IsAppThemeLight;
+            Windows.UI.Color shadowColor = isAppLight ? Colors.White : Colors.Black;
+            double shadowBlurRadius = isAppLight ? 20 : 15;
+            double shadowOpacity = isAppLight ? 0.5 : 0.3;
+
+            element.ApplyDropShadow(shadowColor, shadowBlurRadius, shadowOpacity);
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -1284,8 +1334,11 @@ namespace CollapseLauncher
             if (!IsLoadFrameCompleted) return;
             if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
 
-            NavigationViewItem item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+#nullable enable
+            NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+            item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
             if (item == null) return;
+#nullable restore
 
             string itemTag = (string)item.Tag;
 
@@ -1326,6 +1379,10 @@ namespace CollapseLauncher
                 case "genshingamesettings":
                     Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), itemTag);
                     break;
+                
+                case "zenlessgamesettings":
+                    Navigate(IsGameInstalled() ? typeof(ZenlessGameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
             }
         }
 
@@ -1339,7 +1396,7 @@ namespace CollapseLauncher
 
         internal void InvokeMainPageNavigateByTag(string tagStr)
         {
-            NavigationViewItem item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()?.Where(x => x.Tag.GetType() == typeof(string) && (string)x.Tag == tagStr)?.FirstOrDefault();
+            NavigationViewItem item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => x.Tag is string tag && tag == tagStr);
             if (item != null)
             {
                 NavigationViewControl.SelectedItem = item;
@@ -1369,18 +1426,18 @@ namespace CollapseLauncher
         {
             if (show)
             {
-                NotificationLostFocusBackground.Visibility = Visibility.Visible;
-                NotificationLostFocusBackground.Opacity = 0.3;
-                NotificationPanel.Translation += Shadow48;
-                ToggleNotificationPanelBtn.Translation -= Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = FontCollections.FontAwesomeSolid;
+                NotificationLostFocusBackground.Visibility                =  Visibility.Visible;
+                NotificationLostFocusBackground.Opacity                   =  0.3;
+                NotificationPanel.Translation                             += Shadow48;
+                ToggleNotificationPanelBtn.Translation                    -= Shadow16;
+                ((FontIcon)ToggleNotificationPanelBtn.Content).FontFamily =  FontCollections.FontAwesomeSolid;
             }
             else
             {
-                NotificationLostFocusBackground.Opacity = 0;
-                NotificationPanel.Translation -= Shadow48;
-                ToggleNotificationPanelBtn.Translation += Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = FontCollections.FontAwesomeRegular;
+                NotificationLostFocusBackground.Opacity                   =  0;
+                NotificationPanel.Translation                             -= Shadow48;
+                ToggleNotificationPanelBtn.Translation                    += Shadow16;
+                ((FontIcon)ToggleNotificationPanelBtn.Content).FontFamily =  FontCollections.FontAwesomeRegular;
                 await Task.Delay(200);
                 NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
             }
@@ -1406,7 +1463,11 @@ namespace CollapseLauncher
                 if (lastPreviousTag.ToLower() == currentNavigationItemTag.ToLower())
                 {
                     string goLastPreviousTag = PreviousTagString[PreviousTagString.Count - 2];
-                    NavigationViewItem goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+
+#nullable enable
+                    NavigationViewItem? goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+                    goPreviousNavigationItem ??= sender.FooterMenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+#nullable restore
 
                     if (goLastPreviousTag == "settings")
                     {
@@ -1547,7 +1608,7 @@ namespace CollapseLauncher
                     true,
                     false,
                     null,
-                    NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (o, e) => ShowKeybinds_Invoked(null, null)),
+                    NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (_, _) => ShowKeybinds_Invoked(null, null)),
                     true,
                     true,
                     true
@@ -1565,36 +1626,39 @@ namespace CollapseLauncher
                     LoadKbShortcuts();
 
                 int numIndex = 0;
-                VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
-                for (; numIndex <= LauncherMetadataHelper.CurrentGameNameCount; numIndex++)
+                if (KbShortcutList != null)
                 {
-                    KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                    VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
+                    for (; numIndex <= LauncherMetadataHelper.CurrentGameNameCount; numIndex++)
                     {
-                        Modifiers = keyModifier,
-                        Key = VirtualKey.Number1 + numIndex,
-                    };
-                    keystroke.Invoked += KeyboardGameShortcut_Invoked;
-                    KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+                        KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                        {
+                            Modifiers = keyModifier,
+                            Key       = VirtualKey.Number1 + numIndex,
+                        };
+                        keystroke.Invoked += KeyboardGameShortcut_Invoked;
+                        KeyboardHandler.KeyboardAccelerators.Add(keystroke);
 
-                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
-                    {
-                        Key = VirtualKey.NumberPad1 + numIndex,
-                    };
-                    keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
-                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
-                }
+                        KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
+                        {
+                            Key = VirtualKey.NumberPad1 + numIndex,
+                        };
+                        keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
+                        KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
+                    }
 
-                numIndex = 0;
-                keyModifier = KbShortcutList["RegionSelection"].Modifier;
-                while (numIndex < LauncherMetadataHelper.CurrentGameRegionMaxCount)
-                {
-                    KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                    numIndex    = 0;
+                    keyModifier = KbShortcutList["RegionSelection"].Modifier;
+                    while (numIndex < LauncherMetadataHelper.CurrentGameRegionMaxCount)
                     {
-                        Modifiers = keyModifier,
-                        Key = VirtualKey.Number1 + numIndex++,
-                    };
-                    keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
-                    KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+                        KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                        {
+                            Modifiers = keyModifier,
+                            Key       = VirtualKey.Number1 + numIndex++,
+                        };
+                        keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
+                        KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+                    }
                 }
 
                 KeyboardAccelerator keystrokeF5 = new KeyboardAccelerator()
@@ -1627,13 +1691,16 @@ namespace CollapseLauncher
 
                 foreach (var func in actions)
                 {
-                    KeyboardAccelerator kbfunc = new KeyboardAccelerator()
+                    if (KbShortcutList != null)
                     {
-                        Modifiers = KbShortcutList[func.Key].Modifier,
-                        Key = KbShortcutList[func.Key].Key
-                    };
-                    kbfunc.Invoked += func.Value;
-                    KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
+                        KeyboardAccelerator kbfunc = new KeyboardAccelerator()
+                        {
+                            Modifiers = KbShortcutList[func.Key].Modifier,
+                            Key       = KbShortcutList[func.Key].Key
+                        };
+                        kbfunc.Invoked += func.Value;
+                        KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
+                    }
                 }
             }
             catch (Exception error)
@@ -1658,9 +1725,9 @@ namespace CollapseLauncher
                 case "settings":
                     return;
                 default:
-                    string Tag = PreviousTag;
+                    string itemTag = PreviousTag;
                     PreviousTag = "Empty";
-                    NavigateInnerSwitch(Tag);
+                    NavigateInnerSwitch(itemTag);
                     if (LauncherFrame != null && LauncherFrame.BackStack != null && LauncherFrame.BackStack.Count > 0)
                         LauncherFrame.BackStack.RemoveAt(LauncherFrame.BackStack.Count - 1);
                     if (PreviousTagString != null && PreviousTagString.Count > 0)
@@ -1690,9 +1757,7 @@ namespace CollapseLauncher
             var gameName = GetAppConfigValue("GameCategory").ToString();
             #nullable enable
             List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
-            
-            gameName ??= gameRegionCollection.FirstOrDefault();
+            _ = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
 
             var indexCategory                    = gameNameCollection.IndexOf(gameName!);
             if (indexCategory < 0) indexCategory = 0;
@@ -1752,7 +1817,7 @@ namespace CollapseLauncher
             DisableInstantRegionChange                = false;
         }
 
-        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private async void ShowKeybinds_Invoked(KeyboardAccelerator? sender, KeyboardAcceleratorInvokedEventArgs? args)
         {
             if (CannotUseKbShortcuts) return;
 
@@ -1896,11 +1961,11 @@ namespace CollapseLauncher
             if (!(IsLoadRegionComplete) || CannotUseKbShortcuts)
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last())
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.FooterMenuItems.Last())
                 return;
 
             DisableKbShortcuts();
-            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
+            NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
             switch (CurrentGameProperty._GamePreset.GameType)
             {
                 case GameNameType.Honkai:
@@ -1948,7 +2013,6 @@ namespace CollapseLauncher
 
             string gameName = args.Game;
 
-            #nullable enable
             List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
             List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
             if (gameRegionCollection == null)
@@ -1960,7 +2024,6 @@ namespace CollapseLauncher
                 gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
             }
             SetAndSaveConfigValue("GameCategory", gameName);
-            #nullable restore
             
             if (args.Region != null)
             {
@@ -1975,7 +2038,6 @@ namespace CollapseLauncher
 
                 int oldGameRegionIndex = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
                 string oldGameRegion = gameRegionCollection.ElementAt(oldGameRegionIndex);
-                if (oldGameRegion == null) return true;
 
                 LauncherMetadataHelper.SetPreviousGameRegion(gameName, gameRegion);
                 SetAndSaveConfigValue("GameRegion", gameRegion);
@@ -2003,7 +2065,7 @@ namespace CollapseLauncher
             {
 #if !DISABLEDISCORD
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool() && !sameRegion)
-                    AppDiscordPresence.SetupPresence();
+                    AppDiscordPresence?.SetupPresence();
 #endif
                 InvokeLoadingRegionPopup(false);
                 LauncherFrame.BackStack.Clear();

@@ -46,6 +46,7 @@ namespace CollapseLauncher
 
         internal const string _assetGameVideoStreamingPath = @"{0}_Data\StreamingAssets\Video\Windows";
         internal const string _assetGameVideoPersistentPath = @"{0}_Data\Persistent\Video\Windows";
+        protected override string _userAgent { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
         public StarRailRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, bool onlyRecoverMainAsset = false, string versionOverride = null)
@@ -100,7 +101,7 @@ namespace CollapseLauncher
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 _assetIndex,
-                string.Format(Lang._GameRepairPage.Status3, _progressTotalCountFound, ConverterTool.SummarizeSizeSimple(_progressTotalSizeFound)),
+                string.Format(Lang._GameRepairPage.Status3, _progressAllCountFound, ConverterTool.SummarizeSizeSimple(_progressAllSizeFound)),
                 Lang._GameRepairPage.Status4);
         }
 

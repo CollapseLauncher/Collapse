@@ -1,3 +1,6 @@
+using CollapseLauncher.CustomControls;
+using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -6,12 +9,15 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 
@@ -29,6 +35,7 @@ namespace CollapseLauncher.GameVersioning
 
         private int gameChannelID    => GamePreset.ChannelID ?? 0;
         private int gameSubChannelID => GamePreset.SubChannelID ?? 0;
+        private string gameCps => GamePreset.LauncherCPSType;
 
         private IniSection _defaultIniProfile =>
             new()
@@ -42,34 +49,11 @@ namespace CollapseLauncher.GameVersioning
                 { "exit_type", new IniValue(2) }
             };
 
-        private IniSection _defaultIniProfileBilibili =>
-            new()
-            {
-                { "cps", new IniValue("bilibili") },
-                { "channel", new IniValue(gameChannelID) },
-                { "sub_channel", new IniValue(gameSubChannelID) },
-                { "game_install_path", new IniValue(_defaultGameDirPath.Replace('\\', '/')) },
-                { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
-                { "is_first_exit", new IniValue(false) },
-                { "exit_type", new IniValue(2) }
-            };
-
         private IniSection _defaultIniVersion =>
             new()
             {
                 { "channel", new IniValue(gameChannelID) },
                 { "cps", new IniValue(GamePreset.LauncherCPSType) },
-                { "game_version", new IniValue() },
-                { "sub_channel", new IniValue(gameSubChannelID) },
-                { "sdk_version", new IniValue() },
-                { "uapc", GenerateUAPCValue() }
-            };
-
-        private IniSection _defaultIniVersionBilibili =>
-            new()
-            {
-                { "channel", new IniValue(gameChannelID) },
-                { "cps", new IniValue("bilibili") },
                 { "game_version", new IniValue() },
                 { "sub_channel", new IniValue(gameSubChannelID) },
                 { "sdk_version", new IniValue() },
@@ -413,31 +397,33 @@ namespace CollapseLauncher.GameVersioning
             return returnList;
         }
 
-        public virtual List<RegionResourceVersion> GetGamePreloadZip()
+#nullable enable
+        public virtual List<RegionResourceVersion>? GetGamePreloadZip()
         {
             // Initialize the return list
             List<RegionResourceVersion> returnList = new();
 
             // If the preload is not exist, then return null
-            if (GameAPIProp.data?.pre_download_game == null)
+            if (GameAPIProp.data?.pre_download_game == null
+           || ((GameAPIProp.data?.pre_download_game?.diffs?.Count ?? 0) == 0
+             && GameAPIProp.data?.pre_download_game?.latest == null))
             {
                 return null;
             }
 
             // Try get the diff file  by the first or default (null)
-            RegionResourceVersion diff = GameAPIProp.data.pre_download_game?.diffs?
+            RegionResourceVersion? diff = GameAPIProp.data?.pre_download_game?.diffs?
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
             // If the single entry of the diff is null, then return null
             // If the diff is null, then get the latest.
             // If diff is found, then add the diff one.
-            returnList.Add(diff ?? GameAPIProp.data.pre_download_game?.latest);
+            returnList.Add(diff ?? GameAPIProp.data?.pre_download_game?.latest ?? throw new NullReferenceException($"Preload neither have diff or latest package!"));
 
             // Return the list
             return returnList;
         }
 
-#nullable enable
         public virtual List<RegionResourcePlugin>? GetGamePluginZip()
         {
             // Check if the plugin is not empty, then add it
@@ -694,10 +680,10 @@ namespace CollapseLauncher.GameVersioning
         public virtual string? FindGameInstallationPath(string path)
         {
             // Try find the base game path from the executable location.
-            string basePath = TryFindGamePathFromExecutableAndConfig(path);
+            string? basePath = TryFindGamePathFromExecutableAndConfig(path, GamePreset.GameExecutableName);
 
             // If the executable file and version config doesn't exist (null), then return null.
-            if (basePath == null)
+            if (string.IsNullOrEmpty(basePath))
             {
                 return null;
             }
@@ -712,7 +698,216 @@ namespace CollapseLauncher.GameVersioning
             // If the file doesn't exist, return as null.
             return null;
         }
-    #nullable disable
+
+        public virtual async ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement)
+        {
+            string? execName = GamePreset.GameExecutableName;
+            bool isExecExist = IsExecutableFileExist(execName);
+            bool isGameDataDirExist = IsGameDataDirExist(execName);
+            bool isGameVendorValid = IsGameVendorValid(execName);
+            bool isGameConfigIdValid = IsGameConfigIdValid();
+            bool isGameExecDataDirValid = IsGameExecDataDirValid(execName);
+            bool isGameHasBilibiliStatus = IsGameHasBilibiliStatus(execName);
+
+            // If the game exist but has invalid state, then ask for the dialog
+            if ((isExecExist && isGameDataDirExist && !isGameVendorValid)
+             || !isGameExecDataDirValid
+             || !isGameConfigIdValid
+             || !isGameHasBilibiliStatus)
+            {
+                string? translatedGameTitle =
+                    InnerLauncherConfig.GetGameTitleRegionTranslationString(GamePreset.GameName,
+                                                                            Locale.Lang._GameClientTitles);
+                string? translatedGameRegion =
+                    InnerLauncherConfig.GetGameTitleRegionTranslationString(GamePreset.ZoneName,
+                                                                            Locale.Lang._GameClientRegions);
+                string gameNameTranslated = $"{translatedGameTitle} - {translatedGameRegion}";
+
+                TextBlock textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle1, true)
+                .AddTextBlockLine(gameNameTranslated, FontWeights.Bold).AddTextBlockNewLine(2)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle2).AddTextBlockNewLine(2)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle3)
+                .AddTextBlockLine(Locale.Lang._Misc.YesContinue, FontWeights.SemiBold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle4)
+                .AddTextBlockLine(Locale.Lang._Misc.NoCancel, FontWeights.SemiBold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle5);
+
+                ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
+                    Locale.Lang._HomePage.GameStateInvalid_Title,
+                    textBlock,
+                    uiParentElement,
+                    Locale.Lang._Misc.NoCancel,
+                    Locale.Lang._Misc.YesContinue,
+                    null,
+                    ContentDialogButton.Primary,
+                    ContentDialogTheme.Error
+                    );
+
+                if (dialogResult == ContentDialogResult.None) return true;
+
+                // Perform the fix
+                FixInvalidGameExecDataDir(execName);
+                FixInvalidGameVendor(execName);
+                FixInvalidGameConfigId();
+                FixInvalidGameBilibiliStatus(execName);
+                Reinitialize();
+
+                textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle1, true)
+                .AddTextBlockLine(gameNameTranslated, FontWeights.Bold).AddTextBlockNewLine(2)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle2)
+                .AddTextBlockLine(Locale.Lang._GameRepairPage.RepairBtn2Full, FontWeights.Bold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle3)
+                .AddTextBlockLine(Locale.Lang._GameRepairPage.PageTitle, FontWeights.Bold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle4);
+
+                dialogResult = await SimpleDialogs.SpawnDialog(
+                    Locale.Lang._HomePage.GameStateInvalidFixed_Title,
+                    textBlock,
+                    uiParentElement,
+                    Locale.Lang._Misc.OkayHappy,
+                    null,
+                    null,
+                    ContentDialogButton.Close,
+                    ContentDialogTheme.Success
+                    );
+
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual bool IsExecutableFileExist(string? executableName)
+        {
+            string fullPath = Path.Combine(GameDirPath, executableName ?? "");
+            return File.Exists(fullPath);
+        }
+
+        protected virtual bool IsGameDataDirExist(string? executableName)
+        {
+            executableName = Path.GetFileNameWithoutExtension(executableName);
+            string fullPath = Path.Combine(GameDirPath, $"{executableName}_Data");
+            return Directory.Exists(fullPath);
+        }
+
+        protected virtual bool IsGameVendorValid(string? executableName)
+        {
+            executableName = Path.GetFileNameWithoutExtension(executableName);
+            string appInfoFilePath = Path.Combine(GameDirPath, $"{executableName}_Data", "app.info");
+            if (!File.Exists(appInfoFilePath)) return false;
+
+            string[] strings = File.ReadAllLines(appInfoFilePath);
+            if (strings.Length != 2) return false;
+
+            string? metaGameVendor = GamePreset.VendorType.ToString();
+            string? metaGameName = GamePreset.InternalGameNameInConfig;
+
+            return (metaGameVendor?.Equals(strings[0]) ?? false)
+                && (metaGameName?.Equals(strings[1]) ?? false);
+        }
+
+        protected virtual bool IsGameConfigIdValid()
+        {
+            const string ChannelIdKeyName = "channel";
+            const string SubChannelIdKeyName = "sub_channel";
+            const string CpsKeyName = "cps";
+
+            if (string.IsNullOrEmpty(GamePreset.LauncherCPSType)
+            || GamePreset.ChannelID == null
+            || GamePreset.SubChannelID == null)
+                return true;
+
+            bool isContainsChannelId = GameIniVersion[_defaultIniVersionSection].ContainsKey(ChannelIdKeyName);
+            bool isContainsSubChannelId = GameIniVersion[_defaultIniVersionSection].ContainsKey(SubChannelIdKeyName);
+            bool isCps = GameIniVersion[_defaultIniVersionSection].ContainsKey(CpsKeyName);
+            if (!isContainsChannelId
+             || !isContainsSubChannelId
+             || !isCps)
+                return false;
+
+            string? channelIdCurrent = GameIniVersion[_defaultIniVersionSection][ChannelIdKeyName].ToString();
+            string? subChannelIdCurrent = GameIniVersion[_defaultIniVersionSection][SubChannelIdKeyName].ToString();
+            string? cpsCurrent = GameIniVersion[_defaultIniVersionSection][CpsKeyName].ToString();
+
+            if (!int.TryParse(channelIdCurrent, null, out int channelIdCurrentInt)
+             || !int.TryParse(subChannelIdCurrent, null, out int subChannelIdCurrentInt)
+             || string.IsNullOrEmpty(cpsCurrent))
+                return false;
+
+            return !(channelIdCurrentInt != GamePreset.ChannelID
+             || subChannelIdCurrentInt != GamePreset.SubChannelID
+             || !(cpsCurrent?.Equals(GamePreset.LauncherCPSType) ?? false));
+        }
+
+        protected virtual bool IsGameExecDataDirValid(string? executableName)
+        {
+            return true; // Always true for games other than Genshin Impact
+        }
+
+        protected virtual bool IsGameHasBilibiliStatus(string? executableName)
+            {
+            bool isBilibili = GamePreset.LauncherCPSType?
+                .IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            if (isBilibili)
+                return true;
+
+            executableName = Path.GetFileNameWithoutExtension(executableName);
+            string sdkDllPath = Path.Combine(GameDirPath, $"{executableName}_Data", "Plugins", "PCGameSDK.dll");
+
+            return !(!isBilibili && File.Exists(sdkDllPath));
+        }
+
+        protected virtual void FixInvalidGameVendor(string? executableName)
+        {
+            executableName = Path.GetFileNameWithoutExtension(executableName);
+            string? appInfoFilePath = Path.Combine(GameDirPath, $"{executableName}_Data", "app.info");
+            string? appInfoFileDir = Path.GetDirectoryName(appInfoFilePath);
+
+            if (!string.IsNullOrEmpty(appInfoFileDir) && !Directory.Exists(appInfoFileDir))
+                Directory.CreateDirectory(appInfoFileDir);
+
+            string appInfoString = $"{GamePreset.VendorType.ToString()}\n{GamePreset.InternalGameNameInConfig!}";
+            byte[] buffer = Encoding.UTF8.GetBytes(appInfoString);
+            File.WriteAllBytes(appInfoFilePath, buffer);
+        }
+
+        protected virtual void FixInvalidGameExecDataDir(string? executableName)
+        {
+            return; // Always return for games other than Genshin Impact
+        }
+
+        protected virtual void FixInvalidGameConfigId()
+        {
+            const string ChannelIdKeyName = "channel";
+            const string SubChannelIdKeyName = "sub_channel";
+            const string CpsKeyName = "cps";
+
+            string gameIniVersionPath = Path.Combine(GameDirPath, "config.ini");
+
+            GameIniVersion[_defaultIniVersionSection][ChannelIdKeyName] = GamePreset.ChannelID ?? 0;
+            GameIniVersion[_defaultIniVersionSection][SubChannelIdKeyName] = GamePreset.SubChannelID ?? 0;
+            GameIniVersion[_defaultIniVersionSection][CpsKeyName] = GamePreset.LauncherCPSType;
+
+            SaveGameIni(gameIniVersionPath, GameIniVersion);
+        }
+
+        protected virtual void FixInvalidGameBilibiliStatus(string? executableName)
+        {
+            bool isBilibili = GamePreset.LauncherCPSType?
+               .IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            executableName = Path.GetFileNameWithoutExtension(executableName);
+            string sdkDllPath = Path.Combine(GameDirPath, $"{executableName}_Data", "Plugins", "PCGameSDK.dll");
+
+            if (!isBilibili && File.Exists(sdkDllPath))
+            {
+                new FileInfo(sdkDllPath) { IsReadOnly = false }.Delete();
+            }
+        }
+#nullable disable
 
         public virtual DeltaPatchProperty CheckDeltaPatchUpdate(string      gamePath, string profileName,
                                                                 GameVersion gameVersion)
@@ -800,22 +995,24 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
-            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
             GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
+            GameIniVersion[_defaultIniVersionSection]["cps"]         = gameCps;
 
-            if (isBilibili)
-            {
-                GameIniVersion[_defaultIniVersionSection]["cps"] = "bilibili";
-            }
+            /* Disable these lines as these will trigger some bugs (like Endless "Broken config.ini" dialog)
+             * and causes the cps field to be missing for other non-Bilibili games
+             * 
             // Remove the contains section if the client is not Bilibili and it does have the value.
             // This to avoid an issue with HSR config.ini detection
-            else if (GameIniVersion.ContainsSection(_defaultIniVersionSection)
-                          && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
-                          && GameIniVersion[_defaultIniVersionSection]["cps"].ToString() == "bilibili")
+            bool isBilibili = GamePreset.ZoneName == "Bilibili";
+            if ( !isBilibili
+                && GameIniVersion.ContainsSection(_defaultIniVersionSection)
+                && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
+                && GameIniVersion[_defaultIniVersionSection]["cps"].ToString().IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 GameIniVersion[_defaultIniVersionSection].Remove("cps");
             }
+            */
 
             if (saveValue)
             {
@@ -881,20 +1078,10 @@ namespace CollapseLauncher.GameVersioning
             GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName ?? string.Empty);
 
             // Initialize INIs
-            if (GamePreset.ZoneName == "Bilibili")
-            {
-                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfileBilibili,
-                                  _defaultIniProfileSection);
-                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersionBilibili,
-                                  _defaultIniVersionSection, true);
-            }
-            else
-            {
-                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile,
-                                  _defaultIniProfileSection);
-                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion,
-                                  _defaultIniVersionSection, true);
-            }
+            InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile,
+                              _defaultIniProfileSection);
+            InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion,
+                              _defaultIniVersionSection, true);
 
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath,
@@ -902,10 +1089,11 @@ namespace CollapseLauncher.GameVersioning
                                                 GamePreset.VendorType);
         }
 
-        private string TryFindGamePathFromExecutableAndConfig(string path)
+#nullable enable
+        protected virtual string? TryFindGamePathFromExecutableAndConfig(string path, string? executableName)
         {
             // Phase 1: Check on the root directory
-            string   targetPath = Path.Combine(path, GamePreset.GameExecutableName ?? string.Empty);
+            string   targetPath = Path.Combine(path, executableName ?? string.Empty);
             string   configPath = Path.Combine(path, "config.ini");
             FileInfo targetInfo = new FileInfo(targetPath);
             if (targetInfo.Exists && targetInfo.Length > 1 << 16 && File.Exists(configPath))
@@ -914,7 +1102,7 @@ namespace CollapseLauncher.GameVersioning
             }
 
             // Phase 2: Check on the launcher directory + GamePreset.GameDirectoryName
-            targetPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", GamePreset.GameExecutableName ?? string.Empty);
+            targetPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", executableName ?? string.Empty);
             configPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", "config.ini");
             targetInfo = new FileInfo(targetPath);
             if (targetInfo.Exists && targetInfo.Length > 1 << 16 && File.Exists(configPath))
@@ -923,8 +1111,10 @@ namespace CollapseLauncher.GameVersioning
             }
 
             // If none of them passes, then return null.
+            Logger.LogWriteLine("[TryFindGamePathFromExecutableAndConfig] Fail!");
             return null;
         }
+#nullable restore
 
         private bool IsTryParseIniVersionExist(string iniPath)
         {
