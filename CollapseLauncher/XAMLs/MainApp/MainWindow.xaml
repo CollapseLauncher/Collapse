@@ -156,8 +156,8 @@
         </Grid>
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
                                              x:FieldModifier="internal" />
-        <local:TrayIcon x:Name="_TrayIcon"
-                        x:FieldModifier="internal" />
+        <local:TrayIcon Grid.Row="0" x:Name="_TrayIcon"
+                        x:FieldModifier="public" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
             <Grid x:Name="AppTitleBar"

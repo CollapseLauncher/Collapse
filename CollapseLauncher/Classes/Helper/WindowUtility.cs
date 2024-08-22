@@ -362,6 +362,7 @@
                                     {
                                         mainWindow._TrayIcon.ToggleAllVisibility();
                                     }
+                                    else TrayNullHandler("WindowUtility.MainWndProc");
 
                                     return 0;
                                 }
@@ -661,10 +662,10 @@
             /// </summary>
             public static void ToggleToTray_MainWindow()
             {
-                if (CurrentWindow is MainWindow window)
-                {
-                    window._TrayIcon.ToggleMainVisibility();
-                }
+                if (CurrentWindow is not MainWindow window) return;
+
+                if (window._TrayIcon != null) window._TrayIcon.ToggleMainVisibility();
+                else TrayNullHandler(nameof(Tray_ShowNotification));
             }
 
             /// <summary>
@@ -672,10 +673,10 @@
             /// </summary>
             public static void ToggleToTray_AllWindow()
             {
-                if (CurrentWindow is MainWindow window)
-                {
-                    window._TrayIcon.ToggleAllVisibility();
-                }
+                if (CurrentWindow is not MainWindow window) return;
+
+                if (window._TrayIcon != null) window._TrayIcon.ToggleAllVisibility();
+                else TrayNullHandler(nameof(Tray_ShowNotification));
             }
 
             /// <summary>
@@ -722,10 +723,17 @@
                                                      bool             respectQuietTime = true,
                                                      bool             realtime         = false)
             {
-                if (CurrentWindow is MainWindow window)
-                {
-                    window._TrayIcon.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
-                }
+                if (CurrentWindow is not MainWindow window) return;
+
+                if (window._TrayIcon != null)
+                    window._TrayIcon.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound,
+                                                      respectQuietTime, realtime);
+                else TrayNullHandler(nameof(Tray_ShowNotification));
+            }
+
+            private static void TrayNullHandler(string caller)
+            {
+                Logger.LogWriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
             }
 
             #endregion
