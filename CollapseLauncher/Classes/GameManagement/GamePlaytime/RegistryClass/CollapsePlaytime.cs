@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.Serialization;
 using System.Text;
 using static Hi3Helper.Logger;
 
@@ -13,8 +14,9 @@ namespace CollapseLauncher.GamePlaytime
         #region Fields
         private static DateTime BaseDate => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
 
-        private const string _ValueName              = "CollapseLauncher_Playtime";
-        private const string _OldLastPlayedValueName = "CollapseLauncher_LastPlayed";
+        private const string _TotalTimeValueName  = "CollapseLauncher_Playtime";
+        private const string _LastPlayedValueName = "CollapseLauncher_LastPlayed";
+        private const string _StatsValueName      = "CollapseLauncher_PlaytimeStats";
 
         private static Dictionary<int, bool> _IsDeserializing = [];
         private        RegistryKey           _registryRoot;
@@ -27,12 +29,14 @@ namespace CollapseLauncher.GamePlaytime
         /// Represents the total time a game was played.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
+        [IgnoreDataMember]
         public TimeSpan TotalPlaytime { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the total time the last/current session lasted.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
+        [IgnoreDataMember]
         public TimeSpan LastSession { get; set; } = TimeSpan.Zero;
 
         /// <summary>
@@ -81,47 +85,37 @@ namespace CollapseLauncher.GamePlaytime
             try
             {
                 _IsDeserializing[hashID] = true;
-                if (root == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                if (root == null) throw new NullReferenceException($"Cannot load playtime. RegistryKey is unexpectedly not initialized!");
 
-                object? value = root.GetValue(_ValueName, null);
+                int? totalTime = (int?)root.GetValue(_TotalTimeValueName,null);
+                int? lastPlayed = (int?)root.GetValue(_LastPlayedValueName,null);
+                object? stats = root.GetValue(_StatsValueName, null);
 
-                // The value being an int means this value was saved by the old implementaion and represents the total number of seconds played.
-                if (value is int oldPlaytime)
+                CollapsePlaytime playtime;
+
+                if (stats != null)
                 {
-                    object? lastPlayed = root.GetValue(_OldLastPlayedValueName, null);
-                    root.DeleteValue(_OldLastPlayedValueName, false);
-
-                    LogWriteLine($"Found old Playtime RegistryKey! Converting to the new format... (Playtime: {oldPlaytime} | Last Played: {lastPlayed})", writeToLog: true);
-                    _IsDeserializing[hashID] = false;
-                    
-                    CollapsePlaytime playtime = new CollapsePlaytime()
-                    {
-                        TotalPlaytime = TimeSpan.FromSeconds(oldPlaytime),
-                        LastPlayed = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null,
-                        _registryRoot = root,
-                        _hashID = hashID
-                    };
-                    playtime.Save();
-
-                    return playtime;
-                }
-
-                if (value != null)
-                {
-                    ReadOnlySpan<byte> byteStr = (byte[])value;
+                    ReadOnlySpan<byte> byteStr = (byte[])stats;
 #if DEBUG
                     LogWriteLine($"Loaded Playtime:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    CollapsePlaytime playtime = byteStr.Deserialize<CollapsePlaytime>(UniversalPlaytimeJSONContext.Default) ?? new CollapsePlaytime();
-                    playtime._registryRoot = root;
-                    playtime._hashID = hashID;
-
-                    return playtime;
+                    playtime = byteStr.Deserialize<CollapsePlaytime>(UniversalPlaytimeJSONContext.Default) ?? new CollapsePlaytime();
                 }
+                else
+                {
+                    playtime = new CollapsePlaytime();
+                }
+
+                playtime._registryRoot = root;
+                playtime._hashID       = hashID;
+                playtime.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
+                playtime.LastPlayed    = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null;
+
+                return playtime;
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while reading playtime.\r\n{ex}", LogType.Error, true);
             }
             finally
             {
@@ -138,18 +132,23 @@ namespace CollapseLauncher.GamePlaytime
         {
             try
             {
-                if (_registryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (_registryRoot == null) throw new NullReferenceException($"Cannot save playtime since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(UniversalPlaytimeJSONContext.Default, true);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
 #endif
-                _registryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                _registryRoot.SetValue(_StatsValueName, dataByte, RegistryValueKind.Binary);
+                _registryRoot.SetValue(_TotalTimeValueName, TotalPlaytime.TotalSeconds, RegistryValueKind.DWord);
+                
+                double? lastPlayed = (LastPlayed?.ToUniversalTime() - BaseDate)?.TotalSeconds;
+                if (lastPlayed != null)
+                    _registryRoot.SetValue(_LastPlayedValueName, lastPlayed);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to save playtime!\r\n{ex}", LogType.Error, true);
             }
         }
 
