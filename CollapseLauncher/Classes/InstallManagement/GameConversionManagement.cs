@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using SharpHDiffPatch.Core;

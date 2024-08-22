@@ -4,6 +4,7 @@ using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
@@ -79,6 +80,38 @@ namespace CollapseLauncher.Interfaces
         #region ProgressEventHandlers - Fetch
         protected void _innerObject_ProgressAdapter(object sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
         protected void _innerObject_StatusAdapter(object sender, TotalPerfileStatus e) => StatusChanged?.Invoke(sender, e);
+
+        protected virtual async void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadData)
+        {
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                double speed = downloadData.BytesDownloaded / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
+                TimeSpan timeLeftSpan = ((downloadData.BytesTotal - downloadData.BytesDownloaded) / speed).ToTimeSpanNormalized();
+                double percentage = ConverterTool.GetPercentageNumber(downloadData.BytesDownloaded, downloadData.BytesTotal, 2);
+
+                lock (_status!)
+                {
+                    // Update fetch status
+                    _status.IsProgressPerFileIndetermined = false;
+                    _status.IsProgressAllIndetermined = false;
+                    _status.ActivityPerFile = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle3!, ConverterTool.SummarizeSizeSimple(speed));
+                }
+
+                lock (_progress!)
+                {
+                    // Update fetch progress
+                    _progress.ProgressPerFilePercentage = percentage;
+                    _progress.ProgressAllSizeCurrent = downloadData.BytesDownloaded;
+                    _progress.ProgressAllSizeTotal = downloadData.BytesTotal;
+                    _progress.ProgressAllSpeed = speed;
+                    _progress.ProgressAllTimeLeft = timeLeftSpan;
+                }
+
+                // Push status and progress update
+                UpdateStatus();
+                UpdateProgress();
+            }
+        }
 
         protected virtual void _httpClient_FetchAssetProgress(object sender, DownloadEvent e)
         {

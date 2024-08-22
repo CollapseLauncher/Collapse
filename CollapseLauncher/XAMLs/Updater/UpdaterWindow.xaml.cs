@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;

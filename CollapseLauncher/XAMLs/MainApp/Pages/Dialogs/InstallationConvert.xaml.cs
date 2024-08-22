@@ -6,7 +6,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;

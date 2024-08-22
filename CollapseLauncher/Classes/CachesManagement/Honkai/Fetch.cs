@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.UABT;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,9 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
+            // Use a new DownloadClient for fetching
+            DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
+
             // Use HttpClient instance on fetching
             using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
             try
@@ -42,7 +46,7 @@ namespace CollapseLauncher
                 httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
 
                 // Build _gameRepoURL from loading Dispatcher and Gateway
-                await BuildGameRepoURL(token);
+                await BuildGameRepoURL(downloadClient, token);
 
                 // Iterate type and do fetch
                 foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
@@ -62,7 +66,7 @@ namespace CollapseLauncher
 
                     // uint = Count of the assets available
                     // long = Total size of the assets available
-                    (int, long) count = await FetchByType(type, httpClient, returnAsset, token);
+                    (int, long) count = await FetchByType(type, downloadClient, returnAsset, token);
 
                     // Write a log about the metadata
                     LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
@@ -84,7 +88,7 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private async Task BuildGameRepoURL(CancellationToken token)
+        private async Task BuildGameRepoURL(DownloadClient downloadClient, CancellationToken token)
         {
             KianaDispatch dispatch = null;
             Exception lastException = null;
@@ -102,7 +106,7 @@ namespace CollapseLauncher
                     string key = _gameVersionManager.GamePreset.DispatcherKey;
 
                     // Try assign dispatcher
-                    dispatch = await KianaDispatch.GetDispatch(baseURL,
+                    dispatch = await KianaDispatch.GetDispatch(downloadClient, baseURL,
                                                                _gameVersionManager.GamePreset.GameDispatchURLTemplate,
                                                                _gameVersionManager.GamePreset.GameDispatchChannelName,
                                                                key, _gameVersion.VersionArray, token);
@@ -120,13 +124,13 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             _gameGateway =
-                await KianaDispatch.GetGameserver(dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
+                await KianaDispatch.GetGameserver(downloadClient, dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
         private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
 
-        private async Task<(int, long)> FetchByType(CacheAssetType type, Http httpClient, List<CacheAsset> assetIndex, CancellationToken token)
+        private async Task<(int, long)> FetchByType(CacheAssetType type, DownloadClient downloadClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
             _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
@@ -145,7 +149,7 @@ namespace CollapseLauncher
 
             // Get a direct HTTP Stream
             await using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(
-                httpClient.GetHttpClient(), assetIndexURL, null, null, token);
+                downloadClient.GetHttpClient(), assetIndexURL, null, null, token);
 
             using XORStream stream = new XORStream(remoteStream);
 
@@ -339,16 +343,16 @@ namespace CollapseLauncher
         public KianaDispatch GetCurrentGateway() => _gameGateway;
 
         public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(
-            Http httpClient, CacheAssetType type, CancellationToken token)
+            DownloadClient downloadClient, CacheAssetType type, CancellationToken token)
         {
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new();
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
-            await BuildGameRepoURL(token);
+            await BuildGameRepoURL(downloadClient, token);
 
             // Fetch the progress
-            _ = await FetchByType(type, httpClient, returnAsset, token);
+            _ = await FetchByType(type, downloadClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
             return (returnAsset, _gameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(_gameGateway),

@@ -2,7 +2,7 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

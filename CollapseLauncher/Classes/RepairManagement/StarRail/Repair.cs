@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

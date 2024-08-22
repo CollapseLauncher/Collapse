@@ -4,6 +4,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using System;
@@ -77,6 +78,9 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
+            // Initialize the new DownloadClient
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
             try
             {
                 // Get the primary manifest
@@ -97,24 +101,24 @@ namespace CollapseLauncher
                 }
 
                 // Subscribe the fetching progress and subscribe StarRailMetadataTool progress to adapter
-                _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
+                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
                 // Initialize the metadata tool (including dispatcher and gateway).
                 // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
                 // not for delta patch integrity check.
-                if (!base._isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                if (!base._isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
                     // Read block metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
 
                     // Read Audio metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
 
                     // Read Video metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
                 }
 
@@ -133,7 +137,7 @@ namespace CollapseLauncher
                 // Clear the hashtable
                 StarRailRepairExtension.ClearHashtable();
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
-                _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
+                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
         }
 

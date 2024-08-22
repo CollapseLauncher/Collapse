@@ -13,7 +13,7 @@ namespace Hi3Helper.Data
 {
     public class GenshinDispatchHelper : IDisposable
     {
-        private Http.Http _httpClient;
+        private Http.Legacy.Http _httpClient;
         private string    DispatchBaseURL { get; set; }
         private string    RegionSubdomain { get; set; }
         private string    ChannelName = "OSRELWin";
@@ -26,7 +26,7 @@ namespace Hi3Helper.Data
         public GenshinDispatchHelper(int RegionID, string DispatchKey, string DispatchURLPrefix, string VersionString = "2.6.0", CancellationToken cancelToken = new CancellationToken())
         {
             if (RegionID >= 4) ChannelName = "CNRELWin";
-            this._httpClient = new Http.Http(false, 1, 1);
+            this._httpClient = new Http.Legacy.Http(false, 1, 1);
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
             this.DispatchBaseURL = string.Format(DispatchURLPrefix!, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
