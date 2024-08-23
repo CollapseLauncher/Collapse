@@ -116,11 +116,9 @@ namespace CollapseLauncher
                         // Trim the path name to get the generic languageName/filename form
                         string pathName = filePath.AsSpan().Slice(audioPersistentPath.Length + 1).ToString();
                         // Combine the generic name with audioAsbPath
-                        string newPath = Path.Combine(audioAsbPath, pathName);
-                        string newPathDir = Path.GetDirectoryName(newPath);
+                        string newPath = EnsureCreationOfDirectory(Path.Combine(audioAsbPath, pathName));
 
                         // Try move the file to the asb path
-                        if (!Directory.Exists(newPathDir)) Directory.CreateDirectory(newPathDir);
                         File.Move(filePath, newPath, true);
                     }
                 }

@@ -124,13 +124,6 @@ namespace CollapseLauncher
             // Other than unused file, do this action
             else
             {
-                // Assign and check the path of the asset directory
-                string assetDir = Path.GetDirectoryName(asset.AssetIndex.ConcatPath);
-                if (!Directory.Exists(assetDir))
-                {
-                    Directory.CreateDirectory(assetDir!);
-                }
-
 #if DEBUG
                 LogWriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
 #endif

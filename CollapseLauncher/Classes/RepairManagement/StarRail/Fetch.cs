@@ -352,10 +352,8 @@ namespace CollapseLauncher
                 // Get game executable name, directory and file path
                 string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
                 string audioRedordDir = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Audio\AudioPackage\Windows");
-                string audioRedordPath = Path.Combine(audioRedordDir, "AudioLangRedord.txt");
+                string audioRedordPath = EnsureCreationOfDirectory(Path.Combine(audioRedordDir, "AudioLangRedord.txt"));
 
-                // Create the directory if not exist
-                if (!Directory.Exists(audioRedordDir)) Directory.CreateDirectory(audioRedordDir);
                 // Then write the Redord file content
                 File.WriteAllText(audioRedordPath, "{\"AudioLang\":\"" + voLangName + "\"}");
             }

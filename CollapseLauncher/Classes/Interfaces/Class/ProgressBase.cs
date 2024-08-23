@@ -540,6 +540,9 @@ namespace CollapseLauncher.Interfaces
 
         protected string EnsureCreationOfDirectory(string str)
         {
+            if (string.IsNullOrEmpty(str))
+                return str;
+
             string dir = Path.GetDirectoryName(str);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir!);
@@ -950,21 +953,38 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
         
-        protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
+        protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL,
+            DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true)
         {
-            // Check for directory availability
-            string dirPath = Path.GetDirectoryName(assetPath);
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
-
             // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
-            await downloadClient.DownloadAsync(
-                assetURL,
-                assetPath,
-                true,
-                progressDelegateAsync: downloadProgress,
-                cancelToken: token
-                );
+            if (assetSize < 10 << 10)
+            {
+                using FileStream fileStream = File.Open(
+                    EnsureCreationOfDirectory(assetPath),
+                    isOverwrite ?
+                        FileMode.Create :
+                        FileMode.OpenOrCreate,
+                    FileAccess.ReadWrite,
+                    FileShare.ReadWrite);
+
+                await downloadClient.DownloadAsync(
+                    assetURL,
+                    fileStream,
+                    !isOverwrite,
+                    progressDelegateAsync: downloadProgress,
+                    cancelToken: token
+                    );
+            }
+            else
+            {
+                await downloadClient.DownloadAsync(
+                    assetURL,
+                    EnsureCreationOfDirectory(assetPath),
+                    isOverwrite,
+                    progressDelegateAsync: downloadProgress,
+                    cancelToken: token
+                    );
+            }
         }
 
         protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL, Http _httpClient, CancellationToken token)

@@ -1635,13 +1635,7 @@ namespace CollapseLauncher.InstallManager.Base
                     continue;
                 }
 
-                string outputPath = Path.Combine(_gamePath, zipEntry.Key);
-                string dirPath    = Path.GetDirectoryName(outputPath);
-
-                if (!Directory.Exists(dirPath) && dirPath != null)
-                {
-                    Directory.CreateDirectory(dirPath);
-                }
+                string outputPath = EnsureCreationOfDirectory(Path.Combine(_gamePath, zipEntry.Key));
 
                 int read;
                 await using FileStream outputStream =
@@ -3420,15 +3414,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Get the combined path from the asset name
                 var inputPath    = Path.Combine(sourcePath, index.N);
-                var outputPath   = Path.Combine(targetPath, index.N);
-                var outputFolder = Path.GetDirectoryName(outputPath);
-
-                // Create directory of the output path if not exist
-                if (!Directory.Exists(outputFolder)
-                    && outputFolder != null)
-                {
-                    Directory.CreateDirectory(outputFolder);
-                }
+                var outputPath   = EnsureCreationOfDirectory(Path.Combine(targetPath, index.N));
 
                 // Sanity Check: If the file is still missing even after the process, then throw
                 var fileInfo = new FileInfo(inputPath);
@@ -3542,15 +3528,6 @@ namespace CollapseLauncher.InstallManager.Base
                                                            _progressAllCountTotal)}";
             LogWriteLine($"Downloading package URL {_progressAllCountCurrent}/{_progressAllCountTotal} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
 
-            // Get the directory path
-            string pathDir = Path.GetDirectoryName(package.PathOutput);
-
-            // If the directory doesn't exist, then create one
-            if (!Directory.Exists(pathDir) && pathDir != null)
-            {
-                Directory.CreateDirectory(pathDir);
-            }
-
             // If the file exist or package size is unmatched,
             // then start downloading
             long existingPackageFileSize    = package.GetStreamLength(_downloadThreadCount);
@@ -3564,11 +3541,11 @@ namespace CollapseLauncher.InstallManager.Base
                 bool isCanMultiSession = package.Size >= 10 << 20;
                 if (isCanMultiSession)
                 {
-                    await httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
+                    await httpClient.Download(package.URL, EnsureCreationOfDirectory(package.PathOutput), _downloadThreadCount, false, token);
                 }
                 else
                 {
-                    await httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
+                    await httpClient.Download(package.URL, EnsureCreationOfDirectory(package.PathOutput), false, null, null, token);
                 }
 
                 // Update status to merging

@@ -513,15 +513,8 @@ namespace CollapseLauncher
         // ReSharper disable once UnusedParameter.Local
         private async Task<KianaAudioManifest> TryGetAudioManifest(HttpClient client, SenadinaFileIdentifier senadinaFileIdentifier, string manifestLocal, string manifestRemote, CancellationToken token)
         {
-            // Always check if the folder is exist
-            string manifestFolder = Path.GetDirectoryName(manifestLocal);
-            if (!Directory.Exists(manifestFolder))
-            {
-                Directory.CreateDirectory(manifestFolder!);
-            }
-
             using Stream originalFile = await senadinaFileIdentifier!.GetOriginalFileStream(client!, token);
-            using FileStream localFile = new FileStream(manifestLocal!, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            using FileStream localFile = new FileStream(EnsureCreationOfDirectory(manifestLocal!), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             // Start downloading manifest.m
             await DoCopyStreamProgress(originalFile, localFile, token);
