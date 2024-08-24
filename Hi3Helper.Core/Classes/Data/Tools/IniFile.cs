@@ -13,7 +13,6 @@ namespace Hi3Helper.Data
 {
     // Reference
     // https://github.com/Enichan/Ini
-    [DebuggerStepThrough]
     public struct IniValue
     {
         private static bool TryParseInt(string text, out int value)
@@ -35,6 +34,36 @@ namespace Hi3Helper.Data
         {
             uint res;
             if (uint.TryParse(text,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out res))
+            {
+                value = res;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+
+        private static bool TryParseLong(string text, out long value)
+        {
+            long res;
+            if (long.TryParse(text,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out res))
+            {
+                value = res;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+
+        private static bool TryParseUlong(string text, out ulong value)
+        {
+            ulong res;
+            if (ulong.TryParse(text,
                 NumberStyles.Integer,
                 CultureInfo.InvariantCulture,
                 out res))
@@ -188,6 +217,26 @@ namespace Hi3Helper.Data
             return valueIfInvalid;
         }
 
+        public long ToLong(long valueIfInvalid = 0)
+        {
+            long res;
+            if (TryConvertLong(out res))
+            {
+                return res;
+            }
+            return valueIfInvalid;
+        }
+
+        public ulong ToUlong(ulong valueIfInvalid = 0)
+        {
+            ulong res;
+            if (TryConvertUlong(out res))
+            {
+                return res;
+            }
+            return valueIfInvalid;
+        }
+
         public bool TryConvertUInt(out uint result)
         {
             if (Value == null)
@@ -210,6 +259,34 @@ namespace Hi3Helper.Data
                 return false;
             }
             if (TryParseInt(Value.Trim(), out result))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryConvertLong(out long result)
+        {
+            if (Value == null)
+            {
+                result = default(long);
+                return false;
+            }
+            if (TryParseLong(Value.Trim(), out result))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryConvertUlong(out ulong result)
+        {
+            if (Value == null)
+            {
+                result = default(ulong);
+                return false;
+            }
+            if (TryParseUlong(Value.Trim(), out result))
             {
                 return true;
             }
@@ -294,11 +371,15 @@ namespace Hi3Helper.Data
 
         public static implicit operator IniValue(int o) => new IniValue(o);
 
+        public static implicit operator IniValue(long o) => new IniValue(o);
+
         public static implicit operator IniValue(sbyte o) => new IniValue(o);
 
         public static implicit operator IniValue(ushort o) => new IniValue(o);
 
         public static implicit operator IniValue(uint o) => new IniValue(o);
+
+        public static implicit operator IniValue(ulong o) => new IniValue(o);
 
         public static implicit operator IniValue(float o) => new IniValue(o);
 
