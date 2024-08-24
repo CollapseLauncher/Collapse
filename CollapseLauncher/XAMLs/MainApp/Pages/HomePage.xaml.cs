@@ -41,10 +41,10 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -56,6 +56,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
+using Point = Windows.Foundation.Point;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
@@ -72,8 +73,8 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
-        public static int RefreshRateDefault { get; } = 500;
-        public static int RefreshRateSlow { get; } = 1000;
+        public static int RefreshRateDefault => 500;
+        public static int RefreshRateSlow    => 1000;
 
         private static int _refreshRate;
 
@@ -2600,15 +2601,16 @@ namespace CollapseLauncher.Pages
         #region Pre/Post Game Launch Command
         private Process _procPreGLC;
 
-        private async void PreLaunchCommand(IGameSettingsUniversal _settings)
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private async void PreLaunchCommand(IGameSettingsUniversal settings)
         {
             try
             {
-                string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
+                var preGameLaunchCommand = settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
                 if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
                 LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
-                             $"Game launch is delayed by {_settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
+                             $"Game launch is delayed by {settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
                              $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                              LogType.Warning, true);
 
@@ -2621,16 +2623,8 @@ namespace CollapseLauncher.Pages
                 _procPreGLC.StartInfo.RedirectStandardOutput = true;
                 _procPreGLC.StartInfo.RedirectStandardError = true;
 
-                _procPreGLC.OutputDataReceived += (_, e) =>
-                                                  {
-                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
-                                                  };
-
-                _procPreGLC.ErrorDataReceived += (_, e) =>
-                                                 {
-                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" +
-                                                              $"{e.Data}", LogType.GLC, true);
-                                                 };
+                _procPreGLC.OutputDataReceived += GLC_OutputHandler;
+                _procPreGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
                 _procPreGLC.Start();
 
@@ -2638,6 +2632,9 @@ namespace CollapseLauncher.Pages
                 _procPreGLC.BeginErrorReadLine();
 
                 await _procPreGLC.WaitForExitAsync();
+                
+                _procPreGLC.OutputDataReceived -= GLC_OutputHandler;
+                _procPreGLC.ErrorDataReceived  -= GLC_ErrorHandler;
             }
             catch (Win32Exception ex)
             {
@@ -2647,36 +2644,45 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
-                if (_procPreGLC != null) _procPreGLC.Dispose();
+                _procPreGLC?.Dispose();
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
         private void PreLaunchCommand_ForceClose()
         {
             try
             {
-                if (_procPreGLC != null && !_procPreGLC.HasExited)
-                {
-                    // Kill main and child processes
-                    Process taskKill = new Process();
-                    taskKill.StartInfo.FileName = "taskkill";
-                    taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
-                    taskKill.Start();
-                    taskKill.WaitForExit();
+                if (_procPreGLC is not { HasExited: false }) return;
 
-                    LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
-                }
+                // Kill main and child processes
+                var taskKill = new Process();
+                taskKill.StartInfo.FileName  = "taskkill";
+                taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
+                taskKill.Start();
+                taskKill.WaitForExit();
+
+                LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
             }
             // Ignore external errors
-            catch (InvalidOperationException) { }
-            catch (Win32Exception) { }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (Win32Exception)
+            {
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
+            }
         }
 
-        private async void PostExitCommand(IGameSettingsUniversal _settings)
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private static async void PostExitCommand(IGameSettingsUniversal settings)
         {
             try
             {
-                string postGameExitCommand = _settings?.SettingsCollapseMisc?.GamePostExitCommand;
+                var postGameExitCommand = settings?.SettingsCollapseMisc?.GamePostExitCommand;
                 if (string.IsNullOrEmpty(postGameExitCommand)) return;
 
                 LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
@@ -2692,29 +2698,35 @@ namespace CollapseLauncher.Pages
                 procPostGLC.StartInfo.RedirectStandardOutput = true;
                 procPostGLC.StartInfo.RedirectStandardError = true;
 
-                procPostGLC.OutputDataReceived += (_, e) =>
-                                                  {
-                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
-                                                  };
-
-                procPostGLC.ErrorDataReceived += (_, e) =>
-                                                 {
-                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" +
-                                                              $"{e.Data}", LogType.GLC, true);
-                                                 };
+                procPostGLC.OutputDataReceived += GLC_OutputHandler;
+                procPostGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
                 procPostGLC.Start();
                 procPostGLC.BeginOutputReadLine();
                 procPostGLC.BeginErrorReadLine();
 
                 await procPostGLC.WaitForExitAsync();
+
+                procPostGLC.OutputDataReceived -= GLC_OutputHandler;
+                procPostGLC.ErrorDataReceived  -= GLC_ErrorHandler;
             }
             catch (Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: " +
-                             $"{CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
+                             $"{settings?.SettingsCollapseMisc?.GamePostExitCommand}\r\n" +
+                             $"Traceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
+        }
+
+        private static void GLC_OutputHandler(object _, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+        }
+
+        private static void GLC_ErrorHandler(object _, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
         }
         #endregion
 
