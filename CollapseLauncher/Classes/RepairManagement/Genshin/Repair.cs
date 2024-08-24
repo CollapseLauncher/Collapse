@@ -2,8 +2,7 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
-using Hi3Helper.Http.Legacy;
-using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Http;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -38,59 +37,47 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            // Use HttpClient instance on fetching
-            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+            // Use the new DownloadClient instance
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            // Try running instance
-            try
+            // Iterate repair asset
+            ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            if (_isBurstDownloadEnabled)
             {
-                // Assign downloader event
-                _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
-
-                // Iterate repair asset
-                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                if (_isBurstDownloadEnabled)
-                {
-                    await Parallel.ForEachAsync(
-                        PairEnumeratePropertyAndAssetIndexPackage(
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
-                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
 #else
-                        repairAssetIndex
+                    repairAssetIndex
 #endif
-                        , assetProperty),
-                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
-                        async (asset, innerToken) =>
-                        {
-                            await RepairAssetTypeGeneric(asset, _httpClient, innerToken);
-                        });
-                }
-                else
-                {
-                    foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset in
-                        PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
-#else
-                        repairAssetIndex
-#endif
-                        , assetProperty))
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                    async (asset, innerToken) =>
                     {
-                        await RepairAssetTypeGeneric(asset, _httpClient, token);
-                    }
-                }
-
-                return true;
+                        await RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken);
+                    });
             }
-            finally
+            else
             {
-                // Unassign downloader event
-                _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
+                foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset in
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    , assetProperty))
+                {
+                    await RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token);
+                }
             }
+
+            return true;
         }
 
         #region GenericRepair
-        private async Task RepairAssetTypeGeneric((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset, Http _httpClient, CancellationToken token)
+        private async Task RepairAssetTypeGeneric((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
             // Increment total count current
             _progressAllCountCurrent++;
@@ -113,7 +100,7 @@ namespace CollapseLauncher
                 string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.remoteName));
 
                 // or start asset download task
-                await RunDownloadTask(asset.AssetIndex.fileSize, assetPath, asset.AssetIndex.remoteURL, _httpClient, token);
+                await RunDownloadTask(asset.AssetIndex.fileSize, assetPath, asset.AssetIndex.remoteURL, downloadClient, downloadProgress, token);
                 LogWriteLine($"File [T: {RepairAssetType.General}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
             }
 

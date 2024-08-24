@@ -4,7 +4,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
-using Hi3Helper.Http.Legacy;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -39,39 +39,28 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            // Use HttpClient instance on fetching
-            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+            // Initialize the new DownloadClient instance
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            try
-            {
-                // Subscribe the progress update
-                _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
+            // Region: PrimaryManifest
+            // Build primary manifest
+            await BuildPrimaryManifest(downloadClient, _httpClient_FetchManifestAssetProgress, assetIndex, hashtableManifest, token);
 
-                // Region: PrimaryManifest
-                // Build primary manifest
-                await BuildPrimaryManifest(_httpClient, assetIndex, hashtableManifest, token);
+            // Region: PersistentManifest
+            // Build persistent manifest
+            _isParsePersistentManifestSuccess = await BuildPersistentManifest(downloadClient, _httpClient_FetchManifestAssetProgress, assetIndex, hashtableManifest, token);
 
-                // Region: PersistentManifest
-                // Build persistent manifest
-                _isParsePersistentManifestSuccess = await BuildPersistentManifest(_httpClient, assetIndex, hashtableManifest, token);
+            // Force-Fetch the Bilibili SDK (if exist :pepehands:)
+            await FetchBilibiliSDK(token);
 
-                // Force-Fetch the Bilibili SDK (if exist :pepehands:)
-                await FetchBilibiliSDK(token);
+            // Remove plugin from assetIndex
+            EliminatePluginAssetIndex(assetIndex);
 
-                // Remove plugin from assetIndex
-                EliminatePluginAssetIndex(assetIndex);
+            // Clear hashtableManifest
+            hashtableManifest.Clear();
 
-                // Clear hashtableManifest
-                hashtableManifest.Clear();
-
-                // Eliminate unnecessary asset indexes
-                return _isParsePersistentManifestSuccess ? EliminateUnnecessaryAssetIndex(assetIndex) : assetIndex;
-            }
-            finally
-            {
-                // Unsubscribe and dispose the _httpClient
-                _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
-            }
+            // Eliminate unnecessary asset indexes
+            return _isParsePersistentManifestSuccess ? EliminateUnnecessaryAssetIndex(assetIndex) : assetIndex;
         }
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
@@ -102,7 +91,7 @@ namespace CollapseLauncher
         }
 
         #region PrimaryManifest
-        private async Task BuildPrimaryManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
+        private async Task BuildPrimaryManifest(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
             try
             {
@@ -117,8 +106,14 @@ namespace CollapseLauncher
                 #if DEBUG
                 LogWriteLine($"Downloading pkg_version...\r\n\t{basicVerURL}", LogType.Debug, true);
                 #endif
-                await _httpClient.Download(basicVerURL, EnsureCreationOfDirectory(ManifestPath), 
-                    true, null, null, token);
+                await downloadClient.DownloadAsync(
+                    basicVerURL,
+                    EnsureCreationOfDirectory(ManifestPath),
+                    true,
+                    progressDelegateAsync: downloadProgress,
+                    maxConnectionSessions: _downloadThreadCount,
+                    cancelToken: token
+                    );
                 
                 // Download additional package lists
                 var dataVerPath = $@"{_execPrefix}_Data\StreamingAssets\data_versions_streaming";
@@ -126,32 +121,56 @@ namespace CollapseLauncher
                 #if DEBUG
                 LogWriteLine($"Downloading data_versions_streaming...\r\n\t{dataVerURL}", LogType.Debug, true);
                 #endif
-                await _httpClient.Download(dataVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, dataVerPath)), 
-                    true, null, null, token);
+                await downloadClient.DownloadAsync(
+                    dataVerURL,
+                    EnsureCreationOfDirectory(Path.Combine(_gamePath, dataVerPath)),
+                    true,
+                    progressDelegateAsync: downloadProgress,
+                    maxConnectionSessions: _downloadThreadCount,
+                    cancelToken: token
+                    );
 
                 var silenceVerPath = $@"{_execPrefix}_Data\StreamingAssets\silence_versions_streaming";
                 var silenceVerURL = CombineURLFromString(_gameRepoURL, silenceVerPath);
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading silence_versions_streaming...\r\n\t{silenceVerURL}", LogType.Debug, true);
-                #endif
-                await _httpClient.Download(silenceVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, silenceVerPath)),
-                    true, null, null, token);
+#endif
+                await downloadClient.DownloadAsync(
+                    silenceVerURL,
+                    EnsureCreationOfDirectory(Path.Combine(_gamePath, silenceVerPath)),
+                    true,
+                    progressDelegateAsync: downloadProgress,
+                    maxConnectionSessions: _downloadThreadCount,
+                    cancelToken: token
+                    );
 
                 var resVerPath = $@"{_execPrefix}_Data\StreamingAssets\res_versions_streaming";
                 var resVerURL = CombineURLFromString(_gameRepoURL, resVerPath);
                 #if DEBUG
                 LogWriteLine($"Downloading res_versions_streaming...\r\n\t{resVerURL}", LogType.Debug, true);
                 #endif
-                await _httpClient.Download(resVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, resVerPath)),
-                    true, null, null, token);
+                await downloadClient.DownloadAsync(
+                    resVerURL,
+                    EnsureCreationOfDirectory(Path.Combine(_gamePath, resVerPath)),
+                    true,
+                    progressDelegateAsync: downloadProgress,
+                    maxConnectionSessions: _downloadThreadCount,
+                    cancelToken: token
+                    );
 
                 var videoVerPath = $@"{_execPrefix}_Data\StreamingAssets\VideoAssets\video_versions_streaming";
                 var videoVerURL = CombineURLFromString(_gameRepoURL, videoVerPath);
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading video_versions_streaming...\r\n\t{videoVerURL}", LogType.Debug, true);
-                #endif
-                await _httpClient.Download(videoVerURL, EnsureCreationOfDirectory(Path.Combine(_gamePath, videoVerPath)),
-                    true, null, null, token);
+#endif
+                await downloadClient.DownloadAsync(
+                    videoVerURL,
+                    EnsureCreationOfDirectory(Path.Combine(_gamePath, videoVerPath)),
+                    true,
+                    progressDelegateAsync: downloadProgress,
+                    maxConnectionSessions: _downloadThreadCount,
+                    cancelToken: token
+                    );
 
                 // Parse basic package version.
                 ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
@@ -192,13 +211,13 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
-        private async Task<bool> BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex,
+        private async Task<bool> BuildPersistentManifest(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, List<PkgVersionProperties> assetIndex,
             Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
             try
             {
                 // Get the Dispatcher Query
-                QueryProperty queryProperty = await GetDispatcherQuery(_httpClient, token);
+                QueryProperty queryProperty = await GetDispatcherQuery(token);
 
                 // Initialize persistent folder path and check for the folder existence
                 string basePersistentPath = $"{_execPrefix}_Data\\Persistent";
@@ -226,7 +245,7 @@ namespace CollapseLauncher
                              $"pri: {primaryParentURL}\r\n\t"+
                              $"sec: {secondaryParentURL}", LogType.Debug, true);
                 #endif
-                await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "res_versions_external",
+                await ParseManifestToAssetIndex(downloadClient, downloadProgress, primaryParentURL, secondaryParentURL, "res_versions_external",
                     "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
                 // Parse data_versions
@@ -235,7 +254,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Downloading data_versions_persist...\r\n\t" +
                              $"{dataVerURL}", LogType.Debug, true);
                 #endif
-                await ParseManifestToAssetIndex(_httpClient, dataVerURL, "",
+                await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataVerURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "data_versions_persist", basePersistentPath,
                     baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
 
@@ -245,7 +264,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Downloading silence_data_versions_persist...\r\n\t" +
                              $"{dataSilURL}", LogType.Debug, true);
                 #endif
-                await ParseManifestToAssetIndex(_httpClient, dataSilURL, "",
+                await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataSilURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
                     basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
 
@@ -260,7 +279,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask ParseManifestToAssetIndex(Http _httpClient, string primaryParentURL, string secondaryParentURL,
+        private async ValueTask ParseManifestToAssetIndex(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, string primaryParentURL, string secondaryParentURL,
             string manifestRemoteName, string manifestLocalName,
             string persistentPath, string streamingAssetsPath,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
@@ -279,7 +298,7 @@ namespace CollapseLauncher
                 }
 
                 // Download the manifest
-                await _httpClient.Download(manifestURL, manifestPath, true, null, null, token);
+                await downloadClient.DownloadAsync(manifestURL, manifestPath, true, progressDelegateAsync: downloadProgress, cancelToken: token);
                 LogWriteLine($"Manifest: {manifestRemoteName} (localName: {manifestLocalName}) has been fetched", LogType.Default, true);
 
                 // Parse the manifest
@@ -429,7 +448,7 @@ namespace CollapseLauncher
 
         #region DispatcherParser
         // ReSharper disable once UnusedParameter.Local
-        private async Task<QueryProperty> GetDispatcherQuery(Http _httpClient, CancellationToken token)
+        private async Task<QueryProperty> GetDispatcherQuery(CancellationToken token)
         {
             // Initialize dispatch helper
             using (GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(_dispatcherRegionID, _gameVersionManager.GamePreset.ProtoDispatchKey, _dispatcherURL, _gameVersion.VersionString, token))
@@ -531,14 +550,15 @@ namespace CollapseLauncher
         }
         #endregion
 
-        private void _httpClient_FetchManifestAssetProgress(object sender, DownloadEvent e)
+        private void _httpClient_FetchManifestAssetProgress(int read, DownloadProgress downloadProgress)
         {
             // Update fetch status
+            double speed = downloadProgress.BytesDownloaded / _stopwatch.Elapsed.TotalSeconds;
             _status.IsProgressPerFileIndetermined = false;
-            _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
+            _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
 
             // Update fetch progress
-            _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+            _progress.ProgressPerFilePercentage = GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
 
             // Push status and progress update
             UpdateStatus();
