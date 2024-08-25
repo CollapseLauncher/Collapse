@@ -433,7 +433,7 @@
     "AppBG": "App Background",
     "AppBG_Checkbox": "Use Custom Background",
     "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
-    "AppBG_Note_Regional": "Regional specific custom background settings is in \"Additional Settings\" button in the home page.",
+    "AppBG_Note_Regional": "Regional specific custom background settings is in \"Quick Settings\" button in the home page.",
 
     "AppThreads": "Application Threads",
     "AppThreads_Download": "Download Threads",
