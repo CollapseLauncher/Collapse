@@ -476,6 +476,7 @@ namespace CollapseLauncher.Pages
             {
                 bool isEnabled = GetAppConfigValue("UseCustomBG").ToBool();
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                LogWriteLine("Read " + isEnabled + " BG Path: " + BGPath + " from config", LogType.Debug, false);
                 if (!string.IsNullOrEmpty(BGPath))
                     BGPathDisplay.Text = BGPath;
                 else

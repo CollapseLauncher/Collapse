@@ -19,6 +19,7 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
@@ -1919,15 +1920,21 @@ namespace CollapseLauncher.Pages
             get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG;
             set
             {
-                if (UseCustomBGParamsSwitch.IsOn)
+                if (value)
                 {
                     ChangeGameBGButton.IsEnabled = true;
+                    SetAndSaveConfigValue("UseCustomBG", new IniValue(true));
                 }
                 else
                 {
                     ChangeGameBGButton.IsEnabled = false;
+                    SetAndSaveConfigValue("UseCustomBG", new IniValue(false));
                 }
+
+                string CustomBGParam = value ? "CustomBGPath" : "CurrentBackground";
                 ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue(CustomBGParam).ToString();
+                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
             } 
         }
         #endregion
@@ -2156,8 +2163,9 @@ namespace CollapseLauncher.Pages
             
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
+                LogWriteLine("Wrote " + GetAppConfigValue("UseCustomBG").ToBool() + "to config", LogType.Debug, false);
                 BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
-            // await SimpleDialogs.Dialog_QuickSettingsChangeBG(this);
+                
             }
         }
 
