@@ -122,6 +122,15 @@
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" />
+                        <TextBlock x:Name="RegionalBGNotice"
+                                   MaxWidth="400"
+                                   Margin="0,0,0,8"
+                                   HorizontalAlignment="Left"
+                                   FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AccentColor}"
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Note_Regional}"
+                                   TextWrapping="WrapWholeWords"
+                                   Visibility="Visible" />
                         <CheckBox x:Name="AppBGMode"
                                   Margin="0,4,0,8"
                                   Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
