@@ -2152,7 +2152,7 @@ namespace CollapseLauncher.Pages
 
         private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
         {
-            var file = await GetFilePicker(ImageLoaderHelper.SupportedStaticImageFormats);
+            var file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (string.IsNullOrEmpty(file)) return;
 
             var currentMediaType = GetMediaType(file);
