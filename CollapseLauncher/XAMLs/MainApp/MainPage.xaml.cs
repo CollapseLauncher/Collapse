@@ -539,17 +539,13 @@ namespace CollapseLauncher
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
 
             // If the custom per region is enabled, then execute below
-            if (((IsCustomBG || IsFirstStartup) && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
-                || isUseCustomPerRegionBg)
-            {
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
-                    () =>
-                    {
-                        IsFirstStartup = false;
-                        ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                    },
-                    IsCustomBG && !isUseCustomPerRegionBg);
-            }
+            BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
+                () =>
+                {
+                    IsFirstStartup = false;
+                    ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                },
+                IsCustomBG && !isUseCustomPerRegionBg);
         }
         #endregion
 
