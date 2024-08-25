@@ -411,7 +411,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 );
         }
 
-        public void Show()
+        public void Show(bool isForceShow = false)
         {
             BackgroundMediaUtility.SharedActionBlockQueue?.Post(ShowInner());
         }
