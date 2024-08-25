@@ -58,6 +58,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 * Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
 
 # Supported Features 
+> Features marked with a :warning: are scheduled for removal and/or are no longer supported by the Collapse development team.
+
 <table>
   <thead>
     <tr>
@@ -85,7 +87,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+      <td>:warning: <br> (From SEA -&gt; Global) </td>
     </tr>
     <tr>
       <td>Global</td>
@@ -95,7 +97,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
+      <td>:warning: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
     </tr>
     <tr>
       <td>Mainland China</td>
@@ -105,7 +107,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>TW/HK/MO</td>
@@ -115,7 +116,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Japan</td>
@@ -125,7 +125,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Korea</td>
@@ -135,7 +134,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td rowspan="4">Genshin Impact</td>
@@ -146,7 +144,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Mainland China</td>
@@ -156,7 +153,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Bilibili</td>
@@ -166,7 +162,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Google Play (Global)</td>
@@ -176,7 +171,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>N/A</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td rowspan="3">Honkai: Star Rail</td>
@@ -187,7 +181,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Mainland China</td>
@@ -197,7 +190,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Bilibili</td>
@@ -207,7 +199,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
    <tr>
       <td rowspan="2">Zenless Zone Zero</td>
@@ -218,7 +209,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
       <td>N/A</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
     <tr>
       <td>Mainland China</td>
@@ -228,7 +218,6 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
       <td>N/A</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
     </tr>
   </tbody>
 </table>

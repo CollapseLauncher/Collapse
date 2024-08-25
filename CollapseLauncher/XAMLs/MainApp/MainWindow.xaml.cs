@@ -25,8 +25,7 @@ namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
-        internal static bool IsForceDisableIntro = false;
-
+        private static bool _isForceDisableIntro;
         public MainWindow() { }
 
         public void InitializeWindowProperties(bool startOOBE = false)
@@ -40,7 +39,7 @@ namespace CollapseLauncher
 
                 if (IsFirstInstall || startOOBE)
                 {
-                    IsForceDisableIntro = true;
+                    _isForceDisableIntro = true;
                     WindowUtility.CurrentWindowTitlebarExtendContent = true;
                     WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
@@ -71,7 +70,7 @@ namespace CollapseLauncher
 
         private async void RunIntroSequence()
         {
-            bool isIntroEnabled = IsIntroEnabled && !IsForceDisableIntro;
+            bool isIntroEnabled = IsIntroEnabled && !_isForceDisableIntro;
             RootFrameGrid.Opacity = 0;
 
             if (isIntroEnabled)
@@ -109,7 +108,7 @@ namespace CollapseLauncher
             }
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
 
-            IsForceDisableIntro = true;
+            _isForceDisableIntro = true;
             IntroSequenceToggle.Visibility = Visibility.Collapsed;
             IntroAnimationGrid.Visibility = Visibility.Collapsed;
 

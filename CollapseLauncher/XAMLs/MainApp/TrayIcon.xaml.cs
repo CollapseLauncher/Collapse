@@ -187,7 +187,6 @@ namespace CollapseLauncher
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 LogWriteLine("Main window is hidden!");
-                WindowUtility.Tray_ShowNotification("test1", "neon stinki");
             }
             else
             {
