@@ -1,4 +1,4 @@
-<!--  ReSharper disable IdentifierTypo  -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.HomePage"
@@ -612,11 +612,11 @@
                             <DataTemplate>
                                 <imageex:ImageEx EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
-                                                 Stretch="Fill"
                                                  Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
                                                  Source="{Binding CarouselImg}"
+                                                 Stretch="Fill"
                                                  Tag="{Binding CarouselUrl}"
                                                  ToolTipService.ToolTip="{Binding CarouselTitle}" />
                             </DataTemplate>
@@ -1914,13 +1914,47 @@
                                         </Grid>
                                     </Button.Content>
                                 </Button>
+                                <StackPanel x:Name="CustomChangeBGParams"
+                                            Visibility="Visible">
+                                    <TextBlock MinWidth="200"
+                                               Margin="0,8,0,0"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle}" />
+                                    <ToggleSwitch x:Name="UseCustomBGParamsSwitch"
+                                                  IsOn="{x:Bind UseCustomBGRegion, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <Button x:Name="ChangeGameBGButton"
+                                            Margin="0,8,0,8"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            Click="ChangeGameBGButton_Click"
+                                            CornerRadius="14">
+                                        <Button.Content>
+                                            <Grid Margin="4,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="18" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                          FontSize="16"
+                                                          Glyph="" />
+                                                <TextBlock Grid.Column="1"
+                                                           Margin="8,-1,0,0"
+                                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegion}"
+                                                           TextWrapping="Wrap" />
+                                            </Grid>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"
                                             Visibility="Collapsed">
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" />
-                                    <ToggleSwitch Margin="0,0,0,8"
+                                    <ToggleSwitch x:Name="CustomStartupArgsSwitch"
+                                                  Margin="0,0,0,8"
                                                   IsOn="{x:Bind UseCustomArgs, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />

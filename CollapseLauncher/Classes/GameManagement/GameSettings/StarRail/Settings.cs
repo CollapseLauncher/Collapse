@@ -41,18 +41,19 @@ namespace CollapseLauncher.GameSettings.StarRail
             InitializeSettings();
         } 
 
+        #nullable enable
         public override void SaveSettings()
         {
             // Save Settings
             base.SaveSettings();
-            GraphicsSettings.Save();
-            SettingsScreen.Save();
-            AudioSettings_BGM.Save();
-            AudioSettings_Master.Save();
-            AudioSettings_SFX.Save();
-            AudioSettings_VO.Save();
-            AudioLanguage.Save();
-            TextLanguage.Save();
+            GraphicsSettings?.Save();
+            SettingsScreen?.Save();
+            AudioSettings_BGM?.Save();
+            AudioSettings_Master?.Save();
+            AudioSettings_SFX?.Save();
+            AudioSettings_VO?.Save();
+            AudioLanguage?.Save();
+            TextLanguage?.Save();
         }
 
         public override IGameSettingsUniversal AsIGameSettingsUniversal() => this;
