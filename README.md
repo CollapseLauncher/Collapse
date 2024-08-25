@@ -58,6 +58,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 * Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
 
 # Supported Features 
+> Features marked with a :warning: are scheduled for removal and/or are no longer supported by the Collapse development team.
+
 <table>
   <thead>
     <tr>
@@ -85,7 +87,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+      <td>:warning: <br> (From SEA -&gt; Global) </td>
     </tr>
     <tr>
       <td>Global</td>
@@ -95,7 +97,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
+      <td>:warning: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
     </tr>
     <tr>
       <td>Mainland China</td>
