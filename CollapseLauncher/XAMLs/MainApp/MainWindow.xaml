@@ -1,4 +1,4 @@
-<Window x:Class="CollapseLauncher.MainWindow"
+﻿<Window x:Class="CollapseLauncher.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:customcontrol="using:CollapseLauncher.CustomControls"
@@ -156,7 +156,8 @@
         </Grid>
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
                                              x:FieldModifier="internal" />
-        <local:TrayIcon Grid.Row="0" x:Name="_TrayIcon"
+        <local:TrayIcon x:Name="_TrayIcon"
+                        Grid.Row="0"
                         x:FieldModifier="public" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">

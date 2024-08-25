@@ -1,4 +1,4 @@
-<!--  ReSharper disable IdentifierTypo  -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.HomePage"
@@ -612,11 +612,11 @@
                             <DataTemplate>
                                 <imageex:ImageEx EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
-                                                 Stretch="Fill"
                                                  Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
                                                  Source="{Binding CarouselImg}"
+                                                 Stretch="Fill"
                                                  Tag="{Binding CarouselUrl}"
                                                  ToolTipService.ToolTip="{Binding CarouselTitle}" />
                             </DataTemplate>
