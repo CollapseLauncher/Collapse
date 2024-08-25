@@ -272,8 +272,8 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            if (!PageToken.IsCancelled) PageToken.Cancel();
-            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
+            if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -1936,12 +1936,6 @@ namespace CollapseLauncher.Pages
                     ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
                         .SettingsCollapseMisc
                         .CustomRegionBGPath = regionBgPath;
-                    CurrentGameProperty._GameSettings.SaveSettings();
-                }
-
-                if (!value)
-                {
-                    regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
                 }
 
                 ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;

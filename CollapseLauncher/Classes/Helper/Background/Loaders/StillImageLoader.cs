@@ -39,6 +39,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             ImageUI?         imageBackCurrent, ImageUI? imageBackLast,
             double           animationDuration = BackgroundMediaUtility.TransitionDuration)
         {
+            GC.SuppressFinalize(this);
             ParentUI          = parentUI;
             CurrentCompositor = parentUI.GetElementCompositor();
 
@@ -56,7 +57,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
+            GC.Collect();
         }
 
         public async Task LoadAsync(string filePath,      bool              isImageLoadForFirstTime,
@@ -89,7 +90,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
             finally
             {
                 GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
         }
 

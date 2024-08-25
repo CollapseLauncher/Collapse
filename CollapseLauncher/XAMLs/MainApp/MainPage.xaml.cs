@@ -161,8 +161,7 @@ namespace CollapseLauncher
             RunBackgroundCheck();
 
             // Initialize the background image utility
-            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-            _localBackgroundHandler = CurrentBackgroundHandler;
+            await InitBackgroundHandler();
 
             Type Page = typeof(HomePage);
 
@@ -195,6 +194,12 @@ namespace CollapseLauncher
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
             InvokeLoadingRegionPopup(false);
+        }
+
+        private async Task InitBackgroundHandler()
+        {
+            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+            _localBackgroundHandler = CurrentBackgroundHandler;
         }
         #endregion
 
@@ -451,7 +456,7 @@ namespace CollapseLauncher
             else CurrentBackgroundHandler?.Undimm();
         }
 
-        private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
+        private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
             if (LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
             {
@@ -468,6 +473,22 @@ namespace CollapseLauncher
                     LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 }
+
+                var mType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
+                                                                          .GameBackgroundImgLocal);
+                switch (mType)
+                {
+                    case BackgroundMediaUtility.MediaType.Media:
+                        BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
+                        BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
+                        break;
+                    default:
+                        BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
+                        BackgroundNewBackGrid.Visibility        = Visibility.Visible;
+                        break;
+                }
+
+                await InitBackgroundHandler();
 
                 CurrentBackgroundHandler
                   ?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
@@ -545,7 +566,7 @@ namespace CollapseLauncher
                     IsFirstStartup = false;
                     ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
                 },
-                IsCustomBG && !isUseCustomPerRegionBg);
+                IsCustomBG || isUseCustomPerRegionBg, true, true);
         }
         #endregion
 
