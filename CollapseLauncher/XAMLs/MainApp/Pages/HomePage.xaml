@@ -1920,17 +1920,15 @@
                                                Margin="0,8,0,0"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle}" />
-                                    <ToggleSwitch Margin="0,0,0,8"
-                                                  x:Name="UseCustomBGParamsSwitch"
+                                    <ToggleSwitch x:Name="UseCustomBGParamsSwitch"
                                                   IsOn="{x:Bind UseCustomBGRegion, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <Button x:Name="ChangeGameBGButton"
-                                            Margin="0,8"
+                                            Margin="0,8,0,8"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
                                             Click="ChangeGameBGButton_Click"
-                                            IsEnabled="{x:Bind UseCustomBGParamsSwitch.IsOn, Mode=OneWay}"
                                             CornerRadius="14">
                                         <Button.Content>
                                             <Grid Margin="4,0">

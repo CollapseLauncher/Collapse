@@ -18,7 +18,7 @@ namespace CollapseLauncher.GameSettings.Universal
 
         private bool _UseCustomArguments = true;
         
-        private bool _UseCustomRegionBG  = true;
+        private bool _UseCustomRegionBG  = false;
 
         private static bool _IsDeserializing;
         #endregion
@@ -103,6 +103,14 @@ namespace CollapseLauncher.GameSettings.Universal
                 if (!_IsDeserializing) Save();
             }
         }
+
+#nullable enable
+        /// <summary>
+        /// The path of the custom BG for each region
+        /// </summary>
+        public string? CustomRegionBGPath { get; set; }
+#nullable restore
+
         #endregion
 
         #region Methods

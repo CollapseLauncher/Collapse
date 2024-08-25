@@ -10,6 +10,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -486,15 +487,37 @@ namespace CollapseLauncher
 
         internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
+            GamePresetProperty currentGameProperty = GetCurrentGameProperty();
+            bool isUseCustomPerRegionBg = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
-            if (IsCustomBG)
+            if (IsCustomBG && !isUseCustomPerRegionBg)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                 if (LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
                 {
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal =
                         string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+                }
+            }
+            else if (isUseCustomPerRegionBg && IsCustomBG)
+            {
+                string regionBgPath = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath;
+
+                if (!string.IsNullOrEmpty(regionBgPath)
+                  && File.Exists(regionBgPath))
+                {
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = regionBgPath;
+                }
+                else if (isAPIBackgroundAvailable)
+                {
+                    await DownloadBackgroundImage(default);
+                    if (((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+                    {
+                        ((IGameSettingsUniversal)currentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath =
+                            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg;
+                    }
                 }
             }
             else if (isAPIBackgroundAvailable)
@@ -515,7 +538,9 @@ namespace CollapseLauncher
             if (!isAPIBackgroundAvailable && !IsCustomBG && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
 
-            if ((!IsCustomBG || IsFirstStartup) && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
+            // If the custom per region is enabled, then execute below
+            if (((IsCustomBG || IsFirstStartup) && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
+                || isUseCustomPerRegionBg)
             {
                 BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
                     () =>
@@ -523,7 +548,7 @@ namespace CollapseLauncher
                         IsFirstStartup = false;
                         ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
                     },
-                    IsCustomBG);
+                    IsCustomBG && !isUseCustomPerRegionBg);
             }
         }
         #endregion

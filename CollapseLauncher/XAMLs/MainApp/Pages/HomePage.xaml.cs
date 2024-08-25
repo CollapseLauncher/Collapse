@@ -1917,24 +1917,36 @@ namespace CollapseLauncher.Pages
         
         public bool UseCustomBGRegion
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG;
+            get
+            {
+                bool value = ((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                UseCustomBGParamsSwitch.IsEnabled = GetAppConfigValue("UseCustomBG").ToBool();
+                ChangeGameBGButton.IsEnabled = UseCustomBGParamsSwitch.IsEnabled && value;
+                return value;
+            }
             set
             {
-                if (value)
+                ChangeGameBGButton.IsEnabled = value;
+
+                string regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                if (string.IsNullOrEmpty(regionBgPath)
+                || !File.Exists(regionBgPath))
                 {
-                    ChangeGameBGButton.IsEnabled = true;
-                    SetAndSaveConfigValue("UseCustomBG", new IniValue(true));
-                }
-                else
-                {
-                    ChangeGameBGButton.IsEnabled = false;
-                    SetAndSaveConfigValue("UseCustomBG", new IniValue(false));
+                    regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
+                    ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
+                        .SettingsCollapseMisc
+                        .CustomRegionBGPath = regionBgPath;
+                    CurrentGameProperty._GameSettings.SaveSettings();
                 }
 
-                string CustomBGParam = value ? "CustomBGPath" : "CurrentBackground";
+                if (!value)
+                {
+                    regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
+                }
+
                 ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue(CustomBGParam).ToString();
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
+                CurrentGameProperty._GameSettings.SaveSettings();
+                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
             } 
         }
         #endregion
@@ -2160,12 +2172,13 @@ namespace CollapseLauncher.Pages
                     if (croppedImage == null) return;
                     SetAlternativeFileStream(croppedImage);
                 }
-            
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
-                SetAndSaveConfigValue("CustomBGPath", file);
-                LogWriteLine("Wrote " + GetAppConfigValue("UseCustomBG").ToBool() + "to config", LogType.Debug, false);
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
-                
+
+                if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+                {
+                    ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath = file;
+                    CurrentGameProperty._GameSettings.SaveSettings();
+                }
+                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
             }
         }
 

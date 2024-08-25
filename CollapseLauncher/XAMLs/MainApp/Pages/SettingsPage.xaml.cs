@@ -9,7 +9,9 @@
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
+    using CollapseLauncher.Interfaces;
     using CollapseLauncher.Pages.OOBE;
+    using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
     using Hi3Helper.Data;
@@ -512,15 +514,23 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("UseCustomBG", new IniValue(value));
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                bool isUseRegionCustomBG = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!value)
                 {
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
-                    AppBGCustomizer.Visibility       = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+
+                    ToggleCustomBgButtons();
+                }
+                else if (isUseRegionCustomBG && value)
+                {
+                    string currentRegionCustomBg = ((IGameSettingsUniversal)currentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
+                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+                    ToggleCustomBgButtons();
                 }
                 else
                 {
@@ -544,20 +554,29 @@ namespace CollapseLauncher.Pages
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
                     AppBGCustomizer.Visibility       = Visibility.Visible;
                     AppBGCustomizerNote.Visibility   = Visibility.Visible;
-                        
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-                    if (currentMediaType == MediaType.Media)
-                    {
-                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                    }
+                }
+
+                var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
+                if (currentMediaType == MediaType.Media)
+                {
+                    CustomBGImageSettings.Visibility = Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
                 BGSelector.IsEnabled = value;
+
+                return;
+                void ToggleCustomBgButtons()
+                {
+                    AppBGCustomizer.Visibility = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
