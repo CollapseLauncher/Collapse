@@ -17,7 +17,6 @@
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
-    using System.Threading.Tasks;
     using Windows.UI;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Logger;

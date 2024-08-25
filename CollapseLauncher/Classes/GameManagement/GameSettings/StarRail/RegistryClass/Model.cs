@@ -7,7 +7,6 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 

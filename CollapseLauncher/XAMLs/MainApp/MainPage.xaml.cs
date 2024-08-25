@@ -523,7 +523,7 @@ namespace CollapseLauncher
             // Check if Regional Custom BG is enabled and available
             if (isUseCustomPerRegionBg)
             {
-                var regionBgPath = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath;
+                var regionBgPath = ((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath;
                 if (!string.IsNullOrEmpty(regionBgPath) && File.Exists(regionBgPath))
                 {
                     if (BackgroundMediaUtility.GetMediaType(regionBgPath) == BackgroundMediaUtility.MediaType.StillImage)

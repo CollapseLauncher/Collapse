@@ -14,7 +14,6 @@
     using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
-    using Hi3Helper.Data;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Xaml;
@@ -430,9 +429,9 @@ namespace CollapseLauncher.Pages
                 {
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
                 }
-                else if (!string.IsNullOrEmpty(((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath))
+                else if (!string.IsNullOrEmpty(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath))
                 {
-                    currentMediaType = BackgroundMediaUtility.GetMediaType(((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath);
+                    currentMediaType = BackgroundMediaUtility.GetMediaType(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath);
                 }
                 
                 if (currentMediaType == MediaType.Media)
@@ -533,7 +532,7 @@ namespace CollapseLauncher.Pages
 
                     ToggleCustomBgButtons();
                 }
-                else if (isUseRegionCustomBG && value)
+                else if (isUseRegionCustomBG)
                 {
                     string currentRegionCustomBg = ((IGameSettingsUniversal)currentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
@@ -543,7 +542,7 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                    var BGPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(BGPath))
                     {
                         LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
