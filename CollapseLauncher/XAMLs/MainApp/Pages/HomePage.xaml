@@ -646,7 +646,8 @@
                       Padding="8,6,8,0"
                       Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
                     <Pivot Margin="0,-16,-16,0"
-                           HorizontalAlignment="Left">
+                           HorizontalAlignment="Left"
+                           SelectedIndex="{x:Bind DefaultPostPanelIndex}">
                         <PivotItem>
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,-12"
