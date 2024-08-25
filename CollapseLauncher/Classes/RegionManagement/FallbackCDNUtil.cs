@@ -389,7 +389,7 @@ namespace CollapseLauncher
                 if (!urlStatus.Item1) return false;
 
                 // Continue to get the content and return true if successful
-                await downloadClient.DownloadAsync(urlStatus.Item2, outputStream, false, HttpInstance_DownloadProgressAdapter, null, null, token);
+                await downloadClient.DownloadAsync(urlStatus.Item2, outputStream, false, HttpInstance_DownloadProgressAdapter, null, null, cancelToken:token);
                 return true;
             }
             // Handle the error and log it. If fails, then log it and return false
@@ -415,7 +415,7 @@ namespace CollapseLauncher
                 {
                     // If the CDN marked to not supporting the partial download, then use single thread mode download.
                     using FileStream stream = File.Create(outputPath);
-                    await downloadClient.DownloadAsync(urlStatus.Item2, stream, false, HttpInstance_DownloadProgressAdapter, null, null, token);
+                    await downloadClient.DownloadAsync(urlStatus.Item2, stream, false, HttpInstance_DownloadProgressAdapter, null, null, cancelToken:token);
                     return true;
                 }
                 await downloadClient.DownloadAsync(urlStatus.Item2, outputPath, true, progressDelegateAsync: HttpInstance_DownloadProgressAdapter, maxConnectionSessions: parallelThread, cancelToken: token);

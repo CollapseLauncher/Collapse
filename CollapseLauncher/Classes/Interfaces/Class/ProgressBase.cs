@@ -84,7 +84,7 @@ namespace CollapseLauncher.Interfaces
         {
             if (await CheckIfNeedRefreshStopwatch())
             {
-                double speed = downloadProgress.BytesDownloaded / _stopwatch.Elapsed.TotalSeconds;
+                double speed = (downloadProgress.BytesDownloaded / _stopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
                 TimeSpan timeLeftSpan = ((downloadProgress.BytesTotal - downloadProgress.BytesDownloaded) / speed).ToTimeSpanNormalized();
                 double percentage = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal, 2);
 
@@ -144,13 +144,13 @@ namespace CollapseLauncher.Interfaces
             Interlocked.Add(ref _progressAllSizeCurrent, size);
             if (await CheckIfNeedRefreshStopwatch())
             {
-                double speed = _progressAllSizeCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
+                double speed = (_progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
                 TimeSpan timeLeftSpan = ((_progressAllSizeCurrent - _progressAllSizeTotal) / speed).ToTimeSpanNormalized();
-                double percentage = ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal, 2);
+                double percentagePerFile = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal, 2);
 
                 lock (_progress!)
                 {
-                    _progress.ProgressPerFilePercentage = percentage;
+                    _progress.ProgressPerFilePercentage = percentagePerFile;
                     _progress.ProgressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
                     _progress.ProgressPerFileSizeTotal = downloadProgress.BytesTotal;
                     _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
@@ -258,7 +258,7 @@ namespace CollapseLauncher.Interfaces
             if (await CheckIfNeedRefreshStopwatch())
             {
                 double speed = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
-                TimeSpan timeLeftSpan = ((_progressAllSizeTotal - _progressAllSizeCurrent) / speed).ToTimeSpanNormalized();
+                TimeSpan timeLeftSpan = ((_progressAllSizeTotal - _progressAllSizeCurrent) / speed.ClampLimitedSpeedNumber()).ToTimeSpanNormalized();
                 double percentage = ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal, 2);
 
                 // Update current progress percentages and speed
@@ -952,40 +952,25 @@ namespace CollapseLauncher.Interfaces
         }
 
         protected virtual bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
-        
+
+#nullable enable
         protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL,
-            DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true)
+            DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true,
+            EventHandler<long>? downloadSpeedLimitChanged = null)
         {
             // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
-            if (assetSize < 10 << 10)
-            {
-                using FileStream fileStream = File.Open(
-                    EnsureCreationOfDirectory(assetPath),
-                    isOverwrite ?
-                        FileMode.Create :
-                        FileMode.OpenOrCreate,
-                    FileAccess.ReadWrite,
-                    FileShare.ReadWrite);
-
-                await downloadClient.DownloadAsync(
-                    assetURL,
-                    fileStream,
-                    !isOverwrite,
-                    progressDelegateAsync: downloadProgress,
-                    cancelToken: token
-                    );
-            }
-            else
-            {
-                await downloadClient.DownloadAsync(
-                    assetURL,
-                    EnsureCreationOfDirectory(assetPath),
-                    isOverwrite,
-                    progressDelegateAsync: downloadProgress,
-                    cancelToken: token
-                    );
-            }
+            await downloadClient.DownloadAsync(
+                assetURL,
+                EnsureCreationOfDirectory(assetPath),
+                isOverwrite,
+                sessionChunkSize: LauncherConfig.DownloadChunkSize,
+                progressDelegateAsync: downloadProgress,
+                cancelToken: token,
+                downloadSpeedLimitEvent: downloadSpeedLimitChanged,
+                initialDownloadSpeed: LauncherConfig.DownloadSpeedLimitCached
+                );
         }
+#nullable restore
 
         protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL, Http _httpClient, CancellationToken token)
         {
