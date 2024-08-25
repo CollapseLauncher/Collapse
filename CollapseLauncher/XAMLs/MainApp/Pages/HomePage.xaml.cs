@@ -1920,17 +1920,15 @@ namespace CollapseLauncher.Pages
             get
             {
                 bool value = ((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
-                UseCustomBGParamsSwitch.IsEnabled = GetAppConfigValue("UseCustomBG").ToBool();
-                ChangeGameBGButton.IsEnabled = UseCustomBGParamsSwitch.IsEnabled && value;
+                ChangeGameBGButton.IsEnabled = value;
                 return value;
             }
             set
             {
                 ChangeGameBGButton.IsEnabled = value;
 
-                string regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
-                if (string.IsNullOrEmpty(regionBgPath)
-                || !File.Exists(regionBgPath))
+                var regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
                 {
                     regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
                     ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
@@ -2154,26 +2152,25 @@ namespace CollapseLauncher.Pages
 
         private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
         {
-            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
-            if (!string.IsNullOrEmpty(file))
-            {
-                var currentMediaType = GetMediaType(file);
-            
-                if (currentMediaType == MediaType.StillImage)
-                {
-                    FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
-            
-                    if (croppedImage == null) return;
-                    SetAlternativeFileStream(croppedImage);
-                }
+            var file = await GetFilePicker(ImageLoaderHelper.SupportedStaticImageFormats);
+            if (string.IsNullOrEmpty(file)) return;
 
-                if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
-                {
-                    ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath = file;
-                    CurrentGameProperty._GameSettings.SaveSettings();
-                }
-                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+            var currentMediaType = GetMediaType(file);
+            
+            if (currentMediaType == MediaType.StillImage)
+            {
+                FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            
+                if (croppedImage == null) return;
+                SetAlternativeFileStream(croppedImage);
             }
+
+            if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+            {
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath = file;
+                CurrentGameProperty._GameSettings.SaveSettings();
+            }
+            m_mainPage?.ChangeBackgroundImageAsRegionAsync();
         }
 
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)

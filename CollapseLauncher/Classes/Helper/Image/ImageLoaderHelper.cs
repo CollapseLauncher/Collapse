@@ -32,11 +32,16 @@ namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
-        internal static Dictionary<string, string> SupportedImageFormats =
+        internal static readonly Dictionary<string, string> SupportedImageFormats =
             new() {
                 { "All supported formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) + ';' + string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) },
                 { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) },
                 { "Video formats", string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) }
+            };
+
+        internal static readonly Dictionary<string, string> SupportedStaticImageFormats = new()
+            {
+                { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) }
             };
 
         #region Waifu2X

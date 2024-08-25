@@ -30,7 +30,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private Grid             AcrylicMask         { get; }
         private Grid             OverlayTitleBar     { get; }
         private double           AnimationDuration   { get; }
-        public  bool             IsBackgroundDimm    { get; set; }
+
+        public bool IsBackgroundDimm
+        {
+            get; 
+            set;
+        }
 
         internal StillImageLoader(
             FrameworkElement parentUI,
@@ -79,13 +84,19 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 BitmapImage bitmapImage =
                     await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
 
-                await Task.WhenAll(
-                                   ColorPaletteUtility.ApplyAccentColor(ParentUI,
-                                                                        imageStream.AsRandomAccessStream(),
-                                                                        filePath,
-                                                                        isImageLoadForFirstTime, false),
-                                   ApplyAndSwitchImage(AnimationDuration, bitmapImage)
-                                  );
+                // await Task.WhenAll(
+                //                    ColorPaletteUtility.ApplyAccentColor(ParentUI,
+                //                                                         imageStream.AsRandomAccessStream(),
+                //                                                         filePath,
+                //                                                         isImageLoadForFirstTime, false),
+                //                    ApplyAndSwitchImage(AnimationDuration, bitmapImage)
+                //                   );
+                ColorPaletteUtility.ApplyAccentColor(ParentUI,
+                                                     imageStream.AsRandomAccessStream(),
+                                                     filePath,
+                                                     isImageLoadForFirstTime, false);
+                await ApplyAndSwitchImage(AnimationDuration, bitmapImage);
+
             }
             finally
             {
@@ -107,9 +118,11 @@ namespace CollapseLauncher.Helper.Background.Loaders
             await Task.WhenAll(
                                ImageBackCurrent.StartAnimation(timeSpan,
                                                                CurrentCompositor
-                                                                  .CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
+                                                                  .CreateScalarKeyFrameAnimation("Opacity",
+                                                                       1, 0, timeSpan * 0.8)),
                                ImageBackLast.StartAnimation(timeSpan,
-                                                            CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
+                                                            CurrentCompositor
+                                                               .CreateScalarKeyFrameAnimation("Opacity",
                                                                 0, 1, timeSpan * 0.8))
                               );
         }

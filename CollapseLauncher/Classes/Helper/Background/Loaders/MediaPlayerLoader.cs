@@ -1,10 +1,10 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
 using CommunityToolkit.WinUI.Animations;
+using Hi3Helper;
 #if USEFFMPEGFORVIDEOBG
 using FFmpegInteropX;
 using Hi3Helper;
-
 #endif
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Composition;
@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+using static Hi3Helper.Logger;
 
 #if USEDYNAMICVIDEOPALETTE
 using CollapseLauncher.Extension;
@@ -101,9 +102,32 @@ namespace CollapseLauncher.Helper.Background.Loaders
             CanvasDevice?.Dispose();
             CurrentFrameBitmap?.Dispose();
 #endif
-            CurrentMediaPlayer?.Dispose();
-            InnerCancellationToken?.Dispose();
-            CurrentMediaStream?.Dispose();
+            try
+            {
+                CurrentMediaPlayer?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error disposing CurrentMediaPlayer: {ex.Message}", LogType.Error, true);
+            }
+
+            try
+            {
+                InnerCancellationToken?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error disposing InnerCancellationToken: {ex.Message}", LogType.Error, true);
+            }
+
+            try
+            {
+                CurrentMediaStream?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error disposing CurrentMediaStream: {ex.Message}", LogType.Error, true);
+            }
 
             GC.SuppressFinalize(this);
         }
