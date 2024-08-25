@@ -5,6 +5,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+      xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
@@ -28,6 +29,7 @@
                               CastTo="{x:Bind ImageEventImgShadow}"
                               Opacity="0.3"
                               Offset="0,4,0" />
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -1946,6 +1948,19 @@
                                             </Grid>
                                         </Button.Content>
                                     </Button>
+                                    <ScrollViewer x:Name="BGPathDisplayViewer"
+                                                  MaxWidth="220"
+                                                  Margin="0,-4,0,-4"
+                                                  HorizontalAlignment="Stretch"
+                                                  HorizontalScrollBarVisibility="Visible"
+                                                  HorizontalScrollMode="Enabled"
+                                                  VerticalScrollMode="Disabled"
+                                                  Visibility="{x:Bind UseCustomBGParamsSwitch.IsOn, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                        <TextBlock x:Name="BGPathDisplay"
+                                                   Margin="0,4"
+                                                   VerticalAlignment="Center"
+                                                   Text="" />
+                                    </ScrollViewer>
                                 </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"
                                             Visibility="Collapsed">
