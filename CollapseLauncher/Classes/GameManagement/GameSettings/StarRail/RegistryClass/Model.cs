@@ -1,11 +1,13 @@
 ﻿using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
@@ -329,6 +331,13 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                
+                if (StarRailGameSettingsPage.CheckAbTest())
+                {
+                    LogWriteLine("[StarRailGameSettings::Model] Graphics settings could not be saved due to A/B test flag is found!",
+                                 LogType.Error, true);
+                    return;
+                }
 
                 RegistryRoot.SetValue(_GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
 
