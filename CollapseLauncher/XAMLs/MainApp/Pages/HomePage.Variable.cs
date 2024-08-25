@@ -32,8 +32,8 @@ namespace CollapseLauncher.Pages
         public Visibility IsPostInfoPanelEmpty => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostInfoPanelAllEmpty =>
             IsPostEventPanelVisible == Visibility.Collapsed
-            && IsPostEventPanelVisible == Visibility.Collapsed
-            && IsPostEventPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
+            && IsPostNoticePanelVisible == Visibility.Collapsed
+            && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
         public int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
 #nullable restore
 
