@@ -269,7 +269,7 @@ namespace CollapseLauncher
 
                 ConvertDetail = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, Entry.FileName, Entry.FileSizeStr));
                 if (!Directory.Exists(OutputPathDir))
-                    Directory.CreateDirectory(OutputPathDir);
+                    Directory.CreateDirectory(OutputPathDir!);
 
                 await downloadClient.DownloadAsync(InputURL, OutputPath, true, progressDelegateAsync: RepairIngredients_Progress, maxConnectionSessions: DownloadThread, cancelToken: CoopToken);
             });

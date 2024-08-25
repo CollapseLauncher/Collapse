@@ -157,81 +157,35 @@ namespace CollapseLauncher
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
 
             // Initialize repo metadata
-            bool isSuccess = false;
             try
             {
                 // Get the metadata
                 Dictionary<string, string> repoMetadata = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
-                if (!(isSuccess = repoMetadata.ContainsKey(_gameVersion.VersionString)))
+                if (!(repoMetadata.TryGetValue(_gameVersion.VersionString, out var value)))
                 {
                     throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
 
                 // Assign the URL based on the version
-                _gameRepoURL = repoMetadata[_gameVersion.VersionString];
+                _gameRepoURL = value;
             }
             // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
             catch when (base._isVersionOverride) { throw; }
 
-            // Fetch the asset index from CDN (also check if the status is success)
-            if (isSuccess)
+            // Fetch the asset index from CDN
+            // Set asset index URL
+            string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
+
+            // Start downloading asset index using FallbackCDNUtil and return its stream
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+            if (stream != null)
             {
-                // Set asset index URL
-                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
-
-                // Start downloading asset index using FallbackCDNUtil and return its stream
-                await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
-                if (stream != null)
-                {
-                    // Deserialize asset index and set it to list
-                    AssetIndexV2 parserTool = new AssetIndexV2();
-                    pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
-                    LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-                }
-            }
-            else
-            {
-                // If the base._isVersionOverride is true (for delta patch), then return
-                if (base._isVersionOverride) return;
-                LogWriteLine($"Falling back to the miHoYo provided pkg_version as the asset index!", LogType.Warning, true);
-
-                // Get the latest game property from the API
-                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
-                RegionResourceVersion gameVersion = _gameVersionManager.GetGameLatestZip(gameState).FirstOrDefault();
-
-                // If the gameVersion is null, then return
-                if (gameVersion == null) return;
-
-                // Try get the uncompressed url and the pkg_version
-                string baseZipURL = gameVersion.path;
-                int lastIndexOfURL = baseZipURL.LastIndexOf('/');
-                string baseUncompressedURL = baseZipURL.Substring(0, lastIndexOfURL);
-                baseUncompressedURL = CombineURLFromString(baseUncompressedURL, "unzip");
-                string basePkgVersionUrl = CombineURLFromString(baseUncompressedURL, "pkg_version");
-
-                try
-                {
-                    // Set the _gameRepoURL
-                    _gameRepoURL = baseUncompressedURL;
-
-                    // Try get the data
-                    using MemoryStream ms = new MemoryStream();
-                    using StreamReader sr = new StreamReader(ms);
-                    await downloadClient.DownloadAsync(basePkgVersionUrl, ms, false, _httpClient_FetchAssetProgress);
-
-                    // Read the stream and deserialize the JSON
-                    pkgVersion.Clear();
-                    while (!sr.EndOfStream)
-                    {
-                        // Deserialize and add the line to pkgVersion list
-                        string jsonLine = sr.ReadLine();
-                        PkgVersionProperties entry = jsonLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
-                        pkgVersion.Add(entry);
-                    }
-                }
-                catch { throw; }
+                // Deserialize asset index and set it to list
+                AssetIndexV2 parserTool = new AssetIndexV2();
+                pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
+                LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
             }
 
             // Convert the pkg version list to asset index
@@ -274,8 +228,14 @@ namespace CollapseLauncher
             GetNormalizedFilePropertyTypeBased(remoteAbsolutePath, remoteRelativePath, fileSize,
                 hash, type, false, isPatchApplicable, isHasHashMark);
 
-        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL, string remoteRelativePath, long fileSize,
-            string hash, FileType type = FileType.Generic, bool isPkgVersion = true, bool isPatchApplicable = false, bool isHasHashMark = false)
+        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
+                                                                        string remoteRelativePath,
+                                                                        long fileSize,
+                                                                        string hash,
+                                                                        FileType type = FileType.Generic,
+                                                                        bool isPkgVersion = true,
+                                                                        bool isPatchApplicable = false, 
+                                                                        bool isHasHashMark = false)
         {
             string localAbsolutePath,
                    remoteAbsolutePath = type switch

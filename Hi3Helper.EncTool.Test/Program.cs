@@ -9,6 +9,7 @@ namespace Hi3Helper.EncTool.Test
 
         static async Task Main(string[] args)
         {
+            return; //frick testing
             #region unused
 
             using (SRMetadata srm = new SRMetadata("https://globaldp-prod-os01.starrails.com/query_dispatch", "3a57430d8d",

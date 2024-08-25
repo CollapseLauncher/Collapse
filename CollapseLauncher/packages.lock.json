@@ -982,14 +982,14 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Hi3Helper.Http": "[1.5.0, )"
+          "Hi3Helper.Http": "[2.0.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.27.2, )",
-          "Hi3Helper.Http": "[1.5.0, )",
+          "Google.Protobuf": "[3.27.3, )",
+          "Hi3Helper.Http": "[2.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
       },
