@@ -148,6 +148,8 @@
     "GameSettings_Panel2MoveGameLocationGame": "Move Game Location",
     "GameSettings_Panel2StopGame": "Force Close Game",
     "GameSettings_Panel3": "Custom Start-up Args",
+    "GameSettings_Panel3CustomBGRegion": "Change Region Background",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Custom Background for Region",
     "GameSettings_Panel4": "Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
     "GameSettings_Panel4ShowSocialMediaPanel": "Show Social Media Panel",
@@ -437,6 +439,7 @@
     "AppBG": "App Background",
     "AppBG_Checkbox": "Use Custom Background",
     "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Regional specific custom background settings is in \"Quick Settings\" button in the home page.",
 
     "AppThreads": "Application Threads",
     "AppThreads_Download": "Download Threads",
@@ -840,7 +843,7 @@
 
     "StopGameTitle": "Force Stop Game",
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
-
+    
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 

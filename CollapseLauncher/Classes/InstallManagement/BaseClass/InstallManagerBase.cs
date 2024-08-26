@@ -2776,7 +2776,10 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
+            #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                // This is intentional as the dialog is only to cancel the routine, not waiting for user input.
                 SimpleDialogs.QueueAndSpawnDialog(contentDialog);
+            #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 await gameRepairInstance.StartCheckRoutine();
                 statusActivity.Text = Lang._InstallMigrateSteam.Step4Title;
                 await gameRepairInstance.StartRepairRoutine(false);

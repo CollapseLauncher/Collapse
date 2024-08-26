@@ -148,6 +148,8 @@
     "GameSettings_Panel2MoveGameLocationGame": "ゲームの位置を移動",
     "GameSettings_Panel2StopGame": "ゲームを強制終了",
     "GameSettings_Panel3": "カスタム起動引数",
+    "GameSettings_Panel3CustomBGRegion": "カスタム背景を選択",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "カスタム背景をゲームごとに変更",
     "GameSettings_Panel4": "その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
@@ -431,6 +433,7 @@
     "AppBG": "背景",
     "AppBG_Checkbox": "カスタム背景を使用する",
     "AppBG_Note": "使用可能なフォーマット:\r\n画像: {0}\r\n動画: {1}",
+    "AppBG_Note_Regional": "カスタム背景をゲームごとに変える機能は、ランチャーのホーム画面の\"クイック設定\"ボタンに含まれています。 ",
 
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
@@ -834,7 +837,7 @@
 
     "StopGameTitle": "ゲームを強制終了します",
     "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
-
+    
     "MeteredConnectionWarningTitle": "従量制課金接続を検出しました！",
     "MeteredConnectionWarningSubtitle": "現在のインターネット接続は「従量制」として検出されました。更新を続行すると、インターネットプロバイダーから追加料金が発生する場合があります。続行しますか?",
 
