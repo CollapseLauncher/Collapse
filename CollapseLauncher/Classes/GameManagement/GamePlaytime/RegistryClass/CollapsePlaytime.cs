@@ -3,8 +3,8 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GamePlaytime
@@ -29,49 +29,49 @@ namespace CollapseLauncher.GamePlaytime
         /// Represents the total time a game was played.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        [IgnoreDataMember]
-        public TimeSpan TotalPlaytime { get; set; } = TimeSpan.Zero;
-
-        /// <summary>
-        /// Represents the total time the last/current session lasted.<br/><br/>
-        /// Default: TimeSpan.Zero
-        /// </summary>
-        [IgnoreDataMember]
-        public TimeSpan LastSession { get; set; } = TimeSpan.Zero;
+        [JsonIgnore]
+        public TimeSpan TotalPlaytime { get; private set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the daily playtime.<br/>
         /// The ControlDate field is used to check if this value should be reset.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan DailyPlaytime { get; set; } = TimeSpan.Zero;
+        public TimeSpan DailyPlaytime { get; private set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the weekly playtime.<br/>
         /// The ControlDate field is used to check if this value should be reset.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan WeeklyPlaytime { get; set; } = TimeSpan.Zero;
+        public TimeSpan WeeklyPlaytime { get; private set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the monthly playtime.<br/>
         /// The ControlDate field is used to check if this value should be reset.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan MonthlyPlaytime { get; set; } = TimeSpan.Zero;
+        public TimeSpan MonthlyPlaytime { get; private set; } = TimeSpan.Zero;
+
+        /// <summary>
+        /// Represents the total time the last/current session lasted.<br/><br/>
+        /// Default: TimeSpan.Zero
+        /// </summary>
+        public TimeSpan LastSession { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the last time the game was launched.<br/><br/>
         /// Default: null
         /// </summary>
-        public DateTime? LastPlayed { get; set; } = null;
+        [JsonIgnore]
+        public DateTime? LastPlayed { get; set; }
 
         /// <summary>
         /// Represents a control date.<br/>
         /// This date is used to check if a specific playtime statistic should be reset.<br/><br/>
         /// Default: DateTime.Today
         /// </summary>
-        public DateTime ControlDate { get; set; } = DateTime.Today;
+        public DateTime ControlDate { get; private set; } = DateTime.Today;
         #endregion
 
         #region Methods

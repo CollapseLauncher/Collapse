@@ -2132,7 +2132,6 @@ namespace CollapseLauncher.Pages
         {
             if (_cachedIsGameRunning) return;
 
-            CurrentGameProperty._GamePlaytime.Reload();
             UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
         }
 

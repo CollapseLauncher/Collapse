@@ -40,13 +40,6 @@ namespace CollapseLauncher.GamePlaytime
         }
 #nullable disable
 
-        public void Reload()
-        {
-            if (IsSessionRunning) return;
-
-            _playtime = CollapsePlaytime.Load(_registryRoot!, _gameVersionManager.GamePreset.HashID);
-        }
-
         public void Update(TimeSpan timeSpan)
         {
             TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
@@ -71,7 +64,6 @@ namespace CollapseLauncher.GamePlaytime
         {
             if (IsSessionRunning) return;
 
-            Reload();
             IsSessionRunning = true;
 
             DateTime begin          = DateTime.Now;
@@ -136,7 +128,6 @@ namespace CollapseLauncher.GamePlaytime
             _token.Cancel();
             _playtime.Save();
 
-            _playtime     = null;
             _registryRoot = null;
         }
     }
