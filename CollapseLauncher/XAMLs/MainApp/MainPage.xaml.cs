@@ -1967,9 +1967,9 @@ namespace CollapseLauncher
 
         private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!CurrentGameProperty.IsGameRunning) return;
+            if (!GetCurrentGameProperty().IsGameRunning) return;
 
-            PresetConfig gamePreset = CurrentGameProperty._GameVersion.GamePreset;
+            PresetConfig gamePreset = GetCurrentGameProperty()._GameVersion.GamePreset;
             try
             {
                 var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
