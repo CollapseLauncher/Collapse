@@ -268,6 +268,14 @@ namespace CollapseLauncher.InstallManager.Honkai
             {
                 return true;
             }
+            
+            // 9th check: If ACE-BASE.sys is detected
+            // AND game state is installed.
+            if (gameState == GameInstallStateEnum.Installed &&
+                localFileInfo.RelativePath.EndsWith("ACE-BASE.sys", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
 
             // If all those matches failed, then return them as a non-game file
             return false;

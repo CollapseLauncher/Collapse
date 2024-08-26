@@ -551,13 +551,13 @@
     "NetworkSettings_Proxy_Hostname": "Tên miền Proxy",
     "NetworkSettings_Proxy_HostnameHelp1": "Đại diện cho URL của Proxy để sử dụng.",
     "NetworkSettings_Proxy_HostnameHelp2": "Collapse chỉ hỗ trợ loại",
-    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS và SOCKS4/4a/5",
     "NetworkSettings_Proxy_HostnameHelp4": "Proxy tại thời điểm hiện tại",
 
-    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
-    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+    "NetworkSettings_ProxyWarn_UrlInvalid": "URL được nhập không hợp lệ",
+    "NetworkSettings_ProxyWarn_NotSupported": "Lược đồ proxy không được hỗ trợ! Collapse chỉ hổ trợ http://, https://, socks4://, socks4a:// và socks5://",
 
-    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_Username": "Người dùng Proxy",
     "NetworkSettings_Proxy_UsernamePlaceholder": "Nhập tên người dùng Proxy",
     "NetworkSettings_Proxy_UsernameHelp1": "Mặc định: ",
     "NetworkSettings_Proxy_UsernameHelp2": "[Trống]",
@@ -569,10 +569,10 @@
     "NetworkSettings_Proxy_PasswordHelp2": "[Trống]",
     "NetworkSettings_Proxy_PasswordHelp3": "Để trống ô này nếu proxy của bạn không yêu cầu xác thực.",
 
-    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
-    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
-    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
-    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+    "NetworkSettings_ProxyTest_Button": "Kiểm tra kết nối đến Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Đang kiểm tra kết nối",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Kiểm tra kết nối Proxy hoàn thành!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Thất bại! Proxy không thể kết nối.",
 
     "NetworkSettings_Http_Title": "Cài đặt .NET HTTP",
     "NetworkSettings_Http_Redirect": "Cho phép Chuyển hướng HTTP",

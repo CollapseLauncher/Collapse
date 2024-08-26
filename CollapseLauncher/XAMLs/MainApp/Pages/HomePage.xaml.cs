@@ -9,6 +9,7 @@ using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -18,6 +19,7 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
@@ -40,19 +42,22 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
+using Point = Windows.Foundation.Point;
 using Size = System.Drawing.Size;
 using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
@@ -69,8 +74,8 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
-        public static int RefreshRateDefault { get; } = 500;
-        public static int RefreshRateSlow { get; } = 1000;
+        public static int RefreshRateDefault => 500;
+        public static int RefreshRateSlow    => 1000;
 
         private static int _refreshRate;
 
@@ -267,8 +272,8 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            if (!PageToken.IsCancelled) PageToken.Cancel();
-            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
+            if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -1167,7 +1172,7 @@ namespace CollapseLauncher.Pages
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Pre-Download paused!", LogType.Warning);
+                LogWriteLine("Pre-Download paused!", LogType.Warning);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
@@ -1894,7 +1899,50 @@ namespace CollapseLauncher.Pages
         public bool UseCustomArgs
         {
             get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
-            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            set
+            {
+                if (CustomStartupArgsSwitch.IsOn)
+                {
+                    CustomArgsTextBox.IsEnabled = true;   
+                }
+                else
+                {
+                    CustomArgsTextBox.IsEnabled = false;
+                }
+                
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            } 
+            
+        }
+        
+        public bool UseCustomBGRegion
+        {
+            get
+            {
+                bool value = ((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                ChangeGameBGButton.IsEnabled = value;
+                BGPathDisplay.Text = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                return value;
+            }
+            set
+            {
+                ChangeGameBGButton.IsEnabled = value;
+
+                var regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
+                {
+                    regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
+                    ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
+                        .SettingsCollapseMisc
+                        .CustomRegionBGPath = regionBgPath;
+                }
+
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;
+                CurrentGameProperty._GameSettings.SaveSettings();
+                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+                BGPathDisplay.Text = regionBgPath;
+            } 
         }
         #endregion
 
@@ -2103,6 +2151,31 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
             StopGame(CurrentGameProperty._GameVersion.GamePreset);
+        }
+
+        private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
+        {
+            var file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            if (string.IsNullOrEmpty(file)) return;
+
+            var currentMediaType = GetMediaType(file);
+            
+            if (currentMediaType == MediaType.StillImage)
+            {
+                FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            
+                if (croppedImage == null) return;
+                SetAlternativeFileStream(croppedImage);
+            }
+
+            if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+            {
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath = file;
+                CurrentGameProperty._GameSettings.SaveSettings();
+            }
+            m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+            BGPathDisplay.Text = file;
         }
 
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
@@ -2545,15 +2618,16 @@ namespace CollapseLauncher.Pages
         #region Pre/Post Game Launch Command
         private Process _procPreGLC;
 
-        private async void PreLaunchCommand(IGameSettingsUniversal _settings)
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private async void PreLaunchCommand(IGameSettingsUniversal settings)
         {
             try
             {
-                string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
+                var preGameLaunchCommand = settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
                 if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
                 LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
-                             $"Game launch is delayed by {_settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
+                             $"Game launch is delayed by {settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
                              $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                              LogType.Warning, true);
 
@@ -2566,16 +2640,8 @@ namespace CollapseLauncher.Pages
                 _procPreGLC.StartInfo.RedirectStandardOutput = true;
                 _procPreGLC.StartInfo.RedirectStandardError = true;
 
-                _procPreGLC.OutputDataReceived += (_, e) =>
-                                                  {
-                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
-                                                  };
-
-                _procPreGLC.ErrorDataReceived += (_, e) =>
-                                                 {
-                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" +
-                                                              $"{e.Data}", LogType.GLC, true);
-                                                 };
+                _procPreGLC.OutputDataReceived += GLC_OutputHandler;
+                _procPreGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
                 _procPreGLC.Start();
 
@@ -2583,6 +2649,9 @@ namespace CollapseLauncher.Pages
                 _procPreGLC.BeginErrorReadLine();
 
                 await _procPreGLC.WaitForExitAsync();
+                
+                _procPreGLC.OutputDataReceived -= GLC_OutputHandler;
+                _procPreGLC.ErrorDataReceived  -= GLC_ErrorHandler;
             }
             catch (Win32Exception ex)
             {
@@ -2592,36 +2661,45 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
-                if (_procPreGLC != null) _procPreGLC.Dispose();
+                _procPreGLC?.Dispose();
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
         private void PreLaunchCommand_ForceClose()
         {
             try
             {
-                if (_procPreGLC != null && !_procPreGLC.HasExited)
-                {
-                    // Kill main and child processes
-                    Process taskKill = new Process();
-                    taskKill.StartInfo.FileName = "taskkill";
-                    taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
-                    taskKill.Start();
-                    taskKill.WaitForExit();
+                if (_procPreGLC is not { HasExited: false }) return;
 
-                    LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
-                }
+                // Kill main and child processes
+                var taskKill = new Process();
+                taskKill.StartInfo.FileName  = "taskkill";
+                taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
+                taskKill.Start();
+                taskKill.WaitForExit();
+
+                LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
             }
             // Ignore external errors
-            catch (InvalidOperationException) { }
-            catch (Win32Exception) { }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (Win32Exception)
+            {
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
+            }
         }
 
-        private async void PostExitCommand(IGameSettingsUniversal _settings)
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private static async void PostExitCommand(IGameSettingsUniversal settings)
         {
             try
             {
-                string postGameExitCommand = _settings?.SettingsCollapseMisc?.GamePostExitCommand;
+                var postGameExitCommand = settings?.SettingsCollapseMisc?.GamePostExitCommand;
                 if (string.IsNullOrEmpty(postGameExitCommand)) return;
 
                 LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
@@ -2637,29 +2715,35 @@ namespace CollapseLauncher.Pages
                 procPostGLC.StartInfo.RedirectStandardOutput = true;
                 procPostGLC.StartInfo.RedirectStandardError = true;
 
-                procPostGLC.OutputDataReceived += (_, e) =>
-                                                  {
-                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
-                                                  };
-
-                procPostGLC.ErrorDataReceived += (_, e) =>
-                                                 {
-                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" +
-                                                              $"{e.Data}", LogType.GLC, true);
-                                                 };
+                procPostGLC.OutputDataReceived += GLC_OutputHandler;
+                procPostGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
                 procPostGLC.Start();
                 procPostGLC.BeginOutputReadLine();
                 procPostGLC.BeginErrorReadLine();
 
                 await procPostGLC.WaitForExitAsync();
+
+                procPostGLC.OutputDataReceived -= GLC_OutputHandler;
+                procPostGLC.ErrorDataReceived  -= GLC_ErrorHandler;
             }
             catch (Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: " +
-                             $"{CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
+                             $"{settings?.SettingsCollapseMisc?.GamePostExitCommand}\r\n" +
+                             $"Traceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
+        }
+
+        private static void GLC_OutputHandler(object _, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+        }
+
+        private static void GLC_ErrorHandler(object _, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
         }
         #endregion
 

@@ -48,7 +48,7 @@ namespace CollapseLauncher.Helper.Background
         private Grid? _parentBgImageBackgroundGrid;
         private Grid? _parentBgMediaPlayerBackgroundGrid;
 
-        internal MediaType CurrentAppliedMediaType = MediaType.Unknown;
+        internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
         private IBackgroundMediaLoader?         _loaderStillImage;
@@ -149,8 +149,6 @@ namespace CollapseLauncher.Helper.Background
 
             _alternativeFileStream?.Dispose();
             _alternativeFileStream = null;
-
-            CurrentAppliedMediaType = MediaType.Unknown;
 
             _isCurrentRegistered = false;
             GC.SuppressFinalize(this);
@@ -349,7 +347,7 @@ namespace CollapseLauncher.Helper.Background
                         _loaderMediaPlayer?.Show();
                         break;
                     case MediaType.StillImage:
-                        _loaderStillImage?.Show();
+                        _loaderStillImage?.Show(CurrentAppliedMediaType == MediaType.Media);
                         _loaderMediaPlayer?.Hide();
                         break;
                 }

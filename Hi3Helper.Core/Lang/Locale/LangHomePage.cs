@@ -46,6 +46,8 @@
                 public string GameSettings_Panel2MoveGameLocationGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame;
                 public string GameSettings_Panel2StopGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2StopGame;
                 public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
+                public string GameSettings_Panel3CustomBGRegion { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegion;
+                public string GameSettings_Panel3CustomBGRegionSectionTitle { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle;
                 public string GameSettings_Panel4 { get; set; } = LangFallback?._HomePage.GameSettings_Panel4;
                 public string GameSettings_Panel4ShowEventsPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
                 public string GameSettings_Panel4ShowSocialMediaPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;

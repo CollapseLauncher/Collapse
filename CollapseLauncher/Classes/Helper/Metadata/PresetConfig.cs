@@ -135,7 +135,7 @@ namespace CollapseLauncher.Helper.Metadata
                 string packageIdValue = branch.GamePreloadField.PackageId;
                 string passwordValue = branch.GamePreloadField.Password;
 
-                PreloadUrl = MainUrl.AssociateGameAndLauncherId(
+                PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(
                     QueryPasswordHead,
                     QueryPackageIdHead,
                     passwordValue,

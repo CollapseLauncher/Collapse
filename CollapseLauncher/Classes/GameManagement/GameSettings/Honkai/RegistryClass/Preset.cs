@@ -21,7 +21,7 @@ namespace CollapseLauncher.GameSettings
 #nullable enable
         #region Fields
         private string CurrentPresetName = PresetConst.DefaultPresetName;
-        private Dictionary<string, T1>? _Presets = null;
+        private Dictionary<string, T1>? _Presets;
         #endregion
 
         #region Properties
@@ -92,7 +92,7 @@ namespace CollapseLauncher.GameSettings
             return result;
         }
 
-        /// <returns>Returns a <c>List<string></c> of the preset</returns>
+        /// <returns>Returns a <c>List-string</c> of the preset</returns>
         /// <exception cref="NullReferenceException"></exception>
         private List<string> GetPresetKeys()
         {
@@ -103,29 +103,24 @@ namespace CollapseLauncher.GameSettings
 
             return Presets.Keys.ToList();
         }
-
+        
         /// <summary>
         /// Set the preset name based on equality of the given value with the preset. If doesn't match, it will be set to <c>DefaultPresetName</c>
         /// </summary>
         /// <param name="value">The value to be compared with the preset</param>
         /// <exception cref="NullReferenceException">If <code>RegistryRoot</code> is null</exception>
-        public void SetPresetKey(T1 value)
+        public void SetPresetKey(T1? value)
         {
-            string presetKey = PresetConst.DefaultPresetName;
-            string presetRegistryName = $"Preset_{typeof(T1).Name}";
-
             if (value != null)
             {
                 KeyValuePair<string, T1>? foundPreset = Presets?.Where(x => x.Value.Equals(value)).FirstOrDefault();
 
                 if (foundPreset.HasValue)
                 {
-                    presetKey = CurrentPresetName = foundPreset.Value.Key;
+                    CurrentPresetName = foundPreset.Value.Key;
                 }
-
                 return;
             }
-
             CurrentPresetName = PresetConst.DefaultPresetName;
         }
 
@@ -163,6 +158,5 @@ namespace CollapseLauncher.GameSettings
             RegistryRoot.SetValue(presetRegistryName, CurrentPresetName, RegistryValueKind.String);
         }
         #endregion
-#nullable disable
     }
 }

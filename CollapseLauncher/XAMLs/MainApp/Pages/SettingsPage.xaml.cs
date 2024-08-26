@@ -9,10 +9,11 @@
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
+    using CollapseLauncher.Interfaces;
     using CollapseLauncher.Pages.OOBE;
+    using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
-    using Hi3Helper.Data;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Xaml;
@@ -421,7 +422,17 @@ namespace CollapseLauncher.Pages
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
+                
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                bool isUseRegionCustomBG = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                if (!isUseRegionCustomBG)
+                {
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
+                }
+                else if (!string.IsNullOrEmpty(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath))
+                {
+                    currentMediaType = BackgroundMediaUtility.GetMediaType(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath);
+                }
                 
                 if (currentMediaType == MediaType.Media)
                 {
@@ -476,6 +487,7 @@ namespace CollapseLauncher.Pages
             {
                 bool isEnabled = GetAppConfigValue("UseCustomBG").ToBool();
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                LogWriteLine("Read " + isEnabled + " BG Path: " + BGPath + " from config", LogType.Debug, false);
                 if (!string.IsNullOrEmpty(BGPath))
                     BGPathDisplay.Text = BGPath;
                 else
@@ -510,20 +522,27 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                SetAndSaveConfigValue("UseCustomBG", new IniValue(value));
+                SetAndSaveConfigValue("UseCustomBG", value);
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                bool isUseRegionCustomBG = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!value)
                 {
-                    BGPathDisplay.Text = Lang._Misc.NotSelected;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
-                    AppBGCustomizer.Visibility       = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+
+                    ToggleCustomBgButtons();
+                }
+                else if (isUseRegionCustomBG)
+                {
+                    string currentRegionCustomBg = ((IGameSettingsUniversal)currentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
+                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+                    ToggleCustomBgButtons();
                 }
                 else
                 {
-                    string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                    var BGPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(BGPath))
                     {
                         LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
@@ -541,22 +560,36 @@ namespace CollapseLauncher.Pages
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
-                    AppBGCustomizer.Visibility       = Visibility.Visible;
-                    AppBGCustomizerNote.Visibility   = Visibility.Visible;
-                        
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-                    if (currentMediaType == MediaType.Media)
-                    {
-                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                    }
+                }
+
+                if (value)
+                {
+                    BGPathDisplay.Text = GetAppConfigValue("CustomBGPath").ToString();
+                    AppBGCustomizer.Visibility = Visibility.Visible;
+                    AppBGCustomizerNote.Visibility = Visibility.Visible;
+                }
+
+                var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
+                if (currentMediaType == MediaType.Media)
+                {
+                    CustomBGImageSettings.Visibility = Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
                 BGSelector.IsEnabled = value;
+
+                return;
+                void ToggleCustomBgButtons()
+                {
+                    AppBGCustomizer.Visibility = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
+                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
+                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -714,7 +747,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                if (MainPage.CurrentBackgroundHandler?.CurrentAppliedMediaType == MediaType.StillImage)
+                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.StillImage)
                     App.ToggleBlurBackdrop(value);
             }
         }

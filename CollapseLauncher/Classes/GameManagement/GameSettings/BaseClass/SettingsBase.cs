@@ -15,13 +15,11 @@ namespace CollapseLauncher.GameSettings.Base
         #endregion
 
 #nullable enable
-        private static string? _registryPath = null;
-        private static RegistryKey? _registryRoot = null;
+        private static RegistryKey? _registryRoot;
 
         internal static string? RegistryPath
         {
-            get => _registryPath = string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ?
-                null :
+            get => string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ? null :
                 Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
         }
 

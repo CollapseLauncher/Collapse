@@ -15,7 +15,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.81.3</Version>
+        <Version>1.81.4</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -74,14 +74,14 @@
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240328-rc" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
-        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.240109" />
-        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
-        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240328-rc" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.1.240821" />
         
         <!--
         Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
@@ -90,15 +90,15 @@
         <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         
         <PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
-        <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.62" />
+        <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.3" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.64" />
         <PackageReference Include="ImageEx" Version="2.1.1" />
         <PackageReference Include="Markdig.Signed" Version="0.37.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240627000" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />

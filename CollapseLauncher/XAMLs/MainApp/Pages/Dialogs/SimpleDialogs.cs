@@ -1,7 +1,9 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Statics;
@@ -20,7 +22,6 @@ using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Dialogs

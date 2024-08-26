@@ -23,52 +23,52 @@ namespace CollapseLauncher
             byte[] buffer = new byte[bufferSize];
 
             await using (FileStream inputStream = inputFile.OpenRead())
-            await using (FileStream outputStream = outputFile!.Exists && outputFile.Length <= inputFile.Length ?
-                             outputFile.Open(FileMode.Open) : outputFile.Create())
-            {
-                // Set the output file size to inputStream's if the length is more than inputStream
-                if (outputStream.Length > inputStream.Length)
-                    outputStream.SetLength(inputStream.Length);
-
-                // Just in-case if the previous move is incomplete, then update and seek to the last position.
-                if (outputStream.Length <= inputStream.Length && outputStream.Length >= bufferSize)
+                await using (FileStream outputStream = outputFile!.Exists && outputFile.Length <= inputFile.Length ?
+                                 outputFile.Open(FileMode.Open) : outputFile.Create())
                 {
-                    // Do check by comparing the first and last 128K data of the file
-                    Memory<byte> firstCompareInputBytes = new byte[bufferSize];
-                    Memory<byte> firstCompareOutputBytes = new byte[bufferSize];
-                    Memory<byte> lastCompareInputBytes = new byte[bufferSize];
-                    Memory<byte> lastCompareOutputBytes = new byte[bufferSize];
+                    // Set the output file size to inputStream's if the length is more than inputStream
+                    if (outputStream.Length > inputStream.Length)
+                        outputStream.SetLength(inputStream.Length);
 
-                    // Seek to the first data
-                    inputStream.Position = 0;
-                    await inputStream.ReadExactlyAsync(firstCompareInputBytes);
-                    outputStream.Position = 0;
-                    await outputStream.ReadExactlyAsync(firstCompareOutputBytes);
-
-                    // Seek to the last data
-                    long lastPos = outputStream.Length - bufferSize;
-                    inputStream.Position = lastPos;
-                    await inputStream.ReadExactlyAsync(lastCompareInputBytes);
-                    outputStream.Position = lastPos;
-                    await outputStream.ReadExactlyAsync(lastCompareOutputBytes);
-
-                    bool isMatch = firstCompareInputBytes.Span.SequenceEqual(firstCompareOutputBytes.Span)
-                                   && lastCompareInputBytes.Span.SequenceEqual(lastCompareOutputBytes.Span);
-
-                    // If the buffers don't match, then start the copy from the beginning
-                    if (!isMatch)
+                    // Just in-case if the previous move is incomplete, then update and seek to the last position.
+                    if (outputStream.Length <= inputStream.Length && outputStream.Length >= bufferSize)
                     {
+                        // Do check by comparing the first and last 128K data of the file
+                        Memory<byte> firstCompareInputBytes  = new byte[bufferSize];
+                        Memory<byte> firstCompareOutputBytes = new byte[bufferSize];
+                        Memory<byte> lastCompareInputBytes   = new byte[bufferSize];
+                        Memory<byte> lastCompareOutputBytes  = new byte[bufferSize];
+
+                        // Seek to the first data
                         inputStream.Position = 0;
+                        await inputStream.ReadExactlyAsync(firstCompareInputBytes);
                         outputStream.Position = 0;
-                    }
-                    else
-                    {
-                        UpdateSizeProcessed(uiRef, outputStream.Length);
-                    }
-                }
+                        await outputStream.ReadExactlyAsync(firstCompareOutputBytes);
 
-                await MoveWriteFileInner(uiRef, inputStream, outputStream, buffer, token);
-            }
+                        // Seek to the last data
+                        long lastPos = outputStream.Length - bufferSize;
+                        inputStream.Position = lastPos;
+                        await inputStream.ReadExactlyAsync(lastCompareInputBytes);
+                        outputStream.Position = lastPos;
+                        await outputStream.ReadExactlyAsync(lastCompareOutputBytes);
+
+                        bool isMatch = firstCompareInputBytes.Span.SequenceEqual(firstCompareOutputBytes.Span)
+                                       && lastCompareInputBytes.Span.SequenceEqual(lastCompareOutputBytes.Span);
+
+                        // If the buffers don't match, then start the copy from the beginning
+                        if (!isMatch)
+                        {
+                            inputStream.Position  = 0;
+                            outputStream.Position = 0;
+                        }
+                        else
+                        {
+                            UpdateSizeProcessed(uiRef, outputStream.Length);
+                        }
+                    }
+
+                    await MoveWriteFileInner(uiRef, inputStream, outputStream, buffer, token);
+                }
 
             inputFile.IsReadOnly = false;
             inputFile.Delete();
@@ -109,8 +109,9 @@ namespace CollapseLauncher
                 });
                 return returnSize;
             });
-
-            if (IsSameOutputDrive = (inputDriveInfo.Name == outputDriveInfo.Name))
+            
+            IsSameOutputDrive = inputDriveInfo.Name == outputDriveInfo.Name;
+            if (IsSameOutputDrive)
                 return true;
 
             bool isSpaceSufficient = outputDriveInfo.TotalFreeSpace > TotalFileSize;

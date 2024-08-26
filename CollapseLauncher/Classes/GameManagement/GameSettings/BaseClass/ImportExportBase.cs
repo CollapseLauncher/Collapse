@@ -67,10 +67,10 @@ namespace CollapseLauncher.GameSettings.Base
             {
                 case 1:
                     using (XORStream xorS = new XORStream(fs, xorKey, true))
-                    using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
-                    {
-                        ReadLegacyValues(comp);
-                    }
+                        using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
+                        {
+                            ReadLegacyValues(comp);
+                        }
                     break;
                 case 2:
                     ReadV2Values(fs);
@@ -174,7 +174,7 @@ namespace CollapseLauncher.GameSettings.Base
 
                 foreach (string valueName in names)
                 {
-                    object? val = RegistryRoot!.GetValue(valueName);
+                    object? val = RegistryRoot.GetValue(valueName);
                     RegistryValueKind valueType = RegistryRoot.GetValueKind(valueName);
 
                     Logger.LogWriteLine($"Writing value V3 {valueName}...");
@@ -196,7 +196,7 @@ namespace CollapseLauncher.GameSettings.Base
             return null;
         }
 
-        private unsafe void EnsureReadImpostorData(Stream stream, string valueName)
+        private void EnsureReadImpostorData(Stream stream, string valueName)
         {
             int sizeOf = ReadValueKindAndSize(stream, out RegistryValueKind realValueType);
             object result = realValueType switch
@@ -205,7 +205,7 @@ namespace CollapseLauncher.GameSettings.Base
                 RegistryValueKind.DWord => ReadTypeNumberUnsafe(stream, sizeOf),
                 RegistryValueKind.String => ReadTypeString(stream, sizeOf),
                 RegistryValueKind.Binary => WriteTypeBinary(stream, sizeOf),
-                _ => throw new InvalidCastException($"Cast of the object cannot be determined!")
+                _ => throw new InvalidCastException("Cast of the object cannot be determined!")
             };
 
             if (realValueType == RegistryValueKind.QWord && sizeOf == sizeof(int)
@@ -222,17 +222,10 @@ namespace CollapseLauncher.GameSettings.Base
                 result = numberAsBuffer;
             }
 
-            try
-            {
-                RegistryRoot?.SetValue(valueName, result, realValueType);
-            }
-            catch
-            {
-                throw;
-            }
+            RegistryRoot?.SetValue(valueName, result, realValueType);
         }
 
-        private unsafe void EnsureWriteImpostorData(Stream stream, RegistryValueKind realValueType, object? value)
+        private void EnsureWriteImpostorData(Stream stream, RegistryValueKind realValueType, object? value)
         {
             Type valueType = value!.GetType();
             if (valueType == typeof(int) || valueType == typeof(float))
@@ -275,7 +268,7 @@ namespace CollapseLauncher.GameSettings.Base
         private unsafe void WriteTypeNumberUnsafe<T>(Stream stream, ref T value, int sizeOf, RegistryValueKind realValueType)
             where T : struct
         {
-            ReadOnlySpan<byte> byteNumberAsSpan = new ReadOnlySpan<byte>((byte*)Unsafe.AsPointer<T>(ref value), sizeOf);
+            ReadOnlySpan<byte> byteNumberAsSpan = new ReadOnlySpan<byte>((byte*)Unsafe.AsPointer(ref value), sizeOf);
             WriteValueKindAndSize(stream, sizeOf, realValueType);
             WriteToStream(stream, byteNumberAsSpan);
         }
@@ -336,7 +329,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
-        private unsafe string ReadTypeString(Stream stream, int length)
+        private string ReadTypeString(Stream stream, int length)
         {
             bool isUsePool = length <= 64 << 10;
             byte[] buffer = isUsePool ? ArrayPool<byte>.Shared.Rent(length) : new byte[length];
@@ -352,7 +345,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
-        private unsafe void WriteTypeString(Stream stream, ReadOnlySpan<char> stringSpan, RegistryValueKind realValueType)
+        private void WriteTypeString(Stream stream, ReadOnlySpan<char> stringSpan, RegistryValueKind realValueType)
         {
             bool isUsePool = stringSpan.Length <= 64 << 10;
             byte[] buffer = isUsePool ? ArrayPool<byte>.Shared.Rent(stringSpan.Length) : new byte[stringSpan.Length];
@@ -404,7 +397,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             if (string.IsNullOrEmpty(path)) return;
             string ext = Path.GetExtension(path);
-            if (ext == null) return;
+            
             if (string.IsNullOrEmpty(ext))
             {
                 path += exte;
@@ -441,6 +434,8 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
+        // ReSharper disable once UnusedMember.Local
+        // just in case, i aint wanna dig around commit history if somehow this needed in the future
         private long ReadInt64(Stream stream)
         {
             Span<byte> buffer = stackalloc byte[4];
