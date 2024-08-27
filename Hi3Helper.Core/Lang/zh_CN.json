@@ -148,6 +148,8 @@
     "GameSettings_Panel2MoveGameLocationGame": "移动游戏位置",
     "GameSettings_Panel2StopGame": "强制关闭游戏",
     "GameSettings_Panel3": "自定义启动参数",
+    "GameSettings_Panel3CustomBGRegion": "修改区服背景",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "自定义区服背景",
     "GameSettings_Panel4": "杂项",
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
@@ -431,6 +433,7 @@
     "AppBG": "应用背景",
     "AppBG_Checkbox": "使用自定义背景",
     "AppBG_Note": "可接受的格式：\r\n图像：{0}\r\n视频：{1}",
+    "AppBG_Note_Regional": "区服特定的自定义背景设置在主页的“快速设置”按钮中。",
 
     "AppThreads": "应用线程",
     "AppThreads_Download": "下载线程",
@@ -834,7 +837,7 @@
 
     "StopGameTitle": "强制停止游戏",
     "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。",
-
+    
     "MeteredConnectionWarningTitle": "检测到按流量计费的连接！",
     "MeteredConnectionWarningSubtitle": "检测到您当前的互联网连接为“按流量计费”！继续更新可能会让互联网提供商收取额外费用。您希望继续吗？",
 
