@@ -148,6 +148,8 @@
     "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
     "GameSettings_Panel3": "Argumentos Personalizados de Arranque",
+    "GameSettings_Panel3CustomBGRegion": "Cambiar Fondo de región",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Fondo Personalizado por Región",
     "GameSettings_Panel4": "Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
@@ -431,6 +433,7 @@
     "AppBG": "Fondo de la Aplicación",
     "AppBG_Checkbox": "Usar Fondo Personalizado",
     "AppBG_Note": "Formatos admitidos:\r\nImagen: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Los ajustes de fondo personalizados específicos por región se encuentran en el botón «Ajustes Rápidos» en la página de inicio.",
 
     "AppThreads": "Hilos de Aplicación",
     "AppThreads_Download": "Hilos de Descarga",
@@ -834,7 +837,7 @@
 
     "StopGameTitle": "Forzar el cierre del juego",
     "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego.",
-
+    
     "MeteredConnectionWarningTitle": "¡Conexión con límite de datos detectada!",
     "MeteredConnectionWarningSubtitle": "¡Se detectó que tu conexión a internet actual es 'Medida'! Continuar con el proceso de actualización puede generar cargos adicionales por parte de tu proveedor de internet. ¿Deseas continuar?",
 
