@@ -9,7 +9,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:ext="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
-      xmlns:helperData="using:Hi3Helper.Data"
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

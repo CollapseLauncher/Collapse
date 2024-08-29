@@ -986,7 +986,7 @@ namespace CollapseLauncher.Interfaces
                 // If the self speed listener is used, then unregister the listener
                 if (isUseSelfSpeedLimiter && downloadSpeedLimiter != null)
                 {
-                    LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter?.GetListener();
+                    LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
                 }
             }
         }

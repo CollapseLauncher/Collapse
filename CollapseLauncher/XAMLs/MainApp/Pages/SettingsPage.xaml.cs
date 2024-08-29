@@ -40,7 +40,6 @@
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
     using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
-using Windows.Storage.Search;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleNullReferenceException

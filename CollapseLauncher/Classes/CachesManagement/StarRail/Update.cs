@@ -89,7 +89,7 @@ namespace CollapseLauncher
             UpdateAll();
 
             // Run download task
-            await RunDownloadTask(asset.AssetIndex.Size, asset.AssetIndex.LocalName, asset.AssetIndex.RemoteURL, downloadClient, downloadProgress, token);
+            await RunDownloadTask(asset.AssetIndex.Size, asset.AssetIndex.LocalName!, asset.AssetIndex.RemoteURL, downloadClient, downloadProgress, token);
             LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.AssetType}]: {Path.GetFileName(asset.AssetIndex.LocalName)}", LogType.Default, true);
 
             // Remove Asset Entry display
