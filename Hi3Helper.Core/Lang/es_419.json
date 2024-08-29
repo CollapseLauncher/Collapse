@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "El juego se detuvo por un error. Detalles a continuación:",
     "UnhandledTitle4": "Advertencia:",
     "UnhandledSubtitle4": "Esto no es un problema grave, pero creemos que deberíamos infórmate:\r\nDebido al A/B testing realizado por miHoYo , Collapse no soporta la lectura de la siguiente clave: App_Settings_h2319593470.\r\nLamentamos las molestias y agradecemos su comprensión.",
+    "UnhandledTitleDiskCrc": "¡Corrupción de Disco Detectado!",
+    "UnhandledSubDiskCrc": "Se ha detectado corrupción en el disco al intentar acceder a un archivo. Por favor comprueba el disco usando chkdsk.",
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior"
