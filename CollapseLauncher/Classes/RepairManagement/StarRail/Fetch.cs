@@ -104,7 +104,7 @@ namespace CollapseLauncher
                 // Initialize the metadata tool (including dispatcher and gateway).
                 // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
                 // not for delta patch integrity check.
-                if (!base._isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                if (!_isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
                     // Read block metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
@@ -223,35 +223,28 @@ namespace CollapseLauncher
         #endregion
 
         #region Utilities
-        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteAbsolutePath, string remoteRelativePath, long fileSize,
-            string hash, FileType type, bool isPatchApplicable, bool isHasHashMark) =>
-            GetNormalizedFilePropertyTypeBased(remoteAbsolutePath, remoteRelativePath, fileSize,
-                hash, type, false, isPatchApplicable, isHasHashMark);
-
         private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
                                                                         string remoteRelativePath,
                                                                         long fileSize,
                                                                         string hash,
                                                                         FileType type = FileType.Generic,
-                                                                        bool isPkgVersion = true,
                                                                         bool isPatchApplicable = false, 
                                                                         bool isHasHashMark = false)
         {
-            string localAbsolutePath,
-                   remoteAbsolutePath = type switch
-                   {
-                       FileType.Generic => CombineURLFromString(remoteParentURL, remoteRelativePath),
-                       _ => remoteParentURL
-                   },
+            string remoteAbsolutePath = type switch
+                                        {
+                                            FileType.Generic => CombineURLFromString(remoteParentURL, remoteRelativePath),
+                                            _ => remoteParentURL
+                                        },
                    typeAssetRelativeParentPath = string.Format(type switch
-                   {
-                       FileType.Blocks => _assetGameBlocksStreamingPath,
-                       FileType.Audio => _assetGameAudioStreamingPath,
-                       FileType.Video => _assetGameVideoStreamingPath,
-                       _ => string.Empty
-                   }, _execName);
+                                                               {
+                                                                   FileType.Blocks => _assetGameBlocksStreamingPath,
+                                                                   FileType.Audio => _assetGameAudioStreamingPath,
+                                                                   FileType.Video => _assetGameVideoStreamingPath,
+                                                                   _ => string.Empty
+                                                               }, _execName);
 
-            localAbsolutePath = Path.Combine(_gamePath, typeAssetRelativeParentPath, NormalizePath(remoteRelativePath));
+            var localAbsolutePath = Path.Combine(_gamePath, typeAssetRelativeParentPath, NormalizePath(remoteRelativePath));
 
             return new FilePropertiesRemote
             {
