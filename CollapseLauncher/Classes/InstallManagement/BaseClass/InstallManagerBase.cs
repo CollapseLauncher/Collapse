@@ -3507,9 +3507,6 @@ namespace CollapseLauncher.InstallManager.Base
             // Subscribe the download progress to the event adapter
             _httpClient.DownloadProgress += HttpClientDownloadProgressAdapter;
 
-            // Create a speed limiter instance for the new DownloadClient and register it
-            DownloadSpeedLimiter speedLimiter = DownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
-            LauncherConfig.DownloadSpeedLimitChanged += speedLimiter.GetListener();
             try
             {
                 // Iterate the package list
@@ -3521,7 +3518,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Iterate the segment list
                         for (int i = 0; i < package.Segments.Count; i++)
                         {
-                            await RunPackageDownloadRoutine(_httpClient, downloadClient, speedLimiter, package.Segments[i], token, packageCount);
+                            await RunPackageDownloadRoutine(_httpClient, downloadClient, package.Segments[i], token, packageCount);
                         }
 
                         // Skip action below and continue to the next segment
@@ -3529,22 +3526,18 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Else, run the routine as normal
-                    await RunPackageDownloadRoutine(_httpClient, downloadClient, speedLimiter, package, token, packageCount);
+                    await RunPackageDownloadRoutine(_httpClient, downloadClient, package, token, packageCount);
                 }
             }
             finally
             {
                 // Unsubscribe the download progress from the event adapter
                 _httpClient.DownloadProgress -= HttpClientDownloadProgressAdapter;
-
-                // Unregister the speed limiter
-                LauncherConfig.DownloadSpeedLimitChanged -= speedLimiter.GetListener();
             }
         }
 
         private async ValueTask RunPackageDownloadRoutine(Http                  httpClient,
                                                           DownloadClient        downloadClient,
-                                                          DownloadSpeedLimiter  downloadSpeedLimiter,
                                                           GameInstallPackage    package,
                                                           CancellationToken     token,
                                                           int                   packageCount)
@@ -3712,7 +3705,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                                                   packageList[i].Segments[j].Size,
                                                                                   token
                                                                                   );
-                        bool isUseLegacySegmentedSize                       = segmentDownloaded > newSegmentedDownloaded || newSegmentedDownloaded > packageList[i].Segments[j].Size;
+                        bool isUseLegacySegmentedSize                       = !LauncherConfig.IsUsePreallocatedDownloader
+                            || segmentDownloaded > newSegmentedDownloaded
+                            || newSegmentedDownloaded > packageList[i].Segments[j].Size;
                         totalSize                                           += isUseLegacySegmentedSize ? segmentDownloaded : newSegmentedDownloaded;
                         totalSegmentDownloaded                              += isUseLegacySegmentedSize ? segmentDownloaded : newSegmentedDownloaded;
                         packageList[i].Segments[j].SizeDownloaded           =  isUseLegacySegmentedSize ? segmentDownloaded : newSegmentedDownloaded;
@@ -3732,7 +3727,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                     packageList[i].Size,
                                                     token
                                                     );
-                bool isUseLegacySize                    =  legacyDownloadedSize > newDownloaderSize || newDownloaderSize > packageList[i].Size;
+                bool isUseLegacySize                    = !LauncherConfig.IsUsePreallocatedDownloader
+                    || legacyDownloadedSize > newDownloaderSize
+                    || newDownloaderSize > packageList[i].Size;
                 packageList[i].IsUseLegacyDownloader    =  isUseLegacySize;
                 packageList[i].SizeDownloaded           =  isUseLegacySize ? legacyDownloadedSize : newDownloaderSize;
                 totalSize                               += packageList[i].SizeDownloaded;
