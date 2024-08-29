@@ -64,7 +64,7 @@ namespace CollapseLauncher.Interfaces
         protected long                  _progressAllSizeCurrent;
         protected long                  _progressAllSizeFound;
         protected long                  _progressAllSizeTotal;
-        protected double                _progressAllIOReadCurrent;
+        protected long                  _progressAllIOReadCurrent;
         protected long                  _progressPerFileSizeCurrent;
         protected long                  _progressPerFileSizeTotal;
         protected double                _progressPerFileIOReadCurrent;
@@ -955,20 +955,40 @@ namespace CollapseLauncher.Interfaces
 
 #nullable enable
         protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL,
-            DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true,
-            EventHandler<long>? downloadSpeedLimitChanged = null)
+            DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true)
         {
-            // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
-            await downloadClient.DownloadAsync(
-                assetURL,
-                EnsureCreationOfDirectory(assetPath),
-                isOverwrite,
-                sessionChunkSize: LauncherConfig.DownloadChunkSize,
-                progressDelegateAsync: downloadProgress,
-                cancelToken: token,
-                downloadSpeedLimitEvent: downloadSpeedLimitChanged,
-                initialDownloadSpeed: LauncherConfig.DownloadSpeedLimitCached
-                );
+            // For any instances that uses Burst Download and if the speed limiter is null when
+            // _isBurstDownloadEnabled set to false, then create the speed limiter instance
+            bool isUseSelfSpeedLimiter = !_isBurstDownloadEnabled;
+            DownloadSpeedLimiter? downloadSpeedLimiter = null;
+            if (isUseSelfSpeedLimiter)
+            {
+                // Create the speed limiter instance and register the listener
+                downloadSpeedLimiter = DownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+                LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
+            }
+
+            try
+            {
+                // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
+                await downloadClient.DownloadAsync(
+                    assetURL,
+                    EnsureCreationOfDirectory(assetPath),
+                    isOverwrite,
+                    sessionChunkSize: LauncherConfig.DownloadChunkSize,
+                    progressDelegateAsync: downloadProgress,
+                    cancelToken: token,
+                    downloadSpeedLimiter: downloadSpeedLimiter
+                    );
+            }
+            finally
+            {
+                // If the self speed listener is used, then unregister the listener
+                if (isUseSelfSpeedLimiter && downloadSpeedLimiter != null)
+                {
+                    LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter?.GetListener();
+                }
+            }
         }
 #nullable restore
 
