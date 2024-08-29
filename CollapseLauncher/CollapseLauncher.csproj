@@ -72,7 +72,7 @@
     <ItemGroup>
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
 
-        <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+        <PackageReference Include="CommunityToolkit.Common" Version="8.3.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240821" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240821" />
