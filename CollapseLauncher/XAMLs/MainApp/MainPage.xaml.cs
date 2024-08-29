@@ -260,6 +260,13 @@ namespace CollapseLauncher
                     MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
 
             }
+            // CRC error show
+            else if (e.Exception.GetType() == typeof(IOException) && e.Exception.HResult == unchecked((int)0x80070017))
+            {
+                PreviousTag = "crashinfo";
+                ErrorSender.ExceptionType = ErrorType.DiskCrc;
+                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
+            }
             else
             {
                 PreviousTag = "crashinfo";
