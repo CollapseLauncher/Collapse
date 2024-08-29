@@ -121,10 +121,25 @@ namespace Hi3Helper
             // Always seek to the end of the file.
             lock(_lockObject)
             {
-                if (!_isWriterOnDispose)
+                try
                 {
+                    if (_isWriterOnDispose) return;
+
                     _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
                     _logWriter?.WriteLine(GetLine(line, type, false, true));
+                }
+                catch (IOException ex) when (ex.HResult == unchecked((int)0x80070070)) // Disk full? Delete all logs <:
+                {
+                #nullable enable
+                    Console.WriteLine("Disk is full.. Resetting log files!");
+                    Logger._log?.ResetLogFiles(LauncherConfig.AppGameLogsFolder, Encoding.UTF8);
+                    // Rewrite log
+                    WriteLog(line, type);
+                #nullable restore
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error while writing log file!\r\n{ex}");
                 }
             }
         }
