@@ -132,9 +132,18 @@ namespace Hi3Helper
                 {
                 #nullable enable
                     Console.WriteLine("Disk is full.. Resetting log files!");
-                    Logger._log?.ResetLogFiles(LauncherConfig.AppGameLogsFolder, Encoding.UTF8);
                     // Rewrite log
-                    WriteLog(line, type);
+                    try
+                    {
+                        Logger._log?.ResetLogFiles(LauncherConfig.AppGameLogsFolder, Encoding.UTF8);
+                        // Attempt to write the log again after resetting
+                        _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
+                        _logWriter?.WriteLine(GetLine(line, type, false, true));
+                    }
+                    catch (Exception retryEx)
+                    {
+                        Console.WriteLine($"Error while writing log file after reset!\r\n{retryEx}");
+                    }
                 #nullable restore
                 }
                 catch (Exception ex)
