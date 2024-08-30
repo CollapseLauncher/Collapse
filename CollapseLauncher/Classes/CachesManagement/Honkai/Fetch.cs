@@ -25,11 +25,11 @@ namespace CollapseLauncher
         private async Task<List<CacheAsset>> Fetch(CancellationToken token)
         {
             // Initialize asset index for the return
-            List<CacheAsset> returnAsset = new();
+            List<CacheAsset> returnAsset = [];
 
             // Initialize new proxy-aware HttpClient
             using HttpClient httpClientNew = new HttpClientBuilder()
-                .UseLauncherConfig(_downloadThreadCount + 16)
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
@@ -83,7 +83,7 @@ namespace CollapseLauncher
             {
                 try
                 {
-                    // Init the key and decrypt it if exist.
+                    // Init the key and decrypt it if existed.
                     if (string.IsNullOrEmpty(_gameVersionManager.GamePreset.DispatcherKey))
                     {
                         throw new NullReferenceException("Dispatcher key is null or empty!");
@@ -114,7 +114,7 @@ namespace CollapseLauncher
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
-        private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
+        private static string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
 
         private async Task<(int, long)> FetchByType(CacheAssetType type, DownloadClient downloadClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
@@ -137,7 +137,7 @@ namespace CollapseLauncher
             await using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(
                 downloadClient.GetHttpClient(), assetIndexURL, null, null, null, null, null, token);
 
-            using XORStream stream = new XORStream(remoteStream);
+            await using XORStream stream = new XORStream(remoteStream);
 
             // Build the asset index and return the count and size of each type
             (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex, token);
@@ -253,7 +253,7 @@ namespace CollapseLauncher
 
             // Initialize local HTTP client
             using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig(_downloadThreadCount + 16)
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
