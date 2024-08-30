@@ -9,6 +9,7 @@ using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -18,6 +19,7 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
@@ -47,6 +49,8 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -268,8 +272,8 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            if (!PageToken.IsCancelled) PageToken.Cancel();
-            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
+            if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -1895,7 +1899,50 @@ namespace CollapseLauncher.Pages
         public bool UseCustomArgs
         {
             get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
-            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            set
+            {
+                if (CustomStartupArgsSwitch.IsOn)
+                {
+                    CustomArgsTextBox.IsEnabled = true;   
+                }
+                else
+                {
+                    CustomArgsTextBox.IsEnabled = false;
+                }
+                
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            } 
+            
+        }
+        
+        public bool UseCustomBGRegion
+        {
+            get
+            {
+                bool value = ((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                ChangeGameBGButton.IsEnabled = value;
+                BGPathDisplay.Text = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                return value;
+            }
+            set
+            {
+                ChangeGameBGButton.IsEnabled = value;
+
+                var regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
+                {
+                    regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
+                    ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
+                        .SettingsCollapseMisc
+                        .CustomRegionBGPath = regionBgPath;
+                }
+
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;
+                CurrentGameProperty._GameSettings.SaveSettings();
+                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+                BGPathDisplay.Text = regionBgPath;
+            } 
         }
         #endregion
 
@@ -2104,6 +2151,31 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
             StopGame(CurrentGameProperty._GameVersion.GamePreset);
+        }
+
+        private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
+        {
+            var file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            if (string.IsNullOrEmpty(file)) return;
+
+            var currentMediaType = GetMediaType(file);
+            
+            if (currentMediaType == MediaType.StillImage)
+            {
+                FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            
+                if (croppedImage == null) return;
+                SetAlternativeFileStream(croppedImage);
+            }
+
+            if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+            {
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath = file;
+                CurrentGameProperty._GameSettings.SaveSettings();
+            }
+            m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+            BGPathDisplay.Text = file;
         }
 
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)

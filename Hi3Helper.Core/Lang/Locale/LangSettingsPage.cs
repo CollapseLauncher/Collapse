@@ -31,6 +31,7 @@
                 public string AppBG                                     { get; set; } = LangFallback?._SettingsPage.AppBG;
                 public string AppBG_Checkbox                            { get; set; } = LangFallback?._SettingsPage.AppBG_Checkbox;
                 public string AppBG_Note                                { get; set; } = LangFallback?._SettingsPage.AppBG_Note;
+                public string AppBG_Note_Regional                       { get; set; } = LangFallback?._SettingsPage.AppBG_Note_Regional;
                 public string AppLang_ApplyNeedRestart                  { get; set; } = LangFallback?._SettingsPage.AppLang_ApplyNeedRestart;
                 public string AppThreads                                { get; set; } = LangFallback?._SettingsPage.AppThreads;
                 public string AppThreads_Download                       { get; set; } = LangFallback?._SettingsPage.AppThreads_Download;

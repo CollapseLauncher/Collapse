@@ -10,9 +10,9 @@
       },
       "CommunityToolkit.Common": {
         "type": "Direct",
-        "requested": "[8.2.2, )",
-        "resolved": "8.2.2",
-        "contentHash": "8/enuV1R68d0hK66UO8/HQ3yEsMjxUqondiEXlA499XB3tYgIqhCM+ITe8fHfH3l4JN3gY6h21SvkJnxfaG3NQ=="
+        "requested": "[8.3.0, )",
+        "resolved": "8.3.0",
+        "contentHash": "TibqmLI1MF5mIo/u1qYM/AFAzmoJsvs6einYKnhUMAXxJHbREIlg1tYMq7YbiqBaJL8Mfp7hqrZdAGJ0fsW0+w=="
       },
       "CommunityToolkit.Mvvm": {
         "type": "Direct",
@@ -372,8 +372,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.27.3",
-        "contentHash": "ld+oe1+Mc6no643d8otGm6Zylu7KBpGnAiqOW3nOpV8VxUuqhz70vRNKUU5grLaCeuUQVF8t9dm8TgmkTMr1Tg=="
+        "resolved": "3.28.0",
+        "contentHash": "lVsLcLIHpkOABswgydr0sjkIhSN5XE9C6AgLXxvMsa6pSSJIpmAIPvK/NZpuF+HTB6xp1R8T5nhLausWVOrU/w=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",

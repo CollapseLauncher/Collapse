@@ -32,11 +32,16 @@ namespace CollapseLauncher.Helper.Image
 {
     internal static class ImageLoaderHelper
     {
-        internal static Dictionary<string, string> SupportedImageFormats =
+        internal static readonly Dictionary<string, string> SupportedImageFormats =
             new() {
                 { "All supported formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) + ';' + string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) },
                 { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) },
                 { "Video formats", string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) }
+            };
+
+        internal static readonly Dictionary<string, string> SupportedStaticImageFormats = new()
+            {
+                { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) }
             };
 
         #region Waifu2X
@@ -191,15 +196,23 @@ namespace CollapseLauncher.Helper.Image
             ContentDialogResult dialogResult = await dialogOverlay.QueueAndSpawnDialog();
             if (dialogResult == ContentDialogResult.Secondary) return null;
 
-            await using (FileStream cachedFileStream = new FileStream(cachedFilePath!, StreamUtility.FileStreamCreateReadWriteOpt))
+            try
             {
-                dialogOverlay.IsPrimaryButtonEnabled = false;
-                dialogOverlay.IsSecondaryButtonEnabled = false;
-                await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream()!, BitmapFileFormat.Png);
-            }
+                await using (FileStream cachedFileStream =
+                             new FileStream(cachedFilePath!, StreamUtility.FileStreamCreateReadWriteOpt))
+                {
+                    dialogOverlay.IsPrimaryButtonEnabled   = false;
+                    dialogOverlay.IsSecondaryButtonEnabled = false;
+                    await imageCropper.SaveAsync(cachedFileStream.AsRandomAccessStream()!, BitmapFileFormat.Png);
+                }
 
-            GC.WaitForPendingFinalizers();
-            GC.WaitForFullGCComplete();
+                GC.WaitForPendingFinalizers();
+                GC.WaitForFullGCComplete();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"Exception caught at [ImageLoaderHelper::SpawnImageCropperDialog]\r\n{ex}", LogType.Error, true);
+            }
 
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
             return await GenerateCachedStream(cachedFileInfo, ToWidth, ToHeight, true);
@@ -258,15 +271,23 @@ namespace CollapseLauncher.Helper.Image
             if (isFromCropProcess)
             {
                 string InputFileName = InputFileInfo!.FullName;
-                InputFileInfo.MoveTo(InputFileInfo.FullName + "_old", true);
-                FileInfo newCachedFileInfo = new FileInfo(InputFileName);
+                try
+                {
+                    InputFileInfo.MoveTo(InputFileInfo.FullName + "_old", true);
+                    FileInfo newCachedFileInfo = new FileInfo(InputFileName);
+                    await using (FileStream newCachedFileStream = newCachedFileInfo.Open(StreamUtility.FileStreamCreateWriteOpt))
+                        await using (FileStream oldInputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                            await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
 
-                await using (FileStream newCachedFileStream = newCachedFileInfo.Open(StreamUtility.FileStreamCreateWriteOpt))
-                await using (FileStream oldInputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
-                    await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
+                    InputFileInfo.Delete();
 
-                InputFileInfo.Delete();
-                return newCachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+                    return newCachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+                }
+                catch (IOException ex)
+                {
+                    Logger.LogWriteLine($"[ImageLoaderHelper::GenerateCachedStream] IOException Caught! Opening InputFile instead...\r\n{ex}", LogType.Error, true);
+                    return InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+                }
             }
 
             FileInfo cachedFileInfo = GetCacheFileInfo(InputFileInfo!.FullName + InputFileInfo.Length);
@@ -274,8 +295,8 @@ namespace CollapseLauncher.Helper.Image
             if (isCachedFileExist) return cachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
 
             await using (FileStream cachedFileStream = cachedFileInfo.Create())
-            await using (FileStream inputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
-                await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
+                await using (FileStream inputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                    await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
 
             return cachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
         }

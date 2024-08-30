@@ -10,6 +10,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
@@ -160,8 +161,7 @@ namespace CollapseLauncher
             RunBackgroundCheck();
 
             // Initialize the background image utility
-            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
-            _localBackgroundHandler = CurrentBackgroundHandler;
+            await InitBackgroundHandler();
 
             Type Page = typeof(HomePage);
 
@@ -194,6 +194,12 @@ namespace CollapseLauncher
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
             InvokeLoadingRegionPopup(false);
+        }
+
+        private async Task InitBackgroundHandler()
+        {
+            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+            _localBackgroundHandler = CurrentBackgroundHandler;
         }
         #endregion
 
@@ -253,6 +259,13 @@ namespace CollapseLauncher
                 else
                     MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
 
+            }
+            // CRC error show
+            else if (e.Exception.GetType() == typeof(IOException) && e.Exception.HResult == unchecked((int)0x80070017))
+            {
+                PreviousTag = "crashinfo";
+                ErrorSender.ExceptionType = ErrorType.DiskCrc;
+                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
             }
             else
             {
@@ -450,81 +463,126 @@ namespace CollapseLauncher
             else CurrentBackgroundHandler?.Undimm();
         }
 
-        private void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
+        private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
-            if (LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
+            var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+            if (gameLauncherApi != null)
             {
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
-                IsCustomBG                                                                          = e.IsCustom;
+                gameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
+                IsCustomBG                             = e.IsCustom;
 
-                if (e.IsCustom)
-                    SetAndSaveConfigValue("CustomBGPath",
-                                          LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi
-                                                                .GameBackgroundImgLocal);
+                // if (e.IsCustom)
+                //     SetAndSaveConfigValue("CustomBGPath",
+                //                           gameLauncherApi.GameBackgroundImgLocal);
 
-                if (!File.Exists(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal))
+                if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
                 {
                     LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
-                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 }
 
-                CurrentBackgroundHandler
-                  ?.LoadBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
-                                   e.IsRequestInit, e.IsForceRecreateCache, ex =>
-                                                                            {
-                                                                                LauncherMetadataHelper
-                                                                                       .CurrentMetadataConfig
-                                                                                       .GameLauncherApi
-                                                                                       .GameBackgroundImgLocal =
-                                                                                    AppDefaultBG;
-                                                                                LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
-                                                                                    LogType.Error, true);
-                                                                                ErrorSender.SendException(ex);
-                                                                            }, e.ActionAfterLoaded);
+                var mType = BackgroundMediaUtility.GetMediaType(gameLauncherApi.GameBackgroundImgLocal);
+                switch (mType)
+                {
+                    case BackgroundMediaUtility.MediaType.Media:
+                        MediaPlayerFrame = new MediaPlayerElement
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment   = VerticalAlignment.Center,
+                            Stretch             = Stretch.UniformToFill,
+                            Tag                 = "MediaPlayer"
+                        };
+                        BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
+                        BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
+                        break;
+                    case BackgroundMediaUtility.MediaType.StillImage:
+                        FileStream imgStream = await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
+                        BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
+                        BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
+                        BackgroundNewBackGrid.Visibility        = Visibility.Visible;
+                        MediaPlayerFrame                        = null;
+                        break;
+                    default:
+                        throw new InvalidCastException();
+                }
+
+                await InitBackgroundHandler();
+                CurrentBackgroundHandler?.LoadBackground(gameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit,
+                                                         e.IsForceRecreateCache, ex =>
+                                                         {
+                                                             gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                                                             LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
+                                                                          LogType.Error, true);
+                                                             ErrorSender.SendException(ex);
+                                                         }, e.ActionAfterLoaded);
             }
         }
 
         internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
+            var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig!.GameLauncherApi!;
+            GamePresetProperty currentGameProperty = GetCurrentGameProperty();
+            bool isUseCustomPerRegionBg = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
-            if (IsCustomBG)
+            
+            // Check if Regional Custom BG is enabled and available
+            if (isUseCustomPerRegionBg)
             {
-                string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                if (LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
+                var regionBgPath = ((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath;
+                if (!string.IsNullOrEmpty(regionBgPath) && File.Exists(regionBgPath))
                 {
-                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal =
-                        string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+                    if (BackgroundMediaUtility.GetMediaType(regionBgPath) == BackgroundMediaUtility.MediaType.StillImage)
+                    {
+                        FileStream imgStream = await ImageLoaderHelper.LoadImage(regionBgPath);
+                        BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
+                    }
+                    
+                    gameLauncherApi.GameBackgroundImgLocal = regionBgPath;
                 }
             }
-            else if (isAPIBackgroundAvailable)
+            // If not, then check for global Custom BG
+            else
             {
-                try
+                var BGPath = IsCustomBG ? GetAppConfigValue("CustomBGPath").ToString() : null;
+                if (!string.IsNullOrEmpty(BGPath))
                 {
-                    await DownloadBackgroundImage(default);
+                    gameLauncherApi.GameBackgroundImgLocal = BGPath;
                 }
-                catch (Exception ex)
+                // If it's still not, then check if API gives any background
+                else if (isAPIBackgroundAvailable)
                 {
-                    ErrorSender.SendException(ex);
-                    LogWriteLine($"Failed while downloading default background image!\r\n{ex}", LogType.Error, true);
-                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    try
+                    {
+                        await DownloadBackgroundImage(default);
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorSender.SendException(ex);
+                        LogWriteLine($"Failed while downloading default background image!\r\n{ex}", LogType.Error, true);
+                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    }
+                }
+                // IF ITS STILL NOT THERE, then use paimon cute deadge pic :)
+                else
+                {
+                    gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                 }
             }
-
+            
             // Use default background if the API background is empty (in-case HoYo did something catchy)
             if (!isAPIBackgroundAvailable && !IsCustomBG && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
-
-            if ((!IsCustomBG || IsFirstStartup) && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
-            {
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal,
-                    () =>
-                    {
-                        IsFirstStartup = false;
-                        ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                    },
-                    IsCustomBG);
-            }
+            
+            // If the custom per region is enabled, then execute below
+            BackgroundImgChanger.ChangeBackground(gameLauncherApi.GameBackgroundImgLocal,
+                                                  () =>
+                                                  {
+                                                      IsFirstStartup = false;
+                                                      ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                  },
+                                                  IsCustomBG || isUseCustomPerRegionBg, true, true);
         }
         #endregion
 
@@ -1916,9 +1974,9 @@ namespace CollapseLauncher
 
         private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!CurrentGameProperty.IsGameRunning) return;
+            if (!GetCurrentGameProperty().IsGameRunning) return;
 
-            PresetConfig gamePreset = CurrentGameProperty._GameVersion.GamePreset;
+            PresetConfig gamePreset = GetCurrentGameProperty()._GameVersion.GamePreset;
             try
             {
                 var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);

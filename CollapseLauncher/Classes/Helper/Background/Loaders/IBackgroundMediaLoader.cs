@@ -16,7 +16,7 @@
         Task LoadAsync(string filePath, bool isForceRecreateCache = false, bool isRequestInit = false, CancellationToken token = default);
         void Dimm();
         void Undimm();
-        void Show();
+        void Show(bool isForceShow = false);
         void Hide();
         void Mute();
         void Unmute();
