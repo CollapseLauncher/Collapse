@@ -16,6 +16,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.IO.Hashing;
@@ -538,10 +539,10 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected string EnsureCreationOfDirectory(string str)
+        protected string EnsureCreationOfDirectory([DisallowNull] string str)
         {
             if (string.IsNullOrEmpty(str))
-                return str;
+                ArgumentException.ThrowIfNullOrEmpty(str);
 
             string dir = Path.GetDirectoryName(str);
             if (!Directory.Exists(dir))

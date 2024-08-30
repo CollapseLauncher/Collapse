@@ -17,6 +17,10 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable IdentifierTypo
+// ReSharper disable CheckNamespace
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher
 {
@@ -30,7 +34,7 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Initialize hashtable for duplicate keys checking
-            Dictionary<string, PkgVersionProperties> hashtableManifest = new Dictionary<string, PkgVersionProperties>();
+            Dictionary<string, PkgVersionProperties> hashtableManifest = new();
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
@@ -65,11 +69,11 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
         {
-            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            _gameVersionManager.GameAPIProp.data?.plugins?.ForEach(plugin =>
             {
                 assetIndex.RemoveAll(asset =>
                 {
-                    return plugin.package.validate?.Exists(validate => validate.path == asset.remoteName) ?? false;
+                    return plugin.package?.validate?.Exists(validate => validate.path == asset.remoteName) ?? false;
                 });
             });
         }
@@ -81,7 +85,7 @@ namespace CollapseLauncher
             string audioLangListPath = Path.Combine(_gamePath, $"{_execPrefix}_Data", "Persistent", "audio_lang_14");
 
             // Get the list of audio lang list
-            string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : new string[] { };
+            string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : [];
 
             // Set the ignored audio lang
             List<string> ignoredAudioLangList = audioLangList.Where(x => !currentAudioLangList.Contains(x)).ToList();
@@ -99,7 +103,7 @@ namespace CollapseLauncher
                 TryDeleteDownloadPref();
 
                 // Build basic file entry.
-                string ManifestPath = Path.Combine(_gamePath, "pkg_version");
+                string manifestPath = Path.Combine(_gamePath, "pkg_version");
 
                 // Download basic package version list
                 var basicVerURL = CombineURLFromString(_gameRepoURL, "pkg_version");
@@ -108,7 +112,7 @@ namespace CollapseLauncher
                 #endif
                 await downloadClient.DownloadAsync(
                     basicVerURL,
-                    EnsureCreationOfDirectory(ManifestPath),
+                    EnsureCreationOfDirectory(manifestPath),
                     true,
                     progressDelegateAsync: downloadProgress,
                     maxConnectionSessions: _downloadThreadCount,
@@ -173,7 +177,7 @@ namespace CollapseLauncher
                     );
 
                 // Parse basic package version.
-                ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
+                ParseManifestToAssetIndex(manifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
 
                 // Build additional blks entry.
                 var streamingAssetsPath = $"{_execPrefix}_Data\\StreamingAssets";
@@ -217,7 +221,7 @@ namespace CollapseLauncher
             try
             {
                 // Get the Dispatcher Query
-                QueryProperty queryProperty = await GetDispatcherQuery(token);
+                QueryProperty queryProperty = await GetDispatcherQuery(downloadClient.GetHttpClient(), token);
 
                 // Initialize persistent folder path and check for the folder existence
                 string basePersistentPath = $"{_execPrefix}_Data\\Persistent";
@@ -325,139 +329,137 @@ namespace CollapseLauncher
             streamingAssetPath = streamingAssetPath.Replace('\\', '/');
 
             // Start reading the manifest
-            using (StreamReader reader = new StreamReader(localManifestPath, new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read }))
+            using StreamReader reader = new StreamReader(localManifestPath, new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read });
+            while (!reader.EndOfStream)
             {
-                while (!reader.EndOfStream)
+                string               manifestLine  = reader.ReadLine();
+                PkgVersionProperties manifestEntry = manifestLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+
+                // Ignore if the remote name is "svc_catalog" or "ctable.dat"
+                if (Path.GetFileName(manifestEntry.remoteName).Equals("svc_catalog", StringComparison.OrdinalIgnoreCase) ||
+                    Path.GetFileName(manifestEntry.remoteName).Equals("ctable.dat",  StringComparison.OrdinalIgnoreCase)) continue;
+
+                // Get relative path based on extension
+                string relativePath = Path.GetExtension(manifestEntry.remoteName).ToLower() switch
+                                      {
+                                          ".pck" => "AudioAssets",
+                                          ".blk" => "AssetBundles",
+                                          ".usm" => "VideoAssets",
+                                          ".cuepoint" => "VideoAssets",
+                                          _ => ""
+                                      };
+
+                string actualName              = string.IsNullOrEmpty(manifestEntry.localName) ? manifestEntry.remoteName : manifestEntry.localName;
+                string assetPersistentPath     = relativePath == "" ? null : CombineURLFromString(persistentPath, relativePath, actualName);
+                string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
+
+                // Set the remote URL
+                string remoteURL;
+                if (!string.IsNullOrEmpty(secondaryParentURL) && !manifestEntry.isPatch)
                 {
-                    string manifestLine = reader.ReadLine();
-                    PkgVersionProperties manifestEntry = manifestLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                    remoteURL = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
+                }
+                else
+                {
+                    remoteURL = CombineURLFromString(primaryParentURL, relativePath, manifestEntry.remoteName);
+                }
 
-                    // Ignore if the remote name is "svc_catalog" or "ctable.dat"
-                    if (Path.GetFileName(manifestEntry.remoteName).Equals("svc_catalog", StringComparison.OrdinalIgnoreCase) ||
-                        Path.GetFileName(manifestEntry.remoteName).Equals("ctable.dat", StringComparison.OrdinalIgnoreCase)) continue;
+                // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
+                manifestEntry.remoteURL            = remoteURL;
+                manifestEntry.remoteName           = assetStreamingAssetPath;
+                manifestEntry.remoteNamePersistent = assetPersistentPath;
+                // Decide if the file is forced to be in persistent or not
+                manifestEntry.isForceStoreInPersistent = forceStoreInPersistent || manifestEntry.isPatch;
 
-                    // Get relative path based on extension
-                    string relativePath = Path.GetExtension(manifestEntry.remoteName).ToLower() switch
-                    {
-                        ".pck" => "AudioAssets",
-                        ".blk" => "AssetBundles",
-                        ".usm" => "VideoAssets",
-                        ".cuepoint" => "VideoAssets",
-                        _ => ""
-                    };
+                // If forceOverwrite and forceStoreInPersistent is true, then
+                // make it as a patch file and store it to persistent
+                if (forceOverwrite && forceStoreInPersistent)
+                {
+                    manifestEntry.isForceStoreInStreaming  = false;
+                    manifestEntry.isForceStoreInPersistent = true;
+                    manifestEntry.isPatch                  = true;
+                }
 
-                    string actualName = string.IsNullOrEmpty(manifestEntry.localName) ? manifestEntry.remoteName : manifestEntry.localName;
-                    string assetPersistentPath = relativePath == "" ? null : CombineURLFromString(persistentPath, relativePath, actualName);
-                    string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
+                // If the manifest has isPatch set to true, then set force store in streaming to false
+                if (manifestEntry.isPatch) manifestEntry.isForceStoreInStreaming = false;
 
-                    // Set the remote URL
-                    string remoteURL;
-                    if (!string.IsNullOrEmpty(secondaryParentURL) && !manifestEntry.isPatch)
-                    {
-                        remoteURL = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
-                    }
-                    else
-                    {
-                        remoteURL = CombineURLFromString(primaryParentURL, relativePath, manifestEntry.remoteName);
-                    }
+                // Check if the hashtable has the value
+                bool isHashHasValue = hashtable.ContainsKey(assetStreamingAssetPath);
+                if (isHashHasValue)
+                {
+                    // If yes, then get the reference and index ID
+                    PkgVersionProperties reference = hashtable[assetStreamingAssetPath];
+                    int                  indexID   = assetIndex.IndexOf(reference);
 
-                    // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
-                    manifestEntry.remoteURL = remoteURL;
-                    manifestEntry.remoteName = assetStreamingAssetPath;
-                    manifestEntry.remoteNamePersistent = assetPersistentPath;
-                    // Decide if the file is forced to be in persistent or not
-                    manifestEntry.isForceStoreInPersistent = forceStoreInPersistent || manifestEntry.isPatch;
+                    // If the index is not found (== -1), then skip it.
+                    // Otherwise, continue overriding its value
+                    if (indexID == -1) continue;
 
-                    // If forceOverwrite and forceStoreInPwrsistent is true, then
-                    // make it as a patch file and store it to persistent
-                    if (forceOverwrite && forceStoreInPersistent)
-                    {
-                        manifestEntry.isForceStoreInStreaming = false;
-                        manifestEntry.isForceStoreInPersistent = true;
-                        manifestEntry.isPatch = true;
-                    }
+                    // Override the force state if isPatch is true
+                    manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
 
-                    // If the manifest has isPatch set to true, then set force store in streaming to false
-                    if (manifestEntry.isPatch) manifestEntry.isForceStoreInStreaming = false;
+                    // If it has isForceStoreStreamingAssets flag and isPatch is false, then continue.
+                    if (hashtable[assetStreamingAssetPath].isForceStoreInStreaming
+                        && !manifestEntry.isPatch) continue;
 
-                    // Check if the hashtable has the value
-                    bool IsHashHasValue = hashtable.ContainsKey(assetStreamingAssetPath);
-                    if (IsHashHasValue)
-                    {
-                        // If yes, then get the reference and index ID
-                        PkgVersionProperties reference = hashtable[assetStreamingAssetPath];
-                        int indexID = assetIndex.IndexOf(reference);
+                    // Start overriding the value
+                    hashtable[assetStreamingAssetPath] = manifestEntry;
+                    assetIndex[indexID]                = manifestEntry;
+                }
+                else
+                {
+                    manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
 
-                        // If the index is not found (== -1), then skip it.
-                        // Otherwise, continue overriding its value
-                        if (indexID == -1) continue;
-
-                        // Override the force state if isPatch is true
-                        manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
-
-                        // If it has isForceStoreStreamingAssets flag and isPatch is false, then continue.
-                        if (hashtable[assetStreamingAssetPath].isForceStoreInStreaming
-                            && !manifestEntry.isPatch) continue;
-
-                        // Start overriding the value
-                        hashtable[assetStreamingAssetPath] = manifestEntry;
-                        assetIndex[indexID] = manifestEntry;
-                    }
-                    else
-                    {
-                        manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
-
-                        hashtable.Add(manifestEntry.remoteName, manifestEntry);
-                        assetIndex.Add(manifestEntry);
-                    }
+                    hashtable.Add(manifestEntry.remoteName, manifestEntry);
+                    assetIndex.Add(manifestEntry);
                 }
             }
         }
 
         private void SavePersistentRevision(QueryProperty dispatchQuery)
         {
-            string PersistentPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent");
+            string persistentPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent");
 
             // Get base_res_version_hash content
-            string FilePath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming");
-            string Hash = CreateMD5Shared(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
+            string filePath = Path.Combine(_gamePath, $@"{_execPrefix}_Data\StreamingAssets\res_versions_streaming");
+            string hash = CreateMD5Shared(new FileStream(filePath, FileMode.Open, FileAccess.Read));
 
 #nullable enable
             // Write DownloadPref template
-            byte[]? PrefTemplateBytes = (_gameVersionManager as GameTypeGenshinVersion)?.GamePreset
+            byte[]? prefTemplateBytes = (_gameVersionManager as GameTypeGenshinVersion)?.GamePreset
                 .GetGameDataTemplate("DownloadPref", _gameVersion.VersionArrayManifest.Select(x => (byte)x).ToArray());
-            if (PrefTemplateBytes != null) File.WriteAllBytes(PersistentPath + "\\DownloadPref", PrefTemplateBytes);
+            if (prefTemplateBytes != null) File.WriteAllBytes(persistentPath + "\\DownloadPref", prefTemplateBytes);
 #nullable disable
 
             // Get base_res_version_hash content
-            File.WriteAllText(PersistentPath + "\\base_res_version_hash", Hash);
+            File.WriteAllText(persistentPath + "\\base_res_version_hash", hash);
             // Get data_revision content
-            File.WriteAllText(PersistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
+            File.WriteAllText(persistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
             // Get res_revision content
-            File.WriteAllText(PersistentPath + "\\res_revision", $"{dispatchQuery.ResRevisionNum}");
+            File.WriteAllText(persistentPath + "\\res_revision", $"{dispatchQuery.ResRevisionNum}");
             // Get silence_revision content
-            File.WriteAllText(PersistentPath + "\\silence_revision", $"{dispatchQuery.SilenceRevisionNum}");
+            File.WriteAllText(persistentPath + "\\silence_revision", $"{dispatchQuery.SilenceRevisionNum}");
             // Get audio_revision content
-            File.WriteAllText(PersistentPath + "\\audio_revision", $"{dispatchQuery.AudioRevisionNum}");
+            File.WriteAllText(persistentPath + "\\audio_revision", $"{dispatchQuery.AudioRevisionNum}");
             // Get ChannelName content
-            File.WriteAllText(PersistentPath + "\\ChannelName", $"{dispatchQuery.ChannelName}");
+            File.WriteAllText(persistentPath + "\\ChannelName", $"{dispatchQuery.ChannelName}");
             // Get ScriptVersion content
-            File.WriteAllText(PersistentPath + "\\ScriptVersion", $"{dispatchQuery.GameVersion}");
+            File.WriteAllText(persistentPath + "\\ScriptVersion", $"{dispatchQuery.GameVersion}");
         }
         #endregion
 
         #region DispatcherParser
         // ReSharper disable once UnusedParameter.Local
-        private async Task<QueryProperty> GetDispatcherQuery(CancellationToken token)
+        private async Task<QueryProperty> GetDispatcherQuery(HttpClient client, CancellationToken token)
         {
             // Initialize dispatch helper
-            using (GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(_dispatcherRegionID, _gameVersionManager.GamePreset.ProtoDispatchKey, _dispatcherURL, _gameVersion.VersionString, token))
+            GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(client, _dispatcherRegionID, _gameVersionManager.GamePreset.ProtoDispatchKey!, _dispatcherURL, _gameVersion.VersionString, token);
             {
                 // Get the dispatcher info
                 YSDispatchInfo dispatchInfo = await dispatchHelper.LoadDispatchInfo();
 
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
-                string dFormat = string.Format("Query Response (RAW Encrypted form):\r\n{0}", dispatchInfo.content);
+                string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.content}";
 #if DEBUG
                 LogWriteLine(dFormat);
 #endif
@@ -477,7 +479,7 @@ namespace CollapseLauncher
             byte[] decryptedData = dispatchDecryptor.DecryptYSDispatch(dispatchInfo.content, _gameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0, _gameVersionManager.GamePreset.DispatcherKey);
 
             // DEBUG ONLY: Show the decrypted Proto as Base64 format
-            string dFormat = string.Format("Proto Response (RAW Decrypted form):\r\n{0}", Convert.ToBase64String(decryptedData));
+            string dFormat = $"Proto Response (RAW Decrypted form):\r\n{Convert.ToBase64String(decryptedData)}";
 #if DEBUG
             LogWriteLine(dFormat);
 #endif
