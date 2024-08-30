@@ -33,7 +33,7 @@ namespace CollapseLauncher
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
-                .UseLauncherConfig(_downloadThreadCount + 16)
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
@@ -156,7 +156,7 @@ namespace CollapseLauncher
                 true);
 
             // Set URL of the asset
-            string assetURL = customURL != null ? customURL : asset.AssetIndex.RN;
+            string assetURL  = customURL ?? asset.AssetIndex.RN;
             string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
 
             if (asset.AssetIndex.FT == FileType.Unused && !_isOnlyRecoverMain)
