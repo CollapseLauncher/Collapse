@@ -72,12 +72,12 @@
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
-                    TrayIcon.Current?.ShowNotification(
-                        Lang._NotificationToast.GameRepairCheckCompleted_Title,
-                        IsGameBroken ?
-                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty._GameRepair.AssetEntry.Count) :
-                            Lang._NotificationToast.GameRepairCheckCompletedNotFound_Subtitle
-                        );
+                    WindowUtility.Tray_ShowNotification(
+                                                        Lang._NotificationToast.GameRepairCheckCompleted_Title,
+                                                        IsGameBroken ?
+                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty._GameRepair.AssetEntry.Count) :
+                                                            Lang._NotificationToast.GameRepairCheckCompletedNotFound_Subtitle
+                                                       );
                 }
             }
             catch (TaskCanceledException)
@@ -124,10 +124,10 @@
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
-                    TrayIcon.Current?.ShowNotification(
-                        Lang._NotificationToast.GameRepairDownloadCompleted_Title,
-                        string.Format(Lang._NotificationToast.GameRepairDownloadCompleted_Subtitle, assetCount)
-                        );
+                    WindowUtility.Tray_ShowNotification(
+                                                        Lang._NotificationToast.GameRepairDownloadCompleted_Title,
+                                                        string.Format(Lang._NotificationToast.GameRepairDownloadCompleted_Subtitle, assetCount)
+                                                       );
                 }
             }
             catch (TaskCanceledException)

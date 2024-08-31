@@ -1173,10 +1173,10 @@ namespace CollapseLauncher.Pages
                 {
                     string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
 
-                    TrayIcon.Current?.ShowNotification(
-                        string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
-                        Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
-                        );
+                    WindowUtility.Tray_ShowNotification(
+                                                        string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
+                                                        Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
+                                                       );
                 }
             }
             catch (OperationCanceledException)
@@ -1311,13 +1311,13 @@ namespace CollapseLauncher.Pages
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
-                    TrayIcon.Current?.ShowNotification(
-                                                       string.Format(Lang._NotificationToast.GameInstallCompleted_Title,
-                                                                     gameNameLocale),
-                                                       string
-                                                          .Format(Lang._NotificationToast.GameInstallCompleted_Subtitle,
-                                                                  gameNameLocale)
-                                                      );
+                    WindowUtility.Tray_ShowNotification(
+                                                        string.Format(Lang._NotificationToast.GameInstallCompleted_Title,
+                                                                      gameNameLocale),
+                                                        string
+                                                           .Format(Lang._NotificationToast.GameInstallCompleted_Subtitle,
+                                                                   gameNameLocale)
+                                                       );
                 }
             }
             catch (TaskCanceledException)
@@ -2469,10 +2469,10 @@ namespace CollapseLauncher.Pages
                     string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
                     string gameVersionString = CurrentGameProperty._GameVersion.GetGameVersionAPI()?.VersionString;
 
-                    TrayIcon.Current?.ShowNotification(
-                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Title, gameNameLocale),
-                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Subtitle, gameNameLocale, gameVersionString)
-                        );
+                    WindowUtility.Tray_ShowNotification(
+                                                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Title, gameNameLocale),
+                                                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Subtitle, gameNameLocale, gameVersionString)
+                                                       );
                 }
             }
             catch (TaskCanceledException)

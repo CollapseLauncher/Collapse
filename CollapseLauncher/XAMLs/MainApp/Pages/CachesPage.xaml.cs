@@ -73,7 +73,7 @@
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
-                    TrayIcon.Current?.ShowNotification(
+                    WindowUtility.Tray_ShowNotification(
                         Lang._NotificationToast.CacheUpdateCheckCompleted_Title,
                         IsNeedUpdate ?
                             string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty._GameCache.AssetEntry.Count) :
@@ -125,10 +125,10 @@
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
-                    TrayIcon.Current?.ShowNotification(
-                        Lang._NotificationToast.CacheUpdateDownloadCompleted_Title,
-                        string.Format(Lang._NotificationToast.CacheUpdateDownloadCompleted_Subtitle, assetCount)
-                        );
+                    WindowUtility.Tray_ShowNotification(
+                                                        Lang._NotificationToast.CacheUpdateDownloadCompleted_Title,
+                                                        string.Format(Lang._NotificationToast.CacheUpdateDownloadCompleted_Subtitle, assetCount)
+                                                       );
                 }
             }
             catch (TaskCanceledException)
