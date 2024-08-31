@@ -43,22 +43,18 @@ namespace CollapseLauncher
         public HonkaiRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
             : base(parentUI, GameVersionManager, GameSettings, null, "", versionOverride)
         {
-            _cacheUtil = (GameCacheManager as ICacheBase<HonkaiCache>).AsBaseType();
+            _cacheUtil = (GameCacheManager as ICacheBase<HonkaiCache>)?.AsBaseType();
 
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
 
             // Initialize audio asset language
-            string audioLanguage = (GameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
-            switch (audioLanguage)
-            {
-                case "Chinese(PRC)":
-                    _audioLanguage = AudioLanguageType.Chinese;
-                    break;
-                default:
-                    _audioLanguage = _gameVersionManager.GamePreset.GameDefaultCVLanguage;
-                    break;
-            }
+            string audioLanguage = (GameSettings as HonkaiSettings)?.SettingsAudio._userCVLanguage;
+            _audioLanguage = audioLanguage switch
+                             {
+                                 "Chinese(PRC)" => AudioLanguageType.Chinese,
+                                 _ => _gameVersionManager.GamePreset.GameDefaultCVLanguage
+                             };
         }
 
         ~HonkaiRepair() => Dispose();
@@ -98,7 +94,7 @@ namespace CollapseLauncher
             CountAssetIndex(_assetIndex);
 
             // Copy list to _originAssetIndex
-            _originAssetIndex = new List<FilePropertiesRemote>(_assetIndex);
+            _originAssetIndex = [.._assetIndex];
 
             // Step 3: Check for the asset indexes integrity
             await Check(_assetIndex, _token.Token);

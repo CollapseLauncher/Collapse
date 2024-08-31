@@ -127,7 +127,11 @@ namespace Hi3Helper
                 public string IAcceptAgreement      { get; set; } = LangFallback?._Misc.IAcceptAgreement;
                 public string IDoNotAcceptAgreement { get; set; } = LangFallback?._Misc.IDoNotAcceptAgreement;
 
-                public string ImageCropperTitle { get; set; } = LangFallback?._Misc.ImageCropperTitle;
+                public string ImageCropperTitle     { get; set; } = LangFallback?._Misc.ImageCropperTitle;
+
+                public string IsBytesMoreThanBytes  { get; set; } = LangFallback?._Misc.IsBytesMoreThanBytes;
+                public string IsBytesUnlimited      { get; set; } = LangFallback?._Misc.IsBytesUnlimited;
+                public string IsBytesNotANumber     { get; set; } = LangFallback?._Misc.IsBytesNotANumber;
             }
         }
         #endregion

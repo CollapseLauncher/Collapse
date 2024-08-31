@@ -1298,7 +1298,98 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
             }
         }
+        
+        private bool IsBurstDownloadModeEnabled
+        {
+            get => LauncherConfig.IsBurstDownloadModeEnabled;
+            set => LauncherConfig.IsBurstDownloadModeEnabled = value;
+        }
 
+        private bool IsUseDownloadSpeedLimiter
+        {
+            get
+            {
+                bool value = LauncherConfig.IsUseDownloadSpeedLimiter;
+                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
+                if (value)
+                    NetworkBurstDownloadModeToggle.IsOn = false;
+                NetworkBurstDownloadModeToggle.IsEnabled = !value;
+                return value;
+            }
+            set
+            {
+                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
+                if (value)
+                    NetworkBurstDownloadModeToggle.IsOn = false;
+                NetworkBurstDownloadModeToggle.IsEnabled = !value;
+                LauncherConfig.IsUseDownloadSpeedLimiter = value;
+            }
+        }
+
+        private bool IsUsePreallocatedDownloader
+        {
+            get
+            {
+                bool value = LauncherConfig.IsUsePreallocatedDownloader;
+                NetworkDownloadChunkSizeGrid.Opacity = value ? 1 : 0.45;
+                OldDownloadChunksMergingToggle.IsEnabled = !value;
+
+                if (!value)
+                {
+                    NetworkDownloadSpeedLimitToggle.IsOn = value;
+                    NetworkBurstDownloadModeToggle.IsOn = value;
+                }
+                NetworkDownloadSpeedLimitToggle.IsEnabled = value;
+                NetworkBurstDownloadModeToggle.IsEnabled = value;
+                return value;
+            }
+            set
+            {
+                NetworkDownloadChunkSizeGrid.Opacity = value ? 1 : 0.45;
+                OldDownloadChunksMergingToggle.IsEnabled = !value;
+
+                if (!value)
+                {
+                    NetworkDownloadSpeedLimitToggle.IsOn = value;
+                    NetworkBurstDownloadModeToggle.IsOn = value;
+                }
+                NetworkDownloadSpeedLimitToggle.IsEnabled = value;
+                NetworkBurstDownloadModeToggle.IsEnabled = value;
+                LauncherConfig.IsUsePreallocatedDownloader = value;
+            }
+        }
+
+        private double DownloadSpeedLimit
+        {
+            get
+            {
+                double val = LauncherConfig.DownloadSpeedLimit;
+                double valDividedM = val / (1 << 20);
+                return valDividedM;
+            }
+            set
+            {
+                long valBfromM = (long)(value * (1 << 20));
+                
+                LauncherConfig.DownloadSpeedLimit = Math.Max(valBfromM, 0);
+            }
+        }
+
+        private double DownloadChunkSize
+        {
+            get
+            {
+                double val = LauncherConfig.DownloadChunkSize;
+                double valDividedM = val / (1 << 20);
+                return valDividedM;
+            }
+            set
+            {
+                int valBfromM = (int)(value * (1 << 20));
+
+                LauncherConfig.DownloadChunkSize = Math.Max(valBfromM, 0);
+            }
+        }
 #nullable restore
         #endregion
 

@@ -20,6 +20,9 @@
     <Page.Resources>
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
+        <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
+        <conv:DoubleFormatter x:Key="DoubleFormatter" />
     </Page.Resources>
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
@@ -572,6 +575,246 @@
                                        Minimum="10"
                                        SpinButtonPlacementMode="Compact"
                                        Value="{x:Bind HttpClientTimeout, Mode=TwoWay}" />
+
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="0,16,0,0">
+                                <TextBlock FontSize="16"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_Title}" />
+                                <!--  ReSharper disable once Xaml.RedundantStyledValue  -->
+                                <Button Width="24"
+                                    Height="24"
+                                    Margin="8,0,0,0"
+                                    Padding="0"
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="4"
+                                    Style="{ThemeResource AcrylicButtonStyle}">
+                                    <Button.Content>
+                                        <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                              FontSize="10"
+                                              Glyph="&#x3f;" />
+                                    </Button.Content>
+                                    <Button.Flyout>
+                                        <Flyout Placement="Right">
+                                            <StackPanel MaxWidth="340">
+                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}" />
+                                                <TextBlock Margin="0,4,0,0">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp1}" />
+                                                    <Run FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"
+                                                         Text="{x:Bind helper:Locale.Lang._Misc.Disabled}" />
+                                                </TextBlock>
+                                                <TextBlock Margin="0,0,0,0">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp2}" />
+                                                    <Run FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"
+                                                         Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp3}" />
+                                                </TextBlock>
+                                                <TextBlock Margin="0,8,0,16"
+                                                       TextWrapping="Wrap">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp4}" />
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownload_Title}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimitHelp5}" />
+                                                </TextBlock>
+                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_Title}" />
+                                                <TextBlock Margin="0,4,0,0">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp1}" />
+                                                    <Run FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"
+                                                         Text="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                </TextBlock>
+                                                <TextBlock Margin="0,0,0,0">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp2}" />
+                                                    <Run FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"
+                                                         Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp3}" />
+                                                </TextBlock>
+                                                <TextBlock Margin="0,8,0,4"
+                                                       TextWrapping="Wrap" >
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp4}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp5}"/>
+                                                </TextBlock>
+                                                <TextBlock Margin="0,0,0,8"
+                                                       TextWrapping="Wrap" >
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp6}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp7}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownload_Title}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp8}"/>
+                                                </TextBlock>
+                                                <TextBlock Margin="0,0,0,0"
+                                                       TextWrapping="Wrap"
+                                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp9}"
+                                                           FontSize="16"
+                                                           FontWeight="Bold"
+                                                           Foreground="{ThemeResource AccentColor}"/>
+                                                <TextBlock Margin="0,0,0,16"
+                                                       TextWrapping="Wrap"
+                                                           FontSize="12">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp10}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownload_Title}" />
+                                                <TextBlock Margin="0,4,0,0">
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp1}" />
+                                                    <Run FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"
+                                                         Text="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                                </TextBlock>
+                                                <TextBlock Margin="0,8,0,0"
+                                                       TextWrapping="Wrap" >
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp2}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._GameRepairPage.PageTitle}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp3}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp4}"/>
+                                                </TextBlock>
+                                                <TextBlock Margin="0,8,0,0"
+                                                       TextWrapping="Wrap" >
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp5}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._GameRepairPage.PageTitle}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp6}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}"
+                                                         FontWeight="Bold"
+                                                         Foreground="{ThemeResource AccentColor}"/>
+                                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp7}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </StackPanel>
+                            <ToggleSwitch x:Name="NetworkDownloadSpeedLimitToggle"
+                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}"
+                                          IsOn="{x:Bind IsUseDownloadSpeedLimiter, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                            <Grid ColumnSpacing="8"
+                                  Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <NumberBox x:Name="NetworkDownloadSpeedLimitNumberBox"
+                                           Text="100"
+                                           Width="Auto"
+                                           MinWidth="120"
+                                           MaxWidth="300"
+                                           Minimum="0"
+                                           Maximum="1000"
+                                           SmallChange="0.125"
+                                           LargeChange="10"
+                                           NumberFormatter="{StaticResource DoubleFormatter}"
+                                           SpinButtonPlacementMode="Inline"
+                                           IsEnabled="{x:Bind NetworkDownloadSpeedLimitToggle.IsOn, Mode=OneWay}"
+                                           Value="{x:Bind DownloadSpeedLimit, Mode=TwoWay}"
+                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_NumBox}"/>
+                                <Grid x:Name="NetworkDownloadSpeedLimitGrid"
+                                      Padding="10,4"
+                                      Margin="0,0,0,4"
+                                      Grid.Column="1"
+                                      VerticalAlignment="Bottom"
+                                      HorizontalAlignment="Left"
+                                      CornerRadius="4"
+                                      Shadow="{ThemeResource FatSliderThumbShadow}"
+                                      Translation="0,0,8"
+                                      Background="{ThemeResource DefaultBGColorAccentBrush}">
+                                    <TextBlock Text="{x:Bind NetworkDownloadSpeedLimitNumberBox.Value,
+                                                             Converter={StaticResource DownloadSpeedLimitToStringConverter},
+                                                             Mode=OneWay}"
+                                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                               FontWeight="SemiBold"
+                                               FontStyle="Italic"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Grid>
+                            <ToggleSwitch x:Name="NetworkNewPreallocDownloaderToggle"
+                                          IsOn="{x:Bind IsUsePreallocatedDownloader, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_Title}"/>
+                                    <TextBlock Grid.Row="1"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_Subtitle}"
+                                               FontSize="10"
+                                               FontWeight="SemiBold"/>
+                                </Grid>
+                            </ToggleSwitch>
+                            <Grid ColumnSpacing="8"
+                                  Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <NumberBox x:Name="NetworkDownloadChunkSizeNumberBox"
+                                           Text="100"
+                                           Width="Auto"
+                                           MinWidth="120"
+                                           MaxWidth="300"
+                                           Minimum="1"
+                                           Maximum="32"
+                                           SmallChange="0.125"
+                                           LargeChange="10"
+                                           NumberFormatter="{StaticResource DoubleFormatter}"
+                                           SpinButtonPlacementMode="Inline"
+                                           IsEnabled="{x:Bind NetworkNewPreallocDownloaderToggle.IsOn, Mode=OneWay}"
+                                           Value="{x:Bind DownloadChunkSize, Mode=TwoWay}"
+                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_NumBox}"/>
+                                <Grid x:Name="NetworkDownloadChunkSizeGrid"
+                                      Padding="10,4"
+                                      Margin="0,0,0,4"
+                                      Grid.Column="1"
+                                      VerticalAlignment="Bottom"
+                                      HorizontalAlignment="Left"
+                                      CornerRadius="4"
+                                      Shadow="{ThemeResource FatSliderThumbShadow}"
+                                      Translation="0,0,8"
+                                      Background="{ThemeResource DefaultBGColorAccentBrush}">
+                                    <TextBlock Text="{x:Bind NetworkDownloadChunkSizeNumberBox.Value,
+                                                             Converter={StaticResource DownloadChunkSizeToStringConverter},
+                                                             Mode=OneWay}"
+                                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                               FontWeight="SemiBold"
+                                               FontStyle="Italic"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Grid>
+                            <ToggleSwitch x:Name="NetworkBurstDownloadModeToggle"
+                                          IsOn="{x:Bind IsBurstDownloadModeEnabled, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownload_Title}"/>
+                                    <TextBlock Grid.Row="1"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_BurstDownload_Subtitle}"
+                                               FontSize="10"
+                                               FontWeight="SemiBold"/>
+                                </Grid>
+                            </ToggleSwitch>
                         </StackPanel>
                         <TextBlock Margin="0,0,0,8"
                                    FontSize="16"
@@ -680,6 +923,15 @@
                                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention}" />
                                             </StackPanel>
                                             <TextBlock Margin="0,8,0,0"
+                                                       TextWrapping="Wrap"
+                                                       FontStyle="Italic">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_AttentionTop1}" />
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_Title}"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_AttentionTop2}" />
+                                            </TextBlock>
+                                            <TextBlock Margin="0,8,0,0"
                                                        TextWrapping="Wrap">
                                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Attention1}" />
                                                 <Run FontWeight="Bold"
@@ -721,7 +973,8 @@
                                        SpinButtonPlacementMode="Compact"
                                        Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" />
                         </StackPanel>
-                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableDownloadChunksMerging}"
+                        <ToggleSwitch x:Name="OldDownloadChunksMergingToggle"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableDownloadChunksMerging}"
                                       IsOn="{x:Bind IsUseDownloadChunksMerging, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />

@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
@@ -31,6 +32,8 @@ public sealed partial class UpdaterWindow
         Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
     public static string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
 
+    private static Stopwatch CurrentStopwatch = Stopwatch.StartNew();
+
     public UpdaterWindow()
     {
         InitializeComponent();
@@ -56,8 +59,8 @@ public sealed partial class UpdaterWindow
             var newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                                              "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
             progressBar.IsIndeterminate = true;
-            UpdateChannelLabel.Text     = m_arguments.Updater.UpdateChannel.ToString();
-            ActivityStatus.Text         = Lang._UpdatePage.UpdateMessage1;
+            UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
+            ActivityStatus.Text = Lang._UpdatePage.UpdateMessage1;
 
             await using var metadataStream =
                 await
@@ -74,17 +77,18 @@ public sealed partial class UpdaterWindow
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            using (var _httpClient = new Http(true, customHttpClient: client))
-            {
-                FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath,
-                                                                 Environment.ProcessorCount > 8
-                                                                     ? 8
-                                                                     : Environment.ProcessorCount,
-                                                                 $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/ApplyUpdate.exe",
-                                                                 default);
-                FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
-            }
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
+            CurrentStopwatch.Restart();
+
+            FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
+            await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, applyElevatedPath,
+                                                             Environment.ProcessorCount > 8
+                                                                 ? 8
+                                                                 : Environment.ProcessorCount,
+                                                             $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/ApplyUpdate.exe",
+                                                             default);
+            FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
 
             await File.WriteAllTextAsync(Path.Combine(workingDir, "..\\", "release"),
                                          m_arguments.Updater.UpdateChannel.ToString().ToLower());
@@ -103,7 +107,7 @@ public sealed partial class UpdaterWindow
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName        = applyElevatedPath,
+                    FileName = applyElevatedPath,
                     UseShellExecute = true
                 }
             };
@@ -119,6 +123,9 @@ public sealed partial class UpdaterWindow
 
     private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
     {
+        double speed = e.SizeDownloaded / CurrentStopwatch.Elapsed.TotalSeconds;
+        TimeSpan timeLeft = ((e.SizeToBeDownloaded - e.SizeDownloaded) / speed).ToTimeSpanNormalized();
+
         DispatcherQueue?.TryEnqueue(() =>
                                     {
                                         progressBar.IsIndeterminate = false;
@@ -128,8 +135,8 @@ public sealed partial class UpdaterWindow
                                             $"{SummarizeSizeSimple(e.SizeDownloaded)} / {SummarizeSizeSimple(e.SizeToBeDownloaded)}";
 
                                         SpeedStatus.Text =
-                                            string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed));
-                                        TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+                                            string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(speed));
+                                        TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, timeLeft);
                                     });
     }
 

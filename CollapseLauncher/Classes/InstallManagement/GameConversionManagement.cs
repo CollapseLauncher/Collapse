@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using SharpHDiffPatch.Core;
@@ -29,7 +30,6 @@ namespace CollapseLauncher
         private PresetConfig SourceProfile, TargetProfile;
         private List<FileProperties> SourceFileManifest;
         private List<FileProperties> TargetFileManifest;
-        private Http _http;
         private HttpClient _client;
 
         string BaseURL;
@@ -49,7 +49,6 @@ namespace CollapseLauncher
                 .UseLauncherConfig()
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
-            this._http = new Http(this._client);
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
             this.BaseURL = BaseURL;
@@ -64,7 +63,6 @@ namespace CollapseLauncher
         public void Dispose()
         {
             this._client?.Dispose();
-            this._http?.Dispose();
         }
 
         public async Task StartPreparation()
@@ -77,6 +75,8 @@ namespace CollapseLauncher
             string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
             string URL = "";
 
+            DownloadClient downloadClient = DownloadClient.CreateInstance(_client);
+
             try
             {
                 FallbackCDNUtil.DownloadProgress += FetchIngredientsAPI_Progress;
@@ -85,7 +85,7 @@ namespace CollapseLauncher
                 {
                     URL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
                     ConvertDetail = Lang._InstallConvert.Step2Subtitle;
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, buffer, URL, Token);
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, buffer, URL, Token);
                     buffer.Position = 0;
                     SourceFileRemote = await buffer.DeserializeAsync<List<FilePropertiesRemote>>(CoreLibraryJSONContext.Default, Token);
                 }
@@ -94,7 +94,7 @@ namespace CollapseLauncher
                 {
                     URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
                     ConvertDetail = Lang._InstallConvert.Step2Subtitle;
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, buffer, URL, Token);
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, buffer, URL, Token);
                     buffer.Position = 0;
                     TargetFileRemote = await buffer.DeserializeAsync<List<FilePropertiesRemote>>(CoreLibraryJSONContext.Default, Token);
                 }
@@ -107,7 +107,7 @@ namespace CollapseLauncher
             SourceFileManifest = BuildManifest(SourceFileRemote);
             TargetFileManifest = BuildManifest(TargetFileRemote);
             await Task.Run(() => PrepareIngredients(SourceFileManifest));
-            await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientsPath), IngredientsPath);
+            await RepairIngredients(downloadClient, await VerifyIngredients(SourceFileManifest, IngredientsPath), IngredientsPath);
         }
 
         long MakeIngredientsRead = 0;
@@ -148,8 +148,10 @@ namespace CollapseLauncher
 
         public async Task PostConversionVerify()
         {
+            DownloadClient downloadClient = DownloadClient.CreateInstance(_client);
+
             string TargetPath = TargetProfile.ActualGameDataLocation;
-            await RepairIngredients(await VerifyIngredients(TargetFileManifest, TargetPath), TargetPath);
+            await RepairIngredients(downloadClient, await VerifyIngredients(TargetFileManifest, TargetPath), TargetPath);
         }
 
         private async Task<List<FileProperties>> VerifyIngredients(List<FileProperties> FileManifest, string GamePath)
@@ -245,45 +247,37 @@ namespace CollapseLauncher
 
         long RepairRead = 0;
         long RepairTotalSize = 0;
-        private async Task RepairIngredients(List<FileProperties> BrokenFile, string GamePath)
+        private async Task RepairIngredients(DownloadClient downloadClient, List<FileProperties> BrokenFile, string GamePath)
         {
             if (BrokenFile.Count == 0) return;
 
             ResetSw();
-            string OutputPath;
-            string InputURL;
             RepairTotalSize = BrokenFile.Sum(x => x.FileSize);
 
             ConvertStatus = Lang._InstallConvert.Step3Title1;
-            foreach (FileProperties Entry in BrokenFile)
+            await Parallel.ForEachAsync(BrokenFile, new ParallelOptions
+            {
+                MaxDegreeOfParallelism = DownloadThread,
+                CancellationToken = Token
+            }, async (Entry, CoopToken) =>
             {
                 Token.ThrowIfCancellationRequested();
-                OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = CombineURLFromString(BaseURL, Entry.FileName);
+
+                string OutputPath = Path.Combine(GamePath, Entry.FileName);
+                string OutputPathDir = Path.GetDirectoryName(OutputPath);
+                string InputURL = CombineURLFromString(BaseURL, Entry.FileName);
 
                 ConvertDetail = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, Entry.FileName, Entry.FileSizeStr));
-                if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
+                if (!Directory.Exists(OutputPathDir))
+                    Directory.CreateDirectory(OutputPathDir!);
 
-                if (File.Exists(OutputPath))
-                    File.Delete(OutputPath);
-
-                _http.DownloadProgress += RepairIngredients_Progress;
-                if (Entry.FileSize >= 20 << 20)
-                {
-                    await _http.Download(InputURL, OutputPath, DownloadThread, true, Token);
-                    await _http.Merge(Token);
-                }
-                else
-                    await _http.Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
-                _http.DownloadProgress -= RepairIngredients_Progress;
-            }
+                await downloadClient.DownloadAsync(InputURL, OutputPath, true, progressDelegateAsync: RepairIngredients_Progress, maxConnectionSessions: DownloadThread, cancelToken: CoopToken);
+            });
         }
 
-        private void RepairIngredients_Progress(object sender, DownloadEvent e)
+        private void RepairIngredients_Progress(int read, DownloadProgress downloadProgress)
         {
-            if (_http.DownloadState != DownloadState.Merging)
-                RepairRead += e.Read;
+            Interlocked.Add(ref RepairRead, read);
 
             UpdateProgress(RepairRead, RepairTotalSize, 1, 1, ConvertSw.Elapsed,
                 ConvertStatus, ConvertDetail);
