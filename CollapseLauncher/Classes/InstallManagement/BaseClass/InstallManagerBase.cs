@@ -1006,12 +1006,24 @@ namespace CollapseLauncher.InstallManager.Base
                                      ParallelOptions parallelOptions,
                                      Func<SophonAsset, CancellationToken, ValueTask> actionDelegate)
             {
-                foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
+                // Create a sophon download speed limiter instance
+                SophonDownloadSpeedLimiter downloadSpeedLimiter = SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+
+                try
                 {
-                    // Enumerate in parallel and process the assets
-                    await Parallel.ForEachAsync(SophonManifest.EnumerateAsync(client, sophonDownloadInfoPair),
-                                                parallelOptions,
-                                                actionDelegate);
+                    LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
+                    foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
+                    {
+                        // Enumerate in parallel and process the assets
+                        await Parallel.ForEachAsync(SophonManifest.EnumerateAsync(client, sophonDownloadInfoPair,
+                                                                                  downloadSpeedLimiter),
+                                                    parallelOptions,
+                                                    actionDelegate);
+                    }
+                }
+                finally
+                {
+                    LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
                 }
             }
         }
@@ -1081,16 +1093,20 @@ namespace CollapseLauncher.InstallManager.Base
                     // Add the tag query to the previous version's Url
                     requestedBaseUrlFrom += $"&tag={requestedVersionFrom.ToString()}";
 
+                    // Create a sophon download speed limiter instance
+                    SophonDownloadSpeedLimiter downloadSpeedLimiter = SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+
                     // Add base game diff data
                     await AddSophonDiffAssetsToList(httpClient,            requestedBaseUrlFrom, requestedBaseUrlTo,
-                                                    sophonUpdateAssetList, "game");
+                                                    sophonUpdateAssetList, "game",               downloadSpeedLimiter);
 
                     // If the game has lang list path, then add it
                     if (_gameAudioLangListPath != null)
                     {
                         // Add existing voice-over diff data
                         await AddSophonAdditionalVODiffAssetsToList(httpClient,         requestedBaseUrlFrom,
-                                                                    requestedBaseUrlTo, sophonUpdateAssetList);
+                                                                    requestedBaseUrlTo, sophonUpdateAssetList,
+                                                                    downloadSpeedLimiter);
                     }
                 }
 
@@ -1211,10 +1227,12 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async Task AddSophonDiffAssetsToList(HttpClient        httpClient,
-                                                     string            requestedUrlFrom, string requestedUrlTo,
-                                                     List<SophonAsset> sophonPreloadAssetList,
-                                                     string            matchingField)
+        private async Task AddSophonDiffAssetsToList(HttpClient                 httpClient,
+                                                     string                     requestedUrlFrom,
+                                                     string                     requestedUrlTo,
+                                                     List<SophonAsset>          sophonPreloadAssetList,
+                                                     string                     matchingField,
+                                                     SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
@@ -1225,22 +1243,24 @@ namespace CollapseLauncher.InstallManager.Base
             // Add asset to the list
             await foreach (SophonAsset sophonAsset in SophonUpdate
                                                      .EnumerateUpdateAsync(httpClient, requestPairFrom, requestPairTo,
-                                                                           false)
+                                                                           false, downloadSpeedLimiter)
                                                      .WithCancellation(_token.Token))
             {
                 sophonPreloadAssetList.Add(sophonAsset);
             }
         }
 
-        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient httpClient,
-                                                                 string requestedUrlFrom, string requestedUrlTo,
-                                                                 List<SophonAsset> sophonPreloadAssetList)
+        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient                 httpClient,
+                                                                 string                     requestedUrlFrom,
+                                                                 string                     requestedUrlTo,
+                                                                 List<SophonAsset>          sophonPreloadAssetList,
+                                                                 SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             // Get the main VO language name from Id
             string mainLangId = GetLanguageLocaleCodeByID(_gameVoiceLanguageID);
             // Get the manifest pair for both previous (from) and next (to) version for the main VO
-            await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo, sophonPreloadAssetList,
-                                            mainLangId);
+            await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
+                                            sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
             if (File.Exists(_gameAudioLangListPath))
@@ -1261,7 +1281,7 @@ namespace CollapseLauncher.InstallManager.Base
                     string otherLangId = GetLanguageLocaleCodeByLanguageString(line);
                     // Get the manifest pair for both previous (from) and next (to) version for other VOs
                     await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                                    sophonPreloadAssetList, otherLangId);
+                                                    sophonPreloadAssetList, otherLangId,      downloadSpeedLimiter);
                 }
             }
         }
