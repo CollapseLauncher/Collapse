@@ -1468,14 +1468,14 @@
     "GamePreloadCompleted_Title": "Pre-load for {0} has been Downloaded",
 
     "GameRepairCheckCompleted_Title": "Game Repair Check is Completed",
-    "GameRepairCheckCompletedFound_Subtitle": "{0} file(s) needs to be updated/repaired. Click this notification to go back to the launcher.",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} file(s) need to be updated/repaired. Click this notification to go back to the launcher.",
     "GameRepairCheckCompletedNotFound_Subtitle": "No files need to be updated/repaired.",
 
     "GameRepairDownloadCompleted_Title": "Game Repair Download is Completed",
     "GameRepairDownloadCompleted_Subtitle": "{0} file(s) have been successfully updated/repaired.",
 
     "CacheUpdateCheckCompleted_Title": "Cache Update Check is Completed",
-    "CacheUpdateCheckCompletedFound_Subtitle": "{0} cache file(s) needs to be updated. Click this notification to go back to the launcher.",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} cache file(s) need to be updated. Click this notification to go back to the launcher.",
     "CacheUpdateCheckCompletedNotFound_Subtitle": "No cache files need to be updated.",
 
     "CacheUpdateDownloadCompleted_Title": "Cache Update Download is Completed",
