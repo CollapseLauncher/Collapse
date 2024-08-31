@@ -18,15 +18,17 @@ namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
     {
-        #region Locales
-        private readonly string _popupHelp1 = Lang._Misc.Taskbar_PopupHelp1;
-        private readonly string _popupHelp2 = Lang._Misc.Taskbar_PopupHelp2;
+        internal static TrayIcon Current { get; private set; }
 
-        private readonly string _showApp     = Lang._Misc.Taskbar_ShowApp;
-        private readonly string _hideApp     = Lang._Misc.Taskbar_HideApp;
-        private readonly string _showConsole = Lang._Misc.Taskbar_ShowConsole;
-        private readonly string _hideConsole = Lang._Misc.Taskbar_HideConsole;
-        private readonly string _exitApp     = Lang._Misc.Taskbar_ExitApp;
+        #region Locales
+        private string _popupHelp1 => Lang._Misc.Taskbar_PopupHelp1;
+        private string _popupHelp2 => Lang._Misc.Taskbar_PopupHelp2;
+
+        private string _showApp     => Lang._Misc.Taskbar_ShowApp;
+        private string _hideApp     => Lang._Misc.Taskbar_HideApp;
+        private string _showConsole => Lang._Misc.Taskbar_ShowConsole;
+        private string _hideConsole => Lang._Misc.Taskbar_HideConsole;
+        private string _exitApp     => Lang._Misc.Taskbar_ExitApp;
 
         // ReSharper disable UnusedMember.Local
         private readonly string _preview = Lang._Misc.BuildChannelPreview;
@@ -77,6 +79,8 @@ namespace CollapseLauncher
             CollapseTaskbar.Visibility = Visibility.Visible;
             
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
+
+            Current = this;
         }
 
         public void Dispose()
@@ -187,6 +191,12 @@ namespace CollapseLauncher
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 LogWriteLine("Main window is hidden!");
+
+                // Spawn the hidden to tray toast notification
+                ShowNotification(
+                    Lang._NotificationToast.WindowHiddenToTray_Title,
+                    Lang._NotificationToast.WindowHiddenToTray_Subtitle
+                    );
             }
             else
             {

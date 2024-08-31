@@ -140,6 +140,18 @@ namespace CollapseLauncher.Helper.Metadata
             throw new AccessViolationException($"Config is not exist or null inside of the metadata! This should not be happening!\r\nGame: ({gameName} - {gameRegion})");
         }
 
+        internal static string GetTranslatedCurrentGameTitleRegionString()
+        {
+            string? curGameName = CurrentMetadataConfigGameName;
+            string? curGameRegion = CurrentMetadataConfigGameRegion;
+
+            string? curGameNameTranslate =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameName, Locale.Lang._GameClientTitles);
+            string? curGameRegionTranslate =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(curGameRegion, Locale.Lang._GameClientRegions);
+
+            return $"{curGameNameTranslate} - {curGameRegionTranslate}";
+        }
 
         /// <summary>
         /// Checks for the local modification of the metadata config

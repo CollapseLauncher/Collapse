@@ -9,7 +9,6 @@ using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
-using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
@@ -19,7 +18,6 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
@@ -1169,6 +1167,17 @@ namespace CollapseLauncher.Pages
 
                 // Set the notification trigger to "Completed" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+
+                    TrayIcon.Current?.ShowNotification(
+                        string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
+                        Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
+                        );
+                }
             }
             catch (OperationCanceledException)
             {
@@ -1297,6 +1306,16 @@ namespace CollapseLauncher.Pages
 
                 // Set the notification trigger to "Completed" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+                    TrayIcon.Current?.ShowNotification(
+                        string.Format(Lang._NotificationToast.GameInstallCompleted_Title, gameNameLocale),
+                        string.Format(Lang._NotificationToast.GameInstallCompleted_Subtitle, gameNameLocale)
+                        );
+                }
             }
             catch (TaskCanceledException)
             {
@@ -2419,6 +2438,18 @@ namespace CollapseLauncher.Pages
 
                 // Set the notification trigger to "Completed" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+                    string gameVersionString = CurrentGameProperty._GameVersion.GetGameVersionAPI()?.VersionString;
+
+                    TrayIcon.Current?.ShowNotification(
+                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Title, gameNameLocale),
+                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Subtitle, gameNameLocale, gameVersionString)
+                        );
+                }
             }
             catch (TaskCanceledException)
             {

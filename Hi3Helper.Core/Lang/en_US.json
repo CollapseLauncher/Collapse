@@ -878,7 +878,7 @@
 
     "StopGameTitle": "Force Stop Game",
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
-    
+
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
 
@@ -927,7 +927,7 @@
 
     "DownloadSettingsTitle": "Download Settings",
     "DownloadSettingsOption1": "Start game after install",
-    
+
     "OpenInExternalBrowser": "Open in External Browser",
     "CloseOverlay": "Close Overlay"
   },
@@ -1453,5 +1453,34 @@
     "Audio_PlaybackDev_Headphones": "Headphones",
     "Audio_PlaybackDev_Speakers": "Speakers",
     "Audio_PlaybackDev_TV": "TV"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher is Minimized to Tray",
+    "WindowHiddenToTray_Subtitle": "The launcher is now running in the background.\r\nClick this notification or the icon on the tray to restore the window.",
+
+    "GameInstallCompleted_Title": "{0} is Ready to Play",
+    "GameInstallCompleted_Subtitle": "{0} has been successfully installed!",
+
+    "GameUpdateCompleted_Title": "{0} has been Updated",
+    "GameUpdateCompleted_Subtitle": "{0} has been successfully updated to v{1}!",
+
+    "GamePreloadCompleted_Title": "Pre-load for {0} has been Downloaded",
+
+    "GameRepairCheckCompleted_Title": "Game Repair Check is Completed",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} file(s) needs to be updated/repaired. Click this notification to go back to the launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "No files need to be updated/repaired.",
+
+    "GameRepairDownloadCompleted_Title": "Game Repair Download is Completed",
+    "GameRepairDownloadCompleted_Subtitle": "{0} file(s) have been successfully updated/repaired.",
+
+    "CacheUpdateCheckCompleted_Title": "Cache Update Check is Completed",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} cache file(s) needs to be updated. Click this notification to go back to the launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "No cache files need to be updated.",
+
+    "CacheUpdateDownloadCompleted_Title": "Cache Update Download is Completed",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} cache file(s) have been successfully updated.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Click this notification to go back to the launcher."
   }
 }
