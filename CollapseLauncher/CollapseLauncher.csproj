@@ -95,7 +95,7 @@
         <PackageReference Include="HtmlAgilityPack" Version="1.11.65" />
         <PackageReference Include="ImageEx" Version="2.1.1" />
         <PackageReference Include="Markdig.Signed" Version="0.37.0" />
-        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
+        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.1-experimental2" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />

@@ -7,7 +7,7 @@ using Windows.Globalization.NumberFormatting;
 
 namespace CollapseLauncher.Pages
 {
-    public class InverseBooleanConverter : IValueConverter
+    public partial class InverseBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string langInfo)
         {
@@ -23,43 +23,43 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public class BooleanVisibilityConverter : IValueConverter
+    public partial class BooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
-    public class InverseBooleanVisibilityConverter : IValueConverter
+    public partial class InverseBooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => !(bool)value ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
-    public class DoubleRound2Converter : IValueConverter
+    public partial class DoubleRound2Converter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => Math.Round((double)value, 2);
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
-    public class DoubleRound3Converter : IValueConverter
+    public partial class DoubleRound3Converter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => Math.Round((double)value, 3);
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
-    public class StringToVisibilityConverter : IValueConverter
+    public partial class StringToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (value is string asString) && !string.IsNullOrEmpty(asString) ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
-    public class FileSizeToStringLiteralConverter : IValueConverter
+    public partial class FileSizeToStringLiteralConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => ConverterTool.SummarizeSizeSimple((long)value);
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 
-    public class DownloadSpeedLimitToStringConverter : IValueConverter
+    public partial class DownloadSpeedLimitToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -79,7 +79,7 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public class DownloadChunkSizeToStringConverter : IValueConverter
+    public partial class DownloadChunkSizeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -99,7 +99,7 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public class BooleanToOpacityDimmConverter : IValueConverter
+    public partial class BooleanToOpacityDimmConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -115,7 +115,7 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public class DoubleFormatter : INumberFormatter2, INumberParser
+    public partial class DoubleFormatter : INumberFormatter2, INumberParser
     {
         private const string Format = "{0:F5}";
         public string FormatDouble(double value) => string.Format(Format, value);

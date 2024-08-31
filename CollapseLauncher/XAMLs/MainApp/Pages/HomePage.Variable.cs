@@ -174,7 +174,7 @@ namespace CollapseLauncher.Pages
         public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
     }
 
-    public class NullVisibilityConverter : IValueConverter
+    public partial class NullVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();

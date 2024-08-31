@@ -155,11 +155,11 @@
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.2.0, )",
-        "resolved": "1.2.0",
-        "contentHash": "7bAo8ObjCy/br0eW0nONRfVKehJu5aDe/KQekWeNXslwTOO2rhrIfWaVGepsXyVqmqwHoLJ31g1HsT7FLdBCoQ==",
+        "requested": "[1.2.1-experimental2, )",
+        "resolved": "1.2.1-experimental2",
+        "contentHash": "jcihghoq78imitWG52m5k3gkPt+GrWTU/CkujU8o2bBHJY982/MG7YpWVOsuA+RKGAn+WIm/OklR99bXZkJjUw==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.5.240227000"
+          "Microsoft.WindowsAppSDK": "1.6.240531000-experimental1"
         }
       },
       "Microsoft.NETCore.Platforms": {
@@ -1030,11 +1030,11 @@
     "net8.0-windows10.0.22621/win-x64": {
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.2.0, )",
-        "resolved": "1.2.0",
-        "contentHash": "7bAo8ObjCy/br0eW0nONRfVKehJu5aDe/KQekWeNXslwTOO2rhrIfWaVGepsXyVqmqwHoLJ31g1HsT7FLdBCoQ==",
+        "requested": "[1.2.1-experimental2, )",
+        "resolved": "1.2.1-experimental2",
+        "contentHash": "jcihghoq78imitWG52m5k3gkPt+GrWTU/CkujU8o2bBHJY982/MG7YpWVOsuA+RKGAn+WIm/OklR99bXZkJjUw==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.5.240227000"
+          "Microsoft.WindowsAppSDK": "1.6.240531000-experimental1"
         }
       },
       "Microsoft.WindowsAppSDK": {
