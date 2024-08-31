@@ -68,7 +68,7 @@ namespace CollapseLauncher.Interfaces
         protected long                  _progressAllIOReadCurrent;
         protected long                  _progressPerFileSizeCurrent;
         protected long                  _progressPerFileSizeTotal;
-        protected double                _progressPerFileIOReadCurrent;
+        protected long                  _progressPerFileIOReadCurrent;
 
         // Extension for IGameInstallManager
 
@@ -437,7 +437,7 @@ namespace CollapseLauncher.Interfaces
 
                 // Calculate the speed
                 double speedAll                         = _progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
-                double speedPerFile                     = _progressPerFileIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
+                double speedPerFile                     = (_progressPerFileIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
                 double speedAllNoReset                  = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
                 _sophonProgress.ProgressAllSpeed        = speedAll;
                 _sophonProgress.ProgressPerFileSpeed    = speedPerFile;
@@ -445,6 +445,11 @@ namespace CollapseLauncher.Interfaces
                 // Calculate Count
                 _sophonProgress.ProgressAllEntryCountCurrent    = _progressAllCountCurrent;
                 _sophonProgress.ProgressAllEntryCountTotal      = _progressAllCountTotal;
+
+                // Always change the status progress to determined
+                _status.IsProgressAllIndetermined     = false;
+                _status.IsProgressPerFileIndetermined = false;
+                StatusChanged?.Invoke(this, _status);
 
                 // Calculate percentage
                 _sophonProgress.ProgressAllPercentage       =
@@ -474,10 +479,7 @@ namespace CollapseLauncher.Interfaces
         protected void UpdateSophonFileDownloadProgress(long downloadedWrite, long currentWrite)
         {
             Interlocked.Add(ref _progressPerFileSizeCurrent, downloadedWrite);
-            lock (_objLock)
-            {
-                _progressPerFileIOReadCurrent += currentWrite;
-            }
+            Interlocked.Add(ref _progressPerFileIOReadCurrent, currentWrite);
         }
 
         protected void UpdateSophonDownloadStatus(SophonAsset asset)
