@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml.Controls;
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 [TemplatePart(Name = MarkdownContainerName, Type = typeof(Grid))]
-public class MarkdownTextBlock : Control
+public partial class MarkdownTextBlock : Control
 {
     private const string MarkdownContainerName = "MarkdownContainer";
     private Grid? _container;
