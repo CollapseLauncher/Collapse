@@ -1246,24 +1246,24 @@ namespace CollapseLauncher.Pages
 
                 HideImageCarousel(true);
 
-                progressRing.Value            = 0;
-                progressRing.IsIndeterminate  = true;
-                InstallGameBtn.Visibility     = Visibility.Collapsed;
-                CancelDownloadBtn.Visibility  = Visibility.Visible;
-                ProgressTimeLeft.Visibility   = Visibility.Visible;
+                progressRing.Value           = 0;
+                progressRing.IsIndeterminate = true;
+                InstallGameBtn.Visibility    = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility  = Visibility.Visible;
 
                 if (isUseSophon)
                 {
-                    SophonProgressStatusGrid.Visibility = Visibility.Visible;
-                    SophonProgressStatusSizeDownloadedGrid.Visibility = Visibility.Collapsed;
-                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
-                    CurrentGameProperty._GameInstall.StatusChanged += GameInstallSophon_StatusChanged;
+                    SophonProgressStatusGrid.Visibility               =  Visibility.Visible;
+                    SophonProgressStatusSizeDownloadedGrid.Visibility =  Visibility.Collapsed;
+                    CurrentGameProperty._GameInstall.ProgressChanged  += GameInstallSophon_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged    += GameInstallSophon_StatusChanged;
                 }
                 else
                 {
-                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    ProgressStatusGrid.Visibility                    =  Visibility.Visible;
                     CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                    CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged   += GameInstall_StatusChanged;
                 }
 
                 int dialogResult = await CurrentGameProperty._GameInstall.GetInstallationPath();
@@ -1312,9 +1312,12 @@ namespace CollapseLauncher.Pages
                 {
                     string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
                     TrayIcon.Current?.ShowNotification(
-                        string.Format(Lang._NotificationToast.GameInstallCompleted_Title, gameNameLocale),
-                        string.Format(Lang._NotificationToast.GameInstallCompleted_Subtitle, gameNameLocale)
-                        );
+                                                       string.Format(Lang._NotificationToast.GameInstallCompleted_Title,
+                                                                     gameNameLocale),
+                                                       string
+                                                          .Format(Lang._NotificationToast.GameInstallCompleted_Subtitle,
+                                                                  gameNameLocale)
+                                                      );
                 }
             }
             catch (TaskCanceledException)
@@ -1328,6 +1331,21 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            }
+            catch (NotSupportedException ex)
+            {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
+                IsPageUnload = true;
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}\r\n{ex}",
+                              LogType.Error, true);
+                
+                await SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
+                            Lang._HomePage.InstallFolderRootSubtitle,
+                            Content,
+                            Lang._Misc.Close,
+                            null, null, ContentDialogButton.Close, ContentDialogTheme.Error);
             }
             catch (NullReferenceException ex)
             {
@@ -2206,6 +2224,12 @@ namespace CollapseLauncher.Pages
                     CurrentGameProperty._GameInstall.ApplyGameConfig();
                     ReturnToHomePage();
                 }
+            }
+            catch (NotSupportedException ex)
+            {
+                LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
+                ex = new NotSupportedException(Lang._HomePage.GameSettings_Panel2MoveGameLocationGame_SamePath, ex);
+                ErrorSender.SendException(ex, ErrorType.Warning);
             }
             catch (Exception ex)
             {

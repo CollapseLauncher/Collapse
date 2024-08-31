@@ -3244,6 +3244,11 @@ namespace CollapseLauncher.InstallManager.Base
                 return -1;
             }
 
+            if (FileMigrationProcess.IsRootPath(result))
+            {
+                throw new NotSupportedException();
+            }
+
             // Check for existing installation and if it's found, then override result
             // with pathPossibleExisting value and return 0 to skip the process
             string pathPossibleExisting = _gameVersionManager.FindGameInstallationPath(result);

@@ -52,6 +52,11 @@ namespace CollapseLauncher
                 if (!await IsOutputPathSpaceSufficient(this.inputPath, this.outputPath))
                     throw new OperationCanceledException($"Disk space is not sufficient. Cancelling!");
 
+                if (IsRootPath(outputPath))
+                {
+                    throw new NotSupportedException("Cannot move game to the root of the drive!");
+                }
+
                 uiRef = BuildMainMigrationUI();
                 string _outputPath = await StartRoutineInner(uiRef.Value);
                 uiRef.Value.mainDialogWindow!.Hide();
@@ -73,6 +78,12 @@ namespace CollapseLauncher
                 if (ProcessStopwatch != null) ProcessStopwatch.Stop();
                 if (EventsStopwatch != null) EventsStopwatch.Stop();
             }
+        }
+        
+        public static bool IsRootPath(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            return dirInfo.Parent == null;
         }
 
         private async Task<string> StartRoutineInner(FileMigrationProcessUIRef uiRef)
