@@ -143,9 +143,11 @@ namespace CollapseLauncher.Interfaces
         protected virtual async void _httpClient_RepairAssetProgress(int size, DownloadProgress downloadProgress)
         {
             Interlocked.Add(ref _progressAllSizeCurrent, size);
+            Interlocked.Add(ref _progressAllIOReadCurrent, size);
+
             if (await CheckIfNeedRefreshStopwatch())
             {
-                double speed = (_progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
+                double speed = (_progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
                 TimeSpan timeLeftSpan = ((_progressAllSizeCurrent - _progressAllSizeTotal) / speed).ToTimeSpanNormalized();
                 double percentagePerFile = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal, 2);
 
@@ -183,6 +185,12 @@ namespace CollapseLauncher.Interfaces
 
                     // Trigger update
                     UpdateAll();
+                }
+
+                if (_downloadSpeedRefreshInterval < _downloadSpeedRefreshStopwatch!.ElapsedMilliseconds)
+                {
+                    _progressAllIOReadCurrent = 0;
+                    _downloadSpeedRefreshStopwatch.Restart();
                 }
             }
         }
@@ -255,11 +263,12 @@ namespace CollapseLauncher.Interfaces
         protected virtual async void _httpClient_UpdateAssetProgress(int size, DownloadProgress downloadProgress)
         {
             Interlocked.Add(ref _progressAllSizeCurrent, size);
+            Interlocked.Add(ref _progressAllIOReadCurrent, size);
 
             if (await CheckIfNeedRefreshStopwatch())
             {
-                double speed = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
-                TimeSpan timeLeftSpan = ((_progressAllSizeTotal - _progressAllSizeCurrent) / speed.ClampLimitedSpeedNumber()).ToTimeSpanNormalized();
+                double speed = (_progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
+                TimeSpan timeLeftSpan = ((_progressAllSizeTotal - _progressAllSizeCurrent) / speed).ToTimeSpanNormalized();
                 double percentage = ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal, 2);
 
                 // Update current progress percentages and speed
@@ -271,6 +280,12 @@ namespace CollapseLauncher.Interfaces
                 _status.ActivityAll = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressAllCountCurrent, _progressAllCountTotal)
                                        + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(speed))
                                        + $" | {timeLeftString}";
+
+                if (_downloadSpeedRefreshInterval < _downloadSpeedRefreshStopwatch!.ElapsedMilliseconds)
+                {
+                    _progressAllIOReadCurrent = 0;
+                    _downloadSpeedRefreshStopwatch.Restart();
+                }
 
                 // Trigger update
                 UpdateAll();
@@ -708,12 +723,14 @@ namespace CollapseLauncher.Interfaces
                 _progress.ProgressPerFileEntryCountTotal    = 0;
 
                 // Reset all inner counter
-                _progressAllCountCurrent    = 0;
-                _progressAllCountTotal      = 0;
-                _progressAllSizeCurrent     = 0;
-                _progressAllSizeTotal       = 0;
-                _progressPerFileSizeCurrent = 0;
-                _progressPerFileSizeTotal   = 0;
+                _progressAllCountCurrent      = 0;
+                _progressAllCountTotal        = 0;
+                _progressAllSizeCurrent       = 0;
+                _progressAllSizeTotal         = 0;
+                _progressAllIOReadCurrent     = 0;
+                _progressPerFileSizeCurrent   = 0;
+                _progressPerFileSizeTotal     = 0;
+                _progressPerFileIOReadCurrent = 0;
             }
         }
 
