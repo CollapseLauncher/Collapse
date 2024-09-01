@@ -339,7 +339,15 @@ namespace CollapseLauncher
                                      bool             respectQuietTime = true,
                                      bool             realtime         = false)
         {
-            CollapseTaskbar.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
+            try
+            {
+                CollapseTaskbar.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
+            }
+            catch (Exception e) //Just write a log if it throws an error, not that important anyway o((⊙﹏⊙))o.
+            {
+                LogWriteLine($"Failed when trying to send notification!\r\n\tTitle: {title}\r\n\t{message}\r\n{e}",
+                             LogType.Error, true);
+            }
         }
         
         #endregion
