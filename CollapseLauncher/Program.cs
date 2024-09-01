@@ -25,6 +25,7 @@ namespace CollapseLauncher;
 public static class MainEntryPoint
 {
     public static int InstanceCount;
+    public static App? CurrentAppInstance;
 
     [DllImport("Microsoft.ui.xaml.dll")]
     private static extern void XamlCheckProcessRequirements();
@@ -124,33 +125,46 @@ public static class MainEntryPoint
             if (!AppActivation.DecideRedirection())
             {
                 XamlCheckProcessRequirements();
-
                 ComWrappersSupport.InitializeComWrappers();
-                Application.Start(_ =>
-                                  {
-                                      var context =
-                                          new DispatcherQueueSynchronizationContext(DispatcherQueue
-                                             .GetForCurrentThread());
-                                      SynchronizationContext.SetSynchronizationContext(context);
 
-                                      // ReSharper disable once ObjectCreationAsStatement
-                                      new App();
-                                  });
+                StartMainApplication();
             }
         }
         catch (Exception ex)
         {
-            LoggerConsole.AllocateConsole();
-            Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}");
-            Console.WriteLine("\r\nIf you are sure that this is not intended, " +
-                              "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
-                              "Press any key to exit...");
-            Console.ReadLine();
+            SpawnFatalErrorConsole(ex);
         }
         finally
         {
             HttpLogInvoker.DownloadLog -= HttpClientLogWatcher;
         }
+    }
+
+    public static void SpawnFatalErrorConsole(Exception ex)
+    {
+        CurrentAppInstance?.Exit();
+        LoggerConsole.AllocateConsole();
+        Console.Error.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
+        Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
+                                "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
+                                "Press any key to exit or Press 'R' to restart the main thread app...");
+
+        if (ConsoleKey.R == Console.ReadKey().Key)
+            StartMainApplication();
+    }
+
+    public static void StartMainApplication()
+    {
+        Application.Start(_ =>
+        {
+            var context =
+                new DispatcherQueueSynchronizationContext(DispatcherQueue
+                   .GetForCurrentThread());
+            SynchronizationContext.SetSynchronizationContext(context);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            CurrentAppInstance = new App();
+        });
     }
 
     private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
