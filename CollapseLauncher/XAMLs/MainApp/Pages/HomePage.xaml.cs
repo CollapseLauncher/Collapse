@@ -975,7 +975,8 @@ namespace CollapseLauncher.Pages
                             //       Make sure the start game button text also changed.
                            )
                         {
-                            StartPlaytimeCounter(currentGameProcess, CurrentGameProperty._GamePreset, DateTime.Now - currentGameProcess.TotalProcessorTime);
+                            DateTime fromActivityOffset = currentGameProcess.StartTime;
+                            StartPlaytimeCounter(currentGameProcess, CurrentGameProperty._GamePreset, fromActivityOffset);
                             await currentGameProcess.WaitForExitAsync(Token);
                         }
                     }
@@ -2319,6 +2320,12 @@ namespace CollapseLauncher.Pages
 
         private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset, DateTime? begin = null)
         {
+            // If a playtime HashSet has already tracked, then return (do not track the playtime more than once)
+            if (_playtimeHashIdCurrentTracked.Contains(gamePreset.HashID))
+                return;
+            // Otherwise, add it to track list
+            _playtimeHashIdCurrentTracked.Add(gamePreset.HashID);
+
             int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
 
             begin ??= DateTime.Now;
@@ -2376,10 +2383,14 @@ namespace CollapseLauncher.Pages
                 {
                     m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
                 });
+
+            // Pop the game from track list
+            _playtimeHashIdCurrentTracked.Remove(gamePreset.HashID);
         }
 
         private const string _playtimeRegName = "CollapseLauncher_Playtime";
         private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
+        private static HashSet<int> _playtimeHashIdCurrentTracked = new HashSet<int>();
 #nullable enable
         private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
         {
