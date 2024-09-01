@@ -159,8 +159,7 @@ namespace CollapseLauncher.Pages
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                 {
-                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
-                    ImageEventImgGrid.Visibility = Visibility.Collapsed;
+                    SidePanel.Visibility = Visibility.Collapsed;
                 }
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
