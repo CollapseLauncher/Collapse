@@ -480,8 +480,10 @@
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
     "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
 
+    "ImageBackground": "Ajustes Imagen de Fondo",
     "VideoBackground": "Ajustes Video de Fondo",
     "VideoBackground_IsEnableAudio": "Permitir Audio",
+    "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
 
     "Update": "Buscar Actualizaciones",
