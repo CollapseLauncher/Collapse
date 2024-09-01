@@ -281,15 +281,29 @@ namespace Hi3Helper.Shared.Region
             get => GetAppConfigValue("EnableConsole").ToBoolNullable() ?? false;
             set => SetAppConfigValue("EnableConsole", value);
         }
+
         public static bool IsMultipleInstanceEnabled
         {
             get => GetAppConfigValue("EnableMultipleInstance").ToBoolNullable() ?? false;
             set => SetAndSaveConfigValue("EnableMultipleInstance", value);
         }
+
         public static bool IsShowRegionChangeWarning
         {
             get => GetAppConfigValue("ShowRegionChangeWarning").ToBool();
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
+        }
+
+        public static bool EnableAcrylicEffect
+        {
+            get => GetAppConfigValue("EnableAcrylicEffect").ToBoolNullable() ?? false;
+            set => SetAndSaveConfigValue("EnableAcrylicEffect", value);
+        }
+
+        public static bool IsUseVideoBGDynamicColorUpdate
+        {
+            get => GetAppConfigValue("IsUseVideoBGDynamicColorUpdate").ToBoolNullable() ?? false;
+            set => SetAndSaveConfigValue("IsUseVideoBGDynamicColorUpdate", value);
         }
 
         public static bool IsIntroEnabled
@@ -393,6 +407,7 @@ namespace Hi3Helper.Shared.Region
             { "ThemeMode", new IniValue(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
+            { "IsUseVideoBGDynamicColorUpdate", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
             { "ShowGamePlaytime", true},

@@ -480,8 +480,10 @@
     "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
     "DiscordRPC_IdleStatusToggle": "Show RPC when idling",
 
+    "ImageBackground": "Image Background Settings",
     "VideoBackground": "Video Background Settings",
     "VideoBackground_IsEnableAudio": "Enable Audio",
+    "VideoBackground_IsEnableAcrylicBackground": "Use Acrylic Effect while using Video Background",
     "VideoBackground_AudioVolume": "Audio Volume",
 
     "Update": "Check for Updates",

@@ -18,6 +18,7 @@
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
@@ -117,7 +118,8 @@
                                       IsOn="{x:Bind IsIntroEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                        <ToggleSwitch Margin="0,4"
+                        <ToggleSwitch x:Name="AppBackgroundUseAcrylic"
+                                      Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableAcrylicEffect}"
                                       IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
@@ -134,10 +136,12 @@
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Note_Regional}"
                                    TextWrapping="WrapWholeWords"
                                    Visibility="Visible" />
-                        <CheckBox x:Name="AppBGMode"
-                                  Margin="0,4,0,8"
-                                  Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
-                                  IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}" />
+                        <ToggleSwitch x:Name="AppBGMode"
+                                      Margin="0,4,0,8"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}"
+                                      IsOn="{x:Bind IsBGCustom, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" 
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"/>
                         <StackPanel x:Name="AppBGCustomizer"
                                     Margin="0,4,0,8"
                                     Visibility="Collapsed">
@@ -184,8 +188,11 @@
                                        Visibility="Collapsed" />
                         </StackPanel>
                         <StackPanel x:Name="CustomBGImageSettings"
-                                    Margin="0,4"
-                                    Visibility="Collapsed">
+                                    Margin="0,4">
+                            <TextBlock Margin="0,0,0,4"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                       FontSize="16"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.ImageBackground}" />
                             <Grid Margin="0,4">
                                 <Border Background="Transparent"
                                         ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
@@ -194,7 +201,8 @@
                                               IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                              ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}">
+                                              ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
+                                              Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource BooleanVisibilityConverter}}">
                                     <ToggleSwitch.Header>
                                         <StackPanel Loaded="EnableHeaderMouseEvent"
                                                     Orientation="Horizontal">
@@ -212,8 +220,17 @@
                             </Grid>
                         </StackPanel>
                         <StackPanel x:Name="CustomBGVideoSettings"
-                                    Margin="0,4"
-                                    Visibility="Collapsed">
+                                    Margin="0,4">
+                            <TextBlock Margin="0,0,0,4"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                       FontSize="16"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground}" />
+                            <ToggleSwitch Margin="0,4"
+                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAcrylicBackground}"
+                                          IsOn="{x:Bind IsUseVideoBGDynamicColorUpdate, Mode=TwoWay}"
+                                          OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                          OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                          IsEnabled="{x:Bind AppBackgroundUseAcrylic.IsOn, Mode=OneWay}"/>
                             <ToggleSwitch x:Name="VideoBackgroundIsAudioMute"
                                           Margin="0,4"
                                           Header="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_IsEnableAudio}"
@@ -221,26 +238,16 @@
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <TextBlock Margin="0,4"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.VideoBackground_AudioVolume}" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="40" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock HorizontalAlignment="Left"
-                                           VerticalAlignment="Center"
-                                           Style="{ThemeResource SubtitleTextBlockStyle}"
-                                           Text="{Binding Value, ElementName=VideoBackgroundAudioVolumeSlider}"
-                                           TextWrapping="Wrap" />
-                                <Slider x:Name="VideoBackgroundAudioVolumeSlider"
-                                        Grid.Column="1"
-                                        Width="180"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Maximum="100"
-                                        Minimum="0"
-                                        Value="{x:Bind VideoBackgroundAudioVolume, Mode=TwoWay}" />
-                            </Grid>
+                            <Slider x:Name="VideoBackgroundAudioVolumeSlider"
+                                    Width="250"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Maximum="100"
+                                    Minimum="0"
+                                    Style="{ThemeResource FatSliderStyle}"
+                                    Value="{x:Bind VideoBackgroundAudioVolume, Mode=TwoWay}" />
                         </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"

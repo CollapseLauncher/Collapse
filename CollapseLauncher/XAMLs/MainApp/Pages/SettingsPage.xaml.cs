@@ -433,17 +433,6 @@ namespace CollapseLauncher.Pages
                 {
                     currentMediaType = BackgroundMediaUtility.GetMediaType(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath);
                 }
-                
-                if (currentMediaType == MediaType.Media)
-                {
-                    CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                }
             }
         }
 
@@ -497,24 +486,11 @@ namespace CollapseLauncher.Pages
                 {
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-                    if (currentMediaType == MediaType.Media)
-                    {
-                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                    }
                 }
                 else
                 {
                     AppBGCustomizer.Visibility       = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
 
                 BGSelector.IsEnabled = isEnabled;
@@ -569,17 +545,6 @@ namespace CollapseLauncher.Pages
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
                 }
 
-                var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-                if (currentMediaType == MediaType.Media)
-                {
-                    CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                }
                 BGSelector.IsEnabled = value;
 
                 return;
@@ -587,8 +552,6 @@ namespace CollapseLauncher.Pages
                 {
                     AppBGCustomizer.Visibility = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility = Visibility.Collapsed;
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -743,12 +706,29 @@ namespace CollapseLauncher.Pages
 #endif
         private bool IsAcrylicEffectEnabled
         {
-            get => GetAppConfigValue("EnableAcrylicEffect").ToBool();
+            get => LauncherConfig.EnableAcrylicEffect;
             set
             {
-                SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.StillImage)
-                    App.ToggleBlurBackdrop(value);
+                LauncherConfig.EnableAcrylicEffect = value;
+
+                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.Media
+                 && value && !IsUseVideoBGDynamicColorUpdate)
+                    return;
+
+                App.ToggleBlurBackdrop(value);
+            }
+        }
+
+        private bool IsUseVideoBGDynamicColorUpdate
+        {
+            get => LauncherConfig.IsUseVideoBGDynamicColorUpdate;
+            set
+            {
+                LauncherConfig.IsUseVideoBGDynamicColorUpdate = value;
+                if (MediaType.StillImage == BackgroundMediaUtility.CurrentAppliedMediaType)
+                    return;
+
+                App.ToggleBlurBackdrop(value);
             }
         }
 

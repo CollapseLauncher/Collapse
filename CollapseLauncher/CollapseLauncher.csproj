@@ -51,7 +51,6 @@
         - SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
         - GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
         - MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
-        - USEDYNAMICVIDEOPALETTE : Enable an experimental dynamic color palette change in video background support
         - USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
                                 This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
