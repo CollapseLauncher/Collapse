@@ -29,7 +29,7 @@
     "FolderNotSelected": "Chưa có thư mục nào được chọn. Vui lòng chọn một thư mục!",
     "OverlayPrepareFolderSubtitle": "Đang áp dụng các quyền truy cập...",
     "OverlayPrepareFolderTitle": "Đang chuẩn bị thư mục ứng dụng",
-    "PageTitle": "First Startup Page",
+    "PageTitle": "Trang khởi động lần đầu",
     "Pg1LoadingSubitle1": "Chúng tôi đang chuẩn bị danh sách các trò chơi được hỗ trợ cho bạn...",
     "Pg1LoadingSubitle2": "trò chơi đã tải thành công! Vui lòng đợi một chút...",
     "Pg1LoadingTitle1": "Đang tải danh sách trò chơi...",
@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "Trò chơi bị văng với các lỗi chi tiết dưới đây:",
     "UnhandledTitle4": "Cảnh báo",
     "UnhandledSubtitle4": "Đây không phải là vấn đề lớn, nhưng chúng tôi nghĩ rằng chúng tôi nên cho bạn biết:\r\nDo thử nghiệm A/B của miHoYo, tính năng Thu gọn không hỗ trợ đọc khóa sau: App_Settings_h2319593470.\r\nChúng tôi xin lỗi vì sự bất tiện này và cảm ơn sự thông cảm của bạn.",
+    "UnhandledTitleDiskCrc": "Phát hiện lỗi ổ đĩa!",
+    "UnhandledSubDiskCrc": "Lỗi ổ đĩa đã được phát hiện khi đang truy cập tệp. Hãy kiểm tra ổ đĩa bằng chkdsk.",
     "CopyClipboardBtn1": "Sao chép tất cả vào khe nhớ tạm",
     "CopyClipboardBtn2": "Đã sao chép thành công!",
     "GoBackPageBtn1": "Trở lại trang trước"
@@ -112,7 +114,7 @@
     "PageTitle": "Trình khởi chạy",
     "PreloadTitle": "Tải về trước đã sẵn sàng",
     "PreloadNotifTitle": "Tải trước phiên bản v{0} đã sẵn sàng!",
-    "PreloadNotifDeltaDetectTitle": "Gói tải trước ở định dạng bản vá tạm thờibản vá tạm thời của phiên bản v{0} đã được xác định!",
+    "PreloadNotifDeltaDetectTitle": "Gói tải trước ở định dạng bản vá tạm thời của phiên bản v{0} đã được xác định!",
     "PreloadNotifSubtitle": "Ấn \"Tải trò chơi\" để bắt đầu tải trong nền.",
     "PreloadNotifDeltaDetectSubtitle": "Bạn đã thành công tải gói tài nguyên tải trước ở định dạng là bản vá tạm thời. Gói tải trước này sẽ được dùng để cập nhật trò chơi của bạn sau này.",
     "PreloadNotifCompleteTitle": "Gói tải trước đã tải xong!",
@@ -146,8 +148,11 @@
     "GameSettings_Panel2UninstallGame": "Gỡ cài đặt trò chơi",
     "GameSettings_Panel2ConvertVersion": "Chuyển đổi phiên bản",
     "GameSettings_Panel2MoveGameLocationGame": "Chuyển vị trí thư mục Game",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Không thể di chuyển trò chơi vào gốc ổ đỉa!\r\nVui lòng tạo thư mục mới và thử lại.",
     "GameSettings_Panel2StopGame": "Buộc đóng trò chơi",
     "GameSettings_Panel3": "Tuỳ chọn khởi động cho trò chơi",
+    "GameSettings_Panel3CustomBGRegion": "Đổi nền của vùng",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Hình nền tùy chỉnh cho vùng",
     "GameSettings_Panel4": "Cài đặt khác",
     "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
     "GameSettings_Panel4ShowSocialMediaPanel": "Hiển thị bảng mạng xã hội",
@@ -168,7 +173,7 @@
     "PostPanel_Events": "Sự kiện",
     "PostPanel_Notices": "Thông báo",
     "PostPanel_Info": "Thông tin",
-    "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?",
+    "PostPanel_NoNews": "Gì?\nKhông có bản tin mới trong ngày hôm nay?",
 
     "CommunityToolsBtn": "Công cụ cộng đồng",
     "CommunityToolsBtn_OfficialText": "Công cụ chính thức",
@@ -192,7 +197,10 @@
     "GameStateInvalidFixed_Subtitle1": "Tệp thuộc tính trò chơi đã được sữa cho khu vực:",
     "GameStateInvalidFixed_Subtitle2": "Vui lòng thực hiện \"",
     "GameStateInvalidFixed_Subtitle3": "\" trong mục \"",
-    "GameStateInvalidFixed_Subtitle4": "\" để đảm bảo tất cả tài nguyên được xác minh."
+    "GameStateInvalidFixed_Subtitle4": "\" để đảm bảo tất cả tài nguyên được xác minh.",
+
+    "InstallFolderRootTitle": "Gốc ổ đĩa đã cung cắp!",
+    "InstallFolderRootSubtitle": "Không thể cài đặt trò chơi vào gốc ổ đỉa! Vui lòng tạo thư mục mới và thử lại."
   },
 
   "_GameRepairPage": {
@@ -270,7 +278,7 @@
   },
 
   "_CutscenesPage": {
-    "PageTitle": "Cutscenes"
+    "PageTitle": "Hoạt Cảnh"
   },
 
   "_GameSettingsPage": {
@@ -379,14 +387,14 @@
     "CustomArgs_Title": "Cấu hình tham số khởi động (Nâng cao)",
     "CustomArgs_Subtitle": "Tham số khởi động",
     "CustomArgs_Footer1": "Về các tham số khởi động, vui lòng xem tại",
-    "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
+    "CustomArgs_Footer2": "Tùy chọn dòng lệnh cho Unity Standalone Player",
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
     "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
     "MobileLayout": "Sử dụng Layout Cảm Ứng",
 
     "Advanced_Title": "Cài đặt Nâng cao",
-    "Advanced_Subtitle1": "Collapse Launcher Team",
+    "Advanced_Subtitle1": "Nhóm Collapse Launcher",
     "Advanced_Subtitle2": "KHÔNG CHỊU TRÁCH NHIỆM",
     "Advanced_Subtitle3": "cho bất kỳ điều gì xảy đến với trò chơi, tài khoản hay hệ thống của bạn khi sử dụng thiết đặt này! Cân nhắc khi sử dụng.",
     "Advanced_GLC_WarningAdmin": "CẢNH BÁO: Lệnh được điền vào sẽ được chạy với quyền quản trị!",
@@ -431,11 +439,12 @@
     "AppBG": "Hình nền",
     "AppBG_Checkbox": "Dùng hình nền tuỳ chọn",
     "AppBG_Note": "Định dạng được chấp nhận:\r\nẢnh: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Cài đặt hình nền tuy chọn cho từng vùng nằm trong nút \"Cài đặt nhanh\" ở trang chủ",
 
     "AppThreads": "Tải về",
     "AppThreads_Download": "Số lượng tải về",
     "AppThreads_Extract": "Số lượng giải nén",
-    "AppThreads_Help1": "Tuỳ chọn này sẽ chọn số lượng tệp mà trình khởi chạy sẽ tải về. Cách thức của nó giống IDM hoặc Parallel download trên chrome",
+    "AppThreads_Help1": "Tuỳ chọn này sẽ chọn số lượng tệp mà trình khởi chạy sẽ tải về. Cách thức của nó giống IDM hoặc Parallel download trên Chrome",
     "AppThreads_Help2": "Giá trị mặc định:",
     "AppThreads_Help3": "Khoảng giá trị:",
     "AppThreads_Help4": "0 (Tự động)",
@@ -463,6 +472,8 @@
     "AppThreads_Attention4": "giá trị nếu bạn đang tải xuống vì nó có thể",
     "AppThreads_Attention5": "TẢI LẠI TẤT CẢ",
     "AppThreads_Attention6": "do số đếm tiến trình yêu cầu cho bản tải về không khớp nhau.",
+    "AppThreads_AttentionTop1": "Những vấn đề này sẽ không xẩy ra nếu bạn bật",
+    "AppThreads_AttentionTop2": "cài đặt này.",
 
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Hiện Trạng Thái Chi Tiết trên Discord",
@@ -578,7 +589,40 @@
     "NetworkSettings_Http_Redirect": "Cho phép Chuyển hướng HTTP",
     "NetworkSettings_Http_SimulateCookies": "Cho phép mô phổng HTTP Cookie",
     "NetworkSettings_Http_UntrustedHttps": "Cho phép chứng chỉ HTTPS không tin cậy",
-    "NetworkSettings_Http_Timeout": "Thời gian chờ HTTP Client (bằng giây)"
+    "NetworkSettings_Http_Timeout": "Thời gian chờ HTTP Client (bằng giây)",
+
+    "FileDownloadSettings_Title": "Cài đạt Tệp tải xuống",
+    "FileDownloadSettings_SpeedLimit_Title": "Giới hạn tốc độ tải",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Giới hạn tốc độ (bằng MiB)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Mặc định:",
+    "FileDownloadSettings_SpeedLimitHelp2": "Khoảng giới hạn tốc độ:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "Giới hạn tốc độ băng thông về tải xuống. Cài đặt này không thể dùng chung với ",
+    "FileDownloadSettings_SpeedLimitHelp5": ".",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Trình Tải Xuống được Phân Bố Trước mới!",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Chỉ cho Cài đặt Game, Sữa Game và Cập Nhật Cache.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Dung lượng Khối (bằng MiB)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Mặc định:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Khoảng Dung Lương Khối:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Khi bật, trình tải xuống sẻ phân bố trước dung lượng tệp trong lúc tải xuống.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Tính năng này giúp trình tải xuống có thể ghi những khối dữ liệu thành một tệp mà không phải tách ra thành những tệp.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Khi vô hiệu hóa, trình khởi chạy trò chơi sẽ dùng hệ thống phân bố cũ, trong đó những khối dữ liêu sẽ tách ra. Tính năng này cũng sẽ vô hiệu hóa những cài đặt",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "và",
+    "FileDownloadSettings_NewPreallocChunkHelp8": ".",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Lưu ý:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Tính năng này chỉ áp dựng cho bước tải trò chơi (như Cài Đặt Ban Đầu, Cặp nhật, và Gói Tải về trước), Sữa Trò Chơi và Cặp nhật Cache.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Chế độ tải liên tục.",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Dành cho Sữa trò chơi và Cặp nhật Cache.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Mặc định:",
+    "FileDownloadSettings_BurstDownloadHelp2": "Khi bật, tính năng này sẽ cho phép quá trình tải xuống cho",
+    "FileDownloadSettings_BurstDownloadHelp3": "và",
+    "FileDownloadSettings_BurstDownloadHelp4": "chạy song song để làm cho trình tải xuống hiệu quả hơn.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Khi vô hiệu hóa, trình tải xuống cho tính năng",
+    "FileDownloadSettings_BurstDownloadHelp6": "và",
+    "FileDownloadSettings_BurstDownloadHelp7": "dùng trình tải xuống nối tiếp."
   },
 
   "_Misc": {
@@ -706,7 +750,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Tên Launcher không rõ)",
 
-    "ImageCropperTitle": "Cắt ảnh"
+    "ImageCropperTitle": "Cắt ảnh",
+
+    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
+    "IsBytesUnlimited": "= Không giới hạn",
+    "IsBytesNotANumber": "= NaN"
   },
 
   "_BackgroundNotification": {
@@ -883,7 +931,7 @@
 
     "DownloadSettingsTitle": "Cài đặt tải xuống",
     "DownloadSettingsOption1": "Khởi động trò chơi sau khi cài đặt",
-    
+
     "OpenInExternalBrowser": "Mở trong trình duyệt",
     "CloseOverlay": "Đóng cửa sổ phủ"
   },
@@ -1251,7 +1299,7 @@
 
     "Audio_Output_Surround": "Âm thanh vòm",
     "Audio_DynamicRange": "Đầy Đủ Dynamic Range",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "Tắt âm thanh khi ẩn",
 
     "Language": "Cài Đặt Ngôn Ngữ",
     "Language_Help1": "Collapse hiện không thể tải trực tiếp gói ngôn ngữ.",
@@ -1409,5 +1457,34 @@
     "Audio_PlaybackDev_Headphones": "Tai Nghe",
     "Audio_PlaybackDev_Speakers": "Loa",
     "Audio_PlaybackDev_TV": "TV"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher đang ẩn trong khay hệ thống",
+    "WindowHiddenToTray_Subtitle": "Trình khởi chạy hiện đang chạy ngầm.\r\nNhấn vào thông báo này để hiện lại cửa sổ.",
+
+    "GameInstallCompleted_Title": "{0} đã sẳn sàng chơi",
+    "GameInstallCompleted_Subtitle": "{0} đã được cài thành công",
+
+    "GameUpdateCompleted_Title": "{0} đã được cập nhật",
+    "GameUpdateCompleted_Subtitle": "{0} đã được cập nhật lên phiên bản [1]!",
+
+    "GamePreloadCompleted_Title": "Gói tải trước cho {0} đã được tải xuống",
+
+    "GameRepairCheckCompleted_Title": "Kiểm tra sữa chữa trò chơi đã hoàn tất",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} tệp cần được cập nhật/sữa lại. Nhấn vào thông báo này để quay lại trình khởi chạy trò chơi.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Không tệp nào cần được cập nhật/sữa lại",
+
+    "GameRepairDownloadCompleted_Title": "Tải xuống sữa chữa trò chơi đã hoàn tất ",
+    "GameRepairDownloadCompleted_Subtitle": "[0] tệp đã cập nhật/sữa hoàn tất.",
+
+    "CacheUpdateCheckCompleted_Title": "Kiểm tra Cập nhật Cache đã hoàn tất",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} tệp Cache cần được cấp nhật, Nhấn vào thông báo này để quay lại.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Không có tệp Cache nào cần cập nhật.",
+
+    "CacheUpdateDownloadCompleted_Title": "Tải xuống tệp Cache đã hoàn tất.",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} tệp cache đã được cập nhật thành công.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Nhấn vào thông báo này để quay lại trình khởi chạy trò chơi."
   }
 }
