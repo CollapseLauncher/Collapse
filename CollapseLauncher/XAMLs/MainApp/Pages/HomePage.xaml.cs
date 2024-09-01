@@ -975,6 +975,7 @@ namespace CollapseLauncher.Pages
                             //       Make sure the start game button text also changed.
                            )
                         {
+                            StartPlaytimeCounter(currentGameProcess, CurrentGameProperty._GamePreset, DateTime.Now - currentGameProcess.TotalProcessorTime);
                             await currentGameProcess.WaitForExitAsync(Token);
                         }
                     }
@@ -2316,18 +2317,18 @@ namespace CollapseLauncher.Pages
             ToolTipService.SetToolTip(PlaytimeBtn, formattedText);
         }
 
-        private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset)
+        private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset, DateTime? begin = null)
         {
             int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
 
-            DateTime begin = DateTime.Now;
-            int lastPlayed = (int)(begin.ToUniversalTime() - Hoyoception).TotalSeconds;
+            begin ??= DateTime.Now;
+            int lastPlayed = (int)(begin.Value.ToUniversalTime() - Hoyoception).TotalSeconds;
             SavePlaytimeToRegistry(false, gamePreset.ConfigRegistryLocation, lastPlayed);
             UpdateLastPlayed(false, lastPlayed);
             int numOfLoops = 0;
 
 #if DEBUG
-            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
+            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin?.ToLongTimeString()}.");
 #endif
 
             using (var inGameTimer = new Timer())
@@ -2338,7 +2339,7 @@ namespace CollapseLauncher.Pages
                     numOfLoops++;
 
                     DateTime now = DateTime.Now;
-                    int elapsedSeconds = (int)(now - begin).TotalSeconds;
+                    int elapsedSeconds = (int)(now - begin.Value).TotalSeconds;
                     if (elapsedSeconds < 0)
                         elapsedSeconds = numOfLoops * 60;
 
@@ -2359,7 +2360,7 @@ namespace CollapseLauncher.Pages
             }
 
             DateTime end = DateTime.Now;
-            int elapsedSeconds = (int)(end - begin).TotalSeconds;
+            int elapsedSeconds = (int)(end - begin.Value).TotalSeconds;
             if (elapsedSeconds < 0)
             {
                 LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
