@@ -198,7 +198,7 @@ namespace CollapseLauncher
 
         private async Task InitBackgroundHandler()
         {
-            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+            CurrentBackgroundHandler ??= await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
             _localBackgroundHandler = CurrentBackgroundHandler;
         }
         #endregion
