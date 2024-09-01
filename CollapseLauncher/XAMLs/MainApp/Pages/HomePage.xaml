@@ -1918,6 +1918,7 @@
                                     </Button.Content>
                                 </Button>
                                 <StackPanel x:Name="CustomChangeBGParams"
+                                            x:FieldModifier="internal"
                                             Visibility="Visible">
                                     <TextBlock MinWidth="200"
                                                Margin="0,8,0,0"
@@ -1949,19 +1950,13 @@
                                             </Grid>
                                         </Button.Content>
                                     </Button>
-                                    <ScrollViewer x:Name="BGPathDisplayViewer"
-                                                  MaxWidth="220"
-                                                  Margin="0,-4,0,-4"
-                                                  HorizontalAlignment="Stretch"
-                                                  HorizontalScrollBarVisibility="Visible"
-                                                  HorizontalScrollMode="Enabled"
-                                                  VerticalScrollMode="Disabled"
-                                                  Visibility="{x:Bind UseCustomBGParamsSwitch.IsOn, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
-                                        <TextBlock x:Name="BGPathDisplay"
-                                                   Margin="0,4"
-                                                   VerticalAlignment="Center"
-                                                   Text="" />
-                                    </ScrollViewer>
+                                    <TextBlock x:Name="BGPathDisplay"
+                                               Margin="0,4"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Stretch"
+                                               Width="{x:Bind CustomChangeBGParams.Width}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Text="" />
                                 </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"
                                             Visibility="Collapsed">

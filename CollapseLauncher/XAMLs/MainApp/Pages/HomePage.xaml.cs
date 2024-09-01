@@ -1958,7 +1958,8 @@ namespace CollapseLauncher.Pages
             {
                 bool value = ((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 ChangeGameBGButton.IsEnabled = value;
-                BGPathDisplay.Text = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                string path = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                BGPathDisplay.Text = Path.GetFileName(path);
                 return value;
             }
             set
@@ -1968,7 +1969,7 @@ namespace CollapseLauncher.Pages
                 var regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
                 if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
                 {
-                    regionBgPath = GetAppConfigValue("CustomBGPath").ToString();
+                    regionBgPath = Path.GetFileName(GetAppConfigValue("CustomBGPath").ToString());
                     ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
                         .SettingsCollapseMisc
                         .CustomRegionBGPath = regionBgPath;
@@ -1978,7 +1979,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameSettings.SaveSettings();
                 m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
-                BGPathDisplay.Text = regionBgPath;
+                BGPathDisplay.Text = Path.GetFileName(regionBgPath);
             } 
         }
         #endregion
@@ -2212,7 +2213,7 @@ namespace CollapseLauncher.Pages
             }
             m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
-            BGPathDisplay.Text = file;
+            BGPathDisplay.Text = Path.GetFileName(file);
         }
 
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
