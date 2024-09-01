@@ -44,7 +44,7 @@ body:
       attributes:
         label: Describe alternatives you've considered
         description: A clear and concise description of any alternative solutions or features you've considered.
-        placeholder: What are the alternatives you've considered? Sometimes, the Collapse team can't always implement everything the way you envisonned it, so what are some compromises, changes you're willing to make to the current proposal?
+        placeholder: What are the alternatives you've considered? Sometimes, the Collapse team can't always implement everything the way you envisioned it, so what are some compromises, changes you're willing to make to the current proposal?
       validations:
         required: true
 
