@@ -964,10 +964,6 @@ namespace CollapseLauncher.Pages
                         PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                    #if !DISABLEDISCORD
-                        AppDiscordPresence?.SetActivity(ActivityType.Play);
-                    #endif
-
                         Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
                         if (currentGameProcess != null
                             && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
@@ -976,6 +972,10 @@ namespace CollapseLauncher.Pages
                            )
                         {
                             DateTime fromActivityOffset = currentGameProcess.StartTime;
+#if !DISABLEDISCORD
+                            AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+#endif
+
                             StartPlaytimeCounter(currentGameProcess, CurrentGameProperty._GamePreset, fromActivityOffset);
                             await currentGameProcess.WaitForExitAsync(Token);
                         }
