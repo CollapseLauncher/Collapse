@@ -347,7 +347,8 @@ namespace CollapseLauncher.Helper.Background
                         _loaderMediaPlayer?.Show();
                         break;
                     case MediaType.StillImage:
-                        _loaderStillImage?.Show(CurrentAppliedMediaType == MediaType.Media);
+                        _loaderStillImage?.Show(CurrentAppliedMediaType == MediaType.Media
+                            || InnerLauncherConfig.m_appCurrentFrameName != "HomePage");
                         _loaderMediaPlayer?.Hide();
                         break;
                 }
