@@ -468,7 +468,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void SetVolume(double value)
         {
-            CurrentMediaPlayer!.Volume = value;
+            if (CurrentMediaPlayer != null)
+                CurrentMediaPlayer.Volume = value;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioVolume", value);
         }
 
