@@ -87,6 +87,7 @@ namespace CollapseLauncher.Statics
                 return _gameExecutableName;
             }
         }
+
         internal string _GameExecutableNameWithoutExtension
         {
             get
@@ -96,9 +97,10 @@ namespace CollapseLauncher.Statics
                 return _gameExecutableNameWithoutExtension;
             }
         }
+
         internal bool IsGameRunning
         {
-            get => InvokeProp.IsProcessExist(_GameExecutableName);
+            get => InvokeProp.IsProcessExist(_GameExecutableName, Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName));
         }
 
 #nullable enable
