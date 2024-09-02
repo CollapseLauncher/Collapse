@@ -336,7 +336,7 @@ namespace Hi3Helper
                     // the input from "processName" argument.
                     ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
                     bool isMatchedExecutable = imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase);
-                    if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
+                    if (isMatchedExecutable)
                     {
                         // If the origin path argument is null, then return as true.
                         if (string.IsNullOrEmpty(checkForOriginPath))
