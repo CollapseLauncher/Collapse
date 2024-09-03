@@ -148,6 +148,7 @@
     "GameSettings_Panel2UninstallGame": "Hapus Game",
     "GameSettings_Panel2ConvertVersion": "Ubah Versi",
     "GameSettings_Panel2MoveGameLocationGame": "Pindah Lokasi Game",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Kamu tidak bisa memilih lokasi root dari drivemu!\r\nMohon buat folder baru dan coba lagi.",
     "GameSettings_Panel2StopGame": "Tutup Paksa Game",
     "GameSettings_Panel3": "Penyesuaian Argumen Pemulaian",
     "GameSettings_Panel3CustomBGRegion": "Ubah Latar Belakang Regional",
@@ -196,7 +197,10 @@
     "GameStateInvalidFixed_Subtitle1": "File Properti Game telah berhasil diperbaiki untuk region:",
     "GameStateInvalidFixed_Subtitle2": "Silahkan lakukan \"",
     "GameStateInvalidFixed_Subtitle3": "\" pada menu \"",
-    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi."
+    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi.",
+
+    "InstallFolderRootTitle": "Tidak Bisa Memilih Drive Root!",
+    "InstallFolderRootSubtitle": "Kamu tidak bisa memasang game di lokasi root dari drivemu! Mohon buat folder baru dan coba lagi."
   },
 
   "_GameRepairPage": {
@@ -476,8 +480,10 @@
     "DiscordRPC_GameStatusToggle": "Munculkan game yang dimainkan pada status Discord",
     "DiscordRPC_IdleStatusToggle": "Tampilkan RPC saat idle",
 
+    "ImageBackground": "Pengaturan Gambar Latar Belakang",
     "VideoBackground": "Pengaturan Latar Belakang Video",
     "VideoBackground_IsEnableAudio": "Nyalakan Suara",
+    "VideoBackground_IsEnableAcrylicBackground": "Gunakan Efek Akrilik saat menggunakan Latar Belakang Video",
     "VideoBackground_AudioVolume": "Volume Suara",
 
     "Update": "Periksa Pembaruan",
@@ -878,7 +884,7 @@
 
     "StopGameTitle": "Tutup Paksa Game",
     "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
-    
+
     "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Ditemukan!",
     "MeteredConnectionWarningSubtitle": "Koneksi internet anda saat ini terdeteksi sebagai koneksi \"berbayar\"! Melanjutkan proses update dapat menambah tagihan internet dari penyedia layanan internet. Apakah kamu ingin melanjutkan aksi ini?",
 
@@ -927,7 +933,7 @@
 
     "DownloadSettingsTitle": "Pengaturan Unduhan",
     "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
-    
+
     "OpenInExternalBrowser": "Buka di Browser Eksternal",
     "CloseOverlay": "Tutup Overlay"
   },
@@ -1453,5 +1459,34 @@
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
     "Audio_PlaybackDev_TV": "Televisi"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher Disembunyikan ke Tray",
+    "WindowHiddenToTray_Subtitle": "Saat ini launcher berjalan di latar belakang.\r\nKlik notifikasi ini atau ikon pada tray untuk kembali ke window.",
+
+    "GameInstallCompleted_Title": "Game {0} is Siap untuk Dimainkan",
+    "GameInstallCompleted_Subtitle": "Game {0} telah berhasil terpasang!",
+
+    "GameUpdateCompleted_Title": "Game {0} sudah Berhasil Diperbarui",
+    "GameUpdateCompleted_Subtitle": "Game {0} sudah berhasil diperbarui ke v{1}!",
+
+    "GamePreloadCompleted_Title": "Pra-unduh untuk {0} telah Selesai Diunduh",
+
+    "GameRepairCheckCompleted_Title": "Pemeriksaan pada Perbaikan Game sudah Selesai",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} file perlu diperbarui atau diperbaiki. Klik notifikasi ini untuk kembali ke launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Tidak ada file yang perlu diperbarui atau diperbaiki.",
+
+    "GameRepairDownloadCompleted_Title": "Unduhan pada Perbaikan Game sudah Selesai",
+    "GameRepairDownloadCompleted_Subtitle": "{0} file telah berhasil diperbarui atau diperbaiki.",
+
+    "CacheUpdateCheckCompleted_Title": "Pemeriksaan pada Pembaruan Cache sudah Selesai",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} file cache perlu diperbarui. Klik notifikasi ini untuk kembali ke launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Tidak ada file cache yang perlu diperbarui.",
+
+    "CacheUpdateDownloadCompleted_Title": "Unduhan pada Pembaruan Cache sudah Selesai",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} file cache telah berhasil diperbarui.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Klik notifikasi ini untuk kembali ke launcher."
   }
 }
