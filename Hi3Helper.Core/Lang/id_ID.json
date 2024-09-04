@@ -1465,7 +1465,7 @@
     "WindowHiddenToTray_Title": "Collapse Launcher Disembunyikan ke Tray",
     "WindowHiddenToTray_Subtitle": "Saat ini launcher berjalan di latar belakang.\r\nKlik notifikasi ini atau ikon pada tray untuk kembali ke window.",
 
-    "GameInstallCompleted_Title": "Game {0} is Siap untuk Dimainkan",
+    "GameInstallCompleted_Title": "Game {0} sudah Siap untuk Dimainkan",
     "GameInstallCompleted_Subtitle": "Game {0} telah berhasil terpasang!",
 
     "GameUpdateCompleted_Title": "Game {0} sudah Berhasil Diperbarui",
