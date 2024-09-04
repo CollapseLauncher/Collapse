@@ -24,8 +24,10 @@ namespace CollapseLauncher;
 
 public static class MainEntryPoint
 {
+    #nullable enable
     public static int InstanceCount;
     public static App? CurrentAppInstance;
+    #nullable restore
 
     [DllImport("Microsoft.ui.xaml.dll")]
     private static extern void XamlCheckProcessRequirements();
@@ -86,7 +88,7 @@ public static class MainEntryPoint
             ParseArguments(args);
             InitializeAppSettings();
 
-            HttpLogInvoker.DownloadLog += HttpClientLogWatcher;
+            HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
 
             switch (m_appMode)
             {
@@ -117,7 +119,7 @@ public static class MainEntryPoint
                     return;
             }
 
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
             InstanceCount = InvokeProp.EnumerateInstances();
 
@@ -136,7 +138,7 @@ public static class MainEntryPoint
         }
         finally
         {
-            HttpLogInvoker.DownloadLog -= HttpClientLogWatcher;
+            HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
         }
     }
 
