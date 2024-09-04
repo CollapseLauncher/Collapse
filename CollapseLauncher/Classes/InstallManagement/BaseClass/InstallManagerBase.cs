@@ -3576,8 +3576,9 @@ namespace CollapseLauncher.InstallManager.Base
 
             // If the file exist or package size is unmatched,
             // then start downloading
-            long existingPackageFileSize    = package.GetStreamLength(_downloadThreadCount);
-            bool isExistingPackageFileExist = package.IsReadStreamExist(_downloadThreadCount);
+            long legacyExistingPackageFileSize  = package.GetStreamLength(_downloadThreadCount);
+            long existingPackageFileSize        = package.SizeDownloaded > legacyExistingPackageFileSize ? package.SizeDownloaded : legacyExistingPackageFileSize;
+            bool isExistingPackageFileExist     = package.IsReadStreamExist(_downloadThreadCount);
 
             if (!isExistingPackageFileExist
                 || existingPackageFileSize != package.Size)
