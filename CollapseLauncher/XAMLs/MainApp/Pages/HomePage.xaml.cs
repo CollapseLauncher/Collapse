@@ -965,12 +965,11 @@ namespace CollapseLauncher.Pages
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
                         Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
-                        if (currentGameProcess != null
-                            && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
+                        if (currentGameProcess != null)
+                        {
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
-                           )
-                        {
+                            StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
                             DateTime fromActivityOffset = currentGameProcess.StartTime;
 #if !DISABLEDISCORD
                             AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
