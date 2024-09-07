@@ -975,7 +975,20 @@ namespace CollapseLauncher.Pages
                             AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
 #endif
 
-                            StartPlaytimeCounter(currentGameProcess, CurrentGameProperty._GamePreset, fromActivityOffset);
+                            IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
+                            PresetConfig gamePreset = CurrentGameProperty._GamePreset;
+
+                            StartPlaytimeCounter(currentGameProcess, gamePreset, fromActivityOffset);
+
+                            int? height = gameSettings.SettingsScreen.height;
+                            int? width = gameSettings.SettingsScreen.width;
+
+                            // Start the resizable window payload (also use the same token as PlaytimeToken)
+                            StartResizableWindowPayload(
+                                gamePreset.GameExecutableName,
+                                gameSettings,
+                                gamePreset.GameType, height, width);
+
                             await currentGameProcess.WaitForExitAsync(Token);
                         }
                     }
