@@ -1930,13 +1930,13 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
-            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+            get => CurrentGameProperty?._GameSettings?.SettingsCustomArgument.CustomArgumentValue;
+            set => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
         }
 
         public bool UseCustomArgs
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+            get => CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.UseCustomArguments ?? false;
             set
             {
                 if (CustomStartupArgsSwitch.IsOn)
@@ -1947,8 +1947,8 @@ namespace CollapseLauncher.Pages
                 {
                     CustomArgsTextBox.IsEnabled = false;
                 }
-                
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
             } 
             
         }
@@ -1957,9 +1957,9 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = ((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool value = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 ChangeGameBGButton.IsEnabled = value;
-                string path = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                string path = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath ?? "";
                 BGPathDisplay.Text = Path.GetFileName(path);
                 return value;
             }
@@ -1967,17 +1967,16 @@ namespace CollapseLauncher.Pages
             {
                 ChangeGameBGButton.IsEnabled = value;
 
-                var regionBgPath = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                var regionBgPath = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath;
                 if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
                 {
                     regionBgPath = Path.GetFileName(GetAppConfigValue("CustomBGPath").ToString());
-                    ((IGameSettingsUniversal)CurrentGameProperty._GameSettings)
-                        .SettingsCollapseMisc
+                    CurrentGameProperty._GameSettings.SettingsCollapseMisc
                         .CustomRegionBGPath = regionBgPath;
                 }
 
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomRegionBG = value;
-                CurrentGameProperty._GameSettings.SaveSettings();
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
+                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
                 m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                 BGPathDisplay.Text = Path.GetFileName(regionBgPath);
@@ -2209,8 +2208,8 @@ namespace CollapseLauncher.Pages
 
             if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
             {
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath = file;
-                CurrentGameProperty._GameSettings.SaveSettings();
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
+                CurrentGameProperty._GameSettings.SaveBaseSettings();
             }
             m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 

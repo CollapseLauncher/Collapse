@@ -5,7 +5,7 @@ using System.IO;
 
 namespace CollapseLauncher.GameSettings.Base
 {
-    internal class SettingsBase : ImportExportBase, IGameSettings, IGameSettingsUniversal
+    internal class SettingsBase : ImportExportBase, IGameSettings
     {
         #region Base Properties
         public virtual CustomArgs SettingsCustomArgument { get; set; }
@@ -54,7 +54,9 @@ namespace CollapseLauncher.GameSettings.Base
 
         public virtual void ReloadSettings() => InitializeSettings();
 
-        public virtual void SaveSettings()
+        public virtual void SaveSettings() => SaveBaseSettings();
+
+        public void SaveBaseSettings()
         {
             SettingsCustomArgument.Save();
             SettingsCollapseScreen.Save();
