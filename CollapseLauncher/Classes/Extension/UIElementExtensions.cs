@@ -2,6 +2,7 @@
 using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
 using Microsoft.UI;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,6 +22,14 @@ namespace CollapseLauncher.Extension
     internal enum CornerRadiusKind { Normal, Rounded }
     internal static class UIElementExtensions
     {
+        /// <summary>
+        /// Set the cursor for the element.
+        /// </summary>
+        /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
+        /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_ProtectedCursor")]
+        internal static extern void SetCursor(this UIElement element, InputCursor inputCursor);
+
         internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",
             string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)
             where TButtonBase : ButtonBase, new()
