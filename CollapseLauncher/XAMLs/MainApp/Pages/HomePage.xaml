@@ -1951,12 +1951,12 @@
                                         </Button.Content>
                                     </Button>
                                     <TextBlock x:Name="BGPathDisplay"
-                                               Margin="0,4"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Stretch"
                                                Width="{x:Bind CustomChangeBGParams.Width}"
-                                               TextTrimming="CharacterEllipsis"
-                                               Text="" />
+                                               Margin="0,4"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Center"
+                                               Text=""
+                                               TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <StackPanel x:Name="CustomStartupArgs"
                                             Visibility="Collapsed">

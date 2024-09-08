@@ -439,6 +439,7 @@ namespace Hi3Helper.Shared.Region
             { "IsEnableSophon", true},
             { "SophonCpuThread", 0},
             { "SophonHttpConnInt", 0},
+            { "SophonPreloadApplyPerfMode", false },
 
             { "IsUseProxy", false },
             { "IsAllowHttpRedirections", true },

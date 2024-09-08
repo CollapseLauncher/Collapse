@@ -602,7 +602,9 @@
                                           SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}">
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Headphones}" />
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Speakers}" />
-                                    <ComboBoxItem Content="Placeholder, please report to @bagusnl if you see this message" IsEnabled="False" Visibility="Collapsed"/>
+                                    <ComboBoxItem Content="Placeholder, please report to @bagusnl if you see this message"
+                                                  IsEnabled="False"
+                                                  Visibility="Collapsed" />
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_TV}" />
                                 </ComboBox>
                             </StackPanel>

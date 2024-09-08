@@ -195,7 +195,8 @@ namespace CollapseLauncher
                 // Spawn the hidden to tray toast notification
                 ShowNotification(
                     Lang._NotificationToast.WindowHiddenToTray_Title,
-                    Lang._NotificationToast.WindowHiddenToTray_Subtitle
+                    Lang._NotificationToast.WindowHiddenToTray_Subtitle, NotificationIcon.None,
+                    null, false, false
                     );
             }
             else

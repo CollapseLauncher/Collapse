@@ -131,6 +131,8 @@
                 public string SophonHttpNumberBox                       { get; set; } = LangFallback?._SettingsPage.SophonHttpNumberBox;
                 public string SophonHelp_Http                           { get; set; } = LangFallback?._SettingsPage.SophonHelp_Http;
                 public string SophonToggle                              { get; set; } = LangFallback?._SettingsPage.SophonToggle;
+                public string SophonPredownPerfMode_Toggle              { get; set; } = LangFallback?._SettingsPage.SophonPredownPerfMode_Toggle;
+                public string SophonPredownPerfMode_Tooltip             { get; set; } = LangFallback?._SettingsPage.SophonPredownPerfMode_Tooltip;
                 public string NetworkSettings_Title                     { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Title;
                 public string NetworkSettings_Proxy_Title               { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_Title;
                 public string NetworkSettings_Proxy_Hostname            { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_Hostname;

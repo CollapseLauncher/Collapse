@@ -464,6 +464,8 @@
     "SophonHttpNumberBox": "Maximum HTTP Connections",
     "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
     "SophonToggle": "Enable Sophon on Supported Regions",
+    "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Use all CPU cores when applying pre-download",
+    "SophonPredownPerfMode_Tooltip": "Enabling this will set CPU threads to maximum available for your system. Disable if you get any problems.",
 
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Before you change the",

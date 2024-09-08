@@ -1160,6 +1160,24 @@ namespace CollapseLauncher.InstallManager.Base
                 bool canDeleteChunks          = _canDeleteZip;
                 bool isSophonPreloadCompleted = _isSophonPreloadCompleted;
 
+                // If preload completed and perf mode is on, use all CPU cores 
+                if (isSophonPreloadCompleted && LauncherConfig.GetAppConfigValue("SophonPreloadApplyPerfMode").ToBool())
+                {
+                    maxThread       = Environment.ProcessorCount;
+                    maxChunksThread = Math.Clamp(maxThread / 2, 2, 32);
+                    
+                    parallelOptions = new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = maxThread,
+                        CancellationToken      = _token.Token
+                    };
+                    parallelChunksOptions = new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = maxChunksThread,
+                        CancellationToken      = _token.Token
+                    };
+                }
+
                 // Set the delegate function for the download action
                 async ValueTask Action(SophonAsset asset, CancellationToken _)
                 {

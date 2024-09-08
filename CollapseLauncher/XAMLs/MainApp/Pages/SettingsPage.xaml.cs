@@ -1092,6 +1092,12 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("SophonHttpConnInt", value);
         }
 
+        private bool IsSophonPreloadPerfMode
+        {
+            get => GetAppConfigValue("SophonPreloadApplyPerfMode").ToBool();
+            set => SetAndSaveConfigValue("SophonPreloadApplyPerfMode", value);
+        }
+
 #nullable enable
         private bool IsUseProxy
         {
