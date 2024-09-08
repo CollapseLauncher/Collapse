@@ -510,7 +510,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenSocMedLink(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(((Button)sender).Tag.ToString())) return;
+            if (string.IsNullOrEmpty((sender as Button)?.Tag as string)) return;
 
             new Process
             {
