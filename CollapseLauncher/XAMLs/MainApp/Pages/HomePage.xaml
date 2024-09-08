@@ -443,138 +443,143 @@
                     </ItemsControl.Transitions>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button x:Name="SocMedButton"
-                                    Width="48px"
-                                    Height="48px"
-                                    Margin="8,4"
-                                    Padding="8"
-                                    Click="OpenSocMedLink"
-                                    CornerRadius="8"
-                                    FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}"
-                                    Loaded="ApplyShadowToImageElement"
-                                    PointerEntered="FadeInSocMedButton"
-                                    PointerExited="FadeOutSocMedButton"
-                                    Shadow="{ThemeResource SharedShadow}"
-                                    Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                    Tag="{Binding SocialMediaUrl}">
-                                <ToolTipService.ToolTip>
-                                    <ToolTip Opened="ShowSocMedFlyout"
-                                             Tag="{Binding ElementName=SocMedButton}"
-                                             Visibility="Collapsed" />
-                                </ToolTipService.ToolTip>
-                                <Button.Resources>
-                                    <Flyout x:Name="SocMedFlyout"
-                                            OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelScrollView}"
-                                            Placement="Left">
-                                        <StackPanel Padding="10,6"
-                                                    Background="Transparent"
-                                                    Loaded="OnLoadedSocMedFlyout"
-                                                    PointerExited="HideSocMedFlyout"
-                                                    Tag="{Binding ElementName=SocMedFlyout}">
-                                            <StackPanel Margin="4,8,4,0"
-                                                        Visibility="{Binding IsHasQr, Converter={ThemeResource BooleanToVisibilityConverter}}">
-                                                <Grid Margin="0,0,0,8"
-                                                      Background="White"
-                                                      CornerRadius="5"
-                                                      Shadow="{ThemeResource SharedShadow}"
-                                                      Translation="0,0,16">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-                                                    <imageex:ImageEx Width="160"
-                                                                     Margin="4"
-                                                                     HorizontalAlignment="Center"
-                                                                     Source="{Binding QrImg}" />
-                                                    <TextBlock Grid.Row="1"
-                                                               Margin="0,0,0,8"
-                                                               HorizontalAlignment="Center"
-                                                               FontWeight="Bold"
-                                                               Foreground="Black"
-                                                               Text="{Binding QrTitle}"
-                                                               TextAlignment="Center"
-                                                               TextWrapping="Wrap"
-                                                               Visibility="{Binding IsHasQrDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
-                                                </Grid>
-                                            </StackPanel>
-                                            <StackPanel Margin="0,2"
-                                                        Visibility="{Binding IsHasLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
-                                                <ItemsControl ItemsSource="{Binding QrLinks}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Button MinWidth="160"
-                                                                    Margin="0,2"
-                                                                    HorizontalAlignment="Stretch"
-                                                                    HorizontalContentAlignment="Stretch"
-                                                                    Click="OpenSocMedLink"
-                                                                    CornerRadius="5"
-                                                                    Shadow="{ThemeResource SharedShadow}"
-                                                                    Style="{ThemeResource AcrylicSemiButtonStyle}"
-                                                                    Tag="{Binding Url}"
-                                                                    Translation="0,0,8">
-                                                                <Grid Margin="0,0,0,0"
-                                                                      HorizontalAlignment="Stretch">
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <Grid HorizontalAlignment="Left">
-                                                                        <TextBlock HorizontalAlignment="Left"
-                                                                                   VerticalAlignment="Center"
-                                                                                   FontWeight="Medium"
-                                                                                   HorizontalTextAlignment="Left"
-                                                                                   Text="{Binding Title}" />
+                            <Grid Loaded="SetHandCursor">
+                                <Button x:Name="SocMedButton"
+                                        Width="48px"
+                                        Height="48px"
+                                        Margin="8,4"
+                                        Padding="8"
+                                        Click="OpenSocMedLink"
+                                        CornerRadius="8"
+                                        FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}"
+                                        Loaded="ApplyShadowToImageElement"
+                                        PointerEntered="FadeInSocMedButton"
+                                        PointerExited="FadeOutSocMedButton"
+                                        Shadow="{ThemeResource SharedShadow}"
+                                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                        Tag="{Binding SocialMediaUrl}">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip Opened="ShowSocMedFlyout"
+                                                 Tag="{Binding ElementName=SocMedButton}"
+                                                 Visibility="Collapsed" />
+                                    </ToolTipService.ToolTip>
+                                    <Button.Resources>
+                                        <Flyout x:Name="SocMedFlyout"
+                                                OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelScrollView}"
+                                                Placement="Left">
+                                            <StackPanel Padding="10,6"
+                                                        Background="Transparent"
+                                                        Loaded="OnLoadedSocMedFlyout"
+                                                        PointerExited="HideSocMedFlyout"
+                                                        Tag="{Binding ElementName=SocMedFlyout}">
+                                                <StackPanel Margin="4,8,4,0"
+                                                            Visibility="{Binding IsHasQr, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                    <Grid Margin="0,0,0,8"
+                                                          Background="White"
+                                                          CornerRadius="5"
+                                                          Shadow="{ThemeResource SharedShadow}"
+                                                          Translation="0,0,16">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <imageex:ImageEx Width="160"
+                                                                         Margin="4"
+                                                                         HorizontalAlignment="Center"
+                                                                         Source="{Binding QrImg}" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Margin="0,0,0,8"
+                                                                   HorizontalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Foreground="Black"
+                                                                   Text="{Binding QrTitle}"
+                                                                   TextAlignment="Center"
+                                                                   TextWrapping="Wrap"
+                                                                   Visibility="{Binding IsHasQrDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                    </Grid>
+                                                </StackPanel>
+                                                <StackPanel Margin="0,2"
+                                                            Visibility="{Binding IsHasLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                    <ItemsControl ItemsSource="{Binding QrLinks}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Button MinWidth="160"
+                                                                        Margin="0,2"
+                                                                        HorizontalAlignment="Stretch"
+                                                                        HorizontalContentAlignment="Stretch"
+                                                                        Click="OpenSocMedLink"
+                                                                        CornerRadius="5"
+                                                                        Loaded="SetHandCursor"
+                                                                        PointerEntered="ElementScaleOutHoveredPointerEntered"
+                                                                        PointerExited="ElementScaleInHoveredPointerExited"
+                                                                        Shadow="{ThemeResource SharedShadow}"
+                                                                        Style="{ThemeResource AcrylicSemiButtonStyle}"
+                                                                        Tag="{Binding Url}"
+                                                                        Translation="0,0,8">
+                                                                    <Grid Margin="0,0,0,0"
+                                                                          HorizontalAlignment="Stretch">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition />
+                                                                            <ColumnDefinition Width="Auto" />
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Grid HorizontalAlignment="Left">
+                                                                            <TextBlock HorizontalAlignment="Left"
+                                                                                       VerticalAlignment="Center"
+                                                                                       FontWeight="Medium"
+                                                                                       HorizontalTextAlignment="Left"
+                                                                                       Text="{Binding Title}" />
+                                                                        </Grid>
+                                                                        <Grid Grid.Column="1"
+                                                                              Margin="4,0,0,0"
+                                                                              HorizontalAlignment="Center"
+                                                                              VerticalAlignment="Center"
+                                                                              RenderTransformOrigin="0.5, 0.5">
+                                                                            <Grid.RenderTransform>
+                                                                                <RotateTransform Angle="-90" />
+                                                                            </Grid.RenderTransform>
+                                                                            <AnimatedIcon Width="14"
+                                                                                          HorizontalAlignment="Center"
+                                                                                          VerticalAlignment="Center">
+                                                                                <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                                                                <AnimatedIcon.FallbackIconSource>
+                                                                                    <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                                                                    Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                                                                    Glyph="&#xE70D;" />
+                                                                                </AnimatedIcon.FallbackIconSource>
+                                                                            </AnimatedIcon>
+                                                                        </Grid>
                                                                     </Grid>
-                                                                    <Grid Grid.Column="1"
-                                                                          Margin="4,0,0,0"
-                                                                          HorizontalAlignment="Center"
-                                                                          VerticalAlignment="Center"
-                                                                          RenderTransformOrigin="0.5, 0.5">
-                                                                        <Grid.RenderTransform>
-                                                                            <RotateTransform Angle="-90" />
-                                                                        </Grid.RenderTransform>
-                                                                        <AnimatedIcon Width="14"
-                                                                                      HorizontalAlignment="Center"
-                                                                                      VerticalAlignment="Center">
-                                                                            <animatedvisuals:AnimatedChevronDownSmallVisualSource />
-                                                                            <AnimatedIcon.FallbackIconSource>
-                                                                                <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                                                                                Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                                                                                Glyph="&#xE70D;" />
-                                                                            </AnimatedIcon.FallbackIconSource>
-                                                                        </AnimatedIcon>
-                                                                    </Grid>
-                                                                </Grid>
-                                                            </Button>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
+                                                                </Button>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                                <TextBlock Margin="0,4"
+                                                           HorizontalAlignment="Center"
+                                                           Text="{Binding Title}"
+                                                           TextWrapping="Wrap"
+                                                           Visibility="{Binding IsHasDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
                                             </StackPanel>
-                                            <TextBlock Margin="0,4"
-                                                       HorizontalAlignment="Center"
-                                                       Text="{Binding Title}"
-                                                       TextWrapping="Wrap"
-                                                       Visibility="{Binding IsHasDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
-                                        </StackPanel>
-                                        <Flyout.FlyoutPresenterStyle>
-                                            <Style TargetType="FlyoutPresenter">
-                                                <Setter Property="Margin" Value="3,0,0,0" />
-                                                <Setter Property="CornerRadius" Value="5" />
-                                                <Setter Property="Padding" Value="0" />
-                                                <Setter Property="MinHeight" Value="0" />
-                                                <Setter Property="MinWidth" Value="0" />
-                                            </Style>
-                                        </Flyout.FlyoutPresenterStyle>
-                                    </Flyout>
-                                </Button.Resources>
-                                <Grid>
-                                    <Image x:Name="Icon"
-                                           Source="{Binding IconImg}" />
-                                    <Image x:Name="IconHover"
-                                           Opacity="0"
-                                           Source="{Binding IconImgHover}" />
-                                </Grid>
-                            </Button>
+                                            <Flyout.FlyoutPresenterStyle>
+                                                <Style TargetType="FlyoutPresenter">
+                                                    <Setter Property="Margin" Value="3,0,0,0" />
+                                                    <Setter Property="CornerRadius" Value="5" />
+                                                    <Setter Property="Padding" Value="0" />
+                                                    <Setter Property="MinHeight" Value="0" />
+                                                    <Setter Property="MinWidth" Value="0" />
+                                                </Style>
+                                            </Flyout.FlyoutPresenterStyle>
+                                        </Flyout>
+                                    </Button.Resources>
+                                    <Grid>
+                                        <Image x:Name="Icon"
+                                               Source="{Binding IconImg}" />
+                                        <Image x:Name="IconHover"
+                                               Opacity="0"
+                                               Source="{Binding IconImgHover}" />
+                                    </Grid>
+                                </Button>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
