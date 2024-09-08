@@ -464,6 +464,8 @@
     "SophonHttpNumberBox": "Conexiones HTTP máximas",
     "SophonHelp_Http": "Controla el número máximo de conexiones de red que Collapse establece para descargar las partes.",
     "SophonToggle": "Habilitar Sophon en Regiones Soportadas",
+    "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Usar todos los núcleos del CPU al aplicar la predescarga ",
+    "SophonPredownPerfMode_Tooltip": "Habilitar esto establecerá al máximo los hilos de la CPU disponibles en tu sistema. Desactiva la opción si causa cualquier problema.",
 
     "AppThreads_Attention": "Precaución",
     "AppThreads_Attention1": "Antes de cambiar el valor de los",
