@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -94,7 +94,6 @@
         <PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
         <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.3" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.65" />
-        <PackageReference Include="ImageEx" Version="2.1.1" />
         <PackageReference Include="Markdig.Signed" Version="0.37.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.1-experimental2" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
@@ -122,12 +121,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
-        <ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
+        <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
         <ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
         <ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
         <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
         <ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
+        <ProjectReference Include="..\ImageEx\ImageEx\ImageEx.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -172,6 +172,7 @@
             <TrimmableAssembly Include="Hi3Helper.EncTool" />
             <TrimmableAssembly Include="Hi3Helper.Http" />
             <TrimmableAssembly Include="Hi3Helper.Sophon" />
+            <TrimmableAssembly Include="ImageEx" />
             <TrimmableAssembly Include="InnoSetupHelper" />
             <TrimmableAssembly Include="SevenZipExtractor" />
             <TrimmableAssembly Include="SharpHDiffPatch.Core" />

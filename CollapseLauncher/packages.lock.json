@@ -138,15 +138,6 @@
         "resolved": "1.11.65",
         "contentHash": "Skse4MVlRcHHyP88x+v/uQrMxTPaBIwQodiQ/y59jxs8vHlqTR5M3jt5Wk+csYFnR4rX6I4ndqDji2M8p9kAzw=="
       },
-      "ImageEx": {
-        "type": "Direct",
-        "requested": "[2.1.1, )",
-        "resolved": "2.1.1",
-        "contentHash": "aYLuAjSv96ERPpdlLw2EhCaE9S6jx48hnyhZbZpp4ptl1HqbTSPa0ilmD2ERvr81i2U6MaaoQ3MPaiUK/HNHkQ==",
-        "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.0.0"
-        }
-      },
       "Markdig.Signed": {
         "type": "Direct",
         "requested": "[0.37.0, )",
@@ -1014,6 +1005,12 @@
           "Google.Protobuf": "[*, )",
           "Hi3Helper.ZstdNet": "[*, )",
           "System.IO.Hashing": "[*, )"
+        }
+      },
+      "imageex": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.WindowsAppSDK": "[1.6.240829007, )"
         }
       },
       "innosetuphelper": {
