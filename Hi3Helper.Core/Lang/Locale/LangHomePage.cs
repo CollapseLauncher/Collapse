@@ -44,35 +44,36 @@
                 public string GameSettings_Panel2UninstallGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2UninstallGame;
                 public string GameSettings_Panel2ConvertVersion { get; set; } = LangFallback?._HomePage.GameSettings_Panel2ConvertVersion;
                 public string GameSettings_Panel2MoveGameLocationGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame;
-                public string GameSettings_Panel2StopGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2StopGame;
-                public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
-                public string GameSettings_Panel3CustomBGRegion { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegion;
-                public string GameSettings_Panel3CustomBGRegionSectionTitle { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle;
-                public string GameSettings_Panel4 { get; set; } = LangFallback?._HomePage.GameSettings_Panel4;
-                public string GameSettings_Panel4ShowEventsPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
-                public string GameSettings_Panel4ShowSocialMediaPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;
-                public string GameSettings_Panel4ShowPlaytimeButton { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowPlaytimeButton;
-                public string GameSettings_Panel4CreateShortcutBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4CreateShortcutBtn;
-                public string GameSettings_Panel4AddToSteamBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4AddToSteamBtn;
-                public string CreateShortcut_FolderPicker { get; set; } = LangFallback?._HomePage.CreateShortcut_FolderPicker;
-                public string GamePlaytime_Panel1 { get; set; } = LangFallback?._HomePage.GamePlaytime_Panel1;
-                public string GamePlaytime_Idle_Panel1Hours { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_Panel1Hours;
-                public string GamePlaytime_Idle_Panel1Minutes { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_Panel1Minutes;
-                public string GamePlaytime_Idle_ResetBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ResetBtn;
-                public string GamePlaytime_Idle_ChangeBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ChangeBtn;
-                public string GamePlaytime_Running_Info1 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info1;
-                public string GamePlaytime_Running_Info2 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info2;
-                public string GamePlaytime_Display { get; set; } = LangFallback?._HomePage.GamePlaytime_Display;
-                public string GamePlaytime_ToolTipDisplay { get; set; } = LangFallback?._HomePage.GamePlaytime_ToolTipDisplay;
-                public string PostPanel_Events { get; set; } = LangFallback?._HomePage.PostPanel_Events;
-                public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
-                public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;
-                public string PostPanel_NoNews { get; set; } = LangFallback?._HomePage.PostPanel_NoNews;
-                public string CommunityToolsBtn { get; set; } = LangFallback?._HomePage.CommunityToolsBtn;
-                public string CommunityToolsBtn_OfficialText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OfficialText;
-                public string CommunityToolsBtn_CommunityText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_CommunityText;
-                public string CommunityToolsBtn_OpenExecutableAppDialogTitle { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle;
-                public string Exception_DownloadTimeout1 { get; set; } =
+                public string GameSettings_Panel2MoveGameLocationGame_SamePath { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame_SamePath;
+                public  string GameSettings_Panel2StopGame                      { get; set; } = LangFallback?._HomePage.GameSettings_Panel2StopGame;
+                public  string GameSettings_Panel3                              { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
+                public  string GameSettings_Panel3CustomBGRegion                { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegion;
+                public  string GameSettings_Panel3CustomBGRegionSectionTitle    { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegionSectionTitle;
+                public  string GameSettings_Panel4                              { get; set; } = LangFallback?._HomePage.GameSettings_Panel4;
+                public  string GameSettings_Panel4ShowEventsPanel               { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
+                public  string GameSettings_Panel4ShowSocialMediaPanel          { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;
+                public  string GameSettings_Panel4ShowPlaytimeButton            { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowPlaytimeButton;
+                public  string GameSettings_Panel4CreateShortcutBtn             { get; set; } = LangFallback?._HomePage.GameSettings_Panel4CreateShortcutBtn;
+                public  string GameSettings_Panel4AddToSteamBtn                 { get; set; } = LangFallback?._HomePage.GameSettings_Panel4AddToSteamBtn;
+                public  string CreateShortcut_FolderPicker                      { get; set; } = LangFallback?._HomePage.CreateShortcut_FolderPicker;
+                public  string GamePlaytime_Panel1                              { get; set; } = LangFallback?._HomePage.GamePlaytime_Panel1;
+                public  string GamePlaytime_Idle_Panel1Hours                    { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_Panel1Hours;
+                public  string GamePlaytime_Idle_Panel1Minutes                  { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_Panel1Minutes;
+                public  string GamePlaytime_Idle_ResetBtn                       { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ResetBtn;
+                public  string GamePlaytime_Idle_ChangeBtn                      { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ChangeBtn;
+                public  string GamePlaytime_Running_Info1                       { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info1;
+                public  string GamePlaytime_Running_Info2                       { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info2;
+                public  string GamePlaytime_Display                             { get; set; } = LangFallback?._HomePage.GamePlaytime_Display;
+                public  string GamePlaytime_ToolTipDisplay                      { get; set; } = LangFallback?._HomePage.GamePlaytime_ToolTipDisplay;
+                public  string PostPanel_Events                                 { get; set; } = LangFallback?._HomePage.PostPanel_Events;
+                public  string PostPanel_Notices                                { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
+                public  string PostPanel_Info                                   { get; set; } = LangFallback?._HomePage.PostPanel_Info;
+                public  string PostPanel_NoNews                                 { get; set; } = LangFallback?._HomePage.PostPanel_NoNews;
+                public  string CommunityToolsBtn                                { get; set; } = LangFallback?._HomePage.CommunityToolsBtn;
+                public  string CommunityToolsBtn_OfficialText                   { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OfficialText;
+                public  string CommunityToolsBtn_CommunityText                  { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_CommunityText;
+                public  string CommunityToolsBtn_OpenExecutableAppDialogTitle   { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle;
+                public string Exception_DownloadTimeout1 { get;                        set; } =
                     LangFallback?._HomePage.Exception_DownloadTimeout1;
                 public string Exception_DownloadTimeout2 { get; set; } =
                     LangFallback?._HomePage.Exception_DownloadTimeout2;
@@ -91,6 +92,8 @@
                 public string GameStateInvalidFixed_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle2;
                 public string GameStateInvalidFixed_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle3;
                 public string GameStateInvalidFixed_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle4;
+                public string InstallFolderRootTitle { get; set; } = LangFallback?._HomePage.InstallFolderRootTitle;
+                public string InstallFolderRootSubtitle { get; set; } =LangFallback?._HomePage.InstallFolderRootSubtitle;
             }
         }
         #endregion

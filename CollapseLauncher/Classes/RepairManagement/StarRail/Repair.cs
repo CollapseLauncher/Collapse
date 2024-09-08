@@ -32,84 +32,72 @@ namespace CollapseLauncher
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
-                .UseLauncherConfig(_downloadThreadCount + 16)
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            // Use HttpClient instance on fetching
-            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+            // Use the new DownloadClient instance
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            // Try running instance
-            try
+            // Iterate repair asset and check it using different method for each type
+            ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            if (_isBurstDownloadEnabled)
             {
-                // Assign downloader event
-                _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
-
-                // Iterate repair asset and check it using different method for each type
-                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
-                if (_isBurstDownloadEnabled)
-                {
-                    await Parallel.ForEachAsync(
-                        PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR    
-                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
-#else
-                        repairAssetIndex
-#endif
-                        , assetProperty),
-                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
-                        async (asset, innerToken) =>
-                        {
-                            // Assign a task depends on the asset type
-                            Task assetTask = asset.AssetIndex.FT switch
-                            {
-                                FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
-                                FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
-                                FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, innerToken),
-                                _ => RepairAssetTypeGeneric(asset, _httpClient, innerToken)
-                            };
-
-                            // Await the task
-                            await assetTask;
-                        });
-                }
-                else
-                {
-                    foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
-                        PairEnumeratePropertyAndAssetIndexPackage(
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
-                        EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
 #else
-                        repairAssetIndex
+                    repairAssetIndex
 #endif
-                        , assetProperty))
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                    async (asset, innerToken) =>
                     {
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
-                            FileType.Blocks => RepairAssetTypeGeneric(asset, _httpClient, token),
-                            FileType.Audio => RepairAssetTypeGeneric(asset, _httpClient, token),
-                            FileType.Video => RepairAssetTypeGeneric(asset, _httpClient, token),
-                            _ => RepairAssetTypeGeneric(asset, _httpClient, token)
+                            FileType.Blocks => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken)
                         };
 
                         // Await the task
                         await assetTask;
-                    }
-                }
-
-                return true;
+                    });
             }
-            finally
+            else
             {
-                // Unassign downloader event
-                _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
+                foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    , assetProperty))
+                {
+                    // Assign a task depends on the asset type
+                    Task assetTask = asset.AssetIndex.FT switch
+                    {
+                        FileType.Blocks => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
+                    };
+
+                    // Await the task
+                    await assetTask;
+                }
             }
+
+            return true;
         }
 
         #region GenericRepair
-        private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, Http _httpClient, CancellationToken token)
+        private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
             // Increment total count current
             _progressAllCountCurrent++;
@@ -122,7 +110,7 @@ namespace CollapseLauncher
             // If asset type is unused, then delete it
             if (asset.AssetIndex.FT == FileType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.AssetIndex.N);
+                FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!);
                 if (fileInfo.Exists)
                 {
                     fileInfo.IsReadOnly = false;
@@ -134,7 +122,7 @@ namespace CollapseLauncher
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N, asset.AssetIndex.RN, _httpClient, token);
+                await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N!, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
                 LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Blocks ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 

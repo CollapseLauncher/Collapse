@@ -48,6 +48,7 @@ namespace CollapseLauncher.Helper.Background
         private Grid? _parentBgImageBackgroundGrid;
         private Grid? _parentBgMediaPlayerBackgroundGrid;
 
+        internal static string    CurrentAppliedMediaPath;
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
@@ -68,7 +69,8 @@ namespace CollapseLauncher.Helper.Background
             EnsureOrdered = true,
             MaxMessagesPerTask = 1,
             MaxDegreeOfParallelism = 1,
-            TaskScheduler = TaskScheduler.Default
+            BoundedCapacity = 1,
+            TaskScheduler = TaskScheduler.Current
         });
 
         /// <summary>
@@ -287,17 +289,20 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal void LoadBackground(string mediaPath,                  bool                  isRequestInit = false,
+        internal async void LoadBackground(string mediaPath,                  bool                  isRequestInit = false,
                                      bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
                                      Action? actionAfterLoaded = null)
         {
-            SharedActionBlockQueue?.Post(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded));
+            await (SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded)) ?? Task.CompletedTask);
         }
 
         private async Task LoadBackgroundInner(string mediaPath,                  bool                  isRequestInit = false,
-                                                bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
-                                                Action? actionAfterLoaded = null)
+                                               bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
+                                               Action? actionAfterLoaded = null)
         {
+            if (mediaPath.Equals(CurrentAppliedMediaPath, StringComparison.OrdinalIgnoreCase))
+                return;
+
             try
             {
                 while (!_isCurrentRegistered)
@@ -347,7 +352,8 @@ namespace CollapseLauncher.Helper.Background
                         _loaderMediaPlayer?.Show();
                         break;
                     case MediaType.StillImage:
-                        _loaderStillImage?.Show(CurrentAppliedMediaType == MediaType.Media);
+                        _loaderStillImage?.Show(CurrentAppliedMediaType == MediaType.Media
+                            || InnerLauncherConfig.m_appCurrentFrameName != "HomePage");
                         _loaderMediaPlayer?.Hide();
                         break;
                 }
@@ -360,6 +366,8 @@ namespace CollapseLauncher.Helper.Background
 
                 CurrentAppliedMediaType = mediaType;
                 actionAfterLoaded?.Invoke();
+
+                CurrentAppliedMediaPath = mediaPath;
             }
             catch (Exception ex)
             {

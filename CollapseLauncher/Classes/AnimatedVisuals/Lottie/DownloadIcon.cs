@@ -59,7 +59,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
     // Frame rate:  60 fps
     // Frame count: 300
     // Duration:    5000.0 mS
-    sealed class DownloadIcon
+    sealed partial class DownloadIcon
         : Microsoft.UI.Xaml.Controls.IAnimatedVisualSource
         , Microsoft.UI.Xaml.Controls.IAnimatedVisualSource2
     {
@@ -132,7 +132,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
         {
         }
 
-        sealed class DownloadIcon_AnimatedVisual
+        sealed partial class DownloadIcon_AnimatedVisual
             : Microsoft.UI.Xaml.Controls.IAnimatedVisual
             , Microsoft.UI.Xaml.Controls.IAnimatedVisual2
         {

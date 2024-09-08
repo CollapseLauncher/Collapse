@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -11,15 +11,17 @@
         <ProductName>Collapse</ProductName>
         <Product>Collapse</Product>
         <Description>Collapse Launcher</Description>
+		<AssemblyTitle>Collapse Launcher</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.81.4</Version>
+        <Version>1.81.5</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
         <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+        <WindowsSdkPackageVersion>10.0.22621.41</WindowsSdkPackageVersion>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
@@ -37,6 +39,7 @@
         <InvariantGlobalization>false</InvariantGlobalization>
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+		<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     </PropertyGroup>
 
 <!--
@@ -50,7 +53,6 @@
         - SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
         - GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
         - MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
-        - USEDYNAMICVIDEOPALETTE : Enable an experimental dynamic color palette change in video background support
         - USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
                                 This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
@@ -72,8 +74,8 @@
     <ItemGroup>
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
 
-        <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+        <PackageReference Include="CommunityToolkit.Common" Version="8.3.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.0" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240821" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240821" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240821" />
@@ -91,19 +93,19 @@
         
         <PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
         <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.3" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.64" />
-        <PackageReference Include="ImageEx" Version="2.1.1" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.65" />
         <PackageReference Include="Markdig.Signed" Version="0.37.0" />
-        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
+        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.1-experimental2" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240829007" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="SharpCompress" Version="0.37.2" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
+        <PackageReference Include="SharpCompress" Version="0.38.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.7" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
@@ -119,12 +121,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
-        <ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
+        <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
         <ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
         <ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
         <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
         <ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
+        <ProjectReference Include="..\ImageEx\ImageEx\ImageEx.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -169,6 +172,7 @@
             <TrimmableAssembly Include="Hi3Helper.EncTool" />
             <TrimmableAssembly Include="Hi3Helper.Http" />
             <TrimmableAssembly Include="Hi3Helper.Sophon" />
+            <TrimmableAssembly Include="ImageEx" />
             <TrimmableAssembly Include="InnoSetupHelper" />
             <TrimmableAssembly Include="SevenZipExtractor" />
             <TrimmableAssembly Include="SharpHDiffPatch.Core" />

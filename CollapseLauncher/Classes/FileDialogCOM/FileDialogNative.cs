@@ -44,7 +44,7 @@ namespace CollapseLauncher.FileDialogCOM
         {
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileOpenDialog),
-                null,
+                IntPtr.Zero,
                 CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileOpenDialog dialog).ThrowOnFailure();
 
@@ -85,6 +85,8 @@ namespace CollapseLauncher.FileDialogCOM
             finally
             {
                 if (titlePtr != IntPtr.Zero) Marshal.FreeCoTaskMem(titlePtr);
+                // Free the COM instance
+                PInvoke.Free(dialog);
             }
         }
 
@@ -92,7 +94,7 @@ namespace CollapseLauncher.FileDialogCOM
         {
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileSaveDialog),
-                null,
+                IntPtr.Zero,
                 CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileSaveDialog dialog).ThrowOnFailure();
 
@@ -121,6 +123,8 @@ namespace CollapseLauncher.FileDialogCOM
             finally
             {
                 if (titlePtr != IntPtr.Zero) Marshal.FreeCoTaskMem(titlePtr);
+                // Free the COM instance
+                PInvoke.Free(dialog);
             }
         }
 

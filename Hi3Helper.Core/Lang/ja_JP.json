@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "ゲームは以下のエラーのためにクラッシュしました:",
     "UnhandledTitle4": "警告",
     "UnhandledSubtitle4": "バグが起きてるってわけじゃありませんが、一応お知らせしておきます：\r\nmiHoYoのA/Bテスト検知を避けるため、CollapseはレジストリキーApp_Settings_h2319593470の読み取りをサポートしていません。\r\nご不便をお掛けしますが、ご了承ください。",
+    "UnhandledTitleDiskCrc": "ディスクの破損を検出しました！",
+    "UnhandledSubDiskCrc": "ファイルへのアクセス中にディスクの破損を検出しました。chkdskを使用してディスクをチェックしてください。",
     "CopyClipboardBtn1": "すべてをクリップボードにコピー",
     "CopyClipboardBtn2": "クリップボードにコピーしました！",
     "GoBackPageBtn1": "前のページに戻る"
@@ -146,8 +148,11 @@
     "GameSettings_Panel2UninstallGame": "アンインストール",
     "GameSettings_Panel2ConvertVersion": "リージョンを変更",
     "GameSettings_Panel2MoveGameLocationGame": "ゲームの位置を移動",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "ゲームをドライブのルートフォルダーに移動させることはできません！\r\nフォルダーを作成してから再度お試しください。",
     "GameSettings_Panel2StopGame": "ゲームを強制終了",
     "GameSettings_Panel3": "カスタム起動引数",
+    "GameSettings_Panel3CustomBGRegion": "カスタム背景を選択",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "カスタム背景をゲームごとに変更",
     "GameSettings_Panel4": "その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
@@ -192,7 +197,10 @@
     "GameStateInvalidFixed_Subtitle1": "以下のサーバーのゲームファイルのプロパティが修復されました:",
     "GameStateInvalidFixed_Subtitle2": "全てのファイルの整合性を確認するために、\"",
     "GameStateInvalidFixed_Subtitle3": "\"を\"",
-    "GameStateInvalidFixed_Subtitle4": "\"メニューから実行してください。"
+    "GameStateInvalidFixed_Subtitle4": "\"メニューから実行してください。",
+
+    "InstallFolderRootTitle": "ドライブのルートフォルダーが選択されています！",
+    "InstallFolderRootSubtitle": "ゲームをドライブのルートフォルダーにインストールすることはできません！新しいフォルダーを作成してから再度お試しください。"
   },
 
   "_GameRepairPage": {
@@ -431,6 +439,7 @@
     "AppBG": "背景",
     "AppBG_Checkbox": "カスタム背景を使用する",
     "AppBG_Note": "使用可能なフォーマット:\r\n画像: {0}\r\n動画: {1}",
+    "AppBG_Note_Regional": "カスタム背景をゲームごとに変える機能は、ランチャーのホーム画面の\"クイック設定\"ボタンに含まれています。 ",
 
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
@@ -463,14 +472,18 @@
     "AppThreads_Attention4": "。ダウンロードセッションの数が一致しなくなるため、",
     "AppThreads_Attention5": "全部最初からダウンロードし直すはめになる",
     "AppThreads_Attention6": "可能性があります。",
+    "AppThreads_AttentionTop1": "以下の問題は",
+    "AppThreads_AttentionTop2": "を有効化することで回避できます。",
 
     "DiscordRPC": "Discordアクティビティステータス",
     "DiscordRPC_Toggle": "ランチャーをDiscordのステータスに表示",
     "DiscordRPC_GameStatusToggle": "今遊んでいるゲームをステータスに表示",
     "DiscordRPC_IdleStatusToggle": "待機中もステータスに表示",
 
+    "ImageBackground": "画像背景の設定",
     "VideoBackground": "カスタム動画背景の設定",
     "VideoBackground_IsEnableAudio": "音を出す",
+    "VideoBackground_IsEnableAcrylicBackground": "動画背景を使用中もUIに透明効果を付ける",
     "VideoBackground_AudioVolume": "音量",
 
     "Update": "アップデートの確認",
@@ -578,7 +591,40 @@
     "NetworkSettings_Http_Redirect": "HTTPリダイレクトを許可",
     "NetworkSettings_Http_SimulateCookies": "HTTP Cookieのシミュレートを許可",
     "NetworkSettings_Http_UntrustedHttps": "信頼されていないHTTP証明書を許可",
-    "NetworkSettings_Http_Timeout": "HTTPクライアントのタイムアウト（秒単位）"
+    "NetworkSettings_Http_Timeout": "HTTPクライアントのタイムアウト（秒単位）",
+
+    "FileDownloadSettings_Title": "ダウンロードの設定",
+    "FileDownloadSettings_SpeedLimit_Title": "ダウンロード速度を制限",
+    "FileDownloadSettings_SpeedLimit_NumBox": "制限速度（MiB単位）",
+    "FileDownloadSettings_SpeedLimitHelp1": "デフォルト:",
+    "FileDownloadSettings_SpeedLimitHelp2": "速度制限の値の範囲:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/秒",
+    "FileDownloadSettings_SpeedLimitHelp4": "ダウンロードに使用できる最大帯域幅を制限します。この設定は",
+    "FileDownloadSettings_SpeedLimitHelp5": "と併用できません。",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "新型事前割り当てダウンローダー",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "ゲームのインストール、修復、キャッシュ更新にのみ適用されます。",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "チャンクサイズ（MiB単位）",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "デフォルト:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "チャンクサイズの値の範囲:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "この機能を有効化すると、ダウンローダーがファイルのダウンロード中にファイルサイズの動的な自動割り当てを行います。",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "これにより、ダウンローダーがデータチャンクを個別のファイルに分割せずに、直接ファイルに書き込むことができるようになります。",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "機能を無効化すると、ランチャーは従来の割り当て方式を使用し、データチャンクを個別のファイルへ書き込みます。また、",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "と",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "も同時に無効化されます。",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "注:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "この機能はゲームのインストール（初回インストール・更新・事前ダウンロードなど）、ゲームの修復、キャッシュ更新の処理にのみ適用されます。",
+
+    "FileDownloadSettings_BurstDownload_Title": "バーストダウンロードモード",
+    "FileDownloadSettings_BurstDownload_Subtitle": "ゲームの修復とキャッシュ更新にのみ適用されます。",
+    "FileDownloadSettings_BurstDownloadHelp1": "デフォルト:",
+    "FileDownloadSettings_BurstDownloadHelp2": "機能を有効化すると、",
+    "FileDownloadSettings_BurstDownloadHelp3": "と",
+    "FileDownloadSettings_BurstDownloadHelp4": "のダウンロードプロセスが並行して行われるようになり、より効率的になります。",
+    "FileDownloadSettings_BurstDownloadHelp5": "機能を無効化すると、",
+    "FileDownloadSettings_BurstDownloadHelp6": "と",
+    "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。"
   },
 
   "_Misc": {
@@ -706,7 +752,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "（ランチャー不明）",
 
-    "ImageCropperTitle": "画像の表示範囲を選択"
+    "ImageCropperTitle": "画像の表示範囲を選択",
+
+    "IsBytesMoreThanBytes": "= {0} バイト (-/+ {1})",
+    "IsBytesUnlimited": "= 無制限",
+    "IsBytesNotANumber": "= 不正な数値"
   },
 
   "_BackgroundNotification": {
@@ -883,7 +933,7 @@
 
     "DownloadSettingsTitle": "ダウンロード設定",
     "DownloadSettingsOption1": "インストール完了後にゲームを起動",
-    
+
     "OpenInExternalBrowser": "外部ブラウザで開く",
     "CloseOverlay": "閉じる"
   },
@@ -1409,5 +1459,34 @@
     "Audio_PlaybackDev_Headphones": "ヘッドホン",
     "Audio_PlaybackDev_Speakers": "スピーカー",
     "Audio_PlaybackDev_TV": "TV"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcherはトレイに最小化されました",
+    "WindowHiddenToTray_Subtitle": "ランチャーはバックグラウンドで動作中です。\r\nこの通知またはタスクトレイのアイコンをクリックすると元のウィンドウに戻ります。",
+
+    "GameInstallCompleted_Title": "{0}をプレイする準備ができました",
+    "GameInstallCompleted_Subtitle": "{0}のインストールに成功しました！",
+
+    "GameUpdateCompleted_Title": "{0}がアップデートされました",
+    "GameUpdateCompleted_Subtitle": "{0}がバージョン{1}にアップデートされました！",
+
+    "GamePreloadCompleted_Title": "{0}の事前ダウンロードが完了しました",
+
+    "GameRepairCheckCompleted_Title": "ゲームの修復チェックが完了しました",
+    "GameRepairCheckCompletedFound_Subtitle": "{0}個のファイルをアップデート/修復する必要があります。この通知をクリックするとランチャーに戻ります。",
+    "GameRepairCheckCompletedNotFound_Subtitle": "アップデート/修復が必要なファイルはありません。",
+
+    "GameRepairDownloadCompleted_Title": "ゲームの修復ダウンロードが完了しました",
+    "GameRepairDownloadCompleted_Subtitle": "{0}個のファイルがアップデート/修復されました。",
+
+    "CacheUpdateCheckCompleted_Title": "キャッシュ更新チェックが完了しました",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0}個のキャッシュをアップデートする必要があります。この通知をクリックするとランチャーに戻ります。",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "アップデートが必要なキャッシュはありません。",
+
+    "CacheUpdateDownloadCompleted_Title": "キャッシュ更新ダウンロードが完了しました",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0}個のキャッシュがアップデートされました。",
+
+    "GenericClickNotifToGoBack_Subtitle": "この通知をクリックするとランチャーに戻ります。"
   }
 }

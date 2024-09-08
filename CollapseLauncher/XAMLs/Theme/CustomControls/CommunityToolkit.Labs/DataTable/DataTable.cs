@@ -15,7 +15,7 @@ namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 /// A <see cref="DataTable"/> is a <see cref="Panel"/> which lays out <see cref="DataColumn"/>s based on
 /// their configured properties (akin to <see cref="ColumnDefinition"/>); similar to a <see cref="Grid"/> with a single row.
 /// </summary>
-public class DataTable : Panel
+public partial class DataTable : Panel
 {
     // TODO: We should cache this result and update if column properties change
     internal bool IsAnyColumnAuto => Children.Any(static e => e is DataColumn { CurrentWidth.GridUnitType: GridUnitType.Auto });

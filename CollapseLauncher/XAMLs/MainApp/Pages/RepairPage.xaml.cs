@@ -1,6 +1,7 @@
 ﻿#if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
+    using CollapseLauncher.Helper;
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
@@ -67,6 +68,17 @@
 
                 RepairFilesBtn.Visibility = IsGameBroken ? Visibility.Visible : Visibility.Collapsed;
                 CheckFilesBtn.Visibility = IsGameBroken ? Visibility.Collapsed : Visibility.Visible;
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    WindowUtility.Tray_ShowNotification(
+                                                        Lang._NotificationToast.GameRepairCheckCompleted_Title,
+                                                        IsGameBroken ?
+                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty._GameRepair.AssetEntry.Count) :
+                                                            Lang._NotificationToast.GameRepairCheckCompletedNotFound_Subtitle
+                                                       );
+                }
             }
             catch (TaskCanceledException)
             {
@@ -98,6 +110,8 @@
             {
                 AddEvent();
 
+                int assetCount = CurrentGameProperty._GameRepair.AssetEntry.Count;
+
                 await CurrentGameProperty._GameRepair.StartRepairRoutine();
 
                 RepairFilesBtn.IsEnabled = false;
@@ -106,6 +120,15 @@
 
                 RepairFilesBtn.Visibility = Visibility.Collapsed;
                 CheckFilesBtn.Visibility = Visibility.Visible;
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    WindowUtility.Tray_ShowNotification(
+                                                        Lang._NotificationToast.GameRepairDownloadCompleted_Title,
+                                                        string.Format(Lang._NotificationToast.GameRepairDownloadCompleted_Subtitle, assetCount)
+                                                       );
+                }
             }
             catch (TaskCanceledException)
             {

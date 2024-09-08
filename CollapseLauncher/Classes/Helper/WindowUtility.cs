@@ -144,7 +144,7 @@
             }
 
             internal static double CurrentWindowMonitorScaleFactor
-                => (CurrentWindowMonitorDpi * 100 + (96 >> 1)) / 96 / 100.0;
+                => (CurrentWindowMonitorDpi * (double)100 + (96 >> 1)) / 96 / 100.0;
 
             internal static Rect CurrentWindowPosition
             {

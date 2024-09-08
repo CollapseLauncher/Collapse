@@ -107,6 +107,27 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
         get => SettingsJsonNode.GetNodeValueEnum("DeviceLanguageVoiceType", LanguageVoice.Unset);
         set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageVoiceType", value, JsonEnumStoreType.AsNumber);
     }
+    
+    [JsonPropertyName("PlayerPrefs_StringContainer")]
+    public string? PlayerPrefsStringContainer
+    {
+        get => SettingsJsonNode.GetNodeValue("PlayerPrefs_StringContainer", "");
+        set => SettingsJsonNode.SetNodeValue("DeviceLanguageVoiceType", value);
+    }
+
+    [JsonPropertyName("PlayerPrefs_IntContainer")]
+    public string? PlayerPrefsIntContainer
+    {
+        get => SettingsJsonNode.GetNodeValue("PlayerPrefs_IntContainer", "");
+        set => SettingsJsonNode.SetNodeValue("PlayerPrefs_IntContainer", value);
+    }
+
+    [JsonPropertyName("PlayerPrefs_FloatContainer")]
+    public string? PlayerPrefsFloatContainer
+    {
+        get => SettingsJsonNode.GetNodeValue("PlayerPrefs_FloatContainer", "");
+        set => SettingsJsonNode.SetNodeValue("PlayerPrefs_FloatContainer", value);
+    }
 
     [JsonPropertyName("LocalUILayoutPlatform ")]
     public int LocalUILayoutPlatform

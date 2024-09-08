@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
     "UnhandledSubtitle4": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:\r\nAkibat miHoYo A/B testing, Collapse tidak dapat memproses pengaturan ini: App_Settings_h2319593470.\r\nKami mohon maaf atas ketidaknyamanannya.",
+    "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
+    "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
     "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
@@ -146,8 +148,11 @@
     "GameSettings_Panel2UninstallGame": "Hapus Game",
     "GameSettings_Panel2ConvertVersion": "Ubah Versi",
     "GameSettings_Panel2MoveGameLocationGame": "Pindah Lokasi Game",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Kamu tidak bisa memilih lokasi root dari drivemu!\r\nMohon buat folder baru dan coba lagi.",
     "GameSettings_Panel2StopGame": "Tutup Paksa Game",
     "GameSettings_Panel3": "Penyesuaian Argumen Pemulaian",
+    "GameSettings_Panel3CustomBGRegion": "Ubah Latar Belakang Regional",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Latar Belakang Lainnya untuk Region",
     "GameSettings_Panel4": "Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
@@ -192,7 +197,10 @@
     "GameStateInvalidFixed_Subtitle1": "File Properti Game telah berhasil diperbaiki untuk region:",
     "GameStateInvalidFixed_Subtitle2": "Silahkan lakukan \"",
     "GameStateInvalidFixed_Subtitle3": "\" pada menu \"",
-    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi."
+    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi.",
+
+    "InstallFolderRootTitle": "Tidak Bisa Memilih Drive Root!",
+    "InstallFolderRootSubtitle": "Kamu tidak bisa memasang game di lokasi root dari drivemu! Mohon buat folder baru dan coba lagi."
   },
 
   "_GameRepairPage": {
@@ -431,6 +439,7 @@
     "AppBG": "Latar Belakang",
     "AppBG_Checkbox": "Gunakan Latar Belakang Lainnya",
     "AppBG_Note": "Format yang didukung:\r\nGambar: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Pengaturan Latar Belakang Lainnya untuk region tertentu berada di tombol \"Pengaturan Cepat\" pada menu awal launcher.",
 
     "AppThreads": "Utas Aplikasi",
     "AppThreads_Download": "Utas Unduhan",
@@ -463,14 +472,18 @@
     "AppThreads_Attention4": "nilai dari pengaturan dikarenakan hal ini akan membuat proses unduhan kamu",
     "AppThreads_Attention5": "TERULANG DARI AWAL",
     "AppThreads_Attention6": "dikarenakan jumlah sesi yang dibutuhkan untuk unduhan tidak sama.",
+    "AppThreads_AttentionTop1": "Issue dibawah tidak akan berpengaruh apabila fitur",
+    "AppThreads_AttentionTop2": "dinyalakan.",
 
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Perlihatkan Discord Presence",
     "DiscordRPC_GameStatusToggle": "Munculkan game yang dimainkan pada status Discord",
     "DiscordRPC_IdleStatusToggle": "Tampilkan RPC saat idle",
 
+    "ImageBackground": "Pengaturan Gambar Latar Belakang",
     "VideoBackground": "Pengaturan Latar Belakang Video",
     "VideoBackground_IsEnableAudio": "Nyalakan Suara",
+    "VideoBackground_IsEnableAcrylicBackground": "Gunakan Efek Akrilik saat menggunakan Latar Belakang Video",
     "VideoBackground_AudioVolume": "Volume Suara",
 
     "Update": "Periksa Pembaruan",
@@ -578,7 +591,40 @@
     "NetworkSettings_Http_Redirect": "Perbolehkan Pengalihan HTTP",
     "NetworkSettings_Http_SimulateCookies": "Perbolehkan Simuliasi Cookie pada HTTP",
     "NetworkSettings_Http_UntrustedHttps": "Perbolehkan Sertifikat HTTPS Untrusted",
-    "NetworkSettings_Http_Timeout": "Masa Tenggang HTTP Client (dalam Detik)"
+    "NetworkSettings_Http_Timeout": "Masa Tenggang HTTP Client (dalam detik)",
+
+    "FileDownloadSettings_Title": "Pengaturan Unduhan File",
+    "FileDownloadSettings_SpeedLimit_Title": "Batasi Kecepatan Unduhan",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Batasan Kecepatan (dalam MiB)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Nilai Bawaan:",
+    "FileDownloadSettings_SpeedLimitHelp2": "Jangkauan nilai untuk Batasan Kecepatan:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/d",
+    "FileDownloadSettings_SpeedLimitHelp4": "Membatasi berapa banyak maksimum bandwidth yang diperbolehkan saat mengunduh. Pengaturan",
+    "FileDownloadSettings_SpeedLimitHelp5": "tidak dapat digunakan apabila pengaturan Batasan Kecepatan sedang digunakan.",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Gunakan Pengunduh Baru Berbasis Prealokasi",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Hanya untuk Pemasangan Game, Perbaikan Game dan Pembaruan Cache.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Ukuran Potongan (dalam MiB)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Nilai Bawaan:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Jangkauan nilai untuk Ukuran Potongan:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Saat dinyalakan, pengunduh akan mengalokasikan ukuran file secara dinamik saat proses unduhan berlangsung.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Fitur ini memberikan proses pengunduhan akses untuk mengunduh potongan-potongan data ke dalam file tanpa harus memisahkan terlebih dahulu ke dalam file terpisah.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Saat dimatikan, launcher akan balik menggunakan proses unduhan yang lama dimana potongan-potongan data akan diunduh ke dalam file terpisah. Pengaturan",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "dan",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "tidak dapat digunakan saat pengaturan \"Pengunduhan Baru Berbasis Prealokasi\" dimatikan.",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Catatan:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Pengaturan ini hanya tersedia untuk proses unduhan (seperti Pemasangan Game, Pembaruan Game dan Pre-load) serta untuk Perbaikan Game dan Pembaruan Cache.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Mode Unduhan File Beruntun",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Hanya untuk Perbaikan Game dan Pembaruan Cache.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Nilai Bawaan:",
+    "FileDownloadSettings_BurstDownloadHelp2": "Ketika dinyalakan, pengaturan ini akan membuat proses unduhan untuk beberapa file pada",
+    "FileDownloadSettings_BurstDownloadHelp3": "dan",
+    "FileDownloadSettings_BurstDownloadHelp4": "berjalan secara bersamaan sehingga proses unduhan berjalan lebih cepat dan efisien.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Ketika dimatikan, proses unduhan pada",
+    "FileDownloadSettings_BurstDownloadHelp6": "dan",
+    "FileDownloadSettings_BurstDownloadHelp7": "akan berjalan satu-per-satu."
   },
 
   "_Misc": {
@@ -706,7 +752,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nama launcher tidak diketahui)",
 
-    "ImageCropperTitle": "Memotong Gambar"
+    "ImageCropperTitle": "Memotong Gambar",
+
+    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
+    "IsBytesUnlimited": "= Tidak Terbatas",
+    "IsBytesNotANumber": "= Bukan Nomor"
   },
 
   "_BackgroundNotification": {
@@ -883,7 +933,7 @@
 
     "DownloadSettingsTitle": "Pengaturan Unduhan",
     "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
-    
+
     "OpenInExternalBrowser": "Buka di Browser Eksternal",
     "CloseOverlay": "Tutup Overlay"
   },
@@ -1409,5 +1459,34 @@
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
     "Audio_PlaybackDev_TV": "Televisi"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher Disembunyikan ke Tray",
+    "WindowHiddenToTray_Subtitle": "Saat ini launcher berjalan di latar belakang.\r\nKlik notifikasi ini atau ikon pada tray untuk kembali ke window.",
+
+    "GameInstallCompleted_Title": "Game {0} sudah Siap untuk Dimainkan",
+    "GameInstallCompleted_Subtitle": "Game {0} telah berhasil terpasang!",
+
+    "GameUpdateCompleted_Title": "Game {0} sudah Berhasil Diperbarui",
+    "GameUpdateCompleted_Subtitle": "Game {0} sudah berhasil diperbarui ke v{1}!",
+
+    "GamePreloadCompleted_Title": "Pra-unduh untuk {0} telah Selesai Diunduh",
+
+    "GameRepairCheckCompleted_Title": "Pemeriksaan pada Perbaikan Game sudah Selesai",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} file perlu diperbarui atau diperbaiki. Klik notifikasi ini untuk kembali ke launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Tidak ada file yang perlu diperbarui atau diperbaiki.",
+
+    "GameRepairDownloadCompleted_Title": "Unduhan pada Perbaikan Game sudah Selesai",
+    "GameRepairDownloadCompleted_Subtitle": "{0} file telah berhasil diperbarui atau diperbaiki.",
+
+    "CacheUpdateCheckCompleted_Title": "Pemeriksaan pada Pembaruan Cache sudah Selesai",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} file cache perlu diperbarui. Klik notifikasi ini untuk kembali ke launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Tidak ada file cache yang perlu diperbarui.",
+
+    "CacheUpdateDownloadCompleted_Title": "Unduhan pada Pembaruan Cache sudah Selesai",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} file cache telah berhasil diperbarui.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Klik notifikasi ini untuk kembali ke launcher."
   }
 }

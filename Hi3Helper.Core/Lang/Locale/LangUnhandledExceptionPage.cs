@@ -16,6 +16,8 @@
                 public string UnhandledSubtitle3 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledSubtitle3;
                 public string UnhandledTitle4 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledTitle4;
                 public string UnhandledSubtitle4 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledSubtitle4;
+                public string UnhandledTitleDiskCrc { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledTitleDiskCrc;
+                public string UnhandledSubDiskCrc { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledSubDiskCrc;
                 public string CopyClipboardBtn1 { get; set; } = LangFallback?._UnhandledExceptionPage.CopyClipboardBtn1;
                 public string CopyClipboardBtn2 { get; set; } = LangFallback?._UnhandledExceptionPage.CopyClipboardBtn2;
                 public string GoBackPageBtn1 { get; set; } = LangFallback?._UnhandledExceptionPage.GoBackPageBtn1;

@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace CollapseLauncher.CustomControls
 {
-    public class CompressedTextBlock : Grid
+    public partial class CompressedTextBlock : Grid
     {
         #region Context
         private const string OpenBracketMarks = "「『“‘（《〈【〖〔［｛";

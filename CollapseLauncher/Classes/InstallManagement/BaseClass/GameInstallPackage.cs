@@ -1,7 +1,7 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
@@ -9,27 +9,29 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace CollapseLauncher.InstallManager
 {
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     internal class GameInstallPackage : IAssetIndexSummary
     {
         #region Properties
-        public string                   URL             { get; set; }
-        public string                   DecompressedURL { get; set; }
-        public string                   Name            { get; set; }
-        public string                   PathOutput      { get; set; }
-        public GameInstallPackageType   PackageType     { get; set; }
-        public long                     Size            { get; set; }
-        public long                     SizeRequired    { get; set; }
-        public long                     SizeDownloaded  { get; set; }
-        public GameVersion              Version         { get; set; }
-        public byte[]                   Hash            { get; set; }
-        public string                   HashString      { get => HexTool.BytesToHexUnsafe(Hash); }
-        public string                   LanguageID      { get; set; }
-        public List<GameInstallPackage> Segments        { get; set; }
-        public string                   RunCommand      { get; set; }
-        public string                   PluginId        { get; set; }
+        public string                   URL                     { get; set; }
+        public string                   DecompressedURL         { get; set; }
+        public string                   Name                    { get; set; }
+        public string                   PathOutput              { get; set; }
+        public GameInstallPackageType   PackageType             { get; set; }
+        public long                     Size                    { get; set; }
+        public long                     SizeRequired            { get; set; }
+        public long                     SizeDownloaded          { get; set; }
+        public GameVersion              Version                 { get; set; }
+        public byte[]                   Hash                    { get; set; }
+        public string                   HashString              { get => HexTool.BytesToHexUnsafe(Hash); }
+        public string                   LanguageID              { get; set; }
+        public List<GameInstallPackage> Segments                { get; set; }
+        public string                   RunCommand              { get; set; }
+        public string                   PluginId                { get; set; }
+        public bool                     IsUseLegacyDownloader   { get; set; }
         #endregion
 
         public GameInstallPackage(RegionResourcePlugin packageProperty, string pathOutput)

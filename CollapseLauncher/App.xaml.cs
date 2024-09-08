@@ -34,9 +34,21 @@ namespace CollapseLauncher
                 DebugSettings.IsXamlResourceReferenceTracingEnabled = true;
                 DebugSettings.IsBindingTracingEnabled = true;
 #endif
-                DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
-                DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true); };
-                UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true); };
+                DebugSettings.XamlResourceReferenceFailed += static (sender, args) =>
+                {
+                    LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
+                };
+                DebugSettings.BindingFailed += (sender, args) =>
+                {
+                    LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
+                };
+                UnhandledException += (sender, e) =>
+                {
+                    LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true);
+                    MainEntryPoint.SpawnFatalErrorConsole(e!.Exception);
+                };
             }
 
             RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;

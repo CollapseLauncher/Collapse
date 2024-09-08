@@ -1005,29 +1005,6 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
-            async void CopyTextToClipboard(object sender, RoutedEventArgs e)
-            {
-                InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
-                if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
-                {
-                    FontIcon fontIcon = panel.Children[0] as FontIcon;
-                    TextBlock textBlock = panel.Children[1] as TextBlock;
-
-                    string lastGlyph = fontIcon.Glyph;
-                    string lastText = textBlock.Text;
-
-                    fontIcon.Glyph = "";
-                    textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
-                    btn.IsEnabled = false;
-
-                    await Task.Delay(1000);
-
-                    fontIcon.Glyph = lastGlyph;
-                    textBlock.Text = lastText;
-                    btn.IsEnabled = true;
-                }
-            }
-
             Button copyButton = null;
 
             try
@@ -1036,7 +1013,8 @@ namespace CollapseLauncher.Dialogs
                 string title = ErrorSender.ExceptionTitle;
                 string subtitle = ErrorSender.ExceptionSubtitle;
 
-                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
+                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) &&
+                                        (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
 
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
@@ -1085,6 +1063,29 @@ namespace CollapseLauncher.Dialogs
             {
                 if (copyButton != null)
                     copyButton.Click -= CopyTextToClipboard;
+            }
+        }
+
+        private static async void CopyTextToClipboard(object sender, RoutedEventArgs e)
+        {
+            InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
+            if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
+            {
+                FontIcon  fontIcon  = panel.Children[0] as FontIcon;
+                TextBlock textBlock = panel.Children[1] as TextBlock;
+
+                string lastGlyph = fontIcon!.Glyph;
+                string lastText  = textBlock!.Text;
+
+                fontIcon.Glyph = "";
+                textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
+                btn.IsEnabled  = false;
+
+                await Task.Delay(1000);
+
+                fontIcon.Glyph = lastGlyph;
+                textBlock.Text = lastText;
+                btn.IsEnabled  = true;
             }
         }
 

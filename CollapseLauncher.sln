@@ -14,13 +14,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.EncTool.Test", "Hi3Helper.EncTool.Test\Hi3Helper.EncTool.Test.csproj", "{1BAB5CE4-640E-41A7-B529-4842D378BD4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj", "{D145686A-C0AA-4164-9854-A8942CB1DFDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj", "{D145686A-C0AA-4164-9854-A8942CB1DFDE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoSetupHelper", "InnoSetupHelper\InnoSetupHelper.csproj", "{21691306-8D30-4993-98A2-A5AE0712D81A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRPC", "Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj", "{2004AA88-FFC3-4186-B11A-3E4C577A3D25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon", "Hi3Helper.Sophon\Hi3Helper.Sophon.csproj", "{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageEx", "ImageEx\ImageEx\ImageEx.csproj", "{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +90,12 @@ Global
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Publish|x64.Build.0 = Release|x64
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.ActiveCfg = Release|x64
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.Build.0 = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Debug|x64.ActiveCfg = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Debug|x64.Build.0 = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.ActiveCfg = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.Build.0 = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Release|x64.ActiveCfg = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

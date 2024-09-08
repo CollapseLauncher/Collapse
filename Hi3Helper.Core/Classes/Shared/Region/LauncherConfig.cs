@@ -76,6 +76,10 @@ namespace Hi3Helper.Shared.Region
 
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
             IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
+
+            // Initialize the DownloadClient speed at start.
+            // ignored
+            _ = DownloadSpeedLimit;
         }
 
         public static bool IsConfigKeyExist(string key) => appIni.Profile![SectionName!]!.ContainsKey(key!);
@@ -277,15 +281,29 @@ namespace Hi3Helper.Shared.Region
             get => GetAppConfigValue("EnableConsole").ToBoolNullable() ?? false;
             set => SetAppConfigValue("EnableConsole", value);
         }
+
         public static bool IsMultipleInstanceEnabled
         {
             get => GetAppConfigValue("EnableMultipleInstance").ToBoolNullable() ?? false;
             set => SetAndSaveConfigValue("EnableMultipleInstance", value);
         }
+
         public static bool IsShowRegionChangeWarning
         {
             get => GetAppConfigValue("ShowRegionChangeWarning").ToBool();
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
+        }
+
+        public static bool EnableAcrylicEffect
+        {
+            get => GetAppConfigValue("EnableAcrylicEffect").ToBoolNullable() ?? false;
+            set => SetAndSaveConfigValue("EnableAcrylicEffect", value);
+        }
+
+        public static bool IsUseVideoBGDynamicColorUpdate
+        {
+            get => GetAppConfigValue("IsUseVideoBGDynamicColorUpdate").ToBoolNullable() ?? false;
+            set => SetAndSaveConfigValue("IsUseVideoBGDynamicColorUpdate", value);
         }
 
         public static bool IsIntroEnabled
@@ -299,6 +317,50 @@ namespace Hi3Helper.Shared.Region
             get => GetAppConfigValue("IsBurstDownloadModeEnabled").ToBoolNullable() ?? true;
             set => SetAndSaveConfigValue("IsBurstDownloadModeEnabled", value);
         }
+
+        public static bool IsUsePreallocatedDownloader
+        {
+            get => GetAppConfigValue("IsUsePreallocatedDownloader").ToBoolNullable() ?? true;
+            set => SetAndSaveConfigValue("IsUsePreallocatedDownloader", value);
+        }
+
+        public static bool IsUseDownloadSpeedLimiter
+        {
+            get => GetAppConfigValue("IsUseDownloadSpeedLimiter").ToBoolNullable() ?? true;
+            set
+            {
+                SetAndSaveConfigValue("IsUseDownloadSpeedLimiter", value);
+
+                _ = DownloadSpeedLimit;
+            }
+        }
+
+        public static long DownloadSpeedLimit
+        {
+            get => DownloadSpeedLimitCached = GetAppConfigValue("DownloadSpeedLimit").ToLong();
+            set => SetAndSaveConfigValue("DownloadSpeedLimit", DownloadSpeedLimitCached = value);
+        }
+
+        public static int DownloadChunkSize
+        {
+            get => GetAppConfigValue("DownloadChunkSize").ToInt();
+            set => SetAndSaveConfigValue("DownloadChunkSize", value);
+        }
+
+        private static long _downloadSpeedLimitCached = 0; // Default: 0 == Unlimited
+        public static long DownloadSpeedLimitCached
+        {
+            get => _downloadSpeedLimitCached;
+            set
+            {
+                _downloadSpeedLimitCached = IsUseDownloadSpeedLimiter ? value : 0;
+                DownloadSpeedLimitChanged?.Invoke(null, _downloadSpeedLimitCached);
+            }
+        }
+
+#nullable enable
+        public static event EventHandler<long>? DownloadSpeedLimitChanged;
+#nullable restore
 
         private static bool? _cachedIsInstantRegionChange = null;
         public static bool IsInstantRegionChange
@@ -345,6 +407,7 @@ namespace Hi3Helper.Shared.Region
             { "ThemeMode", new IniValue(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
+            { "IsUseVideoBGDynamicColorUpdate", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
             { "ShowGamePlaytime", true},
@@ -376,12 +439,17 @@ namespace Hi3Helper.Shared.Region
             { "IsEnableSophon", true},
             { "SophonCpuThread", 0},
             { "SophonHttpConnInt", 0},
+            { "SophonPreloadApplyPerfMode", false },
 
             { "IsUseProxy", false },
             { "IsAllowHttpRedirections", true },
             { "IsAllowHttpCookies", false },
             { "IsAllowUntrustedCert", false },
-            { "IsBurstDownloadModeEnabled", false },
+            { "IsUseDownloadSpeedLimiter", false },
+            { "IsUsePreallocatedDownloader", true },
+            { "IsBurstDownloadModeEnabled", true },
+            { "DownloadSpeedLimit", 0 },
+            { "DownloadChunkSize", 4 << 20 },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },

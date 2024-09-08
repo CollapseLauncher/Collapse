@@ -10,7 +10,7 @@ namespace CollapseLauncher.CustomControls
 {
     public enum ContentDialogTheme { Informational, Warning, Error, Success }
 
-    public class ContentDialogCollapse : ContentDialog
+    public partial class ContentDialogCollapse : ContentDialog
     {
         public string ThemeTitleGlyph { get; set; }
         public ContentDialogTheme Theme { get; set; }
