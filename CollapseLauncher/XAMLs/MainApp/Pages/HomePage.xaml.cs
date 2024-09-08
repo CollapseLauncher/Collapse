@@ -2552,15 +2552,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Set Hand Cursor
-        private static void ChangeCursor(UIElement element, InputCursor cursor)
-        {
-            typeof(UIElement).InvokeMember("ProtectedCursor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, element, new object[] { cursor });
-        }
-
-        private void SetHandCursor(object sender, RoutedEventArgs e = null)
-        {
-            ChangeCursor((UIElement)sender, InputSystemCursor.Create(InputSystemCursorShape.Hand));
-        }
+        private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
+            (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
         #endregion
 
         #region Hyper Link Color
