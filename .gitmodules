@@ -21,4 +21,4 @@
 	url = https://github.com/CollapseLauncher/ImageEx
 [submodule "SevenZipExtractor"]
 	path = SevenZipExtractor
-	url = https://github.com/neon-nyan/SevenZipExtractor
+	url = https://github.com/CollapseLauncher/SevenZipExtractor
