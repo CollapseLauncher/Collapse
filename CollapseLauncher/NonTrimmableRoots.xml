@@ -13,24 +13,20 @@
 
 	<assembly fullname="CollapseLauncher">
 		<!-- Protect generated code from trimming -->
-		<!--
 		<namespace fullname="CollapseLauncher.CollapseLauncher_XamlTypeInfo" preserve="all" />
-		-->
 		<!-- Preserve COM Interop used in project code when trimming -->
-		<!--
 		<type fullname="CollapseLauncher.PInvoke" preserve="all" />
 		<type fullname="CollapseLauncher.HRESULT" preserve="all" />
 		<type fullname="CollapseLauncher.CLSCTX" preserve="all" />
-		-->
 	</assembly>
+	
 	<!-- Protect built-in libs COM from trimming -->
-	<!--
 	<assembly fullname="System.Private.CoreLib">
 		<namespace fullname="Internal.Runtime.InteropServices" preserve="all" />
 		<namespace fullname="System.Runtime.CompilerServices" preserve="all" />
 	</assembly>
+	
 	<assembly fullname="WinRT.Runtime">
 		<type fullname="WinRT.TypeExtensions" preserve="all" />
 	</assembly>
-	-->
 </linker>
