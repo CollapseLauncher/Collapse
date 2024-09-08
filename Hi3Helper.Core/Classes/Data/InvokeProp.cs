@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -273,11 +274,20 @@ namespace Hi3Helper
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode, EntryPoint = "QueryFullProcessImageNameW")]
         public static unsafe extern bool QueryFullProcessImageName(nint hProcess, int dwFlags, char* lpExeName, ref int lpdwSize);
 
+        private const int DefaultNtQueryChangedLen = 4 << 17;
+        private static int DynamicNtQueryChangedBufferLen = DefaultNtQueryChangedLen;
+
         public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName, string checkForOriginPath = "")
         {
+            // If the buffer length is more than 2 MiB, then reset the length to default
+            if (DynamicNtQueryChangedBufferLen > (2 << 20))
+            {
+                DynamicNtQueryChangedBufferLen = DefaultNtQueryChangedLen;
+            }
+
             // Initialize the first buffer to 512 KiB
             ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
-            byte[] NtQueryCachedBuffer = arrayPool.Rent(4 << 17);
+            byte[] NtQueryCachedBuffer = arrayPool.Rent(DynamicNtQueryChangedBufferLen);
             bool isReallocate = false;
             uint length = 0;
 
@@ -288,13 +298,13 @@ namespace Hi3Helper
             try
             {
                 // If the buffer request is more than 2 MiB, then return false
-                if (length > (2 << 20))
+                if (DynamicNtQueryChangedBufferLen > (2 << 20))
                     return false;
 
                 // If buffer reallocation is requested, then re-rent the buffer
                 // from ArrayPool<T>.Shared
                 if (isReallocate)
-                    NtQueryCachedBuffer = arrayPool.Rent((int)length);
+                    NtQueryCachedBuffer = arrayPool.Rent(DynamicNtQueryChangedBufferLen);
 
                 // Get the pointer of the buffer
                 fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
@@ -307,6 +317,8 @@ namespace Hi3Helper
                     const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
                     if (hNtQuerySystemInformationResult == STATUS_INFO_LENGTH_MISMATCH || length > NtQueryCachedBuffer.Length)
                     {
+                        // Round up length
+                        DynamicNtQueryChangedBufferLen = (int)BitOperations.RoundUpToPowerOf2(length);
                         LogWriteLine($"Buffer requested is insufficient! Requested: {length} > Capacity: {NtQueryCachedBuffer.Length}, Resizing the buffer...", LogType.Warning, true);
                         isReallocate = true;
                         goto StartOver;
