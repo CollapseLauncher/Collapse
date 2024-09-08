@@ -464,6 +464,8 @@
     "SophonHttpNumberBox": "Jumlah Max. Koneksi HTTP",
     "SophonHelp_Http": "Bagian ini mengatur banyaknya jumlah koneksi yang akan dipakai oleh Collapse saat mengunduh chunks secara bersamaan.",
     "SophonToggle": "Gunakan Sophon pada Wilayah yang Didukung",
+    "SophonPredownPerfMode_Toggle": "[EKSPERIMENTAL] Gunakan semua CPU core saat menerapkan pra-unduh",
+    "SophonPredownPerfMode_Tooltip": "Saat dinyalakan, semua CPU thread pada sistem-mu akan digunakan seluruhnya. Matikan apabila masalah terjadi.",
 
     "AppThreads_Attention": "Perhatian",
     "AppThreads_Attention1": "Sebelum kamu mengubah pengaturan",
