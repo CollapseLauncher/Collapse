@@ -418,8 +418,59 @@ namespace Hi3Helper
 
             return false;
         }
+
+#nullable enable
+        public static unsafe string? GetProcessPathByProcessId(int processId)
+        {
+            // Try open the process and get the handle
+            const int QueryLimitedInformation = 0x1000;
+            nint processHandle = OpenProcess(QueryLimitedInformation, false, (uint)processId);
+
+            // If failed, then log the Win32 error and return null.
+            if (processHandle == nint.Zero)
+            {
+                LogWriteLine($"Error happened while operating OpenProcess(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                return null;
+            }
+
+            // Try rent the new buffer to get the command line
+            int bufferProcessCmdLen = 1 << 10;
+            int bufferProcessCmdLenReturn = bufferProcessCmdLen;
+            char[] bufferProcessCmd = ArrayPool<char>.Shared.Rent(bufferProcessCmdLen);
+
+            try
+            {
+                // Cast processCmd buffer as pointer
+                fixed (char* bufferProcessCmdPtr = &bufferProcessCmd[0])
+                {
+                    // Get the command line query of the process
+                    bool hQueryFullProcessImageNameResult = QueryFullProcessImageName(processHandle, 0, bufferProcessCmdPtr, ref bufferProcessCmdLenReturn);
+                    // If the query is unsuccessful, then log the Win32 error and return false.
+                    if (!hQueryFullProcessImageNameResult)
+                    {
+                        LogWriteLine($"Error happened while operating QueryFullProcessImageName(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                        return null;
+                    }
+
+                    // If the requested return length is more than capacity (-2 for null terminator), then return false.
+                    if (bufferProcessCmdLenReturn > bufferProcessCmdLen - 2)
+                    {
+                        LogWriteLine($"The process command line length is more than requested length: {bufferProcessCmdLen - 2} < return {bufferProcessCmdLenReturn}", LogType.Error, true);
+                        return null;
+                    }
+
+                    // Return string
+                    return new string(bufferProcessCmdPtr, 0, bufferProcessCmdLenReturn);
+                }
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(bufferProcessCmd);
+            }
+        }
+#nullable restore
         #endregion
-        
+
         #region shell32
         [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]

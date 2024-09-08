@@ -3,7 +3,7 @@
 #nullable enable
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameSettings
+    internal interface IGameSettings : IGameSettingsUniversal
     {
         Exception? ImportSettings(string? gameBasePath = null);
         Exception? ExportSettings(bool isCompressed = true, string? parentPathToImport = null, string[]? relativePathToImport = null);

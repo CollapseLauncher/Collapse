@@ -108,10 +108,38 @@ namespace CollapseLauncher.Statics
         // The Process.GetProcessesByName(procName) will get an array of the process list. The output is piped into null-break operator "?" which will
         // returns a null if something goes wrong. If not, then pass it to .Where(x) method which will select the given value with the certain logic.
         // (in this case, we need to ensure that the MainWindowHandle is not a non-zero pointer) and then piped into null-break operator.
-        internal Process? GetGameProcessWithActiveWindow() =>
-            Process
-               .GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset!.GameExecutableName))
-               .FirstOrDefault(x => x.MainWindowHandle != IntPtr.Zero);
+        internal Process? GetGameProcessWithActiveWindow()
+        {
+            Process[] processArr = Process.GetProcessesByName(_GameExecutableNameWithoutExtension);
+            int selectedIndex = -1;
+            try
+            {
+                for (int i = 0; i < processArr.Length; i++)
+                {
+                    Process process = processArr[i];
+                    int processId = process.Id;
+
+                    string? processPath = InvokeProp.GetProcessPathByProcessId(processId);
+                    string expectedProcessPath = Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName);
+                    if (string.IsNullOrEmpty(processPath) || !expectedProcessPath.Equals(processPath, StringComparison.OrdinalIgnoreCase)
+                     || process.MainWindowHandle == IntPtr.Zero)
+                        continue;
+
+                    selectedIndex = i;
+                    return process;
+                }
+            }
+            finally
+            {
+                for (int i = 0; i < processArr.Length; i++)
+                {
+                    if (i == selectedIndex)
+                        continue;
+                    processArr[i].Dispose();
+                }
+            }
+            return null;
+        }
 #nullable disable
 
         /*

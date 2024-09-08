@@ -17,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Windows.Graphics.Imaging;
 using Windows.Media.Playback;
 using Windows.Storage;
@@ -398,9 +399,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
             DisposeMediaModules();
         }
 
-        public void WindowUnfocused()
+        public async void WindowUnfocused()
         {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(WindowUnfocusedInner());
+            await (BackgroundMediaUtility.SharedActionBlockQueue?.SendAsync(WindowUnfocusedInner()) ?? Task.CompletedTask);
         }
 
         private async Task WindowUnfocusedInner()
@@ -410,9 +411,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
             Pause();
         }
 
-        public void WindowFocused()
+        public async void WindowFocused()
         {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(WindowFocusedInner());
+            await (BackgroundMediaUtility.SharedActionBlockQueue?.SendAsync(WindowFocusedInner()) ?? Task.CompletedTask);
         }
 
         private async Task WindowFocusedInner()

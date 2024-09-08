@@ -106,6 +106,8 @@ namespace CollapseLauncher
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
             _localBackgroundHandler?.Dispose();
+            CurrentBackgroundHandler = null;
+            _localBackgroundHandler = null;
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
