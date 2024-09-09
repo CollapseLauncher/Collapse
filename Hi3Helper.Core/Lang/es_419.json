@@ -757,7 +757,7 @@
     "ImageCropperTitle": "Recortar Imagen",
 
     "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
-    "IsBytesUnlimited": "= Unlimited",
+    "IsBytesUnlimited": "= Sin Límite",
     "IsBytesNotANumber": "= NaN"
   },
 
