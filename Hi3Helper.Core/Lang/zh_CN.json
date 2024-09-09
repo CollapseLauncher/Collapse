@@ -464,6 +464,8 @@
     "SophonHttpNumberBox": "最大 HTTP 连接数",
     "SophonHelp_Http": "该值控制 Collapse 建立的用于下载分块的最大网络连接数。",
     "SophonToggle": "在受支持的区服启用 Sophon",
+    "SophonPredownPerfMode_Toggle": "［实验性］应用预下载时使用所有 CPU 核心",
+    "SophonPredownPerfMode_Tooltip": "启用后，CPU 线程将设置为系统可用的最大值。如果出现任何问题，请禁用。",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
