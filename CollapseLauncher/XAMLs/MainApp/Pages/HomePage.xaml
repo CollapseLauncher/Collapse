@@ -650,21 +650,24 @@
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
                       Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
-                    <Pivot Margin="0,-16,-16,0"
+                    <Pivot Margin="0,-18,-16,0"
                            HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind DefaultPostPanelIndex}">
+                        <Pivot.Resources>
+                            <Style BasedOn="{StaticResource MinScrollBarStyle}" TargetType="ScrollBar"/>
+                        </Pivot.Resources>
                         <PivotItem>
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,-12"
-                                           FontSize="14"
+                                           FontSize="13"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
                             </PivotItem.Header>
                             <Grid>
-                                <ScrollViewer Margin="0,8,0,0"
+                                <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostEventPanelVisible}">
-                                    <StackPanel Margin="0,0,16,10">
+                                    <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -733,15 +736,15 @@
                         <PivotItem>
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,-12"
-                                           FontSize="14"
+                                           FontSize="13"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
                             </PivotItem.Header>
                             <Grid>
-                                <ScrollViewer Margin="0,8,0,0"
+                                <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostNoticePanelVisible}">
-                                    <StackPanel Margin="0,0,16,10">
+                                    <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -810,15 +813,15 @@
                         <PivotItem>
                             <PivotItem.Header>
                                 <TextBlock Margin="0,0,0,-12"
-                                           FontSize="14"
+                                           FontSize="13"
                                            FontWeight="Bold"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
                             </PivotItem.Header>
                             <Grid>
-                                <ScrollViewer Margin="0,8,0,0"
+                                <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostInfoPanelVisible}">
-                                    <StackPanel Margin="0,0,16,10">
+                                    <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
