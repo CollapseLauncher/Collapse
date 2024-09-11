@@ -414,19 +414,28 @@
 
         private void MaxLuminositySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            MaxLuminosityValue.Value = Math.Round(e.NewValue, 1);
+            if (e.OldValue == 0) return;
+            var value = Math.Round(e.NewValue, 1);
+            MaxLuminosityValue.Value = value;
+            MaxLuminosity            = value;
             DrawHDRCalibrationImage1();
         }
 
         private void UiPaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            UiPaperWhiteValue.Value = Math.Round(e.NewValue, 1);
+            if (e.OldValue == 0) return;
+            var value = Math.Round(e.NewValue, 1);
+            UiPaperWhiteValue.Value = value;
+            UiPaperWhite            = value;
             DrawHDRCalibrationImage2();
         }
 
         private void ScenePaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            ScenePaperWhiteValue.Value = Math.Round(e.NewValue, 1);
+            if (e.OldValue == 0) return;
+            var value = Math.Round(e.NewValue, 1);
+            ScenePaperWhiteValue.Value = value;
+            ScenePaperWhite            = value;
             DrawHDRCalibrationImage2();
         }
         #endregion
@@ -450,7 +459,7 @@
         {
             CanvasSwapChainPanel panel     = HDRCalibrationPanel1;
             CanvasSwapChain      swapChain = panel.SwapChain;
-            
+
             if (swapChain == null) return;
             float w      = (float)panel.Width;
             float h      = (float)panel.Height;
@@ -485,12 +494,13 @@
             panel.SwapChain = swapChain;
 
             // Unpacked app failed to open ms-appx uri, so we need to read it manually :(
-            StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibrationSign.png"));
+            StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibration/Sign.png"));
             using (IRandomAccessStream stream = await bgFile.OpenReadAsync())
             {
                 HDRCalibrationIcon = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
+            MaxLuminositySlider.Value = MaxLuminosity;
             DrawHDRCalibrationImage1();
         }
 
@@ -545,18 +555,20 @@
             CanvasSwapChain swapChain = new CanvasSwapChain(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
             panel.SwapChain = swapChain;
 
-            StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibrationScene.jxr"));
+            StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibration/Scene.jxr"));
             using (IRandomAccessStream stream = await bgFile.OpenReadAsync())
             {
                 HDRCalibrationScene = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
-            StorageFile uiFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibrationUI.jxr"));
+            StorageFile uiFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibration/UI.jxr"));
             using (IRandomAccessStream stream = await uiFile.OpenReadAsync())
             {
                 HDRCalibrationUI = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
+            ScenePaperWhiteSlider.Value = ScenePaperWhite;
+            UiPaperWhiteSlider.Value = UiPaperWhite;
             DrawHDRCalibrationImage2();
         }
 
