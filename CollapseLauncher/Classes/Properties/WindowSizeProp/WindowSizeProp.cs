@@ -30,7 +30,7 @@ namespace CollapseLauncher.WindowSize
                     SidePanel1Width               = new GridLength(340, GridUnitType.Pixel),
                     EventPostCarouselBounds       = new Size(340,  158),
                     PostPanelBounds               = new Size(340,  84),
-                    PostPanelBottomMargin         = new Thickness(0, 0, 0, 24),
+                    PostPanelBottomMargin         = new Thickness(0, 0, 0, 20),
                     PostPanelPaimonHeight         = 138,
                     PostPanelPaimonMargin         = new Thickness(0, -48, -64, 0),
                     PostPanelPaimonInnerMargin    = new Thickness(0, 0,   0,   0),
