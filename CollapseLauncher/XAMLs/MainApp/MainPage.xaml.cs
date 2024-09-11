@@ -1252,7 +1252,7 @@ namespace CollapseLauncher
 
             FontIcon IconLauncher = new FontIcon { Glyph = "" };
             FontIcon IconRepair = new FontIcon { Glyph = "" };
-            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
+            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
             FontIcon IconGameSettings = new FontIcon { Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { Glyph = "" };
 

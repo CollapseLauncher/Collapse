@@ -159,7 +159,7 @@
                                           FallbackColor="{ThemeResource SystemAccentColorLight1}"
                                           TintColor="{ThemeResource SystemAccentColorLight1}"
                                           TintOpacity="1"/>
-                            
+
                             <!-- For Navigation View -->
                             <AcrylicBrush x:Key="NavigationViewContentBackground"
                                           FallbackColor="Transparent"
@@ -712,10 +712,6 @@
                                      Color="#00FF0000"/>
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
-                    <!--  Font families  -->
-                    <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
-                    <FontFamily x:Key="FontAwesome">ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
-                    <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid</FontFamily>
                     <!--  Navigation title-bar border thickness  -->
                     <Thickness x:Key="NavigationViewContentMargin">0,47,0,0</Thickness>
 
@@ -3978,6 +3974,10 @@
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <!--  Font families  -->
+            <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf/#Font Awesome 6 Brands</FontFamily>
+            <FontFamily x:Key="FontAwesome">ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf/#Font Awesome 6 Free</FontFamily>
+            <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf/#Font Awesome 6 Free</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
