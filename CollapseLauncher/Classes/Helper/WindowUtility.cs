@@ -144,7 +144,9 @@
             }
 
             internal static double CurrentWindowMonitorScaleFactor
-                => (CurrentWindowMonitorDpi * (double)100 + (96 >> 1)) / 96 / 100.0;
+                // Deliberate loss of precision
+                // ReSharper disable once PossibleLossOfFraction
+                => (CurrentWindowMonitorDpi * 100 + (96 >> 1)) / 96 / 100.0;
 
             internal static Rect CurrentWindowPosition
             {
