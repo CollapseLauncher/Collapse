@@ -17,7 +17,6 @@ namespace CollapseLauncher.Extension
 
                 return cached_FontAwesomeSolid;
             }
-            set => UIElementExtensions.SetApplicationResource("FontAwesomeSolid", value);
         }
 
         internal static FontFamily FontAwesomeRegular
@@ -29,7 +28,6 @@ namespace CollapseLauncher.Extension
 
                 return cached_FontAwesomeRegular;
             }
-            set => UIElementExtensions.SetApplicationResource("FontAwesome", value);
         }
 
         internal static FontFamily FontAwesomeBrand
@@ -41,7 +39,6 @@ namespace CollapseLauncher.Extension
 
                 return cached_FontAwesomeBrand;
             }
-            set => UIElementExtensions.SetApplicationResource("FontAwesomeBrand", value);
         }
     }
 }

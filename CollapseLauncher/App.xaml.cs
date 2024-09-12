@@ -1,4 +1,3 @@
-using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
 using Hi3Helper;
@@ -62,14 +61,6 @@ namespace CollapseLauncher
         {
             try
             {
-                // Fallback to the old font path for Windows 11 machines
-                if (m_isWindows11)
-                {
-                    FontCollections.FontAwesomeRegular = new FontFamily("ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free");
-                    FontCollections.FontAwesomeBrand = new FontFamily("ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands");
-                    FontCollections.FontAwesomeSolid = new FontFamily("ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid");
-                }
-
                 ThemeChangerInvoker.ThemeEvent += (_, _) => 
                   {
                       WindowUtility.ApplyWindowTitlebarLegacyColor();

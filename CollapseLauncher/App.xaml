@@ -3975,9 +3975,9 @@
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <!--  Font families  -->
-            <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf/#Font Awesome 6 Brands</FontFamily>
-            <FontFamily x:Key="FontAwesome">ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf/#Font Awesome 6 Free</FontFamily>
-            <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf/#Font Awesome 6 Free</FontFamily>
+            <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
+            <FontFamily x:Key="FontAwesome">ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
+            <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
