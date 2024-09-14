@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net9.0": {
       "Google.Protobuf": {
         "type": "Transitive",
         "resolved": "3.28.1",
@@ -9,15 +9,15 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA=="
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "giMiDNlne8WcLG7rsEfrETaukDUTBPn8a97QRo9LYR71O0Rb4SJ6TbfGdQ9oiBYldVPSAbSQANb5ThLZOo408Q=="
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.28.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "System.IO.Hashing": "[8.0.0, )"
+          "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
         }
       },
       "hi3helper.http": {
