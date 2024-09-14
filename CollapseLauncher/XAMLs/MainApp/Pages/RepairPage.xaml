@@ -203,7 +203,7 @@
                                           FontSize="16"
                                           Glyph="&#xf6e3;" />
                                 <TextBlock Margin="8,0"
-                                           FontWeight="Medium"
+                                           FontWeight="SemiBold"
                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" />
                             </StackPanel>
                         </Button>
@@ -214,46 +214,60 @@
                                      CornerRadius="16"
                                      Tag="Fast"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
                                           Glyph="&#xf002;" />
-                                <TextBlock Margin="8,0"
-                                           FontWeight="Medium"
+                                <TextBlock FontWeight="SemiBold"
                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" />
                             </StackPanel>
                             <SplitButton.Flyout>
                                 <Flyout Placement="Top">
-                                    <StackPanel Margin="-8">
+                                    <StackPanel Margin="-8"
+                                                Spacing="8">
                                         <Button x:Name="CheckFilesQuickBtn"
-                                                Margin="0,0,0,8"
                                                 HorizontalAlignment="Stretch"
                                                 Click="StartGameCheck"
                                                 Tag="Fast"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}"
+                                                HorizontalContentAlignment="Stretch">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <FontIcon Grid.Column="1"
+                                                          FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf101;" />
-                                                <TextBlock Margin="8,0"
-                                                           FontWeight="Medium"
+                                                          Glyph="&#xf101;"
+                                                          HorizontalAlignment="Right"/>
+                                                <TextBlock FontWeight="SemiBold"
+                                                           HorizontalAlignment="Left"
                                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" />
-                                            </StackPanel>
+                                            </Grid>
                                         </Button>
                                         <Button x:Name="CheckFilesFullBtn"
                                                 HorizontalAlignment="Stretch"
                                                 Click="StartGameCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}"
+                                                HorizontalContentAlignment="Stretch">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <FontIcon Grid.Column="1"
+                                                          FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf105;" />
-                                                <TextBlock Margin="8,0"
-                                                           FontWeight="Medium"
+                                                          Glyph="&#xf105;"
+                                                          HorizontalAlignment="Right"/>
+                                                <TextBlock FontWeight="SemiBold"
+                                                           HorizontalAlignment="Left"
                                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Full}" />
-                                            </StackPanel>
+                                            </Grid>
                                         </Button>
                                     </StackPanel>
                                 </Flyout>

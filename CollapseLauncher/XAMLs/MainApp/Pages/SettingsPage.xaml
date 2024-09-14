@@ -1352,7 +1352,7 @@
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn3}" />
                         </Grid>
                         <FontIcon Grid.Column="1"
-                                  Margin="8,-1,0,0"
+                                  Margin="8,0,0,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
@@ -1383,7 +1383,7 @@
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" />
                         </Grid>
                         <FontIcon Grid.Column="1"
-                                  Margin="8,-1,0,0"
+                                  Margin="8,0,0,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"
@@ -1414,7 +1414,7 @@
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" />
                         </Grid>
                         <FontIcon Grid.Column="1"
-                                  Margin="8,-1,0,0"
+                                  Margin="8,0,0,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   FontFamily="{ThemeResource FontAwesomeBrand}"

@@ -1396,110 +1396,134 @@
                     Orientation="Horizontal"
                     Spacing="8">
             <Button x:Name="PlaytimeBtn"
-                    HorizontalAlignment="Left"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    Padding="0"
                     Click="ForceUpdatePlaytimeButton_Click"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
                     Shadow="{ThemeResource SharedShadow}"
                     Translation="0,0,32">
                 <Button.Content>
-                    <Grid>
-                        <Grid Margin="-16"
+                    <Grid HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                        <Grid Margin="-8"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               Background="{ThemeResource GameSettingsBtnBrush}" />
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <FontIcon VerticalAlignment="Center"
-                                      FontFamily="{ThemeResource FontAwesome}"
-                                      FontSize="18"
-                                      Glyph="" />
-                            <TextBlock x:Name="PlaytimeMainBtn"
-                                       Margin="8,0,0,0"
+                        <Grid Margin="16,0,16,2"
+                              ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <FontIcon FontSize="18"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Center"
+                                      Glyph="&#xE916;" />
+                            <TextBlock Grid.Column="1"
+                                       x:Name="PlaytimeMainBtn"
+                                       HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium"
+                                       FontWeight="SemiBold"
                                        Text="-" />
-                            <TextBlock x:Name="PlaytimeLastOpen"
-                                       Margin="8,0,0,0"
+                            <TextBlock Grid.Column="2"
+                                       x:Name="PlaytimeLastOpen"
                                        VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"
                                        FontSize="18"
                                        Opacity="0.25"
+                                       Margin="0,0,-4,0"
                                        Text="&#xf05a;" />
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
                     <Flyout x:Name="PlaytimeFlyout">
-                        <StackPanel MaxWidth="224">
+                        <StackPanel MaxWidth="250">
                             <StackPanel x:Name="PlaytimeIdleStack"
-                                        MaxWidth="224"
-                                        Margin="0,0">
-                                <TextBlock Margin="0,0,0,8"
-                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                        MaxWidth="250"
+                                        Spacing="8">
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
-                                <StackPanel Margin="0,0"
-                                            Orientation="Horizontal">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
                                     <TextBox x:Name="HourPlaytimeTextBox"
-                                             Margin="0,0,8,0"
                                              HorizontalContentAlignment="Center"
                                              BeforeTextChanging="NumberValidationTextBox"
                                              Text="" />
                                     <TextBox x:Name="MinutePlaytimeTextBox"
-                                             Margin="2,0,8,0"
+                                             Grid.Column="1"
                                              HorizontalContentAlignment="Center"
                                              BeforeTextChanging="NumberValidationTextBox"
                                              Text="" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0"
-                                            Orientation="Horizontal">
+                                </Grid>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,-4,0,4">
                                     <TextBlock x:Name="PlaytimeHours"
                                                Width="55"
-                                               Margin="5,1,0,8"
+                                               Margin="5,1,0,0"
                                                HorizontalAlignment="Center"
                                                FontSize="11"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" />
                                     <TextBlock x:Name="PlaytimeMinutes"
                                                Width="55"
-                                               Margin="19,1,0,8"
+                                               Margin="19,1,0,0"
                                                HorizontalAlignment="Center"
                                                FontSize="11"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" />
                                 </StackPanel>
                                 <Button x:Name="ChangePlaytimeButton"
-                                        Margin="0,8"
                                         HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
+                                        HorizontalContentAlignment="Stretch"
                                         Click="ChangePlaytimeButton_Click"
                                         CornerRadius="14"
+                                        Margin="-4,0"
                                         Style="{ThemeResource AccentButtonStyle}">
-                                    <Button.Content>
-                                        <StackPanel Margin="3,0"
-                                                    Orientation="Horizontal">
-                                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                       FontSize="16"
-                                                       Text="" />
-                                            <TextBlock Margin="7,-1,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
-                                        </StackPanel>
-                                    </Button.Content>
+                                    <Grid Margin="0,0,-4,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  FontSize="14"
+                                                  Glyph="&#xE777;" />
+                                        <TextBlock HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
+                                    </Grid>
                                 </Button>
                                 <Button x:Name="ResetPlaytimeButton"
-                                        Margin="0,8"
                                         HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
+                                        HorizontalContentAlignment="Stretch"
                                         Click="ResetPlaytimeButton_Click"
-                                        CornerRadius="14">
-                                    <Button.Content>
-                                        <StackPanel Margin="4,0"
-                                                    Orientation="Horizontal">
-                                            <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                       FontSize="16"
-                                                       Text="" />
-                                            <TextBlock Margin="8,-1,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
-                                        </StackPanel>
-                                    </Button.Content>
+                                        CornerRadius="14"
+                                        Margin="-4,0,-4,-4">
+                                    <Grid Margin="0,0,-4,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  FontSize="14"
+                                                  Glyph="&#xE74D;" />
+                                        <TextBlock HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
+                                    </Grid>
                                 </Button>
                             </StackPanel>
                             <StackPanel x:Name="PlaytimeRunningStack"
@@ -1521,9 +1545,12 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="CommunityToolsBtn"
-                    HorizontalAlignment="Right"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    CornerRadius="20"
+                    VerticalContentAlignment="Stretch"
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
+                    Padding="0"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
@@ -1539,17 +1566,16 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <FontIcon Grid.Column="0"
-                                          Margin="0,1,0,0"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           FontFamily="{x:Bind IconFontFamily}"
                                           FontSize="12"
                                           Glyph="{x:Bind IconGlyph}" />
                                 <TextBlock Grid.Column="1"
-                                           Margin="0,-1,0,0"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
-                                           FontWeight="Medium"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis"
                                            Text="{x:Bind Text}" />
                             </Grid>
                         </Button>
@@ -1567,40 +1593,44 @@
                                     <ColumnDefinition Width="28" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0"
-                                          Margin="0,1,0,0"
-                                          HorizontalAlignment="Center"
+                                <FontIcon HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           FontFamily="{x:Bind IconFontFamily}"
                                           FontSize="12"
                                           Glyph="{x:Bind IconGlyph}" />
                                 <TextBlock Grid.Column="1"
-                                           Margin="0,-1,0,0"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
-                                           FontWeight="Medium"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis"
                                            Text="{x:Bind Text}" />
                             </Grid>
                         </Button>
                     </DataTemplate>
                 </Button.Resources>
                 <Button.Content>
-                    <Grid>
-                        <Grid Margin="-16"
+                    <Grid HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                        <Grid Margin="-8"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               Background="{ThemeResource GameSettingsBtnBrush}" />
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <FontIcon FontFamily="Segoe MDL2 Assets"
-                                      FontSize="18"
+                        <Grid Margin="16,0,16,2"
+                              ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <FontIcon FontSize="18"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Center"
                                       Glyph="&#xE71B;" />
-                            <TextBlock Margin="8,-2,0,0"
-                                       HorizontalAlignment="Center"
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium"
+                                       FontWeight="SemiBold"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn}" />
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
@@ -1654,7 +1684,7 @@
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
-                                                <Setter Property="Width" Value="180" />
+                                                <Setter Property="Width" Value="200" />
                                                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                                 <Setter Property="MinHeight" Value="0" />
                                                 <Setter Property="Padding" Value="0,0,0,0" />
@@ -1675,20 +1705,27 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="GameStartupSetting"
-                    Margin="0,0,8,0"
-                    HorizontalAlignment="Right"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    CornerRadius="20"
+                    VerticalContentAlignment="Stretch"
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}"
+                    Padding="0"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Content>
-                    <Grid>
-                        <Grid Margin="-16"
+                    <Grid HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                        <Grid Margin="-8"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               Background="{ThemeResource GameSettingsBtnBrush}" />
-                        <StackPanel Margin="8,0"
-                                    Orientation="Horizontal">
-                            <AnimatedIcon Width="20">
+                        <Grid Margin="16,0,16,2"
+                              ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <AnimatedIcon Width="18">
                                 <AnimatedIcon.Source>
                                     <animatedvisuals:AnimatedSettingsVisualSource />
                                 </AnimatedIcon.Source>
@@ -1696,12 +1733,12 @@
                                     <SymbolIconSource Symbol="Setting" />
                                 </AnimatedIcon.FallbackIconSource>
                             </AnimatedIcon>
-                            <TextBlock Margin="8,-2,0,0"
-                                       HorizontalAlignment="Center"
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium"
+                                       FontWeight="SemiBold"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" />
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
@@ -1734,7 +1771,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}"
                                                        TextWrapping="Wrap" />
@@ -1757,7 +1794,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}"
                                                        TextWrapping="Wrap" />
@@ -1780,7 +1817,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}"
                                                        TextWrapping="Wrap" />
@@ -1803,7 +1840,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        FontWeight="Medium"
                                                        Text="{x:Bind helper:Locale.Lang._FileCleanupPage.Title}"
                                                        TextWrapping="Wrap" />
@@ -1830,7 +1867,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
@@ -1852,7 +1889,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
@@ -1874,7 +1911,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
@@ -1896,7 +1933,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2MoveGameLocationGame}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
@@ -1919,7 +1956,7 @@
                                                       FontSize="16"
                                                       Glyph="" />
                                             <TextBlock Grid.Column="1"
-                                                       Margin="8,-1,0,0"
+                                                       Margin="8,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
@@ -1952,7 +1989,7 @@
                                                           FontSize="16"
                                                           Glyph="" />
                                                 <TextBlock Grid.Column="1"
-                                                           Margin="8,-1,0,0"
+                                                           Margin="8,0,0,0"
                                                            Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3CustomBGRegion}"
                                                            TextWrapping="Wrap" />
                                             </Grid>
@@ -2024,7 +2061,7 @@
                                                           FontSize="16"
                                                           Glyph="" />
                                                 <TextBlock Grid.Column="1"
-                                                           Margin="8,-1,0,0"
+                                                           Margin="8,0,0,0"
                                                            FontWeight="Medium"
                                                            Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4CreateShortcutBtn}"
                                                            TextWrapping="Wrap" />
@@ -2047,7 +2084,7 @@
                                                           FontSize="18"
                                                           Glyph="" />
                                                 <TextBlock Grid.Column="1"
-                                                           Margin="8,-1,0,0"
+                                                           Margin="8,0,0,0"
                                                            FontWeight="Medium"
                                                            Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4AddToSteamBtn}"
                                                            TextWrapping="Wrap" />
@@ -2171,20 +2208,18 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Margin="0,-2,16,0"
-                                       HorizontalAlignment="Left"
+                            <TextBlock HorizontalAlignment="Left"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium"
+                                       FontWeight="SemiBold"
                                        HorizontalTextAlignment="Left"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"
                                        TextTrimming="CharacterEllipsis" />
                             <Grid x:Name="InstallGameBtnAnimBackground"
                                   Grid.Column="1"
-                                  Width="64"
                                   Margin="-20,-12"
                                   Padding="8,0"
                                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
-                                <AnimatedVisualPlayer Height="28"
+                                <AnimatedVisualPlayer Height="26"
                                                       HorizontalAlignment="Right">
                                     <lottie:DownloadIcon />
                                 </AnimatedVisualPlayer>
@@ -2206,10 +2241,9 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Margin="0,-2,16,0"
-                                       HorizontalAlignment="Left"
+                            <TextBlock HorizontalAlignment="Left"
                                        VerticalAlignment="Center"
-                                       FontWeight="Medium"
+                                       FontWeight="SemiBold"
                                        HorizontalTextAlignment="Left"
                                        Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"
                                        TextTrimming="CharacterEllipsis" />
@@ -2240,10 +2274,9 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="0,-2,16,0"
-                                   HorizontalAlignment="Left"
+                        <TextBlock HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
-                                   FontWeight="Medium"
+                                   FontWeight="SemiBold"
                                    HorizontalTextAlignment="Left"
                                    Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"
                                    TextTrimming="CharacterEllipsis" />
@@ -2279,10 +2312,9 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="0,-2,16,0"
-                                   HorizontalAlignment="Left"
+                        <TextBlock HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
-                                   FontWeight="Medium"
+                                   FontWeight="SemiBold"
                                    HorizontalTextAlignment="Left"
                                    Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"
                                    TextTrimming="CharacterEllipsis" />
@@ -2305,10 +2337,9 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="0,-2,16,0"
-                                   HorizontalAlignment="Left"
+                        <TextBlock HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
-                                   FontWeight="Medium"
+                                   FontWeight="SemiBold"
                                    HorizontalTextAlignment="Left"
                                    Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"
                                    TextTrimming="CharacterEllipsis" />
