@@ -151,6 +151,7 @@ public static class MainEntryPoint
                                 "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
                                 "Press any key to exit or Press 'R' to restart the main thread app...");
 
+        #if !DEBUG
         try
         {
             if (ConsoleKey.R == Console.ReadKey().Key)
@@ -161,6 +162,7 @@ public static class MainEntryPoint
             Console.WriteLine(e);
             throw;
         }
+        #endif
     }
 
     public static void StartMainApplication()
