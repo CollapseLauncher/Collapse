@@ -48,7 +48,7 @@ namespace CollapseLauncher.Helper.Background
         private Grid? _parentBgImageBackgroundGrid;
         private Grid? _parentBgMediaPlayerBackgroundGrid;
 
-        internal static string    CurrentAppliedMediaPath;
+        internal static string?   CurrentAppliedMediaPath;
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
@@ -287,11 +287,15 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="mediaPath">Path of the background file</param>
         /// <param name="isRequestInit">Request an initialization before processing the background file</param>
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
+        /// <param name="throwAction">Action to do after exception occurred</param>
+        /// <param name="actionAfterLoaded">Action to do after background is loaded</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal async void LoadBackground(string mediaPath,                  bool                  isRequestInit = false,
-                                     bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
-                                     Action? actionAfterLoaded = null)
+        internal async void LoadBackground(string                mediaPath,
+                                           bool                  isRequestInit        = false,
+                                           bool                  isForceRecreateCache = false,
+                                           ThrowExceptionAction? throwAction          = null,
+                                           Action?               actionAfterLoaded    = null)
         {
             await (SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded)) ?? Task.CompletedTask);
         }
