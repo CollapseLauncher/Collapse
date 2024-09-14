@@ -153,6 +153,9 @@ namespace CollapseLauncher.Helper
 
         public HttpClientBuilder<THandler> SetTimeout(double fromSeconds = _httpTimeoutDefault)
         {
+            if (double.IsNaN(fromSeconds) || double.IsInfinity(fromSeconds))
+                fromSeconds = _httpTimeoutDefault;
+
             return SetTimeout(TimeSpan.FromSeconds(fromSeconds));
         }
 
