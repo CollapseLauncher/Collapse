@@ -33,7 +33,7 @@ namespace CollapseLauncher.GameSettings.Base
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
                     byte[] head = new byte[6];
-                    fs.Read(head, 0, head.Length);
+                    _ = fs.Read(head, 0, head.Length);
 
                     Logger.LogWriteLine($"Importing registry {RegistryPath}...");
 
@@ -425,7 +425,7 @@ namespace CollapseLauncher.GameSettings.Base
             byte[] buffer = ArrayPool<byte>.Shared.Rent(length);
             try
             {
-                stream.Read(buffer, 0, length);
+                _ = stream.Read(buffer, 0, length);
                 return Encoding.UTF8.GetString(buffer, 0, length);
             }
             finally
@@ -439,21 +439,21 @@ namespace CollapseLauncher.GameSettings.Base
         private long ReadInt64(Stream stream)
         {
             Span<byte> buffer = stackalloc byte[4];
-            stream.Read(buffer);
+            _ = stream.Read(buffer);
             return MemoryMarshal.Read<long>(buffer);
         }
 
         private int ReadInt32(Stream stream)
         {
             Span<byte> buffer = stackalloc byte[4];
-            stream.Read(buffer);
+            _ = stream.Read(buffer);
             return MemoryMarshal.Read<int>(buffer);
         }
 
         private short ReadInt16(Stream stream)
         {
             Span<byte> buffer = stackalloc byte[2];
-            stream.Read(buffer);
+            _ = stream.Read(buffer);
             return MemoryMarshal.Read<short>(buffer);
         }
 

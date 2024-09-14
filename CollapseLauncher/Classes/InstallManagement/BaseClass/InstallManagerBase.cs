@@ -2591,12 +2591,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual bool IsValidLocaleCode(ReadOnlySpan<char> localeCode)
         {
-            // If it's empty or null, return false
-            if (localeCode == null)
-            {
-                return false;
-            }
-
+            // If it's empty, return false
             if (localeCode.IsEmpty)
             {
                 return false;

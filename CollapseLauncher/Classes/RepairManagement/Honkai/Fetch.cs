@@ -220,7 +220,7 @@ namespace CollapseLauncher
             ArgumentNullException.ThrowIfNull(stream);
             
             Memory<byte> header = new byte[_collapseHeader.Length];
-            await stream.ReadAsync(header, token)!;
+            _ = await stream.ReadAsync(header, token)!;
             if (!header.Span.SequenceEqual(_collapseHeader))
                 throw new InvalidDataException($"Daftar pustaka file is corrupted! Expecting header: 0x{BinaryPrimitives.ReadInt64LittleEndian(_collapseHeader):x8} but got: 0x{BinaryPrimitives.ReadInt64LittleEndian(header.Span):x8} instead!");
         }
@@ -310,14 +310,13 @@ namespace CollapseLauncher
 
         private async Task BuildAndEnumerateVideoVersioningFile(CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, string assetBundleURL)
         {
-            ArgumentNullException.ThrowIfNull(token);
             ArgumentNullException.ThrowIfNull(assetIndex);
             
             // Get the base URL
-            string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
+            string baseURL = CombineURLFromString(GetAppConfigValue("EnableHTTPRepairOverride").ToBool() ? "http://" : "https://" + assetBundleURL, "/Video/");
 
             // Build video versioning file
-            using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false))
+            await using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false))
             {
                 // Iterate the metadata to be converted into asset index in parallel
                 await Parallel.ForEachAsync(enumEntry!, new ParallelOptions
@@ -340,10 +339,10 @@ namespace CollapseLauncher
                         }
                     }
 
-                    #if DEBUG
+                #if DEBUG
                     if (isCGIgnored)
                         LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {(_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN)}", LogType.Debug, true);
-                    #endif
+                #endif
 
                     if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                     {
