@@ -53,7 +53,7 @@ jobs:
 
     - name: Build
       run: |
-        dotnet publish CollapseLauncher -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\" 
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\preview-build\" 
           
     - name: Upload Artifact (Release)
       uses: actions/upload-artifact@v4.3.1
