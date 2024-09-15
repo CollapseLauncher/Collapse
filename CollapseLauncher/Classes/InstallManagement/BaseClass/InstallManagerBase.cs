@@ -3262,7 +3262,7 @@ namespace CollapseLauncher.InstallManager.Base
                 return -1;
             }
 
-            if (FileMigrationProcess.IsRootPath(result))
+            if (FileUtility.IsRootPath(result))
             {
                 throw new NotSupportedException();
             }
