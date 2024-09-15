@@ -314,7 +314,7 @@ namespace CollapseLauncher
             ArgumentNullException.ThrowIfNull(assetIndex);
             
             // Get the base URL
-            string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
+            string baseURL = CombineURLFromString((GetAppConfigValue("EnableHTTPRepairOverride").ToBool() ? "http://" : "https://") + assetBundleURL, "/Video/");
 
             // Build video versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false))
