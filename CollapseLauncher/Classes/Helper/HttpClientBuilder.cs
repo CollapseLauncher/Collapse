@@ -114,6 +114,9 @@ namespace CollapseLauncher.Helper
 
         public HttpClientBuilder<THandler> SetMaxConnection(int maxConnections = _maxConnectionsDefault)
         {
+            if (maxConnections < 2)
+                maxConnections = 2;
+
             MaxConnections = maxConnections;
             return this;
         }
