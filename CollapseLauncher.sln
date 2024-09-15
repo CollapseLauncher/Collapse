@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon", "Hi3Help
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageEx", "ImageEx\ImageEx\ImageEx.csproj", "{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.TaskScheduler", "Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj", "{C9CBAF52-49C7-4B72-A03B-130F596E24CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -92,10 +94,13 @@ Global
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.Build.0 = Release|x64
 		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Debug|x64.ActiveCfg = Debug|x64
 		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Debug|x64.Build.0 = Debug|x64
-		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.ActiveCfg = Debug|x64
-		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.Build.0 = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.ActiveCfg = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.Build.0 = Release|x64
 		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Release|x64.ActiveCfg = Release|x64
 		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Release|x64.Build.0 = Release|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Debug|x64.ActiveCfg = Release|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Publish|x64.ActiveCfg = Release|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

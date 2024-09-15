@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Update;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
@@ -87,6 +88,9 @@ public static class MainEntryPoint
 
             ParseArguments(args);
             InitializeAppSettings();
+
+            // Initialize TaskSchedulerHelper
+            TaskSchedulerHelper.InvokeGetStatusCommand();
 
             HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
 

@@ -13,6 +13,8 @@ echo 	Clearing Http cache
 rmdir /S /Q Hi3Helper.Http\bin && rmdir /S /Q Hi3Helper.Http\obj
 echo 	Clearing Http tester cache
 rmdir /S /Q Hi3Helper.Http\Test\bin && rmdir /S /Q Hi3Helper.Http\Test\obj
+echo 	Clearing TaskScheduler cache
+rmdir /S /Q Hi3Helper.TaskScheduler\bin && rmdir /S /Q Hi3Helper.TaskScheduler\obj
 echo 	Clearing HDiff cache
 rmdir /S /Q Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\bin && rmdir /S /Q Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\obj
 echo 	Clearing 2nd HDiff cache

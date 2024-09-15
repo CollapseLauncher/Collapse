@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -113,7 +113,6 @@
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0-rc.1.24431.7" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0-rc.1.24431.7" />
         <PackageReference Include="System.Text.Json" Version="9.0.0-rc.1.24431.7" />
-        <PackageReference Include="TaskScheduler" Version="2.11.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -255,12 +254,17 @@
             -->
         </ItemGroup>
     </Target>
-    
-    <Target Name="PostBuild" AfterTargets="Build" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
-        <Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" />
-    </Target>
-    
-    <Target Name="PostBuild" AfterTargets="Publish" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))">
-      <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" />
-    </Target>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />
+	</Target>
+
+	<Target Name="PostBuild" AfterTargets="Build">
+		<Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+	</Target>
+
+	<Target Name="PostBuild" AfterTargets="Publish">
+		<Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+		<Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
+	</Target>
 </Project>

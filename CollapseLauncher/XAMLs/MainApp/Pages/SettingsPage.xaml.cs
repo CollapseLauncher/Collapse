@@ -22,7 +22,6 @@
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.UI.Xaml.Media.Animation;
-    using Microsoft.Win32.TaskScheduler;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -39,7 +38,6 @@
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
-    using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
 
 // ReSharper disable CheckNamespace
@@ -53,7 +51,6 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
 
-        private const string _collapseStartupTaskName = "CollapseLauncherStartupTask";
         private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
         
         private readonly bool _initIsInstantRegionChange;
@@ -441,26 +438,6 @@ namespace CollapseLauncher.Pages
         {
             if (EggsAttempt++ >= 10)
                 HerLegacy.Visibility = Visibility.Visible;
-        }
-
-        private TaskSched CreateScheduledTask(string taskName)
-        {
-            string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
-
-            using TaskService ts = new TaskService();
-
-            TaskDefinition taskDefinition = TaskService.Instance.NewTask();
-            taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
-            taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
-            taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
-            taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
-            taskDefinition.Settings.Enabled             = false;
-            taskDefinition.Triggers.Add(new LogonTrigger());
-            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget));
-
-            TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
-            taskDefinition.Dispose();
-            return task;
         }
 
         private void EnableHeaderMouseEvent(object sender, RoutedEventArgs e)
@@ -1018,13 +995,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
-
-                bool value = task.Definition.Settings.Enabled;
-                task.Dispose();
+                bool value = TaskSchedulerHelper.IsEnabled();
 
                 if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
                 else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
@@ -1033,12 +1004,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                task.Definition.Settings.Enabled = value;
-                task.RegisterChanges();
-                task.Dispose();
+                TaskSchedulerHelper.ToggleEnabled(value);
 
                 if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
                 else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
@@ -1047,31 +1013,8 @@ namespace CollapseLauncher.Pages
 
         private bool IsStartupToTray
         {
-            get
-            {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
-
-                bool? value = false;
-                if (task.Definition.Actions[0] is ExecAction execAction)
-                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.OrdinalIgnoreCase);
-
-                task.Dispose();
-                return value ?? false;
-            }
-            set
-            {
-                string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                task.Definition.Actions.Clear();
-                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null));
-                task.RegisterChanges();
-                task.Dispose();
-            }
+            get => TaskSchedulerHelper.IsOnTrayEnabled();
+            set => TaskSchedulerHelper.ToggleTrayEnabled(value);
         }
 
         private bool IsEnableSophon
