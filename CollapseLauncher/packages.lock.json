@@ -1010,6 +1010,7 @@
       "imageex": {
         "type": "Project",
         "dependencies": {
+          "CommunityToolkit.WinUI.Extensions": "[8.1.240821, )",
           "Microsoft.WindowsAppSDK": "[1.6.240829007, )"
         }
       },
