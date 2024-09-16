@@ -10,15 +10,15 @@
       },
       "CommunityToolkit.Common": {
         "type": "Direct",
-        "requested": "[8.3.0, )",
-        "resolved": "8.3.0",
-        "contentHash": "TibqmLI1MF5mIo/u1qYM/AFAzmoJsvs6einYKnhUMAXxJHbREIlg1tYMq7YbiqBaJL8Mfp7hqrZdAGJ0fsW0+w=="
+        "requested": "[8.3.1, )",
+        "resolved": "8.3.1",
+        "contentHash": "r8jWhfnwSfn7/xPjh3Aom6gAGkENUMrr+FmZJOzOvRWBgXJ/latl8b8iCx1F+GHiS/0f5zK4zWZM18P0DgNNiw=="
       },
       "CommunityToolkit.Mvvm": {
         "type": "Direct",
-        "requested": "[8.3.0, )",
-        "resolved": "8.3.0",
-        "contentHash": "APWb6lZI3l8WVf5Ijp3WHHe471anU9pJ04aNJNCNJQ3kKy/mUW6irvDwyXeYTLaaNNGBAyo4/musnA/oQRKS/Q=="
+        "requested": "[8.3.1, )",
+        "resolved": "8.3.1",
+        "contentHash": "Fuqjp5uYzHEdrRxsZlY0EqvFX9pF2v0cZN+zfso44lVLI3wZa8Nb9jdcBoXbHxiRSU3hEDhHUqh2fM8znzodzg=="
       },
       "CommunityToolkit.WinUI.Behaviors": {
         "type": "Direct",
@@ -167,9 +167,9 @@
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
-        "requested": "[2.1.1, )",
-        "resolved": "2.1.1",
-        "contentHash": "q2CixHYFojIC1As4qUcK+yRIdDsN9UVT96TsI+3wBPab+zDKIv1PqrFOfJgB4Jkpn6iPs7nbLFRH3abVFzBPGA=="
+        "requested": "[2.1.3, )",
+        "resolved": "2.1.3",
+        "contentHash": "Nl8A4rQ4l2GNj703GvLSbr0Vo++FjxKxU7CIj1pcKz/sN8XSvD4dIvUCYYgD16o2pG4PSSXNgAxfwDUwLGHLPA=="
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
@@ -370,8 +370,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.28.0",
-        "contentHash": "lVsLcLIHpkOABswgydr0sjkIhSN5XE9C6AgLXxvMsa6pSSJIpmAIPvK/NZpuF+HTB6xp1R8T5nhLausWVOrU/w=="
+        "resolved": "3.28.1",
+        "contentHash": "i4EN7Z+OUdoRBNiVMIG6CfMh6UowXiUx+BKgE+GHLbAX5ArSmpUTFUDwgRNwNfYdosl6GXuBlDiHCcXSHw43+A=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
@@ -991,7 +991,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.28.0, )",
+          "Google.Protobuf": "[3.28.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
@@ -1010,6 +1010,7 @@
       "imageex": {
         "type": "Project",
         "dependencies": {
+          "CommunityToolkit.WinUI.Extensions": "[8.1.240821, )",
           "Microsoft.WindowsAppSDK": "[1.6.240829007, )"
         }
       },

@@ -464,6 +464,8 @@
     "SophonHttpNumberBox": "最大HTTP接続数",
     "SophonHelp_Http": "CollapseがチャンクをダウンロードするためにHoYoVerseのサーバーに対して確立するネットワーク接続の最大数を設定します。",
     "SophonToggle": "サポート済みのゲームでSophonモードを使用する",
+    "SophonPredownPerfMode_Toggle": "[実験的な機能] 事前ダウンロードの適用時に全てのCPUコアを使用する",
+    "SophonPredownPerfMode_Tooltip": "有効にするとCPUスレッドがシステムで利用可能な最大値に設定されます。問題が発生した場合はこの設定を無効にしてください。",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "既にダウンロード済みのパッケージがある場合は、",

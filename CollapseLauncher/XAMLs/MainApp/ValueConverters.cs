@@ -126,4 +126,27 @@ namespace CollapseLauncher.Pages
         public long? ParseInt(string text) => throw new NotSupportedException();
         public ulong? ParseUInt(string text) => throw new NotSupportedException();
     }
+
+    public partial class CapsuleCornerRadiusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is double d)
+            {
+                double padding = 0;
+                if (parameter is double asDouble)
+                {
+                    padding = asDouble;
+                }
+                return (d - padding) / 2.0;
+            }
+
+            return 0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

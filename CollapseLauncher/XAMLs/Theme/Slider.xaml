@@ -352,7 +352,6 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Thumb">
                                             <Border Margin="-20">
-
                                                 <VisualStateManager.VisualStateGroups>
                                                     <VisualStateGroup x:Name="CommonStates">
                                                         <VisualState x:Name="Normal">
@@ -442,7 +441,7 @@
                                                         <CompositeTransform />
                                                     </Grid.RenderTransform>
                                                     <TextBlock x:Name="FatSliderInnerThumbValue"
-                                                               Margin="8,-4,8,0"
+                                                               Margin="8,0"
                                                                VerticalAlignment="Center"
                                                                FontSize="16"
                                                                FontWeight="SemiBold"

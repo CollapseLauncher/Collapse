@@ -152,11 +152,11 @@
 
         private void SetMainCheckFilesBtnProperty(object sender)
         {
-            string btnText = ((TextBlock)((StackPanel)((Button)sender).Content).Children[1]).Text;
+            string btnText = ((TextBlock)((Panel)((Button)sender).Content).Children[1]).Text;
             string btnTag = (string)((Button)sender).Tag;
             string btnToolTip = (string)ToolTipService.GetToolTip((Button)sender);
 
-            ((TextBlock)((StackPanel)CheckFilesBtn.Content).Children[1]).Text = btnText;
+            ((TextBlock)((Panel)CheckFilesBtn.Content).Children[1]).Text = btnText;
             CheckFilesBtn.Tag = btnTag;
             ToolTipService.SetToolTip(CheckFilesBtn, btnToolTip);
         }

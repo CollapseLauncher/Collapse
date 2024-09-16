@@ -153,11 +153,11 @@
 
         private void SetMainCheckUpdateBtnProperty(object sender)
         {
-            string btnText = ((TextBlock)((StackPanel)((Button)sender).Content).Children[1]).Text;
+            string btnText = ((TextBlock)((Panel)((Button)sender).Content).Children[1]).Text;
             string btnTag = (string)((Button)sender).Tag;
             string btnToolTip = (string)ToolTipService.GetToolTip((Button)sender);
 
-            ((TextBlock)((StackPanel)CheckUpdateBtn.Content).Children[1]).Text = btnText;
+            ((TextBlock)((Panel)CheckUpdateBtn.Content).Children[1]).Text = btnText;
             CheckUpdateBtn.Tag = btnTag;
             ToolTipService.SetToolTip(CheckUpdateBtn, btnToolTip);
         }
