@@ -4,6 +4,9 @@
 
 #if WINAPPSDK
 using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
+
 #endif
 using Windows.System;
 using Windows.UI.Core;

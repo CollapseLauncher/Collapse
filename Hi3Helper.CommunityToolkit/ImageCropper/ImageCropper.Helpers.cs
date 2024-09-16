@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Numerics;
 #if WINAPPSDK
 using Microsoft.UI.Xaml.Media.Imaging;
 using Colors = Microsoft.UI.Colors;
@@ -10,11 +9,6 @@ using Colors = Microsoft.UI.Colors;
 using Windows.UI.Xaml.Media.Imaging;
 using Colors = Windows.UI.Colors;
 #endif
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Effects;
-using Microsoft.Graphics.Canvas.Geometry;
-using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
@@ -36,7 +30,7 @@ public partial class ImageCropper
         using (var sourceStream = writeableBitmap.PixelBuffer.AsStream())
         {
             var buffer = new byte[sourceStream.Length];
-            await sourceStream.ReadAsync(buffer, 0, buffer.Length);
+            _ = await sourceStream.ReadAsync(buffer);
             var bitmapEncoder = await BitmapEncoder.CreateAsync(GetEncoderId(bitmapFileFormat), stream);
             bitmapEncoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, (uint)writeableBitmap.PixelWidth, (uint)writeableBitmap.PixelHeight, 96.0, 96.0, buffer);
             bitmapEncoder.BitmapTransform.Bounds = new BitmapBounds

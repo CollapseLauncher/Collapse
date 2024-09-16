@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Windows.Storage;
-using Windows.Storage.Streams;
 #if WINAPPSDK
-using Path = Microsoft.UI.Xaml.Shapes.Path;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Path = Microsoft.UI.Xaml.Shapes.Path;
 #else
 using Windows.UI.Xaml.Media.Imaging;
 using Path = Windows.UI.Xaml.Shapes.Path;
@@ -17,19 +19,19 @@ namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 /// <summary>
 /// The <see cref="ImageCropper"/> control allows user to crop image freely.
 /// </summary>
-[TemplatePart(Name = LayoutGridName, Type = typeof(Grid))]
-[TemplatePart(Name = ImageCanvasPartName, Type = typeof(Canvas))]
-[TemplatePart(Name = SourceImagePartName, Type = typeof(Image))]
-[TemplatePart(Name = MaskAreaPathPartName, Type = typeof(Path))]
-[TemplatePart(Name = OverlayAreaPathPartName, Type = typeof(Path))]
-[TemplatePart(Name = TopThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = BottomThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = LeftThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = RightThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = UpperLeftThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = UpperRightThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = LowerLeftThumbPartName, Type = typeof(ImageCropperThumb))]
-[TemplatePart(Name = LowerRightThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.LayoutGridName, Type = typeof(Grid))]
+[TemplatePart(Name = ImageCropperNames.ImageCanvasPartName, Type = typeof(Canvas))]
+[TemplatePart(Name = ImageCropperNames.SourceImagePartName, Type = typeof(Image))]
+[TemplatePart(Name = ImageCropperNames.MaskAreaPathPartName, Type = typeof(Path))]
+[TemplatePart(Name = ImageCropperNames.OverlayAreaPathPartName, Type = typeof(Path))]
+[TemplatePart(Name = ImageCropperNames.TopThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.BottomThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.LeftThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.RightThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.UpperLeftThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.UpperRightThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.LowerLeftThumbPartName, Type = typeof(ImageCropperThumb))]
+[TemplatePart(Name = ImageCropperNames.LowerRightThumbPartName, Type = typeof(ImageCropperThumb))]
 public partial class ImageCropper : Control
 {
     private readonly CompositeTransform _imageTransform = new CompositeTransform();
@@ -164,19 +166,19 @@ public partial class ImageCropper : Control
     protected override void OnApplyTemplate()
     {
         UnhookEvents();
-        _layoutGrid = GetTemplateChild(LayoutGridName) as Grid;
-        _imageCanvas = GetTemplateChild(ImageCanvasPartName) as Canvas;
-        _sourceImage = GetTemplateChild(SourceImagePartName) as Image;
-        _maskAreaPath = GetTemplateChild(MaskAreaPathPartName) as Path;
-        _overlayAreaPath = GetTemplateChild(OverlayAreaPathPartName) as Path;
-        _topThumb = GetTemplateChild(TopThumbPartName) as ImageCropperThumb;
-        _bottomThumb = GetTemplateChild(BottomThumbPartName) as ImageCropperThumb;
-        _leftThumb = GetTemplateChild(LeftThumbPartName) as ImageCropperThumb;
-        _rightThumb = GetTemplateChild(RightThumbPartName) as ImageCropperThumb;
-        _upperLeftThumb = GetTemplateChild(UpperLeftThumbPartName) as ImageCropperThumb;
-        _upperRightThumb = GetTemplateChild(UpperRightThumbPartName) as ImageCropperThumb;
-        _lowerLeftThumb = GetTemplateChild(LowerLeftThumbPartName) as ImageCropperThumb;
-        _lowerRigthThumb = GetTemplateChild(LowerRightThumbPartName) as ImageCropperThumb;
+        _layoutGrid = GetTemplateChild(ImageCropperNames.LayoutGridName) as Grid;
+        _imageCanvas = GetTemplateChild(ImageCropperNames.ImageCanvasPartName) as Canvas;
+        _sourceImage = GetTemplateChild(ImageCropperNames.SourceImagePartName) as Image;
+        _maskAreaPath = GetTemplateChild(ImageCropperNames.MaskAreaPathPartName) as Path;
+        _overlayAreaPath = GetTemplateChild(ImageCropperNames.OverlayAreaPathPartName) as Path;
+        _topThumb = GetTemplateChild(ImageCropperNames.TopThumbPartName) as ImageCropperThumb;
+        _bottomThumb = GetTemplateChild(ImageCropperNames.BottomThumbPartName) as ImageCropperThumb;
+        _leftThumb = GetTemplateChild(ImageCropperNames.LeftThumbPartName) as ImageCropperThumb;
+        _rightThumb = GetTemplateChild(ImageCropperNames.RightThumbPartName) as ImageCropperThumb;
+        _upperLeftThumb = GetTemplateChild(ImageCropperNames.UpperLeftThumbPartName) as ImageCropperThumb;
+        _upperRightThumb = GetTemplateChild(ImageCropperNames.UpperRightThumbPartName) as ImageCropperThumb;
+        _lowerLeftThumb = GetTemplateChild(ImageCropperNames.LowerLeftThumbPartName) as ImageCropperThumb;
+        _lowerRigthThumb = GetTemplateChild(ImageCropperNames.LowerRightThumbPartName) as ImageCropperThumb;
         HookUpEvents();
         UpdateThumbsVisibility();
     }

@@ -7,70 +7,71 @@ namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 /// <summary>
 /// The <see cref="ImageCropper"/> control allows user to crop image freely.
 /// </summary>
-public partial class ImageCropper
+
+public static class ImageCropperNames
 {
     /// <summary>
     /// Key of the root layout container.
     /// </summary>
-    private const string LayoutGridName = "PART_LayoutGrid";
+    internal const string LayoutGridName = "PART_LayoutGrid";
 
     /// <summary>
     /// Key of the Canvas that contains the image and ImageCropperThumbs.
     /// </summary>
-    private const string ImageCanvasPartName = "PART_ImageCanvas";
+    internal const string ImageCanvasPartName = "PART_ImageCanvas";
 
     /// <summary>
     /// Key of the Image Control inside the ImageCropper Control.
     /// </summary>
-    private const string SourceImagePartName = "PART_SourceImage";
+    internal const string SourceImagePartName = "PART_SourceImage";
 
     /// <summary>
     /// Key of the mask layer.
     /// </summary>
-    private const string MaskAreaPathPartName = "PART_MaskAreaPath";
+    internal const string MaskAreaPathPartName = "PART_MaskAreaPath";
 
     /// <summary>
     /// Key of the overlay layer.
     /// </summary>
-    private const string OverlayAreaPathPartName = "PART_OverlayAreaPath";
+    internal const string OverlayAreaPathPartName = "PART_OverlayAreaPath";
 
     /// <summary>
     /// Key of the ImageCropperThumb that on the top.
     /// </summary>
-    private const string TopThumbPartName = "PART_TopThumb";
+    internal const string TopThumbPartName = "PART_TopThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb on the bottom.
     /// </summary>
-    private const string BottomThumbPartName = "PART_BottomThumb";
+    internal const string BottomThumbPartName = "PART_BottomThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb on the left.
     /// </summary>
-    private const string LeftThumbPartName = "PART_LeftThumb";
+    internal const string LeftThumbPartName = "PART_LeftThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb on the right.
     /// </summary>
-    private const string RightThumbPartName = "PART_RightThumb";
+    internal const string RightThumbPartName = "PART_RightThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb that on the upper left.
     /// </summary>
-    private const string UpperLeftThumbPartName = "PART_UpperLeftThumb";
+    internal const string UpperLeftThumbPartName = "PART_UpperLeftThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb that on the upper right.
     /// </summary>
-    private const string UpperRightThumbPartName = "PART_UpperRightThumb";
+    internal const string UpperRightThumbPartName = "PART_UpperRightThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb that on the lower left.
     /// </summary>
-    private const string LowerLeftThumbPartName = "PART_LowerLeftThumb";
+    internal const string LowerLeftThumbPartName = "PART_LowerLeftThumb";
 
     /// <summary>
     /// Key of the ImageCropperThumb that on the lower right.
     /// </summary>
-    private const string LowerRightThumbPartName = "PART_LowerRightThumb";
+    internal const string LowerRightThumbPartName = "PART_LowerRightThumb";
 }

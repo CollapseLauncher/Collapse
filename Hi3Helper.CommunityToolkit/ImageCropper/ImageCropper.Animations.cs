@@ -4,12 +4,15 @@
 
 #if WINAPPSDK
 using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
+
 #else
 using Windows.UI.Composition;
 using Windows.UI.Xaml.Hosting;
 #endif
-using System.Numerics;
 
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
