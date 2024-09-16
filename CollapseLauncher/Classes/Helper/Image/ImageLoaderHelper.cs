@@ -29,6 +29,7 @@ using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
+using ImageBlendBrush = Hi3Helper.CommunityToolkit.WinUI.Media.ImageBlendBrush;
 using ImageCropper = Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper;
 using CropShape = Hi3Helper.CommunityToolkit.WinUI.Controls.CropShape;
 using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
@@ -175,15 +176,19 @@ namespace CollapseLauncher.Helper.Image
             imageCropper.HorizontalAlignment = HorizontalAlignment.Stretch;
             imageCropper.VerticalAlignment = VerticalAlignment.Stretch;
             imageCropper.Opacity = 0;
+
+            // Path of image
+            Uri overlayImageUri = new Uri(Path.Combine(AppFolder!, @"Assets\Images\ImageCropperOverlay",
+                                                       GetAppConfigValue("WindowSizeProfile").ToString() == "Small" ? "small.png" : "normal.png"));
+
             // Why not use ImageBrush?
             // https://github.com/microsoft/microsoft-ui-xaml/issues/7809
             imageCropper.Overlay = new ImageBlendBrush()
             {
-                Source = new BitmapImage(new Uri(Path.Combine(AppFolder!, @"Assets\Images\ImageCropperOverlay",
-                                                              GetAppConfigValue("WindowSizeProfile").ToString() == "Small" ? "small.png" : "normal.png"))),
                 Opacity = 0.5,
                 Stretch = Stretch.Fill,
                 Mode = ImageBlendMode.Multiply,
+                SourceUri = overlayImageUri
             };
 
             ContentDialogOverlay dialogOverlay = new ContentDialogOverlay(ContentDialogTheme.Informational)

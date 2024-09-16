@@ -3,6 +3,8 @@ echo 	Clearing Collapse cache
 rmdir /S /Q CollapseLauncher\bin && rmdir /S /Q CollapseLauncher\obj
 echo 	Clearing ColorThief cache
 rmdir /S /Q ColorThief\ColorThief\bin && rmdir /S /Q ColorThief\ColorThief\obj
+echo 	Clearing CommunityToolkit.ImageCropper cache
+rmdir /S /Q Hi3Helper.CommunityToolkit\ImageCropper\bin && rmdir /S /Q Hi3Helper.CommunityToolkit\ImageCropper\obj
 echo 	Clearing Core cache
 rmdir /S /Q Hi3Helper.Core\bin && rmdir /S /Q Hi3Helper.Core\obj
 echo 	Clearing EncTool cache
@@ -21,6 +23,8 @@ echo 	Clearing 2nd HDiff cache
 rmdir /S /Q Hi3Helper.SharpHDiffPatch\SharpHDiffPatch\bin && rmdir /S /Q Hi3Helper.SharpHDiffPatch\SharpHDiffPatch\obj
 echo 	Clearing InnoSetupHelper cache
 rmdir /S /Q InnoSetupHelper\bin && rmdir /S /Q InnoSetupHelper\obj
+echo 	Clearing ImageEx cache
+rmdir /S /Q ImageEx\ImageEx\bin && rmdir /S /Q ImageEx\ImageEx\obj
 echo 	Clearing 7z cache
 rmdir /S /Q Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\bin && rmdir /S /Q Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\obj
 echo 	Clearing SharpDiscordRPC cache

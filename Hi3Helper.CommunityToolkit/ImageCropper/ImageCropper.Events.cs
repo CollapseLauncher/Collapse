@@ -2,15 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#if WINAPPSDK
-using Microsoft.UI.Input;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Input;
-
-#endif
-using Windows.System;
-using Windows.UI.Core;
-
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 /// <summary>

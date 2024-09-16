@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 #if WINAPPSDK
-using Microsoft.UI.Xaml.Media.Imaging;
 using Colors = Microsoft.UI.Colors;
 #else
 using Windows.UI.Xaml.Media.Imaging;

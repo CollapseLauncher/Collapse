@@ -79,7 +79,6 @@
         <PackageReference Include="CommunityToolkit.Common" Version="8.3.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.1" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240821" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240821" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" />
         <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.1.240821" />
