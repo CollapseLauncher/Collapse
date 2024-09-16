@@ -11,12 +11,12 @@
         <ProductName>Collapse</ProductName>
         <Product>Collapse</Product>
         <Description>Collapse Launcher</Description>
-		<AssemblyTitle>Collapse Launcher</AssemblyTitle>
+	<AssemblyTitle>Collapse Launcher</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.81.5</Version>
+        <Version>1.81.6</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -39,7 +39,7 @@
         <InvariantGlobalization>false</InvariantGlobalization>
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-		<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+	<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     </PropertyGroup>
 
 <!--

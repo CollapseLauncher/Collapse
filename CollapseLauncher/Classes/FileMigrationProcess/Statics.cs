@@ -21,7 +21,7 @@ namespace CollapseLauncher
             // Check whether the input is a file or not.
             bool isFileTransfer = File.Exists(inputPath) && !inputPath.StartsWith('\\');
             outputPath = await InitializeAndCheckOutputPath(parentUI, dialogTitle, inputPath, outputPath, isFileTransfer);
-            if (IsRootPath(outputPath))
+            if (Helper.FileUtility.IsRootPath(outputPath))
             {
                 await SimpleDialogs.SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
                                   Lang._HomePage.InstallFolderRootSubtitle,

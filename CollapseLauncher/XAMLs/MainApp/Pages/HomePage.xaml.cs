@@ -1615,6 +1615,12 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
 
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    WatchOutputLog = new CancellationTokenSource();
+                    ReadOutputLog();
+                }
+                
                 if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
                 {
                     SetBackScreenSettings(_Settings, (int)height, (int)width, CurrentGameProperty);
@@ -1629,13 +1635,7 @@ namespace CollapseLauncher.Pages
                     _Settings,
                     _gamePreset.GameType, height, width);
                 GameRunningWatcher(_Settings);
-
-                if (GetAppConfigValue("EnableConsole").ToBool())
-                {
-                    WatchOutputLog = new CancellationTokenSource();
-                    ReadOutputLog();
-                }
-
+                
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
                     case "Minimize":
@@ -2092,20 +2092,51 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Log Method
-        public async void ReadOutputLog()
+        private async void ReadOutputLog()
         {
+            var saveGameLog = GetAppConfigValue("IncludeGameLogs").ToBool();
             InitializeConsoleValues();
-
-            LogWriteLine($"Are Game logs getting saved to Collapse logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
-            LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
+            
+            LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning,
+                         true);
+            LogWriteLine($"Are Game logs getting saved to Collapse logs: {saveGameLog}", LogType.Scheme, true);
+            
             try
             {
-                string logPath = Path.Combine(CurrentGameProperty._GameVersion.GameDirAppDataPath, CurrentGameProperty._GameVersion.GameOutputLogName);
-
+                string logPath = Path.Combine(CurrentGameProperty._GameVersion.GameDirAppDataPath,
+                                              CurrentGameProperty._GameVersion.GameOutputLogName);
                 if (!Directory.Exists(Path.GetDirectoryName(logPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
+                
+                if (CurrentGameProperty._GamePreset.GameType == GameNameType.Zenless)
+                {
+                    var logDir = Path.Combine(CurrentGameProperty._GameVersion.GameDirPath,
+                                              "ZenlessZoneZero_Data\\Persistent\\LogDir\\");
+                    var newLog = await FileUtility.WaitForNewFileAsync(logDir, 20000);
+                    if (!newLog)
+                    {
+                        LogWriteLine("Cannot get Zenless' log file due to timeout! Your computer too fast XD",
+                                     LogType.Warning, saveGameLog);
+                        return;
+                    }
 
-                await using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    var logPat = FileUtility.GetLatestFile(logDir, "NAP_*.log");
+
+                    if (!string.IsNullOrEmpty(logPat)) logPath = logPat;
+                }
+                else
+                {
+                    // If the log file exist beforehand, move it and make a new one
+                    if (File.Exists(logPath))
+                    {
+                        FileUtility.RenameFileWithPrefix(logPath, "-old", true);
+                    } 
+                }
+                
+                LogWriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
+                
+                await using (FileStream fs =
+                             new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         while (true)
@@ -2118,13 +2149,17 @@ namespace CollapseLauncher.Pages
                                     StartExclusiveWindowPayload();
                                     RequireWindowExclusivePayload = false;
                                 }
-                                LogWriteLine(line!, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
+
+                                LogWriteLine(line!, LogType.Game, saveGameLog);
                             }
+
                             await Task.Delay(100, WatchOutputLog.Token);
                         }
                     }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+            }
             catch (Exception ex)
             {
                 LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
