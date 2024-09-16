@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
+    <PropertyGroup>
         <!-- Platform Properties -->
         <Platforms>x64</Platforms>
         <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
@@ -9,43 +9,54 @@
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
         <EnableMsixTooling>true</EnableMsixTooling>
-		<OutputType>Library</OutputType>
-		<LangVersion>12.0</LangVersion>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<DebugType>embedded</DebugType>
+        <OutputType>Library</OutputType>
+        <LangVersion>12.0</LangVersion>
+        <DebugType>embedded</DebugType>
         <!-- Assembly Info Properties-->
-        <AssemblyTitle>ImageCropper</AssemblyTitle>
-        <Product>Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper</Product>
-        <PackageId>Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper</PackageId>
+        <RootNamespace>Hi3Helper.CommunityToolkit.WinUI.Controls</RootNamespace>
+        <AssemblyTitle>Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper</AssemblyTitle>
+        <Product>ImageCropper</Product>
+        <PackageId>ImageCropper</PackageId>
         <Version>1.0.0</Version>
         <PackageProjectUrl>https://github.com/CollapseLauncher/Collapse</PackageProjectUrl>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>disable</Nullable>
-		<DefineConstants>WINAPPSDK</DefineConstants>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <DefineConstants>WINAPPSDK</DefineConstants>
     </PropertyGroup>
 
-	<PropertyGroup>
+    <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
-		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-	</PropertyGroup>
-	
-	<ItemGroup>
+        <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    </PropertyGroup>
+    
+    <ItemGroup>
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240829007" />
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.3" />
-		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.1-experimental2" />
-		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240821" />
-	</ItemGroup>
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.3" />
+        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.1-experimental2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240821" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Using Include="Microsoft.Graphics.Canvas" />
-		<Using Include="Microsoft.Graphics.Canvas.Effects" />
-		<Using Include="Microsoft.Graphics.Canvas.Geometry" />
-		<Using Include="System.Numerics" />
-		<Using Include="System.Runtime.InteropServices.WindowsRuntime" />
-		<Using Include="Windows.Foundation" />
-		<Using Include="Windows.Graphics.Imaging" />
-		<Using Include="Windows.Storage" />
-		<Using Include="Windows.Storage.Streams" />
-	</ItemGroup>
+    <ItemGroup>
+        <Using Include="Microsoft.Graphics.Canvas" />
+        <Using Include="Microsoft.Graphics.Canvas.Effects" />
+        <Using Include="Microsoft.Graphics.Canvas.Geometry" />
+        <Using Include="Microsoft.UI.Composition" />
+        <Using Include="Microsoft.UI.Xaml" />
+        <Using Include="Microsoft.UI.Xaml.Controls" />
+        <Using Include="Microsoft.UI.Xaml.Hosting" />
+        <Using Include="Microsoft.UI.Xaml.Input" />
+        <Using Include="Microsoft.UI.Xaml.Media" />
+        <Using Include="Microsoft.UI.Xaml.Media.Animation" />
+        <Using Include="Microsoft.UI.Xaml.Media.Imaging" />
+        <Using Include="System.Diagnostics.Contracts" />
+        <Using Include="System.Numerics" />
+        <Using Include="System.Runtime.CompilerServices" />
+        <Using Include="System.Runtime.InteropServices.WindowsRuntime" />
+        <Using Include="Windows.Foundation" />
+        <Using Include="Windows.Graphics.Imaging" />
+        <Using Include="Windows.Storage" />
+        <Using Include="Windows.Storage.Streams" />
+        <Using Include="Hi3Helper.CommunityToolkit.WinUI.Controls" />
+    </ItemGroup>
 
 </Project>

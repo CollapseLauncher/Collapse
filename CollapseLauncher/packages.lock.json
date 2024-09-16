@@ -434,6 +434,15 @@
           "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
         }
       },
+      "ImageCropper": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.WinUI.Extensions": "[8.1.240821, )",
+          "Microsoft.Graphics.Win2D": "[1.2.1-experimental2, )",
+          "Microsoft.Windows.CsWinRT": "[2.1.3, )",
+          "Microsoft.WindowsAppSDK": "[1.6.240829007, )"
+        }
+      },
       "imageex": {
         "type": "Project",
         "dependencies": {

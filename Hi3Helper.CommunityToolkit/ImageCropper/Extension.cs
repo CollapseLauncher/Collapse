@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-
-namespace Hi3Helper.CommunityToolkit.WinUI.Controls
+﻿namespace Hi3Helper.CommunityToolkit.WinUI.Controls
 {
     internal static class Extension
     {

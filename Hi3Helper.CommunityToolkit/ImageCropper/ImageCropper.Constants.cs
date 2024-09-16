@@ -8,7 +8,7 @@ namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 /// The <see cref="ImageCropper"/> control allows user to crop image freely.
 /// </summary>
 
-public static class ImageCropperNames
+public partial class ImageCropper
 {
     /// <summary>
     /// Key of the root layout container.

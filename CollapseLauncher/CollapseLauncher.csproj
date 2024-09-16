@@ -11,7 +11,7 @@
         <ProductName>Collapse</ProductName>
         <Product>Collapse</Product>
         <Description>Collapse Launcher</Description>
-	<AssemblyTitle>Collapse Launcher</AssemblyTitle>
+        <AssemblyTitle>Collapse Launcher</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
@@ -39,7 +39,7 @@
         <InvariantGlobalization>false</InvariantGlobalization>
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-	<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+        <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     </PropertyGroup>
 
 <!--
@@ -59,8 +59,8 @@
 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
-		<PublishAot>true</PublishAot>
-		<TrimMode>partial</TrimMode>
+        <PublishAot>true</PublishAot>
+        <TrimMode>partial</TrimMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
@@ -121,15 +121,13 @@
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
+        <ProjectReference Include="..\Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj" />
         <ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
         <ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
         <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
         <ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
         <ProjectReference Include="..\ImageEx\ImageEx\ImageEx.csproj" />
-        
-        <ProjectReference Include="..\Hi3Helper.CommunityToolkit\ImageCropper\CommunityToolkit.WinUI.Controls.ImageCropper.csproj" />
-        <ProjectReference Include="..\Hi3Helper.CommunityToolkit\SettingsControls\CommunityToolkit.WinUI.Controls.SettingsControls.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -142,15 +140,15 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
 
-		<Content Include="icon.ico">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
+        <Content Include="icon.ico">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
 
         <None Include="..\.editorconfig" Link=".editorconfig" />
 
-		<Content Include="..\LICENSE.rtf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
+        <Content Include="..\LICENSE.rtf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
 
         <Content Include="..\PRIVACY.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -186,17 +184,17 @@
             <TrimmableAssembly Include="ColorCode.WinUI" />
             <TrimmableAssembly Include="CommunityToolkit.Common" />
             <TrimmableAssembly Include="CommunityToolkit.Mvvm" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Behaviors" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.ImageCropper" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Sizers" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Converters" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Extensions" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Helpers" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.Triggers" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Behaviors" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.ImageCropper" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Sizers" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Converters" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Extensions" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Helpers" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
+            <TrimmableAssembly Include="CommunityToolkit.WinUI.Triggers" />
             <TrimmableAssembly Include="Google.Protobuf" />
             <TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
             <TrimmableAssembly Include="H.NotifyIcon" />
@@ -261,16 +259,16 @@
         </ItemGroup>
     </Target>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />
-	</Target>
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="dotnet publish $(ProjectDir)..\Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj /p:PublishProfile=AsRelease&#xD;&#xA;mkdir $(ProjectDir)$(OutDir)Lib\win-x64&#xD;&#xA;copy /Y $(ProjectDir)..\Hi3Helper.TaskScheduler\bin\publish\Hi3Helper.TaskScheduler.exe $(ProjectDir)$(OutDir)Lib\win-x64 &amp; exit 0" />
+    </Target>
 
-	<Target Name="PostBuild" AfterTargets="Build">
-		<Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
-	</Target>
+    <Target Name="PostBuild" AfterTargets="Build">
+        <Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+    </Target>
 
-	<Target Name="PostBuild" AfterTargets="Publish">
-		<Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
-		<Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
-	</Target>
+    <Target Name="PostBuild" AfterTargets="Publish">
+        <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+        <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
+    </Target>
 </Project>
