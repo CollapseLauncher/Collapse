@@ -94,7 +94,20 @@ namespace CollapseLauncher
         }
 
         private void CoreWebView2_DocumentTitleChanged(CoreWebView2 sender, object args) => WebViewWindowTitle.Text = sender.DocumentTitle;
-        private void WebView2Window_CoreWebView2Initialized(WebView2 sender, CoreWebView2InitializedEventArgs args) => sender.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+        private void WebView2Window_CoreWebView2Initialized(WebView2 sender, CoreWebView2InitializedEventArgs args)
+        {
+            try
+            {
+                sender.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+            }
+            catch (Exception ex)
+            {
+                if (ex is NotSupportedException nsEx)
+                {
+                    LogWriteLine($"Half-baked NativeAOT Bug (nice MSFT!) :) https://github.com/MicrosoftEdge/WebView2Feedback/issues/4783\r\n{nsEx}", LogType.Error, true);
+                }
+            }
+        }
         private void WebView2Window_PageLoaded(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args) => WebView2LoadingStatus.IsIndeterminate = false;
         private void WebView2Window_PageLoading(WebView2 sender, CoreWebView2NavigationStartingEventArgs args) => WebView2LoadingStatus.IsIndeterminate = true;
         private void WebView2BackBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.GoBack();

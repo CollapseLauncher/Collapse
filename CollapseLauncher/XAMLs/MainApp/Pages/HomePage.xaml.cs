@@ -2,6 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -39,7 +40,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -429,9 +429,9 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = Shadow16;
 
-            Grid  iconGrid   = btn.FindDescendant<Grid>();
-            Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
-            Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+            Grid             iconGrid   = btn.FindDescendant<Grid>();
+            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
+            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
 
             ElementScaleOutHoveredPointerEnteredInner(iconGrid, 0, -2);
 
@@ -445,16 +445,16 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = new Vector3(0);
 
-            Flyout flyout = btn.Resources["SocMedFlyout"] as Flyout;
+            FlyoutBase flyout = btn.Flyout;
             Point pos = e.GetCurrentPoint(btn).Position;
             if (pos.Y <= 0 || pos.Y >= btn.Height || pos.X <= -8 || pos.X >= btn.Width)
             {
-                flyout!.Hide();
+                flyout?.Hide();
             }
 
-            Grid  iconGrid   = btn.FindDescendant<Grid>();
-            Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
-            Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+            Grid             iconGrid   = btn.FindDescendant<Grid>();
+            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
+            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
 
             ElementScaleInHoveredPointerExitedInner(iconGrid, 0, -2);
 
@@ -525,19 +525,43 @@ namespace CollapseLauncher.Pages
         private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
         {
             ToolTip tooltip = sender as ToolTip;
-            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+            if (tooltip?.Tag is Button button)
+            {
+                Flyout flyout = button.Flyout as Flyout;
+                if (flyout != null)
+                {
+                    Panel contextPanel = flyout.Content as Panel;
+                    if (contextPanel != null && contextPanel.Tag is LauncherGameNewsSocialMedia socMedData)
+                    {
+                        if (!socMedData.IsHasDescription && !socMedData.IsHasLinks && !socMedData.IsHasQr)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
+
+            FlyoutBase.ShowAttachedFlyout(tooltip?.Tag as FrameworkElement);
         }
 
         private void HideSocMedFlyout(object sender, RoutedEventArgs e)
         {
-            Flyout flyout = ((StackPanel)sender).Tag as Flyout;
-            flyout!.Hide();
+            Grid dummyGrid = (sender as Panel).FindChild<Grid>();
+            if (dummyGrid != null)
+            {
+                Flyout flyout = dummyGrid.Tag as Flyout;
+                flyout?.Hide();
+            }
         }
 
         private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
         {
             // Prevent the flyout showing when there is no content visible
             StackPanel stackPanel = sender as StackPanel;
+
+            ApplySocialMediaBinding(stackPanel);
+
             bool visible = false;
             foreach (var child in stackPanel!.Children)
             {
@@ -2866,6 +2890,22 @@ namespace CollapseLauncher.Pages
             {
                 bool isStart = true;
                 foreach (Image imageElement in panel.Children.OfType<Image>())
+                {
+                    imageElement.ApplyDropShadow(opacity: 0.5f);
+                    if (isStart)
+                    {
+                        imageElement.Opacity = 0.0f;
+                        imageElement.Loaded += (_, _) =>
+                        {
+                            Compositor compositor = imageElement.GetElementCompositor();
+                            imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
+                                compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+                        };
+                        isStart = false;
+                    }
+                }
+
+                foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
                 {
                     imageElement.ApplyDropShadow(opacity: 0.5f);
                     if (isStart)
