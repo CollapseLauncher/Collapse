@@ -2,17 +2,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:Hi3Helper.CommunityToolkit.WinUI.Controls"
                     xmlns:ui="using:CommunityToolkit.WinUI">
+    
+    <StaticResource x:Key="BackgroundBrush" ResourceKey="CardBackgroundFillColorDefaultBrush"/>
+    <StaticResource x:Key="StrokeColorBrush" ResourceKey="CardStrokeColorDefaultBrush"/>
+    <StaticResource x:Key="SmokeFillColorBrush" ResourceKey="SmokeFillColorDefaultBrush"/>
+
     <Style TargetType="controls:ImageCropper">
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-        <Setter Property="Mask" Value="{ThemeResource SmokeFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeColorBrush}" />
+        <Setter Property="Mask" Value="{StaticResource SmokeFillColorBrush}" />
         <Setter Property="Padding" Value="80" />
         <Setter Property="Template">
             <Setter.Value>

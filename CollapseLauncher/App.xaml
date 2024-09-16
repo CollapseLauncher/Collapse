@@ -4958,12 +4958,13 @@
                     </Style>
                 </ResourceDictionary>
                 <!--  Custom controls styles  -->
+                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper/Themes/Generic.xaml" />
+
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/RadioButton.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Slider.xaml" />
-                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper/Themes/Generic.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/ImageEx/ImageEx.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml" />

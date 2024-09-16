@@ -28,6 +28,11 @@
         <IsAotCompatible>true</IsAotCompatible>
         <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="ImageCropper.xaml" />
+      <None Remove="ImageCropperThumb.xaml" />
+    </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240829007" />
@@ -57,6 +62,17 @@
         <Using Include="Windows.Storage" />
         <Using Include="Windows.Storage.Streams" />
         <Using Include="Hi3Helper.CommunityToolkit.WinUI.Controls" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="ImageCropper.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="ImageCropperThumb.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 
 </Project>

@@ -6,6 +6,7 @@ using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Controls;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
+using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.Data;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -27,6 +28,11 @@ using Windows.Storage.Streams;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+
+using ImageCropper = Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper;
+using CropShape = Hi3Helper.CommunityToolkit.WinUI.Controls.CropShape;
+using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
+using BitmapFileFormat = Hi3Helper.CommunityToolkit.WinUI.Controls.BitmapFileFormat;
 
 namespace CollapseLauncher.Helper.Image
 {
