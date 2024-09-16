@@ -1,0 +1,68 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+                    xmlns:ui="using:CommunityToolkit.WinUI">
+    <Style TargetType="controls:ImageCropper">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="Mask" Value="{ThemeResource SmokeFillColorDefaultBrush}" />
+        <Setter Property="Padding" Value="80" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:ImageCropper">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid x:Name="PART_LayoutGrid"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                              CornerRadius="{TemplateBinding CornerRadius}">
+                            <Canvas x:Name="PART_ImageCanvas">
+                                <Image x:Name="PART_SourceImage"
+                                       Source="{TemplateBinding Source}" />
+                                <Path x:Name="PART_MaskAreaPath"
+                                      Fill="{TemplateBinding Mask}" />
+                                <Path x:Name="PART_OverlayAreaPath"
+                                      Fill="{TemplateBinding Overlay}"
+                                      IsHitTestVisible="False" />
+                                <controls:ImageCropperThumb x:Name="PART_TopThumb"
+                                                            Style="{TemplateBinding SecondaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeNorthSouth"  -->
+                                <controls:ImageCropperThumb x:Name="PART_BottomThumb"
+                                                            Style="{TemplateBinding SecondaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeNorthSouth"  -->
+                                <controls:ImageCropperThumb x:Name="PART_LeftThumb"
+                                                            Style="{TemplateBinding SecondaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeWestEast"  -->
+                                <controls:ImageCropperThumb x:Name="PART_RightThumb"
+                                                            Style="{TemplateBinding SecondaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeWestEast"  -->
+                                <controls:ImageCropperThumb x:Name="PART_UpperLeftThumb"
+                                                            Style="{TemplateBinding PrimaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeNorthwestSoutheast"  -->
+                                <controls:ImageCropperThumb x:Name="PART_UpperRightThumb"
+                                                            Style="{TemplateBinding PrimaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeNortheastSouthwest"  -->
+                                <controls:ImageCropperThumb x:Name="PART_LowerLeftThumb"
+                                                            Style="{TemplateBinding PrimaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeNortheastSouthwest"  -->
+                                <controls:ImageCropperThumb x:Name="PART_LowerRightThumb"
+                                                            Style="{TemplateBinding PrimaryThumbStyle}" />
+                                <!--  ui:FrameworkElementExtensions.Cursor="SizeNorthwestSoutheast"  -->
+                            </Canvas>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

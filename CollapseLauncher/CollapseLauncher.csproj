@@ -58,7 +58,7 @@
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
 		<PublishAot>true</PublishAot>
 		<TrimMode>partial</TrimMode>
     </PropertyGroup>
@@ -127,6 +127,9 @@
         <ProjectReference Include="..\Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" />
         <ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
         <ProjectReference Include="..\ImageEx\ImageEx\ImageEx.csproj" />
+        
+        <ProjectReference Include="..\Hi3Helper.CommunityToolkit\ImageCropper\CommunityToolkit.WinUI.Controls.ImageCropper.csproj" />
+        <ProjectReference Include="..\Hi3Helper.CommunityToolkit\SettingsControls\CommunityToolkit.WinUI.Controls.SettingsControls.csproj" />
     </ItemGroup>
 
     <ItemGroup>

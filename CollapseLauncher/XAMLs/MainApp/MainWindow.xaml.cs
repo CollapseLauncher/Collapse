@@ -56,7 +56,8 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
-                Console.ReadLine();
+                //Console.ReadLine();
+                throw;
             }
         }
 

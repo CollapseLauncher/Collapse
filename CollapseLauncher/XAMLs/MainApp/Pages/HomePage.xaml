@@ -469,19 +469,19 @@
                                         <Flyout x:Name="SocMedFlyout"
                                                 OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelScrollView}"
                                                 Placement="Left">
-                                            <StackPanel Padding="10,6"
-                                                        x:Name="DummySocMedStackPanel"
+                                            <StackPanel x:Name="DummySocMedStackPanel"
+                                                        Padding="10,6"
                                                         Background="Transparent"
                                                         Loaded="OnLoadedSocMedFlyout"
                                                         PointerExited="HideSocMedFlyout"
                                                         Tag="{x:Bind}"
                                                         Visibility="Collapsed">
-                                                <Grid Visibility="Collapsed"
-                                                      Tag="{Binding ElementName=SocMedFlyout}" />
-                                                
-                                                <!-- START: SocialMediaParentPanel_QR -->
-                                                <StackPanel Margin="4,8,4,0"
-                                                            x:Name="SocialMediaParentPanel_QR">
+                                                <Grid Tag="{Binding ElementName=SocMedFlyout}"
+                                                      Visibility="Collapsed" />
+
+                                                <!--  START: SocialMediaParentPanel_QR  -->
+                                                <StackPanel x:Name="SocialMediaParentPanel_QR"
+                                                            Margin="4,8,4,0">
                                                     <Grid Margin="0,0,0,8"
                                                           Background="White"
                                                           CornerRadius="5"
@@ -503,10 +503,10 @@
                                                                    TextWrapping="Wrap" />
                                                     </Grid>
                                                 </StackPanel>
-                                                
-                                                <!-- START: SocialMediaParentPanel_Links -->
-                                                <StackPanel Margin="0,2"
-                                                            x:Name="SocialMediaParentPanel_Links">
+
+                                                <!--  START: SocialMediaParentPanel_Links  -->
+                                                <StackPanel x:Name="SocialMediaParentPanel_Links"
+                                                            Margin="0,2">
                                                     <ItemsControl>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate x:DataType="sophonTypes:LauncherGameNewsSocialMediaQrLinks">
@@ -562,9 +562,9 @@
                                                     </ItemsControl>
                                                 </StackPanel>
 
-                                                <!-- START: SocialMediaParentPanel_Description -->
-                                                <TextBlock Margin="0,4"
-                                                           x:Name="SocialMediaParentPanel_Description"
+                                                <!--  START: SocialMediaParentPanel_Description  -->
+                                                <TextBlock x:Name="SocialMediaParentPanel_Description"
+                                                           Margin="0,4"
                                                            HorizontalAlignment="Center"
                                                            TextWrapping="Wrap" />
                                             </StackPanel>
