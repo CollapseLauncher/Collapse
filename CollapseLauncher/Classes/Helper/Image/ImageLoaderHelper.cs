@@ -446,6 +446,9 @@ namespace CollapseLauncher.Helper.Image
                 Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
                     + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
             }
+            // Ignore cancellation exceptions
+            catch (TaskCanceledException) { }
+            catch (OperationCanceledException) { }
 #if !DEBUG
             catch (Exception ex)
             {
