@@ -704,6 +704,9 @@ namespace CollapseLauncher.Extension
                     case Image imageElement:
                         AttachShadow(imageElement, true, offset);
                         break;
+                    case ImageEx.ImageEx imageExElement:
+                        AttachShadow(imageExElement, true, offset);
+                        break;
                     default:
                         AttachShadow(element, innerMasked, offset);
                         break;
