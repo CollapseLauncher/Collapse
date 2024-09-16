@@ -201,44 +201,44 @@
                                         <Button x:Name="CheckUpdateQuickBtn"
                                                 Margin="0,0,0,8"
                                                 HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
                                                 Click="StartCachesCheck"
                                                 Tag="Fast"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}"
-                                                HorizontalContentAlignment="Stretch">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <FontIcon Grid.Column="1"
+                                                          HorizontalAlignment="Right"
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf101;"
-                                                          HorizontalAlignment="Right"/>
-                                                <TextBlock FontWeight="SemiBold"
-                                                           HorizontalAlignment="Left"
+                                                          Glyph="&#xf101;" />
+                                                <TextBlock HorizontalAlignment="Left"
+                                                           FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
                                             </Grid>
                                         </Button>
                                         <Button x:Name="CheckUpdateFullBtn"
                                                 HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
                                                 Click="StartCachesCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}"
-                                                HorizontalContentAlignment="Stretch">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <FontIcon Grid.Column="1"
+                                                          HorizontalAlignment="Right"
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf105;"
-                                                          HorizontalAlignment="Right"/>
-                                                <TextBlock FontWeight="SemiBold"
-                                                           HorizontalAlignment="Left"
+                                                          Glyph="&#xf105;" />
+                                                <TextBlock HorizontalAlignment="Left"
+                                                           FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}" />
                                             </Grid>
                                         </Button>

@@ -10,6 +10,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
+      xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
       xmlns:local="using:CollapseLauncher"
       xmlns:localPage="using:CollapseLauncher.Pages"
@@ -18,6 +19,7 @@
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="using:CommunityToolkit.WinUI"
+      xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Sophon"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       Unloaded="Page_Unloaded"
@@ -442,7 +444,7 @@
                         <PopupThemeTransition />
                     </ItemsControl.Transitions>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="sophonTypes:LauncherGameNewsSocialMedia">
                             <Grid Loaded="SetHandCursor">
                                 <Button x:Name="SocMedButton"
                                         Width="48px"
@@ -457,23 +459,29 @@
                                         PointerExited="FadeOutSocMedButton"
                                         Shadow="{ThemeResource SharedShadow}"
                                         Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                        Tag="{Binding SocialMediaUrl}">
+                                        Tag="{x:Bind SocialMediaUrl}">
                                     <ToolTipService.ToolTip>
                                         <ToolTip Opened="ShowSocMedFlyout"
                                                  Tag="{Binding ElementName=SocMedButton}"
                                                  Visibility="Collapsed" />
                                     </ToolTipService.ToolTip>
-                                    <Button.Resources>
+                                    <Button.Flyout>
                                         <Flyout x:Name="SocMedFlyout"
                                                 OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelScrollView}"
                                                 Placement="Left">
                                             <StackPanel Padding="10,6"
+                                                        x:Name="DummySocMedStackPanel"
                                                         Background="Transparent"
                                                         Loaded="OnLoadedSocMedFlyout"
                                                         PointerExited="HideSocMedFlyout"
-                                                        Tag="{Binding ElementName=SocMedFlyout}">
+                                                        Tag="{x:Bind}"
+                                                        Visibility="Collapsed">
+                                                <Grid Visibility="Collapsed"
+                                                      Tag="{Binding ElementName=SocMedFlyout}" />
+                                                
+                                                <!-- START: SocialMediaParentPanel_QR -->
                                                 <StackPanel Margin="4,8,4,0"
-                                                            Visibility="{Binding IsHasQr, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                            x:Name="SocialMediaParentPanel_QR">
                                                     <Grid Margin="0,0,0,8"
                                                           Background="White"
                                                           CornerRadius="5"
@@ -485,24 +493,23 @@
                                                         </Grid.RowDefinitions>
                                                         <imageex:ImageEx Width="160"
                                                                          Margin="4"
-                                                                         HorizontalAlignment="Center"
-                                                                         Source="{Binding QrImg}" />
+                                                                         HorizontalAlignment="Center" />
                                                         <TextBlock Grid.Row="1"
                                                                    Margin="0,0,0,8"
                                                                    HorizontalAlignment="Center"
                                                                    FontWeight="Bold"
                                                                    Foreground="Black"
-                                                                   Text="{Binding QrTitle}"
                                                                    TextAlignment="Center"
-                                                                   TextWrapping="Wrap"
-                                                                   Visibility="{Binding IsHasQrDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                                   TextWrapping="Wrap" />
                                                     </Grid>
                                                 </StackPanel>
+                                                
+                                                <!-- START: SocialMediaParentPanel_Links -->
                                                 <StackPanel Margin="0,2"
-                                                            Visibility="{Binding IsHasLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
-                                                    <ItemsControl ItemsSource="{Binding QrLinks}">
+                                                            x:Name="SocialMediaParentPanel_Links">
+                                                    <ItemsControl>
                                                         <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
+                                                            <DataTemplate x:DataType="sophonTypes:LauncherGameNewsSocialMediaQrLinks">
                                                                 <Button MinWidth="160"
                                                                         Margin="0,2"
                                                                         HorizontalAlignment="Stretch"
@@ -514,7 +521,7 @@
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
                                                                         Shadow="{ThemeResource SharedShadow}"
                                                                         Style="{ThemeResource AcrylicSemiButtonStyle}"
-                                                                        Tag="{Binding Url}"
+                                                                        Tag="{x:Bind Url, Mode=OneWay}"
                                                                         Translation="0,0,8">
                                                                     <Grid Margin="0,0,0,0"
                                                                           HorizontalAlignment="Stretch">
@@ -527,7 +534,7 @@
                                                                                        VerticalAlignment="Center"
                                                                                        FontWeight="Medium"
                                                                                        HorizontalTextAlignment="Left"
-                                                                                       Text="{Binding Title}" />
+                                                                                       Text="{x:Bind Title, Mode=OneWay}" />
                                                                         </Grid>
                                                                         <Grid Grid.Column="1"
                                                                               Margin="4,0,0,0"
@@ -554,11 +561,12 @@
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
                                                 </StackPanel>
+
+                                                <!-- START: SocialMediaParentPanel_Description -->
                                                 <TextBlock Margin="0,4"
+                                                           x:Name="SocialMediaParentPanel_Description"
                                                            HorizontalAlignment="Center"
-                                                           Text="{Binding Title}"
-                                                           TextWrapping="Wrap"
-                                                           Visibility="{Binding IsHasDescription, Converter={ThemeResource BooleanToVisibilityConverter}}" />
+                                                           TextWrapping="Wrap" />
                                             </StackPanel>
                                             <Flyout.FlyoutPresenterStyle>
                                                 <Style TargetType="FlyoutPresenter">
@@ -570,13 +578,13 @@
                                                 </Style>
                                             </Flyout.FlyoutPresenterStyle>
                                         </Flyout>
-                                    </Button.Resources>
+                                    </Button.Flyout>
                                     <Grid>
-                                        <Image x:Name="Icon"
-                                               Source="{Binding IconImg}" />
-                                        <Image x:Name="IconHover"
-                                               Opacity="0"
-                                               Source="{Binding IconImgHover}" />
+                                        <imageex:ImageEx x:Name="Icon"
+                                                         Source="{x:Bind IconImg, Mode=OneWay}" />
+                                        <imageex:ImageEx x:Name="IconHover"
+                                                         Opacity="0"
+                                                         Source="{x:Bind IconImgHover, Mode=OneWay}" />
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -616,16 +624,16 @@
                               Style="{ThemeResource CollapseFlipViewStyle}"
                               Translation="0,0,12">
                         <FlipView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="sophonTypes:LauncherGameNewsCarousel">
                                 <imageex:ImageEx EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
                                                  Loaded="SetHandCursor"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
-                                                 Source="{Binding CarouselImg}"
+                                                 Source="{x:Bind CarouselImg}"
                                                  Stretch="Fill"
-                                                 Tag="{Binding CarouselUrl}"
-                                                 ToolTipService.ToolTip="{Binding CarouselTitle}" />
+                                                 Tag="{x:Bind CarouselUrl}"
+                                                 ToolTipService.ToolTip="{x:Bind CarouselTitle}" />
                             </DataTemplate>
                         </FlipView.ItemTemplate>
                     </FlipView>
@@ -654,7 +662,8 @@
                            HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind DefaultPostPanelIndex}">
                         <Pivot.Resources>
-                            <Style BasedOn="{StaticResource MinScrollBarStyle}" TargetType="ScrollBar"/>
+                            <Style BasedOn="{StaticResource MinScrollBarStyle}"
+                                   TargetType="ScrollBar" />
                         </Pivot.Resources>
                         <PivotItem>
                             <PivotItem.Header>
@@ -670,40 +679,37 @@
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
+                                                <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
-                                                            Tag="{Binding PostUrl}">
-                                                        <Button.Template>
-                                                            <ControlTemplate>
-                                                                <Grid Margin="0,2"
-                                                                      HorizontalAlignment="Stretch"
-                                                                      Background="Transparent"
-                                                                      PointerEntered="HyperLink_OnPointerEntered"
-                                                                      PointerExited="HyperLink_OnPointerExited"
-                                                                      ToolTipService.ToolTip="{Binding Title}">
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <customcontrol:CompressedTextBlock Margin="0,0,8,0"
-                                                                                                       HorizontalAlignment="Left"
-                                                                                                       VerticalAlignment="Center"
-                                                                                                       FontSize="12"
-                                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                                       Text="{Binding Title}"
-                                                                                                       TextTrimming="CharacterEllipsis" />
-                                                                    <TextBlock Grid.Column="1"
-                                                                               HorizontalAlignment="Right"
-                                                                               VerticalAlignment="Center"
-                                                                               FontSize="12"
-                                                                               FontWeight="Bold"
-                                                                               Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding PostDate}" />
-                                                                </Grid>
-                                                            </ControlTemplate>
-                                                        </Button.Template>
+                                                            Style="{ThemeResource DraftButtonStyle}"
+                                                            Tag="{x:Bind PostUrl}">
+                                                        <Grid Margin="0,2"
+                                                              HorizontalAlignment="Stretch"
+                                                              Background="Transparent"
+                                                              PointerEntered="HyperLink_OnPointerEntered"
+                                                              PointerExited="HyperLink_OnPointerExited"
+                                                              ToolTipService.ToolTip="{x:Bind Title}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
+                                                                                               HorizontalAlignment="Left"
+                                                                                               VerticalAlignment="Center"
+                                                                                               FontSize="12"
+                                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                               Text="{x:Bind Title}"
+                                                                                               TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       HorizontalAlignment="Right"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="12"
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{ThemeResource AccentColor}"
+                                                                       Text="{x:Bind PostDate}" />
+                                                        </Grid>
                                                     </Button>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -747,40 +753,37 @@
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
+                                                <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
-                                                            Tag="{Binding PostUrl}">
-                                                        <Button.Template>
-                                                            <ControlTemplate>
-                                                                <Grid Margin="0,2"
-                                                                      HorizontalAlignment="Stretch"
-                                                                      Background="Transparent"
-                                                                      PointerEntered="HyperLink_OnPointerEntered"
-                                                                      PointerExited="HyperLink_OnPointerExited"
-                                                                      ToolTipService.ToolTip="{Binding Title}">
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <customcontrol:CompressedTextBlock Margin="0,0,8,0"
-                                                                                                       HorizontalAlignment="Left"
-                                                                                                       VerticalAlignment="Center"
-                                                                                                       FontSize="12"
-                                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                                       Text="{Binding Title}"
-                                                                                                       TextTrimming="CharacterEllipsis" />
-                                                                    <TextBlock Grid.Column="1"
-                                                                               HorizontalAlignment="Right"
-                                                                               VerticalAlignment="Center"
-                                                                               FontSize="12"
-                                                                               FontWeight="Bold"
-                                                                               Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding PostDate}" />
-                                                                </Grid>
-                                                            </ControlTemplate>
-                                                        </Button.Template>
+                                                            Style="{ThemeResource DraftButtonStyle}"
+                                                            Tag="{x:Bind PostUrl}">
+                                                        <Grid Margin="0,2"
+                                                              HorizontalAlignment="Stretch"
+                                                              Background="Transparent"
+                                                              PointerEntered="HyperLink_OnPointerEntered"
+                                                              PointerExited="HyperLink_OnPointerExited"
+                                                              ToolTipService.ToolTip="{x:Bind Title}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
+                                                                                               HorizontalAlignment="Left"
+                                                                                               VerticalAlignment="Center"
+                                                                                               FontSize="12"
+                                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                               Text="{x:Bind Title}"
+                                                                                               TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       HorizontalAlignment="Right"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="12"
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{ThemeResource AccentColor}"
+                                                                       Text="{x:Bind PostDate}" />
+                                                        </Grid>
                                                     </Button>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -824,40 +827,37 @@
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
+                                                <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
-                                                            Tag="{Binding PostUrl}">
-                                                        <Button.Template>
-                                                            <ControlTemplate>
-                                                                <Grid Margin="0,2"
-                                                                      HorizontalAlignment="Stretch"
-                                                                      Background="Transparent"
-                                                                      PointerEntered="HyperLink_OnPointerEntered"
-                                                                      PointerExited="HyperLink_OnPointerExited"
-                                                                      ToolTipService.ToolTip="{Binding Title}">
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <customcontrol:CompressedTextBlock Margin="0,0,8,0"
-                                                                                                       HorizontalAlignment="Left"
-                                                                                                       VerticalAlignment="Center"
-                                                                                                       FontSize="12"
-                                                                                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                                                                                       Text="{Binding Title}"
-                                                                                                       TextTrimming="CharacterEllipsis" />
-                                                                    <TextBlock Grid.Column="1"
-                                                                               HorizontalAlignment="Right"
-                                                                               VerticalAlignment="Center"
-                                                                               FontSize="12"
-                                                                               FontWeight="Bold"
-                                                                               Foreground="{ThemeResource AccentColor}"
-                                                                               Text="{Binding PostDate}" />
-                                                                </Grid>
-                                                            </ControlTemplate>
-                                                        </Button.Template>
+                                                            Style="{ThemeResource DraftButtonStyle}"
+                                                            Tag="{x:Bind PostUrl}">
+                                                        <Grid Margin="0,2"
+                                                              HorizontalAlignment="Stretch"
+                                                              Background="Transparent"
+                                                              PointerEntered="HyperLink_OnPointerEntered"
+                                                              PointerExited="HyperLink_OnPointerExited"
+                                                              ToolTipService.ToolTip="{x:Bind Title}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <customcontrol:CompressedTextBlock Margin="0,0,8,0"
+                                                                                               HorizontalAlignment="Left"
+                                                                                               VerticalAlignment="Center"
+                                                                                               FontSize="12"
+                                                                                               Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                               Text="{x:Bind Title}"
+                                                                                               TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       HorizontalAlignment="Right"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="12"
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{ThemeResource AccentColor}"
+                                                                       Text="{x:Bind PostDate}" />
+                                                        </Grid>
                                                     </Button>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -1396,11 +1396,11 @@
                     Orientation="Horizontal"
                     Spacing="8">
             <Button x:Name="PlaytimeBtn"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    VerticalContentAlignment="Stretch"
                     Padding="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
                     Click="ForceUpdatePlaytimeButton_Click"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
                     Shadow="{ThemeResource SharedShadow}"
@@ -1415,27 +1415,27 @@
                         <Grid Margin="16,0,16,2"
                               ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <FontIcon FontSize="18"
-                                      HorizontalAlignment="Stretch"
+                            <FontIcon HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
+                                      FontSize="18"
                                       Glyph="&#xE916;" />
-                            <TextBlock Grid.Column="1"
-                                       x:Name="PlaytimeMainBtn"
+                            <TextBlock x:Name="PlaytimeMainBtn"
+                                       Grid.Column="1"
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        Text="-" />
-                            <TextBlock Grid.Column="2"
-                                       x:Name="PlaytimeLastOpen"
+                            <TextBlock x:Name="PlaytimeLastOpen"
+                                       Grid.Column="2"
+                                       Margin="0,0,-4,0"
                                        VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"
                                        FontSize="18"
                                        Opacity="0.25"
-                                       Margin="0,0,-4,0"
                                        Text="&#xf05a;" />
                         </Grid>
                     </Grid>
@@ -1450,8 +1450,8 @@
                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="HourPlaytimeTextBox"
                                              HorizontalContentAlignment="Center"
@@ -1463,8 +1463,8 @@
                                              BeforeTextChanging="NumberValidationTextBox"
                                              Text="" />
                                 </Grid>
-                                <StackPanel Orientation="Horizontal"
-                                            Margin="0,-4,0,4">
+                                <StackPanel Margin="0,-4,0,4"
+                                            Orientation="Horizontal">
                                     <TextBlock x:Name="PlaytimeHours"
                                                Width="55"
                                                Margin="5,1,0,0"
@@ -1479,11 +1479,11 @@
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" />
                                 </StackPanel>
                                 <Button x:Name="ChangePlaytimeButton"
+                                        Margin="-4,0"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch"
                                         Click="ChangePlaytimeButton_Click"
                                         CornerRadius="14"
-                                        Margin="-4,0"
                                         Style="{ThemeResource AccentButtonStyle}">
                                     <Grid Margin="0,0,-4,0">
                                         <Grid.ColumnDefinitions>
@@ -1498,16 +1498,16 @@
                                         <TextBlock HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
+                                                   TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Button>
                                 <Button x:Name="ResetPlaytimeButton"
+                                        Margin="-4,0,-4,-4"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch"
                                         Click="ResetPlaytimeButton_Click"
-                                        CornerRadius="14"
-                                        Margin="-4,0,-4,-4">
+                                        CornerRadius="14">
                                     <Grid Margin="0,0,-4,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
@@ -1521,8 +1521,8 @@
                                         <TextBlock HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"
+                                                   TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Button>
                             </StackPanel>
@@ -1545,12 +1545,12 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="CommunityToolsBtn"
+                    Padding="0"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
-                    Padding="0"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
@@ -1575,8 +1575,8 @@
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
-                                           TextTrimming="CharacterEllipsis"
-                                           Text="{x:Bind Text}" />
+                                           Text="{x:Bind Text}"
+                                           TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button>
                     </DataTemplate>
@@ -1602,8 +1602,8 @@
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
-                                           TextTrimming="CharacterEllipsis"
-                                           Text="{x:Bind Text}" />
+                                           Text="{x:Bind Text}"
+                                           TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button>
                     </DataTemplate>
@@ -1618,12 +1618,12 @@
                         <Grid Margin="16,0,16,2"
                               ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <FontIcon FontSize="18"
-                                      HorizontalAlignment="Stretch"
+                            <FontIcon HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
+                                      FontSize="18"
                                       Glyph="&#xE71B;" />
                             <TextBlock Grid.Column="1"
                                        HorizontalAlignment="Stretch"
@@ -1705,12 +1705,12 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="GameStartupSetting"
+                    Padding="0"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}"
-                    Padding="0"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
@@ -1722,8 +1722,8 @@
                         <Grid Margin="16,0,16,2"
                               ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <AnimatedIcon Width="18">
                                 <AnimatedIcon.Source>

@@ -234,8 +234,8 @@
                                             <TextBlock Width="200"
                                                        Margin="0,0,0,12"
                                                        FontWeight="SemiBold"
-                                                       TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" />
+                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}"
+                                                       TextWrapping="Wrap" />
                                             <StackPanel x:Name="ChangeRegionWarning"
                                                         Visibility="Collapsed">
                                                 <TextBlock Width="200"
@@ -268,30 +268,30 @@
                                                                      Visibility="Collapsed" />
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition/>
-                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <Grid HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"
-                                                                  RenderTransformOrigin="0.5, 0.5"
+                                                            <Grid Grid.Column="1"
                                                                   Margin="-0,-8,-4,-8"
-                                                                  Grid.Column="1">
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  RenderTransformOrigin="0.5, 0.5">
                                                                 <Grid.RenderTransform>
                                                                     <RotateTransform Angle="-180" />
                                                                 </Grid.RenderTransform>
                                                                 <AnimatedIcon x:Name="SearchAnimatedIcon"
-                                                                              Height="18"
-                                                                              Width="18">
+                                                                              Width="18"
+                                                                              Height="18">
                                                                     <AnimatedIcon.Source>
-                                                                        <animatedvisuals:AnimatedBackVisualSource/>
+                                                                        <animatedvisuals:AnimatedBackVisualSource />
                                                                     </AnimatedIcon.Source>
                                                                     <AnimatedIcon.FallbackIconSource>
-                                                                        <SymbolIconSource Symbol="Find"/>
+                                                                        <SymbolIconSource Symbol="Find" />
                                                                     </AnimatedIcon.FallbackIconSource>
                                                                 </AnimatedIcon>
                                                             </Grid>
-                                                            <TextBlock VerticalAlignment="Center"
-                                                                       HorizontalAlignment="Left"
+                                                            <TextBlock HorizontalAlignment="Left"
+                                                                       VerticalAlignment="Center"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
                                                         </Grid>

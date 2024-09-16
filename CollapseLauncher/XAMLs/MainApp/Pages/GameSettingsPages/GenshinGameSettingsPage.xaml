@@ -268,15 +268,15 @@
                                                                     <LineBreak />
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}" />
                                                                 </TextBlock>
-                                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                                           Margin="0,16,0,0">
+                                                                <TextBlock Margin="0,16,0,0"
+                                                                           Style="{ThemeResource SubtitleTextBlockStyle}">
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}" />
                                                                 </TextBlock>
-                                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                                           Margin="0,16,0,0">
+                                                                <TextBlock Margin="0,16,0,0"
+                                                                           Style="{ThemeResource SubtitleTextBlockStyle}">
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
