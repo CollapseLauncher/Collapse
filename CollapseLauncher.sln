@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.TaskScheduler", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper", "Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj", "{558A1D17-BEB4-49DF-A200-15ABE283BDED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls", "Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj", "{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -109,6 +111,12 @@ Global
 		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Publish|x64.Build.0 = Release|x64
 		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Release|x64.ActiveCfg = Release|x64
 		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Release|x64.Build.0 = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Debug|x64.ActiveCfg = Debug|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Debug|x64.Build.0 = Debug|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Publish|x64.ActiveCfg = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Publish|x64.Build.0 = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Release|x64.ActiveCfg = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4959,6 +4959,7 @@
                 </ResourceDictionary>
                 <!--  Custom controls styles  -->
                 <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper/Themes/Generic.xaml" />
+                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls/Themes/Generic.xaml" />
 
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml" />
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml" />

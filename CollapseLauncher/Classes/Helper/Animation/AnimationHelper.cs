@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.WinUI.Controls;
-using Hi3Helper;
+﻿using Hi3Helper;
+using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

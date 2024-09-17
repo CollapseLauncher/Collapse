@@ -2,13 +2,13 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-                    xmlns:local="using:CommunityToolkit.WinUI.Controls"
+                    xmlns:local="using:Hi3Helper.CommunityToolkit.WinUI.Controls"
                     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                     xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ms-appx:///CommunityToolkit.WinUI.Controls.SettingsControls/SettingsCard/SettingsCard.xaml" />
+        <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls/SettingsCard/SettingsCard.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <x:String x:Key="SettingsExpanderChevronToolTip">Show all settings</x:String>

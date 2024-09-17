@@ -5,12 +5,12 @@
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 //// Note: ItemsRepeater will request all the available horizontal space: https://github.com/microsoft/microsoft-ui-xaml/issues/3842
-[TemplatePart(Name = PART_ItemsRepeater, Type = typeof(MUXC.ItemsRepeater))]
+[TemplatePart(Name = PART_ItemsRepeater, Type = typeof(ItemsRepeater))]
 public partial class SettingsExpander : Control
 {
     private const string PART_ItemsRepeater = "PART_ItemsRepeater";
 
-    private MUXC.ItemsRepeater? _itemsRepeater;
+    private ItemsRepeater? _itemsRepeater;
 
     /// <summary>
     /// The SettingsExpander is a collapsable control to host multiple SettingsCards.
@@ -32,7 +32,7 @@ public partial class SettingsExpander : Control
             _itemsRepeater.ElementPrepared -= this.ItemsRepeater_ElementPrepared;
         }
 
-        _itemsRepeater = GetTemplateChild(PART_ItemsRepeater) as MUXC.ItemsRepeater;
+        _itemsRepeater = GetTemplateChild(PART_ItemsRepeater) as ItemsRepeater;
 
         if (_itemsRepeater != null)
         {

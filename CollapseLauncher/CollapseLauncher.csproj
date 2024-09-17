@@ -78,13 +78,12 @@
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.3.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.1" />
-        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240821" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.1.240821" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240916" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240916" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.1.240916" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240916" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240916" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.1.240916" />
         
         <!--
         Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
@@ -121,6 +120,7 @@
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
         <ProjectReference Include="..\Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj" />
+        <ProjectReference Include="..\Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj" />
         <ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" />
         <ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />

@@ -5,6 +5,8 @@ echo 	Clearing ColorThief cache
 rmdir /S /Q ColorThief\ColorThief\bin && rmdir /S /Q ColorThief\ColorThief\obj
 echo 	Clearing CommunityToolkit.ImageCropper cache
 rmdir /S /Q Hi3Helper.CommunityToolkit\ImageCropper\bin && rmdir /S /Q Hi3Helper.CommunityToolkit\ImageCropper\obj
+echo 	Clearing CommunityToolkit.SettingsControls cache
+rmdir /S /Q Hi3Helper.CommunityToolkit\SettingsControls\bin && rmdir /S /Q Hi3Helper.CommunityToolkit\SettingsControls\obj
 echo 	Clearing Core cache
 rmdir /S /Q Hi3Helper.Core\bin && rmdir /S /Q Hi3Helper.Core\obj
 echo 	Clearing EncTool cache

@@ -7,7 +7,7 @@ packages/*
 
 CollapseLauncher/Deps/*
 CollapseLauncher/Invoker/*
-CollapseLauncher/Generated Files/**
+**/Generated Files/**
 *.psd
 InstallerProp/Output/*
 InstallerProp/temp/**

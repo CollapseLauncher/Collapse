@@ -58,7 +58,7 @@ public partial class SettingsExpander
         }
     }
 
-    private void ItemsRepeater_ElementPrepared(MUXC.ItemsRepeater sender, MUXC.ItemsRepeaterElementPreparedEventArgs args)
+    private void ItemsRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
     {
         if (ItemContainerStyleSelector != null &&
             args.Element is FrameworkElement element &&

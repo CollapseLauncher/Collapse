@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
+using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
