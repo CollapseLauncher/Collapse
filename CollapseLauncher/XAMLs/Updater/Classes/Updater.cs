@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Squirrel;
 using Squirrel.Sources;
 using System;
@@ -128,7 +129,7 @@ public class Updater : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Failed while running update via Squirrel. Failback to legacy method...\r\n{ex}",
+            Logger.LogWriteLine($"Failed while running update via Squirrel. Fallback to legacy method...\r\n{ex}",
                                 LogType.Error, true);
             IsUseLegacyDownload = true;
             await StartLegacyUpdate();
@@ -145,32 +146,29 @@ public class Updater : IDisposable
             .SetAllowedDecompression(DecompressionMethods.None)
             .Create();
 
-        using (var _httpClient = new Http(true, customHttpClient: client))
-        {
-            UpdateStopwatch = Stopwatch.StartNew();
+        DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            await using (var stream =
-                         await FallbackCDNUtil.TryGetCDNFallbackStream($"{ChannelName.ToLower()}/fileindex.json"))
-            {
-                var updateInfo =
-                    await stream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
-                var gameVersion = updateInfo!.Version;
+        UpdateStopwatch = Stopwatch.StartNew();
 
-                if (gameVersion != null) NewVersionTag = gameVersion.Value!;
-                UpdateStatus();
-                UpdateProgress();
-            }
+        AppUpdateVersionProp updateInfo = await FallbackCDNUtil
+            .DownloadAsJSONType<AppUpdateVersionProp>($"{ChannelName.ToLower()}/fileindex.json",
+            InternalAppJSONContext.Default, default);
 
-            FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
-            await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath,
-                                                             Environment.ProcessorCount > 8
-                                                                 ? 8
-                                                                 : Environment.ProcessorCount,
-                                                             $"{ChannelName.ToLower()}/ApplyUpdate.exe", default);
-            FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
+        GameVersion? gameVersion = updateInfo!.Version;
 
-            await File.WriteAllTextAsync(Path.Combine(workingDir, "..\\", "release"), ChannelName.ToLower());
-        }
+        if (gameVersion.HasValue) NewVersionTag = gameVersion.Value!;
+        UpdateStatus();
+        UpdateProgress();
+
+        FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
+        await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, applyElevatedPath,
+                                                         Environment.ProcessorCount > 8
+                                                             ? 8
+                                                             : Environment.ProcessorCount,
+                                                         $"{ChannelName.ToLower()}/ApplyUpdate.exe", default);
+        FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
+
+        await File.WriteAllTextAsync(Path.Combine(workingDir, "..\\", "release"), ChannelName.ToLower());
     }
 
     private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)

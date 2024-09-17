@@ -64,7 +64,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
     // Frame rate:  60 fps
     // Frame count: 600
     // Duration:    10000.0 mS
-    sealed class NewLogoTitleIntro
+    sealed partial class NewLogoTitleIntro
         : Microsoft.UI.Xaml.Controls.IAnimatedVisualSource
         , Microsoft.UI.Xaml.Controls.IAnimatedVisualSource2
         , Microsoft.UI.Xaml.Controls.IDynamicAnimatedVisualSource
@@ -232,7 +232,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
         {
         }
 
-        sealed class NewLogoTitleIntro_AnimatedVisual
+        sealed partial class NewLogoTitleIntro_AnimatedVisual
             : Microsoft.UI.Xaml.Controls.IAnimatedVisual
             , Microsoft.UI.Xaml.Controls.IAnimatedVisual2
         {

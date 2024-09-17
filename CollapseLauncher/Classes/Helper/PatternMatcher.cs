@@ -19,7 +19,7 @@ namespace CollapseLauncher.Helper
             return Regex.IsMatch(input, regexPattern,
                                  RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.NonBacktracking);
         }
-        
+
         /// <summary>
         /// Determines whether the specified input string matches any pattern in the given list of patterns.
         /// </summary>
@@ -35,6 +35,7 @@ namespace CollapseLauncher.Helper
                     return true;
                 }
             }
+
             return false;
         }
     }

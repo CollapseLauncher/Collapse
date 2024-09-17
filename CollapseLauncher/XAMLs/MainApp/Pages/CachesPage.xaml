@@ -187,12 +187,12 @@
                                      CornerRadius="16"
                                      Tag="Fast"
                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                                           FontSize="16"
                                           Glyph="&#xf002;" />
-                                <TextBlock Margin="8,0"
-                                           FontWeight="Medium"
+                                <TextBlock FontWeight="SemiBold"
                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
                             </StackPanel>
                             <SplitButton.Flyout>
@@ -203,30 +203,44 @@
                                                 HorizontalAlignment="Stretch"
                                                 Click="StartCachesCheck"
                                                 Tag="Fast"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}"
+                                                HorizontalContentAlignment="Stretch">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <FontIcon Grid.Column="1"
+                                                          FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf101;" />
-                                                <TextBlock Margin="8,0"
-                                                           FontWeight="Medium"
+                                                          Glyph="&#xf101;"
+                                                          HorizontalAlignment="Right"/>
+                                                <TextBlock FontWeight="SemiBold"
+                                                           HorizontalAlignment="Left"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
-                                            </StackPanel>
+                                            </Grid>
                                         </Button>
                                         <Button x:Name="CheckUpdateFullBtn"
                                                 HorizontalAlignment="Stretch"
                                                 Click="StartCachesCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}"
+                                                HorizontalContentAlignment="Stretch">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <FontIcon Grid.Column="1"
+                                                          FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf105;" />
-                                                <TextBlock Margin="8,0"
-                                                           FontWeight="Medium"
+                                                          Glyph="&#xf105;"
+                                                          HorizontalAlignment="Right"/>
+                                                <TextBlock FontWeight="SemiBold"
+                                                           HorizontalAlignment="Left"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}" />
-                                            </StackPanel>
+                                            </Grid>
                                         </Button>
                                     </StackPanel>
                                 </Flyout>

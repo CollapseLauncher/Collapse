@@ -3,7 +3,14 @@
 	<assembly fullname="Microsoft.WinUI">
 		<!-- Fix a crash due to property: PropertyPath went missing on ILTrimming -->
 		<type fullname="Microsoft.UI.Xaml.Controls.Primitives.Popup" preserve="all"/>
+		
+		<!--
+		Fix WinRT exception triggering InvalidCastException (thanks Microsoft, very cool! :terismash:)
+		TODO: Exclude only the specific method/class which triggers it
+		-->
+		<namespace fullname="ABI.Microsoft.UI.Xaml.Media" preserve="All"/>
 	</assembly>
+
 	<assembly fullname="CollapseLauncher">
 		<!-- Protect generated code from trimming -->
 		<namespace fullname="CollapseLauncher.CollapseLauncher_XamlTypeInfo" preserve="all" />
@@ -12,11 +19,13 @@
 		<type fullname="CollapseLauncher.HRESULT" preserve="all" />
 		<type fullname="CollapseLauncher.CLSCTX" preserve="all" />
 	</assembly>
+	
 	<!-- Protect built-in libs COM from trimming -->
 	<assembly fullname="System.Private.CoreLib">
 		<namespace fullname="Internal.Runtime.InteropServices" preserve="all" />
 		<namespace fullname="System.Runtime.CompilerServices" preserve="all" />
 	</assembly>
+	
 	<assembly fullname="WinRT.Runtime">
 		<type fullname="WinRT.TypeExtensions" preserve="all" />
 	</assembly>

@@ -141,13 +141,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             foreach (string oldPath in Directory.EnumerateFiles(_gameAudioOldPath, "*", SearchOption.AllDirectories))
             {
                 string basePath  = oldPath.AsSpan()[offset..].ToString();
-                string newPath   = Path.Combine(_gameAudioNewPath, basePath);
-                string newFolder = Path.GetDirectoryName(newPath);
-
-                if (!Directory.Exists(newFolder) && newFolder != null)
-                {
-                    Directory.CreateDirectory(newFolder);
-                }
+                string newPath   = EnsureCreationOfDirectory(Path.Combine(_gameAudioNewPath, basePath));
 
                 FileInfo oldFileInfo = new FileInfo(oldPath)
                 {

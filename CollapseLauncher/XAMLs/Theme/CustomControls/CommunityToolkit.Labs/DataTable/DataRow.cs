@@ -12,7 +12,7 @@ using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
-public class DataRow : Panel
+public partial class DataRow : Panel
 {
     // TODO: Create our own helper class here for the Header as well vs. straight-Grid.
     // TODO: WeakReference?

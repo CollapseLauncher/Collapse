@@ -9,5 +9,6 @@ namespace CollapseLauncher.Interfaces
         CollapseScreenSetting SettingsCollapseScreen { get; set; }
         CollapseMiscSetting SettingsCollapseMisc { get; set; }
         CustomArgs SettingsCustomArgument { get; set; }
+        void SaveBaseSettings();
     }
 }

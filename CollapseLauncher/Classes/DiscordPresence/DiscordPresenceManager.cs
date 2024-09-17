@@ -186,7 +186,7 @@
                 EnablePresence(AppDiscordApplicationID);
             }
 
-            public void SetActivity(ActivityType activity)
+            public void SetActivity(ActivityType activity, DateTime? activityOffset = null)
             {
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool())
                 {
@@ -199,7 +199,7 @@
                         {
                             bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
                             BuildActivityGameStatus(isGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play,
-                                                    isGameStatusEnabled);
+                                                    isGameStatusEnabled, activityOffset);
                             break;
                         }
                         case ActivityType.Update:
@@ -250,7 +250,7 @@
                 }
             }
 
-            private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
+            private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled, DateTime? activityOffset = null)
             {
                 var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
                 var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
@@ -279,14 +279,14 @@
                     },
                     Timestamps = new Timestamps
                     {
-                        Start = GetCachedStartPlayTime()
+                        Start = GetCachedStartPlayTime(activityOffset)
                     }
                 };
             }
 
-            private DateTime GetCachedStartPlayTime()
+            private DateTime GetCachedStartPlayTime(DateTime? activityOffset)
             {
-                _lastPlayTime ??= DateTime.UtcNow;
+                _lastPlayTime ??= activityOffset ??= DateTime.UtcNow;
                 return _lastPlayTime.Value;
             }
 

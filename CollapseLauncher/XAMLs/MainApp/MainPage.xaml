@@ -168,10 +168,10 @@
                                         <TextBlock Margin="4,0,0,0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
-                                                   FontWeight="Medium"
+                                                   FontWeight="SemiBold"
                                                    Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
                                         <Grid Grid.Column="1"
-                                              Margin="4,2,0,0"
+                                              Margin="4,0,0,0"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
                                               RenderTransformOrigin="0.5, 0.5">
@@ -205,10 +205,10 @@
                                         <TextBlock Margin="4,0,0,0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
-                                                   FontWeight="Medium"
+                                                   FontWeight="SemiBold"
                                                    Text="{x:Bind helper:Locale.Lang._Misc.Change}" />
                                         <Grid Grid.Column="1"
-                                              Margin="4,2,0,0"
+                                              Margin="4,0,0,0"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
                                               RenderTransformOrigin="0.5, 0.5">
@@ -233,14 +233,14 @@
                                         <StackPanel>
                                             <TextBlock Width="200"
                                                        Margin="0,0,0,12"
-                                                       FontWeight="Medium"
-                                                       Style="{ThemeResource BaseTextBlockStyle}"
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="Wrap"
                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" />
                                             <StackPanel x:Name="ChangeRegionWarning"
                                                         Visibility="Collapsed">
                                                 <TextBlock Width="200"
                                                            FontSize="14"
-                                                           FontWeight="Medium"
+                                                           FontWeight="SemiBold"
                                                            Style="{ThemeResource BaseTextBlockStyle}"
                                                            Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeWarnTitle}" />
                                                 <TextBlock x:Name="ChangeRegionWarningText"
@@ -253,8 +253,9 @@
                                             </StackPanel>
                                             <Button x:Name="ChangeRegionBtn"
                                                     HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Stretch"
                                                     Click="ChangeRegion"
-                                                    CornerRadius="14"
+                                                    CornerRadius="16"
                                                     Style="{ThemeResource AccentButtonStyle}">
                                                 <Button.Content>
                                                     <Grid Margin="-36,-8"
@@ -265,16 +266,35 @@
                                                                      ShowError="False"
                                                                      ShowPaused="False"
                                                                      Visibility="Collapsed" />
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <FontIcon VerticalAlignment="Center"
-                                                                      FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                                      FontSize="16"
-                                                                      Glyph="&#xf362;" />
-                                                            <TextBlock Margin="8,-1,0,0"
-                                                                       VerticalAlignment="Center"
-                                                                       FontWeight="Medium"
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  RenderTransformOrigin="0.5, 0.5"
+                                                                  Margin="-0,-8,-4,-8"
+                                                                  Grid.Column="1">
+                                                                <Grid.RenderTransform>
+                                                                    <RotateTransform Angle="-180" />
+                                                                </Grid.RenderTransform>
+                                                                <AnimatedIcon x:Name="SearchAnimatedIcon"
+                                                                              Height="18"
+                                                                              Width="18">
+                                                                    <AnimatedIcon.Source>
+                                                                        <animatedvisuals:AnimatedBackVisualSource/>
+                                                                    </AnimatedIcon.Source>
+                                                                    <AnimatedIcon.FallbackIconSource>
+                                                                        <SymbolIconSource Symbol="Find"/>
+                                                                    </AnimatedIcon.FallbackIconSource>
+                                                                </AnimatedIcon>
+                                                            </Grid>
+                                                            <TextBlock VerticalAlignment="Center"
+                                                                       HorizontalAlignment="Left"
+                                                                       FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
-                                                        </StackPanel>
+                                                        </Grid>
                                                     </Grid>
                                                 </Button.Content>
                                             </Button>

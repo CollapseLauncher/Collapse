@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
     "UnhandledTitle4": "警告",
     "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470。\n给您带来的不便我们深表歉意，感谢您的理解。",
+    "UnhandledTitleDiskCrc": "检测到硬盘损坏！",
+    "UnhandledSubDiskCrc": "访问文件时检测到硬盘损坏。请使用 chkdsk 检查您的硬盘。",
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页"
@@ -146,8 +148,11 @@
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换游戏版本",
     "GameSettings_Panel2MoveGameLocationGame": "移动游戏位置",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "无法将游戏移动到硬盘根目录！\r\n请新建一个文件夹并重试。",
     "GameSettings_Panel2StopGame": "强制关闭游戏",
     "GameSettings_Panel3": "自定义启动参数",
+    "GameSettings_Panel3CustomBGRegion": "修改区服背景",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "自定义区服背景",
     "GameSettings_Panel4": "杂项",
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
@@ -192,7 +197,10 @@
     "GameStateInvalidFixed_Subtitle1": "已为如下区域修复游戏文件属性：",
     "GameStateInvalidFixed_Subtitle2": "请执行“",
     "GameStateInvalidFixed_Subtitle3": "”（在“",
-    "GameStateInvalidFixed_Subtitle4": "”菜单内）以确保所有文件都经过验证。"
+    "GameStateInvalidFixed_Subtitle4": "”菜单内）以确保所有文件都经过验证。",
+
+    "InstallFolderRootTitle": "提供了根目录！",
+    "InstallFolderRootSubtitle": "无法将游戏安装到硬盘根目录！请新建一个文件夹并重试。"
   },
 
   "_GameRepairPage": {
@@ -431,6 +439,7 @@
     "AppBG": "应用背景",
     "AppBG_Checkbox": "使用自定义背景",
     "AppBG_Note": "可接受的格式：\r\n图像：{0}\r\n视频：{1}",
+    "AppBG_Note_Regional": "区服特定的自定义背景设置在主页的“快速设置”按钮中。",
 
     "AppThreads": "应用线程",
     "AppThreads_Download": "下载线程",
@@ -455,6 +464,8 @@
     "SophonHttpNumberBox": "最大 HTTP 连接数",
     "SophonHelp_Http": "该值控制 Collapse 建立的用于下载分块的最大网络连接数。",
     "SophonToggle": "在受支持的区服启用 Sophon",
+    "SophonPredownPerfMode_Toggle": "［实验性］应用预下载时使用所有 CPU 核心",
+    "SophonPredownPerfMode_Tooltip": "启用后，CPU 线程将设置为系统可用的最大值。如果出现任何问题，请禁用。",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
@@ -463,14 +474,18 @@
     "AppThreads_Attention4": "该值，因为它可能会因下载所需的会话数不匹配而",
     "AppThreads_Attention5": "重新下载所有内容",
     "AppThreads_Attention6": "。",
+    "AppThreads_AttentionTop1": "如果您开启了",
+    "AppThreads_AttentionTop2": "，以下问题将不会再出现。",
 
     "DiscordRPC": "Discord 活动状态",
     "DiscordRPC_Toggle": "显示 Discord 状态",
     "DiscordRPC_GameStatusToggle": "在 Discord 状态中显示当前游戏",
     "DiscordRPC_IdleStatusToggle": "闲置时显示 RPC",
 
+    "ImageBackground": "图像背景设置",
     "VideoBackground": "视频背景设置",
     "VideoBackground_IsEnableAudio": "启用声音",
+    "VideoBackground_IsEnableAcrylicBackground": "使用视频背景时使用亚克力效果",
     "VideoBackground_AudioVolume": "音量",
 
     "Update": "检查更新",
@@ -578,7 +593,40 @@
     "NetworkSettings_Http_Redirect": "允许 HTTP 重定向",
     "NetworkSettings_Http_SimulateCookies": "允许模拟 HTTP Cookies",
     "NetworkSettings_Http_UntrustedHttps": "允许不受信任的 HTTPS 证书",
-    "NetworkSettings_Http_Timeout": "HTTP 客户端超时（秒）"
+    "NetworkSettings_Http_Timeout": "HTTP 客户端超时（秒）",
+
+    "FileDownloadSettings_Title": "文件下载设置",
+    "FileDownloadSettings_SpeedLimit_Title": "限制下载速度",
+    "FileDownloadSettings_SpeedLimit_NumBox": "速度限制（MiB）",
+    "FileDownloadSettings_SpeedLimitHelp1": "默认：",
+    "FileDownloadSettings_SpeedLimitHelp2": "速度限制取值范围：",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "限制允许的最大下载带宽。该设置不能与",
+    "FileDownloadSettings_SpeedLimitHelp5": "同时使用。",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "预分配下载器（新）",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "仅适用于游戏安装、游戏修复与缓存更新。",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "分块大小（MiB）",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "默认：",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "分块大小取值范围：",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "启用后，下载器将在下载过程中动态预分配文件大小。",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "允许下载器直接将数据块写入文件，而无需将其分割成单独的文件。",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "禁用后，启动器将使用旧的分配方法，将数据分块写入单独的文件。同时会禁用",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "与",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "设置。",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "注：",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "该功能仅适用于游戏安装（如初始安装、更新和预加载）、游戏修复和缓存更新步骤。",
+
+    "FileDownloadSettings_BurstDownload_Title": "爆发下载模式",
+    "FileDownloadSettings_BurstDownload_Subtitle": "仅适用于游戏修复与缓存更新。",
+    "FileDownloadSettings_BurstDownloadHelp1": "默认：",
+    "FileDownloadSettings_BurstDownloadHelp2": "启用后，将允许",
+    "FileDownloadSettings_BurstDownloadHelp3": "与",
+    "FileDownloadSettings_BurstDownloadHelp4": "功能的下载过程并行执行，以让下载过程更高效。",
+    "FileDownloadSettings_BurstDownloadHelp5": "禁用后，",
+    "FileDownloadSettings_BurstDownloadHelp6": "与",
+    "FileDownloadSettings_BurstDownloadHelp7": "功能的下载过程将会按顺序下载。"
   },
 
   "_Misc": {
@@ -706,7 +754,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(启动器名称未知)",
 
-    "ImageCropperTitle": "裁剪图像"
+    "ImageCropperTitle": "裁剪图像",
+
+    "IsBytesMoreThanBytes": "= {0} 字节 (-/+ {1})",
+    "IsBytesUnlimited": "= 无限制",
+    "IsBytesNotANumber": "= NaN"
   },
 
   "_BackgroundNotification": {
@@ -750,7 +802,7 @@
     "AddtDownloadCompletedTitle": "附加组件下载已完成！",
     "AddtDownloadCompletedSubtitle": "附加组件/持久性文件下载已完成！\n祝您游戏愉快！",
     "RepairCompletedTitle": "修复已完成！",
-    "RepairCompletedSubtitle": "{0}个文件已被修复。",
+    "RepairCompletedSubtitle": "{0} 个文件已被修复。",
     "RepairCompletedSubtitleNoBroken": "未找到损坏的文件。",
     "ExtremeGraphicsSettingsWarnTitle": "您选择了“非常高”的设置预设！",
     "ExtremeGraphicsSettingsWarnSubtitle": "您将把设置预设为非常高！\n非常高的设置预设基本上是2倍的渲染比例，并启用了MSAA，它是非常不稳定的！（除非您有NASA的超级计算机来运行）。\n\n您确定您要使用这个设置吗？",
@@ -883,7 +935,7 @@
 
     "DownloadSettingsTitle": "下载设置",
     "DownloadSettingsOption1": "安装后启动游戏",
-    
+
     "OpenInExternalBrowser": "在外部浏览器中打开",
     "CloseOverlay": "关闭"
   },
@@ -1409,5 +1461,34 @@
     "Audio_PlaybackDev_Headphones": "耳机",
     "Audio_PlaybackDev_Speakers": "音响",
     "Audio_PlaybackDev_TV": "电视"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse 启动器已最小化到托盘",
+    "WindowHiddenToTray_Subtitle": "启动器正在后台运行。\r\n点击此通知或托盘图标以还原窗口。",
+
+    "GameInstallCompleted_Title": "{0} 已准备好开始游戏",
+    "GameInstallCompleted_Subtitle": "{0} 已成功安装！",
+
+    "GameUpdateCompleted_Title": "{0} 已更新",
+    "GameUpdateCompleted_Subtitle": "{0} 已更新到 v{1}！",
+
+    "GamePreloadCompleted_Title": "{0} 预载包已下载",
+
+    "GameRepairCheckCompleted_Title": "游戏修复检查已完成",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} 个文件需要更新或修复。点击此通知以返回到启动器。",
+    "GameRepairCheckCompletedNotFound_Subtitle": "没有文件需要更新或修复。",
+
+    "GameRepairDownloadCompleted_Title": "游戏修复下载已完成",
+    "GameRepairDownloadCompleted_Subtitle": "{0} 个文件已成功更新或修复。",
+
+    "CacheUpdateCheckCompleted_Title": "缓存检查已完成",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} 个缓存文件需要更新。点击此通知以返回到启动器。",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "没有缓存文件需要更新。",
+
+    "CacheUpdateDownloadCompleted_Title": "缓存更新下载已完成",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} 个缓存文件已成功更新。",
+
+    "GenericClickNotifToGoBack_Subtitle": "点击此通知以返回到启动器。"
   }
 }

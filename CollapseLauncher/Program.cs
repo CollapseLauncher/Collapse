@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.Helper.Update;
 using Hi3Helper;
-using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -24,7 +24,10 @@ namespace CollapseLauncher;
 
 public static class MainEntryPoint
 {
+    #nullable enable
     public static int InstanceCount;
+    public static App? CurrentAppInstance;
+    #nullable restore
 
     [DllImport("Microsoft.ui.xaml.dll")]
     private static extern void XamlCheckProcessRequirements();
@@ -85,7 +88,7 @@ public static class MainEntryPoint
             ParseArguments(args);
             InitializeAppSettings();
 
-            HttpLogInvoker.DownloadLog += HttpClientLogWatcher;
+            HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
 
             switch (m_appMode)
             {
@@ -116,7 +119,7 @@ public static class MainEntryPoint
                     return;
             }
 
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
             InstanceCount = InvokeProp.EnumerateInstances();
 
@@ -124,33 +127,56 @@ public static class MainEntryPoint
             if (!AppActivation.DecideRedirection())
             {
                 XamlCheckProcessRequirements();
-
                 ComWrappersSupport.InitializeComWrappers();
-                Application.Start(_ =>
-                                  {
-                                      var context =
-                                          new DispatcherQueueSynchronizationContext(DispatcherQueue
-                                             .GetForCurrentThread());
-                                      SynchronizationContext.SetSynchronizationContext(context);
 
-                                      // ReSharper disable once ObjectCreationAsStatement
-                                      new App();
-                                  });
+                StartMainApplication();
             }
         }
         catch (Exception ex)
         {
-            LoggerConsole.AllocateConsole();
-            Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}");
-            Console.WriteLine("\r\nIf you are sure that this is not intended, " +
-                              "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
-                              "Press any key to exit...");
-            Console.ReadLine();
+            SpawnFatalErrorConsole(ex);
         }
         finally
         {
-            HttpLogInvoker.DownloadLog -= HttpClientLogWatcher;
+            HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
         }
+    }
+
+    public static void SpawnFatalErrorConsole(Exception ex)
+    {
+        CurrentAppInstance?.Exit();
+        LoggerConsole.AllocateConsole();
+        Console.Error.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
+        Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
+                                "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
+                                "Press any key to exit or Press 'R' to restart the main thread app...");
+
+        #if !DEBUG
+        try
+        {
+            if (ConsoleKey.R == Console.ReadKey().Key)
+                StartMainApplication();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        #endif
+    }
+
+    public static void StartMainApplication()
+    {
+        Application.Start(_ =>
+        {
+            var context =
+                new DispatcherQueueSynchronizationContext(DispatcherQueue
+                   .GetForCurrentThread());
+            SynchronizationContext.SetSynchronizationContext(context);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            CurrentAppInstance = new App();
+        });
     }
 
     private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)

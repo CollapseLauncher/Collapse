@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 #nullable enable
 namespace CollapseLauncher.Helper
 {
-    public class HttpClientBuilder : HttpClientBuilder<HttpClientHandler>
+    public class HttpClientBuilder : HttpClientBuilder<SocketsHttpHandler>
     {
         public HttpClientBuilder() : base() { }
     }
@@ -114,6 +114,9 @@ namespace CollapseLauncher.Helper
 
         public HttpClientBuilder<THandler> SetMaxConnection(int maxConnections = _maxConnectionsDefault)
         {
+            if (maxConnections < 2)
+                maxConnections = 2;
+
             MaxConnections = maxConnections;
             return this;
         }
@@ -153,6 +156,9 @@ namespace CollapseLauncher.Helper
 
         public HttpClientBuilder<THandler> SetTimeout(double fromSeconds = _httpTimeoutDefault)
         {
+            if (double.IsNaN(fromSeconds) || double.IsInfinity(fromSeconds))
+                fromSeconds = _httpTimeoutDefault;
+
             return SetTimeout(TimeSpan.FromSeconds(fromSeconds));
         }
 

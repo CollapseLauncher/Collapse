@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "El juego se detuvo por un error. Detalles a continuación:",
     "UnhandledTitle4": "Advertencia:",
     "UnhandledSubtitle4": "Esto no es un problema grave, pero creemos que deberíamos infórmate:\r\nDebido al A/B testing realizado por miHoYo , Collapse no soporta la lectura de la siguiente clave: App_Settings_h2319593470.\r\nLamentamos las molestias y agradecemos su comprensión.",
+    "UnhandledTitleDiskCrc": "¡Corrupción de Disco Detectado!",
+    "UnhandledSubDiskCrc": "Se ha detectado corrupción en el disco al intentar acceder a un archivo. Por favor comprueba el disco usando chkdsk.",
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior"
@@ -146,8 +148,11 @@
     "GameSettings_Panel2UninstallGame": "Desinstalar Juego",
     "GameSettings_Panel2ConvertVersion": "Convertir Versión",
     "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "¡No se puede mover el juego a la carpeta raíz de tu disco!\r\nPor favor, crea una carpeta e inténtalo de nuevo.",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
     "GameSettings_Panel3": "Argumentos Personalizados de Arranque",
+    "GameSettings_Panel3CustomBGRegion": "Cambiar Fondo de región",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Fondo Personalizado por Región",
     "GameSettings_Panel4": "Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
@@ -192,7 +197,10 @@
     "GameStateInvalidFixed_Subtitle1": "Se han corregido las propiedades para la región:",
     "GameStateInvalidFixed_Subtitle2": "Por Favor, realiza un \"",
     "GameStateInvalidFixed_Subtitle3": "\" en el menú de \"",
-    "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados."
+    "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados.",
+
+    "InstallFolderRootTitle": "¡Directorio Raíz Seleccionado!",
+    "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo."
   },
 
   "_GameRepairPage": {
@@ -431,6 +439,7 @@
     "AppBG": "Fondo de la Aplicación",
     "AppBG_Checkbox": "Usar Fondo Personalizado",
     "AppBG_Note": "Formatos admitidos:\r\nImagen: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Los ajustes de fondo personalizados específicos por región se encuentran en el botón «Ajustes Rápidos» en la página de inicio.",
 
     "AppThreads": "Hilos de Aplicación",
     "AppThreads_Download": "Hilos de Descarga",
@@ -455,6 +464,8 @@
     "SophonHttpNumberBox": "Conexiones HTTP máximas",
     "SophonHelp_Http": "Controla el número máximo de conexiones de red que Collapse establece para descargar las partes.",
     "SophonToggle": "Habilitar Sophon en Regiones Soportadas",
+    "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Usar todos los núcleos del CPU al aplicar la predescarga ",
+    "SophonPredownPerfMode_Tooltip": "Habilitar esto establecerá al máximo los hilos de la CPU disponibles en tu sistema. Desactiva la opción si causa cualquier problema.",
 
     "AppThreads_Attention": "Precaución",
     "AppThreads_Attention1": "Antes de cambiar el valor de los",
@@ -463,14 +474,18 @@
     "AppThreads_Attention4": "el valor si tienes una descarga existente, ya que podría ",
     "AppThreads_Attention5": "REINICIAR LA DESCARGA COMPLETA",
     "AppThreads_Attention6": "debido a que generaran diferencias durante el conteo de la sesión.",
+    "AppThreads_AttentionTop1": "Los problemas a continuación ya no se producirán si tiene la configuración",
+    "AppThreads_AttentionTop2": "habilitada.",
 
     "DiscordRPC": "Estado de actividad en Discord (Rich Presence)",
     "DiscordRPC_Toggle": "Mostrar Presencia de Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
     "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
 
+    "ImageBackground": "Ajustes Imagen de Fondo",
     "VideoBackground": "Ajustes Video de Fondo",
     "VideoBackground_IsEnableAudio": "Permitir Audio",
+    "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
 
     "Update": "Buscar Actualizaciones",
@@ -578,7 +593,40 @@
     "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
     "NetworkSettings_Http_SimulateCookies": "Permitir Simular HTTP Cookies",
     "NetworkSettings_Http_UntrustedHttps": "Permitir Certificados HTTPS que no son de confianza",
-    "NetworkSettings_Http_Timeout": "Tiempo de espera del cliente HTTP (en segundos)"
+    "NetworkSettings_Http_Timeout": "Tiempo de espera del cliente HTTP (en segundos)",
+
+    "FileDownloadSettings_Title": "Ajuste de Descarga de Archivos",
+    "FileDownloadSettings_SpeedLimit_Title": "Limitar Velocidad de Descarga",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Limite de Velocidad (en MiB)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
+    "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para la descarga. Esta opción no puede utilizarse junto con la opción",
+    "FileDownloadSettings_SpeedLimitHelp5": ".",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Solo para la Instalación, Reparación y actualización de Caché del juego.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Tamaño de Partes (en MiB)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Por Defecto:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Rango del tamaño de trozo:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Cuando esta habilitado, el descargador reasignará dinámicamente el tamaño del archivo durante su descarga.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Esto permite al descargador escribir directamente trozos de datos en el archivo sin dividirlo en archivos separados.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Cuando se deshabilita, el launcher utilizará el antiguo método de asignación, en el que los trozos de datos se escribirán en archivos separados. También desactivará los ajustes",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "y ",
+    "FileDownloadSettings_NewPreallocChunkHelp8": ".",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Aviso:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Esta función esta disponible solo para la instalación del juego (como la primera instalación, actualización y pre-descarga), reparación del juego y actualización de caché.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Modo de Descarga en Ráfagas",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Solo para Reparación del juego y Actualización de Caché.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Por Defecto:",
+    "FileDownloadSettings_BurstDownloadHelp2": "Al habilitarlo, esta función permite al proceso de descarga en ",
+    "FileDownloadSettings_BurstDownloadHelp3": "y",
+    "FileDownloadSettings_BurstDownloadHelp4": "se ejecuten en paralelo para que el proceso de descarga sea más eficiente.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Al deshabilitarlo, el proceso de descarga para",
+    "FileDownloadSettings_BurstDownloadHelp6": "y",
+    "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial."
   },
 
   "_Misc": {
@@ -706,7 +754,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
 
-    "ImageCropperTitle": "Recortar Imagen"
+    "ImageCropperTitle": "Recortar Imagen",
+
+    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
+    "IsBytesUnlimited": "= Sin Límite",
+    "IsBytesNotANumber": "= NaN"
   },
 
   "_BackgroundNotification": {
@@ -883,7 +935,7 @@
 
     "DownloadSettingsTitle": "Descargando Configuración",
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
-    
+
     "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
     "CloseOverlay": "Cerrar Superposición (Overlay)"
   },
@@ -1409,5 +1461,34 @@
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
     "Audio_PlaybackDev_TV": "TV"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse esta Minimizado en la Bandeja",
+    "WindowHiddenToTray_Subtitle": "El Launcher esta funcionando en Segundo Plano.\r\nHaz clic en esta notificación o el icono de la bandeja para restaura la ventana.",
+
+    "GameInstallCompleted_Title": "{0} está Listo para Jugar",
+    "GameInstallCompleted_Subtitle": "¡{0} fue Instalado Exitosamente!",
+
+    "GameUpdateCompleted_Title": "{0} fue Actualizado",
+    "GameUpdateCompleted_Subtitle": "¡{0} fue actualizado exitosamente a v{1}!",
+
+    "GamePreloadCompleted_Title": "¡Precarga para {0} fue Descargado!",
+
+    "GameRepairCheckCompleted_Title": "Reparar Juego - Verificación Completada",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} archivo(s) necesitan ser actualizados/reparados. Haz clic aquí para ir al Launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Ningún archivo debe ser actualizado/reparado.",
+
+    "GameRepairDownloadCompleted_Title": "Reparar Juego - Descarga Completada",
+    "GameRepairDownloadCompleted_Subtitle": "{0} archivo(s) fueron actualizados/reparados exitosamente.",
+
+    "CacheUpdateCheckCompleted_Title": "Actualizar Cachés - Verificación Completada",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} archivo(s) de caché necesitan ser actualizados. Haz clic aquí para ir al Launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Ningún archivo de caché debe ser actualizado.",
+
+    "CacheUpdateDownloadCompleted_Title": "Actualizar Cachés - Descarga Completada",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} archivo(s) de caché fueron actualizados exitosamente.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Haz clic en esta notificación para ir al Launcher "
   }
 }

@@ -72,16 +72,18 @@ namespace CollapseLauncher
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig(_downloadThreadCount + 16)
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
+            // Initialize the new DownloadClient
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
             try
             {
                 // Get the primary manifest
-                using Http httpClient = new Http(client);
-                await GetPrimaryManifest(httpClient, token, assetIndex);
+                await GetPrimaryManifest(downloadClient, token, assetIndex);
 
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
                 if (this._isOnlyRecoverMain && base._isVersionOverride)
@@ -97,24 +99,24 @@ namespace CollapseLauncher
                 }
 
                 // Subscribe the fetching progress and subscribe StarRailMetadataTool progress to adapter
-                _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
+                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
                 // Initialize the metadata tool (including dispatcher and gateway).
                 // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
                 // not for delta patch integrity check.
-                if (!base._isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                if (!_isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
                     // Read block metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
 
                     // Read Audio metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
 
                     // Read Video metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
                 }
 
@@ -133,7 +135,7 @@ namespace CollapseLauncher
                 // Clear the hashtable
                 StarRailRepairExtension.ClearHashtable();
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
-                _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
+                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
         }
 
@@ -149,93 +151,41 @@ namespace CollapseLauncher
         }
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(Http client, CancellationToken token, List<FilePropertiesRemote> assetIndex)
+        private async Task GetPrimaryManifest(DownloadClient downloadClient, CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Initialize pkgVersion list
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
 
             // Initialize repo metadata
-            bool isSuccess = false;
             try
             {
                 // Get the metadata
                 Dictionary<string, string> repoMetadata = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
-                if (!(isSuccess = repoMetadata.ContainsKey(_gameVersion.VersionString)))
+                if (!(repoMetadata.TryGetValue(_gameVersion.VersionString, out var value)))
                 {
                     throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
 
                 // Assign the URL based on the version
-                _gameRepoURL = repoMetadata[_gameVersion.VersionString];
+                _gameRepoURL = value;
             }
             // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
             catch when (base._isVersionOverride) { throw; }
 
-            // Fetch the asset index from CDN (also check if the status is success)
-            if (isSuccess)
+            // Fetch the asset index from CDN
+            // Set asset index URL
+            string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
+
+            // Start downloading asset index using FallbackCDNUtil and return its stream
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+            if (stream != null)
             {
-                // Set asset index URL
-                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
-
-                // Start downloading asset index using FallbackCDNUtil and return its stream
-                await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
-                if (stream != null)
-                {
-                    // Deserialize asset index and set it to list
-                    AssetIndexV2 parserTool = new AssetIndexV2();
-                    pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
-                    LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-                }
-            }
-            else
-            {
-                // If the base._isVersionOverride is true (for delta patch), then return
-                if (base._isVersionOverride) return;
-                LogWriteLine($"Falling back to the miHoYo provided pkg_version as the asset index!", LogType.Warning, true);
-
-                // Get the latest game property from the API
-                GameInstallStateEnum gameState = await _gameVersionManager.GetGameState();
-                RegionResourceVersion gameVersion = _gameVersionManager.GetGameLatestZip(gameState).FirstOrDefault();
-
-                // If the gameVersion is null, then return
-                if (gameVersion == null) return;
-
-                // Try get the uncompressed url and the pkg_version
-                string baseZipURL = gameVersion.path;
-                int lastIndexOfURL = baseZipURL.LastIndexOf('/');
-                string baseUncompressedURL = baseZipURL.Substring(0, lastIndexOfURL);
-                baseUncompressedURL = CombineURLFromString(baseUncompressedURL, "unzip");
-                string basePkgVersionUrl = CombineURLFromString(baseUncompressedURL, "pkg_version");
-
-                try
-                {
-                    // Set the _gameRepoURL
-                    _gameRepoURL = baseUncompressedURL;
-
-                    // Try get the data
-                    using MemoryStream ms = new MemoryStream();
-                    using StreamReader sr = new StreamReader(ms);
-                    client.DownloadProgress += _httpClient_FetchAssetProgress;
-                    await client.Download(basePkgVersionUrl, ms, null, null, token);
-
-                    // Read the stream and deserialize the JSON
-                    pkgVersion.Clear();
-                    while (!sr.EndOfStream)
-                    {
-                        // Deserialize and add the line to pkgVersion list
-                        string jsonLine = sr.ReadLine();
-                        PkgVersionProperties entry = jsonLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
-                        pkgVersion.Add(entry);
-                    }
-                }
-                catch { throw; }
-                finally
-                {
-                    // Unsubscribe the event
-                    client.DownloadProgress -= _httpClient_FetchAssetProgress;
-                }
+                // Deserialize asset index and set it to list
+                AssetIndexV2 parserTool = new AssetIndexV2();
+                pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
+                LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
             }
 
             // Convert the pkg version list to asset index
@@ -273,29 +223,28 @@ namespace CollapseLauncher
         #endregion
 
         #region Utilities
-        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteAbsolutePath, string remoteRelativePath, long fileSize,
-            string hash, FileType type, bool isPatchApplicable, bool isHasHashMark) =>
-            GetNormalizedFilePropertyTypeBased(remoteAbsolutePath, remoteRelativePath, fileSize,
-                hash, type, false, isPatchApplicable, isHasHashMark);
-
-        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL, string remoteRelativePath, long fileSize,
-            string hash, FileType type = FileType.Generic, bool isPkgVersion = true, bool isPatchApplicable = false, bool isHasHashMark = false)
+        private FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
+                                                                        string remoteRelativePath,
+                                                                        long fileSize,
+                                                                        string hash,
+                                                                        FileType type = FileType.Generic,
+                                                                        bool isPatchApplicable = false, 
+                                                                        bool isHasHashMark = false)
         {
-            string localAbsolutePath,
-                   remoteAbsolutePath = type switch
-                   {
-                       FileType.Generic => CombineURLFromString(remoteParentURL, remoteRelativePath),
-                       _ => remoteParentURL
-                   },
+            string remoteAbsolutePath = type switch
+                                        {
+                                            FileType.Generic => CombineURLFromString(remoteParentURL, remoteRelativePath),
+                                            _ => remoteParentURL
+                                        },
                    typeAssetRelativeParentPath = string.Format(type switch
-                   {
-                       FileType.Blocks => _assetGameBlocksStreamingPath,
-                       FileType.Audio => _assetGameAudioStreamingPath,
-                       FileType.Video => _assetGameVideoStreamingPath,
-                       _ => string.Empty
-                   }, _execName);
+                                                               {
+                                                                   FileType.Blocks => _assetGameBlocksStreamingPath,
+                                                                   FileType.Audio => _assetGameAudioStreamingPath,
+                                                                   FileType.Video => _assetGameVideoStreamingPath,
+                                                                   _ => string.Empty
+                                                               }, _execName);
 
-            localAbsolutePath = Path.Combine(_gamePath, typeAssetRelativeParentPath, NormalizePath(remoteRelativePath));
+            var localAbsolutePath = Path.Combine(_gamePath, typeAssetRelativeParentPath, NormalizePath(remoteRelativePath));
 
             return new FilePropertiesRemote
             {
@@ -356,10 +305,8 @@ namespace CollapseLauncher
                 // Get game executable name, directory and file path
                 string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
                 string audioRedordDir = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Audio\AudioPackage\Windows");
-                string audioRedordPath = Path.Combine(audioRedordDir, "AudioLangRedord.txt");
+                string audioRedordPath = EnsureCreationOfDirectory(Path.Combine(audioRedordDir, "AudioLangRedord.txt"));
 
-                // Create the directory if not exist
-                if (!Directory.Exists(audioRedordDir)) Directory.CreateDirectory(audioRedordDir);
                 // Then write the Redord file content
                 File.WriteAllText(audioRedordPath, "{\"AudioLang\":\"" + voLangName + "\"}");
             }

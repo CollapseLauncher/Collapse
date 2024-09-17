@@ -64,17 +64,17 @@ namespace CollapseLauncher
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig(_downloadThreadCount + 16)
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            // Use HttpClient instance on fetching
-            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+            // Get the instance of a new DownloadClient
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
             try
             {
                 // Subscribe the fetching progress and subscribe cacheUtil progress to adapter
-                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
                 _cacheUtil!.ProgressChanged += _innerObject_ProgressAdapter;
                 _cacheUtil!.StatusChanged += _innerObject_StatusAdapter;
 
@@ -84,7 +84,7 @@ namespace CollapseLauncher
 
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
-                Dictionary<string, string> manifestDict = await FetchMetadata(_httpClient, token);
+                Dictionary<string, string> manifestDict = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!manifestDict.ContainsKey(_gameVersion.VersionString!))
@@ -100,9 +100,6 @@ namespace CollapseLauncher
                 SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier = null;
                 _mainMetaRepoUrl = null;
 
-                // Get the instance of the inner HttpClient from Hi3Helper.Http
-                HttpClient httpClient = _httpClient.GetHttpClient()!;
-
                 // Get the status if the current game is Senadina version.
                 GameTypeHonkaiVersion gameVersionKind = _gameVersionManager!.CastAs<GameTypeHonkaiVersion>()!;
                 int[] versionArray = gameVersionKind.GetGameVersionAPI()?.VersionArray!;
@@ -114,16 +111,16 @@ namespace CollapseLauncher
                     _mainMetaRepoUrl = $"https://r2.bagelnl.my.id/cl-meta/pustaka/{_gameVersionManager!.GamePreset!.ProfileName}/{string.Join('.', versionArray)}";
 
                     // Get the Senadina File Identifier Dictionary and its file references
-                    senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(httpClient, _mainMetaRepoUrl, token);
-                    audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                    senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(client, _mainMetaRepoUrl, token);
+                    audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
                                                                                           SenadinaKind.chiptunesCurrent, versionArray, _mainMetaRepoUrl, false, token);
-                    blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                    blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
                                                                                                SenadinaKind.platformBase, versionArray, _mainMetaRepoUrl, false, token);
-                    blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                    blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
                                                                                                SenadinaKind.bricksBase, versionArray, _mainMetaRepoUrl, false, token);
-                    blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                    blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
                                                                                                   SenadinaKind.bricksCurrent, versionArray, _mainMetaRepoUrl, false, token);
-                    patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(httpClient, senadinaFileIdentifier,
+                    patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
                                                                                                 SenadinaKind.wandCurrent, versionArray, _mainMetaRepoUrl, true, token);
                 }
 
@@ -135,13 +132,13 @@ namespace CollapseLauncher
                     // Region: VideoIndex via External -> _cacheUtil: Data Fetch
                     // Fetch video index and also fetch the gateway URL
                     (string, string) gatewayURL;
-                    gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, IgnoredAssetIDs, token);
+                    gatewayURL = await FetchVideoAndGateway(downloadClient, assetIndex, IgnoredAssetIDs, token);
                     _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
                     _gameServer = _cacheUtil?.GetCurrentGateway()!;
 
                     // Region: AudioIndex
                     // Try check audio manifest.m file and fetch it if it doesn't exist
-                    await FetchAudioIndex(httpClient, assetIndex, IgnoredAssetIDs, audioManifestSenadinaFileIdentifier!, token);
+                    await FetchAudioIndex(client, assetIndex, IgnoredAssetIDs, audioManifestSenadinaFileIdentifier!, token);
                 }
 
                 // Assign the URL based on the version
@@ -155,7 +152,7 @@ namespace CollapseLauncher
                 {
                     // Region: XMFAndAssetIndex
                     // Try check XMF file and fetch it if it doesn't exist
-                    await FetchXMFFile(httpClient, assetIndex, blocksPlatformManifestSenadinaFileIdentifier,
+                    await FetchXMFFile(client, assetIndex, blocksPlatformManifestSenadinaFileIdentifier,
                         blocksBaseManifestSenadinaFileIdentifier!, blocksCurrentManifestSenadinaFileIdentifier!,
                         patchConfigManifestSenadinaFileIdentifier!, manifestDict[_gameVersion.VersionString!], token);
 
@@ -167,7 +164,6 @@ namespace CollapseLauncher
             finally
             {
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
                 _cacheUtil!.ProgressChanged -= _innerObject_ProgressAdapter;
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 senadinaFileIdentifier?.Clear();
@@ -177,7 +173,7 @@ namespace CollapseLauncher
         private async Task<Dictionary<string, SenadinaFileIdentifier>?> GetSenadinaIdentifierDictionary(HttpClient client, string mainUrl, CancellationToken token)
         {
             string identifierUrl = CombineURLFromString(mainUrl, $"daftar-pustaka")!;
-            using Stream fileIdentifierStream = await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, token);
+            using Stream fileIdentifierStream = (await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, null, null, null, token))!;
             using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
 
             await ThrowIfFileIsNotSenadina(fileIdentifierStream, token);
@@ -209,7 +205,7 @@ namespace CollapseLauncher
             }
 
             SenadinaFileIdentifier identifier = dict[origFileRelativePath];
-            Stream networkStream = await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, 0, null, token);
+            Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
 
             await ThrowIfFileIsNotSenadina(networkStream, token);
             identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
@@ -275,10 +271,10 @@ namespace CollapseLauncher
         #endregion
 
         #region VideoIndex via External -> _cacheUtil: Data Fetch
-        private async Task<(string, string)> FetchVideoAndGateway(Http _httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, CancellationToken token)
+        private async Task<(string, string)> FetchVideoAndGateway(DownloadClient downloadClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, CancellationToken token)
         {
             // Fetch data cache file only and get the gateway
-            (List<CacheAsset>, string, string, int) cacheProperty = await _cacheUtil!.GetCacheAssetList(_httpClient, CacheAssetType.Data, token);
+            (List<CacheAsset>, string, string, int) cacheProperty = await _cacheUtil!.GetCacheAssetList(downloadClient, CacheAssetType.Data, token);
 
             if (!_isOnlyRecoverMain)
             {
@@ -286,23 +282,23 @@ namespace CollapseLauncher
                 CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x!.N!.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
 
                 // Deserialize and build video index into asset index
-                await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, ignoredAssetIDs, cacheProperty.Item4, token);
+                await BuildVideoIndex(downloadClient, cacheAsset, cacheProperty.Item2, assetIndex, ignoredAssetIDs, cacheProperty.Item4, token);
             }
 
             // Return the gateway URL including asset bundle and asset cache
             return (cacheProperty.Item2, cacheProperty.Item3);
         }
 
-        private async Task BuildVideoIndex(Http _httpClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, int luckyNumber, CancellationToken token)
+        private async Task BuildVideoIndex(DownloadClient downloadClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, int luckyNumber, CancellationToken token)
         {
             // Get the remote stream and use CacheStream
             using (Stream memoryStream = new MemoryStream())
             {
-                if (_httpClient == null) throw new ObjectDisposedException("RepairManagement::Honkai::Fetch:BuildVideoIndex() error!" +
-                                                                           "\r\n _httpClient is unexpectedly disposed.");
+                if (downloadClient == null) throw new ObjectDisposedException("RepairManagement::Honkai::Fetch:BuildVideoIndex() error!" +
+                                                                              "\r\n downloadClient is unexpectedly disposed.");
                 ArgumentNullException.ThrowIfNull(cacheAsset);
                 // Download the cache and store it to MemoryStream
-                await _httpClient.Download(cacheAsset.ConcatURL, memoryStream, null, null, token);
+                await downloadClient.DownloadAsync(cacheAsset.ConcatURL, memoryStream, false, cancelToken: token);
                 memoryStream.Position = 0;
 
                 // Use CacheStream to decrypt and read it as Stream
@@ -318,7 +314,7 @@ namespace CollapseLauncher
             ArgumentNullException.ThrowIfNull(assetIndex);
             
             // Get the base URL
-            string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
+            string baseURL = CombineURLFromString((GetAppConfigValue("EnableHTTPRepairOverride").ToBool() ? "http://" : "https://") + assetBundleURL, "/Video/");
 
             // Build video versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false))
@@ -391,7 +387,7 @@ namespace CollapseLauncher
         #endregion
 
         #region AudioIndex
-        private async Task FetchAudioIndex(HttpClient _httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, SenadinaFileIdentifier senadinaFileIdentifier, CancellationToken token)
+        private async Task FetchAudioIndex(HttpClient httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, SenadinaFileIdentifier senadinaFileIdentifier, CancellationToken token)
         {
             // If the gameServer is null, then just leave
             if (_gameServer == null)
@@ -408,7 +404,7 @@ namespace CollapseLauncher
             try
             {
                 // Try to get the audio manifest and deserialize it
-                KianaAudioManifest manifest = await TryGetAudioManifest(_httpClient, senadinaFileIdentifier, manifestLocalPath, manifestRemotePath, token);
+                KianaAudioManifest manifest = await TryGetAudioManifest(httpClient, senadinaFileIdentifier, manifestLocalPath, manifestRemotePath, token);
 
                 // Deserialize manifest and build Audio Index
                 await BuildAudioIndex(manifest, assetIndex, ignoredAssetIDs, token);
@@ -517,15 +513,8 @@ namespace CollapseLauncher
         // ReSharper disable once UnusedParameter.Local
         private async Task<KianaAudioManifest> TryGetAudioManifest(HttpClient client, SenadinaFileIdentifier senadinaFileIdentifier, string manifestLocal, string manifestRemote, CancellationToken token)
         {
-            // Always check if the folder is exist
-            string manifestFolder = Path.GetDirectoryName(manifestLocal);
-            if (!Directory.Exists(manifestFolder))
-            {
-                Directory.CreateDirectory(manifestFolder!);
-            }
-
             using Stream originalFile = await senadinaFileIdentifier!.GetOriginalFileStream(client!, token);
-            using FileStream localFile = new FileStream(manifestLocal!, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            using FileStream localFile = new FileStream(EnsureCreationOfDirectory(manifestLocal!), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             // Start downloading manifest.m
             await DoCopyStreamProgress(originalFile, localFile, token);
@@ -538,7 +527,7 @@ namespace CollapseLauncher
 
         #region XMFAndAssetIndex
         // ReSharper disable once UnusedParameter.Local
-        private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
+        private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
         {
             // Set metadata URL
             string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gameVersionManager!.GamePreset!.ProfileName);

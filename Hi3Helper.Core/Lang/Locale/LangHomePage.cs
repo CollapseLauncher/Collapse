@@ -44,6 +44,7 @@
                 public string GameSettings_Panel2UninstallGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2UninstallGame;
                 public string GameSettings_Panel2ConvertVersion { get; set; } = LangFallback?._HomePage.GameSettings_Panel2ConvertVersion;
                 public string GameSettings_Panel2MoveGameLocationGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame;
+                public string GameSettings_Panel2MoveGameLocationGame_SamePath { get; set; } = LangFallback?._HomePage.GameSettings_Panel2MoveGameLocationGame_SamePath;
                 public string GameSettings_Panel2StopGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2StopGame;
                 public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
                 public string GameSettings_Panel3CustomBGRegion { get; set; } = LangFallback?._HomePage.GameSettings_Panel3CustomBGRegion;
@@ -78,25 +79,22 @@
                 public string CommunityToolsBtn_OfficialText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OfficialText;
                 public string CommunityToolsBtn_CommunityText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_CommunityText;
                 public string CommunityToolsBtn_OpenExecutableAppDialogTitle { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle;
-                public string Exception_DownloadTimeout1 { get; set; } =
-                    LangFallback?._HomePage.Exception_DownloadTimeout1;
-                public string Exception_DownloadTimeout2 { get; set; } =
-                    LangFallback?._HomePage.Exception_DownloadTimeout2;
-                public string Exception_DownloadTimeout3 { get; set; } =
-                    LangFallback?._HomePage.Exception_DownloadTimeout3;
-
+                public string Exception_DownloadTimeout1 { get; set; } = LangFallback?._HomePage.Exception_DownloadTimeout1;
+                public string Exception_DownloadTimeout2 { get; set; } = LangFallback?._HomePage.Exception_DownloadTimeout2;
+                public string Exception_DownloadTimeout3 { get; set; } = LangFallback?._HomePage.Exception_DownloadTimeout3;
                 public string GameStateInvalid_Title { get; set; } = LangFallback?._HomePage.GameStateInvalid_Title;
                 public string GameStateInvalid_Subtitle1 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle1;
                 public string GameStateInvalid_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle2;
                 public string GameStateInvalid_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle3;
                 public string GameStateInvalid_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle4;
                 public string GameStateInvalid_Subtitle5 { get; set; } = LangFallback?._HomePage.GameStateInvalid_Subtitle5;
-
                 public string GameStateInvalidFixed_Title { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Title;
                 public string GameStateInvalidFixed_Subtitle1 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle1;
                 public string GameStateInvalidFixed_Subtitle2 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle2;
                 public string GameStateInvalidFixed_Subtitle3 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle3;
                 public string GameStateInvalidFixed_Subtitle4 { get; set; } = LangFallback?._HomePage.GameStateInvalidFixed_Subtitle4;
+                public string InstallFolderRootTitle { get; set; } = LangFallback?._HomePage.InstallFolderRootTitle;
+                public string InstallFolderRootSubtitle { get; set; } =LangFallback?._HomePage.InstallFolderRootSubtitle;
             }
         }
         #endregion

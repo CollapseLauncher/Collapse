@@ -11,7 +11,7 @@ using System;
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
 
 [TemplatePart(Name = nameof(PART_ColumnSizer), Type = typeof(ContentSizer))]
-public class DataColumn : ContentControl
+public partial class DataColumn : ContentControl
 {
     private ContentSizer? PART_ColumnSizer;
 

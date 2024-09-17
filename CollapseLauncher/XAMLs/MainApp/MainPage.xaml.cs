@@ -106,6 +106,8 @@ namespace CollapseLauncher
 #endif
             ImageLoaderHelper.DestroyWaifu2X();
             _localBackgroundHandler?.Dispose();
+            CurrentBackgroundHandler = null;
+            _localBackgroundHandler = null;
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -198,7 +200,7 @@ namespace CollapseLauncher
 
         private async Task InitBackgroundHandler()
         {
-            CurrentBackgroundHandler = await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
+            CurrentBackgroundHandler ??= await BackgroundMediaUtility.CreateInstanceAsync(this, BackgroundAcrylicMask, BackgroundOverlayTitleBar, BackgroundNewBackGrid, BackgroundNewMediaPlayerGrid);
             _localBackgroundHandler = CurrentBackgroundHandler;
         }
         #endregion
@@ -259,6 +261,13 @@ namespace CollapseLauncher
                 else
                     MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
 
+            }
+            // CRC error show
+            else if (e.Exception.GetType() == typeof(IOException) && e.Exception.HResult == unchecked((int)0x80070017))
+            {
+                PreviousTag = "crashinfo";
+                ErrorSender.ExceptionType = ErrorType.DiskCrc;
+                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
             }
             else
             {
@@ -1243,7 +1252,7 @@ namespace CollapseLauncher
 
             FontIcon IconLauncher = new FontIcon { Glyph = "" };
             FontIcon IconRepair = new FontIcon { Glyph = "" };
-            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
+            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
             FontIcon IconGameSettings = new FontIcon { Glyph = "" };
             FontIcon IconAppSettings = new FontIcon { Glyph = "" };
 

@@ -10,21 +10,21 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.27.2",
-        "contentHash": "0wdgA3LO9mBS477jieBFs4pU1sWhVtwv/P+i9nAEiFDQyUA7PPHDBbJL1CeqYtV18jLiq9og4n7wSVCO171OBg=="
+        "resolved": "3.28.1",
+        "contentHash": "i4EN7Z+OUdoRBNiVMIG6CfMh6UowXiUx+BKgE+GHLbAX5ArSmpUTFUDwgRNwNfYdosl6GXuBlDiHCcXSHw43+A=="
       },
       "hi3helper.core": {
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Hi3Helper.Http": "[1.5.0, )"
+          "Hi3Helper.Http": "[2.0.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.27.2, )",
-          "Hi3Helper.Http": "[1.5.0, )",
+          "Google.Protobuf": "[3.28.1, )",
+          "Hi3Helper.Http": "[2.0.0, )",
           "System.IO.Hashing": "[8.0.0, )"
         }
       },

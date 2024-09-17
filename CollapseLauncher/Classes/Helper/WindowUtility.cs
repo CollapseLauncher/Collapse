@@ -144,6 +144,8 @@
             }
 
             internal static double CurrentWindowMonitorScaleFactor
+                // Deliberate loss of precision
+                // ReSharper disable once PossibleLossOfFraction
                 => (CurrentWindowMonitorDpi * 100 + (96 >> 1)) / 96 / 100.0;
 
             internal static Rect CurrentWindowPosition
@@ -538,11 +540,11 @@
                                 | InvokeProp.SetWindowPosFlags.SWP_NOZORDER
                                 | InvokeProp.SetWindowPosFlags.SWP_FRAMECHANGED;
                     InvokeProp.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
-
-                    var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
-                    OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
                 }
-            }
+
+                var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+                OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
+        }
 
             private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
             {
@@ -553,17 +555,14 @@
                     case WM_WINDOWPOSCHANGING:
                     {
                         // Fix the weird 1px offset
-                        if (!InnerLauncherConfig.m_isWindows11)
+                        var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
+                        if (windowPos.x == 0 && windowPos.y == 1 &&
+                            windowPos.cx == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width * CurrentWindowMonitorScaleFactor) &&
+                            windowPos.cy == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height * CurrentWindowMonitorScaleFactor) - 1)
                         {
-                            var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
-                            if (windowPos.x == 0 && windowPos.y == 1 &&
-                                windowPos.cx == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width &&
-                                windowPos.cy == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height - 1)
-                            {
-                                windowPos.y  =  0;
-                                windowPos.cy += 1;
-                                Marshal.StructureToPtr(windowPos, lParam, false);
-                            }
+                            windowPos.y  =  0;
+                            windowPos.cy += 1;
+                            Marshal.StructureToPtr(windowPos, lParam, false);
                         }
 
                         break;

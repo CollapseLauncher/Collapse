@@ -7,7 +7,7 @@
 
     namespace CollapseLauncher.CustomControls
 {
-    public class ContentDialogOverlay : ContentDialog
+    public partial class ContentDialogOverlay : ContentDialog
     {
         public string ThemeTitleGlyph { get; set; }
         public ContentDialogTheme Theme { get; set; }

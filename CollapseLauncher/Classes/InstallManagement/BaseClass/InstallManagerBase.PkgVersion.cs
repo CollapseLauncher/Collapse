@@ -169,7 +169,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // Initialize new proxy-aware HttpClient
                     using HttpClient httpClient = new HttpClientBuilder()
-                        .UseLauncherConfig(_downloadThreadCount + 16)
+                        .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                         .SetAllowedDecompression(DecompressionMethods.None)
                         .Create();
 
@@ -178,7 +178,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                     Locale.Lang._FileCleanupPage.LoadingTitle,
                                                     Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
-                    using Http client = new Http(httpClient);
+                    DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
                     RegionResourceVersion? packageLatestBase = _gameVersionManager
                                                               .GetGameLatestZip(gameStateEnum).FirstOrDefault();
                     string? packageExtractBasePath = packageLatestBase?.decompressed_path;
@@ -190,7 +190,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Check Fail-safe: Download main pkg_version file
                         string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
                             "pkg_version");
-                        await client.Download(mainPkgVersionUrl, pkgVersionPath, true);
+                        await downloadClient.DownloadAsync(mainPkgVersionUrl, pkgVersionPath, true);
 
                         // Check Fail-safe: Download audio pkg_version files
                         if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) &&
@@ -205,7 +205,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                             await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
                                                                packageExtractBasePath,
-                                                               client);
+                                                               downloadClient);
                         }
                     }
 
@@ -300,7 +300,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual async ValueTask DownloadOtherAudioPkgVersion(string audioListFilePath, string baseExtractUrl,
-                                                                       Http   client)
+                                                                       DownloadClient downloadClient)
         {
             // Initialize reader
             using StreamReader reader = new StreamReader(audioListFilePath);
@@ -326,7 +326,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Download the file
-                await client.Download(pkgUrl, pkgPath, true);
+                await downloadClient.DownloadAsync(pkgUrl, pkgPath, true);
             }
         }
 
