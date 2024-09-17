@@ -11,6 +11,6 @@ namespace CollapseLauncher.Interfaces
 
         void Reset();
         void Update(TimeSpan timeSpan);
-        void StartSession(Process proc);
+        void StartSession(Process proc, DateTime? begin = null);
     }
 }

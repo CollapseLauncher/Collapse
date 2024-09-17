@@ -1528,6 +1528,7 @@
                             </StackPanel>
                             <StackPanel x:Name="PlaytimeRunningStack"
                                         MaxWidth="250"
+                                        Margin="0,0"
                                         Visibility="Collapsed">
                                 <TextBlock Margin="0,0,0,8"
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"

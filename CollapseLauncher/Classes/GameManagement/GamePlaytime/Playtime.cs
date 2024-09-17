@@ -3,6 +3,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Timers;
@@ -19,10 +20,10 @@ namespace CollapseLauncher.GamePlaytime
 #nullable enable
         public CollapsePlaytime CollapsePlaytime => _playtime;
 
-        public  bool              IsSessionRunning { get; protected set; }
-        private RegistryKey?      _registryRoot;
-        private CollapsePlaytime  _playtime;
-        private IGameVersionCheck _gameVersionManager;
+        private static HashSet<int>      _activeSessions = []; 
+        private        RegistryKey?      _registryRoot;
+        private        CollapsePlaytime  _playtime;
+        private        IGameVersionCheck _gameVersionManager;
 
         private CancellationTokenSourceWrapper _token = new();
         #endregion
@@ -60,13 +61,18 @@ namespace CollapseLauncher.GamePlaytime
             LogWriteLine($"Playtime counter was reset! (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
         }
 
-        public async void StartSession(Process proc)
+        public async void StartSession(Process proc, DateTime? begin = null)
         {
-            if (IsSessionRunning) return;
+            int hashId = _gameVersionManager.GamePreset.HashID;
 
-            IsSessionRunning = true;
+            // If a playtime HashSet has already tracked, then return (do not track the playtime more than once)
+            if (_activeSessions.Contains(hashId)) return;
 
-            DateTime begin          = DateTime.Now;
+            // Otherwise, add it to track list
+            _activeSessions.Add(hashId);
+
+            begin ??= DateTime.Now;
+
             TimeSpan initialTimeSpan = _playtime.TotalPlaytime;
 
             _playtime.LastPlayed  = begin;
@@ -75,7 +81,7 @@ namespace CollapseLauncher.GamePlaytime
             PlaytimeUpdated?.Invoke(this, _playtime);
 
 #if DEBUG
-            LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
+            LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin?.ToLongTimeString()}.");
 #endif
             int elapsedSeconds = 0;
 
@@ -100,7 +106,7 @@ namespace CollapseLauncher.GamePlaytime
             }
 
             DateTime end = DateTime.Now;
-            double totalElapsedSeconds = (end - begin).TotalSeconds;
+            double totalElapsedSeconds = (end - begin.Value).TotalSeconds;
             if (totalElapsedSeconds < 0)
             {
                 LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({totalElapsedSeconds}s)", LogType.Error);
@@ -115,19 +121,15 @@ namespace CollapseLauncher.GamePlaytime
             _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false);
             PlaytimeUpdated?.Invoke(this, _playtime);
 
-            IsSessionRunning = false;
+            _activeSessions.Remove(hashId);
         }
 
-        private static string TimeSpanToString(TimeSpan timeSpan)
-        {
-            return $"{timeSpan.Days * 24 + timeSpan.Hours}h {timeSpan.Minutes}m";
-        }
+        private static string TimeSpanToString(TimeSpan timeSpan) => $"{timeSpan.Days * 24 + timeSpan.Hours}h {timeSpan.Minutes}m";
 
         public void Dispose()
         {
             _token.Cancel();
             _playtime.Save();
-
             _registryRoot = null;
         }
     }

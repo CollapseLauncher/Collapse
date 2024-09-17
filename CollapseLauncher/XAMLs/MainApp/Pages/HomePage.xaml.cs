@@ -980,7 +980,7 @@ namespace CollapseLauncher.Pages
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty._GamePreset;
 
-                            StartPlaytimeCounter(currentGameProcess, gamePreset, fromActivityOffset);
+                            CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess, fromActivityOffset);
 
                             int? height = gameSettings.SettingsScreen.height;
                             int? width = gameSettings.SettingsScreen.width;
@@ -2113,15 +2113,14 @@ namespace CollapseLauncher.Pages
                 }
                 
                 LogWriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
-                
+
                 await using (FileStream fs =
                              new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader reader = new StreamReader(fs))
                     {
-                        while (!reader.EndOfStream)
+                        while (true)
                         {
-                            var line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                            if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                            while (!reader.EndOfStream)
                             {
                                 var line = await reader.ReadLineAsync(WatchOutputLog.Token);
                                 if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
@@ -2135,9 +2134,7 @@ namespace CollapseLauncher.Pages
 
                             await Task.Delay(100, WatchOutputLog.Token);
                         }
-                        await Task.Delay(100, WatchOutputLog.Token);
                     }
-                }
             }
             catch (OperationCanceledException)
             {
@@ -2345,11 +2342,11 @@ namespace CollapseLauncher.Pages
                                                       last?.Month, last?.Year, last?.Hour, last?.Minute);
                 }
 
-                PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
+                /*PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
                 PlaytimeStatsWeekly.Text      = FormatTimeStamp(playtime.WeeklyPlaytime);
                 PlaytimeStatsMonthly.Text     = FormatTimeStamp(playtime.MonthlyPlaytime);
-                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);
-                PlaytimeStatsLastPlayed.Text  = lastPlayed;
+                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);*/
+                ToolTipService.SetToolTip(PlaytimeBtn, lastPlayed);
             });
             return;
 

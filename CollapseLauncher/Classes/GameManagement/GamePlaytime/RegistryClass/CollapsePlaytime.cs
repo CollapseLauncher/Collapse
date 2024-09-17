@@ -14,11 +14,11 @@ namespace CollapseLauncher.GamePlaytime
         #region Fields
         private static DateTime BaseDate => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
 
-        private const string _TotalTimeValueName  = "CollapseLauncher_Playtime";
-        private const string _LastPlayedValueName = "CollapseLauncher_LastPlayed";
-        private const string _StatsValueName      = "CollapseLauncher_PlaytimeStats";
+        private const string TotalTimeValueName  = "CollapseLauncher_Playtime";
+        private const string LastPlayedValueName = "CollapseLauncher_LastPlayed";
+        private const string StatsValueName      = "CollapseLauncher_PlaytimeStats";
 
-        private static Dictionary<int, bool> _IsDeserializing = [];
+        private static HashSet<int> _isDeserializing = [];
         private        RegistryKey           _registryRoot;
         private        int                   _hashID;
 
@@ -84,12 +84,12 @@ namespace CollapseLauncher.GamePlaytime
         {
             try
             {
-                _IsDeserializing[hashID] = true;
+                _isDeserializing.Add(hashID);
                 if (root == null) throw new NullReferenceException($"Cannot load playtime. RegistryKey is unexpectedly not initialized!");
 
-                int? totalTime = (int?)root.GetValue(_TotalTimeValueName,null);
-                int? lastPlayed = (int?)root.GetValue(_LastPlayedValueName,null);
-                object? stats = root.GetValue(_StatsValueName, null);
+                int? totalTime = (int?)root.GetValue(TotalTimeValueName,null);
+                int? lastPlayed = (int?)root.GetValue(LastPlayedValueName,null);
+                object? stats = root.GetValue(StatsValueName, null);
 
                 CollapsePlaytime playtime;
 
@@ -119,7 +119,7 @@ namespace CollapseLauncher.GamePlaytime
             }
             finally
             {
-                _IsDeserializing[hashID] = false;
+                _isDeserializing.Remove(hashID);
             }
 
             return new CollapsePlaytime() { _hashID = hashID, _registryRoot = root };
@@ -139,12 +139,12 @@ namespace CollapseLauncher.GamePlaytime
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
 #endif
-                _registryRoot.SetValue(_StatsValueName, dataByte, RegistryValueKind.Binary);
-                _registryRoot.SetValue(_TotalTimeValueName, TotalPlaytime.TotalSeconds, RegistryValueKind.DWord);
+                _registryRoot.SetValue(StatsValueName, dataByte, RegistryValueKind.Binary);
+                _registryRoot.SetValue(TotalTimeValueName, TotalPlaytime.TotalSeconds, RegistryValueKind.DWord);
                 
                 double? lastPlayed = (LastPlayed?.ToUniversalTime() - BaseDate)?.TotalSeconds;
                 if (lastPlayed != null)
-                    _registryRoot.SetValue(_LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
+                    _registryRoot.SetValue(LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
@@ -165,7 +165,7 @@ namespace CollapseLauncher.GamePlaytime
             ControlDate     = DateTime.Today;
             LastPlayed      = null;
 
-            if (!_IsDeserializing[_hashID]) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save();
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace CollapseLauncher.GamePlaytime
             
             TotalPlaytime = timeSpan;
 
-            if (!_IsDeserializing[_hashID]) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save();
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace CollapseLauncher.GamePlaytime
                 ControlDate   = today;
             }
 
-            if (!_IsDeserializing[_hashID]) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save();
         }
 
         #endregion
