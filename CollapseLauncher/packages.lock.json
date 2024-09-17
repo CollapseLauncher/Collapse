@@ -121,6 +121,12 @@
         "resolved": "0.37.0",
         "contentHash": "J7Mt1QjKijE7aAK81u5nt4SYPYEvt1odfr4ddMvyOscyNT3PoGfHKKTBB5VBSXJrWZWhfJlcG7hHBLiqawg+nw=="
       },
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.1.24431.7, )",
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "FN38PfBwjKY4D753sz6GDSnvtHU9UUPb9fNAcPwImOn2j8SyUFZMnVmMVwnYX4dlDB9XL98m4g6szsjIx5UWgg=="
+      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.2.1-experimental2, )",
@@ -129,6 +135,12 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.6.240531000-experimental1"
         }
+      },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.1.24431.7, )",
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "B8jHIIszeUdDY+O4G1/xPOuhrriwsv9Z8/u3XSOAqc8Z0mQCeLBKg2oLGElDZeRF8wWXDGklAKY3f0IHopyXkQ=="
       },
       "Microsoft.NETCore.Targets": {
         "type": "Direct",
@@ -187,12 +199,6 @@
         "requested": "[2.0.1, )",
         "resolved": "2.0.1",
         "contentHash": "Xvhd0IPCKhdYppa9RhDr4fkwhoMMWfahwCfyVtRgt6TRlbUw0gOmSjJR/+L+/s0QNhLTK93C+2pSlrkDgsoY2w=="
-      },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.1.24431.7, )",
-        "resolved": "9.0.0-rc.1.24431.7",
-        "contentHash": "hOXKEHhsK/sWwrMEL1Yrfj0Mw1WnsBsi8OoEEEmS4hgOxo39Kic0aap2nKm9eWRl8Fe5S+K10a2nVkt/T2AF7Q=="
       },
       "SharpCompress": {
         "type": "Direct",
@@ -436,6 +442,15 @@
       }
     },
     "net9.0-windows10.0.22621/win-x64": {
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.1.24431.7, )",
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "FN38PfBwjKY4D753sz6GDSnvtHU9UUPb9fNAcPwImOn2j8SyUFZMnVmMVwnYX4dlDB9XL98m4g6szsjIx5UWgg==",
+        "dependencies": {
+          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.0-rc.1.24431.7"
+        }
+      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.2.1-experimental2, )",
@@ -491,6 +506,11 @@
         "type": "Transitive",
         "resolved": "9.0.0-rc.1.24431.7",
         "contentHash": "IK3fwmfSCVArYWKjPUTEeD9nRXF1VENiFb4+hlqWuUxfP1hPVw41y/sOEdLZtRB+BVdgh6NaZjetrVhEuG4Iyg=="
+      },
+      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
+        "type": "Transitive",
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "hOXKEHhsK/sWwrMEL1Yrfj0Mw1WnsBsi8OoEEEmS4hgOxo39Kic0aap2nKm9eWRl8Fe5S+K10a2nVkt/T2AF7Q=="
       }
     }
   }
