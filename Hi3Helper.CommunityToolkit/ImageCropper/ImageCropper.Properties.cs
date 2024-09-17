@@ -85,6 +85,7 @@ public partial class ImageCropper
         target.UpdateThumbsVisibility();
     }
 
+    #nullable enable
     /// <summary>
     ///  Gets or sets the source of the cropped image.
     /// </summary>
@@ -93,6 +94,7 @@ public partial class ImageCropper
         get { return (WriteableBitmap)GetValue(SourceProperty); }
         set { SetValue(SourceProperty, value); }
     }
+    #nullable restore
 
     /// <summary>
     /// Gets or sets the aspect ratio of the cropped image, the default value is null.

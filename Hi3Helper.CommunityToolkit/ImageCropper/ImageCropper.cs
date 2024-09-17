@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Path = Windows.UI.Xaml.Shapes.Path;
 #endif
 
+#nullable enable
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 /// <summary>

@@ -12,6 +12,7 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml.Media.Imaging;
 #endif
 
+#nullable enable
 namespace Hi3Helper.CommunityToolkit.WinUI.Media;
 
 /// <summary>

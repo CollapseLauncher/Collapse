@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Colors = Windows.UI.Colors;
 #endif
 
+#nullable enable
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 /// <summary>

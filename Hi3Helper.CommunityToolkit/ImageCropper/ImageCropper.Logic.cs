@@ -296,6 +296,7 @@ public partial class ImageCropper
         UpdateSelectionThumbs(startPoint, endPoint, animate);
     }
 
+    #nullable enable
     /// <summary>
     /// Positions the thumbs for the selection rectangle.
     /// </summary>
@@ -433,6 +434,7 @@ public partial class ImageCropper
             storyboard?.Begin();
         }
     }
+    #nullable restore
 
     /// <summary>
     /// Update crop shape.
