@@ -980,12 +980,12 @@ namespace CollapseLauncher.Pages
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty._GamePreset;
 
-                            CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess, fromActivityOffset);
+                            CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess);
 
                             int? height = gameSettings.SettingsScreen.height;
                             int? width = gameSettings.SettingsScreen.width;
 
-                            // Start the resizable window payload (also use the same token as PlaytimeToken)
+                            // Start the resizable window payload
                             StartResizableWindowPayload(
                                 gamePreset.GameExecutableName,
                                 gameSettings,
@@ -2334,7 +2334,7 @@ namespace CollapseLauncher.Pages
                 HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
                 MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
-                string lastPlayed = "Never Played";
+                string lastPlayed = Lang._HomePage.GamePlaytime_Stats_NeverPlayed;
                 if (playtime.LastPlayed != null)
                 {
                     DateTime? last = playtime.LastPlayed?.ToLocalTime();
