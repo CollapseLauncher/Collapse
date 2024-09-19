@@ -10,15 +10,15 @@
       },
       "CommunityToolkit.Common": {
         "type": "Direct",
-        "requested": "[8.3.1, )",
-        "resolved": "8.3.1",
-        "contentHash": "r8jWhfnwSfn7/xPjh3Aom6gAGkENUMrr+FmZJOzOvRWBgXJ/latl8b8iCx1F+GHiS/0f5zK4zWZM18P0DgNNiw=="
+        "requested": "[8.3.2, )",
+        "resolved": "8.3.2",
+        "contentHash": "DFk1MUDzCUZHWFGl33HQkD1XtHHKmgfnjJ6sD2JICDc6et4DaCxf6GBPCzAZ7jcgyy/BdUDk0DUztu1K+61Q6w=="
       },
       "CommunityToolkit.Mvvm": {
         "type": "Direct",
-        "requested": "[8.3.1, )",
-        "resolved": "8.3.1",
-        "contentHash": "Fuqjp5uYzHEdrRxsZlY0EqvFX9pF2v0cZN+zfso44lVLI3wZa8Nb9jdcBoXbHxiRSU3hEDhHUqh2fM8znzodzg=="
+        "requested": "[8.3.2, )",
+        "resolved": "8.3.2",
+        "contentHash": "m8EolE1A0Updj68WTsZSGI6VWb6mUqHPh7QFo0kt7+JPhYMNXRS1ch8TS/oITAdcxTLrwMOp3ku1KjeG1/Zdpg=="
       },
       "CommunityToolkit.WinUI.Behaviors": {
         "type": "Direct",
@@ -97,16 +97,6 @@
         "contentHash": "xt8tAMq42KompgmZI5fpko9IY9cuGqjvNFCc+B6iZeoCHlqcbuGZz33SFD+jTsPZTFfrxqTXvywm/s8DcFcEIg==",
         "dependencies": {
           "ThisAssembly.Constants": "1.4.1"
-        }
-      },
-      "H.NotifyIcon.WinUI": {
-        "type": "Direct",
-        "requested": "[2.1.3, )",
-        "resolved": "2.1.3",
-        "contentHash": "1tAYbvV2vyQ0lXKrMmNvpIiP5tXZibtyXCqlmH2Wjcc3i/W/EatihtVATpeuWZpxM6RA9T1H5pTZhT8+5y7wcQ==",
-        "dependencies": {
-          "H.NotifyIcon": "2.1.3",
-          "Microsoft.WindowsAppSDK": "1.5.240627000"
         }
       },
       "HtmlAgilityPack": {
@@ -296,24 +286,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.28.1",
-        "contentHash": "i4EN7Z+OUdoRBNiVMIG6CfMh6UowXiUx+BKgE+GHLbAX5ArSmpUTFUDwgRNwNfYdosl6GXuBlDiHCcXSHw43+A=="
-      },
-      "H.GeneratedIcons.System.Drawing": {
-        "type": "Transitive",
-        "resolved": "2.1.3",
-        "contentHash": "GH6MR2Qc/yyNaCj1205v2J3jT4siDmg5W+jlbJzxDuMZZtX20pEIb/QBABDS+l9brHlwPs7WygboRNeMii40Qw==",
-        "dependencies": {
-          "System.Drawing.Common": "8.0.7"
-        }
-      },
-      "H.NotifyIcon": {
-        "type": "Transitive",
-        "resolved": "2.1.3",
-        "contentHash": "aiCL1gjfKWh/jRlV4oDOycOqRaRj/C9E5cwHL2KCc+jre5vyUw5lHcHW6t4e/U3ssDmBKJgwhcgAW3JwMUP3ow==",
-        "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.1.3"
-        }
+        "resolved": "3.28.2",
+        "contentHash": "Z86ZKAB+v1B/m0LTM+EVamvZlYw/g3VND3/Gs4M/+aDIxa2JE9YPKjDxTpf0gv2sh26hrve3eI03brxBmzn92g=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -379,6 +353,25 @@
           "System.Text.Json": "[9.0.0-rc.1.24431.7, )"
         }
       },
+      "h.generatedicons.system.drawing": {
+        "type": "Project",
+        "dependencies": {
+          "System.Drawing.Common": "[9.0.0-rc.1.24451.1, )"
+        }
+      },
+      "h.notifyicon": {
+        "type": "Project",
+        "dependencies": {
+          "H.GeneratedIcons.System.Drawing": "[1.0.0, )"
+        }
+      },
+      "h.notifyicon.winui": {
+        "type": "Project",
+        "dependencies": {
+          "H.NotifyIcon": "[1.0.0, )",
+          "Microsoft.WindowsAppSDK": "[1.6.240829007, )"
+        }
+      },
       "hi3helper.core": {
         "type": "Project",
         "dependencies": {
@@ -389,7 +382,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.28.1, )",
+          "Google.Protobuf": "[3.28.2, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
         }
@@ -506,11 +499,6 @@
         "type": "Transitive",
         "resolved": "9.0.0-rc.1.24431.7",
         "contentHash": "IK3fwmfSCVArYWKjPUTEeD9nRXF1VENiFb4+hlqWuUxfP1hPVw41y/sOEdLZtRB+BVdgh6NaZjetrVhEuG4Iyg=="
-      },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Transitive",
-        "resolved": "9.0.0-rc.1.24431.7",
-        "contentHash": "hOXKEHhsK/sWwrMEL1Yrfj0Mw1WnsBsi8OoEEEmS4hgOxo39Kic0aap2nKm9eWRl8Fe5S+K10a2nVkt/T2AF7Q=="
       }
     }
   }
