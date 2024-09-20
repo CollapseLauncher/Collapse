@@ -196,15 +196,6 @@
         "resolved": "2.0.1",
         "contentHash": "Xvhd0IPCKhdYppa9RhDr4fkwhoMMWfahwCfyVtRgt6TRlbUw0gOmSjJR/+L+/s0QNhLTK93C+2pSlrkDgsoY2w=="
       },
-      "SharpCompress": {
-        "type": "Direct",
-        "requested": "[0.38.0, )",
-        "resolved": "0.38.0",
-        "contentHash": "8i6KqjAFI3mvya8W8rnQrf5h4vz6ilw4zqk2AzInVqqqZ25TD6fmVeYBnlisjTWwP26eltZc0buSmJ8a3YIGxg==",
-        "dependencies": {
-          "ZstdSharp.Port": "0.8.1"
-        }
-      },
       "SharpHDiffPatch.Core": {
         "type": "Direct",
         "requested": "[2.2.7, )",

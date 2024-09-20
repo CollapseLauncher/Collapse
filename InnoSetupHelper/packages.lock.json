@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net9.0": {
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.1.24431.7, )",
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "B8jHIIszeUdDY+O4G1/xPOuhrriwsv9Z8/u3XSOAqc8Z0mQCeLBKg2oLGElDZeRF8wWXDGklAKY3f0IHopyXkQ=="
+      },
       "System.IO.Hashing": {
         "type": "Direct",
         "requested": "[9.0.0-rc.1.24431.7, )",

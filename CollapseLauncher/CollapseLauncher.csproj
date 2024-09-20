@@ -25,6 +25,7 @@
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
+        <IsAotCompatible>true</IsAotCompatible>
         <!-- Debug Settings -->
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
@@ -60,6 +61,7 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
 		<PublishAot>true</PublishAot>
+        <RunAOTCompilation>true</RunAOTCompilation>
 		<TrimMode>full</TrimMode>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
