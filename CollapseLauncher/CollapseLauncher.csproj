@@ -120,6 +120,7 @@
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
+        <PackageReference Include="runtime.win-x64.Microsoft.DotNet.ILCompiler" Version="9.0.0-rc.1.24431.7" />
         <PackageReference Include="SharpCompress" Version="0.38.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.7" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
