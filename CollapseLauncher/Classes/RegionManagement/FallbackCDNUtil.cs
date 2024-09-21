@@ -4,7 +4,6 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.Region;
-using Squirrel.Sources;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,18 +11,30 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
+#if !USEVELOPACK
+using System.Text;
+using Squirrel.Sources;
+#else
+using System.Text;
+using Velopack.Sources;
+#endif
+
 namespace CollapseLauncher
 {
     public class UpdateManagerHttpAdapter : IFileDownloader
     {
+#if !USEVELOPACK
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
+#else
+#nullable enable
+        public async Task DownloadFile(string url, string targetFile, Action<int> progress, string? authorization = null, string? accept = null, CancellationToken cancelToken = default)
+#endif
         {
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
@@ -36,7 +47,13 @@ namespace CollapseLauncher
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
-                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url), default);
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url),
+#if !USEVELOPACK
+                    default
+#else
+                    cancelToken
+#endif
+                    );
             }
             catch { throw; }
             finally
@@ -45,7 +62,11 @@ namespace CollapseLauncher
             }
         }
 
+#if !USEVELOPACK
         public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
+#else
+        public async Task<byte[]> DownloadBytes(string url, string? authorization = null, string? accept = null)
+#endif
         {
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
             byte[] buffer = new byte[stream.Length];
@@ -53,7 +74,11 @@ namespace CollapseLauncher
             return buffer;
         }
 
+#if !USEVELOPACK
         public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
+#else
+        public async Task<string> DownloadString(string url, string? authorization = null, string? accept = null)
+#endif
         {
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
             byte[] buffer = new byte[stream.Length];
@@ -67,6 +92,10 @@ namespace CollapseLauncher
             return url.AsSpan(toCompare.Length).ToString();
         }
     }
+
+#if USEVELOPACK
+#nullable restore
+#endif
 
     internal readonly struct CDNUtilHTTPStatus
     {
@@ -380,6 +409,9 @@ namespace CollapseLauncher
 
         private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, DownloadClient downloadClient, Stream outputStream, string relativeURL, CancellationToken token)
         {
+            DownloadEvent DownloadClientAdapter = new DownloadEvent();
+            Stopwatch stopwatch = new Stopwatch();
+
             try
             {
                 // Get the URL Status then return boolean and and URLStatus
@@ -387,6 +419,9 @@ namespace CollapseLauncher
 
                 // If URL status is false, then return false
                 if (!urlStatus.Item1) return false;
+
+                // Start stopwatch
+                stopwatch.Start();
 
                 // Continue to get the content and return true if successful
                 await downloadClient.DownloadAsync(urlStatus.Item2, outputStream, false, HttpInstance_DownloadProgressAdapter, null, null, cancelToken:token);
@@ -398,10 +433,29 @@ namespace CollapseLauncher
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            void HttpInstance_DownloadProgressAdapter(int read, DownloadProgress downloadProgress)
+            {
+                DownloadClientAdapter.SizeToBeDownloaded = downloadProgress.BytesTotal;
+                DownloadClientAdapter.SizeDownloaded = downloadProgress.BytesDownloaded;
+                DownloadClientAdapter.Read = read;
+
+                long speed = (long)(downloadProgress.BytesDownloaded / stopwatch.Elapsed.TotalSeconds);
+                DownloadClientAdapter.Speed = speed;
+                
+                DownloadProgress?.Invoke(null, DownloadClientAdapter);
+            }
         }
 
         private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, DownloadClient downloadClient, string outputPath, string relativeURL, int parallelThread, CancellationToken token)
         {
+            DownloadEvent DownloadClientAdapter = new DownloadEvent();
+            Stopwatch stopwatch = new Stopwatch();
+
             try
             {
                 // Get the URL Status then return boolean and and URLStatus
@@ -409,6 +463,9 @@ namespace CollapseLauncher
 
                 // If URL status is false, then return false
                 if (!urlStatus.Item1) return false;
+
+                // Start stopwatch
+                stopwatch.Start();
 
                 // Continue to get the content and return true if successful
                 if (!cdnProp.PartialDownloadSupport)
@@ -426,6 +483,22 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            void HttpInstance_DownloadProgressAdapter(int read, DownloadProgress downloadProgress)
+            {
+                DownloadClientAdapter.SizeToBeDownloaded = downloadProgress.BytesTotal;
+                DownloadClientAdapter.SizeDownloaded = downloadProgress.BytesDownloaded;
+                DownloadClientAdapter.Read = read;
+
+                long speed = (long)(downloadProgress.BytesDownloaded / stopwatch.Elapsed.TotalSeconds);
+                DownloadClientAdapter.Speed = speed;
+
+                DownloadProgress?.Invoke(null, DownloadClientAdapter);
             }
         }
 
@@ -615,14 +688,5 @@ namespace CollapseLauncher
 
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);
-
-        private static DownloadEvent DownloadClientAdapter = new DownloadEvent();
-
-        private static void HttpInstance_DownloadProgressAdapter(int read, DownloadProgress downloadProgress)
-        {
-            DownloadClientAdapter.SizeToBeDownloaded = downloadProgress.BytesTotal;
-            DownloadClientAdapter.SizeDownloaded = downloadProgress.BytesDownloaded;
-            DownloadClientAdapter.Read = read;
-        }
     }
 }

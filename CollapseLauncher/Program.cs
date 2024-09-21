@@ -5,7 +5,13 @@ using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+#if !USEVELOPACK
 using Squirrel;
+#else
+using Hi3Helper.Shared.Region;
+using NuGet.Versioning;
+using Velopack;
+#endif
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -20,15 +26,16 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Velopack.Windows;
 
 namespace CollapseLauncher;
 
 public static class MainEntryPoint
 {
-    #nullable enable
+#nullable enable
     public static int InstanceCount;
     public static App? CurrentAppInstance;
-    #nullable restore
+#nullable restore
 
     [DllImport("Microsoft.ui.xaml.dll")]
     private static extern void XamlCheckProcessRequirements();
@@ -36,14 +43,12 @@ public static class MainEntryPoint
     [STAThread]
     public static void Main(params string[] args)
     {
-    #if PREVIEW
+#if PREVIEW
         IsPreview = true;
-    #endif
+#endif
 
         try
         {
-            StartSquirrelHook();
-
             AppCurrentArgument = args;
 
             // Extract icons from the executable file
@@ -69,6 +74,8 @@ public static class MainEntryPoint
                              LogType.Warning, true);
                 Directory.SetCurrentDirectory(AppFolder);
             }
+
+            StartUpdaterHook();
 
             LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                                        LauncherUpdateHelper.LauncherCurrentVersionString,
@@ -155,7 +162,7 @@ public static class MainEntryPoint
                                 "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
                                 "Press any key to exit or Press 'R' to restart the main thread app...");
 
-        #if !DEBUG
+#if !DEBUG
         try
         {
             if (ConsoleKey.R == Console.ReadKey().Key)
@@ -166,7 +173,7 @@ public static class MainEntryPoint
             Console.WriteLine(e);
             throw;
         }
-        #endif
+#endif
     }
 
     public static void StartMainApplication()
@@ -200,8 +207,9 @@ public static class MainEntryPoint
         App.IsAppKilled = true;
     }
 
-    private static void StartSquirrelHook()
+    private static void StartUpdaterHook()
     {
+#if !USEVELOPACK
         // Add Squirrel Hooks
         SquirrelAwareApp.HandleEvents(
                                       // Add shortcut and uninstaller entry on first start-up
@@ -225,7 +233,87 @@ public static class MainEntryPoint
                                       // ReSharper restore UnusedParameter.Local
                                       onEveryRun: (_, _, _) => { }
                                      );
+#else
+        VelopackApp.Build()
+            .WithRestarted(TryCleanupFallbackUpdate)
+            .WithAfterUpdateFastCallback(TryCleanupFallbackUpdate)
+            .WithFirstRun(TryCleanupFallbackUpdate)
+            .Run(ILoggerHelper.CreateCollapseILogger());
+#endif
     }
+
+#if USEVELOPACK
+    public static void TryCleanupFallbackUpdate(SemanticVersion newVersion)
+    {
+        string currentExecutedAppFolder = LauncherConfig.AppFolder.TrimEnd('\\');
+
+        // If the path is not actually running under "current" velopack folder, then return
+        if (!currentExecutedAppFolder.EndsWith("current", StringComparison.OrdinalIgnoreCase)) // Expecting "current"
+        {
+            Logger.LogWriteLine("[TryCleanupFallbackUpdate] The launcher does not run from \"current\" folder");
+            return;
+        }
+
+        try
+        {
+            // Otherwise, start cleaning-up process
+            string currentExecutedParentFolder = Path.GetDirectoryName(currentExecutedAppFolder);
+            DirectoryInfo directoryInfo = new DirectoryInfo(currentExecutedParentFolder);
+            foreach (DirectoryInfo childLegacyAppSemVerFolder in directoryInfo.EnumerateDirectories("app-*", SearchOption.TopDirectoryOnly))
+            {
+                // Removing the "app-*" folder
+                childLegacyAppSemVerFolder.Delete(true);
+                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!", LogType.Default, true);
+            }
+
+            // Try remove squirrel temp clowd folder
+            string squirrelTempPackagesFolder = Path.Combine(currentExecutedParentFolder, "SquirrelClowdTemp");
+            DirectoryInfo squirrelTempPackagesFolderInfo = new DirectoryInfo(squirrelTempPackagesFolder);
+            if (squirrelTempPackagesFolderInfo.Exists)
+            {
+                squirrelTempPackagesFolderInfo.Delete(true);
+                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed package temp folder: {squirrelTempPackagesFolder}!", LogType.Default, true);
+            }
+
+            // Try remove stub executable
+            string squirrelLegacyStubPath = Path.Combine(currentExecutedParentFolder, "CollapseLauncher.exe");
+            RemoveSquirrelFilePath(squirrelLegacyStubPath);
+
+            // Try remove createdump executable
+            string squirrelLegacyDumpPath = Path.Combine(currentExecutedParentFolder, "createdump.exe");
+            RemoveSquirrelFilePath(squirrelLegacyDumpPath);
+
+            // Try remove RestartAgent executable
+            string squirrelLegacyRestartAgentPath = Path.Combine(currentExecutedParentFolder, "RestartAgent.exe");
+            RemoveSquirrelFilePath(squirrelLegacyRestartAgentPath);
+
+            // Try remove legacy shortcuts
+            string currentWindowsPathDrive = Path.GetPathRoot(Environment.SystemDirectory);
+            string squirrelLegacyStartMenuGlobal = Path.Combine(currentWindowsPathDrive, @"ProgramData\Microsoft\Windows\Start Menu\Programs\Collapse\Collapse Launcher");
+            string squirrelLegacyStartMenuGlobalParent = Path.GetDirectoryName(squirrelLegacyStartMenuGlobal);
+            if (Directory.Exists(squirrelLegacyStartMenuGlobalParent) && Directory.Exists(squirrelLegacyStartMenuGlobal))
+            {
+                Directory.Delete(squirrelLegacyStartMenuGlobalParent, true);
+            }
+
+            // Try recreate shortcuts
+            TaskSchedulerHelper.RecreateIconShortcuts();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
+        }
+
+        void RemoveSquirrelFilePath(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!", LogType.Default, true);
+            }
+        }
+    }
+#endif
 
     public static string FindCollapseStubPath()
     {

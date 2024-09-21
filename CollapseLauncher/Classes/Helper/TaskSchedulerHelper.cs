@@ -141,6 +141,28 @@ namespace CollapseLauncher.Helper
             argumentBuilder.Append('"');
         }
 
+        internal static void RecreateIconShortcuts()
+        {
+            // Build the argument and get the current executable path
+            StringBuilder argumentBuilder = new StringBuilder();
+            argumentBuilder.Append("RecreateIcons");
+            string currentExecPath = LauncherConfig.AppExecutablePath;
+
+            // Build argument to the executable path
+            argumentBuilder.Append(" \"");
+            argumentBuilder.Append(currentExecPath);
+            argumentBuilder.Append('"');
+
+            // Store argument builder as string
+            string argumentString = argumentBuilder.ToString();
+
+            // Invoke applet
+            int returnCode = GetInvokeCommandReturnCode(argumentString);
+
+            // Print init determination
+            CheckInitDetermination(returnCode);
+        }
+
         private static int GetInvokeCommandReturnCode(string argument)
         {
             const string RETURNVALMARK = "RETURNVAL_";

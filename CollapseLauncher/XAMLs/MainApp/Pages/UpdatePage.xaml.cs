@@ -3,7 +3,11 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+#if !USEVELOPACK
 using Squirrel;
+#else
+using Velopack;
+#endif
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -110,11 +114,11 @@ namespace CollapseLauncher.Pages
             AskUpdateCheckbox.Visibility = Visibility.Collapsed;
             UpdateProgressBox.Visibility = Visibility.Visible;
 
-            // Start Squirrel update routine
-            await GetSquirrelUpdate();
+            // Start Update manager check routine
+            await GetUpdateInformation();
         }
 
-        private async Task GetSquirrelUpdate()
+        private async Task GetUpdateInformation()
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
 

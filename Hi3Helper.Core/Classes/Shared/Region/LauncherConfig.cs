@@ -137,7 +137,7 @@ namespace Hi3Helper.Shared.Region
               new CDNURLProperty
               {
                   Name = "GitHub",
-                  URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main",
+                  URLPrefix = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
                   Description = Lang!._Misc!.CDNDescription_Github,
                   PartialDownloadSupport = true
               },
