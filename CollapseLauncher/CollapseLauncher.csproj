@@ -32,6 +32,9 @@
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <!-- Analyzers Settings -->
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <!-- Other Settings -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
@@ -63,16 +66,22 @@
 		<PublishAot>true</PublishAot>
         <RunAOTCompilation>true</RunAOTCompilation>
 		<TrimMode>full</TrimMode>
+        <IlcDisableSingleFile>true</IlcDisableSingleFile>
+        <PublishSingleFile>false</PublishSingleFile>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>True</Optimize>
         <GitSkipCache>true</GitSkipCache>
+        <IlcDisableSingleFile>true</IlcDisableSingleFile>
+        <PublishSingleFile>false</PublishSingleFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;USENEWZIPDECOMPRESS;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
+        <IlcDisableSingleFile>true</IlcDisableSingleFile>
+        <PublishSingleFile>false</PublishSingleFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -266,10 +275,14 @@
 
     <Target Name="PostBuild" AfterTargets="Build">
         <Exec Command="del /s /q $(OutDir)av*-58.dll $(OutDir)av*-60.dll $(OutDir)avfilter-9.dll $(OutDir)av*.lib&#xD;&#xA;rd /s /q $(OutDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
+        <RemoveDir Directories="$(OutDir)Lib\win-arm64" Condition="Exists('$(OutDir)Lib\win-arm64')" />
+        <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
     </Target>
 
     <Target Name="PostBuild" AfterTargets="Publish">
         <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
+        <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
+        <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
     </Target>
 </Project>
