@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 {
@@ -84,7 +85,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     return _newsPostTypeInfo;
                 }
 
-                _newsPostTypeInfo = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_INFO)?
+                _newsPostTypeInfo = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_INFO)
                                             .OrderBy(x => x.PostOrder)
                                             .ToList();
                 return _newsPostTypeInfo;
@@ -106,7 +107,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     return _newsPostTypeActivity;
                 }
 
-                _newsPostTypeActivity = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY)?
+                _newsPostTypeActivity = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY)
                                                 .OrderBy(x => x.PostOrder)
                                                 .ToList();
                 return _newsPostTypeActivity;
@@ -129,7 +130,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 }
 
                 _newsPostTypeAnnouncement = NewsPost
-                                           .Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE)?
+                                           .Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE)
                                            .OrderBy(x => x.PostOrder)
                                            .ToList();
                 return _newsPostTypeAnnouncement;

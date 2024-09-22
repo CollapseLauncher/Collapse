@@ -3,10 +3,8 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
 using CommunityToolkit.WinUI.Animations;
-using CommunityToolkit.WinUI.Controls;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
-using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.Data;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -159,7 +157,7 @@ namespace CollapseLauncher.Helper.Image
         }
 
         private static async Task<FileStream> SpawnImageCropperDialog(string filePath, string cachedFilePath,
-                                                                      uint ToWidth, uint ToHeight)
+                                                                      uint toWidth, uint toHeight)
         {
             Grid parentGrid = new()
             {
@@ -226,7 +224,7 @@ namespace CollapseLauncher.Helper.Image
             }
 
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
-            return await GenerateCachedStream(cachedFileInfo, ToWidth, ToHeight, true);
+            return await GenerateCachedStream(cachedFileInfo, toWidth, toHeight, true);
         }
 
         private static async void LoadImageCropperDetached(string filePath, ImageCropper imageCropper,
@@ -403,19 +401,22 @@ namespace CollapseLauncher.Helper.Image
 
             // Try to get the prop file which includes the filename + the suggested size provided
             // by the network stream if it has been downloaded before
-            string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
-            // Check if the file is found (not null), then try parse the information
-            if (string.IsNullOrEmpty(propFilePath))
+            if (outputParentPath != null)
             {
-                return false;
-            }
+                string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                // Check if the file is found (not null), then try parse the information
+                if (string.IsNullOrEmpty(propFilePath))
+                {
+                    return false;
+                }
 
-            // Try split the filename into a segment by # char
-            string[] propSegment = Path.GetFileName(propFilePath).Split('#');
-            // Assign the check if the condition met and set the file existence status
-            return propSegment.Length >= 2
-                   && long.TryParse(propSegment[1], null, out long suggestedSize)
-                   && fileInfo.Exists && fileInfo.Length == suggestedSize;
+                // Try split the filename into a segment by # char
+                string[] propSegment = Path.GetFileName(propFilePath).Split('#');
+                // Assign the check if the condition met and set the file existence status
+                return propSegment.Length >= 2
+                       && long.TryParse(propSegment[1], null, out long suggestedSize)
+                       && fileInfo.Exists && fileInfo.Length == suggestedSize;
+            }
 
             // If the prop doesn't exist, then return false to assume that the file doesn't exist
         }
@@ -446,8 +447,11 @@ namespace CollapseLauncher.Helper.Image
                 // Create the prop file for download completeness checking
                 string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
                 string outputFilename = Path.GetFileName(fileInfo.FullName);
-                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                await File.Create(propFilePath).DisposeAsync();
+                if (outputParentPath != null)
+                {
+                    string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                    await File.Create(propFilePath).DisposeAsync();
+                }
 
                 // Copy (and download) the remote streams to local
                 int read;

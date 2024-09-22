@@ -396,7 +396,7 @@
                             </Viewbox>
 
                             <StackPanel x:Name="HeaderPanel"
-                                        Grid.Column="1"
+                                        Grid.Row="0" Grid.Column="1"
                                         Margin="0,0,24,0"
                                         VerticalAlignment="Center"
                                         Orientation="Vertical">
@@ -439,14 +439,14 @@
                             </StackPanel>
 
                             <ContentPresenter x:Name="PART_ContentPresenter"
-                                              Grid.Column="2"
+                                              Grid.Row="0" Grid.Column="2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               Content="{TemplateBinding Content}" />
 
                             <Viewbox x:Name="PART_ActionIconPresenterHolder"
-                                     Grid.RowSpan="2"
+                                     Grid.Row="0" Grid.RowSpan="2"
                                      Grid.Column="3"
                                      MaxWidth="{ThemeResource SettingsCardActionIconMaxSize}"
                                      MaxHeight="{ThemeResource SettingsCardActionIconMaxSize}"
@@ -971,8 +971,7 @@
                                               IsHitTestVisible="False"
                                               TextWrapping="Wrap"
                                               Visibility="Collapsed" />
-                            <Grid Grid.Row="1"
-                                  HorizontalAlignment="Right"
+                            <Grid HorizontalAlignment="Right"
                                   VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -987,7 +986,7 @@
                                       Background="{ThemeResource ToggleSwitchContainerBackground}"
                                       CornerRadius="{TemplateBinding CornerRadius}" />
                                 <ContentPresenter x:Name="OffContentPresenter"
-                                                  Grid.RowSpan="3"
+                                                  Grid.RowSpan="3" Grid.Column="0"
                                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   win:AutomationProperties.AccessibilityView="Raw"
@@ -997,7 +996,7 @@
                                                   IsHitTestVisible="False"
                                                   Opacity="0" />
                                 <ContentPresenter x:Name="OnContentPresenter"
-                                                  Grid.RowSpan="3"
+                                                  Grid.RowSpan="3" Grid.Column="0"
                                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   win:AutomationProperties.AccessibilityView="Raw"
@@ -1007,7 +1006,6 @@
                                                   IsHitTestVisible="False"
                                                   Opacity="0" />
                                 <Rectangle x:Name="OuterBorder"
-                                           Grid.Row="1"
                                            Grid.Column="2"
                                            Width="40"
                                            Height="20"
@@ -1017,7 +1015,6 @@
                                            Stroke="{ThemeResource ToggleSwitchStrokeOff}"
                                            StrokeThickness="{ThemeResource ToggleSwitchOuterBorderStrokeThickness}" />
                                 <Rectangle x:Name="SwitchKnobBounds"
-                                           Grid.Row="1"
                                            Grid.Column="2"
                                            Width="40"
                                            Height="20"
@@ -1028,7 +1025,6 @@
                                            Stroke="{ThemeResource ToggleSwitchStrokeOn}"
                                            StrokeThickness="{ThemeResource ToggleSwitchOnStrokeThickness}" />
                                 <Grid x:Name="SwitchKnob"
-                                      Grid.Row="1"
                                       Grid.Column="2"
                                       Width="20"
                                       Height="20"
@@ -1067,7 +1063,7 @@
                                 </Grid>
                                 <Thumb x:Name="SwitchThumb"
                                        Grid.RowSpan="3"
-                                       Grid.ColumnSpan="3"
+                                       Grid.ColumnSpan="3" Grid.Column="0"
                                        win:AutomationProperties.AccessibilityView="Raw">
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">

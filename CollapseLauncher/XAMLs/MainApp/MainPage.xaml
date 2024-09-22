@@ -20,8 +20,8 @@
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundNewBackGrid" />
         <Grid x:Name="BackgroundNewMediaPlayerGrid">
-            <MediaPlayerElement x:Name="MediaPlayerFrame"
-                                HorizontalAlignment="Center"
+            <MediaPlayerElement
+                HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Stretch="UniformToFill"
                                 Tag="MediaPlayer" />
@@ -99,9 +99,7 @@
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center">
                 <StackPanel Name="GridBG_RegionInner"
-                            Grid.Row="1"
                             Grid.Column="0"
-                            Grid.ColumnSpan="7"
                             Margin="0,0"
                             VerticalAlignment="Center"
                             CanDrag="True"
@@ -116,7 +114,7 @@
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGridShadow)}"
                               Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
-                        <Grid x:Name="ComboBoxGameGrid"
+                        <Grid Grid.Column="0" x:Name="ComboBoxGameGrid"
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -290,7 +288,7 @@
                                                                     </AnimatedIcon.FallbackIconSource>
                                                                 </AnimatedIcon>
                                                             </Grid>
-                                                            <TextBlock HorizontalAlignment="Left"
+                                                            <TextBlock Grid.Column="0" HorizontalAlignment="Left"
                                                                        VerticalAlignment="Center"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
@@ -344,7 +342,6 @@
                 Grid.Column="0"
                 Height="33"
                 Margin="58,8,0,0"
-                HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Click="GridBG_Icon_Click"
                 PointerEntered="GridBG_Icon_PointerEntered"
@@ -395,8 +392,6 @@
                                Visibility="Visible" />
                 </StackPanel>
                 <StackPanel x:Name="PreviewBuildIndicator"
-                            Grid.Column="4"
-                            Grid.ColumnSpan="2"
                             Margin="-10,-12,0,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
@@ -468,8 +463,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="2"
-                                           VerticalAlignment="Center"
+                                <TextBlock VerticalAlignment="Center"
                                            FontSize="20"
                                            FontWeight="SemiBold"
                                            Opacity="0.50"

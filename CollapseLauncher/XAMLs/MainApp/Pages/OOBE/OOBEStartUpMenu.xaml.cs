@@ -35,6 +35,7 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -758,9 +759,6 @@ namespace CollapseLauncher.Pages.OOBE
             { "th", "th-th" },
             { "vi", "vi-vn" }
         };
-
-        private List<string> LangList =
-            LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})").ToList();
 
         private int SelectedLangIndex
         {

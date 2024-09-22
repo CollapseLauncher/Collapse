@@ -91,7 +91,6 @@
                                                         Height="24"
                                                         Margin="16,0,8,0"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -314,7 +313,6 @@
                                                     MaxWidth="514"
                                                     Margin="0,8"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="2000.0"
                                                     Minimum="300.0"
                                                     StepFrequency="50"
@@ -344,7 +342,6 @@
                                                     MinWidth="350"
                                                     Margin="0,8"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="500.0"
                                                     Minimum="100.0"
                                                     StepFrequency="5"
@@ -371,7 +368,6 @@
                                                     MinWidth="350"
                                                     Margin="0,8,0,0"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="550.0"
                                                     Minimum="150.0"
                                                     StepFrequency="5"
@@ -408,7 +404,6 @@
                                     </Grid>
                                     <Slider x:Name="GammaSlider"
                                             Margin="0,8,8,8"
-                                            IsThumbToolTipEnabled="False"
                                             Maximum="3.0"
                                             Minimum="1.4"
                                             StepFrequency="0.000001"

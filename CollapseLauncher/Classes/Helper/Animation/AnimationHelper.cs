@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.Helper.Animation
 {
@@ -65,26 +66,26 @@ namespace CollapseLauncher.Helper.Animation
             {
                 foreach (KeyFrameAnimation anim in animBase!)
                 {
-                    if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                    if (element.DispatcherQueue?.HasThreadAccess ?? false)
                     {
                         anim.Duration = duration;
                         anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
                         animGroup.Add(anim);
                     }
                     else
-                        element?.DispatcherQueue?.TryEnqueue(() =>
+                        element.DispatcherQueue?.TryEnqueue(() =>
                         {
                             anim.Duration = duration;
                             anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
                             animGroup.Add(anim);
                         });
                 }
-                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                if (element.DispatcherQueue?.HasThreadAccess ?? false)
                 {
                     element.StartAnimation(animGroup);
                 }
                 else
-                    element?.DispatcherQueue?.TryEnqueue(() =>
+                    element.DispatcherQueue?.TryEnqueue(() =>
                     {
                         element.StartAnimation(animGroup);
                     });
@@ -123,69 +124,85 @@ namespace CollapseLauncher.Helper.Animation
             rootFrameVisual.ImplicitAnimations = animationCollection;
         }
 
-        internal static void EnableImplicitAnimation(this UIElement element,
-                                                     bool recursiveAssignment = false,
-                                                     CompositionEasingFunction easingFunction = null)
+        internal static void EnableImplicitAnimation(this UIElement element, bool recursiveAssignment = false, CompositionEasingFunction easingFunction = null)
         {
-            try
+            while (true)
             {
-                Visual rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
-                Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
-
-                ImplicitAnimationCollection animationCollection =
-                    rootFrameVisual.ImplicitAnimations != null ?
-                        rootFrameVisual.ImplicitAnimations : compositor!.CreateImplicitAnimationCollection();
-
-                foreach (VisualPropertyType type in Enum.GetValues<VisualPropertyType>())
+                try
                 {
-                    KeyFrameAnimation animation = CreateAnimationByType(compositor, type, 250, 0, easingFunction);
+                    Visual     rootFrameVisual = ElementCompositionPreview.GetElementVisual(element);
+                    Compositor compositor      = CompositionTarget.GetCompositorForCurrentThread();
 
-                    if (animation != null)
+                    ImplicitAnimationCollection animationCollection = rootFrameVisual.ImplicitAnimations != null ? rootFrameVisual.ImplicitAnimations : compositor!.CreateImplicitAnimationCollection();
+
+                    foreach (VisualPropertyType type in Enum.GetValues<VisualPropertyType>())
                     {
-                        animationCollection[type.ToString()] = animation;
+                        KeyFrameAnimation animation = CreateAnimationByType(compositor, type, 250, 0, easingFunction);
+
+                        if (animation != null)
+                        {
+                            animationCollection[type.ToString()] = animation;
+                        }
                     }
+
+                    rootFrameVisual.ImplicitAnimations = animationCollection;
+                    element.EnableElementVisibilityAnimation();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWriteLine($"[AnimationHelper::EnableImplicitAnimation()] Error has occurred while assigning Implicit Animation to the element!\r\n{ex}", LogType.Error, true);
                 }
 
-                rootFrameVisual.ImplicitAnimations = animationCollection;
-                element.EnableElementVisibilityAnimation();
+                if (!recursiveAssignment) return;
+
+                switch (element)
+                {
+                    case Button { Content: UIElement buttonContent }:
+                        buttonContent.EnableImplicitAnimation(true, easingFunction);
+                        break;
+                    case Page { Content: not null } page:
+                        page.Content.EnableImplicitAnimation(true, easingFunction);
+                        break;
+                    case NavigationView { Content: UIElement navigationViewContent }:
+                        navigationViewContent.EnableImplicitAnimation(true, easingFunction);
+                        break;
+                    case Panel panel:
+                    {
+                        foreach (UIElement childrenElement in panel.Children!) childrenElement.EnableImplicitAnimation(true, easingFunction);
+                        break;
+                    }
+                    case ScrollViewer { Content: UIElement elementInner }:
+                        elementInner.EnableImplicitAnimation(true, easingFunction);
+                        break;
+                }
+
+                switch (element)
+                {
+                    case ContentControl { Content: UIElement contentControlInner } contentControl and (SettingsCard or Expander):
+                    {
+                        contentControlInner.EnableImplicitAnimation(true, easingFunction);
+
+                        if (contentControl is Expander { Header: UIElement expanderHeader })
+                        {
+                            element             = expanderHeader;
+                            recursiveAssignment = true;
+                            continue;
+                        }
+
+                        break;
+                    }
+                    case InfoBar { Content: UIElement infoBarInner }:
+                        element             = infoBarInner;
+                        recursiveAssignment = true;
+                        continue;
+                }
+
+                break;
             }
-            catch (Exception ex)
-            {
-                Logger.LogWriteLine($"[AnimationHelper::EnableImplicitAnimation()] Error has occurred while assigning Implicit Animation to the element!\r\n{ex}", LogType.Error, true);
-            }
-
-            if (!recursiveAssignment) return;
-
-            if (element is Button button && button.Content is UIElement buttonContent)
-                buttonContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
-
-            if (element is Page page && page.Content is UIElement pageContent)
-                pageContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
-
-            if (element is NavigationView navigationView && navigationView.Content is UIElement navigationViewContent)
-                navigationViewContent.EnableImplicitAnimation(recursiveAssignment, easingFunction);
-
-            if (element is Panel panel)
-                foreach (UIElement childrenElement in panel.Children!)
-                    childrenElement.EnableImplicitAnimation(recursiveAssignment, easingFunction);
-
-            if (element is ScrollViewer scrollViewer && scrollViewer.Content is UIElement elementInner)
-                elementInner.EnableImplicitAnimation(recursiveAssignment, easingFunction);
-
-            if (element is ContentControl contentControl && (element is SettingsCard || element is Expander) && contentControl.Content is UIElement contentControlInner)
-            {
-                contentControlInner.EnableImplicitAnimation(true, easingFunction);
-
-                if (contentControl is Expander expander && expander.Header is UIElement expanderHeader)
-                    expanderHeader.EnableImplicitAnimation(true, easingFunction);
-            }
-
-            if (element is InfoBar infoBar && infoBar.Content is UIElement infoBarInner)
-                infoBarInner.EnableImplicitAnimation(true, easingFunction);
         }
 
         private static KeyFrameAnimation CreateAnimationByType(Compositor compositor, VisualPropertyType type,
-            double duration = 800, double delay = 0, CompositionEasingFunction easing = null)
+                                                               double duration = 800, double delay = 0, CompositionEasingFunction easing = null)
         {
             KeyFrameAnimation animation;
 
@@ -202,6 +219,8 @@ namespace CollapseLauncher.Helper.Animation
                 case VisualPropertyType.RotationAngleInDegrees:
                     animation = compositor.CreateScalarKeyFrameAnimation();
                     break;
+                case VisualPropertyType.None:
+                case VisualPropertyType.All:
                 default:
                     return null;
             }
@@ -221,25 +240,25 @@ namespace CollapseLauncher.Helper.Animation
 
             ElementCompositionPreview.SetIsTranslationEnabled(element, true);
 
-            ScalarKeyFrameAnimation HideOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
-            ScalarKeyFrameAnimation ShowOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
+            ScalarKeyFrameAnimation hideOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
+            ScalarKeyFrameAnimation showOpacityAnimation = compositor.CreateScalarKeyFrameAnimation();
 
-            HideOpacityAnimation.InsertKeyFrame(1.0f, 0.0f);
-            HideOpacityAnimation.Duration = animDur;
-            HideOpacityAnimation.Target = "Opacity";
+            hideOpacityAnimation.InsertKeyFrame(1.0f, 0.0f);
+            hideOpacityAnimation.Duration = animDur;
+            hideOpacityAnimation.Target = "Opacity";
 
-            ShowOpacityAnimation.InsertKeyFrame(1.0f, 1.0f);
-            ShowOpacityAnimation.Duration = animDur;
-            ShowOpacityAnimation.Target = "Opacity";
+            showOpacityAnimation.InsertKeyFrame(1.0f, 1.0f);
+            showOpacityAnimation.Duration = animDur;
+            showOpacityAnimation.Target = "Opacity";
 
-            CompositionAnimationGroup HideAnimationGroup = compositor.CreateAnimationGroup();
-            CompositionAnimationGroup ShowAnimationGroup = compositor.CreateAnimationGroup();
+            CompositionAnimationGroup hideAnimationGroup = compositor.CreateAnimationGroup();
+            CompositionAnimationGroup showAnimationGroup = compositor.CreateAnimationGroup();
 
-            HideAnimationGroup.Add(HideOpacityAnimation);
-            ShowAnimationGroup.Add(ShowOpacityAnimation);
+            hideAnimationGroup.Add(hideOpacityAnimation);
+            showAnimationGroup.Add(showOpacityAnimation);
 
-            ElementCompositionPreview.SetImplicitHideAnimation(element, HideAnimationGroup);
-            ElementCompositionPreview.SetImplicitShowAnimation(element, ShowAnimationGroup);
+            ElementCompositionPreview.SetImplicitHideAnimation(element, hideAnimationGroup);
+            ElementCompositionPreview.SetImplicitShowAnimation(element, showAnimationGroup);
         }
 
         internal static Compositor GetElementCompositor(this UIElement element)

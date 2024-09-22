@@ -123,7 +123,6 @@
             <StackPanel Grid.Row="2"
                         VerticalAlignment="Bottom">
                 <TextBlock x:Name="CachesStatus"
-                           Grid.Row="1"
                            Margin="0,0,0,16"
                            FontSize="18"
                            Text="{x:Bind helper:Locale.Lang._CachesPage.Status1}"
@@ -157,8 +156,7 @@
                                      Maximum="100"
                                      Value="0" />
                     </StackPanel>
-                    <Grid Grid.Row="1"
-                          Grid.Column="1"
+                    <Grid Grid.Column="1"
                           Margin="0,0,0,10"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Bottom">
@@ -181,7 +179,7 @@
                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" />
                             </StackPanel>
                         </Button>
-                        <SplitButton x:Name="CheckUpdateBtn"
+                        <SplitButton Grid.Column="0" x:Name="CheckUpdateBtn"
                                      HorizontalAlignment="Stretch"
                                      Click="StartCachesCheckSplitButton"
                                      CornerRadius="16"
@@ -215,7 +213,7 @@
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
                                                           Glyph="&#xf101;" />
-                                                <TextBlock HorizontalAlignment="Left"
+                                                <TextBlock Grid.Column="0" HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
                                             </Grid>
@@ -237,7 +235,7 @@
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
                                                           Glyph="&#xf105;" />
-                                                <TextBlock HorizontalAlignment="Left"
+                                                <TextBlock Grid.Column="0" HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}" />
                                             </Grid>
@@ -258,8 +256,7 @@
                                        Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" />
                         </Button>
                     </Grid>
-                    <StackPanel Grid.Row="1"
-                                Grid.Column="1"
+                    <StackPanel Grid.Column="1"
                                 Margin="0,0,0,10"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"

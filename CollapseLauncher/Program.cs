@@ -26,7 +26,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Velopack.Windows;
 
 namespace CollapseLauncher;
 
@@ -258,45 +257,54 @@ public static class MainEntryPoint
         {
             // Otherwise, start cleaning-up process
             string currentExecutedParentFolder = Path.GetDirectoryName(currentExecutedAppFolder);
-            DirectoryInfo directoryInfo = new DirectoryInfo(currentExecutedParentFolder);
-            foreach (DirectoryInfo childLegacyAppSemVerFolder in directoryInfo.EnumerateDirectories("app-*", SearchOption.TopDirectoryOnly))
+            if (currentExecutedParentFolder != null)
             {
-                // Removing the "app-*" folder
-                childLegacyAppSemVerFolder.Delete(true);
-                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!", LogType.Default, true);
+                DirectoryInfo directoryInfo = new DirectoryInfo(currentExecutedParentFolder);
+                foreach (DirectoryInfo childLegacyAppSemVerFolder in directoryInfo.EnumerateDirectories("app-*", SearchOption.TopDirectoryOnly))
+                {
+                    // Removing the "app-*" folder
+                    childLegacyAppSemVerFolder.Delete(true);
+                    Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!", LogType.Default, true);
+                }
             }
 
-            // Try remove squirrel temp clowd folder
-            string squirrelTempPackagesFolder = Path.Combine(currentExecutedParentFolder, "SquirrelClowdTemp");
-            DirectoryInfo squirrelTempPackagesFolderInfo = new DirectoryInfo(squirrelTempPackagesFolder);
-            if (squirrelTempPackagesFolderInfo.Exists)
+            // Try to remove squirrel temp clowd folder
+            if (currentExecutedParentFolder != null)
             {
-                squirrelTempPackagesFolderInfo.Delete(true);
-                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed package temp folder: {squirrelTempPackagesFolder}!", LogType.Default, true);
+                string        squirrelTempPackagesFolder     = Path.Combine(currentExecutedParentFolder, "SquirrelClowdTemp");
+                DirectoryInfo squirrelTempPackagesFolderInfo = new DirectoryInfo(squirrelTempPackagesFolder);
+                if (squirrelTempPackagesFolderInfo.Exists)
+                {
+                    squirrelTempPackagesFolderInfo.Delete(true);
+                    Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed package temp folder: {squirrelTempPackagesFolder}!", LogType.Default, true);
+                }
             }
 
-            // Try remove stub executable
+            // Try to remove stub executable
             string squirrelLegacyStubPath = Path.Combine(currentExecutedParentFolder, "CollapseLauncher.exe");
             RemoveSquirrelFilePath(squirrelLegacyStubPath);
 
-            // Try remove createdump executable
+            // Try to remove createdump executable
             string squirrelLegacyDumpPath = Path.Combine(currentExecutedParentFolder, "createdump.exe");
             RemoveSquirrelFilePath(squirrelLegacyDumpPath);
 
-            // Try remove RestartAgent executable
+            // Try to remove RestartAgent executable
             string squirrelLegacyRestartAgentPath = Path.Combine(currentExecutedParentFolder, "RestartAgent.exe");
             RemoveSquirrelFilePath(squirrelLegacyRestartAgentPath);
 
-            // Try remove legacy shortcuts
+            // Try to remove legacy shortcuts
             string currentWindowsPathDrive = Path.GetPathRoot(Environment.SystemDirectory);
-            string squirrelLegacyStartMenuGlobal = Path.Combine(currentWindowsPathDrive, @"ProgramData\Microsoft\Windows\Start Menu\Programs\Collapse\Collapse Launcher");
-            string squirrelLegacyStartMenuGlobalParent = Path.GetDirectoryName(squirrelLegacyStartMenuGlobal);
-            if (Directory.Exists(squirrelLegacyStartMenuGlobalParent) && Directory.Exists(squirrelLegacyStartMenuGlobal))
+            if (currentWindowsPathDrive != null)
             {
-                Directory.Delete(squirrelLegacyStartMenuGlobalParent, true);
+                string squirrelLegacyStartMenuGlobal       = Path.Combine(currentWindowsPathDrive, @"ProgramData\Microsoft\Windows\Start Menu\Programs\Collapse\Collapse Launcher");
+                string squirrelLegacyStartMenuGlobalParent = Path.GetDirectoryName(squirrelLegacyStartMenuGlobal);
+                if (Directory.Exists(squirrelLegacyStartMenuGlobalParent) && Directory.Exists(squirrelLegacyStartMenuGlobal))
+                {
+                    Directory.Delete(squirrelLegacyStartMenuGlobalParent, true);
+                }
             }
 
-            // Try recreate shortcuts
+            // Try to recreate shortcuts
             TaskSchedulerHelper.RecreateIconShortcuts();
         }
         catch (Exception ex)

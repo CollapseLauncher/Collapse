@@ -10,7 +10,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
-      xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       xmlns:imageex="using:ImageEx"
       xmlns:local="using:CollapseLauncher"
       xmlns:localPage="using:CollapseLauncher.Pages"
@@ -31,7 +30,6 @@
                               CastTo="{x:Bind ImageEventImgShadow}"
                               Opacity="0.3"
                               Offset="0,4,0" />
-        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -241,7 +239,7 @@
                             </StackPanel>
                         </Grid>
                         <Grid Grid.Column="0"
-                              Grid.ColumnSpan="3"
+                              Grid.Row="0" Grid.ColumnSpan="3"
                               Margin="0,0,0,8"
                               HorizontalAlignment="Stretch"
                               ColumnSpacing="16">
@@ -268,14 +266,14 @@
                                            Text="%" />
                             </StackPanel>
                         </Grid>
-                        <Grid Grid.Column="2"
+                        <Grid Grid.Row="0" Grid.Column="2"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom">
                             <StackPanel HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         Orientation="Vertical">
                                 <Grid Margin="0,0,0,8">
-                                    <StackPanel Grid.Column="1">
+                                    <StackPanel>
                                         <TextBlock HorizontalAlignment="Right"
                                                    FontSize="12"
                                                    FontWeight="Bold"
@@ -290,7 +288,7 @@
                             </StackPanel>
                         </Grid>
                         <ProgressBar Grid.Row="1"
-                                     Grid.ColumnSpan="3"
+                                     Grid.ColumnSpan="3" Grid.Column="0"
                                      Margin="0,8,0,24"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Bottom"
@@ -430,9 +428,6 @@
                     CornerRadius="12,0,0,12"
                     Orientation="Vertical"
                     Shadow="{ThemeResource SharedShadow}">
-            <StackPanel.Resources>
-                <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            </StackPanel.Resources>
             <StackPanel.Transitions>
                 <PopupThemeTransition />
             </StackPanel.Transitions>
@@ -596,7 +591,6 @@
         <Grid x:Name="SidePanel"
               Grid.Row="1"
               Grid.Column="0"
-              Grid.ColumnSpan="1"
               Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}"
               HorizontalAlignment="Left"
               VerticalAlignment="Bottom"
@@ -1315,8 +1309,8 @@
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
-                    <FontIcon Grid.Column="2"
-                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                    <FontIcon
+                        FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="10"
                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                               Glyph="" />
@@ -1495,7 +1489,7 @@
                                                   VerticalAlignment="Center"
                                                   FontSize="14"
                                                   Glyph="&#xE777;" />
-                                        <TextBlock HorizontalAlignment="Left"
+                                        <TextBlock Grid.Column="0" HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
@@ -1518,7 +1512,7 @@
                                                   VerticalAlignment="Center"
                                                   FontSize="14"
                                                   Glyph="&#xE74D;" />
-                                        <TextBlock HorizontalAlignment="Left"
+                                        <TextBlock Grid.Column="0" HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"

@@ -949,11 +949,7 @@ namespace CollapseLauncher.InstallManager.Base
                     async ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
                     {
                         // ReSharper disable once AccessToDisposedClosure
-                        if (httpClient != null)
-                        {
-                            // ReSharper disable once AccessToDisposedClosure
-                            await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
-                        }
+                        await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
                     }
 
                     // Declare the rename temp file delegate
@@ -2309,10 +2305,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 throw ex.Flatten().InnerExceptions.First();
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 EventListener.LoggerEvent   -= EventListener_PatchLogEvent;
@@ -3148,9 +3140,9 @@ namespace CollapseLauncher.InstallManager.Base
             if (gameState != GameInstallStateEnum.InstalledHavePlugin)
             {
                 // Iterate the package resource version and add it into packageList
-                foreach (RegionResourceVersion asset in usePreload
+                foreach (RegionResourceVersion asset in (usePreload
                              ? _gameVersionManager.GetGamePreloadZip()
-                             : _gameVersionManager.GetGameLatestZip(gameState))
+                             : _gameVersionManager.GetGameLatestZip(gameState))!)
                 {
                     if (asset == null)
                     {

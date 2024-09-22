@@ -72,7 +72,7 @@ public class Updater : IDisposable
         UpdateDownloader = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
         UpdateManagerLogger = ILoggerHelper.CreateCollapseILogger();
-        VelopackLocator updateManagerLocator = WindowsVelopackLocator.GetDefault(UpdateManagerLogger);
+        VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(UpdateManagerLogger);
         UpdateOptions updateManagerOptions = new UpdateOptions
         {
             AllowVersionDowngrade = true,
@@ -279,10 +279,6 @@ public class Updater : IDisposable
 
         // Try get the version info and if the version info is null, return false
         FileVersionInfo toCheckVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
-        if (toCheckVersionInfo == null)
-        {
-            return false;
-        }
 
         // Otherwise, try compare the version info.
         if (!Version.TryParse(toCheckVersionInfo.ProductVersion, out Version latestVersion))
@@ -296,7 +292,7 @@ public class Updater : IDisposable
         return latestVersion >= currentVersion;
     }
 
-    public async Task FinishUpdate(bool NoSuicide = false)
+    public async Task FinishUpdate(bool noSuicide = false)
     {
         var newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData",
                                          "LocalLow", "CollapseLauncher", "_NewVer");
@@ -310,8 +306,8 @@ public class Updater : IDisposable
         Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
         UpdateProgress();
 
-        File.WriteAllText(newVerTagPath,         NewVersionTag.VersionString);
-        File.WriteAllText(needInnoLogUpdatePath, NewVersionTag.VersionString);
+        await File.WriteAllTextAsync(newVerTagPath,         NewVersionTag.VersionString);
+        await File.WriteAllTextAsync(needInnoLogUpdatePath, NewVersionTag.VersionString);
 
         if (IsUseLegacyDownload)
         {
@@ -319,7 +315,7 @@ public class Updater : IDisposable
             return;
         }
 
-        if (!NoSuicide)
+        if (!noSuicide)
             await Suicide();
     }
 
@@ -331,7 +327,7 @@ public class Updater : IDisposable
 #else
         if (VelopackVersionToUpdate != null)
         {
-            string currentAppPath = Path.Combine(Path.GetDirectoryName(LauncherConfig.AppFolder), "current");
+            string currentAppPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "current");
             if (!Directory.Exists(currentAppPath))
                 Directory.CreateDirectory(currentAppPath);
 
@@ -340,7 +336,7 @@ public class Updater : IDisposable
 #endif
     }
 
-    private void SuicideLegacy()
+    private static void SuicideLegacy()
     {
         var applyUpdate = new Process()
         {

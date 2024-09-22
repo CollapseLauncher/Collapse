@@ -9,18 +9,18 @@ namespace CollapseLauncher.Helper
 {
     internal static class TaskSchedulerHelper
     {
-        private const string _collapseStartupTaskName = "CollapseLauncherStartupTask";
+        private const string CollapseStartupTaskName = "CollapseLauncherStartupTask";
 
-        internal static bool IsInitialized = false;
-        internal static bool Cached_IsOnTrayEnabled = false;
-        internal static bool Cached_IsEnabled = false;
+        internal static bool IsInitialized;
+        internal static bool CachedIsOnTrayEnabled;
+        internal static bool CachedIsEnabled;
 
         internal static bool IsOnTrayEnabled()
         {
             if (!IsInitialized)
                 InvokeGetStatusCommand();
 
-            return Cached_IsOnTrayEnabled;
+            return CachedIsOnTrayEnabled;
         }
 
         internal static bool IsEnabled()
@@ -28,14 +28,11 @@ namespace CollapseLauncher.Helper
             if (!IsInitialized)
                 InvokeGetStatusCommand();
 
-            return Cached_IsEnabled;
+            return CachedIsEnabled;
         }
 
         internal static void InvokeGetStatusCommand()
         {
-            // Get current stub or main executable path
-            string currentExecPath = MainEntryPoint.FindCollapseStubPath();
-
             // Build the argument and mode to set
             StringBuilder argumentBuilder = new StringBuilder();
             argumentBuilder.Append("IsEnabled");
@@ -49,7 +46,7 @@ namespace CollapseLauncher.Helper
             // Invoke command and get return code
             int returnCode = GetInvokeCommandReturnCode(argumentString);
 
-            (Cached_IsEnabled, Cached_IsOnTrayEnabled) = returnCode switch
+            (CachedIsEnabled, CachedIsOnTrayEnabled) = returnCode switch
             {
                 // -1 means task is disabled with tray enabled
                 -1 => (false, true),
@@ -70,7 +67,7 @@ namespace CollapseLauncher.Helper
         private static void CheckInitDetermination(int returnCode)
         {
             // If the return code is within range, then set as initialized
-            if (returnCode > -2 && returnCode < 3)
+            if (returnCode is > -2 and < 3)
             {
                 // Set as initialized
                 IsInitialized = true;
@@ -92,13 +89,13 @@ namespace CollapseLauncher.Helper
 
         internal static void ToggleTrayEnabled(bool isEnabled)
         {
-            Cached_IsOnTrayEnabled = isEnabled;
+            CachedIsOnTrayEnabled = isEnabled;
             InvokeToggleCommand();
         }
 
         internal static void ToggleEnabled(bool isEnabled)
         {
-            Cached_IsEnabled = isEnabled;
+            CachedIsEnabled = isEnabled;
             InvokeToggleCommand();
         }
 
@@ -106,10 +103,10 @@ namespace CollapseLauncher.Helper
         {
             // Build the argument and mode to set
             StringBuilder argumentBuilder = new StringBuilder();
-            argumentBuilder.Append(Cached_IsEnabled ? "Enable" : "Disable");
+            argumentBuilder.Append(CachedIsEnabled ? "Enable" : "Disable");
 
             // Append argument whether to toggle the tray or not
-            if (Cached_IsOnTrayEnabled)
+            if (CachedIsOnTrayEnabled)
                 argumentBuilder.Append("ToTray");
 
             // Append task name and stub path
@@ -132,7 +129,7 @@ namespace CollapseLauncher.Helper
 
             // Build argument to the task name
             argumentBuilder.Append(" \"");
-            argumentBuilder.Append(_collapseStartupTaskName);
+            argumentBuilder.Append(CollapseStartupTaskName);
             argumentBuilder.Append('"');
 
             // Build argument to the executable path
@@ -165,7 +162,7 @@ namespace CollapseLauncher.Helper
 
         private static int GetInvokeCommandReturnCode(string argument)
         {
-            const string RETURNVALMARK = "RETURNVAL_";
+            const string returnvalmark = "RETURNVAL_";
 
             // Get the applet path and check if the file exist
             string appletPath = Path.Combine(LauncherConfig.AppFolder, "Lib", "win-x64", "Hi3Helper.TaskScheduler.exe");
@@ -175,56 +172,49 @@ namespace CollapseLauncher.Helper
                 return short.MinValue;
             }
 
-            // Try make process instance for the applet
-            using (Process process = new Process
+            // Try to make process instance for the applet
+            using Process process = new Process();
+            process.StartInfo = new ProcessStartInfo
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = appletPath,
-                    Arguments = argument,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true
-                }
-            })
+                FileName               = appletPath,
+                Arguments              = argument,
+                UseShellExecute        = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow         = true
+            };
+            int lastErrCode = short.MaxValue;
+            try
             {
-                int lastErrCode = short.MaxValue;
-                try
+                // Start the applet and wait until it exit.
+                process.Start();
+                while (!process.StandardOutput.EndOfStream)
                 {
-                    // Start the applet and wait until it exit.
-                    process.Start();
-                    while (!process.StandardOutput.EndOfStream)
-                    {
-                        string consoleStdOut = process.StandardOutput.ReadLine();
-                        Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
+                    string consoleStdOut = process.StandardOutput.ReadLine();
+                    Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
 
-                        // Parse if it has RETURNVAL_
-                        if (consoleStdOut.StartsWith(RETURNVALMARK))
-                        {
-                            ReadOnlySpan<char> span = consoleStdOut.AsSpan(RETURNVALMARK.Length);
-                            if (int.TryParse(span, null, out int resultReturnCode))
-                            {
-                                lastErrCode = resultReturnCode;
-                            }
-                        }
+                    // Parse if it has RETURNVAL_
+                    if (consoleStdOut == null || !consoleStdOut.StartsWith(returnvalmark))
+                    {
+                        continue;
                     }
 
-                    if (lastErrCode != process.ExitCode)
+                    ReadOnlySpan<char> span = consoleStdOut.AsSpan(returnvalmark.Length);
+                    if (int.TryParse(span, null, out int resultReturnCode))
                     {
-                        lastErrCode = process.ExitCode;
-                    }    
-                    process.WaitForExit();
+                        lastErrCode = resultReturnCode;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    // If error happened, then return.
-                    Logger.LogWriteLine($"An error has occurred while invoking Task Scheduler applet!\r\n{ex}", LogType.Error, true);
-                    return short.MaxValue;
-                }
-
-                // Get return code
-                return lastErrCode;
+                process.WaitForExit();
             }
+            catch (Exception ex)
+            {
+                // If error happened, then return.
+                Logger.LogWriteLine($"An error has occurred while invoking Task Scheduler applet!\r\n{ex}", LogType.Error, true);
+                return short.MaxValue;
+            }
+
+            // Get return code
+            return lastErrCode;
         }
     }
 }

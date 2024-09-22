@@ -73,7 +73,7 @@ namespace CollapseLauncher.Helper.Update
 #if USEVELOPACK
             // Initialize update manager logger, locator and options
             ILogger velopackLogger = ILoggerHelper.CreateCollapseILogger();
-            VelopackLocator updateManagerLocator = WindowsVelopackLocator.GetDefault(velopackLogger);
+            VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(velopackLogger);
             UpdateOptions updateManagerOptions = new UpdateOptions
             {
                 AllowVersionDowngrade = true,

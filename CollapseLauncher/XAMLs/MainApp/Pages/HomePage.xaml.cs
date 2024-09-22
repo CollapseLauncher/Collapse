@@ -547,7 +547,7 @@ namespace CollapseLauncher.Pages
 
         private void HideSocMedFlyout(object sender, RoutedEventArgs e)
         {
-            Grid dummyGrid = (sender as Panel).FindChild<Grid>();
+            Grid dummyGrid = (sender as Panel ?? throw new InvalidOperationException()).FindChild<Grid>();
             if (dummyGrid != null)
             {
                 Flyout flyout = dummyGrid.Tag as Flyout;
@@ -560,17 +560,21 @@ namespace CollapseLauncher.Pages
             // Prevent the flyout showing when there is no content visible
             StackPanel stackPanel = sender as StackPanel;
 
-            ApplySocialMediaBinding(stackPanel);
+            if (stackPanel != null)
+            {
+                ApplySocialMediaBinding(stackPanel);
 
-            bool visible = false;
-            foreach (var child in stackPanel!.Children)
-            {
-                if (child.Visibility == Visibility.Visible)
-                    visible = true;
-            }
-            if (!visible)
-            {
-                HideSocMedFlyout(sender, e);
+                bool visible = false;
+                foreach (var child in stackPanel!.Children)
+                {
+                    if (child.Visibility == Visibility.Visible)
+                        visible = true;
+                }
+
+                if (!visible)
+                {
+                    HideSocMedFlyout(sender, e);
+                }
             }
         }
         #endregion
@@ -2405,7 +2409,7 @@ namespace CollapseLauncher.Pages
             int numOfLoops = 0;
 
 #if DEBUG
-            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin?.ToLongTimeString()}.");
+            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.Value.ToLongTimeString()}.");
 #endif
 
             using (var inGameTimer = new Timer())
