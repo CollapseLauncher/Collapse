@@ -23,7 +23,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         #region Properties
         /// <summary>
         /// This defines "<c>Rendering Accuracy</c>" combobox In-game settings -> Video.<br/>
-        /// <inheritdoc cref="SelectResolutionQuality"/>
+        /// <inheritdoc cref="SelectResolutionQuality"/><br/>
         /// Default: Middle
         /// </summary>
         public SelectResolutionQuality ResolutionQuality { get; set; } = SelectResolutionQuality.Middle;

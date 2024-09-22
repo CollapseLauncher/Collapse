@@ -280,7 +280,7 @@ namespace CollapseLauncher.Pages
         public int GraphicsRenderingAccuracy
         {
             get => prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
-            set => TryChallengeRenderingAccuracySet(value, value < 3);
+            set => TryChallengeRenderingAccuracySet(value, value < 9);
         }
 
         private async void TryChallengeRenderingAccuracySet(int value, bool BypassChallenge = false)
