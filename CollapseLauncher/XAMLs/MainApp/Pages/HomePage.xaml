@@ -5,14 +5,12 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-      xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:customcontrol="using:CollapseLauncher.CustomControls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:imageex="using:ImageEx"
       xmlns:local="using:CollapseLauncher"
-      xmlns:localPage="using:CollapseLauncher.Pages"
       xmlns:localStatic="using:CollapseLauncher.Statics"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
@@ -1032,8 +1030,8 @@
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
-                    <FontIcon Grid.Column="2"
-                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                    <FontIcon
+                        FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="10"
                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                               Glyph="" />

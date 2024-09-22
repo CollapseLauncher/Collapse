@@ -1,15 +1,16 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
-using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
+﻿#nullable enable
+    using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+    using CommunityToolkit.WinUI;
+    using ImageEx;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Data;
 
-#nullable enable
-namespace CollapseLauncher.Pages
+    namespace CollapseLauncher.Pages
 {
     file static class HomePageExtension
     {
-        internal static BooleanVisibilityConverter BooleanVisibilityConverter = new BooleanVisibilityConverter();
+        internal static readonly BooleanVisibilityConverter BooleanVisibilityConverter = new();
 
         internal static void BindProperty(this FrameworkElement element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
         {
@@ -35,7 +36,7 @@ namespace CollapseLauncher.Pages
 
     public partial class HomePage
     {
-        private void ApplySocialMediaBinding(Panel panel)
+        private static void ApplySocialMediaBinding(Panel panel)
         {
             // Bind QR Code Overlay
             LauncherGameNewsSocialMedia? dataBind = panel.Tag as LauncherGameNewsSocialMedia;
@@ -44,21 +45,16 @@ namespace CollapseLauncher.Pages
             TextBlock? descriptionParentPanel = panel.FindChild("SocialMediaParentPanel_Description") as TextBlock;
 
             // If already assigned, then return
-            if ((panel.Tag is bool isAssigned && isAssigned) || dataBind == null)
+            if (panel.Tag is true || dataBind == null)
             {
                 panel.Tag = true;
-                return;
-            }
-
-            if (dataBind == null)
-            {
                 return;
             }
 
             // If qrParentPanel is not null, then proceed
             if (qrParentPanel != null)
             {
-                BindSocialMediaQR(qrParentPanel, dataBind);
+                BindSocialMediaQr(qrParentPanel, dataBind);
             }
 
             // If qrParentPanel is not null, then proceed
@@ -80,10 +76,10 @@ namespace CollapseLauncher.Pages
             panel.Visibility = Visibility.Visible;
         }
 
-        private void BindSocialMediaQR(Panel parentPanel, LauncherGameNewsSocialMedia dataBind)
+        private static void BindSocialMediaQr(Panel parentPanel, LauncherGameNewsSocialMedia dataBind)
         {
             // Bind visibility if dataBind has QR
-            parentPanel.BindProperty(StackPanel.VisibilityProperty, dataBind, "IsHasQr", HomePageExtension.BooleanVisibilityConverter);
+            parentPanel.BindProperty(VisibilityProperty, dataBind, "IsHasQr", HomePageExtension.BooleanVisibilityConverter);
 
             // Find the child grid
             Grid? childGrid = parentPanel.FindChild<Grid>();
@@ -91,17 +87,17 @@ namespace CollapseLauncher.Pages
 
             // Bind the QR properties
             ImageEx.ImageEx? qrImageInstance = childGrid.FindChild<ImageEx.ImageEx>();
-            qrImageInstance?.BindProperty(ImageEx.ImageEx.SourceProperty, dataBind, "QrImg");
+            qrImageInstance?.BindProperty(ImageExBase.SourceProperty, dataBind, "QrImg");
 
             TextBlock? textBlockInstance = childGrid.FindChild<TextBlock>();
             textBlockInstance?.BindProperty(TextBlock.TextProperty, dataBind, "QrTitle");
-            textBlockInstance?.BindProperty(TextBlock.VisibilityProperty, dataBind, "IsHasQrDescription", HomePageExtension.BooleanVisibilityConverter);
+            textBlockInstance?.BindProperty(VisibilityProperty, dataBind, "IsHasQrDescription", HomePageExtension.BooleanVisibilityConverter);
         }
 
-        private void BindSocialMediaLinks(Panel parentPanel, LauncherGameNewsSocialMedia dataBind)
+        private static void BindSocialMediaLinks(Panel parentPanel, LauncherGameNewsSocialMedia dataBind)
         {
             // Bind visibility if dataBind has Links
-            parentPanel.BindProperty(StackPanel.VisibilityProperty, dataBind, "IsHasLinks", HomePageExtension.BooleanVisibilityConverter);
+            parentPanel.BindProperty(VisibilityProperty, dataBind, "IsHasLinks", HomePageExtension.BooleanVisibilityConverter);
 
             // Find the ItemsControl
             ItemsControl? itemsControl = parentPanel.FindChild<ItemsControl>();
@@ -114,10 +110,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void BindSocialMediaDescription(TextBlock parentPanel, LauncherGameNewsSocialMedia dataBind)
+        private static void BindSocialMediaDescription(TextBlock parentPanel, LauncherGameNewsSocialMedia dataBind)
         {
             // Bind visibility if dataBind has Description
-            parentPanel.BindProperty(TextBlock.VisibilityProperty, dataBind, "IsHasDescription", HomePageExtension.BooleanVisibilityConverter);
+            parentPanel.BindProperty(VisibilityProperty, dataBind, "IsHasDescription", HomePageExtension.BooleanVisibilityConverter);
 
             // Bind description text
             parentPanel.BindProperty(TextBlock.TextProperty, dataBind, "Title");

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+// ReSharper disable RedundantExtendsListEntry
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 public partial class SettingsCard : ButtonBase
@@ -13,7 +14,7 @@ public partial class SettingsCard : ButtonBase
         nameof(Header),
         typeof(object),
         typeof(SettingsCard),
-        new PropertyMetadata(defaultValue: null, (d, e) => ((SettingsCard)d).OnHeaderPropertyChanged((object)e.OldValue, (object)e.NewValue)));
+        new PropertyMetadata(defaultValue: null, (d, e) => ((SettingsCard)d).OnHeaderPropertyChanged(e.OldValue, e.NewValue)));
 
     /// <summary>
     /// The backing <see cref="DependencyProperty"/> for the <see cref="Description"/> property.
@@ -22,7 +23,7 @@ public partial class SettingsCard : ButtonBase
         nameof(Description),
         typeof(object),
         typeof(SettingsCard),
-        new PropertyMetadata(defaultValue: null, (d, e) => ((SettingsCard)d).OnDescriptionPropertyChanged((object)e.OldValue, (object)e.NewValue)));
+        new PropertyMetadata(defaultValue: null, (d, e) => ((SettingsCard)d).OnDescriptionPropertyChanged(e.OldValue, e.NewValue)));
 
     /// <summary>
     /// The backing <see cref="DependencyProperty"/> for the <see cref="HeaderIcon"/> property.
@@ -83,7 +84,7 @@ public partial class SettingsCard : ButtonBase
     /// </summary>
     public object Header
     {
-        get => (object)GetValue(HeaderProperty);
+        get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
     }
 
@@ -94,7 +95,7 @@ public partial class SettingsCard : ButtonBase
     public new object Description
 #pragma warning restore CS0109 // Member does not hide an inherited member; new keyword is not required
     {
-        get => (object)GetValue(DescriptionProperty);
+        get => GetValue(DescriptionProperty);
         set => SetValue(DescriptionProperty, value);
     }
 
@@ -152,29 +153,15 @@ public partial class SettingsCard : ButtonBase
         set => SetValue(IsActionIconVisibleProperty, value);
     }
 
-    protected virtual void OnIsClickEnabledPropertyChanged(bool oldValue, bool newValue)
-    {
-        OnIsClickEnabledChanged();
-    }
-    protected virtual void OnHeaderIconPropertyChanged(IconElement oldValue, IconElement newValue)
-    {
-        OnHeaderIconChanged();
-    }
+    protected virtual void OnIsClickEnabledPropertyChanged(bool oldValue, bool newValue) => OnIsClickEnabledChanged();
 
-    protected virtual void OnHeaderPropertyChanged(object oldValue, object newValue)
-    {
-        OnHeaderChanged();
-    }
+    protected virtual void OnHeaderIconPropertyChanged(IconElement oldValue, IconElement newValue) => OnHeaderIconChanged();
 
-    protected virtual void OnDescriptionPropertyChanged(object oldValue, object newValue)
-    {
-        OnDescriptionChanged();
-    }
+    protected virtual void OnHeaderPropertyChanged(object oldValue, object newValue) => OnHeaderChanged();
 
-    protected virtual void OnIsActionIconVisiblePropertyChanged(bool oldValue, bool newValue)
-    {
-        OnActionIconChanged();
-    }
+    protected virtual void OnDescriptionPropertyChanged(object oldValue, object newValue) => OnDescriptionChanged();
+
+    protected virtual void OnIsActionIconVisiblePropertyChanged(bool oldValue, bool newValue) => OnActionIconChanged();
 }
 
 public enum ContentAlignment

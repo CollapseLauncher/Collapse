@@ -487,13 +487,6 @@ namespace CollapseLauncher
                 switch (mType)
                 {
                     case BackgroundMediaUtility.MediaType.Media:
-                        new MediaPlayerElement
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment   = VerticalAlignment.Center,
-                            Stretch             = Stretch.UniformToFill,
-                            Tag                 = "MediaPlayer"
-                        };
                         BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
                         BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
                         break;
@@ -503,6 +496,7 @@ namespace CollapseLauncher
                         BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
                         BackgroundNewBackGrid.Visibility        = Visibility.Visible;
                         break;
+                    case BackgroundMediaUtility.MediaType.Unknown:
                     default:
                         throw new InvalidCastException();
                 }

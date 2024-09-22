@@ -401,7 +401,6 @@
                                         VerticalAlignment="Center"
                                         Orientation="Vertical">
                                 <ContentPresenter x:Name="PART_HeaderPresenter"
-                                                  Grid.Column="1"
                                                   HorizontalAlignment="Left"
                                                   win:HighContrastAdjustment="None"
                                                   Content="{TemplateBinding Header}"

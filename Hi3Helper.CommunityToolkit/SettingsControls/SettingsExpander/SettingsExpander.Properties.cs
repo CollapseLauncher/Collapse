@@ -72,13 +72,11 @@ public partial class SettingsExpander
      new PropertyMetadata(defaultValue: false, (d, e) => ((SettingsExpander)d).OnIsExpandedPropertyChanged((bool)e.OldValue, (bool)e.NewValue)));
 
     /// <summary>
-    /// 
-    /// <summary>
     /// Gets or sets the Header.
     /// </summary>
     public object Header
     {
-        get => (object)GetValue(HeaderProperty);
+        get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
     }
 
@@ -89,7 +87,7 @@ public partial class SettingsExpander
     public new object Description
 #pragma warning restore CS0109 // Member does not hide an inherited member; new keyword is not required
     {
-        get => (object)GetValue(DescriptionProperty);
+        get => GetValue(DescriptionProperty);
         set => SetValue(DescriptionProperty, value);
     }
 
@@ -107,7 +105,7 @@ public partial class SettingsExpander
     /// </summary>
     public object Content
     {
-        get => (object)GetValue(ContentProperty);
+        get => GetValue(ContentProperty);
         set => SetValue(ContentProperty, value);
     }
 

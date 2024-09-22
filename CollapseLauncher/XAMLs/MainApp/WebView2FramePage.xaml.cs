@@ -8,7 +8,8 @@ using System.Diagnostics;
 using System.IO;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable PartialTypeWithSinglePart
 namespace CollapseLauncher
 {
     public sealed partial class WebView2FramePage : Page

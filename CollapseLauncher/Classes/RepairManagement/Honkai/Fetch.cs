@@ -241,12 +241,12 @@ namespace CollapseLauncher
         private HonkaiRepairAssetIgnore GetIgnoredAssetsProperty()
         {
             // Try get the parent registry key
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(_gameVersionManager!.GamePreset!.ConfigRegistryLocation!);
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(_gameVersionManager!.GamePreset!.ConfigRegistryLocation);
             if (keys == null) return HonkaiRepairAssetIgnore.CreateEmpty(); // Return an empty property if the parent key doesn't exist
 
             // Initialize the property
-            AudioPCKType[] IgnoredAudioPCKTypes = Array.Empty<AudioPCKType>();
-            int[] IgnoredVideoCGSubCategory = Array.Empty<int>();
+            AudioPCKType[] IgnoredAudioPCKTypes      = [];
+            int[]          IgnoredVideoCGSubCategory = [];
 
             // Try get the values of the registry key of the Audio ignored list
             object? objIgnoredAudioPCKTypes = keys.GetValue("GENERAL_DATA_V2_DeletedAudioTypes_h214176984");
@@ -652,10 +652,10 @@ namespace CollapseLauncher
                 }
 
                 // Download the platform XMF file if exist
-                if (!_isOnlyRecoverMain && isPlatformXMFStreamExist)
+                if (!_isOnlyRecoverMain)
                 {
                     // Create the filestream
-                    using FileStream fsMeta = new FileStream(EnsureCreationOfDirectory(xmfPlatformPath), FileMode.Create, FileAccess.Write);
+                    await using FileStream fsMeta = new FileStream(EnsureCreationOfDirectory(xmfPlatformPath), FileMode.Create, FileAccess.Write);
 
                     // Download the platform XMF (RAW) into FileStream
                     await DoCopyStreamProgress(metaBaseXMFStream, fsMeta, token);
@@ -666,16 +666,13 @@ namespace CollapseLauncher
                 }
 
                 // Fetch for PatchConfig.xmf file if available (Block patch metadata)
-                if (!_isOnlyRecoverMain && isPatchConfigXMFStreamExist && isPlatformXMFStreamExist)
+                if (!_isOnlyRecoverMain && isPatchConfigXMFStreamExist)
                 {
                     patchConfigInfo = await FetchPatchConfigXMFFile(isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, patchConfigIdentifier, _httpClient, token);
                 }
 
-                if (isPlatformXMFStreamExist)
-                {
-                    // After all completed, then Deserialize the XMF to build the asset index
-                    BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, !isEitherXMFExist);
-                }
+                // After all completed, then Deserialize the XMF to build the asset index
+                BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, !isEitherXMFExist);
             }
 
         #nullable restore
@@ -683,25 +680,21 @@ namespace CollapseLauncher
 
         // ReSharper disable once UnusedParameter.Local
         private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Stream xmfStream, SenadinaFileIdentifier patchConfigFileIdentifier, 
-                                                                       HttpClient _httpClient, CancellationToken token)
+                                                                       HttpClient httpClient, CancellationToken token)
         {
             // Start downloading XMF and load it to MemoryStream first
-            using (MemoryStream mfs = new MemoryStream())
-            {
-                // Copy the remote stream of Patch Config to temporal mfs
-                await patchConfigFileIdentifier!.fileStream!.CopyToAsync(mfs, token);
-                // Reset the MemoryStream position
-                mfs.Position = 0;
+            using MemoryStream mfs = new MemoryStream();
+            // Copy the remote stream of Patch Config to temporal mfs
+            await patchConfigFileIdentifier!.fileStream!.CopyToAsync(mfs, token);
+            // Reset the MemoryStream position
+            mfs.Position = 0;
 
-#nullable enable
-                // Get the version provided by the XMF
-                int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
-                if (gameVersion == null) return null;
-#nullable disable
-
-                // Initialize and parse the manifest, then return the Patch Asset
-                return new BlockPatchManifest(mfs, gameVersion);
-            }
+        #nullable enable
+            // Get the version provided by the XMF
+            int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
+            // Initialize and parse the manifest, then return the Patch Asset
+            return gameVersion == null ? null : new BlockPatchManifest(mfs, gameVersion);
+        #nullable restore
         }
 
 #nullable enable

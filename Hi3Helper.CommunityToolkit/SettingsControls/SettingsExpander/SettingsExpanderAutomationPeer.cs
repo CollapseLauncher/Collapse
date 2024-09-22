@@ -28,7 +28,7 @@ public partial class SettingsExpanderAutomationPeer : FrameworkElementAutomation
     }
 
     /// <summary>
-    /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType,
+    /// Called by GetClassName that gets a human-readable name that, in addition to AutomationControlType,
     /// differentiates the control represented by this AutomationPeer.
     /// </summary>
     /// <returns>The string that contains the name.</returns>
@@ -65,11 +65,11 @@ public partial class SettingsExpanderAutomationPeer : FrameworkElementAutomation
     /// <param name="newValue">New Expanded state</param>
     public void RaiseExpandedChangedEvent(bool newValue)
     {
-        ExpandCollapseState newState = (newValue == true) ?
+        ExpandCollapseState newState = newValue ?
           ExpandCollapseState.Expanded :
           ExpandCollapseState.Collapsed;
 
-        ExpandCollapseState oldState = (newState == ExpandCollapseState.Expanded) ?
+        ExpandCollapseState oldState = newState == ExpandCollapseState.Expanded ?
           ExpandCollapseState.Collapsed :
           ExpandCollapseState.Expanded;
 

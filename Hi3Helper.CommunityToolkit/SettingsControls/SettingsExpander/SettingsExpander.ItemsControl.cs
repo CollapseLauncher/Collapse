@@ -18,7 +18,7 @@ public partial class SettingsExpander
 
     public object ItemsSource
     {
-        get { return (object)GetValue(ItemsSourceProperty); }
+        get { return GetValue(ItemsSourceProperty); }
         set { SetValue(ItemsSourceProperty, value); }
     }
 
@@ -27,7 +27,7 @@ public partial class SettingsExpander
 
     public object ItemTemplate
     {
-        get { return (object)GetValue(ItemTemplateProperty); }
+        get { return GetValue(ItemTemplateProperty); }
         set { SetValue(ItemTemplateProperty, value); }
     }
 
@@ -45,24 +45,21 @@ public partial class SettingsExpander
 
     private static void OnItemsConnectedPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
     {
-        if (dependencyObject is SettingsExpander expander && expander._itemsRepeater is not null)
+        if (dependencyObject is not SettingsExpander { _itemsRepeater: not null } expander)
         {
-            var datasource = expander.ItemsSource;
-
-            if (datasource is null)
-            {
-                datasource = expander.Items;
-            }
-
-            expander._itemsRepeater.ItemsSource = datasource;
+            return;
         }
+
+        var datasource = expander.ItemsSource ?? expander.Items;
+
+        expander._itemsRepeater.ItemsSource = datasource;
     }
 
     private void ItemsRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
     {
         if (ItemContainerStyleSelector != null &&
             args.Element is FrameworkElement element &&
-            element.ReadLocalValue(FrameworkElement.StyleProperty) == DependencyProperty.UnsetValue)
+            element.ReadLocalValue(StyleProperty) == DependencyProperty.UnsetValue)
         {
             // TODO: Get item from args.Index?
             element.Style = ItemContainerStyleSelector.SelectStyle(null, element);

@@ -54,7 +54,7 @@ public partial class ImageCropper
         }
 
         // WinUI3/Win2D bug: switch back to CanvasBitmap once it works.
-        CanvasVirtualBitmap? sourceBitmap = null;
+        CanvasVirtualBitmap? sourceBitmap;
         using (var randomAccessStream = new InMemoryRandomAccessStream())
         {
             await CropImageAsync(writeableBitmap, randomAccessStream, croppedRect, bitmapFileFormat);
@@ -64,21 +64,21 @@ public partial class ImageCropper
         using (var offScreen = new CanvasRenderTarget(device, (float)croppedRect.Width, (float)croppedRect.Height, 96f))
         {
             using (var drawingSession = offScreen.CreateDrawingSession())
-            using (var markCommandList = new CanvasCommandList(device))
-            {
-                using (var markDrawingSession = markCommandList.CreateDrawingSession())
+                using (var markCommandList = new CanvasCommandList(device))
                 {
-                    markDrawingSession.FillGeometry(clipGeometry, Colors.Black);
-                }
+                    using (var markDrawingSession = markCommandList.CreateDrawingSession())
+                    {
+                        markDrawingSession.FillGeometry(clipGeometry, Colors.Black);
+                    }
 
-                var alphaMaskEffect = new AlphaMaskEffect
-                {
-                    Source = sourceBitmap,
-                    AlphaMask = markCommandList
-                };
-                drawingSession.DrawImage(alphaMaskEffect);
-                alphaMaskEffect.Dispose();
-            }
+                    var alphaMaskEffect = new AlphaMaskEffect
+                    {
+                        Source    = sourceBitmap,
+                        AlphaMask = markCommandList
+                    };
+                    drawingSession.DrawImage(alphaMaskEffect);
+                    alphaMaskEffect.Dispose();
+                }
 
             clipGeometry.Dispose();
             sourceBitmap.Dispose();
@@ -100,31 +100,23 @@ public partial class ImageCropper
                 var radiusY = croppedSize.Height / 2;
                 var center = new Point(radiusX, radiusY);
                 return CanvasGeometry.CreateEllipse(resourceCreator, center.ToVector2(), (float)radiusX, (float)radiusY);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(cropShape), cropShape, null);
         }
 
         return null;
     }
 
-    private static Guid GetEncoderId(BitmapFileFormat bitmapFileFormat)
-    {
-        switch (bitmapFileFormat)
-        {
-            case BitmapFileFormat.Bmp:
-                return BitmapEncoder.BmpEncoderId;
-            case BitmapFileFormat.Png:
-                return BitmapEncoder.PngEncoderId;
-            case BitmapFileFormat.Jpeg:
-                return BitmapEncoder.JpegEncoderId;
-            case BitmapFileFormat.Tiff:
-                return BitmapEncoder.TiffEncoderId;
-            case BitmapFileFormat.Gif:
-                return BitmapEncoder.GifEncoderId;
-            case BitmapFileFormat.JpegXR:
-                return BitmapEncoder.JpegXREncoderId;
-        }
-
-        return BitmapEncoder.PngEncoderId;
-    }
+    private static Guid GetEncoderId(BitmapFileFormat bitmapFileFormat) => bitmapFileFormat switch
+               {
+                   BitmapFileFormat.Bmp => BitmapEncoder.BmpEncoderId,
+                   BitmapFileFormat.Png => BitmapEncoder.PngEncoderId,
+                   BitmapFileFormat.Jpeg => BitmapEncoder.JpegEncoderId,
+                   BitmapFileFormat.Tiff => BitmapEncoder.TiffEncoderId,
+                   BitmapFileFormat.Gif => BitmapEncoder.GifEncoderId,
+                   BitmapFileFormat.JpegXR => BitmapEncoder.JpegXREncoderId,
+                   _ => BitmapEncoder.PngEncoderId
+               };
 
     /// <summary>
     /// Gets the closest point in the rectangle to a given point.
@@ -193,8 +185,8 @@ public partial class ImageCropper
     /// <summary>
     /// Determines whether a rectangle satisfies the minimum size limit.
     /// </summary>
-    /// <param name="startPoint">The point on the upper left corner.</param>
-    /// <param name="endPoint">The point on the lower right corner.</param>
+    /// <param name="startPoint">The point in the upper left corner.</param>
+    /// <param name="endPoint">The point in the lower right corner.</param>
     /// <param name="minSize">The minimum size.</param>
     /// <returns>bool</returns>
     private static bool IsSafeRect(Point startPoint, Point endPoint, Size minSize)
@@ -207,8 +199,8 @@ public partial class ImageCropper
     /// <summary>
     /// Gets a rectangle with a minimum size limit.
     /// </summary>
-    /// <param name="startPoint">The point on the upper left corner.</param>
-    /// <param name="endPoint">The point on the lower right corner.</param>
+    /// <param name="startPoint">The point in the upper left corner.</param>
+    /// <param name="endPoint">The point in the lower right corner.</param>
     /// <param name="minSize">The minimum size.</param>
     /// <param name="position">The control point.</param>
     /// <returns>The right rectangle.</returns>
@@ -293,6 +285,8 @@ public partial class ImageCropper
                 }
 
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(position), position, null);
         }
 
         return startPoint.ToRect(endPoint);
@@ -326,15 +320,15 @@ public partial class ImageCropper
 
     private static bool IsValidRect(Rect targetRect)
     {
-        return !targetRect.IsEmpty && targetRect.Width > 0 && targetRect.Height > 0;
+        return targetRect is { IsEmpty: false, Width: > 0, Height: > 0 };
     }
 
     private static Point GetSafeSizeChangeWhenKeepAspectRatio(Rect targetRect, ThumbPosition thumbPosition, Rect selectedRect, Point originSizeChange, double aspectRatio)
     {
-        var safeWidthChange = originSizeChange.X;
-        var safeHeightChange = originSizeChange.Y;
-        var maxWidthChange = 0d;
-        var maxHeightChange = 0d;
+        var    safeWidthChange  = originSizeChange.X;
+        var    safeHeightChange = originSizeChange.Y;
+        double maxWidthChange;
+        double    maxHeightChange;
         switch (thumbPosition)
         {
             case ThumbPosition.Top:
@@ -369,6 +363,8 @@ public partial class ImageCropper
                 maxWidthChange = targetRect.Right - selectedRect.Right;
                 maxHeightChange = targetRect.Bottom - selectedRect.Bottom;
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(thumbPosition), thumbPosition, null);
         }
 
         if (originSizeChange.X > maxWidthChange)
@@ -377,18 +373,20 @@ public partial class ImageCropper
             safeHeightChange = safeWidthChange / aspectRatio;
         }
 
-        if (originSizeChange.Y > maxHeightChange)
+        if (!(originSizeChange.Y > maxHeightChange))
         {
-            safeHeightChange = maxHeightChange;
-            safeWidthChange = safeHeightChange * aspectRatio;
+            return new Point(safeWidthChange, safeHeightChange);
         }
+
+        safeHeightChange = maxHeightChange;
+        safeWidthChange  = safeHeightChange * aspectRatio;
 
         return new Point(safeWidthChange, safeHeightChange);
     }
 
     private static bool CanContains(Rect targetRect, Rect testRect)
     {
-        return (targetRect.Width - testRect.Width > -ThresholdValue) && (targetRect.Height - testRect.Height > -ThresholdValue);
+        return targetRect.Width - testRect.Width > -ThresholdValue && targetRect.Height - testRect.Height > -ThresholdValue;
     }
 
     private static bool TryGetContainedRect(Rect targetRect, ref Rect testRect)

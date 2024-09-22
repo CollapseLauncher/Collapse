@@ -59,7 +59,7 @@ public partial class SettingsCard : ButtonBase
     /// </summary>
     public SettingsCard()
     {
-        this.DefaultStyleKey = typeof(SettingsCard);
+        DefaultStyleKey = typeof(SettingsCard);
     }
 
     /// <inheritdoc />
@@ -84,9 +84,9 @@ public partial class SettingsCard : ButtonBase
 
         if (GetTemplateChild("ContentAlignmentStates") is VisualStateGroup contentAlignmentStatesGroup)
         {
-            contentAlignmentStatesGroup.CurrentStateChanged -= this.ContentAlignmentStates_Changed;
+            contentAlignmentStatesGroup.CurrentStateChanged -= ContentAlignmentStates_Changed;
             CheckVerticalSpacingState(contentAlignmentStatesGroup.CurrentState);
-            contentAlignmentStatesGroup.CurrentStateChanged += this.ContentAlignmentStates_Changed;
+            contentAlignmentStatesGroup.CurrentStateChanged += ContentAlignmentStates_Changed;
         }
     }
 
@@ -129,7 +129,7 @@ public partial class SettingsCard : ButtonBase
 
     private void Control_PreviewKeyUp(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Space || e.Key == Windows.System.VirtualKey.GamepadA)
+        if (e.Key == VirtualKey.Enter || e.Key == VirtualKey.Space || e.Key == VirtualKey.GamepadA)
         {
             VisualStateManager.GoToState(this, NormalState, true);
         }
@@ -137,7 +137,7 @@ public partial class SettingsCard : ButtonBase
 
     private void Control_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Space || e.Key == Windows.System.VirtualKey.GamepadA)
+        if (e.Key == VirtualKey.Enter || e.Key == VirtualKey.Space || e.Key == VirtualKey.GamepadA)
         {
             // Check if the active focus is on the card itself - only then we show the pressed state.
             if (GetFocusedElement() is SettingsCard)
@@ -194,10 +194,7 @@ public partial class SettingsCard : ButtonBase
     /// Creates AutomationPeer
     /// </summary>
     /// <returns>An automation peer for <see cref="SettingsCard"/>.</returns>
-    protected override AutomationPeer OnCreateAutomationPeer()
-    {
-        return new SettingsCardAutomationPeer(this);
-    }
+    protected override AutomationPeer OnCreateAutomationPeer() => new SettingsCardAutomationPeer(this);
 
     private void OnIsClickEnabledChanged()
     {
@@ -264,10 +261,7 @@ public partial class SettingsCard : ButtonBase
        
     }
 
-    private void ContentAlignmentStates_Changed(object sender, VisualStateChangedEventArgs e)
-    {
-        CheckVerticalSpacingState(e.NewState);
-    }
+    private void ContentAlignmentStates_Changed(object sender, VisualStateChangedEventArgs e) => CheckVerticalSpacingState(e.NewState);
 
     private void CheckVerticalSpacingState(VisualState s)
     {
@@ -289,24 +283,10 @@ public partial class SettingsCard : ButtonBase
         {
             return FocusManager.GetFocusedElement(XamlRoot) as FrameworkElement;
         }
-        else
-        {
-            return FocusManager.GetFocusedElement() as FrameworkElement;
-        }
+
+        return FocusManager.GetFocusedElement() as FrameworkElement;
     }
 
-    private static bool IsNullOrEmptyString(object obj)
-    {
-        if (obj == null)
-        {
-            return true;
-        }
-
-        if (obj is string objString && objString == string.Empty)
-        {
-            return true;
-        }
-
-        return false;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsNullOrEmptyString(object obj) => obj is string objString && string.IsNullOrEmpty(objString);
 }

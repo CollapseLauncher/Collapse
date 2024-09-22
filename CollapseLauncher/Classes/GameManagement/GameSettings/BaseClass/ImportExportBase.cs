@@ -481,7 +481,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             int leng = reader.ReadInt32();
             byte[] val = new byte[leng];
-            reader.Read(val, 0, leng);
+            _ = reader.Read(val, 0, leng);
             RegistryRoot?.SetValue(valueName, val, RegistryValueKind.Binary);
         }
     }

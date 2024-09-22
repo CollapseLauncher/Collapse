@@ -5,5 +5,5 @@
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 internal static class ControlHelpers
 {
-    internal static bool IsXamlRootAvailable { get; } = Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", "XamlRoot");
+    internal static bool IsXamlRootAvailable { get; } = Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.UIElement", nameof(UIElement.XamlRoot));
 }

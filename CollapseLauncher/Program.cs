@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml;
 #if !USEVELOPACK
 using Squirrel;
 #else
-using Hi3Helper.Shared.Region;
 using NuGet.Versioning;
 using Velopack;
 #endif
@@ -244,7 +243,7 @@ public static class MainEntryPoint
 #if USEVELOPACK
     public static void TryCleanupFallbackUpdate(SemanticVersion newVersion)
     {
-        string currentExecutedAppFolder = LauncherConfig.AppFolder.TrimEnd('\\');
+        string currentExecutedAppFolder = AppFolder.TrimEnd('\\');
 
         // If the path is not actually running under "current" velopack folder, then return
         if (!currentExecutedAppFolder.EndsWith("current", StringComparison.OrdinalIgnoreCase)) // Expecting "current"
@@ -266,31 +265,28 @@ public static class MainEntryPoint
                     childLegacyAppSemVerFolder.Delete(true);
                     Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!", LogType.Default, true);
                 }
-            }
 
-            // Try to remove squirrel temp clowd folder
-            if (currentExecutedParentFolder != null)
-            {
-                string        squirrelTempPackagesFolder     = Path.Combine(currentExecutedParentFolder, "SquirrelClowdTemp");
+                // Try to remove squirrel temp clowd folder
+                string squirrelTempPackagesFolder = Path.Combine(currentExecutedParentFolder, "SquirrelClowdTemp");
                 DirectoryInfo squirrelTempPackagesFolderInfo = new DirectoryInfo(squirrelTempPackagesFolder);
                 if (squirrelTempPackagesFolderInfo.Exists)
                 {
                     squirrelTempPackagesFolderInfo.Delete(true);
                     Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed package temp folder: {squirrelTempPackagesFolder}!", LogType.Default, true);
                 }
+
+                // Try to remove stub executable
+                string squirrelLegacyStubPath = Path.Combine(currentExecutedParentFolder, "CollapseLauncher.exe");
+                RemoveSquirrelFilePath(squirrelLegacyStubPath);
+
+                // Try to remove createdump executable
+                string squirrelLegacyDumpPath = Path.Combine(currentExecutedParentFolder, "createdump.exe");
+                RemoveSquirrelFilePath(squirrelLegacyDumpPath);
+
+                // Try to remove RestartAgent executable
+                string squirrelLegacyRestartAgentPath = Path.Combine(currentExecutedParentFolder, "RestartAgent.exe");
+                RemoveSquirrelFilePath(squirrelLegacyRestartAgentPath);
             }
-
-            // Try to remove stub executable
-            string squirrelLegacyStubPath = Path.Combine(currentExecutedParentFolder, "CollapseLauncher.exe");
-            RemoveSquirrelFilePath(squirrelLegacyStubPath);
-
-            // Try to remove createdump executable
-            string squirrelLegacyDumpPath = Path.Combine(currentExecutedParentFolder, "createdump.exe");
-            RemoveSquirrelFilePath(squirrelLegacyDumpPath);
-
-            // Try to remove RestartAgent executable
-            string squirrelLegacyRestartAgentPath = Path.Combine(currentExecutedParentFolder, "RestartAgent.exe");
-            RemoveSquirrelFilePath(squirrelLegacyRestartAgentPath);
 
             // Try to remove legacy shortcuts
             string currentWindowsPathDrive = Path.GetPathRoot(Environment.SystemDirectory);

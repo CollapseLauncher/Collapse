@@ -4,6 +4,7 @@
 
 #if WINAPPSDK
 using Path = Microsoft.UI.Xaml.Shapes.Path;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 #else
 using Windows.UI.Xaml.Media.Imaging;
 using Path = Windows.UI.Xaml.Shapes.Path;

@@ -28,14 +28,14 @@ public partial class ImageBlendBrush : XamlCompositionBrushBase
     /// </summary>
     public Uri SourceUri
     {
-        get => (Uri)GetValue(SourceProperty);
-        set => SetValue(SourceProperty, value);
+        get => (Uri)GetValue(SourceUriProperty);
+        set => SetValue(SourceUriProperty, value);
     }
 
     /// <summary>
-    /// Identifies the <see cref="Source"/> dependency property.
+    /// Identifies the <see cref="SourceUri"/> dependency property.
     /// </summary>
-    public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(
+    public static readonly DependencyProperty SourceUriProperty = DependencyProperty.Register(
         nameof(SourceUri),
         typeof(Uri), // We use ImageSource type so XAML engine will automatically construct proper object from String.
         typeof(ImageBlendBrush),
@@ -131,48 +131,50 @@ public partial class ImageBlendBrush : XamlCompositionBrushBase
 #endif
 
         // Delay creating composition resources until they're required.
-        if (CompositionBrush == null && SourceUri != null && SourceUri is Uri bitmapUri)
+        if (CompositionBrush != null || SourceUri == null || SourceUri is not { } bitmapUri)
         {
-            // Use LoadedImageSurface API to get ICompositionSurface from image uri provided
-            // If UriSource is invalid, StartLoadFromUri will return a blank texture.
-            _surface = LoadedImageSurface.StartLoadFromUri(bitmapUri);
-
-            // Load Surface onto SurfaceBrush
-            _surfaceBrush = compositor.CreateSurfaceBrush(_surface);
-            _surfaceBrush.Stretch = CompositionStretchFromStretch(Stretch);
-
-#if WINUI2
-            var compositionCapabilities = CompositionCapabilities.GetForCurrentView();
-#else
-            var compositionCapabilities = new CompositionCapabilities();
-#endif
-            // Abort if effects aren't supported.
-            if (!compositionCapabilities.AreEffectsSupported())
-            {
-                // Just use image straight-up, if we don't support effects.
-                CompositionBrush = _surfaceBrush;
-                return;
-            }
-
-            var backdrop = compositor.CreateBackdropBrush();
-
-            // Use a Win2D invert affect applied to a CompositionBackdropBrush.
-            var graphicsEffect = new CanvasBlendEffect
-            {
-                Name = "Invert",
-                Mode = (BlendEffectMode)(int)Mode,
-                Background = new CompositionEffectSourceParameter("backdrop"),
-                Foreground = new CompositionEffectSourceParameter("image")
-            };
-
-            var effectFactory = compositor.CreateEffectFactory(graphicsEffect);
-            var effectBrush = effectFactory.CreateBrush();
-
-            effectBrush.SetSourceParameter("backdrop", backdrop);
-            effectBrush.SetSourceParameter("image", _surfaceBrush);
-
-            CompositionBrush = effectBrush;
+            return;
         }
+
+        // Use LoadedImageSurface API to get ICompositionSurface from image uri provided
+        // If UriSource is invalid, StartLoadFromUri will return a blank texture.
+        _surface = LoadedImageSurface.StartLoadFromUri(bitmapUri);
+
+        // Load Surface onto SurfaceBrush
+        _surfaceBrush         = compositor.CreateSurfaceBrush(_surface);
+        _surfaceBrush.Stretch = CompositionStretchFromStretch(Stretch);
+
+    #if WINUI2
+        var compositionCapabilities = CompositionCapabilities.GetForCurrentView();
+    #else
+        var compositionCapabilities = new CompositionCapabilities();
+    #endif
+        // Abort if effects aren't supported.
+        if (!compositionCapabilities.AreEffectsSupported())
+        {
+            // Just use image straight-up, if we don't support effects.
+            CompositionBrush = _surfaceBrush;
+            return;
+        }
+
+        var backdrop = compositor.CreateBackdropBrush();
+
+        // Use a Win2D invert affect applied to a CompositionBackdropBrush.
+        var graphicsEffect = new CanvasBlendEffect
+        {
+            Name       = "Invert",
+            Mode       = (BlendEffectMode)(int)Mode,
+            Background = new CompositionEffectSourceParameter("backdrop"),
+            Foreground = new CompositionEffectSourceParameter("image")
+        };
+
+        var effectFactory = compositor.CreateEffectFactory(graphicsEffect);
+        var effectBrush   = effectFactory.CreateBrush();
+
+        effectBrush.SetSourceParameter("backdrop", backdrop);
+        effectBrush.SetSourceParameter("image",    _surfaceBrush);
+
+        CompositionBrush = effectBrush;
     }
 
     /// <inheritdoc/>
@@ -191,28 +193,22 @@ public partial class ImageBlendBrush : XamlCompositionBrushBase
             _surfaceBrush = null;
         }
 
-        if (_surface != null)
+        if (_surface == null)
         {
-            _surface.Dispose();
-            _surface = null;
+            return;
         }
+
+        _surface.Dispose();
+        _surface = null;
     }
 
     //// Helper to allow XAML developer to use XAML stretch property rather than another enum.
-    private static CompositionStretch CompositionStretchFromStretch(Stretch value)
-    {
-        switch (value)
-        {
-            case Stretch.None:
-                return CompositionStretch.None;
-            case Stretch.Fill:
-                return CompositionStretch.Fill;
-            case Stretch.Uniform:
-                return CompositionStretch.Uniform;
-            case Stretch.UniformToFill:
-                return CompositionStretch.UniformToFill;
-        }
-
-        return CompositionStretch.None;
-    }
+    private static CompositionStretch CompositionStretchFromStretch(Stretch value) => value switch
+               {
+                   Stretch.None => CompositionStretch.None,
+                   Stretch.Fill => CompositionStretch.Fill,
+                   Stretch.Uniform => CompositionStretch.Uniform,
+                   Stretch.UniformToFill => CompositionStretch.UniformToFill,
+                   _ => CompositionStretch.None
+               };
 }
