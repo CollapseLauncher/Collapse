@@ -49,11 +49,10 @@ jobs:
 
     - name: Build
       run: |
-        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\" -v detailed
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
           
     - name: Upload Artifact
       uses: actions/upload-artifact@v4.3.1
-      if: ${{ matrix.configuration == 'Release' }}
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/debug-build/
@@ -95,11 +94,10 @@ jobs:
 
     - name: Build
       run: |
-        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\" -v detailed
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
           
     - name: Upload Artifact
       uses: actions/upload-artifact@v4.3.1
-      if: ${{ matrix.configuration == 'Release' }}
       with:
           name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/debug-aot-build/
