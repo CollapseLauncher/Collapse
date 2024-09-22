@@ -1030,8 +1030,7 @@
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
-                    <FontIcon
-                        FontFamily="{ThemeResource FontAwesomeSolid}"
+                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="10"
                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                               Glyph="" />
