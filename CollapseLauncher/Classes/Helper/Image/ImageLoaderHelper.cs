@@ -419,6 +419,7 @@ namespace CollapseLauncher.Helper.Image
             }
 
             // If the prop doesn't exist, then return false to assume that the file doesn't exist
+            return false;
         }
 
         public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)

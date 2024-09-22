@@ -23,6 +23,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable CollectionNeverQueried.Local
+// ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -759,6 +762,9 @@ namespace CollapseLauncher.Pages.OOBE
             { "th", "th-th" },
             { "vi", "vi-vn" }
         };
+
+        private readonly ObservableCollection<string> LangList =
+            new(LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})"));
 
         private int SelectedLangIndex
         {

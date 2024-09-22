@@ -186,7 +186,7 @@
                                                Header="{x:Bind helper:Locale.Lang._OOBEStartUpMenu.CustomizationSettingsLanguageHeader}"
                                                HeaderIcon="{ui:FontIcon Glyph=&#xf57d;}">
                             <ComboBox x:Name="SelectLang"
-                                      ItemsSource="{x:Bind _langList}"
+                                      ItemsSource="{x:Bind LangList}"
                                       MaxDropDownHeight="200"
                                       SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
                                       SelectionChanged="FixComboBoxSize" />
