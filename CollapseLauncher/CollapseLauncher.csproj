@@ -26,6 +26,7 @@
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
         <IsAotCompatible>true</IsAotCompatible>
+        <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
         <!-- Debug Settings -->
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
