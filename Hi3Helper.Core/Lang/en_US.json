@@ -805,7 +805,7 @@
     "RepairCompletedSubtitle": "{0} file(s) have been repaired.",
     "RepairCompletedSubtitleNoBroken": "No broken files found.",
     "ExtremeGraphicsSettingsWarnTitle": "Very High Setting Preset Selected!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting preset to Very High!\r\nVery High setting preset is essentially a 2x Render Scale with MSAA Enabled and is VERY UNOPTIMIZED!\r\n\r\nAre you sure you want to use this setting?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting preset to Very High!\r\nVery High setting preset is essentially a 1.6x Render Scale with MSAA Enabled and is VERY UNOPTIMIZED!\r\n\r\nAre you sure you want to use this setting?",
     "MigrateExistingMoveDirectoryTitle": "Moving Existing Installation for: {0}",
     "MigrateExistingInstallChoiceTitle": "An Existing Installation of {0} is Detected!",
     "MigrateExistingInstallChoiceSubtitle1": "You have an existing installation of the game using {0} on this directory:",
