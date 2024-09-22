@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+// ReSharper disable RedundantExtendsListEntry
 // ReSharper disable PartialTypeWithSinglePart
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 

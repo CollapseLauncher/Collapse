@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable PartialTypeWithSinglePart
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 public partial class SettingsCard : ButtonBase

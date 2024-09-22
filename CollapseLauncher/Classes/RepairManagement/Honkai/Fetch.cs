@@ -694,10 +694,8 @@ namespace CollapseLauncher
             int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
             // Initialize and parse the manifest, then return the Patch Asset
             return gameVersion == null ? null : new BlockPatchManifest(mfs, gameVersion);
-        #nullable restore
         }
 
-#nullable enable
         private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream, bool isMeta)
         {
             // Reset the temporal stream pos.

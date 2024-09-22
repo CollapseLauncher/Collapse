@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable PartialTypeWithSinglePart
 #nullable enable
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
@@ -267,7 +269,7 @@ public partial class SettingsCard : ButtonBase
     {
         // On state change, checking if the Content should be wrapped (e.g. when the card is made smaller or the ContentAlignment is set to Vertical). If the Content and the Header or Description are not null, we add spacing between the Content and the Header/Description.
 
-        if (s != null && (s.Name == RightWrappedState || s.Name == RightWrappedNoIconState || s.Name == VerticalState) && (Content != null) && (!IsNullOrEmptyString(Header) || !IsNullOrEmptyString(Description)))
+        if (s != null && s.Name is RightWrappedState or RightWrappedNoIconState or VerticalState && Content != null && (!IsNullOrEmptyString(Header) || !IsNullOrEmptyString(Description)))
         {
             VisualStateManager.GoToState(this, ContentSpacingState, true);
         }

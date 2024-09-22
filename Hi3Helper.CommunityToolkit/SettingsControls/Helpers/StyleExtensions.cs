@@ -5,7 +5,7 @@
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 // Adapted from https://github.com/rudyhuyn/XamlPlus
-public static partial class StyleExtensions
+public static class StyleExtensions
 {
     // Used to distinct normal ResourceDictionary and the one we add.
     private sealed class StyleExtensionResourceDictionary : ResourceDictionary
