@@ -7,6 +7,13 @@
     <Platforms>x64</Platforms>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <DebugType>portable</DebugType>
+    <ProductName>Task Scheduler Shell</ProductName>
+    <Product>Task Scheduler Shell</Product>
+    <Description>Collapse Launcher's Task Scheduler Shell</Description>
+    <AssemblyTitle>Collapse Launcher's Task Scheduler Shell</AssemblyTitle>
+    <Company>Collapse Launcher Team</Company>
+    <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
+    <Copyright>Copyright 2022-2024 $(Company)</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
