@@ -179,7 +179,8 @@
                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" />
                             </StackPanel>
                         </Button>
-                        <SplitButton Grid.Column="0" x:Name="CheckUpdateBtn"
+                        <SplitButton x:Name="CheckUpdateBtn"
+                                     Grid.Column="0"
                                      HorizontalAlignment="Stretch"
                                      Click="StartCachesCheckSplitButton"
                                      CornerRadius="16"
@@ -213,7 +214,8 @@
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
                                                           Glyph="&#xf101;" />
-                                                <TextBlock Grid.Column="0" HorizontalAlignment="Left"
+                                                <TextBlock Grid.Column="0"
+                                                           HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" />
                                             </Grid>
@@ -235,7 +237,8 @@
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
                                                           Glyph="&#xf105;" />
-                                                <TextBlock Grid.Column="0" HorizontalAlignment="Left"
+                                                <TextBlock Grid.Column="0"
+                                                           HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}" />
                                             </Grid>

@@ -242,7 +242,8 @@
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
                                                           Glyph="&#xf101;" />
-                                                <TextBlock HorizontalAlignment="Left"
+                                                <TextBlock Grid.Column="0"
+                                                           HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" />
                                             </Grid>
@@ -264,7 +265,8 @@
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
                                                           Glyph="&#xf105;" />
-                                                <TextBlock HorizontalAlignment="Left"
+                                                <TextBlock Grid.Column="0"
+                                                           HorizontalAlignment="Left"
                                                            FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Full}" />
                                             </Grid>

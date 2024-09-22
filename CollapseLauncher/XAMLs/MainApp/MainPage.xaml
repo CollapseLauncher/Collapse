@@ -20,8 +20,7 @@
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundNewBackGrid" />
         <Grid x:Name="BackgroundNewMediaPlayerGrid">
-            <MediaPlayerElement
-                HorizontalAlignment="Center"
+            <MediaPlayerElement HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Stretch="UniformToFill"
                                 Tag="MediaPlayer" />
@@ -114,7 +113,8 @@
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGridShadow)}"
                               Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
-                        <Grid Grid.Column="0" x:Name="ComboBoxGameGrid"
+                        <Grid x:Name="ComboBoxGameGrid"
+                              Grid.Column="0"
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -288,7 +288,8 @@
                                                                     </AnimatedIcon.FallbackIconSource>
                                                                 </AnimatedIcon>
                                                             </Grid>
-                                                            <TextBlock Grid.Column="0" HorizontalAlignment="Left"
+                                                            <TextBlock Grid.Column="0"
+                                                                       HorizontalAlignment="Left"
                                                                        VerticalAlignment="Center"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />

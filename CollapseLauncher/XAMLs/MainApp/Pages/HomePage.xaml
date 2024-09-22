@@ -238,8 +238,9 @@
                                 </Grid>
                             </StackPanel>
                         </Grid>
-                        <Grid Grid.Column="0"
-                              Grid.Row="0" Grid.ColumnSpan="3"
+                        <Grid Grid.Row="0"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="3"
                               Margin="0,0,0,8"
                               HorizontalAlignment="Stretch"
                               ColumnSpacing="16">
@@ -266,7 +267,8 @@
                                            Text="%" />
                             </StackPanel>
                         </Grid>
-                        <Grid Grid.Row="0" Grid.Column="2"
+                        <Grid Grid.Row="0"
+                              Grid.Column="2"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom">
                             <StackPanel HorizontalAlignment="Stretch"
@@ -288,7 +290,8 @@
                             </StackPanel>
                         </Grid>
                         <ProgressBar Grid.Row="1"
-                                     Grid.ColumnSpan="3" Grid.Column="0"
+                                     Grid.Column="0"
+                                     Grid.ColumnSpan="3"
                                      Margin="0,8,0,24"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Bottom"
@@ -1309,8 +1312,7 @@
                             Spacing="4"
                             Translation="0,0,16"
                             Visibility="Visible">
-                    <FontIcon
-                        FontFamily="{ThemeResource FontAwesomeSolid}"
+                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="10"
                               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                               Glyph="" />
@@ -1489,7 +1491,8 @@
                                                   VerticalAlignment="Center"
                                                   FontSize="14"
                                                   Glyph="&#xE777;" />
-                                        <TextBlock Grid.Column="0" HorizontalAlignment="Left"
+                                        <TextBlock Grid.Column="0"
+                                                   HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
@@ -1512,7 +1515,8 @@
                                                   VerticalAlignment="Center"
                                                   FontSize="14"
                                                   Glyph="&#xE74D;" />
-                                        <TextBlock Grid.Column="0" HorizontalAlignment="Left"
+                                        <TextBlock Grid.Column="0"
+                                                   HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"
