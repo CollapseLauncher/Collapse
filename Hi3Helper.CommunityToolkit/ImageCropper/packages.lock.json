@@ -53,6 +53,12 @@
         "resolved": "2.1.3",
         "contentHash": "Nl8A4rQ4l2GNj703GvLSbr0Vo++FjxKxU7CIj1pcKz/sN8XSvD4dIvUCYYgD16o2pG4PSSXNgAxfwDUwLGHLPA=="
       },
+      "Microsoft.Windows.SDK.BuildTools": {
+        "type": "Direct",
+        "requested": "[10.0.26100.1742, )",
+        "resolved": "10.0.26100.1742",
+        "contentHash": "ypcHjr4KEi6xQhgClnbXoANHcyyX/QsC4Rky4igs6M4GiDa+weegPo8JuV/VMxqrZCV4zlqDsp2krgkN7ReAAg=="
+      },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
         "requested": "[1.6.240829007, )",
@@ -77,11 +83,6 @@
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
           "Microsoft.WindowsAppSDK": "1.5.240311000"
         }
-      },
-      "Microsoft.Windows.SDK.BuildTools": {
-        "type": "Transitive",
-        "resolved": "10.0.22621.756",
-        "contentHash": "7ZL2sFSioYm1Ry067Kw1hg0SCcW5kuVezC2SwjGbcPE61Nn+gTbH86T73G3LcEOVj0S3IZzNuE/29gZvOLS7VA=="
       }
     },
     "net9.0-windows10.0.22621/win-x64": {

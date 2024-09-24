@@ -30,6 +30,8 @@
         <!-- Debug Settings -->
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
+        <!-- AoT Configs -->
+        <PublishAot>false</PublishAot>
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -45,6 +47,10 @@
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+        <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
 
 <!--
@@ -83,7 +89,7 @@
 		Use Velopack if "USEVELOPACK" constant is used. Otherwise, use Squirrel.
 		-->
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
-		<PackageReference Include="Velopack" Version="0.0.594" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+		<PackageReference Include="Velopack" Version="0.0.626" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.3.2" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
@@ -107,7 +113,7 @@
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2783-prerelease" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.3" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240829007" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
