@@ -44,7 +44,7 @@
                 CornerRadius="0,8,8,0"
                 Opacity="0"
                 Shadow="{ThemeResource SharedShadow}"
-                Translation="0,0,16" />
+                Translation="-48,0,0" />
         <NavigationView x:Name="NavigationViewControl"
                         BackRequested="NavigationViewControl_BackRequested"
                         Background="Transparent"
@@ -412,6 +412,10 @@
                 </StackPanel>
             </StackPanel>
         </Button>
+        <Grid x:Name="NavViewPaneBackgroundHoverArea"
+              Width="48"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Stretch" />
         <Grid x:Name="NotificationLostFocusBackground"
               VerticalAlignment="Stretch"
               Opacity="0"

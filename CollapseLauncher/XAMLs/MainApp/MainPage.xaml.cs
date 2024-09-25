@@ -12,7 +12,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -21,6 +20,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -1316,6 +1316,57 @@ namespace CollapseLauncher
             {
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             }
+
+            InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            SetAllButtonsCursorHandRecursive(MainPageGrid, handCursor);
+        }
+
+        private void SetAllButtonsCursorHandRecursive(UIElement element, InputSystemCursor toCursor)
+        {
+            if (element == null)
+            {
+                return;
+            }    
+
+            if (element is Panel panelKind)
+            {
+                foreach (var panelElements in panelKind.Children)
+                {
+                    SetAllButtonsCursorHandRecursive(panelElements, toCursor);
+                }
+            }
+
+            if (element is Border borderKind)
+            {
+                SetAllButtonsCursorHandRecursive(borderKind.Child, toCursor);
+            }
+
+            if (element is NavigationView navigationViewKind)
+            {
+                foreach (UIElement navigationViewElements in navigationViewKind.FindDescendants())
+                {
+                    if (navigationViewElements is NavigationViewItem)
+                    {
+                        navigationViewElements.SetCursor(toCursor);
+                        continue;
+                    }
+                    SetAllButtonsCursorHandRecursive(navigationViewElements, toCursor);
+                }
+            }
+
+            if (element is ButtonBase buttonBaseKind)
+            {
+                buttonBaseKind.SetCursor(toCursor);
+                if (buttonBaseKind is Button buttonKind && buttonKind.Flyout != null && buttonKind.Flyout is Flyout buttonKindFlyout)
+                {
+                    SetAllButtonsCursorHandRecursive(buttonKindFlyout.Content, toCursor);
+                }
+            }
+
+            if (element.ContextFlyout != null && element.ContextFlyout is Flyout elementFlyoutKind)
+            {
+                SetAllButtonsCursorHandRecursive(elementFlyoutKind.Content, toCursor);
+            }
         }
 
         public static void AttachShadowNavigationPanelItem(FrameworkElement element)
@@ -1339,11 +1390,20 @@ namespace CollapseLauncher
                 }
             }
 
-            var paneRoot = (Grid)NavigationViewControl.FindDescendant("PaneRoot");
-            if (paneRoot != null)
+            NavViewPaneBackground.OpacityTransition = new ScalarTransition()
             {
-                paneRoot.PointerEntered += NavView_PanePointerEntered;
-                paneRoot.PointerExited  += NavView_PanePointerExited;
+                Duration = TimeSpan.FromMilliseconds(150)
+            };
+            NavViewPaneBackground.TranslationTransition = new Vector3Transition()
+            {
+                Duration = TimeSpan.FromMilliseconds(150)
+            };
+
+            var paneSplitView = NavigationViewControl.FindDescendant("RootSplitView");
+            if (paneSplitView is SplitView paneSplitViewAsSplitView)
+            {
+                paneSplitViewAsSplitView.Pane.PointerEntered += NavView_PanePointerEntered;
+                paneSplitViewAsSplitView.Pane.PointerExited  += NavView_PanePointerExited;
             }
 
             // The toggle button is not a part of pane. Why Microsoft!!!
@@ -1351,7 +1411,7 @@ namespace CollapseLauncher
             if (paneToggleButtonGrid != null)
             {
                 paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
-                paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
+                paneToggleButtonGrid.PointerExited  += NavView_PanePointerExited;
             }
 
             // var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
@@ -1361,8 +1421,12 @@ namespace CollapseLauncher
             toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
         }
 
-        private async void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
+        private void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            IsCursorInNavBarHoverArea = true;
+            NavViewPaneBackground.Opacity = 1;
+            NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+            /*
             if (!NavigationViewControl.IsPaneOpen)
             {
                 var duration = TimeSpan.FromSeconds(0.25);
@@ -1371,15 +1435,33 @@ namespace CollapseLauncher
                                                      .CreateScalarKeyFrameAnimation("Opacity", 1, current);
                 await NavViewPaneBackground.StartAnimation(duration, animation);
             }
+            */
         }
 
-        private async void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
+        private bool IsCursorInNavBarHoverArea;
+
+        private void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
         {
+            PointerPoint pointerPoint = e.GetCurrentPoint(NavViewPaneBackgroundHoverArea);
+            IsCursorInNavBarHoverArea = pointerPoint.Position.X <= NavViewPaneBackgroundHoverArea.Width - 8 && pointerPoint.Position.X > 1;
+            if (!IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
+            {
+                NavViewPaneBackground.Opacity = 0;
+                NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+            }
+
+            if (IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
+            {
+                NavViewPaneBackground.Opacity = 1;
+                NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+            }
+            /*
             var duration = TimeSpan.FromSeconds(0.25);
             var current = (float)NavViewPaneBackground.Opacity;
             var animation = NavViewPaneBackground.GetElementCompositor()!
                                                  .CreateScalarKeyFrameAnimation("Opacity", 0, current);
             await NavViewPaneBackground.StartAnimation(duration, animation);
+            */
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -1547,15 +1629,26 @@ namespace CollapseLauncher
             GridBG_Icon.Margin   = curMargin;
             IsTitleIconForceShow = true;
             ToggleTitleIcon(false);
+
+            NavViewPaneBackgroundHoverArea.Width = NavigationViewControl.OpenPaneLength;
         }
 
-        private void NavigationPanelClosing_Event(NavigationView sender, NavigationViewPaneClosingEventArgs args)
+        private async void NavigationPanelClosing_Event(NavigationView sender, NavigationViewPaneClosingEventArgs args)
         {
             Thickness curMargin = GridBG_Icon.Margin;
             curMargin.Left       = 58;
             GridBG_Icon.Margin   = curMargin;
             IsTitleIconForceShow = false;
             ToggleTitleIcon(true);
+
+            NavViewPaneBackgroundHoverArea.Width = NavViewPaneBackground.Width;
+
+            await Task.Delay(200);
+            if (!IsCursorInNavBarHoverArea)
+            {
+                NavViewPaneBackground.Opacity = 0;
+                NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+            }
         }
         #endregion
 

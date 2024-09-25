@@ -16,6 +16,19 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <!--  Custom controls styles  -->
+                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper/Themes/Generic.xaml" />
+                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls/Themes/Generic.xaml" />
+
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/RadioButton.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Slider.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/NavigationView_ThemeResource.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/ImageEx/ImageEx.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default">
@@ -39,7 +52,11 @@
                             <SolidColorBrush x:Key="SolidColorBrushBackgroundDisabled"
                                              Color="#11222222" />
                             <AcrylicBrush x:Key="AccentColorBrush"
-                                          TintColor="{ThemeResource SystemAccentColor}" />
+                                          FallbackColor="{ThemeResource SystemAccentColor}"
+                                          Opacity="0.8"
+                                          TintColor="{ThemeResource SystemAccentColor}"
+                                          TintLuminosityOpacity="0.8"
+                                          TintOpacity="0.2" />
                             <SolidColorBrush x:Key="AccentColor"
                                              Color="{ThemeResource SystemAccentColorLight2}" />
                             <SolidColorBrush x:Key="DefaultBGColorAccentBrush"
@@ -165,12 +182,18 @@
                                           TintLuminosityOpacity="0"
                                           TintOpacity="0.0" />
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground"
-                                          FallbackColor="#FF222222"
+                                          FallbackColor="#AA222222"
                                           TintColor="#222222"
-                                          TintLuminosityOpacity="0.70"
+                                          TintLuminosityOpacity="0.5"
                                           TintOpacity="0.0" />
                             <AcrylicBrush x:Key="NavigationViewUnfoldedPaneBackground"
                                           FallbackColor="#AA222222"
+                                          TintColor="#222222"
+                                          TintLuminosityOpacity="0.5"
+                                          TintOpacity="0.0" />
+                            <AcrylicBrush x:Key="NavigationViewUnfoldedTransparentPaneBackground"
+                                          FallbackColor="#AA222222"
+                                          Opacity="0"
                                           TintColor="#222222"
                                           TintLuminosityOpacity="0.5"
                                           TintOpacity="0.0" />
@@ -186,6 +209,8 @@
                                              Color="#11000000" />
                             <SolidColorBrush x:Key="NavigationViewButtonBackgroundDisabled"
                                              Color="#0A000000" />
+                            <SolidColorBrush x:Key="NavigationViewItemBackground"
+                                             Color="#00000000" />
                             <SolidColorBrush x:Key="NavigationViewItemBackgroundPointerOver"
                                              Color="#22000000" />
                             <SolidColorBrush x:Key="NavigationViewItemBackgroundPressed"
@@ -350,12 +375,25 @@
                                           TintLuminosityOpacity="0.30"
                                           TintOpacity="0.0" />
                             <!--  Window Caption Button Brush  -->
+                            <AcrylicBrush x:Key="WindowCaptionBackgroundAcrylicLight"
+                                          FallbackColor="#C0222222"
+                                          TintColor="#222222"
+                                          TintLuminosityOpacity="0.5"
+                                          TintOpacity="0.0" />
                             <SolidColorBrush x:Key="WindowCaptionBackground"
-                                             Color="#00FFFFFF" />
+                                             Color="#00000000" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled"
                                              Color="#00000000" />
+                            <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                             Color="#10FFFFFF" />
+                            <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPressed"
+                                             Color="#22222222" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClose"
-                                             Color="#00FF0000" />
+                                             Color="#A0C00000" />
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundClosePointerOver"
+                                             Color="#FFD00000" />
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundClosePressed"
+                                             Color="#A0B00000" />
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="Light">
                             <!--  For light theme  -->
@@ -378,7 +416,11 @@
                             <SolidColorBrush x:Key="SolidColorBrushBackgroundDisabled"
                                              Color="#11FFFFFF" />
                             <AcrylicBrush x:Key="AccentColorBrush"
-                                          TintColor="{ThemeResource SystemAccentColor}" />
+                                          FallbackColor="{ThemeResource SystemAccentColor}"
+                                          Opacity="0.8"
+                                          TintColor="{ThemeResource SystemAccentColor}"
+                                          TintLuminosityOpacity="0.8"
+                                          TintOpacity="0.2" />
                             <SolidColorBrush x:Key="AccentColor"
                                              Color="{ThemeResource SystemAccentColor}" />
                             <SolidColorBrush x:Key="DefaultBGColorAccentBrush"
@@ -426,10 +468,10 @@
                                           TintLuminosityOpacity="0.8"
                                           TintOpacity="0" />
                             <AcrylicBrush x:Key="BackgroundImageMaskAcrylicBrush"
-                                          FallbackColor="#EEEEEEEE"
+                                          FallbackColor="#E0EEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.7"
-                                          TintOpacity="0.0" />
+                                          TintLuminosityOpacity="0.9"
+                                          TintOpacity="0.4" />
                             <AcrylicBrush x:Key="PageBackgroundAcrylicBrush"
                                           FallbackColor="#FFEEEEEE"
                                           TintColor="#FFFFFF"
@@ -503,10 +545,16 @@
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground"
                                           FallbackColor="#FFEEEEEE"
                                           TintColor="#EEEEEE"
-                                          TintLuminosityOpacity="0.6"
+                                          TintLuminosityOpacity="0.9"
                                           TintOpacity="0.0" />
                             <AcrylicBrush x:Key="NavigationViewUnfoldedPaneBackground"
                                           FallbackColor="#D0EEEEEE"
+                                          TintColor="#EEEEEE"
+                                          TintLuminosityOpacity="0.9"
+                                          TintOpacity="0.0" />
+                            <AcrylicBrush x:Key="NavigationViewUnfoldedTransparentPaneBackground"
+                                          FallbackColor="#D0EEEEEE"
+                                          Opacity="0"
                                           TintColor="#EEEEEE"
                                           TintLuminosityOpacity="0.6"
                                           TintOpacity="0.0" />
@@ -682,12 +730,25 @@
                                           TintLuminosityOpacity="0.80"
                                           TintOpacity="0.0" />
                             <!--  Window Caption Button Brush  -->
+                            <AcrylicBrush x:Key="WindowCaptionBackgroundAcrylicLight"
+                                          FallbackColor="#88FFFFFF"
+                                          TintColor="#FFFFFF"
+                                          TintLuminosityOpacity="0.5"
+                                          TintOpacity="0.0" />
                             <SolidColorBrush x:Key="WindowCaptionBackground"
-                                             Color="#00000000" />
+                                             Color="#00FFFFFF" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled"
-                                             Color="#00000000" />
+                                             Color="#00FFFFFF" />
+                            <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                             Color="#A0FFFFFF" />
+                            <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPressed"
+                                             Color="#40FFFFFF" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClose"
-                                             Color="#00FF0000" />
+                                             Color="#90FF6666" />
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundClosePointerOver"
+                                             Color="#C0FF0000" />
+                            <SolidColorBrush x:Key="WindowCaptionBackgroundClosePressed"
+                                             Color="#90FF2222" />
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
                     <!--  Navigation title-bar border thickness  -->
@@ -4957,18 +5018,6 @@
                         </Setter>
                     </Style>
                 </ResourceDictionary>
-                <!--  Custom controls styles  -->
-                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper/Themes/Generic.xaml" />
-                <ResourceDictionary Source="ms-appx:///Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls/Themes/Generic.xaml" />
-
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogOverlay.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/RadioButton.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/Slider.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/ImageEx/ImageEx.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/DataTable/DataColumn.xaml" />
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/CustomControls/CommunityToolkit.Labs/MarkdownTextBlock/MarkdownTextBlock.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <!--  Font families  -->
             <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
