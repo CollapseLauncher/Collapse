@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
+
 #if !USEVELOPACK
 using System.Text;
 using Squirrel.Sources;
@@ -280,7 +281,7 @@ namespace CollapseLauncher
             }
         }
 
-        public static async ValueTask<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
+        public static async Task<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
         {
             // Get the preferred CDN first and try get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
@@ -319,7 +320,7 @@ namespace CollapseLauncher
             outputStream.Position = 0;
         }
 
-        private static async ValueTask<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
+        private static async Task<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
         {
             try
             {
@@ -502,7 +503,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static async Task<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, Http httpInstance, string relativeURL, CancellationToken token)
+        private static async ValueTask<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, Http httpInstance, string relativeURL, CancellationToken token)
         {
             // Concat the URL Prefix and Relative URL
             string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
@@ -523,7 +524,7 @@ namespace CollapseLauncher
             return (true, absoluteURL);
         }
 
-        private static async Task<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, DownloadClient downloadClient, string relativeURL, CancellationToken token)
+        private static async ValueTask<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, DownloadClient downloadClient, string relativeURL, CancellationToken token)
         {
             // Concat the URL Prefix and Relative URL
             string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
@@ -589,19 +590,13 @@ namespace CollapseLauncher
         public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token)
             => (T)await _client.GetFromJsonAsync(URL, typeof(T), context, token) ?? default;
 
-        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
-        {
-            return isForceUncompressRequest ? await _clientNoCompression.GetURLHttpResponse(URL, HttpMethod.Get, token)
+        public static async Task<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
+            => isForceUncompressRequest ? await _clientNoCompression.GetURLHttpResponse(URL, HttpMethod.Get, token)
                                             : await _client.GetURLHttpResponse(URL, HttpMethod.Get, token);
-        }
 
 #nullable enable
-        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(this HttpClient client, string url, HttpMethod? httpMethod = null, CancellationToken token = default)
-        {
-            httpMethod ??= HttpMethod.Get;
-            using HttpRequestMessage requestMsg = new HttpRequestMessage(httpMethod, url);
-            return await client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
-        }
+        public static async Task<HttpResponseMessage> GetURLHttpResponse(this HttpClient client, string url, HttpMethod? httpMethod = null, CancellationToken token = default)
+            => await client.GetAsync(url, token);
 
         public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
              => await _client.GetURLStatusCode(URL, token);
@@ -613,13 +608,13 @@ namespace CollapseLauncher
         }
 #nullable restore
 
-        public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
+        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
             HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
-        public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
+        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
             => await BridgedNetworkStream.CreateStream(responseMsg, token);
 
         public static async ValueTask<long[]> GetCDNLatencies(CancellationTokenSource tokenSource, int pingCount = 1)
