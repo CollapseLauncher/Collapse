@@ -1310,8 +1310,14 @@ namespace CollapseLauncher
                 _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
             }
 
-            foreach (var deps in NavigationViewControl.FindDescendants())
+            foreach (var deps in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
             {
+                // Avoid any icons to have shadow attached if it's not from this page
+                if (deps.BaseUri.AbsolutePath != this.BaseUri.AbsolutePath)
+                {
+                    continue;
+                }
+
                 if (deps is FontIcon icon)
                     AttachShadowNavigationPanelItem(icon);
                 if (deps is AnimatedIcon animIcon)
