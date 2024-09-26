@@ -347,6 +347,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("DownloadChunkSize", value);
         }
 
+        public static bool IsEnforceToUse7zipOnExtract
+        {
+            get => GetAppConfigValue("EnforceToUse7zipOnExtract").ToBool();
+            set => SetAndSaveConfigValue("EnforceToUse7zipOnExtract", value);
+        }
+
         private static long _downloadSpeedLimitCached = 0; // Default: 0 == Unlimited
         public static long DownloadSpeedLimitCached
         {
@@ -440,6 +446,8 @@ namespace Hi3Helper.Shared.Region
             { "SophonCpuThread", 0},
             { "SophonHttpConnInt", 0},
             { "SophonPreloadApplyPerfMode", false },
+
+            { "EnforceToUse7zipOnExtract", false },
 
             { "IsUseProxy", false },
             { "IsAllowHttpRedirections", true },

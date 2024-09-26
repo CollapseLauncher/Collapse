@@ -1290,6 +1290,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsEnforceToUse7zipOnExtract
+        {
+            get => LauncherConfig.IsEnforceToUse7zipOnExtract;
+            set => LauncherConfig.IsEnforceToUse7zipOnExtract = value;
+        }
+
         private double DownloadSpeedLimit
         {
             get

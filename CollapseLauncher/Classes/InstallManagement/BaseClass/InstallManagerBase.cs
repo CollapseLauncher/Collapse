@@ -1513,9 +1513,13 @@ namespace CollapseLauncher.InstallManager.Base
                 // Assign extractor
             #if USENEWZIPDECOMPRESS
                 InstallPackageExtractorDelegate installTaskDelegate;
-                if ((asset!.PathOutput.EndsWith(".zip",        StringComparison.OrdinalIgnoreCase)
-                     || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
-                    && !_isAllowExtractCorruptZip)
+                if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+                {
+                    installTaskDelegate = ExtractUsing7zip;
+                }
+                else if ((asset!.PathOutput.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                       || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
+                       && !_isAllowExtractCorruptZip)
                 {
                     installTaskDelegate = ExtractUsingNativeZip;
                 }
