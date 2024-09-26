@@ -208,30 +208,29 @@ namespace CollapseLauncher
         #region Invokers
         private void UpdateBindingsEvent(object sender, EventArgs e)
         {
-            NavigationViewControl.MenuItems.Clear();
-            NavigationViewControl.FooterMenuItems.Clear();
-            Bindings.Update();
-            UpdateLayout();
-
             // Find the last selected category/title and region
             string lastName = LauncherMetadataHelper.CurrentMetadataConfigGameName;
             string lastRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
 
-            #nullable enable
+#nullable enable
+            NavigationViewControl?.ApplyNavigationViewItemLocaleTextBindings();
+
             List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
             List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!)!;
 
             int indexOfName = gameNameCollection.IndexOf(lastName!);
             int indexOfRegion = gameRegionCollection.IndexOf(lastRegion!);
-            #nullable restore
+#nullable restore
                 
             // Rebuild Game Titles and Regions ComboBox items
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
             ComboBoxGameCategory.SelectedIndex = indexOfName;
             ComboBoxGameRegion.SelectedIndex = indexOfRegion;
 
-            InitializeNavigationItems(false);
             ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+
+            UpdateLayout();
+            Bindings.Update();
         }
 
         private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
@@ -1254,53 +1253,61 @@ namespace CollapseLauncher
                 if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+                    { Icon = IconCaches, Tag = "caches" }
+                    .BindNavigationViewItemText("_CachesPage", "PageTitle"));
                 }
                 return;
             }
 
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
+            { Icon = IconLauncher, Tag = "launcher" }
+            .BindNavigationViewItemText("_HomePage", "PageTitle"));
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
+            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
+                .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
 
             if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
+                { Icon = IconRepair, Tag = "repair" }
+                .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
             }
 
             if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+                { Icon = IconCaches, Tag = "caches" }
+                .BindNavigationViewItemText("_CachesPage", "PageTitle"));
             }
 
             switch (CurrentGameVersionCheck.GameType)
             {
                 case GameNameType.Honkai:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "honkaigamesettings" });
+                    { Icon = IconGameSettings, Tag = "honkaigamesettings" }
+                    .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.StarRail:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                    { Icon = IconGameSettings, Tag = "starrailgamesettings" }
+                    .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Genshin:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem() 
-                    { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+                    { Icon = IconGameSettings, Tag = "genshingamesettings" }
+                    .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Zenless:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    {Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "zenlessgamesettings"});
+                    { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
+                    .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
             }
 
             if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
-                SettingsItem.Content = Lang._SettingsPage.PageTitle;
                 SettingsItem.Icon = IconAppSettings;
-                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
+                _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
             }
 
             foreach (var deps in NavigationViewControl.FindDescendants())
@@ -1317,56 +1324,10 @@ namespace CollapseLauncher
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             }
 
+            NavigationViewControl.ApplyNavigationViewItemLocaleTextBindings();
+
             InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-            SetAllButtonsCursorHandRecursive(MainPageGrid, handCursor);
-        }
-
-        private void SetAllButtonsCursorHandRecursive(UIElement element, InputSystemCursor toCursor)
-        {
-            if (element == null)
-            {
-                return;
-            }    
-
-            if (element is Panel panelKind)
-            {
-                foreach (var panelElements in panelKind.Children)
-                {
-                    SetAllButtonsCursorHandRecursive(panelElements, toCursor);
-                }
-            }
-
-            if (element is Border borderKind)
-            {
-                SetAllButtonsCursorHandRecursive(borderKind.Child, toCursor);
-            }
-
-            if (element is NavigationView navigationViewKind)
-            {
-                foreach (UIElement navigationViewElements in navigationViewKind.FindDescendants())
-                {
-                    if (navigationViewElements is NavigationViewItem)
-                    {
-                        navigationViewElements.SetCursor(toCursor);
-                        continue;
-                    }
-                    SetAllButtonsCursorHandRecursive(navigationViewElements, toCursor);
-                }
-            }
-
-            if (element is ButtonBase buttonBaseKind)
-            {
-                buttonBaseKind.SetCursor(toCursor);
-                if (buttonBaseKind is Button buttonKind && buttonKind.Flyout != null && buttonKind.Flyout is Flyout buttonKindFlyout)
-                {
-                    SetAllButtonsCursorHandRecursive(buttonKindFlyout.Content, toCursor);
-                }
-            }
-
-            if (element.ContextFlyout != null && element.ContextFlyout is Flyout elementFlyoutKind)
-            {
-                SetAllButtonsCursorHandRecursive(elementFlyoutKind.Content, toCursor);
-            }
+            MainPageGrid.SetAllControlsCursorRecursive(handCursor);
         }
 
         public static void AttachShadowNavigationPanelItem(FrameworkElement element)
@@ -1470,8 +1431,8 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
 
 #nullable enable
-            NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
-            item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+            NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (x.Content as TextBlock)?.Text == (args.InvokedItem as TextBlock)?.Text);
+            item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (x.Content as TextBlock)?.Text == (args.InvokedItem as TextBlock)?.Text);
             if (item == null) return;
 #nullable restore
 

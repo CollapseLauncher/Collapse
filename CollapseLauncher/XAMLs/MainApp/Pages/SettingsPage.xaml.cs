@@ -16,6 +16,7 @@
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
+    using Microsoft.UI.Input;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Data;
@@ -65,6 +66,7 @@ namespace CollapseLauncher.Pages
                 
             InitializeComponent();
             this.EnableImplicitAnimation(true);
+            this.SetAllControlsCursorRecursive(InputSystemCursor.Create(InputSystemCursorShape.Hand));
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             LoadAppConfig();
@@ -103,7 +105,7 @@ namespace CollapseLauncher.Pages
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
-            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
                 string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
                 string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
@@ -843,7 +845,7 @@ namespace CollapseLauncher.Pages
                     comboBoxOthers.SelectedIndex = lastSelected;
                 }
 
-                UpdateBindingsEvents(this, null);
+                UpdateBindings.Update();
             }
         }
 

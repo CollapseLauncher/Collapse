@@ -7,6 +7,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
@@ -20,6 +21,12 @@ using Windows.UI.Text;
 namespace CollapseLauncher.Extension
 {
     internal enum CornerRadiusKind { Normal, Rounded }
+    internal class NavigationViewItemLocaleTextProperty
+    {
+        public string LocaleSetName { get; set; }
+        public string LocalePropertyName { get; set; }
+    }
+
     internal static class UIElementExtensions
     {
         /// <summary>
@@ -29,6 +36,173 @@ namespace CollapseLauncher.Extension
         /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_ProtectedCursor")]
         internal static extern void SetCursor(this UIElement element, InputCursor inputCursor);
+
+#nullable enable
+        /// <summary>
+        /// Set the initial navigation view item's locale binding before getting set with <seealso cref="ApplyNavigationViewItemLocaleTextBindings"/>
+        /// </summary>
+        /// <typeparam name="T">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</typeparam>
+        /// <param name="element">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</param>
+        /// <param name="localeSetName">The instance name of a <seealso cref="Hi3Helper.Locale"/> members.</param>
+        /// <param name="localePropertyName">Name of the locale property</param>
+        /// <returns>A reference of the <typeparamref name="T"/></returns>
+        internal static ref T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
+            where T : NavigationViewItemBase
+        {
+            NavigationViewItemLocaleTextProperty property = new NavigationViewItemLocaleTextProperty
+            {
+                LocaleSetName = localeSetName,
+                LocalePropertyName = localePropertyName
+            };
+
+            if (element is NavigationViewItemHeader elementAsHeader)
+            {
+                elementAsHeader.Tag = property;
+            }
+            else
+            {
+                TextBlock textBlock = new TextBlock().WithTag(property);
+                element.Content = textBlock;
+            }
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static void SetAllControlsCursorRecursive(this UIElement element, InputSystemCursor toCursor)
+        {
+            if (element == null)
+            {
+                return;
+            }
+
+            if (element is Panel panelKind)
+            {
+                foreach (UIElement panelElements in panelKind.Children)
+                {
+                    SetAllControlsCursorRecursive(panelElements, toCursor);
+                }
+            }
+
+            if (element is RadioButtons radioButtonsKind)
+            {
+                foreach (UIElement radioButtonContent in radioButtonsKind.Items.OfType<UIElement>())
+                {
+                    radioButtonContent.SetCursor(toCursor);
+                }
+            }
+
+            if (element is Border borderKind)
+            {
+                SetAllControlsCursorRecursive(borderKind.Child, toCursor);
+            }
+
+            if (element is ComboBox comboBoxKind)
+            {
+                comboBoxKind.SetCursor(toCursor);
+            }
+
+            if (element is UserControl userControlKind)
+            {
+                SetAllControlsCursorRecursive(userControlKind.Content, toCursor);
+            }
+
+            if (element is ContentControl contentControlKind
+             && contentControlKind.Content is UIElement contentControlKindInner)
+            {
+                SetAllControlsCursorRecursive(contentControlKindInner, toCursor);
+            }
+
+            if (element is NavigationView navigationViewKind)
+            {
+                foreach (UIElement navigationViewElements in navigationViewKind.FindDescendants())
+                {
+                    if (navigationViewElements is NavigationViewItem)
+                    {
+                        navigationViewElements.SetCursor(toCursor);
+                        continue;
+                    }
+                    SetAllControlsCursorRecursive(navigationViewElements, toCursor);
+                }
+            }
+
+            if (element is ButtonBase buttonBaseKind)
+            {
+                buttonBaseKind.SetCursor(toCursor);
+                if (buttonBaseKind is Button buttonKind && buttonKind.Flyout != null && buttonKind.Flyout is Flyout buttonKindFlyout)
+                {
+                    SetAllControlsCursorRecursive(buttonKindFlyout.Content, toCursor);
+                }
+            }
+
+            if (element is ToggleSwitch)
+            {
+                element.SetCursor(toCursor);
+            }
+
+            if (element.ContextFlyout != null && element.ContextFlyout is Flyout elementFlyoutKind)
+            {
+                SetAllControlsCursorRecursive(elementFlyoutKind.Content, toCursor);
+            }
+        }
+
+        internal static void ApplyNavigationViewItemLocaleTextBindings(this NavigationView navViewControl)
+        {
+            foreach (NavigationViewItemBase navItem in navViewControl
+                .FindDescendants()
+                .OfType<NavigationViewItemBase>())
+            {
+                string? localeValue = null;
+                if (navItem.Content is TextBlock navItemTextBlock
+                 && navItemTextBlock.Tag is NavigationViewItemLocaleTextProperty localeProperty)
+                {
+                    navItemTextBlock.BindProperty(
+                        TextBlock.TextProperty,
+                        Locale.Lang,
+                        $"{localeProperty.LocaleSetName}.{localeProperty.LocalePropertyName}");
+                    localeValue = navItemTextBlock.GetValue(TextBlock.TextProperty) as string;
+                }
+                else if (navItem is NavigationViewItemHeader navItemAsHeader
+                      && navItemAsHeader.Tag is NavigationViewItemLocaleTextProperty localePropertyOnHeader)
+                {
+                    navItemAsHeader.BindProperty(
+                        ContentControl.ContentProperty,
+                        Locale.Lang,
+                        $"{localePropertyOnHeader.LocaleSetName}.{localePropertyOnHeader.LocalePropertyName}");
+                    localeValue = navItemAsHeader.GetValue(ContentControl.ContentProperty) as string;
+                }
+
+                if (!string.IsNullOrEmpty(localeValue))
+                {
+                    ToolTipService.SetToolTip(navItem, localeValue);
+                }
+            }
+
+            navViewControl.UpdateLayout();
+        }
+
+        internal static ref T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
+            where T : FrameworkElement
+        {
+            // Create a new binding instance
+            Binding binding = new Binding
+            {
+                Source = objectToBind,
+                Mode = bindingMode,
+                Path = new PropertyPath(propertyName),
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+
+            // If the converter is assigned, then add the converter
+            if (converter != null)
+            {
+                binding.Converter = converter;
+            }
+
+            // Set binding to the element
+            element.SetBinding(dependencyProperty, binding);
+
+            return ref Unsafe.AsRef(ref element);
+        }
+#nullable restore
 
         internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",
             string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)

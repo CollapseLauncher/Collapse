@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangDialogs _Dialogs { get; set; } = LangFallback?._Dialogs;
-            public sealed class LangDialogs
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangDialogs
             {
                 public string DeltaPatchDetectedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;

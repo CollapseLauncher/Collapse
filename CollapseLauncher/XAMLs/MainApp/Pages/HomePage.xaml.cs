@@ -185,6 +185,12 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
+                InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+                SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+                ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+                BottomButtons.SetAllControlsCursorRecursive(cursor);
+                GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
+
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
@@ -303,46 +309,53 @@ namespace CollapseLauncher.Pages
             // Determine if the cache icon exist and the file is completed (more than 1kB in size)
             bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
 
-            // Using the original icon file and cached icon file streams
-            if (!isCacheIconExist)
-                await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
-                {
-                    await using (Stream copyIconFileStream = new MemoryStream())
+            try
+            {
+                // Using the original icon file and cached icon file streams
+                if (!isCacheIconExist)
+                    await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
                     {
-                        await using (Stream iconFileStream =
-                                     await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
-                                         PageToken.Token))
+                        await using (Stream copyIconFileStream = new MemoryStream())
                         {
-                            var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                            // Copy remote stream to memory stream
-                            await iconFileStream.CopyToAsync(copyIconFileStream);
-                            copyIconFileStream.Position = 0;
-                            // Get the icon image information and set the resized frame size
-                            var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                            var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                            var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                            await using (Stream iconFileStream =
+                                         await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
+                                             PageToken.Token))
+                            {
+                                var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                                // Copy remote stream to memory stream
+                                await iconFileStream.CopyToAsync(copyIconFileStream);
+                                copyIconFileStream.Position = 0;
+                                // Get the icon image information and set the resized frame size
+                                var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                                var width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                                var height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                            copyIconFileStream.Position = 0; // Reset the original icon stream position
-                            await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
-                                                                      (uint)width, (uint)height); // Start resizing
-                            cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                                copyIconFileStream.Position = 0; // Reset the original icon stream position
+                                await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
+                                                                          (uint)width, (uint)height); // Start resizing
+                                cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                            // Set the source from cached icon stream
-                            source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                                // Set the source from cached icon stream
+                                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                            }
                         }
                     }
+                else
+                {
+                    await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
                 }
-            else
-            {
-                await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
-                // Set the source from cached icon stream
-                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-            }
 
-            // Set event icon props
-            ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-            ImageEventImg.Source = source;
-            ImageEventImg.Tag = featuredEventArticleUrl;
+                // Set event icon props
+                ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
+                ImageEventImg.Source = source;
+                ImageEventImg.Tag = featuredEventArticleUrl;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
+            }
         }
         #endregion
 

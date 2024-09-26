@@ -603,11 +603,14 @@
             <Grid.RenderTransform>
                 <CompositeTransform />
             </Grid.RenderTransform>
-            <StackPanel x:Name="ImageCarouselAndPostPanel"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
-                        Background="{ThemeResource PostAcrylicBrush}"
-                        Orientation="Vertical">
+            <Grid x:Name="ImageCarouselAndPostPanel"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Bottom"
+                  Background="{ThemeResource PostAcrylicBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
                 <Grid PointerEntered="CarouselPointerEntered"
                       PointerExited="CarouselPointerExited">
                     <FlipView x:Name="ImageCarousel"
@@ -632,23 +635,9 @@
                             </DataTemplate>
                         </FlipView.ItemTemplate>
                     </FlipView>
-                    <Grid x:Name="ImageCarouselPipsPager"
-                          Padding="8,0"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Bottom"
-                          Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                          CornerRadius="8,8,0,0"
-                          Shadow="{ThemeResource SharedShadow}"
-                          Translation="0,0,16">
-                        <PipsPager VerticalAlignment="Center"
-                                   NextButtonVisibility="Collapsed"
-                                   NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
-                                   Orientation="Horizontal"
-                                   PreviousButtonVisibility="Collapsed"
-                                   SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
-                    </Grid>
                 </Grid>
                 <Grid x:Name="PostPanel"
+                      Grid.Row="1"
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
@@ -665,6 +654,7 @@
                                 <TextBlock Margin="0,0,0,-12"
                                            FontSize="13"
                                            FontWeight="Bold"
+                                           Loaded="SetHandCursor"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" />
                             </PivotItem.Header>
                             <Grid>
@@ -739,6 +729,7 @@
                                 <TextBlock Margin="0,0,0,-12"
                                            FontSize="13"
                                            FontWeight="Bold"
+                                           Loaded="SetHandCursor"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" />
                             </PivotItem.Header>
                             <Grid>
@@ -813,6 +804,7 @@
                                 <TextBlock Margin="0,0,0,-12"
                                            FontSize="13"
                                            FontWeight="Bold"
+                                           Loaded="SetHandCursor"
                                            Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" />
                             </PivotItem.Header>
                             <Grid>
@@ -884,7 +876,23 @@
                         </PivotItem>
                     </Pivot>
                 </Grid>
-            </StackPanel>
+                <Grid x:Name="ImageCarouselPipsPager"
+                      Grid.Row="0"
+                      Padding="8,0"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Bottom"
+                      Background="{ThemeResource CarouselPipsAcrylicBrush}"
+                      CornerRadius="8,8,0,0"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16">
+                    <PipsPager VerticalAlignment="Center"
+                               NextButtonVisibility="Collapsed"
+                               NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
+                               Orientation="Horizontal"
+                               PreviousButtonVisibility="Collapsed"
+                               SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
+                </Grid>
+            </Grid>
         </Grid>
         <Grid x:Name="SophonProgressStatusGrid"
               Grid.Row="1"
@@ -1245,12 +1253,12 @@
                                   HorizontalAlignment="Stretch"
                                   IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
                                   Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
-                                  Value="{Binding Value, ElementName=progressRingPerFile}"/>
+                                  Value="{Binding Value, ElementName=progressRingPerFile}" />
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
-                          Shadow="{ThemeResource SharedShadow}"
-                          Translation="0,0,32"
                           Margin="4"
-                          CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"/>
+                          CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
+                          Shadow="{ThemeResource SharedShadow}"
+                          Translation="0,0,32" />
                     <Ellipse x:Name="progressRingBG2"
                              Margin="4"
                              HorizontalAlignment="Stretch"
@@ -1391,7 +1399,8 @@
                 </Button.Content>
             </Button>
         </Grid>
-        <StackPanel Grid.Row="2"
+        <StackPanel x:Name="BottomButtons"
+                    Grid.Row="2"
                     Grid.Column="1"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
@@ -1561,6 +1570,7 @@
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
                                 Click="OpenCommunityButtonLink"
+                                Loaded="SetHandCursor"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
                                   HorizontalAlignment="Left">
@@ -1588,6 +1598,7 @@
                         <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
                                 Click="OpenCommunityButtonLink"
+                                Loaded="SetHandCursor"
                                 Style="{ThemeResource AccentButtonStyle}"
                                 Tag="{x:Bind URL}">
                             <Grid Margin="-8,0,0,0"
@@ -2194,6 +2205,7 @@
                   Grid.Column="0"
                   HorizontalAlignment="Stretch"
                   CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
+                  Loaded="SetHandCursor"
                   PointerEntered="ElementScaleOutHoveredPointerEntered"
                   PointerExited="ElementScaleInHoveredPointerExited"
                   Shadow="{ThemeResource SharedShadow}"
@@ -2236,6 +2248,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="UpdateGameDialog"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
+                        Loaded="SetHandCursor"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <Button.Content>
@@ -2270,6 +2283,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="StartGame"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
+                        Loaded="SetHandCursor"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <Grid Margin="8,0">
@@ -2308,6 +2322,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="CancelInstallationProcedure"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
+                        Loaded="SetHandCursor"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <Grid Margin="8,0">
@@ -2333,6 +2348,7 @@
                         VerticalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
+                        Loaded="SetHandCursor"
                         Style="{ThemeResource NewAccentButtonStyle}"
                         Visibility="Collapsed">
                     <Grid Margin="8,0">

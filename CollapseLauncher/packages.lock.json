@@ -401,7 +401,8 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Hi3Helper.Http": "[2.0.0, )"
+          "Hi3Helper.Http": "[2.0.0, )",
+          "Microsoft.Windows.CsWinRT": "[2.1.3, )"
         }
       },
       "hi3helper.enctool": {
@@ -447,7 +448,6 @@
       "innosetuphelper": {
         "type": "Project",
         "dependencies": {
-          "Hi3Helper.Core": "[1.0.0, )",
           "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
         }
       },

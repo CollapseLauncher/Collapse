@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangUnhandledExceptionPage _UnhandledExceptionPage { get; set; } = LangFallback?._UnhandledExceptionPage;
-            public sealed class LangUnhandledExceptionPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangUnhandledExceptionPage
             {
                 public string UnhandledTitle1 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledTitle1;
                 public string UnhandledSubtitle1 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledSubtitle1;

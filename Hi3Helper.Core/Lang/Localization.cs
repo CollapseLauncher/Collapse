@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using WinRT;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 #if !APPLYUPDATE
@@ -106,6 +107,7 @@ namespace Hi3Helper
         public bool LangIsLoaded;
     }
 
+    [GeneratedBindableCustomProperty]
     public sealed partial class Locale
     {
         public const string FallbackLangID = "en-us";
@@ -226,6 +228,8 @@ namespace Hi3Helper
         public static LocalizationParams Lang;
 #nullable enable
         public static LocalizationParams? LangFallback;
+
+        [GeneratedBindableCustomProperty]
         public sealed partial class LocalizationParams
         {
             public string LanguageName { get; set; } = "";

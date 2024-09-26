@@ -126,7 +126,6 @@
                                       CornerRadius="15,0,0,15"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
-                                      ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
                                       SelectionChanged="SetGameCategoryChange"
                                       Style="{ThemeResource AcrylicComboBoxStyle}" />

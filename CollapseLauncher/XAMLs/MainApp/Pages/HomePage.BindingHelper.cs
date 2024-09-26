@@ -1,37 +1,16 @@
 ﻿#nullable enable
+    using CollapseLauncher.Extension;
     using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
     using CommunityToolkit.WinUI;
     using ImageEx;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
-    using Microsoft.UI.Xaml.Data;
 
     namespace CollapseLauncher.Pages
 {
     file static class HomePageExtension
     {
         internal static readonly BooleanVisibilityConverter BooleanVisibilityConverter = new();
-
-        internal static void BindProperty(this FrameworkElement element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
-        {
-            // Create a new binding instance
-            Binding binding = new Binding
-            {
-                Source = objectToBind,
-                Mode = bindingMode,
-                Path = new PropertyPath(propertyName),
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            };
-
-            // If the converter is assigned, then add the converter
-            if (converter != null)
-            {
-                binding.Converter = converter;
-            }
-
-            // Set binding to the element
-            element.SetBinding(dependencyProperty, binding);
-        }
     }
 
     public partial class HomePage
