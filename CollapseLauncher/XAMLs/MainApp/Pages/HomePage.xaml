@@ -1080,8 +1080,9 @@
                     Height="32"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
-                    CornerRadius="16"
-                    Shadow="{ThemeResource SharedShadow}">
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressInformationButton)}"
+                    Shadow="{ThemeResource SharedShadow}"
+                    Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
                           HorizontalAlignment="Stretch"
@@ -1179,8 +1180,9 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
-                    CornerRadius="16"
-                    Shadow="{ThemeResource SharedShadow}">
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressSettingsButton)}"
+                    Shadow="{ThemeResource SharedShadow}"
+                    Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
                           HorizontalAlignment="Stretch"
@@ -1243,7 +1245,12 @@
                                   HorizontalAlignment="Stretch"
                                   IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
                                   Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
-                                  Value="{Binding Value, ElementName=progressRingPerFile}" />
+                                  Value="{Binding Value, ElementName=progressRingPerFile}"/>
+                    <Grid x:Name="ProgressPerFileCircleShadowCaster"
+                          Shadow="{ThemeResource SharedShadow}"
+                          Translation="0,0,32"
+                          Margin="4"
+                          CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"/>
                     <Ellipse x:Name="progressRingBG2"
                              Margin="4"
                              HorizontalAlignment="Stretch"
@@ -1364,8 +1371,9 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Click="ProgressSettingsButton_OnClick"
-                    CornerRadius="16"
-                    Shadow="{ThemeResource SharedShadow}">
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressSettingsButton)}"
+                    Shadow="{ThemeResource SharedShadow}"
+                    Translation="0,0,16">
                 <Button.Content>
                     <Grid Margin="-16"
                           HorizontalAlignment="Stretch"
