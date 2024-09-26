@@ -25,6 +25,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using InnoSetupHelper;
 
 namespace CollapseLauncher;
 
@@ -97,6 +98,9 @@ public static class MainEntryPoint
             // Initialize TaskSchedulerHelper
             TaskSchedulerHelper.InvokeGetStatusCommand();
 
+            // Initiate InnoSetupHelper's log event
+            InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
+
             HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
 
             switch (m_appMode)
@@ -150,6 +154,17 @@ public static class MainEntryPoint
             HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
         }
     }
+
+    private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e) =>
+        LogWriteLine(
+            e.Message,
+            e.LogType switch
+            {
+                InnoSetupLogType.Warning => LogType.Warning,
+                InnoSetupLogType.Error => LogType.Error,
+                _ => LogType.Default
+            },
+            e.IsWriteToLog);
 
     public static void SpawnFatalErrorConsole(Exception ex)
     {
