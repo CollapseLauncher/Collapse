@@ -1430,13 +1430,104 @@
                                        FontWeight="SemiBold"
                                        Text="-" />
                             <TextBlock Grid.Column="2"
-                                       x:Name="PlaytimeLastOpen"
+                                       x:Name="PlaytimeToolTipIcon"
                                        VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"
                                        FontSize="18"
                                        Opacity="0.25"
                                        Margin="0,0,-4,0"
                                        Text="&#xf05a;" />
+                            <ToolTipService.ToolTip>
+                                <StackPanel Margin="4">
+                                    <TextBlock 
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Title}"
+                                            Margin="0, 0, 0, 4"
+                                        />
+                                    <Grid ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Center">
+                                            <TextBlock 
+                                                    HorizontalAlignment="Center"
+                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Daily}" />
+                                            <TextBlock
+                                                    x:Name="PlaytimeStatsDaily"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{ThemeResource AccentColor}"
+                                                    FontWeight="Bold"
+                                                    Text="-" />
+                                        </StackPanel>
+                                        <StackPanel 
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Center">
+                                            <TextBlock
+                                                    HorizontalAlignment="Center"
+                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Weekly}" />
+                                            <TextBlock
+                                                    x:Name="PlaytimeStatsWeekly"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{ThemeResource AccentColor}"
+                                                    FontWeight="Bold"
+                                                    Text="-" />
+                                        </StackPanel>
+                                        <StackPanel
+                                                Grid.Column="2"
+                                                HorizontalAlignment="Center">
+                                            <TextBlock 
+                                                    HorizontalAlignment="Center"
+                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Monthly}" />
+                                            <TextBlock
+                                                    x:Name="PlaytimeStatsMonthly"
+                                                    HorizontalAlignment="Center"
+                                                    FontWeight="Bold"
+                                                    Foreground="{ThemeResource AccentColor}"
+                                                    Text="-" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock 
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession}"
+                                            Margin="0, 12, 0, 4"/>
+                                    <Grid ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Center">
+                                            <TextBlock 
+                                                    HorizontalAlignment="Center"
+                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime}" />
+                                            <TextBlock
+                                                    x:Name="PlaytimeStatsLastPlayed"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{ThemeResource AccentColor}"
+                                                    FontWeight="Bold"
+                                                    Text="-" />
+                                        </StackPanel>
+                                        <StackPanel
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Center">
+                                            <TextBlock
+                                                    HorizontalAlignment="Center"
+                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration}" />
+                                            <TextBlock
+                                                    x:Name="PlaytimeStatsLastSession"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{ThemeResource AccentColor}"
+                                                    FontWeight="Bold"
+                                                    Text="-" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </ToolTipService.ToolTip>
                         </Grid>
                     </Grid>
                 </Button.Content>

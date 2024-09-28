@@ -66,9 +66,10 @@
                 public string GamePlaytime_Display { get; set; } = LangFallback?._HomePage.GamePlaytime_Display;
                 public string GamePlaytime_DateDisplay { get; set; } = LangFallback?._HomePage.GamePlaytime_DateDisplay;
                 public string GamePlaytime_Stats_Title { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_Title;
-                public string GamePlaytime_Stats_LastPlayed { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_LastPlayed;
                 public string GamePlaytime_Stats_NeverPlayed { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_NeverPlayed;
                 public string GamePlaytime_Stats_LastSession { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_LastSession;
+                public string GamePlaytime_Stats_LastSession_StartTime { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_LastSession_StartTime;
+                public string GamePlaytime_Stats_LastSession_Duration { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_LastSession_Duration;
                 public string GamePlaytime_Stats_Daily { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_Daily;
                 public string GamePlaytime_Stats_Weekly { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_Weekly;
                 public string GamePlaytime_Stats_Monthly { get; set; } = LangFallback?._HomePage.GamePlaytime_Stats_Monthly;

@@ -2342,11 +2342,11 @@ namespace CollapseLauncher.Pages
                                                       last?.Month, last?.Year, last?.Hour, last?.Minute);
                 }
 
-                /*PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
+                PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
                 PlaytimeStatsWeekly.Text      = FormatTimeStamp(playtime.WeeklyPlaytime);
                 PlaytimeStatsMonthly.Text     = FormatTimeStamp(playtime.MonthlyPlaytime);
-                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);*/
-                ToolTipService.SetToolTip(PlaytimeBtn, lastPlayed);
+                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);
+                PlaytimeStatsLastPlayed.Text  = lastPlayed;
             });
             return;
 
