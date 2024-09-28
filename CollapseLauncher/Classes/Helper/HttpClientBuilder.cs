@@ -26,14 +26,15 @@ namespace CollapseLauncher.Helper
         private bool IsAllowHttpCookies { get; set; }
         private bool IsAllowUntrustedCert { get; set; }
 
-        private int MaxConnections { get; set; } = _maxConnectionsDefault;
+        private int                  MaxConnections      { get; set; } = _maxConnectionsDefault;
         private DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
-        private WebProxy? ExternalProxy { get; set; }
-        private Version HttpProtocolVersion { get; set; } = HttpVersion.Version30;
-        private string? HttpUserAgent { get; set; } = GetDefaultUserAgent();
+        private WebProxy?            ExternalProxy       { get; set; }
+        private Version              HttpProtocolVersion { get; set; } = HttpVersion.Version30;
+        private string?              HttpUserAgent       { get; set; } = GetDefaultUserAgent();
+        private string?              HttpAuthHeader      { get; set; }
         private HttpVersionPolicy HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
-        private TimeSpan HttpTimeout { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
-        private Uri? HttpBaseUri { get; set; }
+        private TimeSpan          HttpTimeout               { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
+        private Uri?              HttpBaseUri               { get; set; }
 
         public HttpClientBuilder<THandler> UseProxy(bool isUseSystemProxy = true)
         {
@@ -130,6 +131,12 @@ namespace CollapseLauncher.Helper
         public HttpClientBuilder<THandler> AllowRedirections(bool allowRedirections = true)
         {
             IsAllowHttpRedirections = allowRedirections;
+            return this;
+        }
+
+        public HttpClientBuilder<THandler> SetAuthHeader(string authHeader)
+        {
+            if (!string.IsNullOrEmpty(authHeader)) HttpAuthHeader = authHeader;
             return this;
         }
 
@@ -263,6 +270,10 @@ namespace CollapseLauncher.Helper
             // Set User-agent
             if (!string.IsNullOrEmpty(HttpUserAgent))
                 client.DefaultRequestHeaders.Add("User-Agent", HttpUserAgent);
+            
+            // Add Http Auth Header
+            if (!string.IsNullOrEmpty(HttpAuthHeader))
+                client.DefaultRequestHeaders.Add("Authorization", HttpAuthHeader);
 
             return client;
         }
