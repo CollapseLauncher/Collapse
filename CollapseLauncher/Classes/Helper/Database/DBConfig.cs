@@ -4,30 +4,32 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Windows.System;
 
 namespace CollapseLauncher.Helper.Database
 {
     public static class DbConfig
     {
         #region Properties
-        private static readonly string _configFolder   = LauncherConfig.AppDataFolder;
+
+        private static readonly string _configFolder = LauncherConfig.AppDataFolder;
 
         private const string _configFileName = "dbConfig.ini";
-        private const string DbSectionName   = "[database]";
+        private const string DbSectionName   = "database";
 
         private static readonly string  _configPath = Path.Combine(_configFolder, _configFileName);
 
-        private static IniFile Config = null;
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
+        private static IniFile _config = new();
         #endregion
 
         public static void Init()
         {
             EnsureConfigExist();
             Load();
-            
-            if (!Config.ContainsSection(DbSectionName))
-                Config.Add(DbSectionName, DbSettingsTemplate);
-            
+            if (!_config.ContainsSection(DbSectionName))
+                _config.Add(DbSectionName, DbSettingsTemplate);
+
             DefaultChecker();
         }
         
@@ -40,22 +42,22 @@ namespace CollapseLauncher.Helper.Database
         {
             foreach (KeyValuePair<string, IniValue> Entry in DbSettingsTemplate)
             {
-                if (!Config[DbSectionName].ContainsKey(Entry.Key) ||
-                    string.IsNullOrEmpty(Config[DbSectionName][Entry.Key].Value))
+                if (!_config[DbSectionName].ContainsKey(Entry.Key) ||
+                    string.IsNullOrEmpty(_config[DbSectionName][Entry.Key].Value))
                 {
                     SetValue(Entry.Key, Entry.Value);
                 }
             }
         }
 
-        private static void Load() => Config.Load(_configPath);
-        private static void Save() => Config.Save(_configPath);
+        private static void Load() => _config.Load(_configPath);
+        private static void Save() => _config.Save(_configPath);
         
-        private static IniValue GetConfig(string key) => Config[DbSectionName][key];
+        private static IniValue GetConfig(string key) => _config[DbSectionName][key];
 
-        private static void SetValue(string key, IniValue value) => Config[DbSectionName]![key] = value;
+        private static void SetValue(string key, IniValue value) => _config[DbSectionName]![key] = value;
 
-        public static void SetAndSaveValue(string key, IniValue value)
+        private static void SetAndSaveValue(string key, IniValue value)
         {
             SetValue(key, value);
             Save();
@@ -64,7 +66,7 @@ namespace CollapseLauncher.Helper.Database
         #region Template
         private static readonly Dictionary<string, IniValue> DbSettingsTemplate = new()
         {
-            { "url", "libsql://test-db-bagusnl.turso.io" },
+            { "url", "https://test-db-bagusnl.turso.io" },
             { "token", "" },
             { "userGuid", "" }
         };
@@ -75,9 +77,7 @@ namespace CollapseLauncher.Helper.Database
             get => GetConfig("url").ToString();
             set => SetAndSaveValue("url", value);
         }
-
-        [DebuggerHidden]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        
         public static string DbToken
         {
             get => GetConfig("token").ToString();
@@ -91,8 +91,16 @@ namespace CollapseLauncher.Helper.Database
             get
             {
                 var  c = GetConfig("userGuid").ToString();
+                Guid g;
 
-                return string.IsNullOrEmpty(c) ? Guid.CreateVersion7() : Guid.Parse(c);
+                if (string.IsNullOrEmpty(c))
+                {
+                    g = Guid.CreateVersion7();
+                    SetAndSaveValue("userGuid", g.ToString());
+                }
+                else g = Guid.Parse(c);
+
+                return g;
             }
             set => SetAndSaveValue("userGuid", value.ToString());
         }

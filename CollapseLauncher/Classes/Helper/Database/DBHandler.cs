@@ -1,12 +1,18 @@
-using SQLite;
+using Hi3Helper;
+using Libsql.Client;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Windows.System;
+using static Hi3Helper.Logger;
 
 
 namespace CollapseLauncher.Helper.Database
 {
-    public class DbHandler
+    internal class DbHandler
     {
         #region Config Properties
         private static string _uri;
@@ -27,9 +33,11 @@ namespace CollapseLauncher.Helper.Database
         {
             get
             {
-                if (!string.IsNullOrEmpty(_uri)) return _token;
+                if (!string.IsNullOrEmpty(_token)) return _token;
                 
                 var c = DbConfig.DbToken;
+
+                if (string.IsNullOrEmpty(c)) throw new InvalidDataException("Database token could not be empty!");
                 _token = c;
                 return c;
             }
@@ -50,61 +58,49 @@ namespace CollapseLauncher.Helper.Database
 
         #endregion
         
-        private SQLiteAsyncConnection _database;
+        private static IDatabaseClient _database;
 
-        private Dictionary<string, (string Value, DateTime Expiration)> _cache = new();
-        private TimeSpan _cacheTTL = TimeSpan.FromMinutes(5);
-
-        public async void Init()
+        public static async void Init()
         {
             DbConfig.Init();
 
-            _database = new SQLiteAsyncConnection(Uri);
-            await _database.CreateTableAsync<KeyValueDb>();
-            await CacheDatabase();
+            try
+            {
+                _database = await DatabaseClient.Create(opts =>
+                                                        {
+                                                            opts.Url       = Uri;
+                                                            opts.AuthToken = Token;
+                                                        });
+                await
+                    _database.Execute("CREATE TABLE IF NOT EXISTS KeyValueDb (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
+                
+                // test code
+                // await StoreKeyValue("testdate", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+                // var res = await QueryKey("testdate");
+                // LogWriteLine($"Test SQL data {res}", LogType.Error);
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"[DBHandler::Init] Error!\r\n{e}", LogType.Error, true);
+            }
         }
 
-        public async Task<string> QueryKey(string key)
+        public static async Task<string> QueryKey(string key)
         {
-            if (_cache.TryGetValue(key, out var c))
+            var rs  = await _database.Execute("SELECT value FROM 'KeyValueDb' WHERE key LIKE concat('%', ?, '%')", key);
+            if (rs != null)
             {
-                if (c.Expiration > DateTime.UtcNow) return c.Value;
-                
-                _cache.Remove(key);
-            }
-
-            var kv = await _database.Table<KeyValueDb>().Where(x => x.Key == key).FirstOrDefaultAsync();
-            if (kv != null)
-            {
-                _cache[key] = (kv.Value, DateTime.UtcNow.Add(_cacheTTL));
-                return kv.Value;
+                return string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
             }
 
             return null;
         }
 
-        public async Task StoreKeyValue(string key, string value)
+        public static async Task StoreKeyValue(string key, string value)
         {
-            var kv = new KeyValueDb() { Key = key, Value = value };
-            await _database.InsertOrReplaceAsync(kv);
-            _cache[key] = (value, DateTime.UtcNow.Add(_cacheTTL));
+            var command = $"INSERT INTO 'KeyValueDb' (key, value) VALUES ('{key}', '{value}') " +
+                          $"ON CONFLICT(key) DO UPDATE SET value = '{value}'";
+            await _database.Execute(command);
         }
-
-        private async Task CacheDatabase()
-        {
-            var allEntries = await _database.Table<KeyValueDb>().ToListAsync();
-            foreach (var e in allEntries)
-            {
-                _cache[e.Key] = (e.Value, DateTime.UtcNow.Add(_cacheTTL));
-            }
-        }
-    }
-
-    public class KeyValueDb
-    {
-        [PrimaryKey, AutoIncrement]
-        public int    Id    { get; set; }
-        public string Key   { get; set; }
-        public string Value { get; set; }
     }
 }
