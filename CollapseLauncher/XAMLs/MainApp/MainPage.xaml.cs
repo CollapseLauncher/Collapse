@@ -1366,11 +1366,11 @@ namespace CollapseLauncher
                 Duration = TimeSpan.FromMilliseconds(150)
             };
 
-            var paneSplitView = NavigationViewControl.FindDescendant("RootSplitView");
-            if (paneSplitView is SplitView paneSplitViewAsSplitView)
+            var paneMainGrid = NavigationViewControl.FindDescendant("PaneContentGrid");
+            if (paneMainGrid is Grid paneMainGridAsGrid)
             {
-                paneSplitViewAsSplitView.Pane.PointerEntered += NavView_PanePointerEntered;
-                paneSplitViewAsSplitView.Pane.PointerExited  += NavView_PanePointerExited;
+                paneMainGridAsGrid.PointerEntered += NavView_PanePointerEntered;
+                paneMainGridAsGrid.PointerExited  += NavView_PanePointerExited;
             }
 
             // The toggle button is not a part of pane. Why Microsoft!!!
@@ -1410,7 +1410,8 @@ namespace CollapseLauncher
         private void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
         {
             PointerPoint pointerPoint = e.GetCurrentPoint(NavViewPaneBackgroundHoverArea);
-            IsCursorInNavBarHoverArea = pointerPoint.Position.X <= NavViewPaneBackgroundHoverArea.Width - 8 && pointerPoint.Position.X > 1;
+            IsCursorInNavBarHoverArea = pointerPoint.Position.X <= NavViewPaneBackgroundHoverArea.Width - 8 && pointerPoint.Position.X > 4;
+
             if (!IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
             {
                 NavViewPaneBackground.Opacity = 0;
