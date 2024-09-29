@@ -879,7 +879,7 @@
     "ChangePlaytimeTitle": "Are you sure you want to change your playtime?",
     "ChangePlaytimeSubtitle": "Changing your playtime means overwriting the current value with the one you just inputted. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "ResetPlaytimeTitle": "Are you sure you want to reset your playtime?",
-    "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter back to 0. This is a ",
+    "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter and all related statistics back to 0. This is a ",
     "ResetPlaytimeSubtitle2": "destructive",
     "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "InvalidPlaytimeTitle": "There was a problem saving this session's playtime",
