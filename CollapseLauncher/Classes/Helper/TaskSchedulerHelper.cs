@@ -4,6 +4,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Helper
 {
@@ -29,6 +31,11 @@ namespace CollapseLauncher.Helper
                 InvokeGetStatusCommand();
 
             return CachedIsEnabled;
+        }
+
+        internal static void InitializeDetached()
+        {
+            _ = Task.Run(InvokeGetStatusCommand);
         }
 
         internal static void InvokeGetStatusCommand()

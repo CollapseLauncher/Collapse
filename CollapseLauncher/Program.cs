@@ -74,6 +74,9 @@ public static class MainEntryPoint
                 Directory.SetCurrentDirectory(AppFolder);
             }
 
+            // Initialize TaskSchedulerHelper
+            TaskSchedulerHelper.InvokeGetStatusCommand();
+
             StartUpdaterHook();
 
             LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
@@ -94,9 +97,6 @@ public static class MainEntryPoint
 
             ParseArguments(args);
             InitializeAppSettings();
-
-            // Initialize TaskSchedulerHelper
-            TaskSchedulerHelper.InvokeGetStatusCommand();
 
             // Initiate InnoSetupHelper's log event
             InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
