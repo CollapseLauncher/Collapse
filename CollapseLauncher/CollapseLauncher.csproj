@@ -125,7 +125,6 @@
         <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.7" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
-        <PackageReference Include="System.Diagnostics.EventLog" Version="9.0.0-rc.1.24431.7" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0-rc.1.24431.7" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0-rc.1.24431.7" />
