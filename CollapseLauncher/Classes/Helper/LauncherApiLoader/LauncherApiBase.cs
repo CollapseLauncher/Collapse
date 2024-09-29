@@ -89,7 +89,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
                 async innerToken =>
-                    await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default, innerToken);
+                    await FallbackCDNUtil.DownloadAsJSONType(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, innerToken);
 
             LauncherGameResource = await launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token);
@@ -103,7 +103,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                     async innerToken =>
-                        await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default, innerToken);
+                        await FallbackCDNUtil.DownloadAsJSONType(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default.RegionResourceProp, innerToken);
 
                 RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                ExecutionTimeoutAttempt, onTimeoutRoutine, token);
@@ -282,8 +282,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         private static async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
             string launcherSpriteUrl, CancellationToken token)
         {
-            return await FallbackCDNUtil.DownloadAsJSONType<LauncherGameNews?>(launcherSpriteUrl,
-                                                                               InternalAppJSONContext.Default, token);
+            return await FallbackCDNUtil.DownloadAsJSONType(launcherSpriteUrl, InternalAppJSONContext.Default.LauncherGameNews, token);
         }
 
         private static async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
@@ -291,8 +290,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         {
             return await
                 FallbackCDNUtil
-                   .DownloadAsJSONType<LauncherGameNews?>(string.Format(launcherSpriteUrl, lang),
-                                                          InternalAppJSONContext.Default, token);
+                   .DownloadAsJSONType(string.Format(launcherSpriteUrl, lang), InternalAppJSONContext.Default.LauncherGameNews, token);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)

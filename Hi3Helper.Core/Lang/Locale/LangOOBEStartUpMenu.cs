@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using WinRT;
 
 namespace Hi3Helper
 {
@@ -8,7 +9,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangOOBEStartUpMenu _OOBEStartUpMenu { get; set; } = LangFallback?._OOBEStartUpMenu;
-            public sealed class LangOOBEStartUpMenu
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangOOBEStartUpMenu
             {
                 public Dictionary<string, string[]> WelcomeTitleString { get; set; } = LangFallback?._OOBEStartUpMenu.WelcomeTitleString;
                 public string SetupNextButton { get; set; } = LangFallback?._OOBEStartUpMenu.SetupNextButton;

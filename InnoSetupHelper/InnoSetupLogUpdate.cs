@@ -1,17 +1,29 @@
-﻿using Hi3Helper;
-using Hi3Helper.EncTool.Parser.InnoUninstallerLog;
+﻿using Hi3Helper.EncTool.Parser.InnoUninstallerLog;
 using LibISULR;
 using LibISULR.Flags;
 using LibISULR.Records;
 using System;
 using System.IO;
 using System.Linq;
-using static Hi3Helper.Logger;
 
 namespace InnoSetupHelper
 {
+    public enum InnoSetupLogType
+    {
+        Default, Warning, Error
+    }
+
+    public struct InnoSetupLogStruct
+    {
+        public InnoSetupLogType LogType;
+        public bool IsWriteToLog;
+        public string Message;
+    }
+
     public class InnoSetupLogUpdate
     {
+        public static event EventHandler<InnoSetupLogStruct>? LoggerEvent;
+
         private static readonly string[] excludeDeleteFile = new string[]
         {
             // Generic Files
@@ -38,10 +50,10 @@ namespace InnoSetupHelper
 
         public static void UpdateInnoSetupLog(string path)
         {
-            string  directoryPath = Path.GetDirectoryName(path)!;
-            string searchValue   = GetPathWithoutDriveLetter(directoryPath);
+            string directoryPath = Path.GetDirectoryName(path)!;
+            string searchValue = GetPathWithoutDriveLetter(directoryPath);
 
-            LogWriteLine($"[InnoSetupLogUpdate::UpdateInnoSetupLog()] Updating Inno Setup file located at: {path}", LogType.Default, true);
+            LogWriteLine($"[InnoSetupLogUpdate::UpdateInnoSetupLog()] Updating Inno Setup file located at: {path}", InnoSetupLogType.Default, true);
             try
             {
                 using InnoUninstallLog innoLog = InnoUninstallLog.Load(path, true);
@@ -56,11 +68,11 @@ namespace InnoSetupHelper
 
                 // Save the Inno Setup log
                 innoLog.Save(path);
-                LogWriteLine($"[InnoSetupLogUpdate::UpdateInnoSetupLog()] Inno Setup file: {path} has been successfully updated!", LogType.Default, true);
+                LogWriteLine($"[InnoSetupLogUpdate::UpdateInnoSetupLog()] Inno Setup file: {path} has been successfully updated!", InnoSetupLogType.Default, true);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"[InnoSetupLogUpdate::UpdateInnoSetupLog()] Inno Setup file: {path} was failed due to an error: {ex}", LogType.Warning, true);
+                LogWriteLine($"[InnoSetupLogUpdate::UpdateInnoSetupLog()] Inno Setup file: {path} was failed due to an error: {ex}", InnoSetupLogType.Warning, true);
             }
         }
 
@@ -75,7 +87,7 @@ namespace InnoSetupHelper
             DirectoryInfo currentDirectory = new DirectoryInfo(pathToRegister);
             if (innoLog.Records == null)
             {
-                LogWriteLine("[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] Records is uninitialized!", LogType.Error, true);
+                LogWriteLine("[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] Records is uninitialized!", InnoSetupLogType.Error, true);
             }
             else
             {
@@ -84,14 +96,14 @@ namespace InnoSetupHelper
                     if (excludeDeleteFile.Any(x => x.IndexOf(fileInfo.FullName, StringComparison.OrdinalIgnoreCase) > -1)) continue;
                     fileInfo.IsReadOnly = false;
                     LogWriteLine($"[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] " +
-                                 $"Registering Inno Setup record: (DeleteFileRecord){fileInfo.FullName}", LogType.Default, true);
+                                 $"Registering Inno Setup record: (DeleteFileRecord){fileInfo.FullName}", InnoSetupLogType.Default, true);
                     innoLog.Records.Add(DeleteFileRecord.Create(fileInfo.FullName));
                 }
                 LogWriteLine($"[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] " +
-                             $"Registering Inno Setup record: (DeleteDirOrFilesRecord){pathToRegister}", LogType.Default, true);
+                             $"Registering Inno Setup record: (DeleteDirOrFilesRecord){pathToRegister}", InnoSetupLogType.Default, true);
                 innoLog.Records.Add(DeleteDirOrFilesRecord.Create(pathToRegister));
             }
-            
+
             foreach (DirectoryInfo subdirectories in currentDirectory.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
                 RegisterDirOrFilesRecord(innoLog, subdirectories.FullName);
@@ -106,7 +118,7 @@ namespace InnoSetupHelper
                 if (innoLog.Records == null)
                 {
                     LogWriteLine("[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] Records is uninitialized!",
-                                 LogType.Error, true);
+                                 InnoSetupLogType.Error, true);
                     return;
                 }
                 BaseRecord baseRecord = innoLog.Records[index];
@@ -116,12 +128,12 @@ namespace InnoSetupHelper
                     case RecordType.DeleteDirOrFiles:
                         isRecordValid = IsInnoRecordContainsPath<DeleteDirOrFilesFlags>(baseRecord, searchValue)
                                      && IsDeleteDirOrFilesFlagsValid((DeleteDirOrFilesRecord)baseRecord);
-                        LogWriteLine($"[InnoSetupLogUpdate::CleanUpInnoDirOrFilesRecord()] Removing outdated Inno Setup record: (DeleteDirOrFilesRecord){((DeleteDirOrFilesRecord)baseRecord).Paths[0]}", LogType.Default, true);
+                        LogWriteLine($"[InnoSetupLogUpdate::CleanUpInnoDirOrFilesRecord()] Removing outdated Inno Setup record: (DeleteDirOrFilesRecord){((DeleteDirOrFilesRecord)baseRecord).Paths[0]}", InnoSetupLogType.Default, true);
                         break;
                     case RecordType.DeleteFile:
                         isRecordValid = IsInnoRecordContainsPath<DeleteFileFlags>(baseRecord, searchValue)
                                      && IsDeleteFileFlagsValid((DeleteFileRecord)baseRecord);
-                        LogWriteLine($"[InnoSetupLogUpdate::CleanUpInnoDirOrFilesRecord()] Removing outdated Inno Setup record: (DeleteFileRecord){((DeleteFileRecord)baseRecord).Paths[0]}", LogType.Default, true);
+                        LogWriteLine($"[InnoSetupLogUpdate::CleanUpInnoDirOrFilesRecord()] Removing outdated Inno Setup record: (DeleteFileRecord){((DeleteFileRecord)baseRecord).Paths[0]}", InnoSetupLogType.Default, true);
                         break;
                 }
                 if (isRecordValid)
@@ -139,5 +151,8 @@ namespace InnoSetupHelper
             where TFlags : Enum => ((BasePathListRecord<TFlags>)record)
             .Paths[0]!
             .IndexOf(searchValue!, StringComparison.OrdinalIgnoreCase) > -1;
+
+        private static void LogWriteLine(string message, InnoSetupLogType logType, bool isWriteLog)
+            => LoggerEvent?.Invoke(null, new InnoSetupLogStruct { IsWriteToLog = isWriteLog, LogType = logType, Message = message });
     }
 }

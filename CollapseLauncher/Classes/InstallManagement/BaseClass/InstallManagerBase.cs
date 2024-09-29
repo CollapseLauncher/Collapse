@@ -949,11 +949,7 @@ namespace CollapseLauncher.InstallManager.Base
                     async ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
                     {
                         // ReSharper disable once AccessToDisposedClosure
-                        if (httpClient != null)
-                        {
-                            // ReSharper disable once AccessToDisposedClosure
-                            await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
-                        }
+                        await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
                     }
 
                     // Declare the rename temp file delegate
@@ -1517,9 +1513,13 @@ namespace CollapseLauncher.InstallManager.Base
                 // Assign extractor
             #if USENEWZIPDECOMPRESS
                 InstallPackageExtractorDelegate installTaskDelegate;
-                if ((asset!.PathOutput.EndsWith(".zip",        StringComparison.OrdinalIgnoreCase)
-                     || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
-                    && !_isAllowExtractCorruptZip)
+                if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+                {
+                    installTaskDelegate = ExtractUsing7zip;
+                }
+                else if ((asset!.PathOutput.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                       || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
+                       && !_isAllowExtractCorruptZip)
                 {
                     installTaskDelegate = ExtractUsingNativeZip;
                 }
@@ -1670,8 +1670,8 @@ namespace CollapseLauncher.InstallManager.Base
         private async Task ExtractUsingNativeZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
                                                        CancellationToken cancellationToken)
         {
-            // 16 MB of buffer (hope it's not too big)
-            byte[] buffer = new byte[16 << 20];
+            // 4 MB of buffer
+            byte[] buffer = GC.AllocateUninitializedArray<byte>(4 << 20);
 
             foreach (int entryIndex in entriesIndex)
             {
@@ -2309,10 +2309,6 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 throw ex.Flatten().InnerExceptions.First();
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 EventListener.LoggerEvent   -= EventListener_PatchLogEvent;
@@ -2591,12 +2587,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual bool IsValidLocaleCode(ReadOnlySpan<char> localeCode)
         {
-            // If it's empty or null, return false
-            if (localeCode == null)
-            {
-                return false;
-            }
-
+            // If it's empty, return false
             if (localeCode.IsEmpty)
             {
                 return false;
@@ -3153,9 +3144,9 @@ namespace CollapseLauncher.InstallManager.Base
             if (gameState != GameInstallStateEnum.InstalledHavePlugin)
             {
                 // Iterate the package resource version and add it into packageList
-                foreach (RegionResourceVersion asset in usePreload
+                foreach (RegionResourceVersion asset in (usePreload
                              ? _gameVersionManager.GetGamePreloadZip()
-                             : _gameVersionManager.GetGameLatestZip(gameState))
+                             : _gameVersionManager.GetGameLatestZip(gameState))!)
                 {
                     if (asset == null)
                     {
@@ -3844,17 +3835,20 @@ namespace CollapseLauncher.InstallManager.Base
 
         private async Task GetPackagesRemoteSize(List<GameInstallPackage> packageList, CancellationToken token)
         {
-            // Iterate and assign the remote size to each package inside the list
-            for (int i = 0; i < packageList.Count; i++)
+            // Iterate and assign the remote size to each package inside the list in parallel
+            await Parallel.ForEachAsync(packageList, new ParallelOptions
             {
-                if (packageList[i].Segments != null)
+                CancellationToken = token
+            }, async (package, innerToken) =>
+            {
+                if (package.Segments != null)
                 {
-                    await TryGetSegmentedPackageRemoteSize(packageList[i], token);
-                    continue;
+                    await TryGetSegmentedPackageRemoteSize(package, token);
+                    return;
                 }
 
-                await TryGetPackageRemoteSize(packageList[i], token);
-            }
+                await TryGetPackageRemoteSize(package, token);
+            });
         }
 
         #endregion

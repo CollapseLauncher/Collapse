@@ -1,23 +1,35 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net9.0-windows10.0.22621": {
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.1.24431.7, )",
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "B8jHIIszeUdDY+O4G1/xPOuhrriwsv9Z8/u3XSOAqc8Z0mQCeLBKg2oLGElDZeRF8wWXDGklAKY3f0IHopyXkQ=="
+      },
+      "Microsoft.Windows.CsWinRT": {
+        "type": "Direct",
+        "requested": "[2.1.3, )",
+        "resolved": "2.1.3",
+        "contentHash": "Nl8A4rQ4l2GNj703GvLSbr0Vo++FjxKxU7CIj1pcKz/sN8XSvD4dIvUCYYgD16o2pG4PSSXNgAxfwDUwLGHLPA=="
+      },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.28.1",
-        "contentHash": "i4EN7Z+OUdoRBNiVMIG6CfMh6UowXiUx+BKgE+GHLbAX5ArSmpUTFUDwgRNwNfYdosl6GXuBlDiHCcXSHw43+A=="
+        "resolved": "3.28.2",
+        "contentHash": "Z86ZKAB+v1B/m0LTM+EVamvZlYw/g3VND3/Gs4M/+aDIxa2JE9YPKjDxTpf0gv2sh26hrve3eI03brxBmzn92g=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA=="
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "giMiDNlne8WcLG7rsEfrETaukDUTBPn8a97QRo9LYR71O0Rb4SJ6TbfGdQ9oiBYldVPSAbSQANb5ThLZOo408Q=="
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.28.1, )",
+          "Google.Protobuf": "[3.28.2, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "System.IO.Hashing": "[8.0.0, )"
+          "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
         }
       },
       "hi3helper.http": {

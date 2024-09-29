@@ -163,54 +163,75 @@
               Grid.Row="0">
             <Grid x:Name="AppTitleBar"
                   x:FieldModifier="internal">
-                <Button x:Name="MinimizeButton"
-                        Width="40"
-                        Height="40"
-                        Margin="4,4,48,4"
-                        HorizontalAlignment="Right"
-                        x:FieldModifier="internal"
-                        Click="MinimizeButton_Click"
-                        Content="M 0 0 H 10"
-                        CornerRadius="8"
-                        Style="{ThemeResource WindowCaptionButton}" />
-                <Button x:Name="CloseButton"
-                        Width="40"
-                        Height="40"
-                        Margin="4"
-                        HorizontalAlignment="Right"
-                        x:FieldModifier="internal"
-                        Background="{ThemeResource WindowCaptionBackgroundClose}"
-                        Click="CloseButton_Click"
-                        Content="M 0 0 L 10 10 M 10 0 L 0 10"
-                        CornerRadius="8"
-                        Style="{ThemeResource WindowCaptionButton}">
-                    <Button.Resources>
-                        <ResourceDictionary>
-                            <ResourceDictionary.ThemeDictionaries>
-                                <ResourceDictionary x:Key="Light">
-                                    <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
-                                                    ResourceKey="CloseButtonBackgroundPointerOver" />
-                                    <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
-                                                    ResourceKey="CloseButtonBackgroundPressed" />
-                                    <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
-                                                    ResourceKey="CloseButtonStrokePointerOver" />
-                                    <StaticResource x:Key="WindowCaptionButtonStrokePressed"
-                                                    ResourceKey="CloseButtonStrokePressed" />
-                                </ResourceDictionary>
-                                <ResourceDictionary x:Key="Default">
-                                    <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
-                                                    ResourceKey="CloseButtonBackgroundPointerOver" />
-                                    <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
-                                                    ResourceKey="CloseButtonBackgroundPressed" />
-                                    <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
-                                                    ResourceKey="CloseButtonStrokePointerOver" />
-                                    <StaticResource x:Key="WindowCaptionButtonStrokePressed"
-                                                    ResourceKey="CloseButtonStrokePressed" />
-                                </ResourceDictionary>
-                            </ResourceDictionary.ThemeDictionaries>
-                        </ResourceDictionary>
-                    </Button.Resources>
-                </Button>
+                <Grid.Resources>
+                    <ThemeShadow x:Key="CaptionButtonShadow" />
+                </Grid.Resources>
+                <Grid Width="88"
+                      Height="32"
+                      Margin="8,8"
+                      HorizontalAlignment="Right"
+                      CornerRadius="8"
+                      Shadow="{StaticResource CaptionButtonShadow}"
+                      Translation="0,0,16" />
+                <Grid x:Name="CaptionButtonAcrylicGrid"
+                      Margin="8,8"
+                      HorizontalAlignment="Right"
+                      Background="{ThemeResource WindowCaptionBackgroundAcrylicLight}"
+                      CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="MinimizeButton"
+                            Grid.Column="0"
+                            Width="48"
+                            Height="32"
+                            x:FieldModifier="internal"
+                            Click="MinimizeButton_Click"
+                            Content="M 0 0 H 10"
+                            CornerRadius="8,0,0,8"
+                            Loaded="SetWindowCaptionLoadedCursor"
+                            Style="{ThemeResource WindowCaptionButton}" />
+                    <Button x:Name="CloseButton"
+                            Grid.Column="1"
+                            Width="40"
+                            Height="32"
+                            HorizontalAlignment="Right"
+                            x:FieldModifier="internal"
+                            Background="{ThemeResource WindowCaptionBackgroundClose}"
+                            Click="CloseButton_Click"
+                            Content="M 0 0 L 10 10 M 10 0 L 0 10"
+                            CornerRadius="0,8,8,0"
+                            Loaded="SetWindowCaptionLoadedCursor"
+                            Style="{ThemeResource WindowCaptionButton}">
+                        <Button.Resources>
+                            <ResourceDictionary>
+                                <ResourceDictionary.ThemeDictionaries>
+                                    <ResourceDictionary x:Key="Light">
+                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                                        ResourceKey="WindowCaptionBackgroundClosePointerOver" />
+                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
+                                                        ResourceKey="WindowCaptionBackgroundClosePressed" />
+                                        <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
+                                                        ResourceKey="CloseButtonStrokePointerOver" />
+                                        <StaticResource x:Key="WindowCaptionButtonStrokePressed"
+                                                        ResourceKey="CloseButtonStrokePressed" />
+                                    </ResourceDictionary>
+                                    <ResourceDictionary x:Key="Default">
+                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                                        ResourceKey="WindowCaptionBackgroundClosePointerOver" />
+                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
+                                                        ResourceKey="WindowCaptionBackgroundClosePressed" />
+                                        <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
+                                                        ResourceKey="CloseButtonStrokePointerOver" />
+                                        <StaticResource x:Key="WindowCaptionButtonStrokePressed"
+                                                        ResourceKey="CloseButtonStrokePressed" />
+                                    </ResourceDictionary>
+                                </ResourceDictionary.ThemeDictionaries>
+                            </ResourceDictionary>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

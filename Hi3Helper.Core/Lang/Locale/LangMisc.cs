@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangMisc _Misc { get; set; } = LangFallback?._Misc;
-            public sealed class LangMisc
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangMisc
             {
                 public string SizePrefixes1000U              { get; set; } = LangFallback?._Misc.SizePrefixes1000U;
                 public string UpdateCompleteTitle            { get; set; } = LangFallback?._Misc.UpdateCompleteTitle;

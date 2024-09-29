@@ -228,44 +228,46 @@
                                                 Spacing="8">
                                         <Button x:Name="CheckFilesQuickBtn"
                                                 HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
                                                 Click="StartGameCheck"
                                                 Tag="Fast"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}"
-                                                HorizontalContentAlignment="Stretch">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <FontIcon Grid.Column="1"
+                                                          HorizontalAlignment="Right"
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf101;"
-                                                          HorizontalAlignment="Right"/>
-                                                <TextBlock FontWeight="SemiBold"
+                                                          Glyph="&#xf101;" />
+                                                <TextBlock Grid.Column="0"
                                                            HorizontalAlignment="Left"
+                                                           FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" />
                                             </Grid>
                                         </Button>
                                         <Button x:Name="CheckFilesFullBtn"
                                                 HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
                                                 Click="StartGameCheck"
                                                 Style="{ThemeResource AccentButtonStyle}"
                                                 Tag="Full"
-                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}"
-                                                HorizontalContentAlignment="Stretch">
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}">
                                             <Grid ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <FontIcon Grid.Column="1"
+                                                          HorizontalAlignment="Right"
                                                           FontFamily="{ThemeResource FontAwesomeSolid}"
                                                           FontSize="16"
-                                                          Glyph="&#xf105;"
-                                                          HorizontalAlignment="Right"/>
-                                                <TextBlock FontWeight="SemiBold"
+                                                          Glyph="&#xf105;" />
+                                                <TextBlock Grid.Column="0"
                                                            HorizontalAlignment="Left"
+                                                           FontWeight="SemiBold"
                                                            Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Full}" />
                                             </Grid>
                                         </Button>

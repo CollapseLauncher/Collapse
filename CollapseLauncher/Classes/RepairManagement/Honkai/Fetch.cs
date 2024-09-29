@@ -220,7 +220,7 @@ namespace CollapseLauncher
             ArgumentNullException.ThrowIfNull(stream);
             
             Memory<byte> header = new byte[_collapseHeader.Length];
-            await stream.ReadAsync(header, token)!;
+            _ = await stream.ReadAsync(header, token)!;
             if (!header.Span.SequenceEqual(_collapseHeader))
                 throw new InvalidDataException($"Daftar pustaka file is corrupted! Expecting header: 0x{BinaryPrimitives.ReadInt64LittleEndian(_collapseHeader):x8} but got: 0x{BinaryPrimitives.ReadInt64LittleEndian(header.Span):x8} instead!");
         }
@@ -241,12 +241,12 @@ namespace CollapseLauncher
         private HonkaiRepairAssetIgnore GetIgnoredAssetsProperty()
         {
             // Try get the parent registry key
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(_gameVersionManager!.GamePreset!.ConfigRegistryLocation!);
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(_gameVersionManager!.GamePreset!.ConfigRegistryLocation);
             if (keys == null) return HonkaiRepairAssetIgnore.CreateEmpty(); // Return an empty property if the parent key doesn't exist
 
             // Initialize the property
-            AudioPCKType[] IgnoredAudioPCKTypes = Array.Empty<AudioPCKType>();
-            int[] IgnoredVideoCGSubCategory = Array.Empty<int>();
+            AudioPCKType[] IgnoredAudioPCKTypes      = [];
+            int[]          IgnoredVideoCGSubCategory = [];
 
             // Try get the values of the registry key of the Audio ignored list
             object? objIgnoredAudioPCKTypes = keys.GetValue("GENERAL_DATA_V2_DeletedAudioTypes_h214176984");
@@ -310,14 +310,13 @@ namespace CollapseLauncher
 
         private async Task BuildAndEnumerateVideoVersioningFile(CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, string assetBundleURL)
         {
-            ArgumentNullException.ThrowIfNull(token);
             ArgumentNullException.ThrowIfNull(assetIndex);
             
             // Get the base URL
             string baseURL = CombineURLFromString((GetAppConfigValue("EnableHTTPRepairOverride").ToBool() ? "http://" : "https://") + assetBundleURL, "/Video/");
 
             // Build video versioning file
-            using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false))
+            await using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false))
             {
                 // Iterate the metadata to be converted into asset index in parallel
                 await Parallel.ForEachAsync(enumEntry!, new ParallelOptions
@@ -340,10 +339,10 @@ namespace CollapseLauncher
                         }
                     }
 
-                    #if DEBUG
+                #if DEBUG
                     if (isCGIgnored)
                         LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {(_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN)}", LogType.Debug, true);
-                    #endif
+                #endif
 
                     if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                     {
@@ -603,101 +602,100 @@ namespace CollapseLauncher
             bool isPatchConfigXMFStreamExist = patchConfigIdentifier != null;
 
             // Initialize temporary XMF stream
-            using MemoryStream? tempXMFStream = new();
-            using MemoryStream? tempXMFMetaStream = new();
+            using MemoryStream tempXMFStream = new();
+            using MemoryStream tempXMFMetaStream = new();
             
             using Stream? metaBaseXMFStream = !_isOnlyRecoverMain && isPlatformXMFStreamExist ?
                 await xmfPlatformIdentifier!.GetOriginalFileStream(_httpClient, token) :
                 null;
-            using Stream? metaDataXMFStream = !_isOnlyRecoverMain && isPlatformXMFStreamExist ? xmfPlatformIdentifier?.fileStream : null;
-
-            bool isEitherXMFExist = !(xmfBaseIdentifier == null && xmfCurrentIdentifier == null);
-
-            if (isEitherXMFExist)
+            if (xmfPlatformIdentifier != null)
             {
-                using Stream? baseXMFStream = !_isOnlyRecoverMain && isSecondaryXMFStreamExist ?
-                    await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token) :
-                    await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token);
-                using Stream? dataXMFStream = !_isOnlyRecoverMain && isSecondaryXMFStreamExist ? xmfCurrentIdentifier?.fileStream : xmfBaseIdentifier?.fileStream;
+                using Stream? metaDataXMFStream = !_isOnlyRecoverMain ? xmfPlatformIdentifier.fileStream : null;
 
-                // Fetch only RecoverMain is disabled
-                using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(!_isOnlyRecoverMain && isSecondaryXMFStreamExist ? xmfSecPath : xmfPriPath)!, FileMode.Create, FileAccess.ReadWrite))
+                bool isEitherXMFExist = !(xmfBaseIdentifier == null && xmfCurrentIdentifier == null);
+
+                if (isEitherXMFExist)
                 {
-                    // Download the secondary XMF into MemoryStream
-                    await DoCopyStreamProgress(baseXMFStream, fs1, token);
-
-                    // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
-                    if (!_isOnlyRecoverMain)
+                    using Stream? baseXMFStream = !_isOnlyRecoverMain && isSecondaryXMFStreamExist ?
+                        await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token) :
+                        await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token);
+                    if (xmfCurrentIdentifier != null)
                     {
-                        using (FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write))
+                        using Stream? dataXMFStream = !_isOnlyRecoverMain ? xmfCurrentIdentifier.fileStream : xmfBaseIdentifier?.fileStream;
+
+                        // Fetch only RecoverMain is disabled
+                        using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(!_isOnlyRecoverMain ? xmfSecPath : xmfPriPath)!, FileMode.Create, FileAccess.ReadWrite))
                         {
-                            fs1.Position = 0;
-                            await fs1.CopyToAsync(fs2);
+                            // Download the secondary XMF into MemoryStream
+                            await DoCopyStreamProgress(baseXMFStream, fs1, token);
+
+                            // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
+                            if (!_isOnlyRecoverMain)
+                            {
+                                using (FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write))
+                                {
+                                    fs1.Position = 0;
+                                    await fs1.CopyToAsync(fs2);
+                                }
+                            }
                         }
+
+                        // Get the estimated size of the local xmf size
+                        FileInfo xmfFileInfoLocal = new FileInfo(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
+                        long?    estimatedXmfSize = !xmfFileInfoLocal.Exists ? null : xmfFileInfoLocal.Length;
+
+                        // Copy the source stream into temporal stream
+                        await DoCopyStreamProgress(dataXMFStream, tempXMFStream, token, estimatedXmfSize);
                     }
+
+                    tempXMFStream.Position = 0;
                 }
 
-                // Get the estimated size of the local xmf size
-                FileInfo xmfFileInfoLocal = new FileInfo(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
-                long? estimatedXmfSize = !xmfFileInfoLocal.Exists ? null : xmfFileInfoLocal.Length;
+                // Download the platform XMF file if exist
+                if (!_isOnlyRecoverMain)
+                {
+                    // Create the filestream
+                    await using FileStream fsMeta = new FileStream(EnsureCreationOfDirectory(xmfPlatformPath), FileMode.Create, FileAccess.Write);
 
-                // Copy the source stream into temporal stream
-                await DoCopyStreamProgress(dataXMFStream, tempXMFStream, token, estimatedXmfSize);
-                tempXMFStream.Position = 0;
-            }
+                    // Download the platform XMF (RAW) into FileStream
+                    await DoCopyStreamProgress(metaBaseXMFStream, fsMeta, token);
 
-            // Download the platform XMF file if exist
-            if (!_isOnlyRecoverMain && isPlatformXMFStreamExist)
-            {
-                // Create the filestream
-                using FileStream fsMeta = new FileStream(EnsureCreationOfDirectory(xmfPlatformPath), FileMode.Create, FileAccess.Write);
+                    // Download the platform XMF (Data) into FileStream
+                    await (metaDataXMFStream?.CopyToAsync(tempXMFMetaStream, token) ?? Task.CompletedTask);
+                    tempXMFMetaStream.Position = 0;
+                }
 
-                // Download the platform XMF (RAW) into FileStream
-                await DoCopyStreamProgress(metaBaseXMFStream, fsMeta, token);
+                // Fetch for PatchConfig.xmf file if available (Block patch metadata)
+                if (!_isOnlyRecoverMain && isPatchConfigXMFStreamExist)
+                {
+                    patchConfigInfo = await FetchPatchConfigXMFFile(isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, patchConfigIdentifier, _httpClient, token);
+                }
 
-                // Download the platform XMF (Data) into FileStream
-                await (metaDataXMFStream?.CopyToAsync(tempXMFMetaStream, token) ?? Task.CompletedTask);
-                tempXMFMetaStream.Position = 0;
-            }
-
-            // Fetch for PatchConfig.xmf file if available (Block patch metadata)
-            if (!_isOnlyRecoverMain && isPatchConfigXMFStreamExist && isPlatformXMFStreamExist)
-            {
-                patchConfigInfo = await FetchPatchConfigXMFFile(isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, patchConfigIdentifier, _httpClient, token);
-            }
-
-            if (isPlatformXMFStreamExist)
-            {
                 // After all completed, then Deserialize the XMF to build the asset index
                 BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath, isEitherXMFExist ? tempXMFStream : tempXMFMetaStream, !isEitherXMFExist);
             }
-#nullable restore
+
+        #nullable restore
         }
 
         // ReSharper disable once UnusedParameter.Local
         private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Stream xmfStream, SenadinaFileIdentifier patchConfigFileIdentifier, 
-                                                                       HttpClient _httpClient, CancellationToken token)
+                                                                       HttpClient httpClient, CancellationToken token)
         {
             // Start downloading XMF and load it to MemoryStream first
-            using (MemoryStream mfs = new MemoryStream())
-            {
-                // Copy the remote stream of Patch Config to temporal mfs
-                await patchConfigFileIdentifier!.fileStream!.CopyToAsync(mfs, token);
-                // Reset the MemoryStream position
-                mfs.Position = 0;
+            using MemoryStream mfs = new MemoryStream();
+            // Copy the remote stream of Patch Config to temporal mfs
+            await patchConfigFileIdentifier!.fileStream!.CopyToAsync(mfs, token);
+            // Reset the MemoryStream position
+            mfs.Position = 0;
 
-#nullable enable
-                // Get the version provided by the XMF
-                int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
-                if (gameVersion == null) return null;
-#nullable disable
-
-                // Initialize and parse the manifest, then return the Patch Asset
-                return new BlockPatchManifest(mfs, gameVersion);
-            }
+        #nullable enable
+            // Get the version provided by the XMF
+            int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
+            // Initialize and parse the manifest, then return the Patch Asset
+            return gameVersion == null ? null : new BlockPatchManifest(mfs, gameVersion);
         }
 
-#nullable enable
         private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream, bool isMeta)
         {
             // Reset the temporal stream pos.

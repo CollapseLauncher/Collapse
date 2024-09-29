@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,6 +8,8 @@
         public sealed partial class LocalizationParams
         {
             public LangAppNotification _AppNotification { get; set; } = LangFallback?._AppNotification;
+
+            [GeneratedBindableCustomProperty]
             public sealed class LangAppNotification
             {
                 public string NotifMetadataUpdateTitle { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateTitle;

@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangInstallMigrateSteam _InstallMigrateSteam { get; set; } = LangFallback?._InstallMigrateSteam;
-            public sealed class LangInstallMigrateSteam
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangInstallMigrateSteam
             {
                 public string PageTitle { get; set; } = LangFallback?._InstallMigrateSteam.PageTitle;
                 public string Step1Title { get; set; } = LangFallback?._InstallMigrateSteam.Step1Title;

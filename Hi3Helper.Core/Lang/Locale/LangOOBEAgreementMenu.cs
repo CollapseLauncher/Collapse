@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangOOBEAgreementMenu _OOBEAgreementMenu { get; set; } = LangFallback?._OOBEAgreementMenu;
-            public sealed class LangOOBEAgreementMenu
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangOOBEAgreementMenu
             {
                 public string AgreementTitle { get; set; } = LangFallback?._OOBEAgreementMenu.AgreementTitle;
             }

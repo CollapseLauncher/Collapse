@@ -7,10 +7,11 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using FontWeight = Windows.UI.Text.FontWeight;
 using FontWeights = Microsoft.UI.Text.FontWeights;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CommunityToolkit.WinUI.Controls.MarkdownTextBlockRns;
 
-public sealed class MarkdownThemes : DependencyObject
+public sealed partial class MarkdownThemes : DependencyObject
 {
     internal static MarkdownThemes Default { get; } = new();
 

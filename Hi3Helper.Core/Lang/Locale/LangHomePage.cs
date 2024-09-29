@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangHomePage _HomePage { get; set; } = LangFallback?._HomePage;
-            public sealed class LangHomePage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangHomePage
             {
                 public string PageTitle { get; set; } = LangFallback?._HomePage.PageTitle;
                 public string PreloadTitle { get; set; } = LangFallback?._HomePage.PreloadTitle;
