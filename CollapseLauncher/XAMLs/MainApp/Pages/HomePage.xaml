@@ -1404,8 +1404,7 @@
                     Grid.Column="1"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
-                    Spacing="8"
-                    x:Name="AdditionalButtonsGrid">
+                    Spacing="8">
             <Button x:Name="PlaytimeBtn"
                     Padding="0"
                     HorizontalAlignment="Stretch"
