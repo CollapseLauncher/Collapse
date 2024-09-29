@@ -654,7 +654,8 @@
                            HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind DefaultPostPanelIndex}">
                         <Pivot.Resources>
-                            <Style BasedOn="{StaticResource MinScrollBarStyle}" TargetType="ScrollBar"/>
+                            <Style BasedOn="{StaticResource MinScrollBarStyle}"
+                                   TargetType="ScrollBar" />
                         </Pivot.Resources>
                         <PivotItem>
                             <PivotItem.Header>
@@ -1394,17 +1395,109 @@
                     Grid.Column="1"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
-                    Spacing="8">
+                    Spacing="8"
+                    x:Name="AdditionalButtonsGrid">
             <Button x:Name="PlaytimeBtn"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    VerticalContentAlignment="Stretch"
                     Padding="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
                     Click="ForceUpdatePlaytimeButton_Click"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
+                    PointerExited="HidePlaytimeStatsFlyout"
                     Shadow="{ThemeResource SharedShadow}"
+                    Tag="{x:Bind PlaytimeStatsFlyout}"
                     Translation="0,0,32">
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout x:Name="PlaytimeStatsFlyout"
+                            OverlayInputPassThroughElement="{x:Bind PlaytimeBtn}"
+                            Placement="Top"
+                            LightDismissOverlayMode="On">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Margin="0,0,0,4"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Title}" />
+                            <Grid ColumnSpacing="8"
+                                  Grid.Row="1"
+                                  HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Daily}" />
+                                    <TextBlock x:Name="PlaytimeStatsDaily"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Weekly}" />
+                                    <TextBlock x:Name="PlaytimeStatsWeekly"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Monthly}" />
+                                    <TextBlock x:Name="PlaytimeStatsMonthly"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Margin="0,12,0,4"
+                                       Grid.Row="2"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession}" />
+                            <Grid ColumnSpacing="8"
+                                  Grid.Row="3"
+                                  HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime}" />
+                                    <TextBlock x:Name="PlaytimeStatsLastPlayed"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration}" />
+                                    <TextBlock x:Name="PlaytimeStatsLastSession"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch">
@@ -1412,122 +1505,32 @@
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               Background="{ThemeResource GameSettingsBtnBrush}" />
-                        <Grid Margin="16,0,16,2"
+                        <Grid x:Name="PlaytimeStatsGrid"
+                              Margin="16,0,16,2"
                               ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <FontIcon FontSize="18"
-                                      HorizontalAlignment="Stretch"
+                            <FontIcon HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
+                                      FontSize="18"
                                       Glyph="&#xE916;" />
-                            <TextBlock Grid.Column="1"
-                                       x:Name="PlaytimeMainBtn"
+                            <TextBlock x:Name="PlaytimeMainBtn"
+                                       Grid.Column="1"
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        Text="-" />
-                            <TextBlock Grid.Column="2"
-                                       x:Name="PlaytimeToolTipIcon"
+                            <TextBlock x:Name="PlaytimeToolTipIcon"
+                                       Grid.Column="2"
+                                       Margin="0,0,-4,0"
                                        VerticalAlignment="Center"
                                        FontFamily="{ThemeResource FontAwesomeSolid}"
                                        FontSize="18"
                                        Opacity="0.25"
-                                       Margin="0,0,-4,0"
                                        Text="&#xf05a;" />
-                            <ToolTipService.ToolTip>
-                                <StackPanel Margin="4">
-                                    <TextBlock 
-                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Title}"
-                                            Margin="0, 0, 0, 4"
-                                        />
-                                    <Grid ColumnSpacing="8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel
-                                                Grid.Column="0"
-                                                HorizontalAlignment="Center">
-                                            <TextBlock 
-                                                    HorizontalAlignment="Center"
-                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Daily}" />
-                                            <TextBlock
-                                                    x:Name="PlaytimeStatsDaily"
-                                                    HorizontalAlignment="Center"
-                                                    Foreground="{ThemeResource AccentColor}"
-                                                    FontWeight="Bold"
-                                                    Text="-" />
-                                        </StackPanel>
-                                        <StackPanel 
-                                                Grid.Column="1"
-                                                HorizontalAlignment="Center">
-                                            <TextBlock
-                                                    HorizontalAlignment="Center"
-                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Weekly}" />
-                                            <TextBlock
-                                                    x:Name="PlaytimeStatsWeekly"
-                                                    HorizontalAlignment="Center"
-                                                    Foreground="{ThemeResource AccentColor}"
-                                                    FontWeight="Bold"
-                                                    Text="-" />
-                                        </StackPanel>
-                                        <StackPanel
-                                                Grid.Column="2"
-                                                HorizontalAlignment="Center">
-                                            <TextBlock 
-                                                    HorizontalAlignment="Center"
-                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Monthly}" />
-                                            <TextBlock
-                                                    x:Name="PlaytimeStatsMonthly"
-                                                    HorizontalAlignment="Center"
-                                                    FontWeight="Bold"
-                                                    Foreground="{ThemeResource AccentColor}"
-                                                    Text="-" />
-                                        </StackPanel>
-                                    </Grid>
-                                    <TextBlock 
-                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession}"
-                                            Margin="0, 12, 0, 4"/>
-                                    <Grid ColumnSpacing="8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel
-                                                Grid.Column="0"
-                                                HorizontalAlignment="Center">
-                                            <TextBlock 
-                                                    HorizontalAlignment="Center"
-                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime}" />
-                                            <TextBlock
-                                                    x:Name="PlaytimeStatsLastPlayed"
-                                                    HorizontalAlignment="Center"
-                                                    Foreground="{ThemeResource AccentColor}"
-                                                    FontWeight="Bold"
-                                                    Text="-" />
-                                        </StackPanel>
-                                        <StackPanel
-                                                Grid.Column="1"
-                                                HorizontalAlignment="Center">
-                                            <TextBlock
-                                                    HorizontalAlignment="Center"
-                                                    Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration}" />
-                                            <TextBlock
-                                                    x:Name="PlaytimeStatsLastSession"
-                                                    HorizontalAlignment="Center"
-                                                    Foreground="{ThemeResource AccentColor}"
-                                                    FontWeight="Bold"
-                                                    Text="-" />
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                            </ToolTipService.ToolTip>
                         </Grid>
                     </Grid>
                 </Button.Content>
@@ -1540,8 +1543,8 @@
                                            Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="HourPlaytimeTextBox"
                                              HorizontalContentAlignment="Center"
@@ -1553,8 +1556,8 @@
                                              BeforeTextChanging="NumberValidationTextBox"
                                              Text="" />
                                 </Grid>
-                                <StackPanel Orientation="Horizontal"
-                                            Margin="0,-4,0,4">
+                                <StackPanel Margin="0,-4,0,4"
+                                            Orientation="Horizontal">
                                     <TextBlock x:Name="PlaytimeHours"
                                                Width="55"
                                                Margin="5,1,0,0"
@@ -1585,8 +1588,8 @@
                                                   Glyph="" />
                                         <TextBlock Grid.Column="1"
                                                    Margin="8,0,0,0"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
+                                                   TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Button>
                                 <Button x:Name="ResetPlaytimeButton"
@@ -1594,7 +1597,7 @@
                                         HorizontalContentAlignment="Left"
                                         Click="ResetPlaytimeButton_Click"
                                         CornerRadius="14">
-                                    <Grid Margin="4, 0">
+                                    <Grid Margin="4,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="18" />
                                             <ColumnDefinition />
@@ -1605,8 +1608,8 @@
                                                   Glyph="" />
                                         <TextBlock Grid.Column="1"
                                                    Margin="8,0,0,0"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"
+                                                   TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Button>
                             </StackPanel>
@@ -1626,14 +1629,19 @@
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
+                <ToolTipService.ToolTip>
+                    <ToolTip Opened="ShowPlaytimeStatsFlyout"
+                             Tag="{x:Bind PlaytimeBtn}"
+                             Visibility="Collapsed" />
+                </ToolTipService.ToolTip>
             </Button>
             <Button x:Name="CommunityToolsBtn"
+                    Padding="0"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
-                    Padding="0"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
@@ -1658,8 +1666,8 @@
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
-                                           TextTrimming="CharacterEllipsis"
-                                           Text="{x:Bind Text}" />
+                                           Text="{x:Bind Text}"
+                                           TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button>
                     </DataTemplate>
@@ -1685,8 +1693,8 @@
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            FontWeight="SemiBold"
-                                           TextTrimming="CharacterEllipsis"
-                                           Text="{x:Bind Text}" />
+                                           Text="{x:Bind Text}"
+                                           TextTrimming="CharacterEllipsis" />
                             </Grid>
                         </Button>
                     </DataTemplate>
@@ -1701,12 +1709,12 @@
                         <Grid Margin="16,0,16,2"
                               ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <FontIcon FontSize="18"
-                                      HorizontalAlignment="Stretch"
+                            <FontIcon HorizontalAlignment="Stretch"
                                       VerticalAlignment="Center"
+                                      FontSize="18"
                                       Glyph="&#xE71B;" />
                             <TextBlock Grid.Column="1"
                                        HorizontalAlignment="Stretch"
@@ -1788,12 +1796,12 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="GameStartupSetting"
+                    Padding="0"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GameStartupSetting)}"
-                    Padding="0"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Content>
                     <Grid HorizontalAlignment="Stretch"
@@ -1805,8 +1813,8 @@
                         <Grid Margin="16,0,16,2"
                               ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <AnimatedIcon Width="18">
                                 <AnimatedIcon.Source>

@@ -2352,6 +2352,37 @@ namespace CollapseLauncher.Pages
 
             static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
         }
+
+        private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)
+        {
+            ToolTip tooltip = sender as ToolTip;
+            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+        }
+
+        private void HidePlaytimeStatsFlyout(object sender, PointerRoutedEventArgs e)
+        {
+            FrameworkElement senderAsFrameworkElement = sender as FrameworkElement;
+
+            /* This fix an issue where the flyout spawns right on top of the button
+             * instead of on top of the button in its 1st frame.
+             * 
+             * If this method is called even within its button's range, then just
+             * ignore the call and do not hide the flyout.
+             */
+            PointerPoint pointerPoint = e.GetCurrentPoint(senderAsFrameworkElement);
+            Point currentCursorPosition = pointerPoint.Position;
+            if ((currentCursorPosition.X > 0
+              && currentCursorPosition.Y > 0
+              && currentCursorPosition.X <= senderAsFrameworkElement.ActualWidth
+              && currentCursorPosition.Y <= senderAsFrameworkElement.ActualHeight))
+            {
+                return;
+            }
+
+            // Otherwise, hide the flyout
+            Flyout flyout = senderAsFrameworkElement.Tag as Flyout;
+            flyout!.Hide();
+        }
 #nullable restore
         #endregion
 
