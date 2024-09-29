@@ -188,7 +188,8 @@ namespace CollapseLauncher.Pages
                 InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
                 SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
                 ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
-                BottomButtons.SetAllControlsCursorRecursive(cursor);
+                RightBottomButtons.SetAllControlsCursorRecursive(cursor);
+                LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
                 GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
 
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;

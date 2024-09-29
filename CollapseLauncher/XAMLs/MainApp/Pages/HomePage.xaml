@@ -1399,252 +1399,12 @@
                 </Button.Content>
             </Button>
         </Grid>
-        <StackPanel x:Name="BottomButtons"
+        <StackPanel x:Name="RightBottomButtons"
                     Grid.Row="2"
                     Grid.Column="1"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
                     Spacing="8">
-            <Button x:Name="PlaytimeBtn"
-                    Padding="0"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalContentAlignment="Stretch"
-                    Click="ForceUpdatePlaytimeButton_Click"
-                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
-                    PointerExited="HidePlaytimeStatsFlyout"
-                    Shadow="{ThemeResource SharedShadow}"
-                    Tag="{x:Bind PlaytimeStatsFlyout}"
-                    Translation="0,0,32">
-                <FlyoutBase.AttachedFlyout>
-                    <Flyout x:Name="PlaytimeStatsFlyout"
-                            OverlayInputPassThroughElement="{x:Bind PlaytimeBtn}"
-                            Placement="Top"
-                            LightDismissOverlayMode="On">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Margin="0,0,0,4"
-                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Title}" />
-                            <Grid ColumnSpacing="8"
-                                  Grid.Row="1"
-                                  HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0"
-                                            HorizontalAlignment="Left">
-                                    <TextBlock HorizontalAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Daily}" />
-                                    <TextBlock x:Name="PlaytimeStatsDaily"
-                                               HorizontalAlignment="Left"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource AccentColor}"
-                                               Text="-" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1"
-                                            HorizontalAlignment="Left">
-                                    <TextBlock HorizontalAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Weekly}" />
-                                    <TextBlock x:Name="PlaytimeStatsWeekly"
-                                               HorizontalAlignment="Left"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource AccentColor}"
-                                               Text="-" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2"
-                                            HorizontalAlignment="Left">
-                                    <TextBlock HorizontalAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Monthly}" />
-                                    <TextBlock x:Name="PlaytimeStatsMonthly"
-                                               HorizontalAlignment="Left"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource AccentColor}"
-                                               Text="-" />
-                                </StackPanel>
-                            </Grid>
-                            <TextBlock Margin="0,12,0,4"
-                                       Grid.Row="2"
-                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession}" />
-                            <Grid ColumnSpacing="8"
-                                  Grid.Row="3"
-                                  HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0"
-                                            HorizontalAlignment="Left">
-                                    <TextBlock HorizontalAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime}" />
-                                    <TextBlock x:Name="PlaytimeStatsLastPlayed"
-                                               HorizontalAlignment="Left"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource AccentColor}"
-                                               Text="-" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1"
-                                            HorizontalAlignment="Left">
-                                    <TextBlock HorizontalAlignment="Left"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration}" />
-                                    <TextBlock x:Name="PlaytimeStatsLastSession"
-                                               HorizontalAlignment="Left"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource AccentColor}"
-                                               Text="-" />
-                                </StackPanel>
-                            </Grid>
-                        </Grid>
-                    </Flyout>
-                </FlyoutBase.AttachedFlyout>
-                <Button.Content>
-                    <Grid HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch">
-                        <Grid Margin="-8"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="{ThemeResource GameSettingsBtnBrush}" />
-                        <Grid x:Name="PlaytimeStatsGrid"
-                              Margin="16,0,16,2"
-                              ColumnSpacing="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <FontIcon HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Center"
-                                      FontSize="18"
-                                      Glyph="&#xE916;" />
-                            <TextBlock x:Name="PlaytimeMainBtn"
-                                       Grid.Column="1"
-                                       HorizontalAlignment="Stretch"
-                                       VerticalAlignment="Center"
-                                       FontWeight="SemiBold"
-                                       Text="-" />
-                            <TextBlock x:Name="PlaytimeToolTipIcon"
-                                       Grid.Column="2"
-                                       Margin="0,0,-4,0"
-                                       VerticalAlignment="Center"
-                                       FontFamily="{ThemeResource FontAwesomeSolid}"
-                                       FontSize="18"
-                                       Opacity="0.25"
-                                       Text="&#xf05a;" />
-                        </Grid>
-                    </Grid>
-                </Button.Content>
-                <Button.Flyout>
-                    <Flyout x:Name="PlaytimeFlyout">
-                        <StackPanel MaxWidth="250">
-                            <StackPanel x:Name="PlaytimeIdleStack"
-                                        Spacing="8">
-                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="HourPlaytimeTextBox"
-                                             HorizontalContentAlignment="Center"
-                                             BeforeTextChanging="NumberValidationTextBox"
-                                             Text="" />
-                                    <TextBox x:Name="MinutePlaytimeTextBox"
-                                             Grid.Column="1"
-                                             HorizontalContentAlignment="Center"
-                                             BeforeTextChanging="NumberValidationTextBox"
-                                             Text="" />
-                                </Grid>
-                                <StackPanel Margin="0,-4,0,4"
-                                            Orientation="Horizontal">
-                                    <TextBlock x:Name="PlaytimeHours"
-                                               Width="55"
-                                               Margin="5,1,0,0"
-                                               HorizontalAlignment="Center"
-                                               FontSize="11"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" />
-                                    <TextBlock x:Name="PlaytimeMinutes"
-                                               Width="55"
-                                               Margin="19,1,0,0"
-                                               HorizontalAlignment="Center"
-                                               FontSize="11"
-                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" />
-                                </StackPanel>
-                                <Button x:Name="ChangePlaytimeButton"
-                                        Margin="-4,0"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Click="ChangePlaytimeButton_Click"
-                                        CornerRadius="14"
-                                        Style="{ThemeResource AccentButtonStyle}">
-                                    <Grid Margin="4,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="18" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0"
-                                                  FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                  FontSize="16"
-                                                  Glyph="" />
-                                        <TextBlock Grid.Column="1"
-                                                   Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
-                                                   TextTrimming="CharacterEllipsis" />
-                                    </Grid>
-                                </Button>
-                                <Button x:Name="ResetPlaytimeButton"
-                                        Margin="-4,0,-4,-4"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Click="ResetPlaytimeButton_Click"
-                                        CornerRadius="14">
-                                    <Grid Margin="4,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="18" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0"
-                                                  FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                  FontSize="16"
-                                                  Glyph="" />
-                                        <TextBlock Grid.Column="1"
-                                                   Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"
-                                                   TextTrimming="CharacterEllipsis" />
-                                    </Grid>
-                                </Button>
-                            </StackPanel>
-                            <StackPanel x:Name="PlaytimeRunningStack"
-                                        Margin="0,0"
-                                        Visibility="Collapsed">
-                                <TextBlock Margin="0,0,0,8"
-                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
-                                <TextBlock Margin="0,0,0,8"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}"
-                                           TextWrapping="Wrap" />
-                                <TextBlock Margin="0,0,0,0"
-                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Flyout>
-                </Button.Flyout>
-                <ToolTipService.ToolTip>
-                    <ToolTip Opened="ShowPlaytimeStatsFlyout"
-                             Tag="{x:Bind PlaytimeBtn}"
-                             Visibility="Collapsed" />
-                </ToolTipService.ToolTip>
-            </Button>
             <Button x:Name="CommunityToolsBtn"
                     Padding="0"
                     HorizontalAlignment="Stretch"
@@ -2201,112 +1961,185 @@
                 </Button.Flyout>
             </Button>
         </StackPanel>
-        <Grid Grid.Row="2"
-              Grid.Column="0"
-              Grid.ColumnSpan="2"
-              Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid x:Name="LauncherGameStatusPlaceholderBtn"
-                  Grid.Row="0"
-                  Grid.Column="0"
-                  HorizontalAlignment="Stretch"
-                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
-                  PointerEntered="ElementScaleOutHoveredPointerEntered"
-                  PointerExited="ElementScaleInHoveredPointerExited"
-                  Shadow="{ThemeResource SharedShadow}"
-                  Translation="0,0,32"
-                  Visibility="Collapsed">
-                <Button x:Name="GamePlaceholderBtnComingSoon"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
-                        IsEnabled="False"
-                        Style="{ThemeResource NewAccentButtonStyle}"
-                        Visibility="Collapsed">
-                    <Button.Content>
-                        <Grid Margin="8,0">
-                            <TextBlock HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       FontWeight="Medium"
-                                       HorizontalTextAlignment="Center"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderComingSoonBtn}"
-                                       TextTrimming="CharacterEllipsis" />
-                        </Grid>
-                    </Button.Content>
-                </Button>
-                <Button x:Name="GamePlaceholderBtnPreRegister"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        Click="OpenButtonLinkFromTag"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
-                        Style="{ThemeResource AccentButtonStyle}"
-                        Tag="{x:Bind GamePreRegisterLink}"
-                        Visibility="Collapsed">
-                    <Button.Content>
-                        <Grid Margin="8,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid Width="64"
-                                  Margin="-20,-12"
-                                  Padding="8,0"
-                                  RenderTransformOrigin="0.5, 0.5">
-                                <Grid.RenderTransform>
-                                    <RotateTransform Angle="180" />
-                                </Grid.RenderTransform>
-                                <AnimatedVisualPlayer Height="28"
-                                                      HorizontalAlignment="Right">
-                                    <lottie:StartGameIcon />
-                                </AnimatedVisualPlayer>
+        <StackPanel x:Name="LeftBottomButtons"
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Left"
+                    Orientation="Horizontal"
+                    Spacing="8">
+            <Grid 
+                        Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="LauncherGameStatusPlaceholderBtn"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      HorizontalAlignment="Stretch"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherGameStatusPlaceholderBtn)}"
+                      PointerEntered="ElementScaleOutHoveredPointerEntered"
+                      PointerExited="ElementScaleInHoveredPointerExited"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,32"
+                      Visibility="Collapsed">
+                    <Button x:Name="GamePlaceholderBtnComingSoon"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                                    IsEnabled="False"
+                                    Style="{ThemeResource NewAccentButtonStyle}"
+                                    Visibility="Collapsed">
+                        <Button.Content>
+                            <Grid Margin="8,0">
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Center"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderComingSoonBtn}"
+                                           TextTrimming="CharacterEllipsis" />
                             </Grid>
-                            <TextBlock Grid.Column="1"
-                                       Margin="0,-2,0,0"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       FontWeight="Medium"
-                                       HorizontalTextAlignment="Center"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn}"
-                                       TextTrimming="CharacterEllipsis" />
-                            <Grid Grid.Column="2"
-                                  Width="64"
-                                  Margin="-20,-12"
-                                  Padding="8,0">
-                                <AnimatedVisualPlayer Height="28"
-                                                      HorizontalAlignment="Right">
-                                    <lottie:StartGameIcon />
-                                </AnimatedVisualPlayer>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="GamePlaceholderBtnPreRegister"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Click="OpenButtonLinkFromTag"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Tag="{x:Bind GamePreRegisterLink}"
+                            Visibility="Collapsed">
+                        <Button.Content>
+                            <Grid Margin="8,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Width="64"
+                                      Margin="-20,-12"
+                                      Padding="8,0"
+                                      RenderTransformOrigin="0.5, 0.5">
+                                    <Grid.RenderTransform>
+                                        <RotateTransform Angle="180" />
+                                    </Grid.RenderTransform>
+                                    <AnimatedVisualPlayer Height="28"
+                                              HorizontalAlignment="Right">
+                                        <lottie:StartGameIcon />
+                                    </AnimatedVisualPlayer>
+                                </Grid>
+                                <TextBlock Grid.Column="1"
+                                           Margin="0,-2,0,0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Center"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameStatusPlaceholderPreRegisterBtn}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <Grid Grid.Column="2"
+                                      Width="64"
+                                      Margin="-20,-12"
+                                      Padding="8,0">
+                                    <AnimatedVisualPlayer Height="28"
+                                                          HorizontalAlignment="Right">
+                                        <lottie:StartGameIcon />
+                                    </AnimatedVisualPlayer>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Button.Content>
-                </Button>
-            </Grid>
-            <Grid x:Name="LauncherBtn"
-                  Grid.Row="0"
-                  Grid.Column="0"
-                  HorizontalAlignment="Stretch"
-                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
-                  Loaded="SetHandCursor"
-                  PointerEntered="ElementScaleOutHoveredPointerEntered"
-                  PointerExited="ElementScaleInHoveredPointerExited"
-                  Shadow="{ThemeResource SharedShadow}"
-                  Translation="0,0,32">
-                <Button x:Name="InstallGameBtn"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        Click="InstallGameDialog"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
-                        Style="{ThemeResource NewAccentButtonStyle}">
-                    <Button.Content>
+                        </Button.Content>
+                    </Button>
+                </Grid>
+                <Grid x:Name="LauncherBtn"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      HorizontalAlignment="Stretch"
+                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(LauncherBtn)}"
+                      Loaded="SetHandCursor"
+                      PointerEntered="ElementScaleOutHoveredPointerEntered"
+                      PointerExited="ElementScaleInHoveredPointerExited"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,32">
+                    <Button x:Name="InstallGameBtn"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Click="InstallGameDialog"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
+                            Style="{ThemeResource NewAccentButtonStyle}">
+                        <Button.Content>
+                            <Grid Margin="8,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <Grid x:Name="InstallGameBtnAnimBackground"
+                                      Grid.Column="1"
+                                      Margin="-20,-12"
+                                      Padding="8,0"
+                                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
+                                    <AnimatedVisualPlayer Height="26"
+                                              HorizontalAlignment="Right">
+                                        <lottie:DownloadIcon />
+                                    </AnimatedVisualPlayer>
+                                </Grid>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="UpdateGameBtn"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Click="UpdateGameDialog"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
+                            Loaded="SetHandCursor"
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            Visibility="Collapsed">
+                        <Button.Content>
+                            <Grid Margin="8,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <Grid x:Name="UpdateGameBtnAnimBackground"
+                                      Grid.Column="1"
+                                      Width="64"
+                                      Margin="-20,-12"
+                                      Padding="12,0"
+                                      CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtnAnimBackground)}">
+                                    <AnimatedVisualPlayer Height="28"
+                                                          HorizontalAlignment="Right">
+                                        <lottie:UpdateIcon />
+                                    </AnimatedVisualPlayer>
+                                </Grid>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="StartGameBtn"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Click="StartGame"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
+                            Loaded="SetHandCursor"
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            Visibility="Collapsed">
                         <Grid Margin="8,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -2316,149 +2149,322 @@
                                        VerticalAlignment="Center"
                                        FontWeight="SemiBold"
                                        HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"
                                        TextTrimming="CharacterEllipsis" />
-                            <Grid x:Name="InstallGameBtnAnimBackground"
-                                  Grid.Column="1"
-                                  Margin="-20,-12"
-                                  Padding="8,0"
-                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtnAnimBackground)}">
-                                <AnimatedVisualPlayer Height="26"
-                                                      HorizontalAlignment="Right">
-                                    <lottie:DownloadIcon />
-                                </AnimatedVisualPlayer>
-                            </Grid>
-                        </Grid>
-                    </Button.Content>
-                </Button>
-                <Button x:Name="UpdateGameBtn"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        Click="UpdateGameDialog"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtn)}"
-                        Loaded="SetHandCursor"
-                        Style="{ThemeResource NewAccentButtonStyle}"
-                        Visibility="Collapsed">
-                    <Button.Content>
-                        <Grid Margin="8,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       FontWeight="SemiBold"
-                                       HorizontalTextAlignment="Left"
-                                       Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}"
-                                       TextTrimming="CharacterEllipsis" />
-                            <Grid x:Name="UpdateGameBtnAnimBackground"
+                            <Grid x:Name="StartGameBtnAnimBackground"
                                   Grid.Column="1"
                                   Width="64"
                                   Margin="-20,-12"
                                   Padding="12,0"
-                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(UpdateGameBtnAnimBackground)}">
+                                  CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
                                 <AnimatedVisualPlayer Height="28"
                                                       HorizontalAlignment="Right">
-                                    <lottie:UpdateIcon />
+                                    <lottie:StartGameIcon />
                                 </AnimatedVisualPlayer>
                             </Grid>
+                            <FontIcon Grid.Column="1"
+                                      HorizontalAlignment="Right"
+                                      FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph=""
+                                      Opacity="0" />
                         </Grid>
-                    </Button.Content>
-                </Button>
-                <Button x:Name="StartGameBtn"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        Click="StartGame"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtn)}"
-                        Loaded="SetHandCursor"
-                        Style="{ThemeResource NewAccentButtonStyle}"
-                        Visibility="Collapsed">
-                    <Grid Margin="8,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   FontWeight="SemiBold"
-                                   HorizontalTextAlignment="Left"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}"
-                                   TextTrimming="CharacterEllipsis" />
-                        <Grid x:Name="StartGameBtnAnimBackground"
-                              Grid.Column="1"
-                              Width="64"
-                              Margin="-20,-12"
-                              Padding="12,0"
-                              CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(StartGameBtnAnimBackground)}">
-                            <AnimatedVisualPlayer Height="28"
-                                                  HorizontalAlignment="Right">
-                                <lottie:StartGameIcon />
-                            </AnimatedVisualPlayer>
+                    </Button>
+                    <Button x:Name="CancelDownloadBtn"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Click="CancelInstallationProcedure"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
+                            Loaded="SetHandCursor"
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            Visibility="Collapsed">
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       HorizontalTextAlignment="Left"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <FontIcon Grid.Column="1"
+                                      HorizontalAlignment="Right"
+                                      FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="" />
                         </Grid>
-                        <FontIcon Grid.Column="1"
-                                  HorizontalAlignment="Right"
-                                  FontFamily="{ThemeResource FontAwesomeSolid}"
-                                  FontSize="14"
-                                  Glyph=""
-                                  Opacity="0" />
-                    </Grid>
-                </Button>
-                <Button x:Name="CancelDownloadBtn"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        Click="CancelInstallationProcedure"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CancelDownloadBtn)}"
-                        Loaded="SetHandCursor"
-                        Style="{ThemeResource NewAccentButtonStyle}"
-                        Visibility="Collapsed">
-                    <Grid Margin="8,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   FontWeight="SemiBold"
-                                   HorizontalTextAlignment="Left"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}"
-                                   TextTrimming="CharacterEllipsis" />
-                        <FontIcon Grid.Column="1"
-                                  HorizontalAlignment="Right"
-                                  FontFamily="{ThemeResource FontAwesomeSolid}"
-                                  FontSize="14"
-                                  Glyph="" />
-                    </Grid>
-                </Button>
-                <Button x:Name="ResumeDownloadBtn"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
-                        Loaded="SetHandCursor"
-                        Style="{ThemeResource NewAccentButtonStyle}"
-                        Visibility="Collapsed">
-                    <Grid Margin="8,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   FontWeight="SemiBold"
-                                   HorizontalTextAlignment="Left"
-                                   Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"
-                                   TextTrimming="CharacterEllipsis" />
-                        <FontIcon Grid.Column="1"
-                                  HorizontalAlignment="Right"
-                                  FontFamily="{ThemeResource FontAwesomeSolid}"
-                                  FontSize="14"
-                                  Glyph="" />
-                    </Grid>
-                </Button>
+                    </Button>
+                    <Button x:Name="ResumeDownloadBtn"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ResumeDownloadBtn)}"
+                            Loaded="SetHandCursor"
+                            Style="{ThemeResource NewAccentButtonStyle}"
+                            Visibility="Collapsed">
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       HorizontalTextAlignment="Left"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <FontIcon Grid.Column="1"
+                                      HorizontalAlignment="Right"
+                                      FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="14"
+                                      Glyph="" />
+                        </Grid>
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
+            <Button x:Name="PlaytimeBtn"
+                    Padding="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    Click="ForceUpdatePlaytimeButton_Click"
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(PlaytimeBtn)}"
+                    PointerExited="HidePlaytimeStatsFlyout"
+                    Shadow="{ThemeResource SharedShadow}"
+                    Tag="{x:Bind PlaytimeStatsFlyout}"
+                    Translation="0,0,32">
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout x:Name="PlaytimeStatsFlyout"
+                                    OverlayInputPassThroughElement="{x:Bind PlaytimeBtn}"
+                                    Placement="Top"
+                                    LightDismissOverlayMode="On">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Margin="0,0,0,4"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Title}" />
+                            <Grid ColumnSpacing="8"
+                                  Grid.Row="1"
+                                  HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Daily}" />
+                                    <TextBlock x:Name="PlaytimeStatsDaily"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Weekly}" />
+                                    <TextBlock x:Name="PlaytimeStatsWeekly"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_Monthly}" />
+                                    <TextBlock x:Name="PlaytimeStatsMonthly"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Margin="0,12,0,4"
+                                       Grid.Row="2"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                       Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession}" />
+                            <Grid ColumnSpacing="8"
+                                  Grid.Row="3"
+                                  HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_StartTime}" />
+                                    <TextBlock x:Name="PlaytimeStatsLastPlayed"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Stats_LastSession_Duration}" />
+                                    <TextBlock x:Name="PlaytimeStatsLastSession"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AccentColor}"
+                                               Text="-" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+                <Button.Content>
+                    <Grid HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                        <Grid Margin="-8"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="{ThemeResource GameSettingsBtnBrush}" />
+                        <Grid x:Name="PlaytimeStatsGrid"
+                              Margin="16,0,16,2"
+                              ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Center"
+                                      FontSize="18"
+                                      Glyph="&#xE916;" />
+                            <TextBlock x:Name="PlaytimeMainBtn"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       Text="-" />
+                            <TextBlock x:Name="PlaytimeToolTipIcon"
+                                       Grid.Column="2"
+                                       Margin="0,0,-4,0"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{ThemeResource FontAwesomeSolid}"
+                                       FontSize="18"
+                                       Opacity="0.25"
+                                       Text="&#xf05a;" />
+                        </Grid>
+                    </Grid>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout x:Name="PlaytimeFlyout">
+                        <StackPanel MaxWidth="250">
+                            <StackPanel x:Name="PlaytimeIdleStack"
+                                                Spacing="8">
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="HourPlaytimeTextBox"
+                                             HorizontalContentAlignment="Center"
+                                             BeforeTextChanging="NumberValidationTextBox"
+                                             Text="" />
+                                    <TextBox x:Name="MinutePlaytimeTextBox"
+                                             Grid.Column="1"
+                                             HorizontalContentAlignment="Center"
+                                             BeforeTextChanging="NumberValidationTextBox"
+                                             Text="" />
+                                </Grid>
+                                <StackPanel Margin="0,-4,0,4"
+                                            Orientation="Horizontal">
+                                    <TextBlock x:Name="PlaytimeHours"
+                                               Width="55"
+                                               Margin="5,1,0,0"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" />
+                                    <TextBlock x:Name="PlaytimeMinutes"
+                                               Width="55"
+                                               Margin="19,1,0,0"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" />
+                                </StackPanel>
+                                <Button x:Name="ChangePlaytimeButton"
+                                        Margin="-4,0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="ChangePlaytimeButton_Click"
+                                        CornerRadius="14"
+                                        Style="{ThemeResource AccentButtonStyle}">
+                                    <Grid Margin="4,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="18" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Grid.Column="0"
+                                                  FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                  FontSize="16"
+                                                  Glyph="" />
+                                        <TextBlock Grid.Column="1"
+                                                   Margin="8,0,0,0"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </Button>
+                                <Button x:Name="ResetPlaytimeButton"
+                                        Margin="-4,0,-4,-4"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Click="ResetPlaytimeButton_Click"
+                                        CornerRadius="14">
+                                    <Grid Margin="4,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="18" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Grid.Column="0"
+                                                  FontFamily="{ThemeResource FontAwesomeSolid}"
+                                                  FontSize="16"
+                                                  Glyph="" />
+                                        <TextBlock Grid.Column="1"
+                                                   Margin="8,0,0,0"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+                            <StackPanel x:Name="PlaytimeRunningStack"
+                                        Margin="0,0"
+                                        Visibility="Collapsed">
+                                <TextBlock Margin="0,0,0,8"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" />
+                                <TextBlock Margin="0,0,0,8"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Margin="0,0,0,0"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+                <ToolTipService.ToolTip>
+                    <ToolTip Opened="ShowPlaytimeStatsFlyout"
+                             Tag="{x:Bind PlaytimeBtn}"
+                             Visibility="Collapsed" />
+                </ToolTipService.ToolTip>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>
