@@ -163,7 +163,7 @@
     "GamePlaytime_Running_Info1": "此遊戲的一個實例正在執行中，因此無法更改遊玩時數。",
     "GamePlaytime_Running_Info2": "請注意，完全關閉 Collapse 將停止遊玩時數追蹤（先前的時數將會儲存），且只有由 Collapse 啟動的遊戲實例會被追蹤。",
     "GamePlaytime_Display": "{0}時 {1}分",
-    "GamePlaytime_ToolTipDisplay": "最後打開於 {2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
 
     "PostPanel_Events": "活動",
     "PostPanel_Notices": "公告",

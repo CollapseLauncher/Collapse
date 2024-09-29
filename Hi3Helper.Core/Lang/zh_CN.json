@@ -168,7 +168,7 @@
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
     "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 会导致游戏时间记录停止（之前的记录会被保存），并且时间会在下次 Collapse 启动时再次开始记录。",
     "GamePlaytime_Display": "{0}小时 {1}分钟",
-    "GamePlaytime_ToolTipDisplay": "最后打开于 {2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
 
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
