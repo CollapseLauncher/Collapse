@@ -230,9 +230,8 @@ public class Updater : IDisposable
         CDNURLProperty preferredCdn = FallbackCDNUtil.GetPreferredCDN();
         string updateFileIndexUrl = ConverterTool.CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
 
-        AppUpdateVersionProp updateInfo = await FallbackCDNUtil
-            .DownloadAsJSONType<AppUpdateVersionProp>(updateFileIndexUrl,
-            InternalAppJSONContext.Default, default);
+        AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
+                                            InternalAppJSONContext.Default.AppUpdateVersionProp, default)!;
 
         GameVersion? gameVersion = updateInfo!.Version;
 

@@ -230,6 +230,7 @@ namespace CollapseLauncher.Helper
                 socketsHttpHandler.UseCookies = IsAllowHttpCookies;
                 socketsHttpHandler.AutomaticDecompression = DecompressionMethod;
                 socketsHttpHandler.EnableMultipleHttp2Connections = true;
+                socketsHttpHandler.EnableMultipleHttp3Connections = true;
 
                 // Toggle for allowing untrusted cert
                 if (IsAllowUntrustedCert)
