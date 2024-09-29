@@ -78,7 +78,7 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="32" />
-                <ColumnDefinition Width="104" />
+                <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <Grid x:Name="GridBG_IconGrid"
                   Grid.Column="0"

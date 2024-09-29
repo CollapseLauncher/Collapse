@@ -166,7 +166,7 @@
                 <Grid.Resources>
                     <ThemeShadow x:Key="CaptionButtonShadow" />
                 </Grid.Resources>
-                <Grid Width="88"
+                <Grid Width="80"
                       Height="32"
                       Margin="8,8"
                       HorizontalAlignment="Right"
@@ -184,7 +184,7 @@
                     </Grid.ColumnDefinitions>
                     <Button x:Name="MinimizeButton"
                             Grid.Column="0"
-                            Width="48"
+                            Width="40"
                             Height="32"
                             x:FieldModifier="internal"
                             Click="MinimizeButton_Click"
