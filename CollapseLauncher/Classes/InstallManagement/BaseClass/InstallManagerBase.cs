@@ -1670,8 +1670,8 @@ namespace CollapseLauncher.InstallManager.Base
         private async Task ExtractUsingNativeZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
                                                        CancellationToken cancellationToken)
         {
-            // 16 MB of buffer (hope it's not too big)
-            byte[] buffer = new byte[16 << 20];
+            // 4 MB of buffer
+            byte[] buffer = GC.AllocateUninitializedArray<byte>(4 << 20);
 
             foreach (int entryIndex in entriesIndex)
             {
