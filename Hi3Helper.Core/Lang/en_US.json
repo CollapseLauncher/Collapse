@@ -542,6 +542,7 @@
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "Enforce7ZipExtract": "Always Use 7-zip for Game Installation/Update",
     "UseExternalBrowser": "Always Use External Browser",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",

@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangNotificationToast _NotificationToast { get; set; } = LangFallback?._NotificationToast;
-            public sealed class LangNotificationToast
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangNotificationToast
             {
                 public string WindowHiddenToTray_Title                      { get; set; } = LangFallback?._NotificationToast.WindowHiddenToTray_Title;
                 public string WindowHiddenToTray_Subtitle                   { get; set; } = LangFallback?._NotificationToast.WindowHiddenToTray_Subtitle;

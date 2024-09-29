@@ -12,7 +12,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -208,30 +207,29 @@ namespace CollapseLauncher
         #region Invokers
         private void UpdateBindingsEvent(object sender, EventArgs e)
         {
-            NavigationViewControl.MenuItems.Clear();
-            NavigationViewControl.FooterMenuItems.Clear();
-            Bindings.Update();
-            UpdateLayout();
-
             // Find the last selected category/title and region
             string lastName = LauncherMetadataHelper.CurrentMetadataConfigGameName;
             string lastRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
 
-            #nullable enable
+#nullable enable
+            NavigationViewControl?.ApplyNavigationViewItemLocaleTextBindings();
+
             List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
             List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!)!;
 
             int indexOfName = gameNameCollection.IndexOf(lastName!);
             int indexOfRegion = gameRegionCollection.IndexOf(lastRegion!);
-            #nullable restore
+#nullable restore
                 
             // Rebuild Game Titles and Regions ComboBox items
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
             ComboBoxGameCategory.SelectedIndex = indexOfName;
             ComboBoxGameRegion.SelectedIndex = indexOfRegion;
 
-            InitializeNavigationItems(false);
             ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+
+            UpdateLayout();
+            Bindings.Update();
         }
 
         private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
@@ -487,13 +485,6 @@ namespace CollapseLauncher
                 switch (mType)
                 {
                     case BackgroundMediaUtility.MediaType.Media:
-                        MediaPlayerFrame = new MediaPlayerElement
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment   = VerticalAlignment.Center,
-                            Stretch             = Stretch.UniformToFill,
-                            Tag                 = "MediaPlayer"
-                        };
                         BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
                         BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
                         break;
@@ -502,8 +493,8 @@ namespace CollapseLauncher
                         BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
                         BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
                         BackgroundNewBackGrid.Visibility        = Visibility.Visible;
-                        MediaPlayerFrame                        = null;
                         break;
+                    case BackgroundMediaUtility.MediaType.Unknown:
                     default:
                         throw new InvalidCastException();
                 }
@@ -1261,57 +1252,71 @@ namespace CollapseLauncher
                 if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+                    { Icon = IconCaches, Tag = "caches" }
+                    .BindNavigationViewItemText("_CachesPage", "PageTitle"));
                 }
                 return;
             }
 
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
+            { Icon = IconLauncher, Tag = "launcher" }
+            .BindNavigationViewItemText("_HomePage", "PageTitle"));
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
+            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
+                .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
 
             if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
+                { Icon = IconRepair, Tag = "repair" }
+                .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
             }
 
             if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+                { Icon = IconCaches, Tag = "caches" }
+                .BindNavigationViewItemText("_CachesPage", "PageTitle"));
             }
 
             switch (CurrentGameVersionCheck.GameType)
             {
                 case GameNameType.Honkai:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "honkaigamesettings" });
+                    { Icon = IconGameSettings, Tag = "honkaigamesettings" }
+                    .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.StarRail:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                    { Icon = IconGameSettings, Tag = "starrailgamesettings" }
+                    .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Genshin:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem() 
-                    { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+                    { Icon = IconGameSettings, Tag = "genshingamesettings" }
+                    .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Zenless:
                     NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    {Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "zenlessgamesettings"});
+                    { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
+                    .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
             }
 
             if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
-                SettingsItem.Content = Lang._SettingsPage.PageTitle;
                 SettingsItem.Icon = IconAppSettings;
-                ToolTipService.SetToolTip(SettingsItem, Lang._SettingsPage.PageTitle);
+                _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
             }
 
-            foreach (var deps in NavigationViewControl.FindDescendants())
+            foreach (var deps in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
             {
+                // Avoid any icons to have shadow attached if it's not from this page
+                if (deps.BaseUri.AbsolutePath != this.BaseUri.AbsolutePath)
+                {
+                    continue;
+                }
+
                 if (deps is FontIcon icon)
                     AttachShadowNavigationPanelItem(icon);
                 if (deps is AnimatedIcon animIcon)
@@ -1323,6 +1328,11 @@ namespace CollapseLauncher
             {
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             }
+
+            NavigationViewControl.ApplyNavigationViewItemLocaleTextBindings();
+
+            InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            MainPageGrid.SetAllControlsCursorRecursive(handCursor);
         }
 
         public static void AttachShadowNavigationPanelItem(FrameworkElement element)
@@ -1346,11 +1356,20 @@ namespace CollapseLauncher
                 }
             }
 
-            var paneRoot = (Grid)NavigationViewControl.FindDescendant("PaneRoot");
-            if (paneRoot != null)
+            NavViewPaneBackground.OpacityTransition = new ScalarTransition()
             {
-                paneRoot.PointerEntered += NavView_PanePointerEntered;
-                paneRoot.PointerExited  += NavView_PanePointerExited;
+                Duration = TimeSpan.FromMilliseconds(150)
+            };
+            NavViewPaneBackground.TranslationTransition = new Vector3Transition()
+            {
+                Duration = TimeSpan.FromMilliseconds(150)
+            };
+
+            var paneMainGrid = NavigationViewControl.FindDescendant("PaneContentGrid");
+            if (paneMainGrid is Grid paneMainGridAsGrid)
+            {
+                paneMainGridAsGrid.PointerEntered += NavView_PanePointerEntered;
+                paneMainGridAsGrid.PointerExited  += NavView_PanePointerExited;
             }
 
             // The toggle button is not a part of pane. Why Microsoft!!!
@@ -1358,7 +1377,7 @@ namespace CollapseLauncher
             if (paneToggleButtonGrid != null)
             {
                 paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
-                paneToggleButtonGrid.PointerExited  += NavView_PanePointerEntered;
+                paneToggleButtonGrid.PointerExited  += NavView_PanePointerExited;
             }
 
             // var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
@@ -1368,8 +1387,12 @@ namespace CollapseLauncher
             toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
         }
 
-        private async void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
+        private void NavView_PanePointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            IsCursorInNavBarHoverArea = true;
+            NavViewPaneBackground.Opacity = 1;
+            NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+            /*
             if (!NavigationViewControl.IsPaneOpen)
             {
                 var duration = TimeSpan.FromSeconds(0.25);
@@ -1378,15 +1401,34 @@ namespace CollapseLauncher
                                                      .CreateScalarKeyFrameAnimation("Opacity", 1, current);
                 await NavViewPaneBackground.StartAnimation(duration, animation);
             }
+            */
         }
 
-        private async void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
+        private bool IsCursorInNavBarHoverArea;
+
+        private void NavView_PanePointerExited(object sender, PointerRoutedEventArgs e)
         {
+            PointerPoint pointerPoint = e.GetCurrentPoint(NavViewPaneBackgroundHoverArea);
+            IsCursorInNavBarHoverArea = pointerPoint.Position.X <= NavViewPaneBackgroundHoverArea.Width - 8 && pointerPoint.Position.X > 4;
+
+            if (!IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
+            {
+                NavViewPaneBackground.Opacity = 0;
+                NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+            }
+
+            if (IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
+            {
+                NavViewPaneBackground.Opacity = 1;
+                NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+            }
+            /*
             var duration = TimeSpan.FromSeconds(0.25);
             var current = (float)NavViewPaneBackground.Opacity;
             var animation = NavViewPaneBackground.GetElementCompositor()!
                                                  .CreateScalarKeyFrameAnimation("Opacity", 0, current);
             await NavViewPaneBackground.StartAnimation(duration, animation);
+            */
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -1395,8 +1437,8 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
 
 #nullable enable
-            NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
-            item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+            NavigationViewItem? item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (x.Content as TextBlock)?.Text == (args.InvokedItem as TextBlock)?.Text);
+            item ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (x.Content as TextBlock)?.Text == (args.InvokedItem as TextBlock)?.Text);
             if (item == null) return;
 #nullable restore
 
@@ -1554,15 +1596,26 @@ namespace CollapseLauncher
             GridBG_Icon.Margin   = curMargin;
             IsTitleIconForceShow = true;
             ToggleTitleIcon(false);
+
+            NavViewPaneBackgroundHoverArea.Width = NavigationViewControl.OpenPaneLength;
         }
 
-        private void NavigationPanelClosing_Event(NavigationView sender, NavigationViewPaneClosingEventArgs args)
+        private async void NavigationPanelClosing_Event(NavigationView sender, NavigationViewPaneClosingEventArgs args)
         {
             Thickness curMargin = GridBG_Icon.Margin;
             curMargin.Left       = 58;
             GridBG_Icon.Margin   = curMargin;
             IsTitleIconForceShow = false;
             ToggleTitleIcon(true);
+
+            NavViewPaneBackgroundHoverArea.Width = NavViewPaneBackground.Width;
+
+            await Task.Delay(200);
+            if (!IsCursorInNavBarHoverArea)
+            {
+                NavViewPaneBackground.Opacity = 0;
+                NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+            }
         }
         #endregion
 

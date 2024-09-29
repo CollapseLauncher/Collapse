@@ -181,7 +181,7 @@ namespace CollapseLauncher.Dialogs
 
             RegionResourceProp _Entry;
 
-            _Entry = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Profile.LauncherResourceURL, InternalAppJSONContext.Default, tokenSource.Token);
+            _Entry = await FallbackCDNUtil.DownloadAsJSONType(Profile.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, tokenSource.Token);
             GameVersion = _Entry.data?.game?.latest?.version;
 
             return _RepoList[GameVersion ?? throw new InvalidOperationException()];

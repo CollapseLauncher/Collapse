@@ -2,6 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -40,7 +41,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -185,6 +185,12 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
+                InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+                SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+                ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+                BottomButtons.SetAllControlsCursorRecursive(cursor);
+                GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
+
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
@@ -305,46 +311,53 @@ namespace CollapseLauncher.Pages
             // Determine if the cache icon exist and the file is completed (more than 1kB in size)
             bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
 
-            // Using the original icon file and cached icon file streams
-            if (!isCacheIconExist)
-                await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
-                {
-                    await using (Stream copyIconFileStream = new MemoryStream())
+            try
+            {
+                // Using the original icon file and cached icon file streams
+                if (!isCacheIconExist)
+                    await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
                     {
-                        await using (Stream iconFileStream =
-                                     await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
-                                         PageToken.Token))
+                        await using (Stream copyIconFileStream = new MemoryStream())
                         {
-                            var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                            // Copy remote stream to memory stream
-                            await iconFileStream.CopyToAsync(copyIconFileStream);
-                            copyIconFileStream.Position = 0;
-                            // Get the icon image information and set the resized frame size
-                            var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                            var width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                            var height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                            await using (Stream iconFileStream =
+                                         await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
+                                             PageToken.Token))
+                            {
+                                var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                                // Copy remote stream to memory stream
+                                await iconFileStream.CopyToAsync(copyIconFileStream);
+                                copyIconFileStream.Position = 0;
+                                // Get the icon image information and set the resized frame size
+                                var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                                var width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                                var height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                            copyIconFileStream.Position = 0; // Reset the original icon stream position
-                            await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
-                                                                      (uint)width, (uint)height); // Start resizing
-                            cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                                copyIconFileStream.Position = 0; // Reset the original icon stream position
+                                await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
+                                                                          (uint)width, (uint)height); // Start resizing
+                                cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                            // Set the source from cached icon stream
-                            source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                                // Set the source from cached icon stream
+                                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                            }
                         }
                     }
+                else
+                {
+                    await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
                 }
-            else
-            {
-                await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
-                // Set the source from cached icon stream
-                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-            }
 
-            // Set event icon props
-            ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-            ImageEventImg.Source = source;
-            ImageEventImg.Tag = featuredEventArticleUrl;
+                // Set event icon props
+                ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
+                ImageEventImg.Source = source;
+                ImageEventImg.Tag = featuredEventArticleUrl;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
+            }
         }
         #endregion
 
@@ -431,9 +444,9 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = Shadow16;
 
-            Grid iconGrid = btn.FindDescendant<Grid>();
-            Image iconFirst = iconGrid!.FindDescendant("Icon") as Image;
-            Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+            Grid             iconGrid   = btn.FindDescendant<Grid>();
+            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
+            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
 
             ElementScaleOutHoveredPointerEnteredInner(iconGrid, 0, -2);
 
@@ -447,16 +460,16 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = new Vector3(0);
 
-            Flyout flyout = btn.Resources["SocMedFlyout"] as Flyout;
+            FlyoutBase flyout = btn.Flyout;
             Point pos = e.GetCurrentPoint(btn).Position;
             if (pos.Y <= 0 || pos.Y >= btn.Height || pos.X <= -8 || pos.X >= btn.Width)
             {
-                flyout!.Hide();
+                flyout?.Hide();
             }
 
-            Grid iconGrid = btn.FindDescendant<Grid>();
-            Image iconFirst = iconGrid!.FindDescendant("Icon") as Image;
-            Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+            Grid             iconGrid   = btn.FindDescendant<Grid>();
+            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
+            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
 
             ElementScaleInHoveredPointerExitedInner(iconGrid, 0, -2);
 
@@ -527,28 +540,56 @@ namespace CollapseLauncher.Pages
         private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
         {
             ToolTip tooltip = sender as ToolTip;
-            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+            if (tooltip?.Tag is Button button)
+            {
+                Flyout flyout = button.Flyout as Flyout;
+                if (flyout != null)
+                {
+                    Panel contextPanel = flyout.Content as Panel;
+                    if (contextPanel != null && contextPanel.Tag is LauncherGameNewsSocialMedia socMedData)
+                    {
+                        if (!socMedData.IsHasDescription && !socMedData.IsHasLinks && !socMedData.IsHasQr)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
+
+            FlyoutBase.ShowAttachedFlyout(tooltip?.Tag as FrameworkElement);
         }
 
         private void HideSocMedFlyout(object sender, RoutedEventArgs e)
         {
-            Flyout flyout = ((StackPanel)sender).Tag as Flyout;
-            flyout!.Hide();
+            Grid dummyGrid = (sender as Panel ?? throw new InvalidOperationException()).FindChild<Grid>();
+            if (dummyGrid != null)
+            {
+                Flyout flyout = dummyGrid.Tag as Flyout;
+                flyout?.Hide();
+            }
         }
 
         private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
         {
             // Prevent the flyout showing when there is no content visible
             StackPanel stackPanel = sender as StackPanel;
-            bool visible = false;
-            foreach (var child in stackPanel!.Children)
+
+            if (stackPanel != null)
             {
-                if (child.Visibility == Visibility.Visible)
-                    visible = true;
-            }
-            if (!visible)
-            {
-                HideSocMedFlyout(sender, e);
+                ApplySocialMediaBinding(stackPanel);
+
+                bool visible = false;
+                foreach (var child in stackPanel!.Children)
+                {
+                    if (child.Visibility == Visibility.Visible)
+                        visible = true;
+                }
+
+                if (!visible)
+                {
+                    HideSocMedFlyout(sender, e);
+                }
             }
         }
         #endregion
@@ -2818,6 +2859,22 @@ namespace CollapseLauncher.Pages
             {
                 bool isStart = true;
                 foreach (Image imageElement in panel.Children.OfType<Image>())
+                {
+                    imageElement.ApplyDropShadow(opacity: 0.5f);
+                    if (isStart)
+                    {
+                        imageElement.Opacity = 0.0f;
+                        imageElement.Loaded += (_, _) =>
+                        {
+                            Compositor compositor = imageElement.GetElementCompositor();
+                            imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
+                                compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+                        };
+                        isStart = false;
+                    }
+                }
+
+                foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
                 {
                     imageElement.ApplyDropShadow(opacity: 0.5f);
                     if (isStart)

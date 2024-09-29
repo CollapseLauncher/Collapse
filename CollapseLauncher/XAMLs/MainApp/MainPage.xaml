@@ -7,7 +7,6 @@
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:p="using:CollapseLauncher.Helper.Metadata"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -20,8 +19,7 @@
           Background="{ThemeResource WindowBackground}">
         <Grid x:Name="BackgroundNewBackGrid" />
         <Grid x:Name="BackgroundNewMediaPlayerGrid">
-            <MediaPlayerElement x:Name="MediaPlayerFrame"
-                                HorizontalAlignment="Center"
+            <MediaPlayerElement HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Stretch="UniformToFill"
                                 Tag="MediaPlayer" />
@@ -45,7 +43,7 @@
                 CornerRadius="0,8,8,0"
                 Opacity="0"
                 Shadow="{ThemeResource SharedShadow}"
-                Translation="0,0,16" />
+                Translation="-48,0,0" />
         <NavigationView x:Name="NavigationViewControl"
                         BackRequested="NavigationViewControl_BackRequested"
                         Background="Transparent"
@@ -99,9 +97,7 @@
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center">
                 <StackPanel Name="GridBG_RegionInner"
-                            Grid.Row="1"
                             Grid.Column="0"
-                            Grid.ColumnSpan="7"
                             Margin="0,0"
                             VerticalAlignment="Center"
                             CanDrag="True"
@@ -117,6 +113,7 @@
                               Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,12" />
                         <Grid x:Name="ComboBoxGameGrid"
+                              Grid.Column="0"
                               CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -128,7 +125,6 @@
                                       CornerRadius="15,0,0,15"
                                       DropDownClosed="GameComboBox_OnDropDownClosed"
                                       DropDownOpened="GameComboBox_OnDropDownOpened"
-                                      ItemsSource="{x:Bind p:LauncherMetadataHelper.LauncherGameNameCollection, Mode=OneWay}"
                                       PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
                                       SelectionChanged="SetGameCategoryChange"
                                       Style="{ThemeResource AcrylicComboBoxStyle}" />
@@ -234,8 +230,8 @@
                                             <TextBlock Width="200"
                                                        Margin="0,0,0,12"
                                                        FontWeight="SemiBold"
-                                                       TextWrapping="Wrap"
-                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" />
+                                                       Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}"
+                                                       TextWrapping="Wrap" />
                                             <StackPanel x:Name="ChangeRegionWarning"
                                                         Visibility="Collapsed">
                                                 <TextBlock Width="200"
@@ -268,30 +264,31 @@
                                                                      Visibility="Collapsed" />
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition/>
-                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
-                                                            <Grid HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"
-                                                                  RenderTransformOrigin="0.5, 0.5"
+                                                            <Grid Grid.Column="1"
                                                                   Margin="-0,-8,-4,-8"
-                                                                  Grid.Column="1">
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  RenderTransformOrigin="0.5, 0.5">
                                                                 <Grid.RenderTransform>
                                                                     <RotateTransform Angle="-180" />
                                                                 </Grid.RenderTransform>
                                                                 <AnimatedIcon x:Name="SearchAnimatedIcon"
-                                                                              Height="18"
-                                                                              Width="18">
+                                                                              Width="18"
+                                                                              Height="18">
                                                                     <AnimatedIcon.Source>
-                                                                        <animatedvisuals:AnimatedBackVisualSource/>
+                                                                        <animatedvisuals:AnimatedBackVisualSource />
                                                                     </AnimatedIcon.Source>
                                                                     <AnimatedIcon.FallbackIconSource>
-                                                                        <SymbolIconSource Symbol="Find"/>
+                                                                        <SymbolIconSource Symbol="Find" />
                                                                     </AnimatedIcon.FallbackIconSource>
                                                                 </AnimatedIcon>
                                                             </Grid>
-                                                            <TextBlock VerticalAlignment="Center"
+                                                            <TextBlock Grid.Column="0"
                                                                        HorizontalAlignment="Left"
+                                                                       VerticalAlignment="Center"
                                                                        FontWeight="SemiBold"
                                                                        Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" />
                                                         </Grid>
@@ -344,7 +341,6 @@
                 Grid.Column="0"
                 Height="33"
                 Margin="58,8,0,0"
-                HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Click="GridBG_Icon_Click"
                 PointerEntered="GridBG_Icon_PointerEntered"
@@ -395,8 +391,6 @@
                                Visibility="Visible" />
                 </StackPanel>
                 <StackPanel x:Name="PreviewBuildIndicator"
-                            Grid.Column="4"
-                            Grid.ColumnSpan="2"
                             Margin="-10,-12,0,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
@@ -416,6 +410,10 @@
                 </StackPanel>
             </StackPanel>
         </Button>
+        <Grid x:Name="NavViewPaneBackgroundHoverArea"
+              Width="48"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Stretch" />
         <Grid x:Name="NotificationLostFocusBackground"
               VerticalAlignment="Stretch"
               Opacity="0"
@@ -468,8 +466,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="2"
-                                           VerticalAlignment="Center"
+                                <TextBlock VerticalAlignment="Center"
                                            FontSize="20"
                                            FontWeight="SemiBold"
                                            Opacity="0.50"

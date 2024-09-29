@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangKeyboardShortcuts _KbShortcuts { get; set; } = LangFallback?._KbShortcuts;
-            public sealed class LangKeyboardShortcuts
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangKeyboardShortcuts
             {
                 public string DialogTitle { get; set; } = LangFallback?._KbShortcuts.DialogTitle;
 

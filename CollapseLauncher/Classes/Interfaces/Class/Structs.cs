@@ -111,7 +111,7 @@ namespace CollapseLauncher
         }
     }
 
-    public struct GameVersion
+    public record struct GameVersion
     {
         public GameVersion(int major, int minor, int build, int revision = 0)
         {

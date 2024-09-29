@@ -3,7 +3,6 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
 using CommunityToolkit.WinUI.Animations;
-using CommunityToolkit.WinUI.Controls;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -27,6 +26,12 @@ using Windows.Storage.Streams;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
+
+using ImageBlendBrush = Hi3Helper.CommunityToolkit.WinUI.Media.ImageBlendBrush;
+using ImageCropper = Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper;
+using CropShape = Hi3Helper.CommunityToolkit.WinUI.Controls.CropShape;
+using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
+using BitmapFileFormat = Hi3Helper.CommunityToolkit.WinUI.Controls.BitmapFileFormat;
 
 namespace CollapseLauncher.Helper.Image
 {
@@ -152,7 +157,7 @@ namespace CollapseLauncher.Helper.Image
         }
 
         private static async Task<FileStream> SpawnImageCropperDialog(string filePath, string cachedFilePath,
-                                                                      uint ToWidth, uint ToHeight)
+                                                                      uint toWidth, uint toHeight)
         {
             Grid parentGrid = new()
             {
@@ -169,15 +174,19 @@ namespace CollapseLauncher.Helper.Image
             imageCropper.HorizontalAlignment = HorizontalAlignment.Stretch;
             imageCropper.VerticalAlignment = VerticalAlignment.Stretch;
             imageCropper.Opacity = 0;
+
+            // Path of image
+            Uri overlayImageUri = new Uri(Path.Combine(AppFolder!, @"Assets\Images\ImageCropperOverlay",
+                                                       GetAppConfigValue("WindowSizeProfile").ToString() == "Small" ? "small.png" : "normal.png"));
+
             // Why not use ImageBrush?
             // https://github.com/microsoft/microsoft-ui-xaml/issues/7809
             imageCropper.Overlay = new ImageBlendBrush()
             {
-                Source = new BitmapImage(new Uri(Path.Combine(AppFolder!, @"Assets\Images\ImageCropperOverlay",
-                                                              GetAppConfigValue("WindowSizeProfile").ToString() == "Small" ? "small.png" : "normal.png"))),
                 Opacity = 0.5,
                 Stretch = Stretch.Fill,
                 Mode = ImageBlendMode.Multiply,
+                SourceUri = overlayImageUri
             };
 
             ContentDialogOverlay dialogOverlay = new ContentDialogOverlay(ContentDialogTheme.Informational)
@@ -215,7 +224,7 @@ namespace CollapseLauncher.Helper.Image
             }
 
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
-            return await GenerateCachedStream(cachedFileInfo, ToWidth, ToHeight, true);
+            return await GenerateCachedStream(cachedFileInfo, toWidth, toHeight, true);
         }
 
         private static async void LoadImageCropperDetached(string filePath, ImageCropper imageCropper,
@@ -392,21 +401,25 @@ namespace CollapseLauncher.Helper.Image
 
             // Try to get the prop file which includes the filename + the suggested size provided
             // by the network stream if it has been downloaded before
-            string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
-            // Check if the file is found (not null), then try parse the information
-            if (string.IsNullOrEmpty(propFilePath))
+            if (outputParentPath != null)
             {
-                return false;
+                string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                // Check if the file is found (not null), then try parse the information
+                if (string.IsNullOrEmpty(propFilePath))
+                {
+                    return false;
+                }
+
+                // Try split the filename into a segment by # char
+                string[] propSegment = Path.GetFileName(propFilePath).Split('#');
+                // Assign the check if the condition met and set the file existence status
+                return propSegment.Length >= 2
+                       && long.TryParse(propSegment[1], null, out long suggestedSize)
+                       && fileInfo.Exists && fileInfo.Length == suggestedSize;
             }
 
-            // Try split the filename into a segment by # char
-            string[] propSegment = Path.GetFileName(propFilePath).Split('#');
-            // Assign the check if the condition met and set the file existence status
-            return propSegment.Length >= 2
-                   && long.TryParse(propSegment[1], null, out long suggestedSize)
-                   && fileInfo.Exists && fileInfo.Length == suggestedSize;
-
             // If the prop doesn't exist, then return false to assume that the file doesn't exist
+            return false;
         }
 
         public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
@@ -435,8 +448,11 @@ namespace CollapseLauncher.Helper.Image
                 // Create the prop file for download completeness checking
                 string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
                 string outputFilename = Path.GetFileName(fileInfo.FullName);
-                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                await File.Create(propFilePath).DisposeAsync();
+                if (outputParentPath != null)
+                {
+                    string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                    await File.Create(propFilePath).DisposeAsync();
+                }
 
                 // Copy (and download) the remote streams to local
                 int read;
@@ -446,6 +462,9 @@ namespace CollapseLauncher.Helper.Image
                 Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
                     + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
             }
+            // Ignore cancellation exceptions
+            catch (TaskCanceledException) { }
+            catch (OperationCanceledException) { }
 #if !DEBUG
             catch (Exception ex)
             {

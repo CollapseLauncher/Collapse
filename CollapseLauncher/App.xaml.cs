@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Media;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.NativeCodecs.Libwebp;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -134,7 +133,8 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"FATAL ERROR ON APP INITIALIZER LEVEL!!!\r\n{ex}", LogType.Error, true);
                 LogWriteLine("\r\nIf this is not intended, please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\nPress any key to exit...");
-                Console.ReadLine();
+                //Console.ReadLine();
+                throw;
             }
         }
 
@@ -147,14 +147,12 @@ namespace CollapseLauncher
                 // then select the value, get the type of ResourceDictionary, then enumerate it
                 foreach (ResourceDictionary list in resource!
                     .ThemeDictionaries!
-                    .OfType<KeyValuePair<object, object>>()
                     .Select(x => x.Value)
                     .OfType<ResourceDictionary>())
                 {
                     // Parse the dictionary as type of KeyValuePair<object, object>,
                     // and get the value which has type of AcrylicBrush only, then enumerate it
                     foreach (AcrylicBrush theme in list
-                        .OfType<KeyValuePair<object, object>>()
                         .Select(x => x.Value)
                         .OfType<AcrylicBrush>())
                     {
