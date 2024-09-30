@@ -534,6 +534,7 @@
 
     "EnableAcrylicEffect": "Usar Efecto de Desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
+    "Enforce7ZipExtract": "Usar siempre 7-zip para Instalación/Actualización del Juego",
     "UseExternalBrowser": "Usar Navegador Web Externo ",
 
     "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
@@ -805,7 +806,7 @@
     "RepairCompletedSubtitle": "Se repararon {0} archivo(s).",
     "RepairCompletedSubtitleNoBroken": "No se encontraron archivos rotos.",
     "ExtremeGraphicsSettingsWarnTitle": "¡Preajuste Muy Alto Seleccionado!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Estas por seleccionar la opción grafica \"Muy Alto\" \nEsta configuración prestablecida es básicamente 2x Escalado de renderizado con MSAA activado y NO ESTA OPTIMIZADO!\n\n¿Estas seguro que quieres usar esta configuración?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Estas por seleccionar la opción grafica \"Muy Alto\" \nEsta configuración prestablecida es básicamente 1.6x Escalado de renderizado con MSAA activado y NO ESTA OPTIMIZADO!\n\n¿Estas seguro que quieres usar esta configuración?",
     "MigrateExistingMoveDirectoryTitle": "Moviendo la instalación existente para: {0}",
     "MigrateExistingInstallChoiceTitle": "¡Se a detectado una instalación existente de {0} !",
     "MigrateExistingInstallChoiceSubtitle1": "Tienes una instalación del juego usando {0} en esta ubicación:",
