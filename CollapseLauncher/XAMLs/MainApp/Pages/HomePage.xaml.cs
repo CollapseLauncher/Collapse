@@ -2344,10 +2344,10 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int Mins = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int Hours = int.Parse("0" + HourPlaytimeTextBox.Text);
+            int mins = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int hours = int.Parse("0" + HourPlaytimeTextBox.Text);
 
-            TimeSpan time = TimeSpan.FromMinutes(Hours * 60 + Mins);
+            TimeSpan time = TimeSpan.FromMinutes(hours * 60 + mins);
             if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
 
             CurrentGameProperty._GamePlaytime.Update(time);
@@ -2413,16 +2413,16 @@ namespace CollapseLauncher.Pages
              */
             PointerPoint pointerPoint = e.GetCurrentPoint(senderAsFrameworkElement);
             Point currentCursorPosition = pointerPoint.Position;
-            if ((currentCursorPosition.X > 0
+            if (currentCursorPosition.X > 0
               && currentCursorPosition.Y > 0
-              && currentCursorPosition.X <= senderAsFrameworkElement.ActualWidth
-              && currentCursorPosition.Y <= senderAsFrameworkElement.ActualHeight))
+              && currentCursorPosition.X <= senderAsFrameworkElement!.ActualWidth
+              && currentCursorPosition.Y <= senderAsFrameworkElement!.ActualHeight)
             {
                 return;
             }
 
             // Otherwise, hide the flyout
-            Flyout flyout = senderAsFrameworkElement.Tag as Flyout;
+            Flyout flyout = senderAsFrameworkElement!.Tag as Flyout;
             flyout!.Hide();
         }
 #nullable restore
