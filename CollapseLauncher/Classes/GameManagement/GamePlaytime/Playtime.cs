@@ -37,7 +37,7 @@ namespace CollapseLauncher.GamePlaytime
 
             _gameVersionManager = GameVersionManager;
 
-            _playtime = CollapsePlaytime.Load(_registryRoot, _gameVersionManager.GamePreset.HashID);
+            _playtime = CollapsePlaytime.Load(_registryRoot, _gameVersionManager.GamePreset.HashID, _gameVersionManager);
         }
 #nullable disable
 
@@ -130,7 +130,8 @@ namespace CollapseLauncher.GamePlaytime
         {
             _token.Cancel();
             _playtime.Save();
-            _registryRoot = null;
+            _playtime._lastDbUpdate = DateTime.MinValue;
+            _registryRoot           = null;
         }
     }
 }

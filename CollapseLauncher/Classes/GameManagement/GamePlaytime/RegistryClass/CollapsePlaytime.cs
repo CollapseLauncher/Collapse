@@ -1,4 +1,6 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Helper.Database;
+using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -18,10 +20,12 @@ namespace CollapseLauncher.GamePlaytime
         private const string LastPlayedValueName = "CollapseLauncher_LastPlayed";
         private const string StatsValueName      = "CollapseLauncher_PlaytimeStats";
 
-        private static HashSet<int> _isDeserializing = [];
-        private        RegistryKey           _registryRoot;
-        private        int                   _hashID;
+        private static HashSet<int>      _isDeserializing = [];
+        private        RegistryKey       _registryRoot;
+        private        int               _hashID;
+        private        IGameVersionCheck _gameVersion;
 
+        public DateTime _lastDbUpdate = DateTime.MinValue;
         #endregion
 
         #region Properties
@@ -80,7 +84,7 @@ namespace CollapseLauncher.GamePlaytime
         /// Reads from the Registry and deserializes the contents. <br/>
         /// Converts RegistryKey values if they are of type DWORD (that is, if they were saved by the old implementation).
         /// </summary>
-        public static CollapsePlaytime Load(RegistryKey root, int hashID)
+        public static CollapsePlaytime Load(RegistryKey root, int hashID, IGameVersionCheck gameVersion)
         {
             try
             {
@@ -106,6 +110,7 @@ namespace CollapseLauncher.GamePlaytime
                     playtime = new CollapsePlaytime();
                 }
 
+                playtime._gameVersion  = gameVersion;
                 playtime._registryRoot = root;
                 playtime._hashID       = hashID;
                 playtime.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
@@ -122,7 +127,7 @@ namespace CollapseLauncher.GamePlaytime
                 _isDeserializing.Remove(hashID);
             }
 
-            return new CollapsePlaytime() { _hashID = hashID, _registryRoot = root };
+            return new CollapsePlaytime() { _hashID = hashID, _registryRoot = root, _gameVersion = gameVersion };
         }
 
         /// <summary>
@@ -145,6 +150,12 @@ namespace CollapseLauncher.GamePlaytime
                 double? lastPlayed = (LastPlayed?.ToUniversalTime() - BaseDate)?.TotalSeconds;
                 if (lastPlayed != null)
                     _registryRoot.SetValue(LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
+
+                if ((DateTime.Now - _lastDbUpdate).TotalMinutes >= 5)
+                {
+                    UpdatePlaytime_Database(data);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -225,6 +236,33 @@ namespace CollapseLauncher.GamePlaytime
         private static bool IsDifferentMonth(DateTime date1, DateTime date2) => date1.Year != date2.Year || date1.Month != date2.Month;
 
         private static bool IsDifferentWeek(DateTime date1, DateTime date2) => date1.Year != date2.Year || ISOWeek.GetWeekOfYear(date1) != ISOWeek.GetWeekOfYear(date2);
+        #endregion
+
+        #region Database Extension
+
+        private bool _isDbSyncing;
+        private async void UpdatePlaytime_Database(string jsonData)
+        {
+            if (_isDbSyncing) return;
+            _isDbSyncing = true;
+            try
+            {
+                await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-js",
+                                              jsonData);
+                await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-js-lu",
+                                              DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+                _lastDbUpdate = DateTime.Now;
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
+            }
+            finally
+            {
+                _isDbSyncing = false;
+            }
+        }
+
         #endregion
     }
 }
