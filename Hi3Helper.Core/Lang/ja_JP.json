@@ -534,6 +534,7 @@
 
     "EnableAcrylicEffect": "ランチャーUIに透明効果を付ける",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
+    "Enforce7ZipExtract": "ゲームのインストール/更新で常に7-zipを使用する",
     "UseExternalBrowser": "リンクを常に外部ブラウザで開く",
 
     "LowerCollapsePrioOnGameLaunch": "ゲーム起動中のランチャーの使用リソースを削減",
@@ -805,7 +806,7 @@
     "RepairCompletedSubtitle": "{0}個のファイルが修復されました。",
     "RepairCompletedSubtitleNoBroken": "壊れたファイルは見つかりませんでした。",
     "ExtremeGraphicsSettingsWarnTitle": "超すごい設定のプリセットが選択されました！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
+    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはMSAA有効・レンダリング精度1.6で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
     "MigrateExistingMoveDirectoryTitle": "現在のインストールを移動させる：{0}",
     "MigrateExistingInstallChoiceTitle": "{0}の既存のインストールを検出しました！",
     "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
