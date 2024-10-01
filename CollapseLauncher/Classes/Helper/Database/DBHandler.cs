@@ -121,7 +121,7 @@ namespace CollapseLauncher.Helper.Database
                                                   ex.Message.Contains("Received an invalid baton")) &&
                                                  i < retryCount - 1)
                 {
-                    if (i == 0)
+                    if (i > 0)
                         LogWriteLine("[DBHandler::QueryKey] Database stream expired, retrying...", LogType.Error, true);
 
                     Init();
@@ -158,6 +158,7 @@ namespace CollapseLauncher.Helper.Database
                                   $"ON CONFLICT(key) DO UPDATE SET value = ?";
                     var parameters = new object[] { key, value, value };
                     await _database.Execute(command, parameters);
+                    break;
                 }
                 catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED") ||
                                                  ex.Message.Contains("Received an invalid baton")) &&
@@ -180,7 +181,6 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                     throw;
                 }
-                
             }
         }
     }
