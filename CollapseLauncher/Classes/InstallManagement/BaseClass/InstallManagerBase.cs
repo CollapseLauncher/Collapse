@@ -1670,8 +1670,8 @@ namespace CollapseLauncher.InstallManager.Base
         private async Task ExtractUsingNativeZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
                                                        CancellationToken cancellationToken)
         {
-            // 16 MB of buffer (hope it's not too big)
-            byte[] buffer = new byte[16 << 20];
+            // 4 MB of buffer
+            byte[] buffer = GC.AllocateUninitializedArray<byte>(4 << 20);
 
             foreach (int entryIndex in entriesIndex)
             {
@@ -3835,17 +3835,20 @@ namespace CollapseLauncher.InstallManager.Base
 
         private async Task GetPackagesRemoteSize(List<GameInstallPackage> packageList, CancellationToken token)
         {
-            // Iterate and assign the remote size to each package inside the list
-            for (int i = 0; i < packageList.Count; i++)
+            // Iterate and assign the remote size to each package inside the list in parallel
+            await Parallel.ForEachAsync(packageList, new ParallelOptions
             {
-                if (packageList[i].Segments != null)
+                CancellationToken = token
+            }, async (package, innerToken) =>
+            {
+                if (package.Segments != null)
                 {
-                    await TryGetSegmentedPackageRemoteSize(packageList[i], token);
-                    continue;
+                    await TryGetSegmentedPackageRemoteSize(package, token);
+                    return;
                 }
 
-                await TryGetPackageRemoteSize(packageList[i], token);
-            }
+                await TryGetPackageRemoteSize(package, token);
+            });
         }
 
         #endregion

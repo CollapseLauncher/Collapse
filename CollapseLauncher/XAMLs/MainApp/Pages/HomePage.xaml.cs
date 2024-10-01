@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -57,7 +58,6 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Point = Windows.Foundation.Point;
 using Size = System.Drawing.Size;
-using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Pages
@@ -188,14 +188,16 @@ namespace CollapseLauncher.Pages
                 InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
                 SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
                 ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
-                BottomButtons.SetAllControlsCursorRecursive(cursor);
+                RightBottomButtons.SetAllControlsCursorRecursive(cursor);
+                LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
                 GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
 
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
-                UpdatePlaytime();
-                UpdateLastPlayed();
+                CurrentGameProperty._GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
+                UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
+
                 StartCarouselAutoScroll();
 
 #if !DISABLEDISCORD
@@ -275,6 +277,7 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
+            CurrentGameProperty._GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
             if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
@@ -389,7 +392,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private       void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)  => CarouselRestartScroll(5);
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll(5);
         private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
         public async void CarouselRestartScroll(int delaySeconds = 5)
@@ -418,10 +421,10 @@ namespace CollapseLauncher.Pages
 
             HideImageEventImg(hide);
 
-            Storyboard      storyboard       = new Storyboard();
+            Storyboard storyboard = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
-            OpacityAnimation.From     = hide ? 1 : 0;
-            OpacityAnimation.To       = hide ? 0 : 1;
+            OpacityAnimation.From = hide ? 1 : 0;
+            OpacityAnimation.To = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
             Storyboard.SetTarget(OpacityAnimation, SidePanel);
@@ -969,12 +972,12 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
-            TextBlock               StartGameBtnText              = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon                StartGameBtnIcon              = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            Grid                    StartGameBtnAnimatedIconGrid  = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon StartGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+            Grid StartGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
             // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
-            string                  StartGameBtnIconGlyph         = StartGameBtnIcon!.Glyph;
-            string                  StartGameBtnRunningIconGlyph  = "";
+            string StartGameBtnIconGlyph = StartGameBtnIcon!.Glyph;
+            string StartGameBtnRunningIconGlyph = "";
 
             StartGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
             StartGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -1000,9 +1003,9 @@ namespace CollapseLauncher.Pages
                         ConvertVersionButton.IsEnabled   = false;
                         CustomArgsTextBox.IsEnabled      = false;
                         MoveGameLocationButton.IsEnabled = false;
-                        StopGameButton.IsEnabled         = true;
+                        StopGameButton.IsEnabled = true;
 
-                        PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
+                        PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
                         Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
@@ -1019,12 +1022,12 @@ namespace CollapseLauncher.Pages
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty._GamePreset;
 
-                            StartPlaytimeCounter(currentGameProcess, gamePreset, fromActivityOffset);
+                            CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess);
 
                             int? height = gameSettings.SettingsScreen.height;
                             int? width = gameSettings.SettingsScreen.width;
 
-                            // Start the resizable window payload (also use the same token as PlaytimeToken)
+                            // Start the resizable window payload
                             StartResizableWindowPayload(
                                 gamePreset.GameExecutableName,
                                 gameSettings,
@@ -1668,7 +1671,8 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                StartPlaytimeCounter(proc, _gamePreset);
+                CurrentGameProperty._GamePlaytime.StartSession(proc);
+
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
@@ -1827,7 +1831,7 @@ namespace CollapseLauncher.Pages
 
         #region Game Launch Argument Builder
         bool RequireWindowExclusivePayload;
-        
+
         internal string GetLaunchArguments(IGameSettingsUniversal _Settings)
         {
             StringBuilder parameter = new StringBuilder();
@@ -1882,12 +1886,12 @@ namespace CollapseLauncher.Pages
                     parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
                 }
-                
+
                 // Enable mobile mode
                 if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                 {
-                    const string regLoc  = GameSettings.StarRail.Model._ValueName;
-                    var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
+                    const string regLoc = GameSettings.StarRail.Model._ValueName;
+                    var regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
 
                     if (regRoot != null || !string.IsNullOrEmpty(regLoc))
                     {
@@ -1933,7 +1937,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
-                
+
                 // Enable mobile mode
                 if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                     parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
@@ -2074,9 +2078,9 @@ namespace CollapseLauncher.Pages
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName        = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
+                        FileName = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
                         UseShellExecute = true,
-                        Verb            = "runas"
+                        Verb = "runas"
                     }
                 };
 
@@ -2151,7 +2155,7 @@ namespace CollapseLauncher.Pages
                 }
                 
                 LogWriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
-                
+
                 await using (FileStream fs =
                              new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader reader = new StreamReader(fs))
@@ -2328,32 +2332,25 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Playtime Buttons
+        #region Playtime
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_cachedIsGameRunning)
-                return;
+            if (_cachedIsGameRunning) return;
 
-            UpdatePlaytime();
+            UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int playtimeMins = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int playtimeHours = int.Parse("0" + HourPlaytimeTextBox.Text);
-            int finalPlaytimeMinutes = playtimeMins % 60;
-            int finalPlaytimeHours = playtimeHours + playtimeMins / 60;
-            if (finalPlaytimeHours > 99999) { finalPlaytimeHours = 99999; finalPlaytimeMinutes = 59; }
-            MinutePlaytimeTextBox.Text = finalPlaytimeMinutes.ToString();
-            HourPlaytimeTextBox.Text = finalPlaytimeHours.ToString();
+            int mins = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int hours = int.Parse("0" + HourPlaytimeTextBox.Text);
 
-            int finalPlaytime = finalPlaytimeHours * 3600 + finalPlaytimeMinutes * 60;
+            TimeSpan time = TimeSpan.FromMinutes(hours * 60 + mins);
+            if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
 
-            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
-            LogWriteLine($"Playtime counter changed to {HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m"}. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, finalPlaytime);
+            CurrentGameProperty._GamePlaytime.Update(time);
             PlaytimeFlyout.Hide();
         }
 
@@ -2361,9 +2358,7 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
-            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
-            LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, 0);
+            CurrentGameProperty._GamePlaytime.Reset();
             PlaytimeFlyout.Hide();
         }
 
@@ -2372,140 +2367,63 @@ namespace CollapseLauncher.Pages
             sender.MaxLength = sender == HourPlaytimeTextBox ? 5 : 3;
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
-        #endregion
 
-        #region Playtime Tracker Method
-        private void UpdatePlaytime(bool readRegistry = true, int value = 0)
+        private void UpdatePlaytime(object sender, CollapsePlaytime playtime)
         {
-            if (readRegistry)
-                value = ReadPlaytimeFromRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                PlaytimeMainBtn.Text = FormatTimeStamp(playtime.TotalPlaytime);
+                HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
+                MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
-            HourPlaytimeTextBox.Text = (value / 3600).ToString();
-            MinutePlaytimeTextBox.Text = (value % 3600 / 60).ToString();
-            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, (value / 3600), (value % 3600 / 60));
+                string lastPlayed = Lang._HomePage.GamePlaytime_Stats_NeverPlayed;
+                if (playtime.LastPlayed != null)
+                {
+                    DateTime? last = playtime.LastPlayed?.ToLocalTime();
+                    lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
+                                                      last?.Month, last?.Year, last?.Hour, last?.Minute);
+                }
+
+                PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
+                PlaytimeStatsWeekly.Text      = FormatTimeStamp(playtime.WeeklyPlaytime);
+                PlaytimeStatsMonthly.Text     = FormatTimeStamp(playtime.MonthlyPlaytime);
+                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);
+                PlaytimeStatsLastPlayed.Text  = lastPlayed;
+            });
+            return;
+
+            static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
         }
 
-        private DateTime Hoyoception => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
-        private void UpdateLastPlayed(bool readRegistry = true, int value = 0)
+        private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)
         {
-            if (readRegistry)
-                value = ReadPlaytimeFromRegistry(false, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+            ToolTip tooltip = sender as ToolTip;
+            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+        }
 
-            DateTime last = Hoyoception.AddSeconds(value).ToLocalTime();
+        private void HidePlaytimeStatsFlyout(object sender, PointerRoutedEventArgs e)
+        {
+            FrameworkElement senderAsFrameworkElement = sender as FrameworkElement;
 
-            if (value == 0)
+            /* This fix an issue where the flyout spawns right on top of the button
+             * instead of on top of the button in its 1st frame.
+             * 
+             * If this method is called even within its button's range, then just
+             * ignore the call and do not hide the flyout.
+             */
+            PointerPoint pointerPoint = e.GetCurrentPoint(senderAsFrameworkElement);
+            Point currentCursorPosition = pointerPoint.Position;
+            if (currentCursorPosition.X > 0
+              && currentCursorPosition.Y > 0
+              && currentCursorPosition.X <= senderAsFrameworkElement!.ActualWidth
+              && currentCursorPosition.Y <= senderAsFrameworkElement!.ActualHeight)
             {
-                PlaytimeLastOpen.Visibility = Visibility.Collapsed;
                 return;
             }
 
-            PlaytimeLastOpen.Visibility = Visibility.Visible;
-            string formattedText = string.Format(Lang._HomePage.GamePlaytime_ToolTipDisplay, last.Day,
-                last.Month, last.Year, last.Hour, last.Minute);
-            ToolTipService.SetToolTip(PlaytimeBtn, formattedText);
-        }
-
-        private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset, DateTime? begin = null)
-        {
-            // If a playtime HashSet has already tracked, then return (do not track the playtime more than once)
-            if (_playtimeHashIdCurrentTracked.Contains(gamePreset.HashID))
-                return;
-            // Otherwise, add it to track list
-            _playtimeHashIdCurrentTracked.Add(gamePreset.HashID);
-
-            int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
-
-            begin ??= DateTime.Now;
-            int lastPlayed = (int)(begin.Value.ToUniversalTime() - Hoyoception).TotalSeconds;
-            SavePlaytimeToRegistry(false, gamePreset.ConfigRegistryLocation, lastPlayed);
-            UpdateLastPlayed(false, lastPlayed);
-            int numOfLoops = 0;
-
-#if DEBUG
-            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.Value.ToLongTimeString()}.");
-#endif
-
-            using (var inGameTimer = new Timer())
-            {
-                inGameTimer.Interval = 60000;
-                inGameTimer.Elapsed += (_, _) =>
-                {
-                    numOfLoops++;
-
-                    DateTime now = DateTime.Now;
-                    int elapsedSeconds = (int)(now - begin.Value).TotalSeconds;
-                    if (elapsedSeconds < 0)
-                        elapsedSeconds = numOfLoops * 60;
-
-                    if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                        m_homePage?.DispatcherQueue?.TryEnqueue(() =>
-                        {
-                            m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
-                        });
-#if DEBUG
-                    LogWriteLine($"{gamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
-#endif
-                    SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
-                };
-
-                inGameTimer.Start();
-                await proc.WaitForExitAsync();
-                inGameTimer.Stop();
-            }
-
-            DateTime end = DateTime.Now;
-            int elapsedSeconds = (int)(end - begin.Value).TotalSeconds;
-            if (elapsedSeconds < 0)
-            {
-                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
-                elapsedSeconds = numOfLoops * 60;
-                Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
-            }
-
-            SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] " +
-                         $"to {gamePreset.ProfileName} playtime.", LogType.Default, true);
-            if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                m_homePage?.DispatcherQueue?.TryEnqueue(() =>
-                {
-                    m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
-                });
-
-            // Pop the game from track list
-            _playtimeHashIdCurrentTracked.Remove(gamePreset.HashID);
-        }
-
-        private const string _playtimeRegName = "CollapseLauncher_Playtime";
-        private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
-        private static HashSet<int> _playtimeHashIdCurrentTracked = new HashSet<int>();
-#nullable enable
-        private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
-        {
-            try
-            {
-                object subKeyObj = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)?
-                                   .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0) ?? 0;
-
-                return (int)subKeyObj;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
-                return 0;
-            }
-        }
-
-        private static void SavePlaytimeToRegistry(bool isPlaytime, string regionRegistryKey, int value)
-        {
-            try
-            {
-                RegistryKey? subKey = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true);
-                subKey?.SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value, RegistryValueKind.DWord);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
-            }
+            // Otherwise, hide the flyout
+            Flyout flyout = senderAsFrameworkElement!.Tag as Flyout;
+            flyout!.Hide();
         }
 #nullable restore
         #endregion
@@ -2680,7 +2598,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = false;
-                    collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
                                  $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
@@ -2691,7 +2609,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = true;
-                    collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
                                  $"PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
@@ -2722,7 +2640,7 @@ namespace CollapseLauncher.Pages
 
         private async void GameBoost_Invoke(GamePresetProperty gameProp)
         {
-        #nullable enable
+#nullable enable
             // Init new target process
             Process? toTargetProc = null;
             try
@@ -2758,7 +2676,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }
-        #nullable restore
+#nullable restore
         }
         #endregion
 
@@ -2977,7 +2895,7 @@ namespace CollapseLauncher.Pages
 
         private bool IsPointerInsideSidePanel;
         private bool IsSidePanelCurrentlyScaledOut;
-        
+
         private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
             IsPointerInsideSidePanel = true;
@@ -2987,9 +2905,9 @@ namespace CollapseLauncher.Pages
                 if (IsSidePanelCurrentlyScaledOut) return;
                 if (!IsPointerInsideSidePanel) return;
 
-                var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+                var toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
                 var storyboard = new Storyboard();
-                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
                 var cubicEaseOut = new CubicEase()
                 {
@@ -2998,9 +2916,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleXAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleX,
-                    To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
+                    From = transform.ScaleX,
+                    To = toScale,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -3009,9 +2927,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleYAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleY,
-                    To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
+                    From = transform.ScaleY,
+                    To = toScale,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);
@@ -3037,7 +2955,7 @@ namespace CollapseLauncher.Pages
                 HideImageEventImg(false);
 
                 var storyboard = new Storyboard();
-                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
                 var cubicEaseOut = new CubicEase()
                 {
@@ -3046,9 +2964,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleXAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleX,
-                    To             = 1,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    From = transform.ScaleX,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.25)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -3057,9 +2975,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleYAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleY,
-                    To             = 1,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    From = transform.ScaleY,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.25)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);

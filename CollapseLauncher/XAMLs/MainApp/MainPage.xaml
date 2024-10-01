@@ -7,7 +7,6 @@
       xmlns:extension="using:CollapseLauncher.Extension"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:p="using:CollapseLauncher.Helper.Metadata"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
@@ -79,7 +78,7 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="32" />
-                <ColumnDefinition Width="104" />
+                <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <Grid x:Name="GridBG_IconGrid"
                   Grid.Column="0"

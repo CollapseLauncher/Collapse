@@ -16,6 +16,8 @@ exclude:
   - name: Xaml.ConstructorWarning
   - name: Xaml.InvalidResourceType
   - name: Xaml.StaticResourceNotResolved
+  - name: RedundantExtendsListEntry
+  - name: PartialTypeWithSinglePart
 include:
   - name: CheckDependencyLicenses
 licenseRules:
