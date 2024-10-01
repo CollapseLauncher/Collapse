@@ -168,7 +168,7 @@
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
     "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断される（閉じた瞬間までのプレイ時間が記録されます）ことと、Collapseから起動したプレイ時間のみが加算されることに注意してください。",
     "GamePlaytime_Display": "{0}時間 {1}分",
-    "GamePlaytime_ToolTipDisplay": "前回の起動は{2:0000}年{1:00}月{0:00}日 {3:00}時{4:00}分",
+    "GamePlaytime_DateDisplay": "{2:0000}年{1:00}月{0:00}日 {3:00}時{4:00}分",
 
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
