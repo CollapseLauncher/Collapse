@@ -153,7 +153,7 @@ namespace CollapseLauncher.GamePlaytime
 
                 if ((DateTime.Now - _lastDbUpdate).TotalMinutes >= 5)
                 {
-                    UpdatePlaytime_Database(data);
+                    UpdatePlaytime_Database(data, TotalPlaytime.TotalSeconds, lastPlayed);
                 }
                 
             }
@@ -241,16 +241,22 @@ namespace CollapseLauncher.GamePlaytime
         #region Database Extension
 
         private bool _isDbSyncing;
-        private async void UpdatePlaytime_Database(string jsonData)
+        private async void UpdatePlaytime_Database(string jsonData, double totalTime, double? lastPlayed)
         {
             if (_isDbSyncing) return;
             _isDbSyncing = true;
             try
             {
+                var unixStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
                 await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-js",
                                               jsonData);
-                await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-js-lu",
-                                              DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+                await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-total",
+                                              totalTime.ToString(CultureInfo.InvariantCulture));
+                if (lastPlayed != null)
+                    await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-lastPlayed",
+                                                  ((int)lastPlayed).ToString());
+                await DbHandler.StoreKeyValue($"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-lu",
+                                              unixStamp);
                 _lastDbUpdate = DateTime.Now;
             }
             catch (Exception e)
