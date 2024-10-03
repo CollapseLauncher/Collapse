@@ -75,7 +75,7 @@ public static class MainEntryPoint
             }
 
             // Initialize TaskSchedulerHelper
-            TaskSchedulerHelper.InvokeGetStatusCommand();
+            TaskSchedulerHelper.InitializeDetached();
 
             StartUpdaterHook();
 
