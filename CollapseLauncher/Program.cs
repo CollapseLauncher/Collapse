@@ -74,9 +74,6 @@ public static class MainEntryPoint
                 Directory.SetCurrentDirectory(AppFolder);
             }
 
-            // Initialize TaskSchedulerHelper
-            TaskSchedulerHelper.InitializeDetached();
-
             StartUpdaterHook();
 
             LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",

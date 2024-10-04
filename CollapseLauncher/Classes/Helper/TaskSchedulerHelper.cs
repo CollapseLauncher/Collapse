@@ -31,10 +31,6 @@ namespace CollapseLauncher.Helper
             return CachedIsEnabled;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        internal static async void InitializeDetached() => InvokeGetStatusCommand();
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
         internal static void InvokeGetStatusCommand()
         {
             // Build the argument and mode to set
