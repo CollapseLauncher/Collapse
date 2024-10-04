@@ -6,18 +6,24 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    internal delegate ValueTask<TResult?> ActionTimeoutValueTaskCallback<TResult>(CancellationToken token);
+    internal delegate Task<TResult?> ActionTimeoutValueTaskCallback<TResult>(CancellationToken token);
     internal delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
     internal static class TaskExtensions
     {
         internal const int DefaultTimeoutSec = 10;
         internal const int DefaultRetryAttempt = 5;
 
-        internal static async ValueTask<TResult?> WaitForRetryAsync<TResult>(this ActionTimeoutValueTaskCallback<TResult?> funcCallback, int? timeout = null,
+        internal static async Task AsTaskAndDoAction<TResult>(this Task<TResult?> taskResult, Action<TResult?> doAction)
+        {
+            TResult? result = await taskResult;
+            doAction(result);
+        }
+
+        internal static async Task<TResult?> WaitForRetryAsync<TResult>(this ActionTimeoutValueTaskCallback<TResult?> funcCallback, int? timeout = null,
             int? timeoutStep = null, int? retryAttempt = null, ActionOnTimeOutRetry? actionOnRetry = null, CancellationToken fromToken = default)
             => await WaitForRetryAsync(() => funcCallback, timeout, timeoutStep, retryAttempt, actionOnRetry, fromToken);
 
-        internal static async ValueTask<TResult?> WaitForRetryAsync<TResult>(Func<ActionTimeoutValueTaskCallback<TResult?>> funcCallback, int? timeout = null,
+        internal static async Task<TResult?> WaitForRetryAsync<TResult>(Func<ActionTimeoutValueTaskCallback<TResult?>> funcCallback, int? timeout = null,
             int? timeoutStep = null, int? retryAttempt = null, ActionOnTimeOutRetry? actionOnRetry = null, CancellationToken fromToken = default)
         {
             timeout ??= DefaultTimeoutSec;
@@ -78,7 +84,7 @@ namespace CollapseLauncher.Extension
         }
 
         internal static async
-            ValueTask<T?>
+            Task<T?>
             TimeoutAfter<T>(this Task<T?> task, CancellationToken token = default, int timeout = DefaultTimeoutSec)
         {
             Task<T?> completedTask = await Task.WhenAny(task, ThrowExceptionAfterTimeout<T>(timeout, task, token));

@@ -76,9 +76,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected virtual async ValueTask LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
                                                          CancellationToken     token)
         {
-            await LoadLauncherGameResource(onTimeoutRoutine, token);
-            await LoadLauncherNews(onTimeoutRoutine, token);
-            await LoadLauncherGameInfo(onTimeoutRoutine, token);
+            await Task.WhenAll([
+                LoadLauncherGameResource(onTimeoutRoutine, token),
+                LoadLauncherNews(onTimeoutRoutine, token),
+                LoadLauncherGameInfo(onTimeoutRoutine, token)
+                ]).ConfigureAwait(false);
         }
 
         protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
@@ -91,31 +93,39 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 async innerToken =>
                     await FallbackCDNUtil.DownloadAsJSONType(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, innerToken);
 
-            LauncherGameResource = await launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
+            Task[] tasks = [
+                launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                                            .AsTaskAndDoAction((result) => LauncherGameResource = result),
+                Task.CompletedTask
+                ];
 
-            if (LauncherGameResource == null)
-            {
-                throw new NullReferenceException("Launcher game resource returns a null!");
-            }
-
+            RegionResourceProp? pluginProp = null;
             if (string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL))
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                     async innerToken =>
                         await FallbackCDNUtil.DownloadAsJSONType(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default.RegionResourceProp, innerToken);
 
-                RegionResourceProp? pluginProp = await launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token);
+                tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
+                                                                        ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                                                     .AsTaskAndDoAction((result) => pluginProp = result);
+            }
 
-                if (pluginProp != null && LauncherGameResource.data != null)
-                {
-                    LauncherGameResource.data.plugins = pluginProp.data?.plugins;
-                #if DEBUG
-                    Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading plugin handle!",
-                                        LogType.Debug, true);
-                #endif
-                }
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            if (LauncherGameResource == null)
+            {
+                throw new NullReferenceException("Launcher game resource returns a null!");
+            }
+
+            if (pluginProp != null && LauncherGameResource.data != null)
+            {
+                LauncherGameResource.data.plugins = pluginProp.data?.plugins;
+#if DEBUG
+                Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading plugin handle!",
+                                    LogType.Debug, true);
+#endif
             }
 
             PerformDebugRoutines();
@@ -207,8 +217,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
         }
 
-        protected virtual async ValueTask LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                           CancellationToken     token)
+        protected virtual async Task LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine,
+                                                      CancellationToken     token)
         {
             EnsurePresetConfigNotNull();
 
@@ -252,9 +262,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async ValueTask LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine,
+        protected virtual async Task LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine,
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-                                                               CancellationToken token)
+                                                          CancellationToken token)
         {
             LauncherGameInfoField = new HoYoPlayGameInfoField();
         }
