@@ -1089,6 +1089,92 @@
                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._SettingsPage.SophonPredownPerfMode_Tooltip}" />
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="User Synchronizable Database" />
+                        <ToggleSwitch x:Name="DbToggle"
+                                      Margin="0,4"
+                                      Header="Enable Database Functionality"
+                                      IsOn="{x:Bind IsDbEnabled, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <TextBox x:Name="DbUriTextBox"
+                                 MaxWidth="400"
+                                 Margin="0,8,0,8"
+                                 HorizontalAlignment="Stretch"
+                                 Header="Database Url"
+                                 InputScope="Url"
+                                 IsEnabled="{Binding IsOn, ElementName=DbToggle}"
+                                 IsSpellCheckEnabled="False"
+                                 PlaceholderText="Example: https://db-bagusnl.turso.io"
+                                 Text="{x:Bind DbUrl, Mode=TwoWay}" />
+                        <PasswordBox x:Name="DbTokenPasswordBox"
+                                     MaxWidth="400"
+                                     Margin="0,8,0,8"
+                                     HorizontalAlignment="Stretch"
+                                     Header="Database Token"
+                                     InputScope="Password"
+                                     IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                     Password="{x:Bind DbToken, Mode=TwoWay}" />
+                        <TextBox x:Name="DbUserIdTextBox"
+                                 Grid.Column="0"
+                                 Margin="0,8,0,8"
+                                 HorizontalAlignment="Stretch"
+                                 Header="User ID (GUIDv7)"
+                                 IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                 IsSpellCheckEnabled="False"
+                                 PlaceholderText="00000000-0000-0000-0000-000000000000"
+                                 Text="{x:Bind DbUserId, Mode=TwoWay}" />
+                        <Grid Margin="0,4,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="GenerateGuidButton"
+                                    Grid.Column="0"
+                                    Margin="6,0,0,0"
+                                    Click="GenerateGuidButton_Click"
+                                    CornerRadius="14"
+                                    Style="{ThemeResource AccentButtonStyle}">
+                                <Grid Margin="4,0"
+                                      HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="0"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="16"
+                                              Glyph="" />
+                                    <TextBlock Grid.Column="1"
+                                               Margin="8,0,0,0"
+                                               Text="Generate GUID"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </Button>
+                            <Button x:Name="ValidateDbButton"
+                                    Grid.Column="1"
+                                    Margin="6,0,0,0"
+                                    Click="ValidateDbButton_Click"
+                                    CornerRadius="14"
+                                    Style="{ThemeResource AccentButtonStyle}">
+                                <Grid Margin="4,0"
+                                      HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="0"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="16"
+                                              Glyph="" />
+                                    <TextBlock Grid.Column="1"
+                                               Margin="8,0,0,0"
+                                               Text="Validate Settings"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <TextBlock Margin="0,16,0,8"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" />
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}"

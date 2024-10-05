@@ -12,9 +12,29 @@ namespace CollapseLauncher.Helper.Database
     {
         #region Config Properties
 
-        private static string _uri;
+        private static bool? _enabled;
+        public static bool IsEnabled
+        {
+            get
+            {
+                if (_enabled != null) return (bool)_enabled;
+                var c = DbConfig.DbEnabled;
+                _enabled = c;
+                return c;
+            }
+            set
+            {
+                _enabled           = value;
+                DbConfig.DbEnabled = value;
 
-        private static string Uri
+                if (value) Init();
+                else Dispose();
+            }
+        }
+        
+        
+        private static string _uri;
+        public static string Uri
         {
             get
             {
@@ -23,11 +43,15 @@ namespace CollapseLauncher.Helper.Database
                 _uri = c;
                 return c;
             }
+            set
+            {
+                _uri           = value;
+                DbConfig.DbUrl = value;
+            }
         }
 
         private static string _token;
-
-        private static string Token
+        public static string Token
         {
             get
             {
@@ -37,12 +61,16 @@ namespace CollapseLauncher.Helper.Database
                 _token = c;
                 return c;
             }
+            set
+            {
+                _token           = value;
+                DbConfig.DbToken = value;
+            }
         }
 
         private static Guid?  _userId;
         private static string _userIdHash;
-
-        private static Guid UserId
+        public static Guid UserId
         {
             get
             {
@@ -53,8 +81,17 @@ namespace CollapseLauncher.Helper.Database
                 _userIdHash = BitConverter.ToString(byteUidH).Replace("-", "").ToLowerInvariant();
                 return c;
             }
+            set
+            {
+                _userId           = value;
+                DbConfig.UserGuid = value;
+                
+                var byteUidH = System.IO.Hashing.XxHash64.Hash(value.ToByteArray());
+                _userIdHash = BitConverter.ToString(byteUidH).Replace("-", "").ToLowerInvariant();
+            }
         }
 
+        private static bool _isFirstInit = true;
         #endregion
 
         private static IDatabaseClient _database;
@@ -64,9 +101,16 @@ namespace CollapseLauncher.Helper.Database
             DbConfig.Init();
 
             // Init props
+            _ = IsEnabled;
             _ = Token;
             _ = Uri;
             _ = UserId;
+
+            if (!IsEnabled)
+            {
+                LogWriteLine("[DbHandler::Init] Database functionality is disabled!");
+                return;
+            }
             try
             {
                 _database = await DatabaseClient.Create(opts =>
@@ -74,8 +118,16 @@ namespace CollapseLauncher.Helper.Database
                                                             opts.Url       = Uri;
                                                             opts.AuthToken = Token;
                                                         });
-                await
-                    _database.Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
+
+                if (_isFirstInit)
+                {
+                    LogWriteLine("[DbHandler::Init] Initializing database system...");
+                    await _database.Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
+                    _isFirstInit = false;
+                }
+                else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
+                    
+                
 
                 // test code
                 // await StoreKeyValue("testdate", DateTime.Now.ToString(CultureInfo.CurrentCulture));
@@ -88,8 +140,19 @@ namespace CollapseLauncher.Helper.Database
             }
         }
 
+        private static void Dispose()
+        {
+            _database = null;
+            _enabled = null;
+            _token = null;
+            _uri = null;
+            _userId = null;
+            _userIdHash = null;
+        }
+
         public static async Task<string> QueryKey(string key)
         {
+            if (!IsEnabled) return null;
         #if DEBUG
             var r   = new Random();
             var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
@@ -152,6 +215,7 @@ namespace CollapseLauncher.Helper.Database
 
         public static async Task StoreKeyValue(string key, string value)
         {
+            if (!IsEnabled) return;
         #if DEBUG
             var t   = System.Diagnostics.Stopwatch.StartNew();
             var r   = new Random();

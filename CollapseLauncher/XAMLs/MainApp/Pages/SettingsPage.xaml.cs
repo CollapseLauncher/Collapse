@@ -1,11 +1,13 @@
 #if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
+    using CollapseLauncher.CustomControls;
     using CollapseLauncher.Dialogs;
     using CollapseLauncher.Extension;
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
     using CollapseLauncher.Helper.Background;
+    using CollapseLauncher.Helper.Database;
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
@@ -1328,6 +1330,88 @@ namespace CollapseLauncher.Pages
             }
         }
 #nullable restore
+
+        #region Database
+
+        private bool IsDbEnabled
+        {
+            get => DbHandler.IsEnabled;
+            set
+            {
+                DbHandler.IsEnabled = value;
+                if (value) DbHandler.Init();
+            }
+        }
+
+        private string DbUrl
+        {
+            get => DbHandler.Uri;
+            set
+            {
+                if (!value.Contains("https://"))
+                {
+                    DbUriTextBox.Text = DbHandler.Uri;
+                    return;
+                }
+
+                DbHandler.Uri = value;
+            }
+        }
+
+        private string DbToken
+        {
+            get => DbHandler.Token;
+            set => DbHandler.Token = value;
+        }
+
+        private string DbUserId
+        {
+            get => DbHandler.UserId.ToString();
+            set
+            {
+                // TODO: spawn Dialog_DbGenerateGuid to warn user about losing their database
+                if (Guid.TryParse(value, out var guid))
+                {
+                    DbHandler.UserId = guid;
+                }
+                else
+                {
+                    DbUserIdTextBox.Text = DbHandler.UserId.ToString();
+                }
+            }
+        }
+
+        private async void ValidateDbButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await Task.Run(() => DbHandler.Init());
+                await SpawnDialog(
+                    "All OK!", // TODO: Localize
+                    "Database connected successfully!",
+                    (sender as UIElement),
+                    Lang._Misc.Close,
+                    null,
+                    null,
+                    ContentDialogButton.Close,
+                    ContentDialogTheme.Informational
+                    );
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+            }
+        }
+
+        private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                DbUserIdTextBox.Text = Guid.CreateVersion7().ToString();
+            }
+        }
+
+        #endregion
         #endregion
 
         #region Keyboard Shortcuts
@@ -1368,6 +1452,7 @@ namespace CollapseLauncher.Pages
                 KeyboardShortcutsEvent(this, value ? 0 : 2);
             }
         }
+
         #endregion
     }
 }

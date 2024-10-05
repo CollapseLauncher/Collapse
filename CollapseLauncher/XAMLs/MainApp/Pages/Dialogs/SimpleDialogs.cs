@@ -1049,6 +1049,19 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_DbGenerateUid(UIElement Content)
+        {
+            return await SpawnDialog(
+                "Are you sure to change your user ID?", // TODO: Localize
+                "Changing user ID will cause your data associated with current ID to be lost if you lose your current user ID.",
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null,
+                ContentDialogButton.Close,
+                ContentDialogTheme.Warning);
+        }
+
         public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
         {
             return await SpawnDialog(

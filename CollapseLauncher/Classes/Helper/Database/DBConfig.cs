@@ -65,18 +65,29 @@ namespace CollapseLauncher.Helper.Database
         #region Template
         private static readonly Dictionary<string, IniValue> DbSettingsTemplate = new()
         {
-            { "url", "https://test-db-bagusnl.turso.io" },
+            { "enabled", false },
+            { "url", "" },
             { "token", "" },
             { "userGuid", "" }
         };
         #endregion
 
+        public static bool DbEnabled
+        {
+            get => GetConfig("enabled").ToBool();
+            set => SetAndSaveValue("enabled", value);
+        }
+
+        [DebuggerHidden]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string DbUrl
         {
             get => GetConfig("url").ToString();
             set => SetAndSaveValue("url", value);
         }
         
+        [DebuggerHidden]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string DbToken
         {
             get => GetConfig("token").ToString();

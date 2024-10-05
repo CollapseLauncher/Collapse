@@ -109,6 +109,12 @@ namespace CollapseLauncher.GameSettings.Universal
         /// The path of the custom BG for each region
         /// </summary>
         public string? CustomRegionBGPath { get; set; }
+#nullable restore
+
+        /// <summary>
+        /// Determines if the game playtime should be synced to the database
+        /// </summary>
+        public bool IsSyncPlaytimeToDatabase { get; set; } = true;
 
         #endregion
 
