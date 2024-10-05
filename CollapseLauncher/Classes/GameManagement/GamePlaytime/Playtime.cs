@@ -52,12 +52,12 @@ namespace CollapseLauncher.GamePlaytime
                 PlaytimeUpdated?.Invoke(this, _playtime);
             }
         }
-        
-        public void Update(TimeSpan timeSpan)
+
+        public void Update(TimeSpan timeSpan, bool forceUpdateDb = false)
         {
             TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
 
-            _playtime.Update(timeSpan);
+            _playtime.Update(timeSpan, true, true);
             PlaytimeUpdated?.Invoke(this, _playtime);
 
             LogWriteLine($"Playtime counter changed to {TimeSpanToString(timeSpan)}. (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
@@ -130,7 +130,7 @@ namespace CollapseLauncher.GamePlaytime
             LogWriteLine($"Added {totalElapsedSeconds}s [{totalTimeSpan.Hours}h {totalTimeSpan.Minutes}m {totalTimeSpan.Seconds}s] " +
                          $"to {_gameVersionManager.GamePreset.ProfileName} playtime.", LogType.Default, true);
             
-            _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false);
+            _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false, true);
             PlaytimeUpdated?.Invoke(this, _playtime);
 
             _activeSessions.Remove(hashId);

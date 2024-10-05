@@ -181,7 +181,7 @@ namespace CollapseLauncher.GamePlaytime
             ControlDate     = DateTime.Today;
             LastPlayed      = null;
 
-            if (!_isDeserializing.Contains(_hashID)) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save(true);
         }
 
         /// <summary>
@@ -189,7 +189,8 @@ namespace CollapseLauncher.GamePlaytime
         /// </summary>
         /// <param name="timeSpan">New playtime value</param>
         /// <param name="reset">Reset all other fields</param>
-        public void Update(TimeSpan timeSpan, bool reset = true)
+        /// <param name="forceUpdateDb">Force update database data</param>
+        public void Update(TimeSpan timeSpan, bool reset = true, bool forceUpdateDb = false)
         {
             if (reset)
             {
@@ -202,7 +203,7 @@ namespace CollapseLauncher.GamePlaytime
             
             TotalPlaytime = timeSpan;
 
-            if (!_isDeserializing.Contains(_hashID)) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save(forceUpdateDb);
         }
 
         /// <summary>

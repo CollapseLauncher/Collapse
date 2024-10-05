@@ -2350,7 +2350,7 @@ namespace CollapseLauncher.Pages
             TimeSpan time = TimeSpan.FromMinutes(hours * 60 + mins);
             if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
 
-            CurrentGameProperty._GamePlaytime.Update(time);
+            CurrentGameProperty._GamePlaytime.Update(time, true);
             PlaytimeFlyout.Hide();
         }
 
