@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Windows.System;
 
 namespace CollapseLauncher.Helper.Database
 {
@@ -53,11 +52,11 @@ namespace CollapseLauncher.Helper.Database
         private static void Load() => _config.Load(_configPath);
         private static void Save() => _config.Save(_configPath);
         
-        private static IniValue GetConfig(string key) => _config[DbSectionName][key];
+        public static IniValue GetConfig(string key) => _config[DbSectionName][key];
 
         private static void SetValue(string key, IniValue value) => _config[DbSectionName]![key] = value;
 
-        private static void SetAndSaveValue(string key, IniValue value)
+        public static void SetAndSaveValue(string key, IniValue value)
         {
             SetValue(key, value);
             Save();

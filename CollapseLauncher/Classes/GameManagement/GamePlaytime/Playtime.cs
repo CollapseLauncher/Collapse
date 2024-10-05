@@ -38,9 +38,17 @@ namespace CollapseLauncher.GamePlaytime
             _gameVersionManager = GameVersionManager;
 
             _playtime = CollapsePlaytime.Load(_registryRoot, _gameVersionManager.GamePreset.HashID, _gameVersionManager);
+            
+            CheckDb();
         }
 #nullable disable
 
+        public async void CheckDb()
+        {
+            var needUpdate = await _playtime.DbSync();
+            if (needUpdate) PlaytimeUpdated?.Invoke(this, _playtime);
+        }
+        
         public void Update(TimeSpan timeSpan)
         {
             TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
@@ -129,8 +137,8 @@ namespace CollapseLauncher.GamePlaytime
         public void Dispose()
         {
             _token.Cancel();
-            _playtime.Save();
-            _playtime._lastDbUpdate = DateTime.MinValue;
+            _playtime.Save(true);
+            _playtime.LastDbUpdate = DateTime.MinValue;
             _registryRoot           = null;
         }
     }

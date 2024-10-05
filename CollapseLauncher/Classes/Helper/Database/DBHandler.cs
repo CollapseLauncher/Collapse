@@ -1,17 +1,14 @@
 using Hi3Helper;
 using Libsql.Client;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.System;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Helper.Database
 {
-    internal class DbHandler
+    internal static class DbHandler
     {
         #region Config Properties
 
@@ -94,7 +91,10 @@ namespace CollapseLauncher.Helper.Database
         public static async Task<string> QueryKey(string key)
         {
         #if DEBUG
-            LogWriteLine($"[DBHandler::QueryKey] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
+            var r   = new Random();
+            var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
+            LogWriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
+            var t = System.Diagnostics.Stopwatch.StartNew();
         #endif
             const int retryCount = 3;
             for (var i = 0; i < retryCount; i++)
@@ -111,7 +111,7 @@ namespace CollapseLauncher.Helper.Database
                         var str =
                             string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
                     #if DEBUG
-                        LogWriteLine($"[DBHandler::QueryKey] Got value!\r\n\tKey: {key}\r\n\t{str}", LogType.Debug,
+                        LogWriteLine($"[DBHandler::QueryKey] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
                                      true);
                     #endif
                         return str;
@@ -138,6 +138,13 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                     return null;
                 }
+            #if DEBUG
+                finally
+                {
+                    t.Stop();
+                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
+                }
+            #endif
             }
 
             return null;
@@ -146,7 +153,10 @@ namespace CollapseLauncher.Helper.Database
         public static async Task StoreKeyValue(string key, string value)
         {
         #if DEBUG
-            LogWriteLine($"[DBHandler::StoreKeyValue] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
+            var t   = System.Diagnostics.Stopwatch.StartNew();
+            var r   = new Random();
+            var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
                          true);
         #endif
             const int retryCount = 5;
@@ -161,7 +171,7 @@ namespace CollapseLauncher.Helper.Database
                     break;
                 }
                 catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED") ||
-                                                 ex.Message.Contains("Received an invalid baton")) &&
+                                                  ex.Message.Contains("Received an invalid baton")) &&
                                                  i < retryCount - 1)
                 {
                     if (i > 0)
@@ -181,6 +191,14 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                     throw;
                 }
+            #if DEBUG
+                finally
+                {
+                    t.Stop();
+                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
+                                 LogType.Debug, true);
+                }
+            #endif
             }
         }
     }
