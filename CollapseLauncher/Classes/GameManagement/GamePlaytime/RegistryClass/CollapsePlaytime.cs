@@ -22,7 +22,7 @@ namespace CollapseLauncher.GamePlaytime
         private const string StatsValueName      = "CollapseLauncher_PlaytimeStats";
 
         private static HashSet<int>      _isDeserializing = [];
-        private static CollapsePlaytime  _playtime;
+        private static CollapsePlaytime  _playtimeInner;
         private        RegistryKey       _registryRoot;
         private        int               _hashID;
         private        IGameVersionCheck _gameVersion;
@@ -102,20 +102,20 @@ namespace CollapseLauncher.GamePlaytime
 #if DEBUG
                     LogWriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    _playtime = byteStr.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
+                    _playtimeInner = byteStr.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
                 }
                 else
                 {
-                    _playtime = new CollapsePlaytime();
+                    _playtimeInner = new CollapsePlaytime();
                 }
 
-                _playtime._gameVersion  = gameVersion;
-                _playtime._registryRoot = root;
-                _playtime._hashID       = hashID;
-                _playtime.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
-                _playtime.LastPlayed    = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null;
+                _playtimeInner._gameVersion  = gameVersion;
+                _playtimeInner._registryRoot = root;
+                _playtimeInner._hashID       = hashID;
+                _playtimeInner.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
+                _playtimeInner.LastPlayed    = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null;
 
-                return _playtime;
+                return _playtimeInner;
             }
             catch (Exception ex)
             {
@@ -298,11 +298,11 @@ namespace CollapseLauncher.GamePlaytime
                         return false;
                     }
                     LogWriteLine("[CollapsePlaytime::DbSync] Database data is newer! Pulling data~", LogType.Default, true);
-                    _playtime = _jsonDataDb.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime,
+                    _playtimeInner = _jsonDataDb.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime,
                                                         new CollapsePlaytime());
 
-                    _playtime!.TotalPlaytime = TimeSpan.FromSeconds(_totalTimeDb ?? 0);
-                    if (_lastPlayedDb != null) _playtime.LastPlayed = BaseDate.AddSeconds((int)_lastPlayedDb);
+                    _playtimeInner!.TotalPlaytime = TimeSpan.FromSeconds(_totalTimeDb ?? 0);
+                    if (_lastPlayedDb != null) _playtimeInner.LastPlayed = BaseDate.AddSeconds((int)_lastPlayedDb);
                     DbConfig.SetAndSaveValue(KeyLastUpdated, _unixStampDb.ToString());
                     LastDbUpdate = DateTime.Now;
                     Save();
