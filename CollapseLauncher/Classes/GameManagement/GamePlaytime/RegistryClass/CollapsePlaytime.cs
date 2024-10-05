@@ -303,6 +303,9 @@ namespace CollapseLauncher.GamePlaytime
 
                     _playtime!.TotalPlaytime = TimeSpan.FromSeconds(_totalTimeDb ?? 0);
                     if (_lastPlayedDb != null) _playtime.LastPlayed = BaseDate.AddSeconds((int)_lastPlayedDb);
+                    DbConfig.SetAndSaveValue(KeyLastUpdated, _unixStampDb.ToString());
+                    LastDbUpdate = DateTime.Now;
+                    Save();
                     return true;
                 }
 
