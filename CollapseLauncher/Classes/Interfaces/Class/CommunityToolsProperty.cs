@@ -36,7 +36,7 @@ namespace CollapseLauncher
         {
             try
             {
-                CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync<CommunityToolsProperty>(InternalAppJSONContext.Default);
+                CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync(InternalAppJSONContext.Default.CommunityToolsProperty);
                 ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty.OfficialToolsDictionary);
                 ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty.CommunityToolsDictionary);
                 return communityToolkitProperty;

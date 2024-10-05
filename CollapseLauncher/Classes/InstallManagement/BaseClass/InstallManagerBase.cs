@@ -2383,7 +2383,7 @@ namespace CollapseLauncher.InstallManager.Base
                     while (!listReader.EndOfStream)
                     {
                         string currentLine = listReader.ReadLine();
-                        var    prop = currentLine?.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                        var    prop = currentLine?.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
 
                         if (prop == null)
                         {
@@ -3058,7 +3058,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Try parsing the config
                 value  = Encoding.UTF8.GetString(keyValue);
-                config = value.Deserialize<BHI3LInfo>(InternalAppJSONContext.Default);
+                config = value.Deserialize(InternalAppJSONContext.Default.BHI3LInfo);
             }
             catch (Exception ex)
             {
@@ -3902,14 +3902,18 @@ namespace CollapseLauncher.InstallManager.Base
         protected async Task TryGetSegmentedPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
         {
             long totalSize = 0;
-            for (int i = 0; i < asset.Segments.Count; i++)
+            await Parallel.ForAsync(0, asset.Segments.Count, new ParallelOptions
+            {
+                CancellationToken = token
+            },
+            async (i, innerToken) =>
             {
                 long segmentSize = await FallbackCDNUtil.GetContentLength(asset.Segments[i].URL, token);
-                totalSize              += segmentSize;
-                asset.Segments[i].Size =  segmentSize;
+                totalSize += segmentSize;
+                asset.Segments[i].Size = segmentSize;
                 LogWriteLine($"Package Segment: [T: {asset.PackageType}] {asset.Segments[i].Name} has {ConverterTool.SummarizeSizeSimple(segmentSize)} in size",
                              LogType.Default, true);
-            }
+            });
 
             asset.Size = totalSize;
             LogWriteLine($"Package Segment (count: {asset.Segments.Count}) has {ConverterTool.SummarizeSizeSimple(asset.Size)} in total size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",

@@ -9,6 +9,7 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -149,6 +150,7 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
+            InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             for (int i = 0; i < langlist.Count; i++)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
@@ -168,7 +170,7 @@ namespace CollapseLauncher.Dialogs
                     HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.25,
+                    Opacity = 0.5,
                     Name = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -178,7 +180,7 @@ namespace CollapseLauncher.Dialogs
                     iconSize: 14,
                     textSize: 14,
                     iconFontFamily: "FontAwesomeSolid")
-                    .WithOpacity(0.25);
+                    .WithOpacity(0.5);
                 iconTextGrid.Name = "IconText";
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
@@ -193,7 +195,8 @@ namespace CollapseLauncher.Dialogs
                     Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
                 }
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Center);
+                .WithVerticalAlignment(VerticalAlignment.Center)
+                .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
@@ -216,7 +219,35 @@ namespace CollapseLauncher.Dialogs
                     RadioButton radioButtonLocal = sender as RadioButton;
                     TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 0.25;
+                        textBlockLocal.Opacity = 0.5;
+                };
+
+                radioButton.PointerEntered += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 1;
+                        thisIconText.Opacity = 1;
+                    }
+                };
+
+                radioButton.PointerExited += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 0.5;
+                        thisIconText.Opacity = 0.5;
+                    }
                 };
 
                 if (i == defaultIndex)
@@ -252,7 +283,7 @@ namespace CollapseLauncher.Dialogs
 
                     Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
                     if (thisIconText != null)
-                        thisIconText.Opacity = 0.25;
+                        thisIconText.Opacity = 0.5;
 
                     bool isHasAnyChoices = choices.Any(x => x);
                     dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
@@ -320,6 +351,7 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
+            InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             for (int i = 0; i < langlist.Count; i++)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
@@ -339,7 +371,7 @@ namespace CollapseLauncher.Dialogs
                     HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.25,
+                    Opacity = 0.5,
                     Name = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -349,7 +381,7 @@ namespace CollapseLauncher.Dialogs
                     iconSize: 14,
                     textSize: 14,
                     iconFontFamily: "FontAwesomeSolid")
-                    .WithOpacity(0.25);
+                    .WithOpacity(0.5);
                 iconTextGrid.Name = "IconText";
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
@@ -364,7 +396,8 @@ namespace CollapseLauncher.Dialogs
                     Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
                 }
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Center);
+                .WithVerticalAlignment(VerticalAlignment.Center)
+                .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
@@ -387,7 +420,35 @@ namespace CollapseLauncher.Dialogs
                     RadioButton radioButtonLocal = sender as RadioButton;
                     TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 0.25;
+                        textBlockLocal.Opacity = 0.5;
+                };
+
+                radioButton.PointerEntered += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 1;
+                        thisIconText.Opacity = 1;
+                    }
+                };
+
+                radioButton.PointerExited += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 0.5;
+                        thisIconText.Opacity = 0.5;
+                    }
                 };
 
                 if (i == defaultIndex)
@@ -423,7 +484,7 @@ namespace CollapseLauncher.Dialogs
 
                     Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
                     if (thisIconText != null)
-                        thisIconText.Opacity = 0.25;
+                        thisIconText.Opacity = 0.5;
 
                     bool isHasAnyChoices = choices.Any(x => x);
                     dialog.IsPrimaryButtonEnabled = isHasAnyChoices;

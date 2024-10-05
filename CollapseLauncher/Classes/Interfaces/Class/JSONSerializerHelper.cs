@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
 #nullable enable
@@ -46,52 +45,52 @@ namespace CollapseLauncher
         private static readonly Utf8JsonWriter jsonWriter = new Utf8JsonWriter(jsonBufferWriter, jsonWriterOptions);
         private static readonly Utf8JsonWriter jsonWriterIndented = new Utf8JsonWriter(jsonBufferWriter, jsonWriterOptionsIndented);
 
-        internal static T? Deserialize<T>(this string data, JsonSerializerContext context, T? defaultType = null)
-            where T : class => InnerDeserialize(data, context, defaultType);
+        internal static T? Deserialize<T>(this string data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : class => InnerDeserialize(data, typeInfo, defaultType);
 
-        internal static T? Deserialize<T>(this string data, JsonSerializerContext context, T? defaultType = null)
-            where T : struct => InnerDeserialize(data, context, defaultType);
+        internal static T? Deserialize<T>(this string data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : struct => InnerDeserialize(data, typeInfo, defaultType);
 
         internal static JsonNode? DeserializeAsJsonNode(this string data)
             => InnerDeserializeAsJsonNode(data);
 
-        internal static T? Deserialize<T>(this ReadOnlySpan<char> data, JsonSerializerContext context, T? defaultType = null)
-            where T : class => InnerDeserialize(data, context, defaultType);
+        internal static T? Deserialize<T>(this ReadOnlySpan<char> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : class => InnerDeserialize(data, typeInfo, defaultType);
 
-        internal static T? Deserialize<T>(this ReadOnlySpan<char> data, JsonSerializerContext context, T? defaultType = null)
-            where T : struct => InnerDeserialize(data, context, defaultType);
+        internal static T? Deserialize<T>(this ReadOnlySpan<char> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : struct => InnerDeserialize(data, typeInfo, defaultType);
 
         internal static JsonNode? DeserializeAsJsonNode(this ReadOnlySpan<char> data)
             => InnerDeserializeAsJsonNode(data);
 
-        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonSerializerContext context, T? defaultType = null)
-            where T : class => InnerDeserialize(data, context, defaultType);
+        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : class => InnerDeserialize(data, typeInfo, defaultType);
 
-        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonSerializerContext context, T? defaultType = null)
-            where T : struct => InnerDeserialize(data, context, defaultType);
+        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : struct => InnerDeserialize(data, typeInfo, defaultType);
 
         internal static JsonNode? DeserializeAsJsonNode(this ReadOnlySpan<byte> data)
             => InnerDeserializeAsJsonNode(data);
 
-        internal static T? Deserialize<T>(this Stream data, JsonSerializerContext context, T? defaultType = null)
-            where T : class => InnerDeserializeStream(data, context, defaultType);
+        internal static T? Deserialize<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : class => InnerDeserializeStream(data, typeInfo, defaultType);
 
-        internal static T? Deserialize<T>(this Stream data, JsonSerializerContext context, T? defaultType = null)
-            where T : struct => InnerDeserializeStream(data, context, defaultType);
+        internal static T? Deserialize<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : struct => InnerDeserializeStream(data, typeInfo, defaultType);
 
         internal static JsonNode? DeserializeAsJsonNode(this Stream data)
             => InnerDeserializeStreamAsJsonNode(data);
 
-        private static T? InnerDeserializeStream<T>(Stream data, JsonSerializerContext context, T? defaultType)
+        private static T? InnerDeserializeStream<T>(Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType)
         {
             // Check if the data length is 0, then return default value
             if (data.Length == 0) return defaultType ?? default;
 
             // Try deserialize. If it returns a null, then return the default value
-            return (T?)JsonSerializer.Deserialize(data, typeof(T), context) ?? defaultType ?? default;
+            return JsonSerializer.Deserialize(data, typeInfo) ?? defaultType ?? default;
         }
 
-        private static T? InnerDeserialize<T>(ReadOnlySpan<char> data, JsonSerializerContext context, T? defaultType)
+        private static T? InnerDeserialize<T>(ReadOnlySpan<char> data, JsonTypeInfo<T?> typeInfo, T? defaultType)
         {
             // Check if the data length is less than 2 bytes (assuming the buffer is "{}"), then return default value
             if (data.Length <= MIN_ALLOWED_CHAR_LENGTH) return defaultType ?? default;
@@ -109,7 +108,7 @@ namespace CollapseLauncher
                 // Convert the char[] buffer into byte[]
                 int bufferWritten = Encoding.UTF8.GetBytes(dataTrimmed, tempBuffer);
                 // Start deserialize and return
-                return InnerDeserialize(tempBuffer.AsSpan(0, bufferWritten), context, defaultType);
+                return InnerDeserialize(tempBuffer.AsSpan(0, bufferWritten), typeInfo, defaultType);
             }
             finally
             {
@@ -118,7 +117,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static T? InnerDeserialize<T>(ReadOnlySpan<byte> data, JsonSerializerContext context, T? defaultType)
+        private static T? InnerDeserialize<T>(ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType)
         {
             // Check if the data length is less than 2 bytes (assuming the buffer is "{}"), then return default value
             if (data.Length <= MIN_ALLOWED_CHAR_LENGTH) return defaultType ?? default;
@@ -128,7 +127,6 @@ namespace CollapseLauncher
             Utf8JsonReader jsonReader = new Utf8JsonReader(dataTrimmed, jsonReaderOptions);
 
             // Try deserialize. If it returns a null, then return the default value
-            JsonTypeInfo<T> typeInfo = (JsonTypeInfo<T>?)context.GetTypeInfo(typeof(T)) ?? throw new NullReferenceException($"The type info of {typeof(T)} is null!");
             return JsonSerializer.Deserialize(ref jsonReader, typeInfo) ?? defaultType ?? default;
         }
 
@@ -181,13 +179,13 @@ namespace CollapseLauncher
             return JsonNode.Parse(ref jsonReader, jsonNodeOptions);
         }
 
-        internal static string Serialize<T>(this T? value, JsonSerializerContext context, bool isIncludeNullEndChar = true, bool isWriteIndented = false)
-            => InnerSerialize(value, context, isIncludeNullEndChar, isWriteIndented);
+        internal static string Serialize<T>(this T? value, JsonTypeInfo<T?> typeInfo, bool isIncludeNullEndChar = true, bool isWriteIndented = false)
+            => InnerSerialize(value, typeInfo, isIncludeNullEndChar, isWriteIndented);
 
-        internal static string SerializeJsonNode(this JsonNode? node, JsonSerializerContext context, bool isIncludeNullEndChar = true, bool isWriteIndented = false)
-            => InnerSerializeJsonNode(node, context, isIncludeNullEndChar, isWriteIndented);
+        internal static string SerializeJsonNode<T>(this JsonNode? node, JsonTypeInfo<T?> typeInfo, bool isIncludeNullEndChar = true, bool isWriteIndented = false)
+            => InnerSerializeJsonNode(node, typeInfo, isIncludeNullEndChar, isWriteIndented);
 
-        private static string InnerSerialize<T>(this T? data, JsonSerializerContext context, bool isIncludeNullEndChar, bool isWriteIndented)
+        private static string InnerSerialize<T>(this T? data, JsonTypeInfo<T?> typeInfo, bool isIncludeNullEndChar, bool isWriteIndented)
         {
             const string _defaultValue = "{}";
             // Check if the data is null, then return default value
@@ -212,13 +210,10 @@ namespace CollapseLauncher
                 // Lock the writer
                 lock (writer)
                 {
-                    // Try get the JsonTypeInfo
-                    JsonTypeInfo<T> typeInfo = (JsonTypeInfo<T>?)context.GetTypeInfo(typeof(T)) ?? throw new NullReferenceException($"The type info of {typeof(T)} is null!");
-
                     // Try serialize the type into JSON string
                     JsonSerializer.Serialize(writer, data, typeInfo);
 
-                    // Flush the writter
+                    // Flush the writer
                     writer.Flush();
 
                     // Write the buffer to string
@@ -232,7 +227,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static string InnerSerializeJsonNode(this JsonNode? node, JsonSerializerContext context, bool isIncludeNullEndChar, bool isWriteIndented)
+        private static string InnerSerializeJsonNode<T>(this JsonNode? node, JsonTypeInfo<T?> typeInfo, bool isIncludeNullEndChar, bool isWriteIndented)
         {
             const string _defaultValue = "{}";
             // Check if the node is null, then return default value
@@ -257,13 +252,10 @@ namespace CollapseLauncher
                 // Lock the writer
                 lock (writer)
                 {
-                    // Try get the JsonSerializerOptions
-                    JsonSerializerOptions jsonOptions = context.Options;
-
                     // Try serialize the JSON Node into JSON string
-                    node.WriteTo(writer, jsonOptions);
+                    node.WriteTo(writer, typeInfo.Options);
 
-                    // Flush the writter
+                    // Flush the writer
                     writer.Flush();
 
                     // Write the buffer to string

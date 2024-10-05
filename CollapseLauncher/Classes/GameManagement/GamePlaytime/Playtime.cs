@@ -81,7 +81,7 @@ namespace CollapseLauncher.GamePlaytime
             PlaytimeUpdated?.Invoke(this, _playtime);
 
 #if DEBUG
-            LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin?.ToLongTimeString()}.");
+            LogWriteLine($"{_gameVersionManager.GamePreset.ProfileName} - Started session at {begin.Value.ToLongTimeString()}.");
 #endif
             int elapsedSeconds = 0;
 

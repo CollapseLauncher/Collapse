@@ -53,7 +53,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             GeneralData = GeneralData.LoadWithMagic(
                 MagicReDo,
                 SettingsGameVersionManager.Create(_gameVersionManager, ZZZSettingsConfigFile, "GENERAL_DATA.bin"),
-                ZenlessSettingsJSONContext.Default);
+                ZenlessSettingsJSONContext.Default.GeneralData);
         }
 
         public override void ReloadSettings()
