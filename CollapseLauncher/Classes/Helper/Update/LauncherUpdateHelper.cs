@@ -138,7 +138,7 @@ namespace CollapseLauncher.Helper.Update
         {
             string relativePath = ConverterTool.CombineURLFromString(updateChannel, "fileindex.json");
             await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
-            return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
+            return await ms.DeserializeAsync(InternalAppJSONContext.Default.AppUpdateVersionProp);
         }
     }
 }

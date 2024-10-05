@@ -204,7 +204,7 @@ namespace CollapseLauncher
                 try
                 {
                     // Deserialize the line and set the type
-                    content = line.Deserialize<CacheAsset>(InternalAppJSONContext.Default);
+                    content = line.Deserialize(InternalAppJSONContext.Default.CacheAsset);
                 }
                 catch (Exception ex)
                 {

@@ -99,7 +99,7 @@ namespace CollapseLauncher.GamePlaytime
 #if DEBUG
                     LogWriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    playtime = byteStr.Deserialize<CollapsePlaytime>(UniversalPlaytimeJSONContext.Default) ?? new CollapsePlaytime();
+                    playtime = byteStr.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
                 }
                 else
                 {
@@ -134,7 +134,7 @@ namespace CollapseLauncher.GamePlaytime
             {
                 if (_registryRoot == null) throw new NullReferenceException($"Cannot save playtime since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalPlaytimeJSONContext.Default, true);
+                string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, true);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
