@@ -1089,10 +1089,10 @@
                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._SettingsPage.SophonPredownPerfMode_Tooltip}" />
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Text="User Synchronizable Database" />
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_Title}" />
                         <ToggleSwitch x:Name="DbToggle"
                                       Margin="0,4"
-                                      Header="Enable Database Functionality"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Toggle}"
                                       IsOn="{x:Bind IsDbEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
@@ -1100,27 +1100,28 @@
                                  MaxWidth="400"
                                  Margin="0,8,0,8"
                                  HorizontalAlignment="Stretch"
-                                 Header="Database Url"
+                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url}"
                                  InputScope="Url"
                                  IsEnabled="{Binding IsOn, ElementName=DbToggle}"
                                  IsSpellCheckEnabled="False"
-                                 PlaceholderText="Example: https://db-bagusnl.turso.io"
+                                 PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url_Example}"
                                  Text="{x:Bind DbUrl, Mode=TwoWay}" />
                         <PasswordBox x:Name="DbTokenPasswordBox"
                                      MaxWidth="400"
                                      Margin="0,8,0,8"
                                      HorizontalAlignment="Stretch"
-                                     Header="Database Token"
+                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Token}"
                                      InputScope="Password"
                                      IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                      Password="{x:Bind DbToken, Mode=TwoWay}" />
                         <TextBox x:Name="DbUserIdTextBox"
-                                 Grid.Column="0"
                                  Margin="0,8,0,8"
                                  HorizontalAlignment="Stretch"
-                                 Header="User ID (GUIDv7)"
+                                 GotFocus="DbUserIdTextBox_GotFocus"
+                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_UserId}"
                                  IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                  IsSpellCheckEnabled="False"
+                                 LostFocus="DbUserIdTextBox_LostFocus"
                                  PlaceholderText="00000000-0000-0000-0000-000000000000"
                                  Text="{x:Bind DbUserId, Mode=TwoWay}" />
                         <Grid Margin="0,4,0,4">
@@ -1146,7 +1147,7 @@
                                               Glyph="" />
                                     <TextBlock Grid.Column="1"
                                                Margin="8,0,0,0"
-                                               Text="Generate GUID"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_GenerateGuid}"
                                                TextTrimming="CharacterEllipsis" />
                                 </Grid>
                             </Button>
@@ -1168,7 +1169,7 @@
                                               Glyph="" />
                                     <TextBlock Grid.Column="1"
                                                Margin="8,0,0,0"
-                                               Text="Validate Settings"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_Validate}"
                                                TextTrimming="CharacterEllipsis" />
                                 </Grid>
                             </Button>

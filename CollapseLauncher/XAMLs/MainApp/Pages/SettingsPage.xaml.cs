@@ -1348,6 +1348,9 @@ namespace CollapseLauncher.Pages
             get => DbHandler.Uri;
             set
             {
+                // Automatically replace libsql protocol to https
+                if (value.Contains("libsql://", StringComparison.InvariantCultureIgnoreCase))
+                    value = value.Replace("libsql", "https");
                 if (!value.Contains("https://"))
                 {
                     DbUriTextBox.Text = DbHandler.Uri;
@@ -1364,12 +1367,12 @@ namespace CollapseLauncher.Pages
             set => DbHandler.Token = value;
         }
 
+        private string _currentDbGuid;
         private string DbUserId
         {
             get => DbHandler.UserId.ToString();
             set
             {
-                // TODO: spawn Dialog_DbGenerateGuid to warn user about losing their database
                 if (Guid.TryParse(value, out var guid))
                 {
                     DbHandler.UserId = guid;
@@ -1381,25 +1384,53 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private void DbUserIdTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _currentDbGuid = DbUserIdTextBox.Text;
+        }
+
+        private async void DbUserIdTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var t = sender as TextBox;
+            if (t == null) return;
+
+            var newGuid = t.Text;
+            if (_currentDbGuid == newGuid) return;
+            
+            if (!Guid.TryParse(newGuid, out var guid)) return;
+            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary)
+            {
+                t.Text = _currentDbGuid;
+            }
+            else _currentDbGuid = t.Text;
+
+        }
+
         private async void ValidateDbButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                await Task.Run(() => DbHandler.Init());
+                var r = Random.Shared.Next(100);
+
+                await DbHandler.Init(true);
+                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true);
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r)
+                    throw new InvalidDataException("Data validation failed!");
+        
                 await SpawnDialog(
-                    "All OK!", // TODO: Localize
-                    "Database connected successfully!",
-                    (sender as UIElement),
-                    Lang._Misc.Close,
-                    null,
-                    null,
-                    ContentDialogButton.Close,
-                    ContentDialogTheme.Informational
-                    );
+                                  Lang._Misc.EverythingIsOkay,
+                                  Lang._SettingsPage.Database_ConnectionOk,
+                                  (sender as UIElement),
+                                  Lang._Misc.Close,
+                                  null,
+                                  null,
+                                  ContentDialogButton.Close
+                                 );
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex);
+                var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+                ErrorSender.SendException(newEx);
             }
         }
 

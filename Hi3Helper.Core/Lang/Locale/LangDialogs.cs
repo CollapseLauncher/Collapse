@@ -158,6 +158,9 @@ namespace Hi3Helper
                 public string DownloadSettingsOption1 { get; set; } = LangFallback?._Dialogs.DownloadSettingsOption1;
                 public string OpenInExternalBrowser { get; set; } = LangFallback?._Dialogs.OpenInExternalBrowser;
                 public string CloseOverlay { get; set; } = LangFallback?._Dialogs.CloseOverlay;
+
+                public string DbGenerateUid_Title   { get; set; } = LangFallback?._Dialogs.DbGenerateUid_Title;
+                public string DbGenerateUid_Content { get; set; } = LangFallback?._Dialogs.DbGenerateUid_Content;
             }
         }
         #endregion

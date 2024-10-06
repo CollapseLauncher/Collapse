@@ -25,6 +25,7 @@ namespace CollapseLauncher.GamePlaytime
         private         RegistryKey       _registryRoot;
         private         int               _hashID;
         private         IGameVersionCheck _gameVersion;
+        private         IGameSettings     _gameSettings;
         
         #endregion
 
@@ -84,7 +85,9 @@ namespace CollapseLauncher.GamePlaytime
         /// Reads from the Registry and deserializes the contents. <br/>
         /// Converts RegistryKey values if they are of type DWORD (that is, if they were saved by the old implementation).
         /// </summary>
-        public static CollapsePlaytime Load(RegistryKey root, int hashID, IGameVersionCheck gameVersion)
+        public static CollapsePlaytime Load(RegistryKey root, int hashID,
+                                            IGameVersionCheck gameVersion,
+                                            IGameSettings gameSettings)
         {
             try
             {
@@ -111,6 +114,7 @@ namespace CollapseLauncher.GamePlaytime
                 }
 
                 playtimeInner._gameVersion  = gameVersion;
+                playtimeInner._gameSettings = gameSettings;
                 playtimeInner._registryRoot = root;
                 playtimeInner._hashID       = hashID;
                 playtimeInner.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
@@ -131,7 +135,9 @@ namespace CollapseLauncher.GamePlaytime
             { 
                 _hashID = hashID,
                 _registryRoot = root,
-                _gameVersion = gameVersion };
+                _gameVersion = gameVersion,
+                _gameSettings = gameSettings
+            };
         }
 
         /// <summary>
@@ -154,13 +160,12 @@ namespace CollapseLauncher.GamePlaytime
                 double? lastPlayed = (LastPlayed?.ToUniversalTime() - BaseDate)?.TotalSeconds;
                 if (lastPlayed != null)
                     _registryRoot.SetValue(LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
-
-                // Sync only every 5 minutes to reduce database usage
-                if ((DateTime.Now - LastDbUpdate).TotalMinutes >= 5 || forceUpdateDb) 
+                
+                if (DbHandler.IsEnabled && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
+                    ((DateTime.Now - LastDbUpdate).TotalMinutes >= 5 || forceUpdateDb)) // Sync only every 5 minutes to reduce database usage
                 {
                     UpdatePlaytime_Database_Push(data, TotalPlaytime.TotalSeconds, lastPlayed);
                 }
-                
             }
             catch (Exception ex)
             {
@@ -328,14 +333,13 @@ namespace CollapseLauncher.GamePlaytime
                 return (false, null);
             }
         }
-        
-
         #endregion
         
         #region DB Operation Methods
         private async void UpdatePlaytime_Database_Push(string jsonData, double totalTime, double? lastPlayed)
         {
             if (_isDbSyncing) return;
+            var curDateTime = DateTime.Now;
             _isDbSyncing = true;
             try
             {
@@ -346,7 +350,7 @@ namespace CollapseLauncher.GamePlaytime
                 await DbHandler.StoreKeyValue(KeyLastUpdated,  unixStamp.ToString());
                 DbConfig.SetAndSaveValue(KeyLastUpdated, unixStamp);
                 _unixStampDb     = Convert.ToInt32(unixStamp);
-                LastDbUpdate     = DateTime.Now;
+                LastDbUpdate     = curDateTime;
             }
             catch (Exception e)
             {

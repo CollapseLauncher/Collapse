@@ -1052,8 +1052,8 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_DbGenerateUid(UIElement Content)
         {
             return await SpawnDialog(
-                "Are you sure to change your user ID?", // TODO: Localize
-                "Changing user ID will cause your data associated with current ID to be lost if you lose your current user ID.",
+                Lang._Dialogs.DbGenerateUid_Title,
+                Lang._Dialogs.DbGenerateUid_Content,
                 Content,
                 Lang._Misc.NoCancel,
                 Lang._Misc.Yes,

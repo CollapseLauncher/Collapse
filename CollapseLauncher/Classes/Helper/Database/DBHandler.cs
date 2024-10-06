@@ -47,6 +47,7 @@ namespace CollapseLauncher.Helper.Database
             {
                 _uri           = value;
                 DbConfig.DbUrl = value;
+                _isFirstInit   = true;
             }
         }
 
@@ -65,6 +66,7 @@ namespace CollapseLauncher.Helper.Database
             {
                 _token           = value;
                 DbConfig.DbToken = value;
+                _isFirstInit     = true;
             }
         }
 
@@ -87,7 +89,8 @@ namespace CollapseLauncher.Helper.Database
                 DbConfig.UserGuid = value;
                 
                 var byteUidH = System.IO.Hashing.XxHash64.Hash(value.ToByteArray());
-                _userIdHash = BitConverter.ToString(byteUidH).Replace("-", "").ToLowerInvariant();
+                _userIdHash  = BitConverter.ToString(byteUidH).Replace("-", "").ToLowerInvariant();
+                _isFirstInit = true;
             }
         }
 
@@ -96,7 +99,7 @@ namespace CollapseLauncher.Helper.Database
 
         private static IDatabaseClient _database;
 
-        public static async void Init()
+        public static async Task Init(bool redirectThrow = false)
         {
             DbConfig.Init();
             
@@ -105,14 +108,14 @@ namespace CollapseLauncher.Helper.Database
                 LogWriteLine("[DbHandler::Init] Database functionality is disabled!");
                 return;
             }
-            
+
             try
             {
                 // Init props
                 _ = Token;
                 _ = Uri;
                 _ = UserId;
-                
+
                 _database = await DatabaseClient.Create(opts =>
                                                         {
                                                             opts.Url       = Uri;
@@ -122,12 +125,14 @@ namespace CollapseLauncher.Helper.Database
                 if (_isFirstInit)
                 {
                     LogWriteLine("[DbHandler::Init] Initializing database system...");
-                    await _database.Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
+                    await
+                        _database
+                           .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
                     _isFirstInit = false;
                 }
                 else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
             }
-            catch (Exception e)
+            catch (Exception e) when (!redirectThrow)
             {
                 LogWriteLine($"[DBHandler::Init] Error!\r\n{e}", LogType.Error, true);
             }
@@ -142,7 +147,7 @@ namespace CollapseLauncher.Helper.Database
             _userIdHash = null;
         }
 
-        public static async Task<string> QueryKey(string key)
+        public static async Task<string> QueryKey(string key, bool redirectThrow = false)
         {
             if (!IsEnabled) return null;
         #if DEBUG
@@ -187,7 +192,7 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                     break;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!redirectThrow)
                 {
                     LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key} after {retryCount} retries! Returning null...\r\n{ex}",
                                  LogType.Error, true);
@@ -205,7 +210,7 @@ namespace CollapseLauncher.Helper.Database
             return null;
         }
 
-        public static async Task StoreKeyValue(string key, string value)
+        public static async Task StoreKeyValue(string key, string value, bool redirectThrow = false)
         {
             if (!IsEnabled) return;
         #if DEBUG
@@ -241,7 +246,7 @@ namespace CollapseLauncher.Helper.Database
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! Retrying...\r\n{ex}",
                                  LogType.Error, true);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!redirectThrow)
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key} after {retryCount} tries!\r\n{ex}",
                                  LogType.Error, true);

@@ -199,6 +199,17 @@ namespace Hi3Helper
                 public string FileDownloadSettings_BurstDownloadHelp5       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp5;
                 public string FileDownloadSettings_BurstDownloadHelp6       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp6;
                 public string FileDownloadSettings_BurstDownloadHelp7       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp7;
+
+                public string Database_Title        { get; set; } = LangFallback?._SettingsPage.Database_Title;
+                public string Database_ConnectionOk { get; set; } = LangFallback?._SettingsPage.Database_ConnectionOk;
+                public string Database_ConnectFail  { get; set; } = LangFallback?._SettingsPage.Database_ConnectFail;
+                public string Database_Toggle       { get; set; } = LangFallback?._SettingsPage.Database_Toggle;
+                public string Database_Url          { get; set; } = LangFallback?._SettingsPage.Database_Url;
+                public string Database_Url_Example  { get; set; } = LangFallback?._SettingsPage.Database_Url_Example;
+                public string Database_Token        { get; set; } = LangFallback?._SettingsPage.Database_Token;
+                public string Database_UserId       { get; set; } = LangFallback?._SettingsPage.Database_UserId;
+                public string Database_GenerateGuid { get; set; } = LangFallback?._SettingsPage.Database_GenerateGuid;
+                public string Database_Validate     { get; set; } = LangFallback?._SettingsPage.Database_Validate;
             }
         }
         #endregion
