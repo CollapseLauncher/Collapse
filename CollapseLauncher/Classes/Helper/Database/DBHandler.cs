@@ -99,20 +99,20 @@ namespace CollapseLauncher.Helper.Database
         public static async void Init()
         {
             DbConfig.Init();
-
-            // Init props
-            _ = IsEnabled;
-            _ = Token;
-            _ = Uri;
-            _ = UserId;
-
+            
             if (!IsEnabled)
             {
                 LogWriteLine("[DbHandler::Init] Database functionality is disabled!");
                 return;
             }
+            
             try
             {
+                // Init props
+                _ = Token;
+                _ = Uri;
+                _ = UserId;
+                
                 _database = await DatabaseClient.Create(opts =>
                                                         {
                                                             opts.Url       = Uri;
@@ -126,13 +126,6 @@ namespace CollapseLauncher.Helper.Database
                     _isFirstInit = false;
                 }
                 else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
-                    
-                
-
-                // test code
-                // await StoreKeyValue("testdate", DateTime.Now.ToString(CultureInfo.CurrentCulture));
-                // var res = await QueryKey("testdate");
-                // LogWriteLine($"Test SQL data {res}", LogType.Error);
             }
             catch (Exception e)
             {
@@ -143,7 +136,6 @@ namespace CollapseLauncher.Helper.Database
         private static void Dispose()
         {
             _database = null;
-            _enabled = null;
             _token = null;
             _uri = null;
             _userId = null;
