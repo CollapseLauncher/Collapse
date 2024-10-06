@@ -57,7 +57,7 @@ namespace CollapseLauncher.Statics
                         _GameInstall  = new GenshinInstall(UIElementParent, _GameVersion);
                         break;
                     case GameNameType.Zenless:
-                        _GameVersion  = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
+                        _GameVersion  = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GamePreset, GameName, GameRegion);
                         _GameSettings = new ZenlessSettings(_GameVersion);
                         _GameCache    = null;
                         _GameRepair   = null;
