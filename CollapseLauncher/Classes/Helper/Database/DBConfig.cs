@@ -34,7 +34,10 @@ namespace CollapseLauncher.Helper.Database
         
         private static void EnsureConfigExist()
         {
-            if (!File.Exists(_configPath)) File.Create(_configPath);
+            if (File.Exists(_configPath)) return;
+
+            var f = File.Create(_configPath);
+            f.Close();
         }
 
         private static void DefaultChecker()
