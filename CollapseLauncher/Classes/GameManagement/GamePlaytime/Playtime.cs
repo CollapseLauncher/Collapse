@@ -25,28 +25,26 @@ namespace CollapseLauncher.GamePlaytime
         private        RegistryKey?      _registryRoot;
         private        CollapsePlaytime  _playtime;
         private        IGameVersionCheck _gameVersionManager;
-        private        IGameSettings     _gameSettings;
 
         private CancellationTokenSourceWrapper _token = new();
         #endregion
 
         public Playtime(IGameVersionCheck gameVersionManager, IGameSettings gameSettings)
         {
-            string registryPath = Path.Combine($"Software\\{gameVersionManager.VendorTypeProp.VendorType}", gameVersionManager.GamePreset.InternalGameNameInConfig!);
+            string        registryPath = Path.Combine($"Software\\{gameVersionManager.VendorTypeProp.VendorType}", gameVersionManager.GamePreset.InternalGameNameInConfig!);
             _registryRoot = Registry.CurrentUser.OpenSubKey(registryPath, true);
 
             _registryRoot ??= Registry.CurrentUser.CreateSubKey(registryPath, true, RegistryOptions.None);
 
             _gameVersionManager = gameVersionManager;
-            _gameSettings       = gameSettings;
 
             _playtime = CollapsePlaytime.Load(_registryRoot,
                                               _gameVersionManager.GamePreset.HashID,
                                               _gameVersionManager,
-                                              _gameSettings);
+                                              gameSettings);
             
             
-            if (DbHandler.IsEnabled && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+            if (DbHandler.IsEnabled && gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                 CheckDb();
         }
 #nullable disable

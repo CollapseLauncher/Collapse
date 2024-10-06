@@ -1,7 +1,6 @@
 #if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
-    using CollapseLauncher.CustomControls;
     using CollapseLauncher.Dialogs;
     using CollapseLauncher.Extension;
     using CollapseLauncher.Helper;
@@ -1339,7 +1338,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 DbHandler.IsEnabled = value;
-                if (value) DbHandler.Init();
+                if (value) _ = DbHandler.Init();
             }
         }
 
@@ -1397,13 +1396,12 @@ namespace CollapseLauncher.Pages
             var newGuid = t.Text;
             if (_currentDbGuid == newGuid) return;
             
-            if (!Guid.TryParse(newGuid, out var guid)) return;
+            if (!Guid.TryParse(newGuid, out _)) return;
             if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary)
             {
                 t.Text = _currentDbGuid;
             }
             else _currentDbGuid = t.Text;
-
         }
 
         private async void ValidateDbButton_Click(object sender, RoutedEventArgs e)

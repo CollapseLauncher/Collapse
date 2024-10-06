@@ -27,7 +27,7 @@ namespace CollapseLauncher.Helper.Database
                 _enabled           = value;
                 DbConfig.DbEnabled = value;
 
-                if (value) Init();
+                if (value) _ = Init();
                 else Dispose();
             }
         }
@@ -184,7 +184,7 @@ namespace CollapseLauncher.Helper.Database
                     if (i > 0)
                         LogWriteLine("[DBHandler::QueryKey] Database stream expired, retrying...", LogType.Error, true);
 
-                    Init();
+                    await Init();
                 }
                 catch (Exception ex) when (i < retryCount - 1)
                 {
@@ -239,7 +239,7 @@ namespace CollapseLauncher.Helper.Database
                         LogWriteLine("[DBHandler::StoreKeyValue] Database stream expired, retrying...", LogType.Error,
                                      true);
 
-                    Init();
+                    await Init();
                 }
                 catch (Exception ex) when (i < retryCount - 1)
                 {

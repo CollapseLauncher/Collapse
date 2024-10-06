@@ -129,7 +129,7 @@ public static class MainEntryPoint
                     return;
             }
 
-            Helper.Database.DbHandler.Init();
+            _ = Helper.Database.DbHandler.Init();
             
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
