@@ -60,7 +60,7 @@ namespace CollapseLauncher.Statics
                         _GameVersion  = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GamePreset, GameName, GameRegion);
                         _GameSettings = new ZenlessSettings(_GameVersion);
                         _GameCache    = null;
-                        _GameRepair   = null;
+                        _GameRepair   = new ZenlessRepair(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
                         _GameInstall  = new ZenlessInstall(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
                         break;
                     default:
