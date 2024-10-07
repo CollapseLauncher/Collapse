@@ -3,7 +3,9 @@ using Hi3Helper;
 using Microsoft.UI.Xaml;
 using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Buffers.Text;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -13,6 +15,8 @@ namespace CollapseLauncher.GameVersioning
     {
         #region Properties
         private RSA SleepyInstance { get; set; }
+        internal string SleepyIdentity { get; set; }
+        internal string SleepyArea { get; set; }
         #endregion
 
         #region Initialize Sleepy
@@ -58,11 +62,34 @@ namespace CollapseLauncher.GameVersioning
                 DataCooker.GetServeV3DataSize(keyUtf8Base64, out long servedCompressedSize, out long servedDecompressedSize);
                 Span<byte> outServeData = keyUtf8Base64.AsSpan(keyFromBase64Len, (int)servedDecompressedSize);
                 DataCooker.ServeV3Data(keyUtf8Base64.AsSpan(0, keyFromBase64Len), outServeData, (int)servedCompressedSize, (int)servedDecompressedSize, out int dataWritten);
-                
+
+                // Time for dessert!!!
+                ReadOnlySpan<byte> cheeseCake = outServeData.Slice(0, dataWritten);
+                int identityN = BinaryPrimitives.ReadInt16LittleEndian(cheeseCake.Slice(dataWritten - 4));
+                int identityN2 = identityN * 2;
+                int areaN = BinaryPrimitives.ReadInt16LittleEndian(cheeseCake.Slice(dataWritten - 2));
+                int areaN2 = areaN * 2;
+
+                int nInBite = identityN2 + areaN2;
+                int wine = dataWritten - (4 + nInBite);
+                Span<byte> applePie = outServeData.Slice(wine, nInBite);
+
+                // And eat good
+                int len = applePie.Length;
+                int i = 0;
+            NomNom:
+                int pos = wine % ((len - i) & unchecked((int)0xFFFFFFFF));
+                applePie[i] ^= outServeData[0x10 | pos];
+                if (++i < len) goto NomNom;
+
+                // Then sleep
+                SleepyIdentity = MemoryMarshal.Cast<byte, char>(applePie.Slice(0, identityN2)).ToString();
+                SleepyArea = MemoryMarshal.Cast<byte, char>(applePie.Slice(identityN2, areaN2)).ToString();
+
                 // Load the load
                 SleepyInstance.ImportRSAPrivateKey(outServeData.Slice(0, dataWritten), out int bytesRead);
 
-                // If you're food poisoned, then go to the hospital
+                // If you felt food poisoned since last night's dinner, then go to the hospital
                 if (0 == bytesRead)
                     goto QuitFail;
 
@@ -79,11 +106,13 @@ namespace CollapseLauncher.GameVersioning
             // Close the door
             void DisableRepairAndCacheInstance(PresetConfig config)
             {
+#if !DEBUG
                 config.IsRepairEnabled = false;
                 config.IsCacheUpdateEnabled = false;
+#endif
             }
         }
-        #endregion
+#endregion
 
         public GameTypeZenlessVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset, string gameName, string gameRegion)
             : base(parentUIElement, gameRegionProp, gameName, gameRegion)
