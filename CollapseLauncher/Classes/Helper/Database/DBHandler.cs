@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Helper.Database
@@ -115,8 +116,10 @@ namespace CollapseLauncher.Helper.Database
                 _ = Uri;
                 _ = UserId;
 
-                if (string.IsNullOrEmpty(Uri)) throw new InvalidDataException("Database Uri could not be empty!");
-                if (string.IsNullOrEmpty(Token)) throw new InvalidDataException("Database token could not be empty!");
+                if (string.IsNullOrEmpty(Uri))
+                    throw new NullReferenceException(Lang._SettingsPage.Database_Error_EmptyUri);
+                if (string.IsNullOrEmpty(Token))
+                    throw new NullReferenceException(Lang._SettingsPage.Database_Error_EmptyToken);
 
                 _database = await DatabaseClient.Create(opts =>
                                                         {
@@ -136,7 +139,12 @@ namespace CollapseLauncher.Helper.Database
             }
             catch (Exception e) when (!redirectThrow)
             {
-                LogWriteLine($"[DBHandler::Init] Error!\r\n{e}", LogType.Error, true);
+                LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
+                throw;
             }
         }
 
