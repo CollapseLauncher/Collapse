@@ -1115,6 +1115,7 @@
                                      IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                      Password="{x:Bind DbToken, Mode=TwoWay}" />
                         <TextBox x:Name="DbUserIdTextBox"
+                                 MaxWidth="400"
                                  Margin="0,8,0,8"
                                  HorizontalAlignment="Stretch"
                                  GotFocus="DbUserIdTextBox_GotFocus"
@@ -1295,7 +1296,7 @@
                 <TextBlock IsTextSelectionEnabled="True"
                            Style="{ThemeResource BodyTextBlockStyle}"
                            TextWrapping="Wrap">
-                    <Hyperlink x:Name="GitVersionIndicator_Hyperlink"
+                    <Hyperlink x:Name="GitVersionIndicatorHyperlink"
                                UnderlineStyle="None">
                         <Run x:Name="GitVersionIndicator" />
                     </Hyperlink>
