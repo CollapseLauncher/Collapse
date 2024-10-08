@@ -58,7 +58,6 @@ namespace CollapseLauncher.Helper.Database
             {
                 if (!string.IsNullOrEmpty(_token)) return _token;
                 var c = DbConfig.DbToken;
-                if (string.IsNullOrEmpty(c)) throw new InvalidDataException("Database token could not be empty!");
                 _token = c;
                 return c;
             }
@@ -115,6 +114,9 @@ namespace CollapseLauncher.Helper.Database
                 _ = Token;
                 _ = Uri;
                 _ = UserId;
+
+                if (string.IsNullOrEmpty(Uri)) throw new InvalidDataException("Database Uri could not be empty!");
+                if (string.IsNullOrEmpty(Token)) throw new InvalidDataException("Database token could not be empty!");
 
                 _database = await DatabaseClient.Create(opts =>
                                                         {
