@@ -1436,7 +1436,9 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
             {
-                DbUserIdTextBox.Text = Guid.CreateVersion7().ToString();
+                var g = Guid.CreateVersion7();
+                DbUserIdTextBox.Text = g.ToString();
+                DbHandler.UserId     = g;
             }
         }
 
