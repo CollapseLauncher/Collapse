@@ -292,18 +292,18 @@ namespace CollapseLauncher.GamePlaytime
                     LogWriteLine("[CollapsePlaytime::DbSync] Sync stamp equal, nothing needs to be done~", LogType.Default, true);
                     return (false, null); // Do nothing if stamp is equal
                 }
-                
-                // Pull values from DB
-                await UpdatePlaytime_Database_Pull();
-                if (!_isDbPullSuccess) 
-                {
-                    LogWriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
-                    return (false, null); // Return if pull failed
-                }
 
                 // When Db stamp is newer, sync from Db
                 if (_unixStampDb > unixStampLocal)
                 {
+                    // Pull values from DB
+                    await UpdatePlaytime_Database_Pull();
+                    if (!_isDbPullSuccess) 
+                    {
+                        LogWriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
+                        return (false, null); // Return if pull failed
+                    }
+                    
                     if (string.IsNullOrEmpty(_jsonDataDb))
                     {
                         LogWriteLine("[CollapsePlaytime::DbSync] _jsonDataDb is empty, skipping sync~", default, true);
