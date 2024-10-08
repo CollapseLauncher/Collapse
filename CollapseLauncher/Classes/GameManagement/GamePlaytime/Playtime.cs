@@ -52,11 +52,10 @@ namespace CollapseLauncher.GamePlaytime
         public async void CheckDb()
         {
             var needUpdate = await _playtime.DbSync();
-            if (needUpdate.IsUpdated && needUpdate.PlaytimeData != null)
-            {
-                _playtime = needUpdate.PlaytimeData;
-                PlaytimeUpdated?.Invoke(this, _playtime);
-            }
+            if (needUpdate is not { IsUpdated: true, PlaytimeData: not null }) return;
+
+            _playtime = needUpdate.PlaytimeData;
+            PlaytimeUpdated?.Invoke(this, _playtime);
         }
 
         public void Update(TimeSpan timeSpan, bool forceUpdateDb = false)

@@ -311,8 +311,9 @@ namespace CollapseLauncher.GamePlaytime
                     playtimeInner!.TotalPlaytime = TimeSpan.FromSeconds(_totalTimeDb ?? 0);
                     if (_lastPlayedDb != null) playtimeInner.LastPlayed = BaseDate.AddSeconds((int)_lastPlayedDb);
                     playtimeInner._registryRoot = _registryRoot;
-                    playtimeInner._hashID = _hashID;
-                    playtimeInner._gameVersion = _gameVersion;
+                    playtimeInner._gameSettings = _gameSettings;
+                    playtimeInner._hashID       = _hashID;
+                    playtimeInner._gameVersion  = _gameVersion;
                     DbConfig.SetAndSaveValue(KeyLastUpdated, _unixStampDb.ToString());
                     LastDbUpdate = DateTime.Now;
                     Save();
