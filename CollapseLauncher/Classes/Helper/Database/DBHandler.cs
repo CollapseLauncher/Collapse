@@ -180,7 +180,7 @@ namespace CollapseLauncher.Helper.Database
                         var str =
                             string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
                     #if DEBUG
-                        LogWriteLine($"[DBHandler::QueryKey] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
+                        LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
                                      true);
                     #endif
                         return str;
@@ -206,6 +206,12 @@ namespace CollapseLauncher.Helper.Database
                     LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key} after {retryCount} retries! Returning null...\r\n{ex}",
                                  LogType.Error, true);
                     return null;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key} after {retryCount} retries! Returning null...\r\n{ex}",
+                                 LogType.Error, true);
+                    throw;
                 }
             #if DEBUG
                 finally
@@ -256,6 +262,11 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                 }
                 catch (Exception ex) when (!redirectThrow)
+                {
+                    LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key} after {retryCount} tries!\r\n{ex}",
+                                 LogType.Error, true);
+                }
+                catch (Exception ex)
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key} after {retryCount} tries!\r\n{ex}",
                                  LogType.Error, true);
