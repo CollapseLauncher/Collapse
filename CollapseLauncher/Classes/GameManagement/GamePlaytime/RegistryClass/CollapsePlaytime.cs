@@ -280,20 +280,24 @@ namespace CollapseLauncher.GamePlaytime
             LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
             try
             {
-                // Pull values from DB
-                await UpdatePlaytime_Database_Pull();
-                if (!_isDbPullSuccess) 
-                {
-                    LogWriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
-                    return (false, null); // Return if pull failed
-                }
-
+                // Fetch database last update stamp
+                var stampDbStr = await DbHandler.QueryKey(KeyLastUpdated);
+                _unixStampDb     = !string.IsNullOrEmpty(stampDbStr) ? Convert.ToInt32(stampDbStr) : null;
+                
                 // Compare unix stamp from config
                 var unixStampLocal = Convert.ToInt32(DbConfig.GetConfig(KeyLastUpdated).ToString());
                 if (_unixStampDb == unixStampLocal) 
                 {
                     LogWriteLine("[CollapsePlaytime::DbSync] Sync stamp equal, nothing needs to be done~", LogType.Default, true);
                     return (false, null); // Do nothing if stamp is equal
+                }
+                
+                // Pull values from DB
+                await UpdatePlaytime_Database_Pull();
+                if (!_isDbPullSuccess) 
+                {
+                    LogWriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
+                    return (false, null); // Return if pull failed
                 }
 
                 // When Db stamp is newer, sync from Db
@@ -337,7 +341,7 @@ namespace CollapseLauncher.GamePlaytime
         #endregion
         
         #region DB Operation Methods
-        private async void UpdatePlaytime_Database_Push(string jsonData, double totalTime, double? lastPlayed)
+        private async Task UpdatePlaytime_Database_Push(string jsonData, double totalTime, double? lastPlayed)
         {
             if (_isDbSyncing) return;
             var curDateTime = DateTime.Now;
@@ -378,9 +382,6 @@ namespace CollapseLauncher.GamePlaytime
                 
                 var lpDb = await DbHandler.QueryKey(KeyLastPlayed);
                 _lastPlayedDb    = !string.IsNullOrEmpty(lpDb) && !lpDb.Contains("null") ? Convert.ToDouble(lpDb) : null; // if Db data is null, return null
-
-                var stampDbStr = await DbHandler.QueryKey(KeyLastUpdated);
-                _unixStampDb     = !string.IsNullOrEmpty(stampDbStr) ? Convert.ToInt32(stampDbStr) : null;
                 
                 _isDbPullSuccess = true;
             }
