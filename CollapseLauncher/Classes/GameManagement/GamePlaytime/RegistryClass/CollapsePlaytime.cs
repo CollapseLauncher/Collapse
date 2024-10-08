@@ -21,6 +21,7 @@ namespace CollapseLauncher.GamePlaytime
         private const string LastPlayedValueName = "CollapseLauncher_LastPlayed";
         private const string StatsValueName      = "CollapseLauncher_PlaytimeStats";
 
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private  static HashSet<int>      _isDeserializing = [];
         private         RegistryKey       _registryRoot;
         private         int               _hashID;
@@ -149,7 +150,7 @@ namespace CollapseLauncher.GamePlaytime
             {
                 if (_registryRoot == null) throw new NullReferenceException($"Cannot save playtime since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, true);
+                string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
@@ -164,7 +165,7 @@ namespace CollapseLauncher.GamePlaytime
                 if (DbHandler.IsEnabled && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
                     ((DateTime.Now - LastDbUpdate).TotalMinutes >= 5 || forceUpdateDb)) // Sync only every 5 minutes to reduce database usage
                 {
-                    UpdatePlaytime_Database_Push(data, TotalPlaytime.TotalSeconds, lastPlayed);
+                    _ = UpdatePlaytime_Database_Push(data, TotalPlaytime.TotalSeconds, lastPlayed);
                 }
             }
             catch (Exception ex)
