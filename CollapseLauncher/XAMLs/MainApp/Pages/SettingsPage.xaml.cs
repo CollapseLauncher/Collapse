@@ -1394,26 +1394,30 @@ namespace CollapseLauncher.Pages
             if (t == null) return;
 
             var newGuid = t.Text;
-            if (_currentDbGuid == newGuid) return;
+            if (_currentDbGuid == newGuid) return; // Return if no change
             
-            if (!Guid.TryParse(newGuid, out _)) return;
-            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary)
+            if (!Guid.TryParse(newGuid, out _)) return; // Try to parse, if fail return. Value will be fallen back by DbUserId.set property
+            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
             {
-                t.Text = _currentDbGuid;
+                t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
             }
-            else _currentDbGuid = t.Text;
+            else
+            {
+                _currentDbGuid   = t.Text;
+                DbHandler.UserId = Guid.Parse(t.Text); // Save to DBHandler for good measure
+            }
         }
 
         private async void ValidateDbButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var r = Random.Shared.Next(100);
+                var r = Random.Shared.Next(100); // Generate random int for data verification
 
-                await DbHandler.Init(true);
-                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true);
-                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r)
-                    throw new InvalidDataException("Data validation failed!");
+                await DbHandler.Init(true); // Initialize database
+                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
+                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
         
                 await SpawnDialog(
                                   Lang._Misc.EverythingIsOkay,
@@ -1423,12 +1427,12 @@ namespace CollapseLauncher.Pages
                                   null,
                                   null,
                                   ContentDialogButton.Close
-                                 );
+                                 ); // Show success dialog
             }
             catch (Exception ex)
             {
                 var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
-                ErrorSender.SendException(newEx);
+                ErrorSender.SendException(newEx); // Send error with dialog
             }
         }
 

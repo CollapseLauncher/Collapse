@@ -27,8 +27,9 @@ namespace CollapseLauncher.Helper.Database
                 _enabled           = value;
                 DbConfig.DbEnabled = value;
 
+                _isFirstInit = true; // Force first init
                 if (value) _ = Init();
-                else Dispose();
+                else Dispose(); // Dispose instance if user disabled database function globally
             }
         }
         
@@ -45,6 +46,8 @@ namespace CollapseLauncher.Helper.Database
             }
             set
             {
+                if (value != _uri) _isFirstInit = true; // Force first init if value changed
+                
                 _uri           = value;
                 DbConfig.DbUrl = value;
                 _isFirstInit   = true;
@@ -63,6 +66,8 @@ namespace CollapseLauncher.Helper.Database
             }
             set
             {
+                if (value != _token) _isFirstInit = true; // Force first init if value changed
+                
                 _token           = value;
                 DbConfig.DbToken = value;
                 _isFirstInit     = true;
@@ -76,14 +81,21 @@ namespace CollapseLauncher.Helper.Database
             get
             {
                 if (_userId != null) return (Guid)_userId;
-                var c = DbConfig.UserGuid;
+                var c = DbConfig.UserGuid; // Get or create (if not yet has one) GUIDv7
                 _userId = c;
-                var byteUidH = System.IO.Hashing.XxHash64.Hash(c.ToByteArray());
-                _userIdHash = BitConverter.ToString(byteUidH).Replace("-", "").ToLowerInvariant();
+                _userIdHash = BitConverter.ToString(System.IO.Hashing.XxHash64.Hash(c.ToByteArray())).Replace("-", "")
+                                          .ToLowerInvariant(); // Get hash for the GUID to be used as SQL table name
+                // I know that this is overkill, but I want it to be totally non-identifiable if for some reason someone
+                // has access to their database. It also lowers the amount of query command length to be sent, hopefully
+                // reducing access latency.
+                // p.s. oh yeah, this is also why user won't be able to get their data back if they lost the GUID,
+                // good luck reversing Xxhash64 back to GUIDv7. Technically possible, but good luck!
                 return c;
             }
             set
             {
+                if (value != _userId) _isFirstInit = true; // Force first init if value changed
+                
                 _userId           = value;
                 DbConfig.UserGuid = value;
                 
@@ -120,6 +132,9 @@ namespace CollapseLauncher.Helper.Database
                 if (string.IsNullOrEmpty(Token))
                     throw new NullReferenceException(Lang._SettingsPage.Database_Error_EmptyToken);
 
+                // Connect to database
+                // Libsql-client-dotnet technically support file based SQLite by pushing `file://` proto in the URL.
+                // But what's the point?
                 _database = await DatabaseClient.Create(opts =>
                                                         {
                                                             opts.Url       = Uri;
@@ -129,6 +144,7 @@ namespace CollapseLauncher.Helper.Database
                 if (_isFirstInit)
                 {
                     LogWriteLine("[DbHandler::Init] Initializing database system...");
+                    // Ensure table exist at first initialization
                     await
                         _database
                            .Execute($"CREATE TABLE IF NOT EXISTS \"uid-{_userIdHash}\" (Id INTEGER PRIMARY KEY AUTOINCREMENT, 'key' TEXT UNIQUE NOT NULL, 'value' TEXT)");
@@ -170,13 +186,14 @@ namespace CollapseLauncher.Helper.Database
             {
                 try
                 {
+                    // Get table row for exact key
                     var rs =
                         await
                             _database
-                               .Execute($"SELECT value FROM \"uid-{_userIdHash}\" WHERE key LIKE concat('%', ?, '%')",
-                                        key);
+                               .Execute($"SELECT value FROM \"uid-{_userIdHash}\" WHERE key = ?", key);
                     if (rs != null)
                     {
+                        // freaking black magic to convert the column row to the value 
                         var str =
                             string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
                     #if DEBUG
@@ -240,6 +257,7 @@ namespace CollapseLauncher.Helper.Database
             {
                 try
                 {
+                    // Create key for storing value, if key already exist, just update the value (key column is set to UNIQUE)
                     var command = $"INSERT INTO \"uid-{_userIdHash}\" (key, value) VALUES (?, ?) " +
                                   $"ON CONFLICT(key) DO UPDATE SET value = ?";
                     var parameters = new object[] { key, value, value };
