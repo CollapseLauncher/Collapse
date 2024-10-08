@@ -1,7 +1,6 @@
 using Hi3Helper;
 using Libsql.Client;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
