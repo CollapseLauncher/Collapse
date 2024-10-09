@@ -4,9 +4,9 @@
     "net9.0-windows10.0.22621": {
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
-        "requested": "[9.0.0-rc.1.24431.7, )",
-        "resolved": "9.0.0-rc.1.24431.7",
-        "contentHash": "B8jHIIszeUdDY+O4G1/xPOuhrriwsv9Z8/u3XSOAqc8Z0mQCeLBKg2oLGElDZeRF8wWXDGklAKY3f0IHopyXkQ=="
+        "requested": "[9.0.0-rc.2.24473.5, )",
+        "resolved": "9.0.0-rc.2.24473.5",
+        "contentHash": "mXyCgKqBIo/KOpY09FqjOU8d+LME2qowzzvBd1/viYmSpAKYfQ2w1WDOlh0FniY4xnrB/wmDiAo4frJvfCqT0w=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -21,15 +21,15 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "BWkkIwLhG75+RnyBHGQd0Vrti8wqIBeNiAmHQrb6UiFny6qEQ+z6r61bFAOubw8dbp5S8nQrTS/wjJtpolkYTA=="
+        "resolved": "9.0.0-rc.1.24431.7",
+        "contentHash": "giMiDNlne8WcLG7rsEfrETaukDUTBPn8a97QRo9LYR71O0Rb4SJ6TbfGdQ9oiBYldVPSAbSQANb5ThLZOo408Q=="
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.28.2, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "System.IO.Hashing": "[9.0.0-rc.2.24473.5, )"
+          "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
         }
       },
       "hi3helper.http": {
