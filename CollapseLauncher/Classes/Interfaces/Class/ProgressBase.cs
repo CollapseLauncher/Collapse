@@ -1093,6 +1093,38 @@ namespace CollapseLauncher.Interfaces
             // Return computed hash byte
             return hashProvider.Hash;
         }
+
+
+        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, XxHash64 hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        {
+            // Initialize Xxh64 instance and assign buffer
+            byte[] buffer = new byte[_bufferBigLength];
+
+            // Do read activity
+            int read;
+            while ((read = await stream!.ReadAsync(buffer, token)) > 0)
+            {
+                // Throw Cancellation exception if detected
+                token.ThrowIfCancellationRequested();
+
+                // Append buffer into hash block
+                hashProvider.Append(buffer.AsSpan(0, read));
+
+                lock (this)
+                {
+                    // Increment total size counter
+                    if (updateTotalProgress) _progressAllSizeCurrent += read;
+                    // Increment per file size counter
+                    _progressPerFileSizeCurrent += read;
+                }
+
+                // Update status and progress for Xxh64 calculation
+                UpdateProgressCRC();
+            }
+
+            // Return computed hash byte
+            return hashProvider.GetHashAndReset();
+        }
         #endregion
 
         #region PatchTools

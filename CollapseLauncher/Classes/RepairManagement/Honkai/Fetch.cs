@@ -551,8 +551,8 @@ namespace CollapseLauncher
         private void DeserializeAssetIndexV2(Stream stream, List<FilePropertiesRemote> assetIndexList)
         {
             AssetIndexV2 assetIndex = new AssetIndexV2();
-            PkgVersionProperties[] pkgVersionEntries = assetIndex.Deserialize(stream, out DateTime timestamp);
-            LogWriteLine($"[HonkaiRepair::DeserializeAssetIndexV2()] Asset index V2 has been deserialized with: {pkgVersionEntries!.Length} assets found." +
+            List<PkgVersionProperties> pkgVersionEntries = assetIndex.Deserialize(stream, out DateTime timestamp);
+            LogWriteLine($"[HonkaiRepair::DeserializeAssetIndexV2()] Asset index V2 has been deserialized with: {pkgVersionEntries!.Count} assets found." +
                          $"Asset index was generated at: {timestamp} (UTC)", LogType.Default, true);
 
             bool isOnlyRecoverMain = _isOnlyRecoverMain;
@@ -737,7 +737,7 @@ namespace CollapseLauncher
                     RN = CombineURLFromString(_blockAsbBaseURL, xmfParser.BlockEntry[i]!.HashString + ".wmv")!,
                     S = xmfParser.BlockEntry[i]!.Size,
                     CRC = xmfParser.BlockEntry[i]!.HashString!,
-                    FT = FileType.Blocks,
+                    FT = FileType.Block,
                     BlockPatchInfo = blockPatchInfo
                 };
 

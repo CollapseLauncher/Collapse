@@ -3,7 +3,6 @@ using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -21,6 +20,7 @@ namespace CollapseLauncher
         internal const string _assetGameStreamingPath = @"{0}_Data\StreamingAssets";
 
         private bool IsOnlyRecoverMain { get; set; }
+        private bool IsCacheUpdateMode { get; set; }
         private string? ExecutableName { get; set; }
 
         private List<FilePropertiesRemote>? OriginAssetIndex { get; set; }
@@ -65,11 +65,13 @@ namespace CollapseLauncher
 
         protected override string _userAgent { get; set; } = "UnityPlayer/2019.4.40f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)";
 
-        public ZenlessRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings, bool isOnlyRecoverMain = false, string? versionOverride = null)
+        public ZenlessRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings, bool isOnlyRecoverMain = false, string? versionOverride = null, bool isCacheUpdateMode = false)
             : base(parentUI, gameVersionManager, null, "", versionOverride)
         {
             // Use IsOnlyRecoverMain for future delta-patch or main game only files
             IsOnlyRecoverMain = isOnlyRecoverMain;
+            // We are merging cache functionality with cache update
+            IsCacheUpdateMode = isCacheUpdateMode;
             ExecutableName = Path.GetFileNameWithoutExtension(gameVersionManager.GamePreset.GameExecutableName);
             GameSettings = gameSettings;
         }
@@ -87,7 +89,7 @@ namespace CollapseLauncher
             return await TryRunExamineThrow(CheckRoutine());
         }
 
-        public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null)
+        public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action? actionIfInteractiveCancel = null)
         {
             if (_assetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
 

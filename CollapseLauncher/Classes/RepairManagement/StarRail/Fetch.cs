@@ -184,7 +184,7 @@ namespace CollapseLauncher
             {
                 // Deserialize asset index and set it to list
                 AssetIndexV2 parserTool = new AssetIndexV2();
-                pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
+                pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
                 LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
             }
 
@@ -238,7 +238,7 @@ namespace CollapseLauncher
                                         },
                    typeAssetRelativeParentPath = string.Format(type switch
                                                                {
-                                                                   FileType.Blocks => _assetGameBlocksStreamingPath,
+                                                                   FileType.Block => _assetGameBlocksStreamingPath,
                                                                    FileType.Audio => _assetGameAudioStreamingPath,
                                                                    FileType.Video => _assetGameVideoStreamingPath,
                                                                    _ => string.Empty
@@ -418,8 +418,8 @@ namespace CollapseLauncher
 
         private FileType ConvertFileTypeEnum(SRAssetType assetType) => assetType switch
         {
-            SRAssetType.Asb => FileType.Blocks,
-            SRAssetType.Block => FileType.Blocks,
+            SRAssetType.Asb => FileType.Block,
+            SRAssetType.Block => FileType.Block,
             SRAssetType.Audio => FileType.Audio,
             SRAssetType.Video => FileType.Video,
             _ => FileType.Generic
@@ -427,10 +427,10 @@ namespace CollapseLauncher
 
         private RepairAssetType ConvertRepairAssetTypeEnum(FileType assetType) => assetType switch
         {
-            FileType.Blocks => RepairAssetType.Block,
+            FileType.Block => RepairAssetType.Block,
             FileType.Audio => RepairAssetType.Audio,
             FileType.Video => RepairAssetType.Video,
-            _ => RepairAssetType.General
+            _ => RepairAssetType.Generic
         };
         #endregion
     }

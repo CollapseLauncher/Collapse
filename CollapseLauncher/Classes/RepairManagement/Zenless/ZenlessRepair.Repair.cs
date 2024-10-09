@@ -1,18 +1,15 @@
 ﻿using CollapseLauncher.Helper;
-using Hi3Helper.Http;
-using Hi3Helper.Shared.ClassStruct;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Http;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
+using Hi3Helper.Shared.ClassStruct;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
@@ -59,7 +56,7 @@ namespace CollapseLauncher
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
-                            FileType.Blocks => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
                             FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
                             FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
                             _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken)
@@ -83,7 +80,7 @@ namespace CollapseLauncher
                     // Assign a task depends on the asset type
                     Task assetTask = asset.AssetIndex.FT switch
                     {
-                        FileType.Blocks => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
                         FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
                         FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
                         _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
@@ -116,14 +113,14 @@ namespace CollapseLauncher
                 {
                     fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
-                    Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Blocks ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
+                    Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
             }
             else
             {
                 // Start asset download task
                 await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N!, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
-                Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Blocks ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry

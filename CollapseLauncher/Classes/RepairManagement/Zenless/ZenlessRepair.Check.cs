@@ -4,10 +4,12 @@ using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using ZstdSharp.Unsafe;
 
 namespace CollapseLauncher
 {
@@ -39,14 +41,17 @@ namespace CollapseLauncher
                         case FileType.Generic:
                             await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
-                        case FileType.Blocks:
+                        case FileType.Block:
                             // await CheckAssetType(asset, brokenAssetIndex, threadToken);
+                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                         case FileType.Audio:
                             // await CheckAssetType(asset, brokenAssetIndex, threadToken);
+                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                         case FileType.Video:
                             // await CheckAssetType(asset, brokenAssetIndex, threadToken);
+                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                     }
                 });
@@ -121,7 +126,7 @@ namespace CollapseLauncher
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+                byte[] localCRC = asset.CRCArray.Length > 8 ? await CheckHashAsync(filefs, MD5.Create(), token) : await CheckHashAsync(filefs, new XxHash64(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -151,10 +156,10 @@ namespace CollapseLauncher
 
         private RepairAssetType ConvertRepairAssetTypeEnum(FileType assetType) => assetType switch
         {
-            FileType.Blocks => RepairAssetType.Block,
+            FileType.Block => RepairAssetType.Block,
             FileType.Audio => RepairAssetType.Audio,
             FileType.Video => RepairAssetType.Video,
-            _ => RepairAssetType.General
+            _ => RepairAssetType.Generic
         };
     }
 }

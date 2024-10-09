@@ -14,7 +14,7 @@ namespace CollapseLauncher.GameVersioning
     internal sealed class GameTypeZenlessVersion : GameVersionBase
     {
         #region Properties
-        private RSA SleepyInstance { get; set; }
+        internal RSA SleepyInstance { get; set; }
         internal string SleepyIdentity { get; set; }
         internal string SleepyArea { get; set; }
         #endregion
@@ -112,7 +112,7 @@ namespace CollapseLauncher.GameVersioning
 #endif
             }
         }
-#endregion
+        #endregion
 
         public GameTypeZenlessVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset, string gameName, string gameRegion)
             : base(parentUIElement, gameRegionProp, gameName, gameRegion)
