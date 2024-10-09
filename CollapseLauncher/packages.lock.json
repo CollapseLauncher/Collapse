@@ -324,8 +324,8 @@
       },
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
-        "resolved": "9.0.0-rc.1.24431.7",
-        "contentHash": "IK3fwmfSCVArYWKjPUTEeD9nRXF1VENiFb4+hlqWuUxfP1hPVw41y/sOEdLZtRB+BVdgh6NaZjetrVhEuG4Iyg=="
+        "resolved": "9.0.0-rc.2.24473.5",
+        "contentHash": "is9hwbUxr4o0jPDY5uRJTmq5RqqZVrV/OvZTt/sEC4bekBf/r1un1+SY1L9KE87QkeIkFbFzKomLivEvJ8vCbg=="
       },
       "NuGet.Versioning": {
         "type": "Transitive",
@@ -334,16 +334,16 @@
       },
       "System.Drawing.Common": {
         "type": "Transitive",
-        "resolved": "9.0.0-rc.1.24451.1",
-        "contentHash": "5TJtJLhJk7viKkkflNYN+V+Tl/qxoKrkmCTog2j0dzqamIY/ximaAWQfPznYOUR5852XxxvhZsQLd2LzjJFWUw==",
+        "resolved": "9.0.0-rc.2.24474.1",
+        "contentHash": "a+wqXfOnCuBc7ql6xsCr9IJh5g4Hmm6HBOtQIW/QEuTPHc/R/zMNe6b13FSHN7goEd/0tea7p6EH0OsH3iBKCQ==",
         "dependencies": {
-          "Microsoft.Win32.SystemEvents": "9.0.0-rc.1.24431.7"
+          "Microsoft.Win32.SystemEvents": "9.0.0-rc.2.24473.5"
         }
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.0-rc.1.24431.7",
-        "contentHash": "giMiDNlne8WcLG7rsEfrETaukDUTBPn8a97QRo9LYR71O0Rb4SJ6TbfGdQ9oiBYldVPSAbSQANb5ThLZOo408Q=="
+        "resolved": "9.0.0-rc.2.24473.5",
+        "contentHash": "BWkkIwLhG75+RnyBHGQd0Vrti8wqIBeNiAmHQrb6UiFny6qEQ+z6r61bFAOubw8dbp5S8nQrTS/wjJtpolkYTA=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
@@ -367,19 +367,19 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[9.0.0-rc.1.24451.1, )"
+          "System.Drawing.Common": "[9.0.0-rc.2.24474.1, )"
         }
       },
       "discordrpc": {
         "type": "Project",
         "dependencies": {
-          "System.Text.Json": "[9.0.0-rc.1.24431.7, )"
+          "System.Text.Json": "[9.0.0-rc.2.24473.5, )"
         }
       },
       "h.generatedicons.system.drawing": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[9.0.0-rc.1.24451.1, )"
+          "System.Drawing.Common": "[9.0.0-rc.2.24474.1, )"
         }
       },
       "h.notifyicon": {
@@ -409,7 +409,7 @@
         "dependencies": {
           "Google.Protobuf": "[3.28.2, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
+          "System.IO.Hashing": "[9.0.0-rc.2.24473.5, )"
         }
       },
       "hi3helper.http": {
@@ -420,7 +420,7 @@
         "dependencies": {
           "Google.Protobuf": "[*, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "System.IO.Hashing": "[9.0.0-rc.1.24431.7, )"
+          "System.IO.Hashing": "[9.0.0-rc.2.24473.5, )"
         }
       },
       "ImageCropper": {
@@ -522,8 +522,8 @@
       },
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
-        "resolved": "9.0.0-rc.1.24431.7",
-        "contentHash": "IK3fwmfSCVArYWKjPUTEeD9nRXF1VENiFb4+hlqWuUxfP1hPVw41y/sOEdLZtRB+BVdgh6NaZjetrVhEuG4Iyg=="
+        "resolved": "9.0.0-rc.2.24473.5",
+        "contentHash": "is9hwbUxr4o0jPDY5uRJTmq5RqqZVrV/OvZTt/sEC4bekBf/r1un1+SY1L9KE87QkeIkFbFzKomLivEvJ8vCbg=="
       }
     }
   }
