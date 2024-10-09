@@ -19,14 +19,14 @@ namespace CollapseLauncher
         {
             string parentStreamingRelativePath = string.Format(type switch
             {
-                FileType.Blocks => StarRailRepair._assetGameBlocksStreamingPath,
+                FileType.Block => StarRailRepair._assetGameBlocksStreamingPath,
                 FileType.Audio => StarRailRepair._assetGameAudioStreamingPath,
                 FileType.Video => StarRailRepair._assetGameVideoStreamingPath,
                 _ => string.Empty
             }, execName);
             string parentPersistentRelativePath = string.Format(type switch
             {
-                FileType.Blocks => StarRailRepair._assetGameBlocksPersistentPath,
+                FileType.Block => StarRailRepair._assetGameBlocksPersistentPath,
                 FileType.Audio => StarRailRepair._assetGameAudioPersistentPath,
                 FileType.Video => StarRailRepair._assetGameVideoPersistentPath,
                 _ => string.Empty
@@ -89,7 +89,7 @@ namespace CollapseLauncher
                         case FileType.Generic:
                             await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
-                        case FileType.Blocks:
+                        case FileType.Block:
                             await CheckAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                         case FileType.Audio:
