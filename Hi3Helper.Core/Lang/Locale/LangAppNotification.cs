@@ -10,7 +10,8 @@ namespace Hi3Helper
             public LangAppNotification _AppNotification { get; set; } = LangFallback?._AppNotification;
 
             [GeneratedBindableCustomProperty]
-            public sealed class LangAppNotification
+            // ReSharper disable once PartialTypeWithSinglePart
+            public sealed partial class LangAppNotification
             {
                 public string NotifMetadataUpdateTitle { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateTitle;
                 public string NotifMetadataUpdateSubtitle { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateSubtitle;
