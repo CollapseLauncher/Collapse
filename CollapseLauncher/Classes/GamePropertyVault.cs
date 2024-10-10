@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameSettings.Zenless;
@@ -65,12 +66,15 @@ namespace CollapseLauncher.Statics
                     default:
                         throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
                 }
+
+                _GamePlaytime = new Playtime(_GameVersion);
             }
         }
 
         internal RegionResourceProp _APIResouceProp { get; set; }
         internal PresetConfig _GamePreset { get => _GameVersion.GamePreset; }
         internal IGameSettings _GameSettings { get; set; }
+        internal IGamePlaytime _GamePlaytime { get; set; }
         internal IRepair _GameRepair { get; set; }
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
@@ -161,13 +165,15 @@ namespace CollapseLauncher.Statics
             _GameRepair?.Dispose();
             _GameCache?.Dispose();
             _GameInstall?.Dispose();
+            _GamePlaytime?.Dispose();
 
             _APIResouceProp = null;
-            _GameSettings = null;
-            _GameRepair = null;
-            _GameCache = null;
-            _GameVersion = null;
-            _GameInstall = null;
+            _GameSettings   = null;
+            _GameRepair     = null;
+            _GameCache      = null;
+            _GameVersion    = null;
+            _GameInstall    = null;
+            _GamePlaytime   = null;
         }
     }
 

@@ -197,7 +197,8 @@
                                 <Border Background="Transparent"
                                         ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
                                         Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
-                                <ToggleSwitch IsEnabled="{x:Bind IsWaifu2XUsable}"
+                                <ToggleSwitch x:Name="Waifu2XToggleSwitch"
+                                              IsEnabled="{x:Bind IsWaifu2XUsable}"
                                               IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
@@ -1146,6 +1147,11 @@
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.UseExternalBrowser}"
                                       IsOn="{x:Bind IsAlwaysUseExternalBrowser, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <ToggleSwitch Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.Enforce7ZipExtract}"
+                                      IsOn="{x:Bind IsEnforceToUse7zipOnExtract, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </StackPanel>

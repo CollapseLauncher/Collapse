@@ -21,15 +21,16 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        configuration: [Release] # No need to distribute Debug builds
+        configuration: [Debug] # No need to distribute Debug builds
         platform: [x64]
-        framework: [net8.0-windows10.0.22621.0]
+        framework: [net9.0-windows10.0.22621.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '8.x'
+      DOTNET_VERSION: '9.x'
+      DOTNET_QUALITY: 'preview'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
@@ -42,6 +43,48 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-quality: ${{ env.DOTNET_QUALITY }}
+        cache: true
+        cache-dependency-path: CollapseLauncher/packages.lock.json
+
+    - name: Build
+      run: |
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
+          
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4.3.1
+      with:
+          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
+          path: ./CollapseLauncher/debug-build/
+          compression-level: 9
+
+  build-nativeaot:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Debug]
+        platform: [x64]
+        framework: [net9.0-windows10.0.22621.0]
+
+    env:
+      Configuration: ${{ matrix.configuration }}
+      Platform: ${{ matrix.platform }}
+      DOTNET_INSTALL_DIR: '.\.dotnet' 
+      DOTNET_VERSION: '9.x'
+      DOTNET_QUALITY: 'preview'
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.1.5
+      with:
+        submodules: recursive
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-quality: ${{ env.DOTNET_QUALITY }}
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
@@ -51,16 +94,20 @@ jobs:
 
     - name: Build
       run: |
-        dotnet publish CollapseLauncher -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\" 
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
           
-    - name: Upload Artifact (Release)
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4.3.1
-      if: ${{ matrix.configuration == 'Release' }}
       with:
-          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
-          path: ./CollapseLauncher/preview-build/
+          name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
+          path: ./CollapseLauncher/debug-aot-build/
           compression-level: 9
     
+  notify-discord:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [build, build-nativeaot]
+    steps:
     - name: Notify Discord
       uses: sarisia/actions-status-discord@v1.13.0
       if: always()

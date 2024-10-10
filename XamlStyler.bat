@@ -11,4 +11,4 @@ if %ERRORLEVEL% neq 0 (
 
 echo This tool will apply XamlStyler configured in settings.xamlstyler file for all Xamls in ./CollapseLauncher/XAMLs/ directory.
 pause
-xstyler --config ./settings.xamlstyler --directory ./CollapseLauncher/XAMLs/ --recursive
+xstyler --config ./settings.xamlstyler --directory ./CollapseLauncher/ --recursive

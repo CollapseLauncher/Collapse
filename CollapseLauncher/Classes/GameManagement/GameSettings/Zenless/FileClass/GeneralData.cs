@@ -5,6 +5,7 @@ using Hi3Helper;
 using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 // ReSharper disable ReturnTypeCanBeNotNullable
 
 #nullable enable
@@ -569,10 +570,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!", true)]
     public new static GeneralData Load() => throw new NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");
 
-    public new static GeneralData LoadWithMagic(byte[]                magic, SettingsGameVersionManager versionManager,
-                                                JsonSerializerContext context)
+    public new static GeneralData LoadWithMagic(byte[]                    magic, SettingsGameVersionManager versionManager,
+                                                JsonTypeInfo<GeneralData?> typeInfo)
     {
-        var returnVal    = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, context);
+        var returnVal    = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, typeInfo);
         
     #if DEBUG
         const bool isPrintDebug = true;

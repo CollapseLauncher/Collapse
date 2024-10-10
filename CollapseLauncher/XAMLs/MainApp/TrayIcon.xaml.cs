@@ -186,7 +186,8 @@ namespace CollapseLauncher
 
             if (isVisible && !forceShow)
             {
-                WindowUtility.CurrentWindow?.Hide();
+                WindowUtility.CurrentWindow?.Hide(false);
+                EfficiencyModeWrapper(true);
                 MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
@@ -201,7 +202,8 @@ namespace CollapseLauncher
             }
             else
             {
-                WindowUtility.CurrentWindow?.Show();
+                WindowUtility.CurrentWindow?.Show(false);
+                EfficiencyModeWrapper(false);
                 SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
                 // Revert refresh rate to its default
@@ -351,6 +353,21 @@ namespace CollapseLauncher
             }
         }
         
+        #endregion
+
+        #region Static Methods
+        private static void EfficiencyModeWrapper(bool enableEfficiency)
+        {
+            try
+            {
+                H.NotifyIcon.EfficiencyMode.EfficiencyModeUtilities.SetEfficiencyMode(enableEfficiency);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to toggle Efficiency Mode!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
         #endregion
     }
 }

@@ -22,3 +22,6 @@
 [submodule "SevenZipExtractor"]
 	path = SevenZipExtractor
 	url = https://github.com/CollapseLauncher/SevenZipExtractor
+[submodule "H.NotifyIcon"]
+	path = H.NotifyIcon
+	url = https://github.com/CollapseLauncher/H.NotifyIcon

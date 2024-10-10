@@ -90,10 +90,7 @@
                 foreach (string data in dataList)
                 {
                     (valProp.ClientGameRes as List<PkgVersionProperties?>)?
-                       .Add(
-                            (PkgVersionProperties?)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties),
-                                                                              CoreLibraryJSONContext.Default)
-                           );
+                       .Add(JsonSerializer.Deserialize(data, CoreLibraryJSONContext.Default.PkgVersionProperties));
                 }
             }
 
@@ -132,8 +129,7 @@
                 if (jsonDesignDataSil != null)
                 {
                     valProp.ClientDesignDataSil =
-                        JsonSerializer.Deserialize(jsonDesignDataSil, typeof(PkgVersionProperties),
-                                                   CoreLibraryJSONContext.Default) as PkgVersionProperties;
+                        JsonSerializer.Deserialize(jsonDesignDataSil, CoreLibraryJSONContext.Default.PkgVersionProperties);
                 }
                 else
                 {

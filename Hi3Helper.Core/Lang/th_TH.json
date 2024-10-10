@@ -159,7 +159,7 @@
     "GamePlaytime_Running_Info1": "อินสแตนซ์ของเกมนี้กำลังทำงานอยู่ ดังนั้นเวลาที่เล่นจึงไม่สามารถแก้ไขได้",
     "GamePlaytime_Running_Info2": "โปรดทราบว่าการปิด Collapse จะหยุดการติดตามเวลาที่เล่น (จะบันทึกแค่ตอนที่กำลังทำงานอยู่) และจะติดตามเฉพาะเปิดด้วย Collapse เท่านั้น",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
 
     "PostPanel_Events": "กิจกรรม",
     "PostPanel_Notices": "การ​แจ้งเตือน",

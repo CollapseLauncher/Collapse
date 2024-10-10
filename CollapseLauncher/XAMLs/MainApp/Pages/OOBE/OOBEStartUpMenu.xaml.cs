@@ -9,8 +9,8 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI.Animations;
-using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
+using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Composition;
@@ -23,6 +23,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -35,6 +36,9 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable CollectionNeverQueried.Local
+// ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -759,8 +763,8 @@ namespace CollapseLauncher.Pages.OOBE
             { "vi", "vi-vn" }
         };
 
-        private List<string> LangList =
-            LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})").ToList();
+        private readonly ObservableCollection<string> LangList =
+            new(LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})"));
 
         private int SelectedLangIndex
         {
