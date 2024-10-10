@@ -1049,6 +1049,19 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_DbGenerateUid(UIElement Content)
+        {
+            return await SpawnDialog(
+                Lang._Dialogs.DbGenerateUid_Title,
+                Lang._Dialogs.DbGenerateUid_Content,
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null,
+                ContentDialogButton.Close,
+                ContentDialogTheme.Warning);
+        }
+
         public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
         {
             return await SpawnDialog(

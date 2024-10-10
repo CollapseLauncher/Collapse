@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
@@ -28,24 +29,40 @@ namespace CollapseLauncher.GamePlaytime
         private CancellationTokenSourceWrapper _token = new();
         #endregion
 
-        public Playtime(IGameVersionCheck GameVersionManager)
+        public Playtime(IGameVersionCheck gameVersionManager, IGameSettings gameSettings)
         {
-            string registryPath = Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig!);
+            string        registryPath = Path.Combine($"Software\\{gameVersionManager.VendorTypeProp.VendorType}", gameVersionManager.GamePreset.InternalGameNameInConfig!);
             _registryRoot = Registry.CurrentUser.OpenSubKey(registryPath, true);
 
             _registryRoot ??= Registry.CurrentUser.CreateSubKey(registryPath, true, RegistryOptions.None);
 
-            _gameVersionManager = GameVersionManager;
+            _gameVersionManager = gameVersionManager;
 
-            _playtime = CollapsePlaytime.Load(_registryRoot, _gameVersionManager.GamePreset.HashID);
+            _playtime = CollapsePlaytime.Load(_registryRoot,
+                                              _gameVersionManager.GamePreset.HashID,
+                                              _gameVersionManager,
+                                              gameSettings);
+            
+            
+            if (DbHandler.IsEnabled && gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+                CheckDb();
         }
 #nullable disable
 
-        public void Update(TimeSpan timeSpan)
+        public async void CheckDb()
+        {
+            var needUpdate = await _playtime.DbSync();
+            if (needUpdate is not { IsUpdated: true, PlaytimeData: not null }) return;
+
+            _playtime = needUpdate.PlaytimeData;
+            PlaytimeUpdated?.Invoke(this, _playtime);
+        }
+
+        public void Update(TimeSpan timeSpan, bool forceUpdateDb = false)
         {
             TimeSpan oldTimeSpan = _playtime.TotalPlaytime;
 
-            _playtime.Update(timeSpan);
+            _playtime.Update(timeSpan, true, true);
             PlaytimeUpdated?.Invoke(this, _playtime);
 
             LogWriteLine($"Playtime counter changed to {TimeSpanToString(timeSpan)}. (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
@@ -118,7 +135,7 @@ namespace CollapseLauncher.GamePlaytime
             LogWriteLine($"Added {totalElapsedSeconds}s [{totalTimeSpan.Hours}h {totalTimeSpan.Minutes}m {totalTimeSpan.Seconds}s] " +
                          $"to {_gameVersionManager.GamePreset.ProfileName} playtime.", LogType.Default, true);
             
-            _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false);
+            _playtime.Update(initialTimeSpan.Add(totalTimeSpan), false, true);
             PlaytimeUpdated?.Invoke(this, _playtime);
 
             _activeSessions.Remove(hashId);
@@ -129,8 +146,9 @@ namespace CollapseLauncher.GamePlaytime
         public void Dispose()
         {
             _token.Cancel();
-            _playtime.Save();
-            _registryRoot = null;
+            _playtime.Save(true);
+            _playtime.LastDbUpdate = DateTime.MinValue;
+            _registryRoot           = null;
         }
     }
 }

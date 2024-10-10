@@ -129,6 +129,8 @@ public static class MainEntryPoint
                     return;
             }
 
+            _ = Helper.Database.DbHandler.Init();
+            
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
             InstanceCount = InvokeProp.EnumerateInstances();

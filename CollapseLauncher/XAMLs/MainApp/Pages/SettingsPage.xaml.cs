@@ -6,6 +6,7 @@
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
     using CollapseLauncher.Helper.Background;
+    using CollapseLauncher.Helper.Database;
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
@@ -85,7 +86,7 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = Version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
-            GitVersionIndicator_Hyperlink.NavigateUri = 
+            GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
@@ -1328,6 +1329,124 @@ namespace CollapseLauncher.Pages
             }
         }
 #nullable restore
+
+        #region Database
+
+        private bool IsDbEnabled
+        {
+            get => DbHandler.IsEnabled;
+            set
+            {
+                DbHandler.IsEnabled = value;
+                if (value) _ = DbHandler.Init();
+            }
+        }
+
+        private string DbUrl
+        {
+            get => DbHandler.Uri;
+            set
+            {
+                // Automatically replace libsql protocol to https
+                if (value.Contains("libsql://", StringComparison.InvariantCultureIgnoreCase))
+                    value = value.Replace("libsql", "https");
+                if (!value.Contains("https://"))
+                {
+                    DbUriTextBox.Text = DbHandler.Uri;
+                    return;
+                }
+
+                DbHandler.Uri = value;
+            }
+        }
+
+        private string DbToken
+        {
+            get => DbHandler.Token;
+            set => DbHandler.Token = value;
+        }
+
+        private string _currentDbGuid;
+        private string DbUserId
+        {
+            get => DbHandler.UserId.ToString();
+            set
+            {
+                if (Guid.TryParse(value, out var guid))
+                {
+                    DbHandler.UserId = guid;
+                }
+                else
+                {
+                    DbUserIdTextBox.Text = DbHandler.UserId.ToString();
+                }
+            }
+        }
+
+        private void DbUserIdTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _currentDbGuid = DbUserIdTextBox.Text;
+        }
+
+        private async void DbUserIdTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var t = sender as TextBox;
+            if (t == null) return;
+
+            var newGuid = t.Text;
+            if (_currentDbGuid == newGuid) return; // Return if no change
+            
+            if (!Guid.TryParse(newGuid, out _)) return; // Try to parse, if fail return. Value will be fallen back by DbUserId.set property
+            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
+            {
+                t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
+            }
+            else
+            {
+                _currentDbGuid   = t.Text;
+                DbHandler.UserId = Guid.Parse(t.Text); // Save to DBHandler for good measure
+            }
+        }
+
+        private async void ValidateDbButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var r = Random.Shared.Next(100); // Generate random int for data verification
+
+                await DbHandler.Init(true); // Initialize database
+                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
+                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
+        
+                await SpawnDialog(
+                                  Lang._Misc.EverythingIsOkay,
+                                  Lang._SettingsPage.Database_ConnectionOk,
+                                  (sender as UIElement),
+                                  Lang._Misc.Close,
+                                  null,
+                                  null,
+                                  ContentDialogButton.Close
+                                 ); // Show success dialog
+            }
+            catch (Exception ex)
+            {
+                var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+                ErrorSender.SendException(newEx); // Send error with dialog
+            }
+        }
+
+        private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                var g = Guid.CreateVersion7();
+                DbUserIdTextBox.Text = g.ToString();
+                DbHandler.UserId     = g;
+            }
+        }
+
+        #endregion
         #endregion
 
         #region Keyboard Shortcuts
@@ -1368,6 +1487,7 @@ namespace CollapseLauncher.Pages
                 KeyboardShortcutsEvent(this, value ? 0 : 2);
             }
         }
+
         #endregion
     }
 }
