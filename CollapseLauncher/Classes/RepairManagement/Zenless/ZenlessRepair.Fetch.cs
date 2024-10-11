@@ -8,7 +8,6 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Buffers;
-using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -140,7 +139,7 @@ namespace CollapseLauncher
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
         {
             // Set metadata URL
-            string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, GameVersionManagerCast.GamePreset.ProfileName);
+            string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, GameVersionManagerCast!.GamePreset.ProfileName);
 
             // Start downloading metadata using FallbackCDNUtil
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
@@ -152,14 +151,14 @@ namespace CollapseLauncher
         private async Task GetResManifest(DownloadClient downloadClient, Dictionary<string, FilePropertiesRemote> hashSet, CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Create sleepy property
-            PresetConfig gamePreset = GameVersionManagerCast.GamePreset;
+            PresetConfig gamePreset = GameVersionManagerCast!.GamePreset;
             HttpClient client = downloadClient.GetHttpClient();
 
             // Get sleepy info
             SleepyInfo sleepyInfo = await TryGetSleepyInfo(
                 client,
                 gamePreset,
-                GameSettings.GeneralData.SelectedServerName,
+                GameSettings!.GeneralData.SelectedServerName,
                 gamePreset.GameDispatchDefaultName,
                 token);
 
@@ -228,9 +227,9 @@ namespace CollapseLauncher
             {
                 // Initialize property
                 SleepyProperty sleepyProperty = SleepyProperty.Create(
-                    GameVersionManagerCast.GetGameExistingVersion()?.VersionString,
+                    GameVersionManagerCast!.GetGameExistingVersion()?.VersionString,
                     gamePreset.GameDispatchChannelName,
-                    gamePreset.GameDispatchArrayURL[Random.Shared.Next(0, gamePreset.GameDispatchArrayURL.Count - 1)],
+                    gamePreset.GameDispatchArrayURL![Random.Shared.Next(0, gamePreset.GameDispatchArrayURL.Count - 1)],
                     gamePreset.GameDispatchURLTemplate,
                     targetServerName ?? fallbackServerName,
                     gamePreset.GameGatewayURLTemplate,
@@ -323,11 +322,11 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
             {
                 assetIndex.RemoveAll(asset =>
                 {
-                    return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                    return plugin.package!.validate?.Exists(validate => validate.path == asset.N) ?? false;
                 });
             });
         }

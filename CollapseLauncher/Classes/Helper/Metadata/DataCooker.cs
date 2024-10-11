@@ -206,31 +206,31 @@ namespace CollapseLauncher.Helper.Metadata
             int dataWritten;
 
             fixed (byte* inputBuffer = &dataRawBuffer[0])
-            fixed (byte* outputBuffer = &outData[0])
-            {
-                int decompressedWritten = 0;
-
-                byte[] buffer = new byte[4 << 10];
-
-                using UnmanagedMemoryStream inputStream = new UnmanagedMemoryStream(inputBuffer, dataRawBuffer.Length);
-                using UnmanagedMemoryStream outputStream = new UnmanagedMemoryStream(outputBuffer, outData.Length);
-                using ZstdDecompressStream decompStream = new ZstdDecompressStream(inputStream);
-
-                int read = 0;
-                while ((read = decompStream.Read(buffer)) > 0)
+                fixed (byte* outputBuffer = &outData[0])
                 {
-                    outputStream.Write(buffer, 0, read);
-                    decompressedWritten += read;
-                }
+                    int decompressedWritten = 0;
 
-                if (decompressedSize != decompressedWritten)
-                {
-                    throw new DataMisalignedException("Decompressed data is misaligned!");
-                }
+                    byte[] buffer = new byte[4 << 10];
 
-                dataWritten = decompressedWritten;
-                return dataWritten;
-            }
+                    using UnmanagedMemoryStream inputStream = new UnmanagedMemoryStream(inputBuffer, dataRawBuffer.Length);
+                    using UnmanagedMemoryStream outputStream = new UnmanagedMemoryStream(outputBuffer, outData.Length);
+                    using ZstdDecompressStream decompStream = new ZstdDecompressStream(inputStream);
+
+                    int read;
+                    while ((read = decompStream.Read(buffer)) > 0)
+                    {
+                        outputStream.Write(buffer, 0, read);
+                        decompressedWritten += read;
+                    }
+
+                    if (decompressedSize != decompressedWritten)
+                    {
+                        throw new DataMisalignedException("Decompressed data is misaligned!");
+                    }
+
+                    dataWritten = decompressedWritten;
+                    return dataWritten;
+                }
         }
     }
 }

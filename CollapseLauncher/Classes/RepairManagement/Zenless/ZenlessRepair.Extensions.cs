@@ -89,7 +89,7 @@ namespace CollapseLauncher
 
             await redirectStream.WriteAsync(innerBuffer, 0, read, token);
 
-            int lastIndexOffset = 0;
+            int lastIndexOffset;
             if (isFieldStart && ((lastIndexOffset = EnsureIsEnd(innerBuffer, read)) > 0))
             {
                 innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer.Span);
@@ -123,7 +123,7 @@ namespace CollapseLauncher
 
             redirectStream.Write(innerBuffer, 0, read);
 
-            int lastIndexOffset = 0;
+            int lastIndexOffset;
             if (isFieldStart && ((lastIndexOffset = EnsureIsEnd(innerBuffer, read)) > 0))
             {
                 innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer);
@@ -362,7 +362,7 @@ namespace CollapseLauncher
         {
             assetType = RepairAssetType.Generic;
 
-            int indexOfOffset = -1;
+            int indexOfOffset;
             if ((indexOfOffset = asset.N.LastIndexOf(AssetTypeAudioPath, StringComparison.OrdinalIgnoreCase)) >= 0)
             {
                 assetType = RepairAssetType.Audio;

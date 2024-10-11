@@ -19,10 +19,13 @@ namespace CollapseLauncher
         internal const string _assetGamePersistentPath = @"{0}_Data\Persistent";
         internal const string _assetGameStreamingPath = @"{0}_Data\StreamingAssets";
 
+        // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
         private bool IsOnlyRecoverMain { get; set; }
         private bool IsCacheUpdateMode { get; set; }
         private string? ExecutableName { get; set; }
-
+        // ReSharper restore AutoPropertyCanBeMadeGetOnly.Local
+        
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private List<FilePropertiesRemote>? OriginAssetIndex { get; set; }
         private GameTypeZenlessVersion? GameVersionManagerCast { get => _gameVersionManager as GameTypeZenlessVersion; }
         private ZenlessSettings? GameSettings { get; init; }

@@ -20,7 +20,7 @@ namespace CollapseLauncher
 
         [JsonPropertyName("md5")] // "mD5" they said. BROO, IT'S A F**KING XXH64 HASH!!!!
         [JsonConverter(typeof(NumberStringToXxh64HashBytesConverter))] // AND THEY STORED IT AS A NUMBER IN A STRING WTFF??????
-        public byte[] Xxh64Hash { get; set; }
+        public byte[] Xxh64Hash { get; set; } // classic
 
         [JsonPropertyName("fileSize")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]

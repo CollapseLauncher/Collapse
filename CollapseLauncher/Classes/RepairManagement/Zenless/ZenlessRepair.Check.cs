@@ -9,7 +9,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using ZstdSharp.Unsafe;
 
 namespace CollapseLauncher
 {
@@ -59,10 +58,6 @@ namespace CollapseLauncher
             catch (AggregateException ex)
             {
                 throw ex.Flatten().InnerExceptions.First();
-            }
-            catch (Exception)
-            {
-                throw;
             }
 
             // Re-add the asset index with a broken asset index
