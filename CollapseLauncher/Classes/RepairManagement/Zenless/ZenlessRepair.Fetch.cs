@@ -110,29 +110,32 @@ namespace CollapseLauncher
             string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil and return its stream
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
-            await Task.Run(() =>
+            await using (BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token))
             {
-                if (stream != null)
+                await Task.Run(() =>
                 {
-                    // Deserialize asset index and set it to list
-                    AssetIndexV2 parserTool = new AssetIndexV2();
-                    pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
-                }
+                    if (stream != null)
+                    {
+                        // Deserialize asset index and set it to list
+                        AssetIndexV2 parserTool = new AssetIndexV2();
+                        pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
+                        Logger.LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
+                    }
 
-                // Convert the pkg version list to asset index
-                foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, _gamePath, _gameRepoURL))
-                {
-                    // If entry is null (means, an existing entry has been overwritten), then next
-                    if (entry == null)
-                        continue;
+                    // Convert the pkg version list to asset index
+                    foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, _gamePath, _gameRepoURL))
+                    {
+                        // If entry is null (means, an existing entry has been overwritten), then next
+                        if (entry == null)
+                            continue;
 
-                    assetIndex.Add(entry);
-                }
+                        assetIndex.Add(entry);
+                    }
 
-                // Clear the pkg version list
-                pkgVersion.Clear();
-            }).ConfigureAwait(false);
+                    // Clear the pkg version list
+                    pkgVersion.Clear();
+                }).ConfigureAwait(false);
+            }
         }
 
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)

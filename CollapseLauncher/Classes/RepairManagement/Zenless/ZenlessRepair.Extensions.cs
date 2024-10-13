@@ -31,7 +31,7 @@ namespace CollapseLauncher
         internal ZenlessManifestInterceptStream(string? filePath, Stream stream)
         {
             innerStream = stream;
-            if (!string.IsNullOrWhiteSpace(filePath))
+            if (!string.IsNullOrWhiteSpace(filePath) && stream != null)
             {
                 string? filePathDir = Path.GetDirectoryName(filePath);
                 if (!string.IsNullOrEmpty(filePathDir) && !Directory.Exists(filePathDir))
@@ -184,11 +184,8 @@ namespace CollapseLauncher
 
         public override async ValueTask DisposeAsync()
         {
-            if (innerStream != null)
-                await innerStream.DisposeAsync();
-
-            if (redirectStream != null)
-                await redirectStream.DisposeAsync();
+            await innerStream.DisposeAsync();
+            await redirectStream.DisposeAsync();
         }
 
         protected override void Dispose(bool disposing)
@@ -287,7 +284,7 @@ namespace CollapseLauncher
         private static FilePropertiesRemote? ReturnCategorizedYieldValue(Dictionary<string, FilePropertiesRemote> hashSet, List<FilePropertiesRemote> assetIndex, PkgVersionProperties asset, string baseLocalPath, string baseUrl, string? alternativeUrlIfNonPatch = null)
         {
             FilePropertiesRemote asRemoteProperty = GetNormalizedFilePropertyTypeBased(
-                    asset.isPatch || string.IsNullOrEmpty(alternativeUrlIfNonPatch) ? baseUrl : alternativeUrlIfNonPatch!,
+                    asset.isPatch || string.IsNullOrEmpty(alternativeUrlIfNonPatch) ? baseUrl : alternativeUrlIfNonPatch,
                     baseLocalPath,
                     asset.remoteName,
                     asset.fileSize,

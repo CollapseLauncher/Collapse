@@ -14,6 +14,6 @@ namespace CollapseLauncher
         public ZenlessCache AsBaseType() => this;
 
         public async Task StartUpdateRoutine(bool showInteractivePrompt = false)
-            => await base.StartRepairRoutine(showInteractivePrompt);
+            => await StartRepairRoutine(showInteractivePrompt);
     }
 }
