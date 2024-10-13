@@ -24,7 +24,8 @@ namespace CollapseLauncher.InstallManager.Zenless
     internal class ZenlessInstall : InstallManagerBase
     {
         #region Private Properties
-        private ZenlessSettings? ZenlessSettings { get; set; }
+        private ZenlessSettings? ZenlessSettings          { get; }
+        private ZenlessRepair?   ZenlessGameRepairManager { get; set; }
         #endregion
 
         #region Override Properties
@@ -55,20 +56,6 @@ namespace CollapseLauncher.InstallManager.Zenless
             }
         }
 
-        private            string? _gameAudioLangListPathAlternate
-        {
-            get
-            {
-                // If the persistent folder is not exist, then return null
-                if (!Directory.Exists(_gameDataPersistentPath))
-                    return null;
-
-                // Get the audio lang path index
-                string audioLangPath = _gameAudioLangListPathAlternateStatic;
-                return File.Exists(audioLangPath) ? audioLangPath : null;
-            }
-        }
-
         protected override string _gameAudioLangListPathStatic =>
             Path.Combine(_gameDataPersistentPath, "audio_lang_launcher");
         private            string _gameAudioLangListPathAlternateStatic =>
@@ -82,10 +69,44 @@ namespace CollapseLauncher.InstallManager.Zenless
         }
 
         #region Override Methods - StartPackageInstallationInner
+
+        public override async ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage)
+        {
+            IsRunning = true;
+
+            // Get the delta patch confirmation if the property is not null
+            if (_gameDeltaPatchProperty == null)
+                return await base.StartPackageVerification(gamePackage);
+
+            // If the confirm is 1 (verified) or -1 (cancelled), then return the code
+            int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
+                                                                  ZenlessGameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as ZenlessRepair);
+            if (deltaPatchConfirm is -1 or 1)
+            {
+                return deltaPatchConfirm;
+            }
+
+            // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
+            return await base.StartPackageVerification(gamePackage);
+        }
+
+        protected override IRepair GetGameRepairInstance(string? versionString) =>
+            new ZenlessRepair(_parentUI,
+                               _gameVersionManager, ZenlessSettings!, true,
+                               versionString);
+
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage>? gamePackage = null,
                                                                     bool isOnlyInstallPackage = false,
                                                                     bool doNotDeleteZipExplicit = false)
         {
+            // If the delta patch is performed, then return
+            if (!isOnlyInstallPackage && await StartDeltaPatch(ZenlessGameRepairManager, false, true))
+            {
+                // Update the audio package list after delta patch has been initiated
+                WriteAudioLangList(_gameDeltaPatchPreReqList);
+                return;
+            }
+
             // Run the base installation process
             await base.StartPackageInstallationInner(gamePackage, isOnlyInstallPackage, doNotDeleteZipExplicit);
 
@@ -184,7 +205,6 @@ namespace CollapseLauncher.InstallManager.Zenless
         #endregion
 
         #region Override Methods - UninstallGame
-
         protected override UninstallGameProperty AssignUninstallFolders()
         {
             return new UninstallGameProperty
@@ -199,8 +219,6 @@ namespace CollapseLauncher.InstallManager.Zenless
                 foldersToKeepInData = ["ScreenShots"]
             };
         }
-
         #endregion
     }
 }
-#nullable restore

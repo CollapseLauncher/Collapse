@@ -31,7 +31,6 @@ namespace CollapseLauncher
         private ZenlessSettings? GameSettings { get; init; }
 
         private string GameDataPersistentPath { get => Path.Combine(_gamePath, string.Format(_assetGamePersistentPath, ExecutableName)); }
-        private string GameDataStreamingPath { get => Path.Combine(_gamePath, string.Format(_assetGameStreamingPath, ExecutableName)); }
 
         protected string? _gameAudioLangListPath
         {
