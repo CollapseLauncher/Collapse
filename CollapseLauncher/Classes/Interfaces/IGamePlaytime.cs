@@ -10,7 +10,8 @@ namespace CollapseLauncher.Interfaces
         CollapsePlaytime CollapsePlaytime { get; }
 
         void Reset();
-        void Update(TimeSpan timeSpan);
-        void StartSession(Process proc, DateTime? begin = null);
+        void Update(TimeSpan      timeSpan, bool      forceUpdateDb = false);
+        void StartSession(Process proc,     DateTime? begin         = null);
+        void CheckDb();
     }
 }
