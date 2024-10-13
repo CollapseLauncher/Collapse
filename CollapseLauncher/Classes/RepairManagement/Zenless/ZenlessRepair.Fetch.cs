@@ -269,14 +269,26 @@ namespace CollapseLauncher
         {
             try
             {
+                // Get re-associated channel ids
+                string dispatchUrlTemplate = ('.' + gamePreset.GameDispatchURLTemplate).AssociateGameAndLauncherId(
+                    "channel_id",
+                    "sub_channel_id",
+                    $"{gamePreset.ChannelID}",
+                    $"{gamePreset.SubChannelID}").TrimStart('.');
+                string gatewayUrlTemplate = ('.' + gamePreset.GameGatewayURLTemplate).AssociateGameAndLauncherId(
+                    "channel_id",
+                    "sub_channel_id",
+                    $"{gamePreset.ChannelID}",
+                    $"{gamePreset.SubChannelID}").TrimStart('.');
+
                 // Initialize property
                 SleepyProperty sleepyProperty = SleepyProperty.Create(
                     GameVersionManagerCast!.GetGameExistingVersion()?.VersionString,
                     gamePreset.GameDispatchChannelName,
                     gamePreset.GameDispatchArrayURL![Random.Shared.Next(0, gamePreset.GameDispatchArrayURL.Count - 1)],
-                    gamePreset.GameDispatchURLTemplate,
+                    dispatchUrlTemplate,
                     targetServerName ?? fallbackServerName,
-                    gamePreset.GameGatewayURLTemplate,
+                    gatewayUrlTemplate,
                     gamePreset.ProtoDispatchKey,
                     SleepyBuildProperty.Create(GameVersionManagerCast.SleepyIdentity, GameVersionManagerCast.SleepyArea)
                     );
