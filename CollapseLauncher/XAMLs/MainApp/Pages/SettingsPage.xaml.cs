@@ -1332,6 +1332,12 @@ namespace CollapseLauncher.Pages
 
         #region Database
 
+        // Temporary prop store
+        private string _dbUrl;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _dbToken;
+        private Guid _dbGuid;
+        
         private bool IsDbEnabled
         {
             get => DbHandler.IsEnabled;
@@ -1344,7 +1350,12 @@ namespace CollapseLauncher.Pages
 
         private string DbUrl
         {
-            get => DbHandler.Uri;
+            get
+            {
+                var c = DbHandler.Uri;
+                _dbUrl = c;
+                return c;
+            }  
             set
             {
                 // Automatically replace libsql protocol to https
@@ -1356,25 +1367,35 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                DbHandler.Uri = value;
+                DbUriTextBox.Text = value;
+                _dbUrl            = value;
             }
         }
 
         private string DbToken
         {
-            get => DbHandler.Token;
-            set => DbHandler.Token = value;
+            get
+            {
+                var c =  DbHandler.Token;
+                _dbToken = c;
+                return c;
+            }
+            set => _dbToken = value;
         }
 
         private string _currentDbGuid;
         private string DbUserId
         {
-            get => DbHandler.UserId.ToString();
+            get
+            {
+              _dbGuid = DbHandler.UserId;
+              return  DbHandler.UserId.ToString();
+            } 
             set
             {
                 if (Guid.TryParse(value, out var guid))
                 {
-                    DbHandler.UserId = guid;
+                    _dbGuid = guid;
                 }
                 else
                 {
@@ -1404,21 +1425,32 @@ namespace CollapseLauncher.Pages
             else
             {
                 _currentDbGuid   = t.Text;
-                DbHandler.UserId = Guid.Parse(t.Text); // Save to DBHandler for good measure
+                _dbGuid = Guid.Parse(t.Text); // Store to temp prop
             }
         }
 
-        private async void ValidateDbButton_Click(object sender, RoutedEventArgs e)
+        [DebuggerHidden]
+        private async void ValidateAndSaveDbButton_Click(object sender, RoutedEventArgs e)
         {
+            // Store current value in local vars
+            var curUrl   = DbHandler.Uri;
+            var curToken = DbHandler.Token;
+            var curGuid  = DbHandler.UserId;
+            
             try
             {
+                // Set the value from prop
+                DbHandler.Uri    = _dbUrl;
+                DbHandler.Token  = _dbToken;
+                DbHandler.UserId = _dbGuid;
+                
                 var r = Random.Shared.Next(100); // Generate random int for data verification
 
                 await DbHandler.Init(true); // Initialize database
                 await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
                 if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
                     throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
-        
+                
                 await SpawnDialog(
                                   Lang._Misc.EverythingIsOkay,
                                   Lang._SettingsPage.Database_ConnectionOk,
@@ -1431,6 +1463,11 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                // Revert value if fail
+                DbHandler.Uri    = curUrl;
+                DbHandler.Token  = curToken;
+                DbHandler.UserId = curGuid;
+                
                 var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
                 ErrorSender.SendException(newEx); // Send error with dialog
             }
@@ -1442,7 +1479,7 @@ namespace CollapseLauncher.Pages
             {
                 var g = Guid.CreateVersion7();
                 DbUserIdTextBox.Text = g.ToString();
-                DbHandler.UserId     = g;
+                _dbGuid     = g;
             }
         }
 

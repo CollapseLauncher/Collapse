@@ -1155,7 +1155,7 @@
                             <Button x:Name="ValidateDbButton"
                                     Grid.Column="1"
                                     Margin="6,0,0,0"
-                                    Click="ValidateDbButton_Click"
+                                    Click="ValidateAndSaveDbButton_Click"
                                     CornerRadius="14"
                                     Style="{ThemeResource AccentButtonStyle}">
                                 <Grid Margin="4,0"

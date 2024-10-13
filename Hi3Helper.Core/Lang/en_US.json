@@ -648,7 +648,7 @@
     "Database_Token": "Token",
     "Database_UserId": "User ID (GUID v7)",
     "Database_GenerateGuid": "Generate GUID",
-    "Database_Validate": "Validate Settings",
+    "Database_Validate": "Validate & Save Settings",
     "Database_Error_EmptyUri": "Database URL could not be empty!",
     "Database_Error_EmptyToken": "Database token could not be empty!"
   },
