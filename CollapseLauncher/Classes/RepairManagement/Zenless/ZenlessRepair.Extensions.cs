@@ -274,20 +274,20 @@ namespace CollapseLauncher
             }
         }
 
-        internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterResCategorizedAssetsToHashSetAsync(this IAsyncEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string baseUrl)
+        internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterResCategorizedAssetsToHashSetAsync(this IAsyncEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string basePatchUrl, string baseResUrl)
         {
             await foreach (PkgVersionProperties asset in assetEnumerable)
             {
                 string baseLocalPathMerged = Path.Combine(baseLocalPath, asset.isPatch ? PersistentAssetsPath : StreamingAssetsPath);
 
-                yield return ReturnCategorizedYieldValue(hashSet, assetIndex, asset, baseLocalPathMerged, baseUrl);
+                yield return ReturnCategorizedYieldValue(hashSet, assetIndex, asset, baseLocalPathMerged, basePatchUrl, baseResUrl);
             }
         }
 
-        private static FilePropertiesRemote? ReturnCategorizedYieldValue(Dictionary<string, FilePropertiesRemote> hashSet, List<FilePropertiesRemote> assetIndex, PkgVersionProperties asset, string baseLocalPath, string baseUrl)
+        private static FilePropertiesRemote? ReturnCategorizedYieldValue(Dictionary<string, FilePropertiesRemote> hashSet, List<FilePropertiesRemote> assetIndex, PkgVersionProperties asset, string baseLocalPath, string baseUrl, string? alternativeUrlIfNonPatch = null)
         {
             FilePropertiesRemote asRemoteProperty = GetNormalizedFilePropertyTypeBased(
-                    baseUrl,
+                    asset.isPatch || string.IsNullOrEmpty(alternativeUrlIfNonPatch) ? baseUrl : alternativeUrlIfNonPatch!,
                     baseLocalPath,
                     asset.remoteName,
                     asset.fileSize,
@@ -315,7 +315,7 @@ namespace CollapseLauncher
                 };
 
                 string relTypeRelativePathStr = relTypeRelativePath.ToString();
-                if (!hashSet.TryAdd(relTypeRelativePathStr, asRemoteProperty))
+                if (!hashSet.TryAdd(relTypeRelativePathStr, asRemoteProperty) && asset.isPatch)
                 {
                     FilePropertiesRemote existingValue = hashSet[relTypeRelativePathStr];
                     int indexOf = assetIndex.IndexOf(existingValue);

@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.Sleepy;
 using Hi3Helper.Http;
@@ -28,7 +29,6 @@ namespace CollapseLauncher
             _status.ActivityStatus = Locale.Lang._GameRepairPage.Status2;
             _status.IsProgressAllIndetermined = true;
             UpdateStatus();
-            StarRailRepairExtension.ClearHashtable();
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
@@ -43,39 +43,35 @@ namespace CollapseLauncher
             // Create a hash set to overwrite local files
             Dictionary<string, FilePropertiesRemote> hashSet = new Dictionary<string, FilePropertiesRemote>(StringComparer.OrdinalIgnoreCase);
 
-            try
+            // If not in cache mode, then fetch main package
+            if (!IsCacheUpdateMode)
             {
-                // If not in cache mode, then fetch main package
+                // Get the primary manifest
+                await GetPrimaryManifest(downloadClient, hashSet, token, assetIndex);
+            }
+
+            // Execute on non-recover main mode
+            if (!IsOnlyRecoverMain)
+            {
+                // Get the in-game res manifest
+                await GetResManifest(downloadClient, hashSet, token, assetIndex,
+#if DEBUG
+                    true
+#else
+                    false
+#endif
+                    );
+
+                // Execute plugin things if not in cache mode only
                 if (!IsCacheUpdateMode)
                 {
-                    // Get the primary manifest
-                    await GetPrimaryManifest(downloadClient, hashSet, token, assetIndex);
+                    // Force-Fetch the Bilibili SDK (if exist :pepehands:)
+                    await FetchBilibiliSDK(token);
+
+                    // Remove plugin from assetIndex
+                    // Skip the removal for Delta-Patch
+                    EliminatePluginAssetIndex(assetIndex);
                 }
-
-                // Execute on non-recover main mode
-                if (!IsOnlyRecoverMain)
-                {
-                    // Get the in-game res manifest
-                    await GetResManifest(downloadClient, hashSet, token, assetIndex);
-
-                    // Execute plugin things if not in cache mode only
-                    if (!IsCacheUpdateMode)
-                    {
-                        // Force-Fetch the Bilibili SDK (if exist :pepehands:)
-                        await FetchBilibiliSDK(token);
-
-                        // Remove plugin from assetIndex
-                        // Skip the removal for Delta-Patch
-                        EliminatePluginAssetIndex(assetIndex);
-                    }
-                }
-            }
-            finally
-            {
-                // Clear the hashtable
-                StarRailRepairExtension.ClearHashtable();
-                // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
-                // _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
         }
         #endregion
@@ -115,25 +111,28 @@ namespace CollapseLauncher
 
             // Start downloading asset index using FallbackCDNUtil and return its stream
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
-            if (stream != null)
+            await Task.Run(() =>
             {
-                // Deserialize asset index and set it to list
-                AssetIndexV2 parserTool = new AssetIndexV2();
-                pkgVersion = await Task.Run(() => parserTool.Deserialize(stream, out DateTime timestamp)).ConfigureAwait(false);
-            }
+                if (stream != null)
+                {
+                    // Deserialize asset index and set it to list
+                    AssetIndexV2 parserTool = new AssetIndexV2();
+                    pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
+                }
 
-            // Convert the pkg version list to asset index
-            foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, _gamePath, _gameRepoURL))
-            {
-                // If entry is null (means, an existing entry has been overwritten), then next
-                if (entry == null)
-                    continue;
+                // Convert the pkg version list to asset index
+                foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, _gamePath, _gameRepoURL))
+                {
+                    // If entry is null (means, an existing entry has been overwritten), then next
+                    if (entry == null)
+                        continue;
 
-                assetIndex.Add(entry);
-            }
+                    assetIndex.Add(entry);
+                }
 
-            // Clear the pkg version list
-            pkgVersion.Clear();
+                // Clear the pkg version list
+                pkgVersion.Clear();
+            }).ConfigureAwait(false);
         }
 
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
@@ -148,77 +147,119 @@ namespace CollapseLauncher
         #endregion
 
         #region ResManifest
-        private async Task GetResManifest(DownloadClient downloadClient, Dictionary<string, FilePropertiesRemote> hashSet, CancellationToken token, List<FilePropertiesRemote> assetIndex)
+        private async Task GetResManifest(
+            DownloadClient downloadClient,
+            Dictionary<string, FilePropertiesRemote> hashSet,
+            CancellationToken token,
+            List<FilePropertiesRemote> assetIndex,
+            bool throwIfError)
         {
-            // Create sleepy property
-            PresetConfig gamePreset = GameVersionManagerCast!.GamePreset;
-            HttpClient client = downloadClient.GetHttpClient();
-
-            // Get sleepy info
-            SleepyInfo sleepyInfo = await TryGetSleepyInfo(
-                client,
-                gamePreset,
-                GameSettings!.GeneralData.SelectedServerName,
-                gamePreset.GameDispatchDefaultName,
-                token);
-
-            // Get persistent path
-            string persistentPath = GameDataPersistentPath;
-
-            // Fetch cache files
-            if (IsCacheUpdateMode)
+            try
             {
+                // Create sleepy property
+                PresetConfig gamePreset = GameVersionManagerCast!.GamePreset;
+                HttpClient client = downloadClient.GetHttpClient();
+
+                // Get sleepy info
+                SleepyInfo sleepyInfo = await TryGetSleepyInfo(
+                    client,
+                    gamePreset,
+                    GameSettings!.GeneralData.SelectedServerName,
+                    gamePreset.GameDispatchDefaultName,
+                    token);
+
+                // Get persistent path
+                string persistentPath = GameDataPersistentPath;
+
+                // Get Sleepy Info
                 SleepyFileInfoResult infoKindSilence = sleepyInfo.GetFileInfoResult(FileInfoKind.Silence);
                 SleepyFileInfoResult infoKindData = sleepyInfo.GetFileInfoResult(FileInfoKind.Data);
-
-                IAsyncEnumerable<FilePropertiesRemote> infoSilenceEnumerable = EnumerateResManifestToAssetIndexAsync(
-                    infoKindSilence.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
-                    assetIndex,
-                    hashSet,
-                    Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
-                    infoKindSilence.BaseUrl);
-
-                IAsyncEnumerable<FilePropertiesRemote> infoDataEnumerable = EnumerateResManifestToAssetIndexAsync(
-                    infoKindData.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
-                    assetIndex,
-                    hashSet,
-                    Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
-                    infoKindData.BaseUrl);
-
-                await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                    .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable))
-                {
-                    assetIndex.Add(asset);
-                }
-            }
-            // Fetch repair files
-            else
-            {
                 SleepyFileInfoResult infoKindRes = sleepyInfo.GetFileInfoResult(FileInfoKind.Res);
                 SleepyFileInfoResult infoKindAudio = sleepyInfo.GetFileInfoResult(FileInfoKind.Audio);
+                SleepyFileInfoResult infoKindBase = sleepyInfo.GetFileInfoResult(FileInfoKind.Base);
 
-                IAsyncEnumerable<FilePropertiesRemote> infoResEnumerable = EnumerateResManifestToAssetIndexAsync(
-                    infoKindRes.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
-                    assetIndex,
-                    hashSet,
-                    Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
-                    infoKindRes.BaseUrl);
+                // Create non-patch URL
+                string baseResUrl = GetBaseResUrl(infoKindBase.BaseUrl, infoKindBase.RevisionStamp);
 
-                IAsyncEnumerable<FilePropertiesRemote> infoAudioEnumerable = GetOnlyInstalledAudioPack(
-                        EnumerateResManifestToAssetIndexAsync(
-                        infoKindAudio.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
+                // Fetch cache files
+                if (IsCacheUpdateMode)
+                {
+                    IAsyncEnumerable<FilePropertiesRemote> infoSilenceEnumerable = EnumerateResManifestToAssetIndexAsync(
+                        infoKindSilence.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
                         hashSet,
                         Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
-                        infoKindAudio.BaseUrl)
-                    );
+                        infoKindSilence.BaseUrl, baseResUrl);
 
-                await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                    .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable))
+                    IAsyncEnumerable<FilePropertiesRemote> infoDataEnumerable = EnumerateResManifestToAssetIndexAsync(
+                        infoKindData.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
+                        assetIndex,
+                        hashSet,
+                        Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                        infoKindData.BaseUrl, baseResUrl);
+
+                    await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
+                        .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable))
+                    {
+                        assetIndex.Add(asset);
+                    }
+
+                    // Create base revision file
+                    string baseRevisionFile = Path.Combine(persistentPath, "base_revision");
+                    File.WriteAllText(EnsureCreationOfDirectory(baseRevisionFile), infoKindBase.RevisionStamp);
+                }
+                // Fetch repair files
+                else
                 {
-                    assetIndex.Add(asset);
+                    IAsyncEnumerable<FilePropertiesRemote> infoResEnumerable = EnumerateResManifestToAssetIndexAsync(
+                        infoKindRes.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
+                        assetIndex,
+                        hashSet,
+                        Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                        infoKindRes.BaseUrl, baseResUrl);
+
+                    IAsyncEnumerable<FilePropertiesRemote> infoAudioEnumerable = GetOnlyInstalledAudioPack(
+                            EnumerateResManifestToAssetIndexAsync(
+                            infoKindAudio.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
+                            assetIndex,
+                            hashSet,
+                            Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                            infoKindAudio.BaseUrl, baseResUrl)
+                        );
+
+                    await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
+                        .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable))
+                    {
+                        assetIndex.Add(asset);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                if (throwIfError)
+                    throw;
+
+                Logger.LogWriteLine($"An error has occurred while trying to fetch Sleepy's res manifest\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private string GetBaseResUrl(string baseUrl, string stampRevision)
+        {
+            const string startMark = "output_";
+            const string endMark = "/client";
+
+            ReadOnlySpan<char> baseUrlSpan = baseUrl;
+
+            int startMarkOffset = baseUrlSpan.IndexOf(startMark);
+            int endMarkOffset = baseUrlSpan.IndexOf(endMark);
+
+            if (startMarkOffset < 0 || endMarkOffset < 0)
+                throw new IndexOutOfRangeException($"Start mark offset or End mark offset was not found! Start: {startMarkOffset} End: {endMarkOffset}");
+
+            ReadOnlySpan<char> startMarkSpan = baseUrlSpan.Slice(0, startMarkOffset);
+            ReadOnlySpan<char> endMarkSpan = baseUrlSpan.Slice(endMarkOffset);
+
+            return ConverterTool.CombineURLFromString(startMarkSpan, $"output_{stampRevision}", endMarkSpan.ToString());
         }
 
         private async Task<SleepyInfo> TryGetSleepyInfo(HttpClient client, PresetConfig gamePreset, string targetServerName, string fallbackServerName = null, CancellationToken token = default)
@@ -258,7 +299,7 @@ namespace CollapseLauncher
                 return await TryGetSleepyInfo(client, gamePreset, fallbackServerName, null, token);
             }
         }
-        
+
         private async IAsyncEnumerable<FilePropertiesRemote> GetOnlyInstalledAudioPack(IAsyncEnumerable<FilePropertiesRemote> enumerable)
         {
             const string WindowsFullPath = "Audio\\Windows\\Full";
@@ -307,9 +348,10 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> assetIndex,
             Dictionary<string, FilePropertiesRemote> hashSet,
             string baseLocalPath,
-            string baseUrl)
+            string basePatchUrl,
+            string baseResUrl)
         {
-            await foreach (FilePropertiesRemote? entry in pkgVersion.RegisterResCategorizedAssetsToHashSetAsync(assetIndex, hashSet, baseLocalPath, baseUrl))
+            await foreach (FilePropertiesRemote? entry in pkgVersion.RegisterResCategorizedAssetsToHashSetAsync(assetIndex, hashSet, baseLocalPath, basePatchUrl, baseResUrl))
             {
                 // If entry is null (means, an existing entry has been overwritten), then next
                 if (entry == null)
