@@ -26,49 +26,53 @@ namespace CollapseLauncher.Statics
 {
     internal class GamePresetProperty : IDisposable
     {
-        internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
+        internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
-            if (LauncherMetadataHelper.LauncherMetadataConfig != null)
+            if (LauncherMetadataHelper.LauncherMetadataConfig == null)
             {
-                PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
-
-                _APIResouceProp = APIResouceProp!.Copy();
-                switch (GamePreset!.GameType)
-                {
-                    case GameNameType.Honkai:
-                        _GameVersion  = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new HonkaiSettings(_GameVersion);
-                        _GameCache    = new HonkaiCache(UIElementParent, _GameVersion);
-                        _GameRepair   = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                        _GameInstall  = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                        break;
-                    case GameNameType.StarRail:
-                        _GameVersion  = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new StarRailSettings(_GameVersion);
-                        _GameCache    = new StarRailCache(UIElementParent, _GameVersion);
-                        _GameRepair   = new StarRailRepair(UIElementParent, _GameVersion);
-                        _GameInstall  = new StarRailInstall(UIElementParent, _GameVersion);
-                        break;
-                    case GameNameType.Genshin:
-                        _GameVersion  = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new GenshinSettings(_GameVersion);
-                        _GameCache    = null;
-                        _GameRepair   = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
-                        _GameInstall  = new GenshinInstall(UIElementParent, _GameVersion);
-                        break;
-                    case GameNameType.Zenless:
-                        _GameVersion  = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GamePreset, GameName, GameRegion);
-                        _GameSettings = new ZenlessSettings(_GameVersion);
-                        _GameCache    = new ZenlessCache(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
-                        _GameRepair   = new ZenlessRepair(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
-                        _GameInstall  = new ZenlessInstall(UIElementParent, _GameVersion, _GameSettings as ZenlessSettings);
-                        break;
-                    default:
-                        throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
-                }
-
-                _GamePlaytime = new Playtime(_GameVersion);
+                return;
             }
+
+            PresetConfig gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
+
+            _APIResouceProp = apiResourceProp!.Copy();
+            switch (gamePreset!.GameType)
+            {
+                case GameNameType.Honkai:
+                    _GameVersion  = new GameTypeHonkaiVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameSettings = new HonkaiSettings(_GameVersion);
+                    _GameCache    = new HonkaiCache(uiElementParent, _GameVersion);
+                    _GameRepair   = new HonkaiRepair(uiElementParent, _GameVersion, _GameCache, _GameSettings);
+                    _GameInstall  = new HonkaiInstall(uiElementParent, _GameVersion, _GameCache, _GameSettings);
+                    break;
+                case GameNameType.StarRail:
+                    _GameVersion  = new GameTypeStarRailVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameSettings = new StarRailSettings(_GameVersion);
+                    _GameCache    = new StarRailCache(uiElementParent, _GameVersion);
+                    _GameRepair   = new StarRailRepair(uiElementParent, _GameVersion);
+                    _GameInstall  = new StarRailInstall(uiElementParent, _GameVersion);
+                    break;
+                case GameNameType.Genshin:
+                    _GameVersion  = new GameTypeGenshinVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameSettings = new GenshinSettings(_GameVersion);
+                    _GameCache    = null;
+                    _GameRepair   = new GenshinRepair(uiElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
+                    _GameInstall  = new GenshinInstall(uiElementParent, _GameVersion);
+                    break;
+                case GameNameType.Zenless:
+                    _GameVersion  = new GameTypeZenlessVersion(uiElementParent, _APIResouceProp, gamePreset, gameName, gameRegion);
+                    ZenlessSettings gameSettings = new ZenlessSettings(_GameVersion);
+                    _GameSettings = gameSettings;
+                    _GameCache    = new ZenlessCache(uiElementParent, _GameVersion, gameSettings);
+                    _GameRepair   = new ZenlessRepair(uiElementParent, _GameVersion, gameSettings);
+                    _GameInstall  = new ZenlessInstall(uiElementParent, _GameVersion, gameSettings);
+                    break;
+                case GameNameType.Unknown:
+                default:
+                    throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {gamePreset.GameType} ({gamePreset.ProfileName} - {gamePreset.ZoneName}) is not supported!");
+            }
+
+            _GamePlaytime = new Playtime(_GameVersion);
         }
 
         internal RegionResourceProp _APIResouceProp { get; set; }

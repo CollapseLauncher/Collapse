@@ -47,7 +47,7 @@ namespace CollapseLauncher
             if (!IsCacheUpdateMode)
             {
                 // Get the primary manifest
-                await GetPrimaryManifest(downloadClient, hashSet, token, assetIndex);
+                await GetPrimaryManifest(hashSet, token, assetIndex);
             }
 
             // Execute on non-recover main mode
@@ -77,7 +77,7 @@ namespace CollapseLauncher
         #endregion
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(DownloadClient downloadClient, Dictionary<string, FilePropertiesRemote> hashSet, CancellationToken token, List<FilePropertiesRemote> assetIndex)
+        private async Task GetPrimaryManifest(Dictionary<string, FilePropertiesRemote> hashSet, CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // If it's using cache update mode, then return since we don't need to add manifest
             // from pkg_version on cache update mode.
@@ -103,7 +103,7 @@ namespace CollapseLauncher
                 _gameRepoURL = value;
             }
             // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
-            catch when (base._isVersionOverride) { throw; }
+            catch when (_isVersionOverride) { throw; }
 
             // Fetch the asset index from CDN
             // Set asset index URL
@@ -112,30 +112,28 @@ namespace CollapseLauncher
             // Start downloading asset index using FallbackCDNUtil and return its stream
             await Task.Run(async () =>
             {
-                await using (BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token))
+                await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+                if (stream != null)
                 {
-                    if (stream != null)
-                    {
-                        // Deserialize asset index and set it to list
-                        AssetIndexV2 parserTool = new AssetIndexV2();
-                        pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
-                        Logger.LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-                    }
-
-                    // Convert the pkg version list to asset index
-                    foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, _gamePath, _gameRepoURL))
-                    {
-                        // If entry is null (means, an existing entry has been overwritten), then next
-                        if (entry == null)
-                            continue;
-
-                        assetIndex.Add(entry);
-                    }
-
-                    // Clear the pkg version list
-                    pkgVersion.Clear();
+                    // Deserialize asset index and set it to list
+                    AssetIndexV2 parserTool = new AssetIndexV2();
+                    pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
+                    Logger.LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
                 }
-            }).ConfigureAwait(false);
+
+                // Convert the pkg version list to asset index
+                foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, _gamePath, _gameRepoURL))
+                {
+                    // If entry is null (means, an existing entry has been overwritten), then next
+                    if (entry == null)
+                        continue;
+
+                    assetIndex.Add(entry);
+                }
+
+                // Clear the pkg version list
+                pkgVersion.Clear();
+            }, token).ConfigureAwait(false);
         }
 
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
@@ -191,25 +189,25 @@ namespace CollapseLauncher
                         infoKindSilence.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
                         hashSet,
-                        Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                        Path.Combine(_gamePath, $@"{ExecutableName}_Data\"),
                         infoKindSilence.BaseUrl, baseResUrl);
 
                     IAsyncEnumerable<FilePropertiesRemote> infoDataEnumerable = EnumerateResManifestToAssetIndexAsync(
                         infoKindData.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
                         hashSet,
-                        Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                        Path.Combine(_gamePath, $@"{ExecutableName}_Data\"),
                         infoKindData.BaseUrl, baseResUrl);
 
                     await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                        .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable))
+                                                                .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable).WithCancellation(token))
                     {
                         assetIndex.Add(asset);
                     }
 
                     // Create base revision file
                     string baseRevisionFile = Path.Combine(persistentPath, "base_revision");
-                    File.WriteAllText(EnsureCreationOfDirectory(baseRevisionFile), infoKindBase.RevisionStamp);
+                    await File.WriteAllTextAsync(EnsureCreationOfDirectory(baseRevisionFile), infoKindBase.RevisionStamp, token);
                 }
                 // Fetch repair files
                 else
@@ -218,7 +216,7 @@ namespace CollapseLauncher
                         infoKindRes.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
                         hashSet,
-                        Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                        Path.Combine(_gamePath, $@"{ExecutableName}_Data\"),
                         infoKindRes.BaseUrl, baseResUrl);
 
                     IAsyncEnumerable<FilePropertiesRemote> infoAudioEnumerable = GetOnlyInstalledAudioPack(
@@ -226,12 +224,12 @@ namespace CollapseLauncher
                             infoKindAudio.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                             assetIndex,
                             hashSet,
-                            Path.Combine(_gamePath, string.Format(@"{0}_Data\", ExecutableName)),
+                            Path.Combine(_gamePath, $@"{ExecutableName}_Data\"),
                             infoKindAudio.BaseUrl, baseResUrl)
                         );
 
                     await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                        .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable))
+                                                                .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable).WithCancellation(token))
                     {
                         assetIndex.Add(asset);
                     }
@@ -259,8 +257,8 @@ namespace CollapseLauncher
             if (startMarkOffset < 0 || endMarkOffset < 0)
                 throw new IndexOutOfRangeException($"Start mark offset or End mark offset was not found! Start: {startMarkOffset} End: {endMarkOffset}");
 
-            ReadOnlySpan<char> startMarkSpan = baseUrlSpan.Slice(0, startMarkOffset);
-            ReadOnlySpan<char> endMarkSpan = baseUrlSpan.Slice(endMarkOffset);
+            ReadOnlySpan<char> startMarkSpan = baseUrlSpan[..startMarkOffset];
+            ReadOnlySpan<char> endMarkSpan   = baseUrlSpan[endMarkOffset..];
 
             return ConverterTool.CombineURLFromString(startMarkSpan, $"output_{stampRevision}", endMarkSpan.ToString());
         }
@@ -274,12 +272,12 @@ namespace CollapseLauncher
                     "channel_id",
                     "sub_channel_id",
                     $"{gamePreset.ChannelID}",
-                    $"{gamePreset.SubChannelID}").TrimStart('.');
-                string gatewayUrlTemplate = ('.' + gamePreset.GameGatewayURLTemplate).AssociateGameAndLauncherId(
+                    $"{gamePreset.SubChannelID}")!.TrimStart('.');
+                string gatewayUrlTemplate = ('.' + gamePreset.GameGatewayURLTemplate)!.AssociateGameAndLauncherId(
                     "channel_id",
                     "sub_channel_id",
                     $"{gamePreset.ChannelID}",
-                    $"{gamePreset.SubChannelID}").TrimStart('.');
+                    $"{gamePreset.SubChannelID}")!.TrimStart('.');
 
                 // Initialize property
                 SleepyProperty sleepyProperty = SleepyProperty.Create(
@@ -317,18 +315,18 @@ namespace CollapseLauncher
 
         private async IAsyncEnumerable<FilePropertiesRemote> GetOnlyInstalledAudioPack(IAsyncEnumerable<FilePropertiesRemote> enumerable)
         {
-            const string WindowsFullPath = "Audio\\Windows\\Full";
+            const string windowsFullPath = @"Audio\Windows\Full";
             string[] audioList = GetCurrentAudioLangList("Jp");
             SearchValues<string> searchExclude = SearchValues.Create(audioList, StringComparison.OrdinalIgnoreCase);
 
             await foreach (FilePropertiesRemote asset in enumerable)
             {
-                if (IsAudioFileIncluded(WindowsFullPath, searchExclude, asset))
+                if (IsAudioFileIncluded(windowsFullPath, searchExclude, asset))
                     yield return asset;
             }
         }
 
-        private static bool IsAudioFileIncluded(string WindowsFullPath, SearchValues<string> searchInclude, FilePropertiesRemote asset)
+        private static bool IsAudioFileIncluded(string windowsFullPath, SearchValues<string> searchInclude, FilePropertiesRemote asset)
         {
             // If it's not audio file, then return
             ReadOnlySpan<char> relPath = asset.GetAssetRelativePath(out RepairAssetType assetType);
@@ -337,22 +335,20 @@ namespace CollapseLauncher
 
             ReadOnlySpan<char> dirRelPath = Path.GetDirectoryName(relPath);
             // If non language audio file, then return
-            if (dirRelPath.EndsWith(WindowsFullPath))
+            if (dirRelPath.EndsWith(windowsFullPath))
                 return true;
 
-            // Check if non full path, then return
-            int indexOf = dirRelPath.LastIndexOf(WindowsFullPath);
+            // Check if non-full path, then return
+            int indexOf = dirRelPath.LastIndexOf(windowsFullPath);
             if (indexOf < 0)
                 return true;
 
             // If the index is more than WindowsFullPath.Length (included), then return
             ReadOnlySpan<char> lastSequence = Path.GetFileName(dirRelPath);
             int indexOfAny = lastSequence.IndexOfAny(searchInclude);
-            if (indexOfAny == 0)
-                return true;
 
             // Otherwise, return false
-            return false;
+            return indexOfAny == 0;
         }
         #endregion
 

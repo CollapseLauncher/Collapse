@@ -5,6 +5,7 @@ using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -22,15 +23,15 @@ namespace CollapseLauncher
 
     internal class ZenlessManifestInterceptStream : Stream
     {
-        private Stream redirectStream;
-        private Stream innerStream;
-        private bool isFieldStart;
-        private bool isFieldEnd;
-        private byte[] innerBuffer = new byte[16 << 10];
+        private readonly Stream _redirectStream;
+        private readonly Stream _innerStream;
+        private          bool   _isFieldStart;
+        private          bool   _isFieldEnd;
+        private readonly byte[] _innerBuffer = new byte[16 << 10];
 
         internal ZenlessManifestInterceptStream(string? filePath, Stream stream)
         {
-            innerStream = stream;
+            _innerStream = stream;
             if (!string.IsNullOrWhiteSpace(filePath))
             {
                 string? filePathDir = Path.GetDirectoryName(filePath);
@@ -38,10 +39,10 @@ namespace CollapseLauncher
                 {
                     Directory.CreateDirectory(filePathDir);
                 }
-                redirectStream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                _redirectStream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                 return;
             }
-            redirectStream = Stream.Null;
+            _redirectStream = Stream.Null;
         }
 
         public override bool CanRead => true;
@@ -56,8 +57,8 @@ namespace CollapseLauncher
 
         public override void Flush()
         {
-            innerStream.Flush();
-            redirectStream.Flush();
+            _innerStream.Flush();
+            _redirectStream.Flush();
         }
 
         public override int Read(byte[] buffer, int offset, int count) => InternalRead(buffer.AsSpan(offset, count));
@@ -70,40 +71,40 @@ namespace CollapseLauncher
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
             => await InternalReadAsync(buffer, cancellationToken);
 
-        private readonly char[] searchStartValuesUtf16 = "\"files\": [".ToCharArray();
-        private readonly byte[] searchStartValuesUtf8 = "\"files\": ["u8.ToArray();
-        private readonly char[] searchEndValuesUtf16 = "]\r\n}".ToCharArray();
-        private readonly byte[] searchEndValuesUtf8 = "]\r\n}"u8.ToArray();
+        private readonly char[] _searchStartValuesUtf16 = "\"files\": [".ToCharArray();
+        private readonly byte[] _searchStartValuesUtf8 = "\"files\": ["u8.ToArray();
+        private readonly char[] _searchEndValuesUtf16 = "]\r\n}".ToCharArray();
+        private readonly byte[] _searchEndValuesUtf8 = "]\r\n}"u8.ToArray();
 
         private async ValueTask<int> InternalReadAsync(Memory<byte> buffer, CancellationToken token)
         {
-            if (isFieldEnd)
+            if (_isFieldEnd)
                 return 0;
 
             Start:
             // - 8 is important to ensure that the EOF detection is working properly
-            int toRead = Math.Min(innerBuffer.Length - 8, buffer.Length);
-            int read = await innerStream.ReadAtLeastAsync(innerBuffer.AsMemory(0, toRead), toRead, false, token);
+            int toRead = Math.Min(_innerBuffer.Length - 8, buffer.Length);
+            int read = await _innerStream.ReadAtLeastAsync(_innerBuffer.AsMemory(0, toRead), toRead, false, token);
             if (read == 0)
                 return 0;
 
-            await redirectStream.WriteAsync(innerBuffer, 0, read, token);
+            await _redirectStream.WriteAsync(_innerBuffer, 0, read, token);
 
             int lastIndexOffset;
-            if (isFieldStart && ((lastIndexOffset = EnsureIsEnd(innerBuffer, read)) > 0))
+            if (_isFieldStart && (lastIndexOffset = EnsureIsEnd(_innerBuffer)) > 0)
             {
-                innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer.Span);
-                isFieldEnd = true;
+                _innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer.Span);
+                _isFieldEnd = true;
                 return lastIndexOffset;
             }
 
             int offset = 0;
-            if (!isFieldStart && !(isFieldStart = !((offset = EnsureIsStart(innerBuffer)) < 0)))
+            if (!_isFieldStart && !(_isFieldStart = !((offset = EnsureIsStart(_innerBuffer)) < 0)))
                 goto Start;
 
-            bool isOneGoBufferLoadEnd = read < toRead && isFieldStart && !isFieldEnd;
-            ReadOnlySpan<byte> spanToCopy = isOneGoBufferLoadEnd ? innerBuffer.AsSpan(offset, read - offset).TrimEnd((byte)'}')
-                : innerBuffer.AsSpan(offset, read - offset);
+            bool isOneGoBufferLoadEnd = read < toRead && _isFieldStart && !_isFieldEnd;
+            ReadOnlySpan<byte> spanToCopy = isOneGoBufferLoadEnd ? _innerBuffer.AsSpan(offset, read - offset).TrimEnd((byte)'}')
+                : _innerBuffer.AsSpan(offset, read - offset);
 
             spanToCopy.CopyTo(buffer.Span);
             return isOneGoBufferLoadEnd ? spanToCopy.Length : read - offset;
@@ -111,60 +112,62 @@ namespace CollapseLauncher
 
         private int InternalRead(Span<byte> buffer)
         {
-            if (isFieldEnd)
+            if (_isFieldEnd)
                 return 0;
 
             Start:
             // - 8 is important to ensure that the EOF detection is working properly
-            int toRead = Math.Min(innerBuffer.Length - 8, buffer.Length);
-            int read = innerStream.ReadAtLeast(innerBuffer.AsSpan(0, toRead), toRead, false);
+            int toRead = Math.Min(_innerBuffer.Length - 8, buffer.Length);
+            int read = _innerStream.ReadAtLeast(_innerBuffer.AsSpan(0, toRead), toRead, false);
             if (read == 0)
                 return 0;
 
-            redirectStream.Write(innerBuffer, 0, read);
+            _redirectStream.Write(_innerBuffer, 0, read);
 
             int lastIndexOffset;
-            if (isFieldStart && ((lastIndexOffset = EnsureIsEnd(innerBuffer, read)) > 0))
+            if (_isFieldStart && (lastIndexOffset = EnsureIsEnd(_innerBuffer)) > 0)
             {
-                innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer);
-                isFieldEnd = true;
+                _innerBuffer.AsSpan(0, lastIndexOffset).CopyTo(buffer);
+                _isFieldEnd = true;
                 return lastIndexOffset;
             }
 
             int offset = 0;
-            if (!isFieldStart && !(isFieldStart = !((offset = EnsureIsStart(innerBuffer)) < 0)))
+            if (!_isFieldStart && !(_isFieldStart = !((offset = EnsureIsStart(_innerBuffer)) < 0)))
                 goto Start;
 
-            innerBuffer.AsSpan(offset, read - offset).CopyTo(buffer);
+            _innerBuffer.AsSpan(offset, read - offset).CopyTo(buffer);
             return read - offset;
         }
 
-        private int EnsureIsEnd(Span<byte> buffer, int read)
+        private int EnsureIsEnd(Span<byte> buffer)
         {
             ReadOnlySpan<char> bufferAsChars = MemoryMarshal.Cast<byte, char>(buffer);
 
-            int lastIndexOfAnyUtf8 = buffer.LastIndexOf(searchEndValuesUtf8);
-            if (lastIndexOfAnyUtf8 < searchEndValuesUtf8.Length)
+            int lastIndexOfAnyUtf8 = buffer.LastIndexOf(_searchEndValuesUtf8);
+            if (lastIndexOfAnyUtf8 >= _searchEndValuesUtf8.Length)
             {
-                int lastIndexOfAnyUtf16 = bufferAsChars.LastIndexOf(searchEndValuesUtf16);
-                return lastIndexOfAnyUtf16 > 0 ? lastIndexOfAnyUtf16 + 1 : -1;
+                return lastIndexOfAnyUtf8 + 1;
             }
 
-            return lastIndexOfAnyUtf8 + 1;
+            int lastIndexOfAnyUtf16 = bufferAsChars.LastIndexOf(_searchEndValuesUtf16);
+            return lastIndexOfAnyUtf16 > 0 ? lastIndexOfAnyUtf16 + 1 : -1;
+
         }
 
         private int EnsureIsStart(Span<byte> buffer)
         {
             ReadOnlySpan<char> bufferAsChars = MemoryMarshal.Cast<byte, char>(buffer);
 
-            int indexOfAnyUtf8 = buffer.IndexOf(searchStartValuesUtf8);
-            if (indexOfAnyUtf8 < searchStartValuesUtf8.Length)
+            int indexOfAnyUtf8 = buffer.IndexOf(_searchStartValuesUtf8);
+            if (indexOfAnyUtf8 >= _searchStartValuesUtf8.Length)
             {
-                int indexOfAnyUtf16 = bufferAsChars.IndexOf(searchStartValuesUtf16);
-                return indexOfAnyUtf16 > 0 ? indexOfAnyUtf16 + (searchStartValuesUtf16.Length - 1) : -1;
+                return indexOfAnyUtf8 + (_searchStartValuesUtf8.Length - 1);
             }
 
-            return indexOfAnyUtf8 + (searchStartValuesUtf8.Length - 1);
+            int indexOfAnyUtf16 = bufferAsChars.IndexOf(_searchStartValuesUtf16);
+            return indexOfAnyUtf16 > 0 ? indexOfAnyUtf16 + (_searchStartValuesUtf16.Length - 1) : -1;
+
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -184,31 +187,33 @@ namespace CollapseLauncher
 
         public override async ValueTask DisposeAsync()
         {
-            await innerStream.DisposeAsync();
-            await redirectStream.DisposeAsync();
+            await _innerStream.DisposeAsync();
+            await _redirectStream.DisposeAsync();
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposing)
             {
-                innerStream?.Dispose();
-                redirectStream?.Dispose();
+                return;
             }
+
+            _innerStream.Dispose();
+            _redirectStream.Dispose();
         }
     }
 
     internal static class ZenlessRepairExtensions
     {
-        const string StreamingAssetsPath = "StreamingAssets\\";
-        const string AssetTypeAudioPath = StreamingAssetsPath + "Audio\\Windows\\";
-        const string AssetTypeBlockPath = StreamingAssetsPath + "Blocks\\";
-        const string AssetTypeVideoPath = StreamingAssetsPath + "Video\\HD\\";
+        private const string StreamingAssetsPath = @"StreamingAssets\";
+        private const string AssetTypeAudioPath  = StreamingAssetsPath + @"Audio\Windows\";
+        private const string AssetTypeBlockPath  = StreamingAssetsPath + @"Blocks\";
+        private const string AssetTypeVideoPath  = StreamingAssetsPath + @"Video\HD\";
 
-        const string PersistentAssetsPath = "Persistent\\";
-        const string AssetTypeAudioPersistentPath = PersistentAssetsPath + "Audio\\Windows\\";
-        const string AssetTypeBlockPersistentPath = PersistentAssetsPath + "Blocks\\";
-        const string AssetTypeVideoPersistentPath = PersistentAssetsPath + "Video\\HD\\";
+        private const string PersistentAssetsPath = @"Persistent\";
+        private const string AssetTypeAudioPersistentPath = PersistentAssetsPath + @"Audio\Windows\";
+        private const string AssetTypeBlockPersistentPath = PersistentAssetsPath + @"Blocks\";
+        private const string AssetTypeVideoPersistentPath = PersistentAssetsPath + @"Video\HD\";
 
         internal static async IAsyncEnumerable<T?> MergeAsyncEnumerable<T>(params IAsyncEnumerable<T?>[] sources)
         {
@@ -264,12 +269,7 @@ namespace CollapseLauncher
         }
 
         internal static IEnumerable<FilePropertiesRemote?> RegisterMainCategorizedAssetsToHashSet(this IEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string baseUrl)
-        {
-            foreach (PkgVersionProperties asset in assetEnumerable)
-            {
-                yield return ReturnCategorizedYieldValue(hashSet, assetIndex, asset, baseLocalPath, baseUrl);
-            }
-        }
+            => assetEnumerable.Select(asset => ReturnCategorizedYieldValue(hashSet, assetIndex, asset, baseLocalPath, baseUrl));
 
         internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterResCategorizedAssetsToHashSetAsync(this IAsyncEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string basePatchUrl, string baseResUrl)
         {
@@ -301,32 +301,27 @@ namespace CollapseLauncher
                 _ => FileType.Generic
             };
 
-            if (!relTypeRelativePath.IsEmpty)
+            if (relTypeRelativePath.IsEmpty)
             {
-                string relTypePath = assetType switch
-                {
-                    RepairAssetType.Audio => AssetTypeAudioPath,
-                    RepairAssetType.Block => AssetTypeBlockPath,
-                    RepairAssetType.Video => AssetTypeVideoPath,
-                    _ => throw new NotSupportedException()
-                };
-
-                string relTypeRelativePathStr = relTypeRelativePath.ToString();
-                if (!hashSet.TryAdd(relTypeRelativePathStr, asRemoteProperty) && asset.isPatch)
-                {
-                    FilePropertiesRemote existingValue = hashSet[relTypeRelativePathStr];
-                    int indexOf = assetIndex.IndexOf(existingValue);
-                    if (indexOf < -1)
-                        return asRemoteProperty;
-
-                    assetIndex[indexOf] = asRemoteProperty;
-                    hashSet[relTypeRelativePathStr] = asRemoteProperty;
-
-                    return null;
-                }
+                return asRemoteProperty;
             }
 
-            return asRemoteProperty;
+            string relTypeRelativePathStr = relTypeRelativePath.ToString();
+            if (hashSet.TryAdd(relTypeRelativePathStr, asRemoteProperty) || !asset.isPatch)
+            {
+                return asRemoteProperty;
+            }
+
+            FilePropertiesRemote existingValue = hashSet[relTypeRelativePathStr];
+            int                  indexOf       = assetIndex.IndexOf(existingValue);
+            if (indexOf < -1)
+                return asRemoteProperty;
+
+            assetIndex[indexOf]             = asRemoteProperty;
+            hashSet[relTypeRelativePathStr] = asRemoteProperty;
+
+            return null;
+
         }
 
         private static FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
@@ -385,12 +380,7 @@ namespace CollapseLauncher
                 assetType = RepairAssetType.Video;
             }
 
-            if (indexOfOffset >= 0)
-            {
-                return asset.N.AsSpan(indexOfOffset);
-            }
-
-            return ReadOnlySpan<char>.Empty;
+            return indexOfOffset >= 0 ? asset.N.AsSpan(indexOfOffset) : ReadOnlySpan<char>.Empty;
         }
     }
 }
