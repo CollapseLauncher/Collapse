@@ -36,28 +36,28 @@ namespace CollapseLauncher.GamePlaytime
         /// Default: TimeSpan.Zero
         /// </summary>
         [JsonIgnore]
-        public TimeSpan TotalPlaytime { get; private set; } = TimeSpan.Zero;
+        public TimeSpan TotalPlaytime { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the daily playtime.<br/>
         /// The ControlDate field is used to check if this value should be reset.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan DailyPlaytime { get; private set; } = TimeSpan.Zero;
+        public TimeSpan DailyPlaytime { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the weekly playtime.<br/>
         /// The ControlDate field is used to check if this value should be reset.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan WeeklyPlaytime { get; private set; } = TimeSpan.Zero;
+        public TimeSpan WeeklyPlaytime { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the monthly playtime.<br/>
         /// The ControlDate field is used to check if this value should be reset.<br/><br/>
         /// Default: TimeSpan.Zero
         /// </summary>
-        public TimeSpan MonthlyPlaytime { get; private set; } = TimeSpan.Zero;
+        public TimeSpan MonthlyPlaytime { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Represents the total time the last/current session lasted.<br/><br/>
@@ -77,14 +77,13 @@ namespace CollapseLauncher.GamePlaytime
         /// This date is used to check if a specific playtime statistic should be reset.<br/><br/>
         /// Default: DateTime.Today
         /// </summary>
-        public DateTime ControlDate { get; private set; } = DateTime.Today;
+        public DateTime ControlDate { get; set; } = DateTime.Today;
         #endregion
 
         #region Methods
 #nullable enable
         /// <summary>
-        /// Reads from the Registry and deserializes the contents. <br/>
-        /// Converts RegistryKey values if they are of type DWORD (that is, if they were saved by the old implementation).
+        /// Reads from the Registry and deserializes the contents.
         /// </summary>
         public static CollapsePlaytime Load(RegistryKey root, int hashID,
                                             IGameVersionCheck gameVersion,
