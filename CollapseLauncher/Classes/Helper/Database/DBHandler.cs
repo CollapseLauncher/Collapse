@@ -1,6 +1,7 @@
 using Hi3Helper;
 using Libsql.Client;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -53,8 +54,12 @@ namespace CollapseLauncher.Helper.Database
                 _isFirstInit   = true;
             }
         }
-
+        
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static string _token;
+        
+        [DebuggerHidden]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string Token
         {
             get
@@ -73,7 +78,7 @@ namespace CollapseLauncher.Helper.Database
                 _isFirstInit     = true;
             }
         }
-
+        
         private static Guid?  _userId;
         private static string _userIdHash;
         public static Guid UserId
@@ -107,7 +112,8 @@ namespace CollapseLauncher.Helper.Database
 
         private static bool _isFirstInit = true;
         #endregion
-
+        
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static IDatabaseClient _database;
 
         public static async Task Init(bool redirectThrow = false)
@@ -152,9 +158,23 @@ namespace CollapseLauncher.Helper.Database
                 }
                 else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
             }
+            catch (LibsqlException e) when (e.Message.Contains("`api error: `{\"error\":\"Unauthorized: `The JWT is invalid`\"}``",
+                                                               StringComparison.InvariantCultureIgnoreCase) && !redirectThrow)
+            {
+                LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
+                             LogType.Error, true);
+            }
             catch (Exception e) when (!redirectThrow)
             {
                 LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
+            }
+            catch (LibsqlException e) when (e.Message.Contains("`api error: `{\"error\":\"Unauthorized: `The JWT is invalid`\"}``",
+                                                               StringComparison.InvariantCultureIgnoreCase))
+            {
+                LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
+                             LogType.Error, true);
+                var ex = new AggregateException("Unauthorized: wrong token inserted", e);
+                throw ex;
             }
             catch (Exception e)
             {
