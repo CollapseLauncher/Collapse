@@ -31,7 +31,7 @@ namespace CollapseLauncher
         internal ZenlessManifestInterceptStream(string? filePath, Stream stream)
         {
             innerStream = stream;
-            if (!string.IsNullOrWhiteSpace(filePath) && stream != null)
+            if (!string.IsNullOrWhiteSpace(filePath))
             {
                 string? filePathDir = Path.GetDirectoryName(filePath);
                 if (!string.IsNullOrEmpty(filePathDir) && !Directory.Exists(filePathDir))

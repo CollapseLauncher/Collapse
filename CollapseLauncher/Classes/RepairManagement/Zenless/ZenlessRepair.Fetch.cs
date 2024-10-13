@@ -110,9 +110,9 @@ namespace CollapseLauncher
             string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil and return its stream
-            await using (BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token))
+            await Task.Run(async () =>
             {
-                await Task.Run(() =>
+                await using (BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token))
                 {
                     if (stream != null)
                     {
@@ -134,8 +134,8 @@ namespace CollapseLauncher
 
                     // Clear the pkg version list
                     pkgVersion.Clear();
-                }).ConfigureAwait(false);
-            }
+                }
+            }).ConfigureAwait(false);
         }
 
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
