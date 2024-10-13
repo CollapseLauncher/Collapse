@@ -1062,8 +1062,11 @@ namespace CollapseLauncher.Interfaces
         #region HashTools
         protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
-            // Initialize MD5 instance and assign buffer
-            byte[] buffer = new byte[_bufferBigLength];
+            // Get length based on stream length or at least if bigger, use the default one
+            int bufferLen = stream is FileStream && _bufferBigLength < stream.Length ? (int)stream.Length : _bufferBigLength;
+
+            // Initialize Xxh64 instance and assign buffer
+            byte[] buffer = GC.AllocateUninitializedArray<byte>(bufferLen);
 
             // Do read activity
             int read;
@@ -1094,11 +1097,13 @@ namespace CollapseLauncher.Interfaces
             return hashProvider.Hash;
         }
 
-
-        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, XxHash64 hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, NonCryptographicHashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
+            // Get length based on stream length or at least if bigger, use the default one
+            int bufferLen = stream is FileStream && _bufferBigLength < stream.Length ? (int)stream.Length : _bufferBigLength;
+
             // Initialize Xxh64 instance and assign buffer
-            byte[] buffer = new byte[_bufferBigLength];
+            byte[] buffer = GC.AllocateUninitializedArray<byte>(bufferLen);
 
             // Do read activity
             int read;
