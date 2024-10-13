@@ -1482,7 +1482,6 @@ namespace CollapseLauncher.Pages
                 _dbGuid     = g;
             }
         }
-
         #endregion
         #endregion
 
@@ -1524,7 +1523,6 @@ namespace CollapseLauncher.Pages
                 KeyboardShortcutsEvent(this, value ? 0 : 2);
             }
         }
-
         #endregion
     }
 }

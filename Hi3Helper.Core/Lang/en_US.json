@@ -644,13 +644,13 @@
     "Database_ConnectFail": "Failed to connect to the database, see error(s) below:",
     "Database_Toggle": "Enable Online Database",
     "Database_Url": "Database URL",
-    "Database_Url_Example": "Example: https://db-bagusnl.turso.io",
+    "Database_Url_Example": "Example: https://db-collapse.turso.io",
     "Database_Token": "Token",
     "Database_UserId": "User ID (GUID v7)",
     "Database_GenerateGuid": "Generate GUID",
     "Database_Validate": "Validate & Save Settings",
-    "Database_Error_EmptyUri": "Database URL could not be empty!",
-    "Database_Error_EmptyToken": "Database token could not be empty!"
+    "Database_Error_EmptyUri": "Database URL cannot be empty!",
+    "Database_Error_EmptyToken": "Database token cannot be empty!"
   },
 
   "_Misc": {
@@ -964,8 +964,8 @@
     "OpenInExternalBrowser": "Open in External Browser",
     "CloseOverlay": "Close Overlay",
     
-    "DbGenerateUid_Title": "Are you sure to change your user ID?",
-    "DbGenerateUid_Content": "Changing user ID will cause your data associated with current ID to be lost if you lose your current user ID."
+    "DbGenerateUid_Title": "Are you sure you wish to change your user ID?",
+    "DbGenerateUid_Content": "Changing the current user ID will cause the associated data to be lost if you lose it."
   },
 
   "_FileMigrationProcess": {
