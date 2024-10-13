@@ -2449,7 +2449,7 @@
                                     </Grid>
                                 </Button>
                                 <Button x:Name="SyncDbPlaytimeBtn"
-                                        Margin="-4,0"
+                                        Margin="-4,0,-4,-4"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Left"
                                         Click="SyncDbPlaytimeButton_Click"
