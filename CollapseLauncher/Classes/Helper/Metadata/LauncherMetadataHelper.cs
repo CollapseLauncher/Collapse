@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Loading;
@@ -33,8 +32,8 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Metadata Stamp List and Config Dictionary
 
-        internal static List<Stamp>? LauncherMetadataStamp { get; private set; }
-        internal static List<Stamp>? NewUpdateMetadataStamp { get; private set; }
+        internal static List<Stamp?>? LauncherMetadataStamp { get; private set; }
+        internal static List<Stamp?>? NewUpdateMetadataStamp { get; private set; }
         internal static List<string>? LauncherGameNameCollection => LauncherGameNameRegionCollection?.Keys.ToList();
         private static Dictionary<string, Stamp>? LauncherMetadataStampDictionary { get; set; }
 
@@ -249,7 +248,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 // Deserialize the stream
                 LauncherMetadataStamp =
-                    await stampLocalStream.DeserializeAsync<List<Stamp>>(InternalAppJSONContext.Default);
+                    await stampLocalStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
 
                 // SANITIZE: Check if the stamp is empty, then throw
                 if (LauncherMetadataStamp == null || LauncherMetadataStamp.Count == 0)
@@ -258,6 +257,9 @@ namespace CollapseLauncher.Helper.Metadata
                 // Load and add stamp into stamp dictionary
                 foreach (Stamp? stamp in LauncherMetadataStamp)
                 {
+                    if (stamp == null)
+                        continue;
+
                     string? gameName = string.IsNullOrEmpty(stamp.GameName) ? stamp.MetadataType.ToString() : stamp.GameName;
                     string? gameRegion = string.IsNullOrEmpty(stamp.GameRegion) ? stamp.MetadataPath : stamp.GameRegion;
                     LauncherMetadataStampDictionary?.Add($"{gameName} - {gameRegion}", stamp);
@@ -324,7 +326,7 @@ namespace CollapseLauncher.Helper.Metadata
 
             // Find and iterate the master key first
             Stamp? masterKeyStamp =
-                LauncherMetadataStamp.FirstOrDefault(x => x.MetadataType == MetadataType.MasterKey);
+                LauncherMetadataStamp.FirstOrDefault(x => x?.MetadataType == MetadataType.MasterKey);
             if (masterKeyStamp == null)
             {
                 throw new KeyNotFoundException("Master key information is not found in the stamp!");
@@ -333,7 +335,7 @@ namespace CollapseLauncher.Helper.Metadata
 
             // Iterate the CommunityTools configs
             Stamp? stampCommunityToolkit = LauncherMetadataStamp
-               .FirstOrDefault(x => x.MetadataType == MetadataType.CommunityTools);
+               .FirstOrDefault(x => x?.MetadataType == MetadataType.CommunityTools);
             if (stampCommunityToolkit != null)
             {
                 await LoadConfigInner(stampCommunityToolkit, currentChannel, false, false);
@@ -341,11 +343,14 @@ namespace CollapseLauncher.Helper.Metadata
 
             // Iterate the stamp and try to load the configs
             int index = 1;
-            List<Stamp> stampList = LauncherMetadataStamp
-                                   .Where(x => x.MetadataType == MetadataType.PresetConfigV2)
+            List<Stamp?> stampList = LauncherMetadataStamp
+                                   .Where(x => x?.MetadataType == MetadataType.PresetConfigV2)
                                    .ToList();
-            foreach (Stamp stamp in stampList)
+            foreach (Stamp? stamp in stampList)
             {
+                if (stamp == null)
+                    continue;
+
                 if (isShowLoadingMessage)
                 {
                     LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing,
@@ -404,7 +409,7 @@ namespace CollapseLauncher.Helper.Metadata
                         {
                             // Deserialize the key config
                             MasterKeyConfig? keyConfig =
-                                await configLocalStream.DeserializeAsync<MasterKeyConfig>(InternalAppJSONContext.Default);
+                                await configLocalStream.DeserializeAsync(InternalAppJSONContext.Default.MasterKeyConfig);
 
                             // Assign the key to instance property
                             CurrentMasterKey = keyConfig ?? throw new InvalidDataException("Master key config seems to be empty!");
@@ -421,7 +426,7 @@ namespace CollapseLauncher.Helper.Metadata
                     case MetadataType.PresetConfigV2:
                         {
                             PresetConfig? presetConfig =
-                                await configLocalStream.DeserializeAsync<PresetConfig>(InternalAppJSONContext.Default);
+                                await configLocalStream.DeserializeAsync(InternalAppJSONContext.Default.PresetConfig);
                             if (presetConfig != null)
                             {
                                 if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
@@ -526,8 +531,8 @@ namespace CollapseLauncher.Helper.Metadata
                 // Check and throw if the stream returns null or empty
                 if (stampRemoteStream != null)
                 {
-                    List<Stamp>? remoteMetadataStampList =
-                        await stampRemoteStream.DeserializeAsync<List<Stamp>>(InternalAppJSONContext.Default);
+                    List<Stamp?>? remoteMetadataStampList =
+                        await stampRemoteStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
 
                     // Check and throw if the metadata stamp returns null or empty
                     if (remoteMetadataStampList == null || remoteMetadataStampList.Count == 0)
@@ -545,18 +550,21 @@ namespace CollapseLauncher.Helper.Metadata
                     bool isOutdatedStampDetected = false;
                     foreach (Stamp? remoteMetadataStamp in remoteMetadataStampList)
                     {
+                        if (remoteMetadataStamp == null)
+                            continue;
+
                         // Check if the local stamp does not have one, then add it to new update stamp list
                         Stamp? localStamp =
                             LauncherMetadataStamp?.FirstOrDefault(x => remoteMetadataStamp.GameRegion ==
-                                                                       x.GameRegion
+                                                                       x?.GameRegion
                                                                        && remoteMetadataStamp.GameName ==
-                                                                       x.GameName
+                                                                       x?.GameName
                                                                        && remoteMetadataStamp.LastUpdated ==
-                                                                       x.LastUpdated
+                                                                       x?.LastUpdated
                                                                        && remoteMetadataStamp.MetadataPath ==
-                                                                       x.MetadataPath
+                                                                       x?.MetadataPath
                                                                        && remoteMetadataStamp.MetadataType ==
-                                                                       x.MetadataType);
+                                                                       x?.MetadataType);
                         if (localStamp != null) continue;
 
 
@@ -608,8 +616,10 @@ namespace CollapseLauncher.Helper.Metadata
                 }
 
                 // Remove the old metadata config file first
-                foreach (Stamp newUpdateStamp in NewUpdateMetadataStamp)
+                foreach (Stamp? newUpdateStamp in NewUpdateMetadataStamp)
                 {
+                    if (newUpdateStamp == null) continue;
+
                     // Ensure if the MetadataPath is not empty
                     if (string.IsNullOrEmpty(newUpdateStamp.MetadataPath))
                     {
@@ -644,7 +654,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        private static async ValueTask UpdateStampContent(string stampPath, List<Stamp> newStampList)
+        private static async ValueTask UpdateStampContent(string stampPath, List<Stamp?> newStampList)
         {
             try
             {
@@ -653,26 +663,28 @@ namespace CollapseLauncher.Helper.Metadata
                     throw new FileNotFoundException($"Unable to update the stamp file because it is not exist! It should have been located here: {stampPath}");
 
                 // Read the old stamp list stream
-                List<Stamp>? oldStampList = null;
+                List<Stamp?>? oldStampList = null;
                 using (FileStream stampStream = File.OpenRead(stampPath))
                 {
                     // Deserialize and do sanitize if the old stamp list is empty
-                    oldStampList = await stampStream.DeserializeAsync<List<Stamp>>(InternalAppJSONContext.Default);
+                    oldStampList = await stampStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
                     if (oldStampList == null || oldStampList?.Count == 0)
                         throw new NullReferenceException($"The old stamp list contains an empty/null content!");
 
                     // Try iterate the new stamp list to replace the old ones or add a new entry
-                    foreach (Stamp newStamp in newStampList)
+                    foreach (Stamp? newStamp in newStampList)
                     {
+                        if (newStamp == null) continue;
+
                         // Find the old stamp reference from the old list
                         Stamp? oldStampRef = oldStampList?.FirstOrDefault(x => newStamp.GameRegion ==
-                                                                          x.GameRegion
+                                                                          x?.GameRegion
                                                                           && newStamp.GameName ==
-                                                                          x.GameName
+                                                                          x?.GameName
                                                                           && newStamp.MetadataPath ==
-                                                                          x.MetadataPath
+                                                                          x?.MetadataPath
                                                                           && newStamp.MetadataType ==
-                                                                          x.MetadataType);
+                                                                          x?.MetadataType);
                         // Check if the old stamp ref is null or index of old stamp reference returns < 0, then
                         // add it as a new entry.
                         int indexOfOldStamp = 0;
@@ -687,7 +699,7 @@ namespace CollapseLauncher.Helper.Metadata
                 // Now write the updated list to the stamp file
                 using (FileStream updatedStampStream = File.Create(stampPath))
                 {
-                    await oldStampList.SerializeAsync(updatedStampStream, InternalAppJSONContext.Default);
+                    await oldStampList.SerializeAsync(updatedStampStream, InternalAppJSONContext.Default.ListStamp);
                     return;
                 }
             }

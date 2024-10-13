@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace CollapseLauncher.Interfaces
 {
@@ -16,6 +17,8 @@ namespace CollapseLauncher.Interfaces
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         byte[] Magic { get; }
 
-        abstract static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context);
+#nullable enable
+        abstract static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo);
+#nullable restore
     }
 }

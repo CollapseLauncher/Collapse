@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
+using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 {
@@ -83,7 +85,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     return _newsPostTypeInfo;
                 }
 
-                _newsPostTypeInfo = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_INFO)?
+                _newsPostTypeInfo = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_INFO)
                                             .OrderBy(x => x.PostOrder)
                                             .ToList();
                 return _newsPostTypeInfo;
@@ -105,7 +107,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                     return _newsPostTypeActivity;
                 }
 
-                _newsPostTypeActivity = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY)?
+                _newsPostTypeActivity = NewsPost.Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ACTIVITY)
                                                 .OrderBy(x => x.PostOrder)
                                                 .ToList();
                 return _newsPostTypeActivity;
@@ -128,7 +130,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 }
 
                 _newsPostTypeAnnouncement = NewsPost
-                                           .Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE)?
+                                           .Where(x => x.PostType == LauncherGameNewsPostType.POST_TYPE_ANNOUNCE)
                                            .OrderBy(x => x.PostOrder)
                                            .ToList();
                 return _newsPostTypeAnnouncement;
@@ -220,7 +222,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         public int? CarouselOrder { get; init; }
     }
 
-    public class LauncherGameNewsSocialMedia : ILauncherGameNewsDataTokenized
+    [GeneratedBindableCustomProperty]
+    public partial class LauncherGameNewsSocialMedia : ILauncherGameNewsDataTokenized
     {
         private readonly string? _qrImg;
         private readonly List<LauncherGameNewsSocialMediaQrLinks>? _qrLinks;
@@ -303,7 +306,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonIgnore] public bool IsHasQrDescription => !string.IsNullOrEmpty(QrTitle);
     }
 
-    public class LauncherGameNewsSocialMediaQrLinks
+    [GeneratedBindableCustomProperty]
+    public partial class LauncherGameNewsSocialMediaQrLinks
     {
         [JsonPropertyName("title")]
         [JsonConverter(typeof(EmptyStringAsNullConverter))]

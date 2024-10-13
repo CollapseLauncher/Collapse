@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangInstallConvert _InstallConvert { get; set; } = LangFallback?._InstallConvert;
-            public sealed class LangInstallConvert
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangInstallConvert
             {
                 public string PageTitle { get; set; } = LangFallback?._InstallConvert.PageTitle;
                 public string Step1Title { get; set; } = LangFallback?._InstallConvert.Step1Title;

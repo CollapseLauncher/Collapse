@@ -1,4 +1,5 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -9,6 +10,7 @@ using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,13 +22,13 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
         private static bool _isForceDisableIntro;
-        public MainWindow() { }
 
         public void InitializeWindowProperties(bool startOOBE = false)
         {
@@ -56,7 +58,8 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
-                Console.ReadLine();
+                //Console.ReadLine();
+                throw;
             }
         }
 
@@ -89,7 +92,6 @@ namespace CollapseLauncher
                     IntroAnimation.Stop();
                 }
                 IntroAnimation.Source = null;
-                newIntro = null;
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
@@ -162,8 +164,13 @@ namespace CollapseLauncher
                 WindowUtility.CurrentWindowIsResizable = false;
                 WindowUtility.CurrentWindowIsMaximizable = false;
 
-                WindowUtility.CurrentAppWindow.TitleBar.ButtonBackgroundColor = new Color { A = 0, B = 0, G = 0, R = 0 };
-                WindowUtility.CurrentAppWindow.TitleBar.ButtonInactiveBackgroundColor = new Color { A = 0, B = 0, G = 0, R = 0 };
+                if (WindowUtility.CurrentAppWindow != null)
+                {
+                    WindowUtility.CurrentAppWindow.TitleBar.ButtonBackgroundColor =
+                        new Color { A = 0, B = 0, G = 0, R = 0 };
+                    WindowUtility.CurrentAppWindow.TitleBar.ButtonInactiveBackgroundColor =
+                        new Color { A = 0, B = 0, G = 0, R = 0 };
+                }
 
                 // Hide system menu
                 var controlsHwnd = FindWindowEx(WindowUtility.CurrentWindowPtr, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
@@ -270,5 +277,8 @@ namespace CollapseLauncher
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 0.25f)
                 );
         }
+
+        private void SetWindowCaptionLoadedCursor(object sender, RoutedEventArgs e)
+            => (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
     }
 }

@@ -94,7 +94,7 @@ namespace CollapseLauncher.Helper.Metadata
             // Fetch branch info
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
                 async innerToken =>
-                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(branchUrl, InternalAppJSONContext.Default, innerToken);
+                    await FallbackCDNUtil.DownloadAsJSONType(branchUrl, InternalAppJSONContext.Default.HoYoPlayLauncherGameInfo, innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await hypLauncherBranchCallback.WaitForRetryAsync(
                 LauncherApiBase.ExecutionTimeout,

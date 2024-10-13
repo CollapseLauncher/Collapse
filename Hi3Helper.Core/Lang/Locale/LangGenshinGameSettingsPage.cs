@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangGenshinGameSettingsPage _GenshinGameSettingsPage { get; set; } = LangFallback?._GenshinGameSettingsPage;
-            public sealed class LangGenshinGameSettingsPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangGenshinGameSettingsPage
             {
                 public string PageTitle { get; set; } = LangFallback?._GenshinGameSettingsPage.PageTitle;
                 #region Overlay

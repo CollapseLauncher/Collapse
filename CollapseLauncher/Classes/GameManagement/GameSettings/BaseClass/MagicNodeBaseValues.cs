@@ -289,14 +289,14 @@ namespace CollapseLauncher.GameSettings.Base
         public JsonNode? SettingsJsonNode { get; protected set; }
 
         [JsonIgnore]
-        public JsonSerializerContext Context { get; protected set; }
+        public JsonTypeInfo<T?> TypeInfo { get; protected set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 
         [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!", true)]
         public static T Load() => throw new NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");
 
-        public static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
+        public static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo)
         {
             if (magic == null || magic.Length == 0)
                 throw new NullReferenceException($"Magic cannot be an empty array!");
@@ -314,28 +314,28 @@ namespace CollapseLauncher.GameSettings.Base
 #endif
                 JsonNode? node = raw.DeserializeAsJsonNode();
                 T data = new T();
-                data.InjectNodeAndMagic(node, magic, versionManager, context);
+                data.InjectNodeAndMagic(node, magic, versionManager, typeInfo);
                 return data;
             }
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
-                return DefaultValue(magic, versionManager, context);
+                return DefaultValue(magic, versionManager, typeInfo);
             }
         }
 
-        private static T DefaultValue(byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
+        private static T DefaultValue(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo)
         {
             // Generate dummy data
             T data = new T();
 
             // Generate raw JSON string
-            string rawJson = data.Serialize(context, false, false);
+            string rawJson = data.Serialize(typeInfo, false, false);
 
             // Deserialize it back to JSON Node and inject
             // the node and magic
             JsonNode? defaultJsonNode = rawJson.DeserializeAsJsonNode();
-            data.InjectNodeAndMagic(defaultJsonNode, magic, versionManager, context);
+            data.InjectNodeAndMagic(defaultJsonNode, magic, versionManager, typeInfo);
 
             // Return
             return data;
@@ -352,18 +352,18 @@ namespace CollapseLauncher.GameSettings.Base
                 Directory.CreateDirectory(fileDirPath!);
 
             // Write into the file
-            string jsonString = SettingsJsonNode.SerializeJsonNode(Context, false, false);
+            string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false, false);
             Sleepy.WriteString(filePath, jsonString, Magic);
         }
 
         public bool Equals(T? other) => JsonNode.DeepEquals(this.SettingsJsonNode, other?.SettingsJsonNode);
 
-        protected virtual void InjectNodeAndMagic(JsonNode? jsonNode, byte[] magic, SettingsGameVersionManager versionManager, JsonSerializerContext context)
+        protected virtual void InjectNodeAndMagic(JsonNode? jsonNode, byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo)
         {
             SettingsJsonNode = jsonNode;
             GameVersionManager = versionManager;
             Magic = magic;
-            Context = context;
+            TypeInfo = typeInfo;
         }
     }
 }
