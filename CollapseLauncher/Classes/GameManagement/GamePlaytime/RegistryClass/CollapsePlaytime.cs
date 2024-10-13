@@ -320,7 +320,7 @@ namespace CollapseLauncher.GamePlaytime
                     playtimeInner._gameVersion  = _gameVersion;
                     DbConfig.SetAndSaveValue(KeyLastUpdated, _unixStampDb.ToString());
                     LastDbUpdate = DateTime.Now;
-                    Save();
+                    playtimeInner.Save();
                     return (true, playtimeInner);
                 }
 
@@ -351,11 +351,11 @@ namespace CollapseLauncher.GamePlaytime
                 var unixStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 await DbHandler.StoreKeyValue(KeyPlaytimeJson, jsonData);
                 await DbHandler.StoreKeyValue(KeyTotalTime,    totalTime.ToString(CultureInfo.InvariantCulture));
-                await DbHandler.StoreKeyValue(KeyLastPlayed,   lastPlayed != null ? lastPlayed.ToString() : "null");
+                await DbHandler.StoreKeyValue(KeyLastPlayed,   lastPlayed != null ? lastPlayed.Value.ToString(CultureInfo.InvariantCulture) : "null");
                 await DbHandler.StoreKeyValue(KeyLastUpdated,  unixStamp.ToString());
                 DbConfig.SetAndSaveValue(KeyLastUpdated, unixStamp);
-                _unixStampDb     = Convert.ToInt32(unixStamp);
-                LastDbUpdate     = curDateTime;
+                _unixStampDb = Convert.ToInt32(unixStamp);
+                LastDbUpdate = curDateTime;
             }
             catch (Exception e)
             {
@@ -378,10 +378,10 @@ namespace CollapseLauncher.GamePlaytime
                 _jsonDataDb   = await DbHandler.QueryKey(KeyPlaytimeJson);
                 
                 var totalTimeDbStr = await DbHandler.QueryKey(KeyTotalTime);
-                _totalTimeDb  = string.IsNullOrEmpty(totalTimeDbStr) ? null : Convert.ToDouble(totalTimeDbStr);
+                _totalTimeDb  = string.IsNullOrEmpty(totalTimeDbStr) ? null : Convert.ToDouble(totalTimeDbStr, CultureInfo.InvariantCulture);
                 
                 var lpDb = await DbHandler.QueryKey(KeyLastPlayed);
-                _lastPlayedDb    = !string.IsNullOrEmpty(lpDb) && !lpDb.Contains("null") ? Convert.ToDouble(lpDb) : null; // if Db data is null, return null
+                _lastPlayedDb    = !string.IsNullOrEmpty(lpDb) && !lpDb.Contains("null") ? Convert.ToDouble(lpDb, CultureInfo.InvariantCulture) : null; // if Db data is null, return null
                 
                 _isDbPullSuccess = true;
             }

@@ -1,4 +1,4 @@
-<!--  ReSharper disable IdentifierTypo  -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.HomePage"
@@ -2428,7 +2428,7 @@
                                     </Grid>
                                 </Button>
                                 <Button x:Name="ResetPlaytimeButton"
-                                        Margin="-4,0,-4,-4"
+                                        Margin="-4,0"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Left"
                                         Click="ResetPlaytimeButton_Click"
