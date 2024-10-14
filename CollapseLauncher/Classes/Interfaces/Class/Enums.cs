@@ -2,7 +2,7 @@
 {
     internal enum RepairAssetType
     {
-        General,
+        Generic,
         Block,
         BlockUpdate,
         Audio,

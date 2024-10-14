@@ -425,8 +425,8 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? IsHideSocMedDesc           { get; init; } = true;
         
         #if !DEBUG
-        public bool? IsRepairEnabled            { get; init; }
-        public bool? IsCacheUpdateEnabled       { get; init; }
+        public bool? IsRepairEnabled            { get; set; }
+        public bool? IsCacheUpdateEnabled       { get; set; }
         #else
         public bool? IsRepairEnabled      = true;
         public bool? IsCacheUpdateEnabled = true;
