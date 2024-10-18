@@ -1123,10 +1123,10 @@
                                  IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                  IsSpellCheckEnabled="False"
                                  LostFocus="DbUserIdTextBox_LostFocus"
-                                 PlaceholderText="00000000-0000-0000-0000-000000000000"
                                  Text="{x:Bind DbUserId, Mode=TwoWay}" />
                         <Grid Margin="0,4,0,4">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
@@ -1174,6 +1174,12 @@
                                                TextTrimming="CharacterEllipsis" />
                                 </Grid>
                             </Button>
+                            <FontIcon x:Name="DbWarningSaveIcon"
+                                      Grid.Column="2"
+                                      FontFamily="{ThemeResource FontAwesomeSolid}"
+                                      FontSize="20"
+                                      Glyph=""
+                                      Visibility="Collapsed" />
                         </Grid>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"

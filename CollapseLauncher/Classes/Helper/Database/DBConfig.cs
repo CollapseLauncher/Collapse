@@ -99,23 +99,20 @@ namespace CollapseLauncher.Helper.Database
 
         [DebuggerHidden]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public static Guid UserGuid
+        public static string UserGuid
         {
             get
             {
                 var  c = GetConfig("userGuid").ToString();
-                Guid g;
 
-                if (string.IsNullOrEmpty(c))
-                {
-                    g = Guid.CreateVersion7();
-                    SetAndSaveValue("userGuid", g.ToString());
-                }
-                else g = Guid.Parse(c);
+                if (!string.IsNullOrEmpty(c)) return c; // Return early if config is set
 
-                return g;
+                c = Guid.CreateVersion7().ToString();
+                SetAndSaveValue("userGuid", c);
+
+                return c;
             }
-            set => SetAndSaveValue("userGuid", value.ToString());
+            set => SetAndSaveValue("userGuid", value);
         }
     }
 }

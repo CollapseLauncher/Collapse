@@ -1336,7 +1336,7 @@ namespace CollapseLauncher.Pages
         private string _dbUrl;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string _dbToken;
-        private Guid _dbGuid;
+        private string _dbUserId;
         
         private bool IsDbEnabled
         {
@@ -1369,6 +1369,8 @@ namespace CollapseLauncher.Pages
 
                 DbUriTextBox.Text = value;
                 _dbUrl            = value;
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
             }
         }
 
@@ -1380,7 +1382,12 @@ namespace CollapseLauncher.Pages
                 _dbToken = c;
                 return c;
             }
-            set => _dbToken = value;
+            set
+            {
+                _dbToken = value;
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
         }
 
         private string _currentDbGuid;
@@ -1388,19 +1395,13 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-              _dbGuid = DbHandler.UserId;
-              return  DbHandler.UserId.ToString();
+              _dbUserId = DbHandler.UserId;
+              return  DbHandler.UserId;
             } 
             set
             {
-                if (Guid.TryParse(value, out var guid))
-                {
-                    _dbGuid = guid;
-                }
-                else
-                {
-                    DbUserIdTextBox.Text = DbHandler.UserId.ToString();
-                }
+                _dbUserId        = value;
+                DbHandler.UserId = value;
             }
         }
 
@@ -1417,15 +1418,16 @@ namespace CollapseLauncher.Pages
             var newGuid = t.Text;
             if (_currentDbGuid == newGuid) return; // Return if no change
             
-            if (!Guid.TryParse(newGuid, out _)) return; // Try to parse, if fail return. Value will be fallen back by DbUserId.set property
             if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
             {
                 t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
             }
             else
             {
-                _currentDbGuid   = t.Text;
-                _dbGuid = Guid.Parse(t.Text); // Store to temp prop
+                _currentDbGuid = t.Text;
+                _dbUserId      = t.Text; // Store to temp prop
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
             }
         }
 
@@ -1442,19 +1444,20 @@ namespace CollapseLauncher.Pages
                 // Set the value from prop
                 DbHandler.Uri    = _dbUrl;
                 DbHandler.Token  = _dbToken;
-                DbHandler.UserId = _dbGuid;
+                DbHandler.UserId = _dbUserId;
                 
                 var r = Random.Shared.Next(100); // Generate random int for data verification
 
-                await DbHandler.Init(true); // Initialize database
+                await DbHandler.Init(true, true); // Initialize database
                 await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
                 if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
                     throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
                 
+                DbWarningSaveIcon.Visibility = Visibility.Collapsed;
                 await SpawnDialog(
                                   Lang._Misc.EverythingIsOkay,
                                   Lang._SettingsPage.Database_ConnectionOk,
-                                  (sender as UIElement),
+                                  sender as UIElement,
                                   Lang._Misc.Close,
                                   null,
                                   null,
@@ -1478,8 +1481,9 @@ namespace CollapseLauncher.Pages
             if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
             {
                 var g = Guid.CreateVersion7();
-                DbUserIdTextBox.Text = g.ToString();
-                _dbGuid     = g;
+                DbUserIdTextBox.Text         = g.ToString();
+                _dbUserId                    = g.ToString();
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
             }
         }
         #endregion

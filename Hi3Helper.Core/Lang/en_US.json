@@ -647,7 +647,7 @@
     "Database_Url_Example": "Example: https://db-collapse.turso.io",
     "Database_Token": "Token",
     "Database_UserId": "User ID (GUID v7)",
-    "Database_GenerateGuid": "Generate GUID",
+    "Database_GenerateGuid": "Generate UID",
     "Database_Validate": "Validate & Save Settings",
     "Database_Error_EmptyUri": "Database URL cannot be empty!",
     "Database_Error_EmptyToken": "Database token cannot be empty!"

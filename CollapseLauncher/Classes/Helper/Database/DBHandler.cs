@@ -3,10 +3,12 @@ using Libsql.Client;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
+#nullable enable
 namespace CollapseLauncher.Helper.Database
 {
     internal static class DbHandler
@@ -35,7 +37,7 @@ namespace CollapseLauncher.Helper.Database
         }
         
         
-        private static string _uri;
+        private static string? _uri;
         public static string Uri
         {
             get
@@ -56,7 +58,7 @@ namespace CollapseLauncher.Helper.Database
         }
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static string _token;
+        private static string? _token;
         
         [DebuggerHidden]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -79,22 +81,22 @@ namespace CollapseLauncher.Helper.Database
             }
         }
         
-        private static Guid?  _userId;
-        private static string _userIdHash;
-        public static Guid UserId
+        private static string? _userId;
+        private static string? _userIdHash;
+        public static string UserId
         {
             get
             {
-                if (_userId != null) return (Guid)_userId;
+                if (_userId != null) return _userId;
                 var c = DbConfig.UserGuid; // Get or create (if not yet has one) GUIDv7
                 _userId = c;
-                _userIdHash = BitConverter.ToString(System.IO.Hashing.XxHash64.Hash(c.ToByteArray())).Replace("-", "")
-                                          .ToLowerInvariant(); // Get hash for the GUID to be used as SQL table name
+                _userIdHash = Convert.ToHexStringLower(System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(c))); 
+                // Get hash for the UserID to be used as SQL table name
                 // I know that this is overkill, but I want it to be totally non-identifiable if for some reason someone
                 // has access to their database. It also lowers the amount of query command length to be sent, hopefully
                 // reducing access latency.
                 // p.s. oh yeah, this is also why user won't be able to get their data back if they lost the GUID,
-                // good luck reversing Xxhash64 back to GUIDv7. Technically possible, but good luck!
+                // good luck reversing Xxhash64 back to string. Technically possible, but good luck!
                 return c;
             }
             set
@@ -104,8 +106,8 @@ namespace CollapseLauncher.Helper.Database
                 _userId           = value;
                 DbConfig.UserGuid = value;
                 
-                var byteUidH = System.IO.Hashing.XxHash64.Hash(value.ToByteArray());
-                _userIdHash  = BitConverter.ToString(byteUidH).Replace("-", "").ToLowerInvariant();
+                var byteUidH = System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(value));
+                _userIdHash  = Convert.ToHexStringLower(byteUidH);
                 _isFirstInit = true;
             }
         }
@@ -114,13 +116,13 @@ namespace CollapseLauncher.Helper.Database
         #endregion
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static IDatabaseClient _database;
+        private static IDatabaseClient? _database;
 
-        public static async Task Init(bool redirectThrow = false)
+        public static async Task Init(bool redirectThrow = false, bool bypassEnableFlag = false)
         {
             DbConfig.Init();
             
-            if (!IsEnabled)
+            if (!bypassEnableFlag && !IsEnabled)
             {
                 LogWriteLine("[DbHandler::Init] Database functionality is disabled!");
                 return;
@@ -192,24 +194,25 @@ namespace CollapseLauncher.Helper.Database
             _userIdHash = null;
         }
 
-        public static async Task<string> QueryKey(string key, bool redirectThrow = false)
+        public static async Task<string?> QueryKey(string key, bool redirectThrow = false)
         {
             if (!IsEnabled) return null;
         #if DEBUG
             var r   = new Random();
             var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
             LogWriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
-            var t = System.Diagnostics.Stopwatch.StartNew();
+            var t = Stopwatch.StartNew();
         #endif
             const int retryCount = 3;
             for (var i = 0; i < retryCount; i++)
             {
                 try
                 {
+                    if (_database == null) await Init(true);
                     // Get table row for exact key
                     var rs =
                         await
-                            _database
+                            _database!
                                .Execute($"SELECT value FROM \"uid-{_userIdHash}\" WHERE key = ?", key);
                     if (rs != null)
                     {
@@ -266,7 +269,7 @@ namespace CollapseLauncher.Helper.Database
         {
             if (!IsEnabled) return;
         #if DEBUG
-            var t   = System.Diagnostics.Stopwatch.StartNew();
+            var t   = Stopwatch.StartNew();
             var r   = new Random();
             var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
             LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
@@ -277,11 +280,13 @@ namespace CollapseLauncher.Helper.Database
             {
                 try
                 {
+                    if (_database == null) await Init(true);
+                    
                     // Create key for storing value, if key already exist, just update the value (key column is set to UNIQUE)
                     var command = $"INSERT INTO \"uid-{_userIdHash}\" (key, value) VALUES (?, ?) " +
                                   $"ON CONFLICT(key) DO UPDATE SET value = ?";
                     var parameters = new object[] { key, value, value };
-                    await _database.Execute(command, parameters);
+                    await _database!.Execute(command, parameters);
                     break;
                 }
                 catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED") ||
