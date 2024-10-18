@@ -10,6 +10,7 @@ using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
@@ -167,6 +168,15 @@ namespace CollapseLauncher.Pages
 
                 if (!GetAppConfigValue("ShowGamePlaytime").ToBool())
                     PlaytimeBtn.Visibility = Visibility.Collapsed;
+
+                if (!DbConfig.DbEnabled)
+                {
+                    PlaytimeDbSyncToggle.IsEnabled = false;
+                }
+                
+                if (!DbConfig.DbEnabled || !CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+                    SyncDbPlaytimeBtn.IsEnabled = false;
+                   
 
                 TryLoadEventPanelImage();
 
@@ -2350,7 +2360,7 @@ namespace CollapseLauncher.Pages
             TimeSpan time = TimeSpan.FromMinutes(hours * 60 + mins);
             if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
 
-            CurrentGameProperty._GamePlaytime.Update(time);
+            CurrentGameProperty._GamePlaytime.Update(time, true);
             PlaytimeFlyout.Hide();
         }
 
@@ -2360,6 +2370,11 @@ namespace CollapseLauncher.Pages
 
             CurrentGameProperty._GamePlaytime.Reset();
             PlaytimeFlyout.Hide();
+        }
+
+        private void SyncDbPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentGameProperty._GamePlaytime.CheckDb();
         }
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)

@@ -34,6 +34,7 @@ namespace Hi3Helper
                 public string UseCurrentDir        { get; set; } = LangFallback?._Misc.UseCurrentDir;
                 public string UseDefaultDir        { get; set; } = LangFallback?._Misc.UseDefaultDir;
                 public string LocateDir            { get; set; } = LangFallback?._Misc.LocateDir;
+                public string EverythingIsOkay     { get; set; } = LangFallback?._Misc.EverythingIsOkay;
                 public string Okay                 { get; set; } = LangFallback?._Misc.Okay;
                 public string OkaySad              { get; set; } = LangFallback?._Misc.OkaySad;
                 public string OkayHappy            { get; set; } = LangFallback?._Misc.OkayHappy;

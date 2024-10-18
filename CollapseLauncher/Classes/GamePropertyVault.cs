@@ -66,8 +66,8 @@ namespace CollapseLauncher.Statics
                     default:
                         throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
                 }
-
-                _GamePlaytime = new Playtime(_GameVersion);
+                
+                _GamePlaytime = new Playtime(_GameVersion, _GameSettings);
             }
         }
 

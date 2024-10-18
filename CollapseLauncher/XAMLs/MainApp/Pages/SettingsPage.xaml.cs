@@ -6,6 +6,7 @@
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
     using CollapseLauncher.Helper.Background;
+    using CollapseLauncher.Helper.Database;
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
@@ -85,7 +86,7 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = Version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
-            GitVersionIndicator_Hyperlink.NavigateUri = 
+            GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
@@ -1328,6 +1329,164 @@ namespace CollapseLauncher.Pages
             }
         }
 #nullable restore
+
+        #region Database
+
+        // Temporary prop store
+        private string _dbUrl;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _dbToken;
+        private string _dbUserId;
+        
+        private bool IsDbEnabled
+        {
+            get => DbHandler.IsEnabled;
+            set
+            {
+                DbHandler.IsEnabled = value;
+                if (value) _ = DbHandler.Init();
+            }
+        }
+
+        private string DbUrl
+        {
+            get
+            {
+                var c = DbHandler.Uri;
+                _dbUrl = c;
+                return c;
+            }  
+            set
+            {
+                // Automatically replace libsql protocol to https
+                if (value.Contains("libsql://", StringComparison.InvariantCultureIgnoreCase))
+                    value = value.Replace("libsql", "https");
+                if (!value.Contains("https://"))
+                {
+                    DbUriTextBox.Text = DbHandler.Uri;
+                    return;
+                }
+
+                DbUriTextBox.Text = value;
+                _dbUrl            = value;
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        private string DbToken
+        {
+            get
+            {
+                var c =  DbHandler.Token;
+                _dbToken = c;
+                return c;
+            }
+            set
+            {
+                _dbToken = value;
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        private string _currentDbGuid;
+        private string DbUserId
+        {
+            get
+            {
+              _dbUserId = DbHandler.UserId;
+              return  DbHandler.UserId;
+            } 
+            set
+            {
+                _dbUserId        = value;
+                DbHandler.UserId = value;
+            }
+        }
+
+        private void DbUserIdTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _currentDbGuid = DbUserIdTextBox.Text;
+        }
+
+        private async void DbUserIdTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var t = sender as TextBox;
+            if (t == null) return;
+
+            var newGuid = t.Text;
+            if (_currentDbGuid == newGuid) return; // Return if no change
+            
+            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
+            {
+                t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
+            }
+            else
+            {
+                _currentDbGuid = t.Text;
+                _dbUserId      = t.Text; // Store to temp prop
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        [DebuggerHidden]
+        private async void ValidateAndSaveDbButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Store current value in local vars
+            var curUrl   = DbHandler.Uri;
+            var curToken = DbHandler.Token;
+            var curGuid  = DbHandler.UserId;
+            
+            try
+            {
+                // Set the value from prop
+                DbHandler.Uri    = _dbUrl;
+                DbHandler.Token  = _dbToken;
+                DbHandler.UserId = _dbUserId;
+                
+                var r = Random.Shared.Next(100); // Generate random int for data verification
+
+                await DbHandler.Init(true, true); // Initialize database
+                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
+                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
+                
+                DbWarningSaveIcon.Visibility = Visibility.Collapsed;
+                await SpawnDialog(
+                                  Lang._Misc.EverythingIsOkay,
+                                  Lang._SettingsPage.Database_ConnectionOk,
+                                  sender as UIElement,
+                                  Lang._Misc.Close,
+                                  null,
+                                  null,
+                                  ContentDialogButton.Close
+                                 ); // Show success dialog
+            }
+            catch (Exception ex)
+            {
+                // Revert value if fail
+                DbHandler.Uri    = curUrl;
+                DbHandler.Token  = curToken;
+                DbHandler.UserId = curGuid;
+                
+                var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+                ErrorSender.SendException(newEx); // Send error with dialog
+            }
+        }
+
+        private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                var g = Guid.CreateVersion7();
+                DbUserIdTextBox.Text         = g.ToString();
+                _dbUserId                    = g.ToString();
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+        #endregion
         #endregion
 
         #region Keyboard Shortcuts
