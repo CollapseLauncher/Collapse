@@ -80,7 +80,7 @@ namespace CollapseLauncher
             // Get the file info
             FileInfo fileInfo = new FileInfo(asset.N);
 
-            // Check if the file exist or has unmatched size
+            // Check if the file exist
             if (!fileInfo.Exists)
             {
                 // Update the total progress and found counter

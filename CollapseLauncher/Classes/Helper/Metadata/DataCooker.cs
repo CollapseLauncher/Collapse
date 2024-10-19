@@ -179,7 +179,6 @@ namespace CollapseLauncher.Helper.Metadata
 
         private static int DecompressDataFromBrotli(Span<byte> outData, int compressedSize, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
         {
-            int dataWritten;
             BrotliDecoder decoder = new BrotliDecoder();
 
             int offset = 0;
@@ -197,14 +196,11 @@ namespace CollapseLauncher.Helper.Metadata
                 throw new DataMisalignedException("Decompressed data is misaligned!");
             }
 
-            dataWritten = decompressedWritten;
-            return dataWritten;
+            return decompressedWritten;
         }
 
         private static unsafe int DecompressDataFromZstd(Span<byte> outData, int compressedSize, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
         {
-            int dataWritten;
-
             fixed (byte* inputBuffer = &dataRawBuffer[0])
                 fixed (byte* outputBuffer = &outData[0])
                 {
@@ -228,8 +224,7 @@ namespace CollapseLauncher.Helper.Metadata
                         throw new DataMisalignedException("Decompressed data is misaligned!");
                     }
 
-                    dataWritten = decompressedWritten;
-                    return dataWritten;
+                    return decompressedWritten;
                 }
         }
     }

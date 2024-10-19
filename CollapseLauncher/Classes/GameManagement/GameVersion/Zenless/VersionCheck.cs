@@ -54,8 +54,7 @@ namespace CollapseLauncher.GameVersioning
                 }
 
                 // Try serve a dinner and if it fails, then GET OUT!
-                bool isServed = DataCooker.IsServeV3Data(keyUtf8Base64);
-                if (!isServed)
+                if (!DataCooker.IsServeV3Data(keyUtf8Base64))
                     goto QuitFail;
 
                 // Enjoy the meal (i guess?)
