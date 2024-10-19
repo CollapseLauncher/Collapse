@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless.JsonProperties;
 
-public struct SystemSettingLocalData<TData>
+public readonly struct SystemSettingLocalData<TData>
     where TData : struct
 {
     private const string TypeKey = "MoleMole.SystemSettingLocalData";
