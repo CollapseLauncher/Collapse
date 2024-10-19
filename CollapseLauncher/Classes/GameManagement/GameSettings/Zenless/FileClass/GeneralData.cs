@@ -469,7 +469,45 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
         set =>
             _envQualityData?.SetDataEnum(value);
     }
-    
+
+    // Key 12155 Global Illumination
+    private SystemSettingLocalData<QualityOption3>? _envGlobalIllumination;
+
+    /// <summary>
+    /// Sets the in-game global illumination settings for Environment
+    /// </summary>
+    /// <see cref="QualityOption3"/>
+    [JsonIgnore]
+    public QualityOption3 GlobalIllumination
+    {
+        get =>
+            (_envGlobalIllumination.HasValue
+                ? _envGlobalIllumination
+                : _envGlobalIllumination = SystemSettingDataMap!.AsSystemSettingLocalData("12155",
+                    QualityOption3.High)).Value
+                                         .GetDataEnum<QualityOption3>();
+        set =>
+            _envGlobalIllumination?.SetDataEnum(value);
+    }
+
+    // Key 8 VSync
+    private SystemSettingLocalData<int>? _vMotionBlur;
+
+    /// <summary>
+    /// Set Motion Blur mode
+    /// </summary>
+    [JsonIgnore]
+    public bool MotionBlur
+    {
+        get =>
+            (_vMotionBlur.HasValue
+                ? _vMotionBlur
+                : _vMotionBlur = SystemSettingDataMap!
+                   .AsSystemSettingLocalData("106", 1)).Value.GetData() == 1;
+        set =>
+            _vMotionBlur?.SetData(value ? 1 : 0);
+    }
+
     // Key 110 FPS
     private SystemSettingLocalData<FpsOption>? _fpsData;
 
