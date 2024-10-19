@@ -473,7 +473,10 @@ namespace CollapseLauncher.Interfaces
                     Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
 
                 // Calculate the timelapse
-                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedAllNoReset;
+                double progressTimeAvg = speedPerFile > 0 ?
+                    (_progressPerFileSizeTotal - _progressPerFileSizeCurrent) / speedPerFile :
+                    (_progressAllSizeTotal - _progressAllSizeCurrent) / speedAllNoReset;
+
                 _sophonProgress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
 
                 // Update progress
