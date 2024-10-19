@@ -38,7 +38,7 @@ namespace CollapseLauncher.GameVersioning
                 return base.TryFindGamePathFromExecutableAndConfig(path, executableName);
             }
 
-            return null;
+            return basePath;
         }
 
         protected override bool IsExecutableFileExist(string? executableName)
