@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.Sleepy;
 using Hi3Helper.Shared.ClassStruct;
@@ -271,6 +272,15 @@ namespace CollapseLauncher
         internal static IEnumerable<FilePropertiesRemote?> RegisterMainCategorizedAssetsToHashSet(this IEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string baseUrl)
             => assetEnumerable.Select(asset => ReturnCategorizedYieldValue(hashSet, assetIndex, asset, baseLocalPath, baseUrl));
 
+        internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterMainCategorizedAssetsToHashSetAsync(this IAsyncEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string baseUrl, [EnumeratorCancellation] CancellationToken token = default)
+
+        {
+            await foreach (PkgVersionProperties asset in assetEnumerable.WithCancellation(token))
+            {
+                yield return ReturnCategorizedYieldValue(hashSet, assetIndex, asset, baseLocalPath, baseUrl);
+            }
+        }
+
         internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterResCategorizedAssetsToHashSetAsync(this IAsyncEnumerable<PkgVersionProperties> assetEnumerable, List<FilePropertiesRemote> assetIndex, Dictionary<string, FilePropertiesRemote> hashSet, string baseLocalPath, string basePatchUrl, string baseResUrl)
         {
             await foreach (PkgVersionProperties asset in assetEnumerable)
@@ -381,6 +391,22 @@ namespace CollapseLauncher
             }
 
             return indexOfOffset >= 0 ? asset.N.AsSpan(indexOfOffset) : ReadOnlySpan<char>.Empty;
+        }
+
+        internal static async IAsyncEnumerable<PkgVersionProperties> EnumerateStreamToPkgVersionPropertiesAsync(
+            this Stream stream,
+            [EnumeratorCancellation] CancellationToken token = default)
+        {
+            using TextReader reader = new StreamReader(stream);
+            string? currentLine;
+            while (!string.IsNullOrEmpty(currentLine = await reader.ReadLineAsync(token)))
+            {
+                PkgVersionProperties? property = currentLine.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
+                if (property == null)
+                    continue;
+
+                yield return property;
+            }
         }
     }
 }

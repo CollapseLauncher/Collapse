@@ -94,9 +94,38 @@ namespace CollapseLauncher
                 Dictionary<string, string> repoMetadata = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
-                if (!(repoMetadata.TryGetValue(_gameVersion.VersionString, out var value)))
+                if (!repoMetadata.TryGetValue(_gameVersion.VersionString, out var value))
                 {
-                    throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+                    // If version override is on, then throw
+                    if (_isVersionOverride)
+                        throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+
+                    // Otherwise, fallback to the launcher's pkg_version
+                    RegionResourceVersion latestZipApi = GameVersionManagerCast?.GetGameLatestZip(GameInstallStateEnum.Installed).FirstOrDefault();
+                    string latestZipApiUrl = latestZipApi?.decompressed_path;
+
+                    // Throw if latest zip api URL returns null
+                    if (string.IsNullOrEmpty(latestZipApiUrl))
+                        throw new NullReferenceException("Cannot find latest zip api url while failing back to pkg_version");
+
+                    // Assign the URL based on the version
+                    _gameRepoURL = latestZipApiUrl;
+
+                    // Combine pkg_version url
+                    latestZipApiUrl = ConverterTool.CombineURLFromString(latestZipApiUrl, "pkg_version");
+
+                    // Read pkg_version stream response
+                    await using Stream stream = await FallbackCDNUtil.GetHttpStreamFromResponse(latestZipApiUrl, token);
+                    await foreach (FilePropertiesRemote asset in stream
+                        .EnumerateStreamToPkgVersionPropertiesAsync(token)
+                        .RegisterMainCategorizedAssetsToHashSetAsync(assetIndex, hashSet, _gamePath, _gameRepoURL, token))
+                    {
+                        // If entry is null (means, an existing entry has been overwritten), then next
+                        if (asset == null)
+                            continue;
+
+                        assetIndex.Add(asset);
+                    }
                 }
 
                 // Assign the URL based on the version
