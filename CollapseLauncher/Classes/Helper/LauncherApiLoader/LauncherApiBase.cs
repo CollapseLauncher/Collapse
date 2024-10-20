@@ -73,7 +73,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
         }
 
-        protected virtual async ValueTask LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
+        protected virtual async Task LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
                                                          CancellationToken     token)
         {
             await Task.WhenAll([

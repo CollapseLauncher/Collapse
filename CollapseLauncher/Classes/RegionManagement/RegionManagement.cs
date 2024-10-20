@@ -28,20 +28,8 @@ namespace CollapseLauncher
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]      
     public sealed partial class MainPage
     {
-        private enum ResourceLoadingType
-        {
-            LocalizedResource,
-            DownloadInformation,
-            DownloadBackground
-        }
-
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool IsLoadRegionComplete { get; set; }
-
-        private const uint                           MaxRetry                   = 5; // Max 5 times of retry attempt
-        private const uint                           LoadTimeout                = 10; // 10 seconds of initial Load Timeout
-        private const uint                           BackgroundImageLoadTimeout = 3600; // Give background image download 1 hour of timeout
-        private const uint                           LoadTimeoutStep            = 5; // Step 5 seconds for each timeout retries
 
         private static  string        RegionToChangeName { get => $"{GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameName, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(LauncherMetadataHelper.CurrentMetadataConfigGameRegion, Lang._GameClientRegions)}"; }
         private         List<object>  LastMenuNavigationItem;
@@ -160,7 +148,7 @@ namespace CollapseLauncher
             LauncherFrame.BackStack.Clear();
         }
 
-        private async ValueTask DownloadBackgroundImage(CancellationToken Token)
+        private async Task DownloadBackgroundImage(CancellationToken Token)
         {
             // Get and set the current path of the image
             string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");

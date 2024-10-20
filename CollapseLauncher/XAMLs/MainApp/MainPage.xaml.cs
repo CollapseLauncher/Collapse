@@ -515,7 +515,7 @@ namespace CollapseLauncher
         {
             var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig!.GameLauncherApi!;
             GamePresetProperty currentGameProperty = GetCurrentGameProperty();
-            bool isUseCustomPerRegionBg = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+            bool isUseCustomPerRegionBg = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
 
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
@@ -523,7 +523,7 @@ namespace CollapseLauncher
             // Check if Regional Custom BG is enabled and available
             if (isUseCustomPerRegionBg)
             {
-                var regionBgPath = ((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath;
+                var regionBgPath = currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath;
                 if (!string.IsNullOrEmpty(regionBgPath) && File.Exists(regionBgPath))
                 {
                     if (BackgroundMediaUtility.GetMediaType(regionBgPath) == BackgroundMediaUtility.MediaType.StillImage)
