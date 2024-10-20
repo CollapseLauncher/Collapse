@@ -10,17 +10,15 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
-    internal partial class StarRailRepair
+    internal partial class ZenlessRepair
     {
         private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            _status.ActivityStatus = Lang._GameRepairPage.Status11;
+            _status.ActivityStatus = Locale.Lang._GameRepairPage.Status11;
             _status.IsProgressAllIndetermined = true;
             _status.IsProgressPerFileIndetermined = true;
 
@@ -103,8 +101,8 @@ namespace CollapseLauncher
             _progressAllCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                string.Format(Locale.Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
+                string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             // If asset type is unused, then delete it
@@ -115,15 +113,14 @@ namespace CollapseLauncher
                 {
                     fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
-                    LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
+                    Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
-                RemoveHashMarkFile(asset.AssetIndex.N, out _, out _);
             }
             else
             {
                 // Start asset download task
                 await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N!, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
-                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
