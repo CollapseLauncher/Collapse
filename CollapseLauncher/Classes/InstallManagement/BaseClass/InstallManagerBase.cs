@@ -1574,6 +1574,10 @@ namespace CollapseLauncher.InstallManager.Base
                         {
                             indexOfArgument = asset.RunCommand.IndexOf(' ');
                         }
+                        else
+                        {
+                            indexOfArgument = -1;
+                        }
 
                         if (indexOfArgument >= 0)
                         {
