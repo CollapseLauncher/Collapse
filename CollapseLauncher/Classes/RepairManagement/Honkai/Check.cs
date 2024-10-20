@@ -21,11 +21,14 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
-            _status.IsProgressPerFileIndetermined = false;
+            if (_status != null)
+            {
+                _status.IsProgressAllIndetermined     = false;
+                _status.IsProgressPerFileIndetermined = false;
 
-            // Show the asset entry panel
-            _status.IsAssetEntryPanelShow = true;
+                // Show the asset entry panel
+                _status.IsAssetEntryPanelShow = true;
+            }
 
             // Find unused assets
             CheckUnusedAsset(assetIndex, brokenAssetIndex);
@@ -60,6 +63,8 @@ namespace CollapseLauncher
                         case FileType.Video:
                             CheckAssetTypeVideo(asset, brokenAssetIndex);
                             break;
+                        case FileType.Generic:
+                        case FileType.Unused:
                         default:
                             await CheckAssetTypeGeneric(asset, brokenAssetIndex, threadToken);
                             break;
@@ -123,7 +128,10 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -160,13 +168,15 @@ namespace CollapseLauncher
 
                 // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
-                if (!file.Exists)
+                switch (file.Exists)
                 {
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found locally", LogType.Warning, true);
-                } else if (file.Exists && file.Length != asset.S && !asset.AudioPatchInfo.HasValue)
-                {
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true);
-                } // length mismatch
+                    case false:
+                        LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found locally", LogType.Warning, true);
+                        break;
+                    case true when file.Length != asset.S && !asset.AudioPatchInfo.HasValue:
+                        LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true); // length mismatch
+                        break;
+                }
 
                 // Increment current Total Size
                 _progressAllSizeCurrent += asset.S;
@@ -208,20 +218,30 @@ namespace CollapseLauncher
                     // Increment/decrement the size of the file based on size differences
                     _progressAllSizeCurrent += sizeDifference;
                     // Increment progress count and size
-                    _progressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
-                    _progressAllCountFound++;
+                    if (asset.AudioPatchInfo != null)
+                    {
+                        _progressAllSizeFound +=
+                            asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
+                        _progressAllCountFound++;
 
-                    // Add asset to Display
-                    Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            asset.IsPatchApplicable ? RepairAssetType.AudioUpdate : RepairAssetType.Audio,
-                            Path.GetDirectoryName(asset.N),
-                            asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S,
-                            localCRC,
-                            asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.NewAudioMD5Array : asset.CRCArray
-                        )
-                    ));
+                        // Add asset to Display
+                        Dispatch(() => AssetEntry.Add(
+                                                      new AssetProperty<RepairAssetType>(
+                                                           Path.GetFileName(asset.N),
+                                                           asset.IsPatchApplicable
+                                                               ? RepairAssetType.AudioUpdate
+                                                               : RepairAssetType.Audio,
+                                                           Path.GetDirectoryName(asset.N),
+                                                           asset.IsPatchApplicable
+                                                               ? asset.AudioPatchInfo.Value.PatchFileSize
+                                                               : asset.S,
+                                                           localCRC,
+                                                           asset.IsPatchApplicable
+                                                               ? asset.AudioPatchInfo.Value.NewAudioMD5Array
+                                                               : asset.CRCArray
+                                                          )
+                                                     ));
+                    }
 
                     // Add asset into targetAssetIndex
                     targetAssetIndex.Add(asset);
@@ -236,7 +256,10 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -384,7 +407,10 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;

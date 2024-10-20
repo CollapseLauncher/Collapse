@@ -65,8 +65,12 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            _status.ActivityStatus = Lang._GameRepairPage.Status2;
-            _status.IsProgressAllIndetermined = true;
+            if (_status != null)
+            {
+                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+                _status.IsProgressAllIndetermined = true;
+            }
+
             UpdateStatus();
             StarRailRepairExtension.ClearHashtable();
 
@@ -83,10 +87,10 @@ namespace CollapseLauncher
             try
             {
                 // Get the primary manifest
-                await GetPrimaryManifest(downloadClient, token, assetIndex);
+                await GetPrimaryManifest(token, assetIndex);
 
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
-                if (this._isOnlyRecoverMain && base._isVersionOverride)
+                if (_isOnlyRecoverMain && _isVersionOverride)
                 {
                     _originAssetIndex = new List<FilePropertiesRemote>();
                     foreach (FilePropertiesRemote asset in assetIndex)
@@ -141,17 +145,17 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            _gameVersionManager.GameAPIProp.data?.plugins?.ForEach(plugin =>
             {
                 assetIndex.RemoveAll(asset =>
                 {
-                    return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                    return plugin.package?.validate?.Exists(validate => validate.path == asset.N) ?? false;
                 });
             });
         }
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(DownloadClient downloadClient, CancellationToken token, List<FilePropertiesRemote> assetIndex)
+        private async Task GetPrimaryManifest(CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Initialize pkgVersion list
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
@@ -172,7 +176,7 @@ namespace CollapseLauncher
                 _gameRepoURL = value;
             }
             // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
-            catch when (base._isVersionOverride) { throw; }
+            catch when (_isVersionOverride) { throw; }
 
             // Fetch the asset index from CDN
             // Set asset index URL
@@ -364,7 +368,11 @@ namespace CollapseLauncher
 
                 // Assign the default value and write to the file, then return.
                 returnValue = new string[] { fallbackCurrentLangname };
-                File.WriteAllLines(audioLangListPathStatic, returnValue);
+                if (audioLangListPathStatic != null)
+                {
+                    File.WriteAllLines(audioLangListPathStatic, returnValue);
+                }
+
                 return returnValue;
             }
 
