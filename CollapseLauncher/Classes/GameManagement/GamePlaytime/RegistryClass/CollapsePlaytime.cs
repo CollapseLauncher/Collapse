@@ -1,10 +1,13 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Helper.Database;
+using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GamePlaytime
@@ -18,10 +21,13 @@ namespace CollapseLauncher.GamePlaytime
         private const string LastPlayedValueName = "CollapseLauncher_LastPlayed";
         private const string StatsValueName      = "CollapseLauncher_PlaytimeStats";
 
-        private static HashSet<int> _isDeserializing = [];
-        private        RegistryKey           _registryRoot;
-        private        int                   _hashID;
-
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
+        private  static HashSet<int>      _isDeserializing = [];
+        private         RegistryKey       _registryRoot;
+        private         int               _hashID;
+        private         IGameVersionCheck _gameVersion;
+        private         IGameSettings     _gameSettings;
+        
         #endregion
 
         #region Properties
@@ -79,7 +85,9 @@ namespace CollapseLauncher.GamePlaytime
         /// <summary>
         /// Reads from the Registry and deserializes the contents.
         /// </summary>
-        public static CollapsePlaytime Load(RegistryKey root, int hashID)
+        public static CollapsePlaytime Load(RegistryKey root, int hashID,
+                                            IGameVersionCheck gameVersion,
+                                            IGameSettings gameSettings)
         {
             try
             {
@@ -90,7 +98,7 @@ namespace CollapseLauncher.GamePlaytime
                 int? lastPlayed = (int?)root.GetValue(LastPlayedValueName,null);
                 object? stats = root.GetValue(StatsValueName, null);
 
-                CollapsePlaytime playtime;
+                CollapsePlaytime? playtimeInner;
 
                 if (stats != null)
                 {
@@ -98,19 +106,21 @@ namespace CollapseLauncher.GamePlaytime
 #if DEBUG
                     LogWriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    playtime = byteStr.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
+                    playtimeInner = byteStr.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
                 }
                 else
                 {
-                    playtime = new CollapsePlaytime();
+                    playtimeInner = new CollapsePlaytime();
                 }
 
-                playtime._registryRoot = root;
-                playtime._hashID       = hashID;
-                playtime.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
-                playtime.LastPlayed    = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null;
+                playtimeInner._gameVersion  = gameVersion;
+                playtimeInner._gameSettings = gameSettings;
+                playtimeInner._registryRoot = root;
+                playtimeInner._hashID       = hashID;
+                playtimeInner.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
+                playtimeInner.LastPlayed    = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null;
 
-                return playtime;
+                return playtimeInner;
             }
             catch (Exception ex)
             {
@@ -121,19 +131,25 @@ namespace CollapseLauncher.GamePlaytime
                 _isDeserializing.Remove(hashID);
             }
 
-            return new CollapsePlaytime() { _hashID = hashID, _registryRoot = root };
+            return new CollapsePlaytime
+            { 
+                _hashID = hashID,
+                _registryRoot = root,
+                _gameVersion = gameVersion,
+                _gameSettings = gameSettings
+            };
         }
 
         /// <summary>
         /// Serializes all fields and saves them to the Registry.
         /// </summary>
-        public void Save()
+        public void Save(bool forceUpdateDb = false)
         {
             try
             {
                 if (_registryRoot == null) throw new NullReferenceException($"Cannot save playtime since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, true);
+                string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
@@ -144,6 +160,12 @@ namespace CollapseLauncher.GamePlaytime
                 double? lastPlayed = (LastPlayed?.ToUniversalTime() - BaseDate)?.TotalSeconds;
                 if (lastPlayed != null)
                     _registryRoot.SetValue(LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
+                
+                if (DbHandler.IsEnabled && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
+                    ((DateTime.Now - LastDbUpdate).TotalMinutes >= 5 || forceUpdateDb)) // Sync only every 5 minutes to reduce database usage
+                {
+                    _ = UpdatePlaytime_Database_Push(data, TotalPlaytime.TotalSeconds, lastPlayed);
+                }
             }
             catch (Exception ex)
             {
@@ -164,7 +186,7 @@ namespace CollapseLauncher.GamePlaytime
             ControlDate     = DateTime.Today;
             LastPlayed      = null;
 
-            if (!_isDeserializing.Contains(_hashID)) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save(true);
         }
 
         /// <summary>
@@ -172,7 +194,8 @@ namespace CollapseLauncher.GamePlaytime
         /// </summary>
         /// <param name="timeSpan">New playtime value</param>
         /// <param name="reset">Reset all other fields</param>
-        public void Update(TimeSpan timeSpan, bool reset = true)
+        /// <param name="forceUpdateDb">Force update database data</param>
+        public void Update(TimeSpan timeSpan, bool reset = true, bool forceUpdateDb = false)
         {
             if (reset)
             {
@@ -185,7 +208,7 @@ namespace CollapseLauncher.GamePlaytime
             
             TotalPlaytime = timeSpan;
 
-            if (!_isDeserializing.Contains(_hashID)) Save();
+            if (!_isDeserializing.Contains(_hashID)) Save(forceUpdateDb);
         }
 
         /// <summary>
@@ -224,6 +247,154 @@ namespace CollapseLauncher.GamePlaytime
         private static bool IsDifferentMonth(DateTime date1, DateTime date2) => date1.Year != date2.Year || date1.Month != date2.Month;
 
         private static bool IsDifferentWeek(DateTime date1, DateTime date2) => date1.Year != date2.Year || ISOWeek.GetWeekOfYear(date1) != ISOWeek.GetWeekOfYear(date2);
+        #endregion
+
+        #region Database Extension
+        // processing flags, prevents double task
+        private bool _isDbSyncing;
+        private bool _isDbPulling;
+        private bool _isDbPullSuccess;
+
+        public DateTime LastDbUpdate = DateTime.MinValue;
+        
+        // value store
+        private string? _jsonDataDb;
+        private double? _totalTimeDb;
+        private double? _lastPlayedDb;
+        private int?    _unixStampDb;
+        
+        // Key names
+        private string KeyPlaytimeJson => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-js";
+        private string KeyTotalTime    => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-total";
+        private string KeyLastPlayed   => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-lastPlayed";
+        private string KeyLastUpdated  => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-lu";
+        
+
+        #region Sync Methods
+        /// <summary>
+        /// Sync from/to DB at init
+        /// </summary>
+        /// <returns>true if require refresh, false if dont.</returns>
+        public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync()
+        {
+            LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
+            try
+            {
+                // Fetch database last update stamp
+                var stampDbStr = await DbHandler.QueryKey(KeyLastUpdated);
+                _unixStampDb     = !string.IsNullOrEmpty(stampDbStr) ? Convert.ToInt32(stampDbStr) : null;
+                
+                // Compare unix stamp from config
+                var unixStampLocal = Convert.ToInt32(DbConfig.GetConfig(KeyLastUpdated).ToString());
+                if (_unixStampDb == unixStampLocal) 
+                {
+                    LogWriteLine("[CollapsePlaytime::DbSync] Sync stamp equal, nothing needs to be done~", LogType.Default, true);
+                    return (false, null); // Do nothing if stamp is equal
+                }
+
+                // When Db stamp is newer, sync from Db
+                if (_unixStampDb > unixStampLocal)
+                {
+                    // Pull values from DB
+                    await UpdatePlaytime_Database_Pull();
+                    if (!_isDbPullSuccess) 
+                    {
+                        LogWriteLine("[CollapsePlaytime::DbSync] Database pull failed, skipping sync~", LogType.Error);
+                        return (false, null); // Return if pull failed
+                    }
+                    
+                    if (string.IsNullOrEmpty(_jsonDataDb))
+                    {
+                        LogWriteLine("[CollapsePlaytime::DbSync] _jsonDataDb is empty, skipping sync~", default, true);
+                        return (false, null);
+                    }
+                    LogWriteLine("[CollapsePlaytime::DbSync] Database data is newer! Pulling data~", LogType.Default, true);
+                    CollapsePlaytime? playtimeInner = _jsonDataDb.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime,
+                                                        new CollapsePlaytime());
+
+                    playtimeInner!.TotalPlaytime = TimeSpan.FromSeconds(_totalTimeDb ?? 0);
+                    if (_lastPlayedDb != null) playtimeInner.LastPlayed = BaseDate.AddSeconds((int)_lastPlayedDb);
+                    playtimeInner._registryRoot = _registryRoot;
+                    playtimeInner._gameSettings = _gameSettings;
+                    playtimeInner._hashID       = _hashID;
+                    playtimeInner._gameVersion  = _gameVersion;
+                    DbConfig.SetAndSaveValue(KeyLastUpdated, _unixStampDb.ToString());
+                    LastDbUpdate = DateTime.Now;
+                    playtimeInner.Save();
+                    return (true, playtimeInner);
+                }
+
+                if (_unixStampDb < unixStampLocal)
+                {
+                    LogWriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
+                    Save(true);
+                }
+                return (false, null);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"[CollapsePlaytime::DbSync] Failed when trying to do sync operation\r\n{ex}",
+                             LogType.Error, true);
+                return (false, null);
+            }
+        }
+        #endregion
+        
+        #region DB Operation Methods
+        private async Task UpdatePlaytime_Database_Push(string jsonData, double totalTime, double? lastPlayed)
+        {
+            if (_isDbSyncing) return;
+            var curDateTime = DateTime.Now;
+            _isDbSyncing = true;
+            try
+            {
+                var unixStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                await DbHandler.StoreKeyValue(KeyPlaytimeJson, jsonData);
+                await DbHandler.StoreKeyValue(KeyTotalTime,    totalTime.ToString(CultureInfo.InvariantCulture));
+                await DbHandler.StoreKeyValue(KeyLastPlayed,   lastPlayed != null ? lastPlayed.Value.ToString(CultureInfo.InvariantCulture) : "null");
+                await DbHandler.StoreKeyValue(KeyLastUpdated,  unixStamp.ToString());
+                DbConfig.SetAndSaveValue(KeyLastUpdated, unixStamp);
+                _unixStampDb = Convert.ToInt32(unixStamp);
+                LastDbUpdate = curDateTime;
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
+            }
+            finally
+            {
+                _isDbSyncing = false;
+            }
+        }
+        
+        private async Task UpdatePlaytime_Database_Pull()
+        {
+            if (_isDbPulling) return;
+            _isDbPullSuccess = false;
+            try
+            {
+                _isDbPulling = true;
+
+                _jsonDataDb   = await DbHandler.QueryKey(KeyPlaytimeJson);
+                
+                var totalTimeDbStr = await DbHandler.QueryKey(KeyTotalTime);
+                _totalTimeDb  = string.IsNullOrEmpty(totalTimeDbStr) ? null : Convert.ToDouble(totalTimeDbStr, CultureInfo.InvariantCulture);
+                
+                var lpDb = await DbHandler.QueryKey(KeyLastPlayed);
+                _lastPlayedDb    = !string.IsNullOrEmpty(lpDb) && !lpDb.Contains("null") ? Convert.ToDouble(lpDb, CultureInfo.InvariantCulture) : null; // if Db data is null, return null
+                
+                _isDbPullSuccess = true;
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
+            }
+            finally
+            {
+                _isDbPulling = false;
+            }
+        }
+        #endregion
         #endregion
     }
 }

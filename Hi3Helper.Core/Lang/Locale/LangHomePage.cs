@@ -57,6 +57,7 @@ namespace Hi3Helper
                 public string GameSettings_Panel4ShowEventsPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
                 public string GameSettings_Panel4ShowSocialMediaPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;
                 public string GameSettings_Panel4ShowPlaytimeButton { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowPlaytimeButton;
+                public string GameSettings_Panel4SyncPlaytimeDatabase { get; set; } = LangFallback?._HomePage.GameSettings_Panel4SyncPlaytimeDatabase;
                 public string GameSettings_Panel4CreateShortcutBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4CreateShortcutBtn;
                 public string GameSettings_Panel4AddToSteamBtn { get; set; } = LangFallback?._HomePage.GameSettings_Panel4AddToSteamBtn;
                 public string CreateShortcut_FolderPicker { get; set; } = LangFallback?._HomePage.CreateShortcut_FolderPicker;
@@ -65,6 +66,7 @@ namespace Hi3Helper
                 public string GamePlaytime_Idle_Panel1Minutes { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_Panel1Minutes;
                 public string GamePlaytime_Idle_ResetBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ResetBtn;
                 public string GamePlaytime_Idle_ChangeBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ChangeBtn;
+                public string GamePlaytime_Idle_SyncDb { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_SyncDb;
                 public string GamePlaytime_Running_Info1 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info1;
                 public string GamePlaytime_Running_Info2 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info2;
                 public string GamePlaytime_Display { get; set; } = LangFallback?._HomePage.GamePlaytime_Display;

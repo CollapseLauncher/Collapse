@@ -99,6 +99,12 @@
         "resolved": "1.11.67",
         "contentHash": "xnt6f8E56oK9nLqgkF42bsVSAkUuIuJnSfvzimK7GwvbhdXWRmGsx4A8AKmLOlCUq1rVSUADKalxnSMizHt4Mg=="
       },
+      "Libsql.Client": {
+        "type": "Direct",
+        "requested": "[0.5.0, )",
+        "resolved": "0.5.0",
+        "contentHash": "5Tw6O9sBDAN1aV+kpOSVvqvFk6Ahk6bYz0TTx3808Dp40M45gKTtzTzI9SS1VeAkljE6BAOeKaykpPnG36oOgw=="
+      },
       "Markdig.Signed": {
         "type": "Direct",
         "requested": "[0.37.0, )",
@@ -465,6 +471,12 @@
       }
     },
     "net9.0-windows10.0.22621/win-x64": {
+      "Libsql.Client": {
+        "type": "Direct",
+        "requested": "[0.5.0, )",
+        "resolved": "0.5.0",
+        "contentHash": "5Tw6O9sBDAN1aV+kpOSVvqvFk6Ahk6bYz0TTx3808Dp40M45gKTtzTzI9SS1VeAkljE6BAOeKaykpPnG36oOgw=="
+      },
       "Microsoft.DotNet.ILCompiler": {
         "type": "Direct",
         "requested": "[9.0.0-rc.2.24473.5, )",
