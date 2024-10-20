@@ -61,8 +61,6 @@ for:
 
         set channel=preview
 
-        set squirrel="C:\Users\appveyor\.nuget\packages\clowd.squirrel\2.11.1\tools"
-
         set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 
         echo.
@@ -95,16 +93,6 @@ for:
         xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
 
 
-        echo Preparing stub and updater...
-
-        copy %squirrel%\stubexecutable.exe DeployResource\CollapseLauncher.exe
-
-        copy %squirrel%\Update.exe DeployResource\Update.exe
-
-
-        %squirrel%\rcedit.exe DeployResource\CollapseLauncher.exe --set-file-version %version% --set-product-version %version% --set-icon CollapseLauncher\icon.ico --set-requested-execution-level requireAdministrator
-
-
         echo Making innosetup file...
 
         mkdir InnoTarget
@@ -120,13 +108,9 @@ for:
 
         mkdir SignArtifact\BuildArtifact-%version%
 
-        mkdir SignArtifact\Squirrel-Stub
-
         mkdir SignArtifact\InnoInstaller
 
         xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
-
-        copy DeployResource\CollapseLauncher.exe SignArtifact\Squirrel-Stub\CollapseLauncher.exe
 
         xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
 
@@ -204,8 +188,6 @@ for:
 
         set channel=stable
 
-        set squirrel="C:\Users\appveyor\.nuget\packages\clowd.squirrel\2.11.1\tools"
-
         set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 
         echo.
@@ -238,16 +220,6 @@ for:
         xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
 
 
-        echo Preparing stub and updater...
-
-        copy %squirrel%\stubexecutable.exe DeployResource\CollapseLauncher.exe
-
-        copy %squirrel%\Update.exe DeployResource\Update.exe
-
-
-        %squirrel%\rcedit.exe DeployResource\CollapseLauncher.exe --set-file-version %version% --set-product-version %version% --set-icon CollapseLauncher\icon.ico --set-requested-execution-level requireAdministrator
-
-
         echo Making innosetup file...
 
         mkdir InnoTarget
@@ -263,17 +235,12 @@ for:
 
         mkdir SignArtifact\BuildArtifact-%version%
 
-        mkdir SignArtifact\Squirrel-Stub
 
         mkdir SignArtifact\InnoInstaller
 
-
         xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
 
-        copy DeployResource\CollapseLauncher.exe SignArtifact\Squirrel-Stub\CollapseLauncher.exe
-
         xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
-
 
         
     test: off
