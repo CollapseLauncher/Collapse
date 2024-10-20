@@ -1063,75 +1063,91 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HashTools
-        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async Task<byte[]> CheckHashAsync<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
+            where T : HashAlgorithm
         {
             // Get length based on stream length or at least if bigger, use the default one
-            int bufferLen = stream is FileStream && _bufferBigLength < stream.Length ? (int)stream.Length : _bufferBigLength;
+            int bufferLen = _bufferMediumLength > stream.Length ? (int)stream.Length : _bufferMediumLength;
 
-            // Initialize Xxh64 instance and assign buffer
-            byte[] buffer = GC.AllocateUninitializedArray<byte>(bufferLen);
+            // Initialize buffer
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
 
-            // Do read activity
-            int read;
-            while ((read = await stream!.ReadAsync(buffer, token)) > 0)
+            try
             {
-                // Throw Cancellation exception if detected
-                token.ThrowIfCancellationRequested();
-
-                // Append buffer into hash block
-                hashProvider!.TransformBlock(buffer, 0, read, buffer, 0);
-
-                lock (this)
+                // Do read activity
+                int read;
+                while ((read = await stream!.ReadAsync(buffer, token)) > 0)
                 {
-                    // Increment total size counter
-                    if (updateTotalProgress) _progressAllSizeCurrent += read;
-                    // Increment per file size counter
-                    _progressPerFileSizeCurrent += read;
+                    // Throw Cancellation exception if detected
+                    token.ThrowIfCancellationRequested();
+
+                    // Append buffer into hash block
+                    hashProvider!.TransformBlock(buffer, 0, read, buffer, 0);
+
+                    lock (this)
+                    {
+                        // Increment total size counter
+                        if (updateTotalProgress) _progressAllSizeCurrent += read;
+                        // Increment per file size counter
+                        _progressPerFileSizeCurrent += read;
+                    }
+
+                    // Update status and progress for MD5 calculation
+                    UpdateProgressCRC();
                 }
 
-                // Update status and progress for MD5 calculation
-                UpdateProgressCRC();
+                // Finalize the hash calculation
+                hashProvider!.TransformFinalBlock(buffer, 0, read);
+
+                // Return computed hash byte
+                return hashProvider.Hash;
             }
-
-            // Finalize the hash calculation
-            hashProvider!.TransformFinalBlock(buffer, 0, read);
-
-            // Return computed hash byte
-            return hashProvider.Hash;
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
-        protected virtual async ValueTask<byte[]> CheckHashAsync(Stream stream, NonCryptographicHashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async Task<byte[]> CheckNonCryptoHashAsync<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
+            where T : NonCryptographicHashAlgorithm
         {
             // Get length based on stream length or at least if bigger, use the default one
-            int bufferLen = stream is FileStream && _bufferBigLength < stream.Length ? (int)stream.Length : _bufferBigLength;
+            int bufferLen = _bufferMediumLength > stream.Length ? (int)stream.Length : _bufferMediumLength;
 
-            // Initialize Xxh64 instance and assign buffer
-            byte[] buffer = GC.AllocateUninitializedArray<byte>(bufferLen);
+            // Initialize buffer
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
 
-            // Do read activity
-            int read;
-            while ((read = await stream!.ReadAsync(buffer, token)) > 0)
+            try
             {
-                // Throw Cancellation exception if detected
-                token.ThrowIfCancellationRequested();
-
-                // Append buffer into hash block
-                hashProvider.Append(buffer.AsSpan(0, read));
-
-                lock (this)
+                // Do read activity
+                int read;
+                while ((read = await stream!.ReadAsync(buffer, token)) > 0)
                 {
-                    // Increment total size counter
-                    if (updateTotalProgress) _progressAllSizeCurrent += read;
-                    // Increment per file size counter
-                    _progressPerFileSizeCurrent += read;
+                    // Throw Cancellation exception if detected
+                    token.ThrowIfCancellationRequested();
+
+                    // Append buffer into hash block
+                    hashProvider.Append(buffer.AsSpan(0, read));
+
+                    lock (this)
+                    {
+                        // Increment total size counter
+                        if (updateTotalProgress) _progressAllSizeCurrent += read;
+                        // Increment per file size counter
+                        _progressPerFileSizeCurrent += read;
+                    }
+
+                    // Update status and progress for Xxh64 calculation
+                    UpdateProgressCRC();
                 }
 
-                // Update status and progress for Xxh64 calculation
-                UpdateProgressCRC();
+                // Return computed hash byte
+                return hashProvider.GetHashAndReset();
             }
-
-            // Return computed hash byte
-            return hashProvider.GetHashAndReset();
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
         #endregion
 
