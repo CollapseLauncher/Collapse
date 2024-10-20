@@ -457,7 +457,7 @@ namespace Hi3Helper.Shared.Region
             { "IsUsePreallocatedDownloader", true },
             { "IsBurstDownloadModeEnabled", true },
             { "DownloadSpeedLimit", 0 },
-            { "DownloadChunkSize", 4 << 20 },
+            { "DownloadChunkSize", 20 << 20 },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },

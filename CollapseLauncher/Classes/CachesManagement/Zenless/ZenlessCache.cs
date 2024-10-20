@@ -5,12 +5,9 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
-    internal class ZenlessCache : ZenlessRepair, ICache, ICacheBase<ZenlessCache>
+    internal class ZenlessCache(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings)
+        : ZenlessRepair(parentUI, gameVersionManager, gameSettings, false, null, true), ICache, ICacheBase<ZenlessCache>
     {
-        public ZenlessCache(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings)
-            : base(parentUI, gameVersionManager, gameSettings, false, null, true)
-        { }
-
         public ZenlessCache AsBaseType() => this;
 
         public async Task StartUpdateRoutine(bool showInteractivePrompt = false)

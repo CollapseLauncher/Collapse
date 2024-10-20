@@ -1,18 +1,8 @@
 ﻿using Hi3Helper.EncTool.Parser.Sleepy.JsonConverters;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CollapseLauncher
 {
-    internal class ZenlessResManifest
-    {
-        [JsonPropertyName("remoteParentDir")]
-        public string ParentPath { get; set; }
-
-        [JsonPropertyName("files")]
-        public IAsyncEnumerable<ZenlessResManifestAsset> AssetList { get; set; }
-    }
-
     internal class ZenlessResManifestAsset
     {
         [JsonPropertyName("remoteName")]
