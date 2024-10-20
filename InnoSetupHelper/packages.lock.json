@@ -2,12 +2,6 @@
   "version": 1,
   "dependencies": {
     "net9.0": {
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.2.24473.5, )",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA=="
-      },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
         "requested": "[9.0.0-rc.2.24473.5, )",
@@ -19,22 +13,6 @@
         "requested": "[9.0.0-rc.2.24473.5, )",
         "resolved": "9.0.0-rc.2.24473.5",
         "contentHash": "BWkkIwLhG75+RnyBHGQd0Vrti8wqIBeNiAmHQrb6UiFny6qEQ+z6r61bFAOubw8dbp5S8nQrTS/wjJtpolkYTA=="
-      }
-    },
-    "net9.0/win-x64": {
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.2.24473.5, )",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA==",
-        "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.0-rc.2.24473.5"
-        }
-      },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Transitive",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "gtZORh0O2hlNn8D+ezseJs1SEAI83Ca+LC8vmAIqaYUbiAn5+6iqD+ytuztGo4Thjr/2qWXKn3l7GGQEQiCJMg=="
       }
     }
   }
