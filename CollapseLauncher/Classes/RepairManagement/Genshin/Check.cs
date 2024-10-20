@@ -201,7 +201,7 @@ namespace CollapseLauncher
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
                         Path.GetFileName(UsePersistent ? asset.remoteNamePersistent : asset.remoteName),
-                        RepairAssetType.General,
+                        RepairAssetType.Generic,
                         Path.GetDirectoryName(UsePersistent ? asset.remoteNamePersistent : asset.remoteName),
                         asset.fileSize,
                         null,
@@ -211,7 +211,7 @@ namespace CollapseLauncher
                 targetAssetIndex.Add(asset);
 
                 string remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
-                LogWriteLine($"File [T: {RepairAssetType.General}]: {(string.IsNullOrEmpty(remoteName) ? asset.localName : remoteName)} is not found or has unmatched size", LogType.Warning, true);
+                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {(string.IsNullOrEmpty(remoteName) ? asset.localName : remoteName)} is not found or has unmatched size", LogType.Warning, true);
                 return;
             }
 
@@ -249,7 +249,7 @@ namespace CollapseLauncher
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
                             Path.GetFileName(asset.remoteName),
-                            RepairAssetType.General,
+                            RepairAssetType.Generic,
                             Path.GetDirectoryName(asset.remoteName),
                             asset.fileSize,
                             localCRC,

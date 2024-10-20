@@ -51,7 +51,7 @@ namespace CollapseLauncher
                     // Assign a task depends on the asset type
                     switch (asset.FT)
                     {
-                        case FileType.Blocks:
+                        case FileType.Block:
                             await CheckAssetTypeBlocks(asset, brokenAssetIndex, threadToken);
                             break;
                         case FileType.Audio:
@@ -261,7 +261,7 @@ namespace CollapseLauncher
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.N),
-                        RepairAssetType.General,
+                        RepairAssetType.Generic,
                         Path.GetDirectoryName(asset.N),
                         asset.S,
                         null,
@@ -303,7 +303,7 @@ namespace CollapseLauncher
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
                             Path.GetFileName(asset.N),
-                            asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.General,
+                            asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.Generic,
                             Path.GetDirectoryName(asset.N),
                             asset.S,
                             localCRC,
@@ -559,7 +559,7 @@ namespace CollapseLauncher
                 // Determine the type of the asset
                 switch (asset.FT)
                 {
-                    case FileType.Blocks:
+                    case FileType.Block:
                         catalog.Add(path);
                         if (asset.BlockPatchInfo.HasValue)
                         {

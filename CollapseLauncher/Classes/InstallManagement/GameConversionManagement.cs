@@ -215,7 +215,7 @@ namespace CollapseLauncher
                             });
                         }
                         break;
-                    case FileType.Blocks:
+                    case FileType.Block:
                         {
                             _out.AddRange(BuildBlockManifest(Entry.BlkC, Entry.N));
                         }
