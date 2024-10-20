@@ -969,7 +969,7 @@ namespace CollapseLauncher.Interfaces
             where T : HashAlgorithm
         {
             // Get length based on stream length or at least if bigger, use the default one
-            int bufferLen = _bufferMediumLength > stream.Length ? (int)stream.Length : _bufferMediumLength;
+            int bufferLen = _bufferBigLength > stream.Length ? (int)stream.Length : _bufferBigLength;
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
@@ -1014,7 +1014,7 @@ namespace CollapseLauncher.Interfaces
             where T : NonCryptographicHashAlgorithm
         {
             // Get length based on stream length or at least if bigger, use the default one
-            int bufferLen = _bufferMediumLength > stream.Length ? (int)stream.Length : _bufferMediumLength;
+            int bufferLen = _bufferBigLength > stream.Length ? (int)stream.Length : _bufferBigLength;
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
