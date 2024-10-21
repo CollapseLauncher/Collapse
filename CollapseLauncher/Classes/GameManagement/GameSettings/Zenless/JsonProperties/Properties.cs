@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless.JsonProperties;
 
-public struct SystemSettingLocalData<TData>
+public readonly struct SystemSettingLocalData<TData>
     where TData : struct
 {
     private const string TypeKey = "MoleMole.SystemSettingLocalData";
@@ -44,7 +44,7 @@ public struct SystemSettingLocalData<TData>
 public static class SystemSettingLocalDataExt
 {
     public static SystemSettingLocalData<TData> AsSystemSettingLocalData<TData>(
-        [NotNull] this JsonNode node, string keyName, TData defaultData = default, int defaultVersion = 1)
+        [NotNull] this JsonNode? node, string keyName, TData defaultData = default, int defaultVersion = 1)
         where TData : struct
     {
         ArgumentNullException.ThrowIfNull(node, nameof(node));

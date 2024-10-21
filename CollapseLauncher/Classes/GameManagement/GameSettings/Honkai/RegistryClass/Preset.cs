@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -16,7 +16,7 @@ namespace CollapseLauncher.GameSettings
         public const string DefaultPresetName = "Custom";
     }
 
-    internal class Preset<T1, TObjectType> where T1 : IGameSettingsValue<T1> where TObjectType : JsonSerializerContext
+    internal class Preset<T1, TObjectType> where T1 : IGameSettingsValue<T1>
     {
 #nullable enable
         #region Fields
@@ -51,11 +51,11 @@ namespace CollapseLauncher.GameSettings
         #endregion
 
         #region Methods
-        public Preset(string presetJSONPath, TObjectType jsonContext)
+        public Preset(string presetJSONPath, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
             using (FileStream fs = new FileStream(presetJSONPath, FileMode.Open, FileAccess.Read))
             {
-                Presets = fs.Deserialize<Dictionary<string, T1>>(jsonContext);
+                Presets = fs.Deserialize(jsonType);
                 PresetKeys = GetPresetKeys();
             }
         }
@@ -66,10 +66,10 @@ namespace CollapseLauncher.GameSettings
         /// <param name="gameType">The type of the game</param>
         /// <param name="jsonContext">JSON source generation context</param>
         /// <returns>The instance of preset</returns>
-        public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, TObjectType jsonContext)
+        public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
             string presetPath = Path.Combine(AppFolder, $"Assets\\Presets\\{gameType}\\", $"{typeof(T1).Name}.json");
-            return new Preset<T1, TObjectType>(presetPath, jsonContext);
+            return new Preset<T1, TObjectType>(presetPath, jsonType);
         }
 
         /// <param name="key">The key of the preset</param>

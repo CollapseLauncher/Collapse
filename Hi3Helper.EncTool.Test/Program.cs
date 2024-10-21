@@ -1,5 +1,4 @@
-﻿using Hi3Helper.EncTool.Parser.AssetMetadata;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 
 namespace Hi3Helper.EncTool.Test
 {

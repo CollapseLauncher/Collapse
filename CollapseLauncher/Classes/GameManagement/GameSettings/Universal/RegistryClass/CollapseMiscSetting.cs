@@ -109,6 +109,12 @@ namespace CollapseLauncher.GameSettings.Universal
         /// The path of the custom BG for each region
         /// </summary>
         public string? CustomRegionBGPath { get; set; }
+#nullable restore
+
+        /// <summary>
+        /// Determines if the game playtime should be synced to the database
+        /// </summary>
+        public bool IsSyncPlaytimeToDatabase { get; set; } = true;
 
         #endregion
 
@@ -129,7 +135,7 @@ namespace CollapseLauncher.GameSettings.Universal
                     #if DEBUG
                     LogWriteLine($"Loaded Collapse Misc Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
                     #endif
-                    return byteStr.Deserialize<CollapseMiscSetting>(UniversalSettingsJSONContext.Default) ?? new CollapseMiscSetting();
+                    return byteStr.Deserialize(UniversalSettingsJSONContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
                 }
             }
             catch ( Exception ex )
@@ -150,7 +156,7 @@ namespace CollapseLauncher.GameSettings.Universal
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalSettingsJSONContext.Default, true);
+                string data = this.Serialize(UniversalSettingsJSONContext.Default.CollapseMiscSetting, true);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Collapse Misc Settings:\r\n{data}", LogType.Debug, true);

@@ -65,8 +65,12 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            _status.ActivityStatus = Lang._GameRepairPage.Status2;
-            _status.IsProgressAllIndetermined = true;
+            if (_status != null)
+            {
+                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+                _status.IsProgressAllIndetermined = true;
+            }
+
             UpdateStatus();
             StarRailRepairExtension.ClearHashtable();
 
@@ -83,10 +87,10 @@ namespace CollapseLauncher
             try
             {
                 // Get the primary manifest
-                await GetPrimaryManifest(downloadClient, token, assetIndex);
+                await GetPrimaryManifest(token, assetIndex);
 
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
-                if (this._isOnlyRecoverMain && base._isVersionOverride)
+                if (_isOnlyRecoverMain && _isVersionOverride)
                 {
                     _originAssetIndex = new List<FilePropertiesRemote>();
                     foreach (FilePropertiesRemote asset in assetIndex)
@@ -106,17 +110,19 @@ namespace CollapseLauncher
                 // not for delta patch integrity check.
                 if (!_isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
-                    // Read block metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
+                    await Task.WhenAll(
+                        // Read Block metadata
+                        _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token),
+                        _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token),
+                        // Read Audio metadata
+                        _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token),
+                        // Read Video metadata
+                        _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token)
+                        ).ConfigureAwait(false);
+
+                    // Convert Block, Audio and Video metadata to FilePropertiesRemote
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
-
-                    // Read Audio metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
-
-                    // Read Video metadata and convert to FilePropertiesRemote
-                    await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(downloadClient, _httpClient_FetchAssetProgress, token);
                     ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
                 }
 
@@ -141,17 +147,17 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            _gameVersionManager.GameAPIProp.data?.plugins?.ForEach(plugin =>
             {
                 assetIndex.RemoveAll(asset =>
                 {
-                    return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                    return plugin.package?.validate?.Exists(validate => validate.path == asset.N) ?? false;
                 });
             });
         }
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(DownloadClient downloadClient, CancellationToken token, List<FilePropertiesRemote> assetIndex)
+        private async Task GetPrimaryManifest(CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Initialize pkgVersion list
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
@@ -172,7 +178,7 @@ namespace CollapseLauncher
                 _gameRepoURL = value;
             }
             // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
-            catch when (base._isVersionOverride) { throw; }
+            catch when (_isVersionOverride) { throw; }
 
             // Fetch the asset index from CDN
             // Set asset index URL
@@ -184,7 +190,7 @@ namespace CollapseLauncher
             {
                 // Deserialize asset index and set it to list
                 AssetIndexV2 parserTool = new AssetIndexV2();
-                pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
+                pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
                 LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
             }
 
@@ -202,7 +208,7 @@ namespace CollapseLauncher
 
             // Start downloading metadata using FallbackCDNUtil
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
-            return await stream.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
+            return await stream.DeserializeAsync(CoreLibraryJSONContext.Default.DictionaryStringString, token);
         }
 
         private void ConvertPkgVersionToAssetIndex(List<PkgVersionProperties> pkgVersion, List<FilePropertiesRemote> assetIndex)
@@ -238,7 +244,7 @@ namespace CollapseLauncher
                                         },
                    typeAssetRelativeParentPath = string.Format(type switch
                                                                {
-                                                                   FileType.Blocks => _assetGameBlocksStreamingPath,
+                                                                   FileType.Block => _assetGameBlocksStreamingPath,
                                                                    FileType.Audio => _assetGameAudioStreamingPath,
                                                                    FileType.Video => _assetGameVideoStreamingPath,
                                                                    _ => string.Empty
@@ -364,7 +370,11 @@ namespace CollapseLauncher
 
                 // Assign the default value and write to the file, then return.
                 returnValue = new string[] { fallbackCurrentLangname };
-                File.WriteAllLines(audioLangListPathStatic, returnValue);
+                if (audioLangListPathStatic != null)
+                {
+                    File.WriteAllLines(audioLangListPathStatic, returnValue);
+                }
+
                 return returnValue;
             }
 
@@ -418,8 +428,8 @@ namespace CollapseLauncher
 
         private FileType ConvertFileTypeEnum(SRAssetType assetType) => assetType switch
         {
-            SRAssetType.Asb => FileType.Blocks,
-            SRAssetType.Block => FileType.Blocks,
+            SRAssetType.Asb => FileType.Block,
+            SRAssetType.Block => FileType.Block,
             SRAssetType.Audio => FileType.Audio,
             SRAssetType.Video => FileType.Video,
             _ => FileType.Generic
@@ -427,10 +437,10 @@ namespace CollapseLauncher
 
         private RepairAssetType ConvertRepairAssetTypeEnum(FileType assetType) => assetType switch
         {
-            FileType.Blocks => RepairAssetType.Block,
+            FileType.Block => RepairAssetType.Block,
             FileType.Audio => RepairAssetType.Audio,
             FileType.Video => RepairAssetType.Video,
-            _ => RepairAssetType.General
+            _ => RepairAssetType.Generic
         };
         #endregion
     }

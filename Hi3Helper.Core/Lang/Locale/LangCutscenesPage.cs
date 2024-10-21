@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangCutscenesPage _CutscenesPage { get; set; } = LangFallback?._CutscenesPage;
-            public sealed class LangCutscenesPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangCutscenesPage
             {
                 public string PageTitle { get; set; } = LangFallback?._CutscenesPage.PageTitle;
             }

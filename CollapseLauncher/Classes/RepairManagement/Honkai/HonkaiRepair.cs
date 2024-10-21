@@ -15,7 +15,6 @@ namespace CollapseLauncher
     internal partial class HonkaiRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
-        private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic" };
         private HonkaiCache _cacheUtil { get; init; }
@@ -40,16 +39,16 @@ namespace CollapseLauncher
         private protected List<FilePropertiesRemote> _originAssetIndex { get; set; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, GameVersionManager, GameSettings, null, "", versionOverride)
+        public HonkaiRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, ICache gameCacheManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, gameVersionManager, gameSettings, null, "", versionOverride)
         {
-            _cacheUtil = (GameCacheManager as ICacheBase<HonkaiCache>)?.AsBaseType();
+            _cacheUtil = (gameCacheManager as ICacheBase<HonkaiCache>)?.AsBaseType();
 
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
 
             // Initialize audio asset language
-            string audioLanguage = (GameSettings as HonkaiSettings)?.SettingsAudio._userCVLanguage;
+            string audioLanguage = (gameSettings as HonkaiSettings)?.SettingsAudio._userCVLanguage;
             _audioLanguage = audioLanguage switch
                              {
                                  "Chinese(PRC)" => AudioLanguageType.Chinese,
@@ -71,7 +70,7 @@ namespace CollapseLauncher
         {
             if (_assetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
 
-            if (showInteractivePrompt)
+            if (showInteractivePrompt && actionIfInteractiveCancel != null)
             {
                 await SpawnRepairDialog(_assetIndex, actionIfInteractiveCancel);
             }
@@ -122,9 +121,12 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            _status.IsCompleted = true;
-            _status.IsCanceled = false;
-            _status.ActivityStatus = Lang._GameRepairPage.Status7;
+            if (_status != null)
+            {
+                _status.IsCompleted    = true;
+                _status.IsCanceled     = false;
+                _status.ActivityStatus = Lang._GameRepairPage.Status7;
+            }
 
             // Update status and progress
             UpdateAll();

@@ -6,6 +6,7 @@
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
     using CollapseLauncher.Helper.Background;
+    using CollapseLauncher.Helper.Database;
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
@@ -16,13 +17,13 @@
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
+    using Microsoft.UI.Input;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Data;
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.UI.Xaml.Media.Animation;
-    using Microsoft.Win32.TaskScheduler;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -39,7 +40,6 @@
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
-    using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
 
 // ReSharper disable CheckNamespace
@@ -53,7 +53,6 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
 
-        private const string _collapseStartupTaskName = "CollapseLauncherStartupTask";
         private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
         
         private readonly bool _initIsInstantRegionChange;
@@ -68,6 +67,7 @@ namespace CollapseLauncher.Pages
                 
             InitializeComponent();
             this.EnableImplicitAnimation(true);
+            this.SetAllControlsCursorRecursive(InputSystemCursor.Create(InputSystemCursorShape.Hand));
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             LoadAppConfig();
@@ -86,7 +86,7 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = Version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
-            GitVersionIndicator_Hyperlink.NavigateUri = 
+            GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
@@ -106,7 +106,7 @@ namespace CollapseLauncher.Pages
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
-            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
                 string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
                 string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
@@ -441,26 +441,6 @@ namespace CollapseLauncher.Pages
         {
             if (EggsAttempt++ >= 10)
                 HerLegacy.Visibility = Visibility.Visible;
-        }
-
-        private TaskSched CreateScheduledTask(string taskName)
-        {
-            string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
-
-            using TaskService ts = new TaskService();
-
-            TaskDefinition taskDefinition = TaskService.Instance.NewTask();
-            taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
-            taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
-            taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
-            taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
-            taskDefinition.Settings.Enabled             = false;
-            taskDefinition.Triggers.Add(new LogonTrigger());
-            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget));
-
-            TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
-            taskDefinition.Dispose();
-            return task;
         }
 
         private void EnableHeaderMouseEvent(object sender, RoutedEventArgs e)
@@ -866,7 +846,7 @@ namespace CollapseLauncher.Pages
                     comboBoxOthers.SelectedIndex = lastSelected;
                 }
 
-                UpdateBindingsEvents(this, null);
+                UpdateBindings.Update();
             }
         }
 
@@ -1018,13 +998,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
-
-                bool value = task.Definition.Settings.Enabled;
-                task.Dispose();
+                bool value = TaskSchedulerHelper.IsEnabled();
 
                 if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
                 else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
@@ -1033,12 +1007,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                task.Definition.Settings.Enabled = value;
-                task.RegisterChanges();
-                task.Dispose();
+                TaskSchedulerHelper.ToggleEnabled(value);
 
                 if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
                 else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
@@ -1047,31 +1016,8 @@ namespace CollapseLauncher.Pages
 
         private bool IsStartupToTray
         {
-            get
-            {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
-
-                bool? value = false;
-                if (task.Definition.Actions[0] is ExecAction execAction)
-                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.OrdinalIgnoreCase);
-
-                task.Dispose();
-                return value ?? false;
-            }
-            set
-            {
-                string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                task.Definition.Actions.Clear();
-                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null));
-                task.RegisterChanges();
-                task.Dispose();
-            }
+            get => TaskSchedulerHelper.IsOnTrayEnabled();
+            set => TaskSchedulerHelper.ToggleTrayEnabled(value);
         }
 
         private bool IsEnableSophon
@@ -1345,6 +1291,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsEnforceToUse7zipOnExtract
+        {
+            get => LauncherConfig.IsEnforceToUse7zipOnExtract;
+            set => LauncherConfig.IsEnforceToUse7zipOnExtract = value;
+        }
+
         private double DownloadSpeedLimit
         {
             get
@@ -1377,6 +1329,164 @@ namespace CollapseLauncher.Pages
             }
         }
 #nullable restore
+
+        #region Database
+
+        // Temporary prop store
+        private string _dbUrl;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _dbToken;
+        private string _dbUserId;
+        
+        private bool IsDbEnabled
+        {
+            get => DbHandler.IsEnabled;
+            set
+            {
+                DbHandler.IsEnabled = value;
+                if (value) _ = DbHandler.Init();
+            }
+        }
+
+        private string DbUrl
+        {
+            get
+            {
+                var c = DbHandler.Uri;
+                _dbUrl = c;
+                return c;
+            }  
+            set
+            {
+                // Automatically replace libsql protocol to https
+                if (value.Contains("libsql://", StringComparison.InvariantCultureIgnoreCase))
+                    value = value.Replace("libsql", "https");
+                if (!value.Contains("https://"))
+                {
+                    DbUriTextBox.Text = DbHandler.Uri;
+                    return;
+                }
+
+                DbUriTextBox.Text = value;
+                _dbUrl            = value;
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        private string DbToken
+        {
+            get
+            {
+                var c =  DbHandler.Token;
+                _dbToken = c;
+                return c;
+            }
+            set
+            {
+                _dbToken = value;
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        private string _currentDbGuid;
+        private string DbUserId
+        {
+            get
+            {
+              _dbUserId = DbHandler.UserId;
+              return  DbHandler.UserId;
+            } 
+            set
+            {
+                _dbUserId        = value;
+                DbHandler.UserId = value;
+            }
+        }
+
+        private void DbUserIdTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _currentDbGuid = DbUserIdTextBox.Text;
+        }
+
+        private async void DbUserIdTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var t = sender as TextBox;
+            if (t == null) return;
+
+            var newGuid = t.Text;
+            if (_currentDbGuid == newGuid) return; // Return if no change
+            
+            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
+            {
+                t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
+            }
+            else
+            {
+                _currentDbGuid = t.Text;
+                _dbUserId      = t.Text; // Store to temp prop
+                
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        [DebuggerHidden]
+        private async void ValidateAndSaveDbButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Store current value in local vars
+            var curUrl   = DbHandler.Uri;
+            var curToken = DbHandler.Token;
+            var curGuid  = DbHandler.UserId;
+            
+            try
+            {
+                // Set the value from prop
+                DbHandler.Uri    = _dbUrl;
+                DbHandler.Token  = _dbToken;
+                DbHandler.UserId = _dbUserId;
+                
+                var r = Random.Shared.Next(100); // Generate random int for data verification
+
+                await DbHandler.Init(true, true); // Initialize database
+                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
+                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
+                
+                DbWarningSaveIcon.Visibility = Visibility.Collapsed;
+                await SpawnDialog(
+                                  Lang._Misc.EverythingIsOkay,
+                                  Lang._SettingsPage.Database_ConnectionOk,
+                                  sender as UIElement,
+                                  Lang._Misc.Close,
+                                  null,
+                                  null,
+                                  ContentDialogButton.Close
+                                 ); // Show success dialog
+            }
+            catch (Exception ex)
+            {
+                // Revert value if fail
+                DbHandler.Uri    = curUrl;
+                DbHandler.Token  = curToken;
+                DbHandler.UserId = curGuid;
+                
+                var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+                ErrorSender.SendException(newEx); // Send error with dialog
+            }
+        }
+
+        private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                var g = Guid.CreateVersion7();
+                DbUserIdTextBox.Text         = g.ToString();
+                _dbUserId                    = g.ToString();
+                DbWarningSaveIcon.Visibility = Visibility.Visible;
+            }
+        }
+        #endregion
         #endregion
 
         #region Keyboard Shortcuts

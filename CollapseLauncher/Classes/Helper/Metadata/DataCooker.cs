@@ -2,17 +2,21 @@
 using System;
 using System.Buffers;
 using System.Buffers.Text;
+using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+
+using ZstdDecompressStream = ZstdNet.DecompressionStream;
 
 namespace CollapseLauncher.Helper.Metadata
 {
     internal enum CompressionType : byte
     {
         None,
-        Brotli
+        Brotli,
+        Zstd
     }
 
     internal static class DataCooker
@@ -150,27 +154,10 @@ namespace CollapseLauncher.Helper.Metadata
                         dataWritten = decompressedSize;
                         break;
                     case CompressionType.Brotli:
-                    {
-                        Span<byte>    dataDecompressed = outData;
-                        BrotliDecoder decoder          = new BrotliDecoder();
-
-                        int offset              = 0;
-                        int decompressedWritten = 0;
-                        while (offset < compressedSize)
-                        {
-                            decoder.Decompress(dataRawBuffer.Slice(offset), dataDecompressed.Slice(decompressedWritten),
-                                               out int dataConsumedWritten, out int dataDecodedWritten);
-                            decompressedWritten += dataDecodedWritten;
-                            offset              += dataConsumedWritten;
-                        }
-
-                        if (decompressedSize != decompressedWritten)
-                        {
-                            throw new DataMisalignedException("Decompressed data is misaligned!");
-                        }
-
-                        dataWritten = decompressedWritten;
-                    }
+                        dataWritten = DecompressDataFromBrotli(outData, compressedSize, decompressedSize, dataRawBuffer);
+                        break;
+                    case CompressionType.Zstd:
+                        dataWritten = DecompressDataFromZstd(outData, compressedSize, decompressedSize, dataRawBuffer);
                         break;
                     default:
                         throw new FormatException($"Decompression format is not supported! ({compressionType})");
@@ -188,6 +175,57 @@ namespace CollapseLauncher.Helper.Metadata
                     ArrayPool<byte>.Shared.Return(decryptedDataSpan, true);
                 }
             }
+        }
+
+        private static int DecompressDataFromBrotli(Span<byte> outData, int compressedSize, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
+        {
+            BrotliDecoder decoder = new BrotliDecoder();
+
+            int offset = 0;
+            int decompressedWritten = 0;
+            while (offset < compressedSize)
+            {
+                decoder.Decompress(dataRawBuffer.Slice(offset), outData.Slice(decompressedWritten),
+                                   out int dataConsumedWritten, out int dataDecodedWritten);
+                decompressedWritten += dataDecodedWritten;
+                offset += dataConsumedWritten;
+            }
+
+            if (decompressedSize != decompressedWritten)
+            {
+                throw new DataMisalignedException("Decompressed data is misaligned!");
+            }
+
+            return decompressedWritten;
+        }
+
+        private static unsafe int DecompressDataFromZstd(Span<byte> outData, int compressedSize, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
+        {
+            fixed (byte* inputBuffer = &dataRawBuffer[0])
+                fixed (byte* outputBuffer = &outData[0])
+                {
+                    int decompressedWritten = 0;
+
+                    byte[] buffer = new byte[4 << 10];
+
+                    using UnmanagedMemoryStream inputStream = new UnmanagedMemoryStream(inputBuffer, dataRawBuffer.Length);
+                    using UnmanagedMemoryStream outputStream = new UnmanagedMemoryStream(outputBuffer, outData.Length);
+                    using ZstdDecompressStream decompStream = new ZstdDecompressStream(inputStream);
+
+                    int read;
+                    while ((read = decompStream.Read(buffer)) > 0)
+                    {
+                        outputStream.Write(buffer, 0, read);
+                        decompressedWritten += read;
+                    }
+
+                    if (decompressedSize != decompressedWritten)
+                    {
+                        throw new DataMisalignedException("Decompressed data is misaligned!");
+                    }
+
+                    return decompressedWritten;
+                }
         }
     }
 }

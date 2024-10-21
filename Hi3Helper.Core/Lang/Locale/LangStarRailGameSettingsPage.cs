@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangStarRailGameSettingsPage _StarRailGameSettingsPage { get; set; } = LangFallback?._StarRailGameSettingsPage;
-            public sealed class LangStarRailGameSettingsPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangStarRailGameSettingsPage
             {
                 public string PageTitle                     { get; set; } = LangFallback?._StarRailGameSettingsPage.PageTitle;
                 public string Graphics_Title                { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_Title;
