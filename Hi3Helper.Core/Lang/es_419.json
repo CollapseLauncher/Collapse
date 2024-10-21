@@ -157,6 +157,7 @@
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Sincronizar Tiempo de Juego con Base de Datos",
     "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
     "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
 
@@ -165,6 +166,7 @@
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
     "GamePlaytime_Idle_ResetBtn": "Restablecer",
     "GamePlaytime_Idle_ChangeBtn": "Cambiar",
+    "GamePlaytime_Idle_SyncDb": "Sincronizar",
     "GamePlaytime_Running_Info1": "El juego se está ejecutando, por lo tanto no se puede editar el tiempo de juego.",
     "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar completamente Collapse se detendrá el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto)",
     "GamePlaytime_Display": "{0}h {1}m",
@@ -635,7 +637,20 @@
     "FileDownloadSettings_BurstDownloadHelp4": "se ejecuten en paralelo para que el proceso de descarga sea más eficiente.",
     "FileDownloadSettings_BurstDownloadHelp5": "Al deshabilitarlo, el proceso de descarga para",
     "FileDownloadSettings_BurstDownloadHelp6": "y",
-    "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial."
+    "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial.",
+    
+    "Database_Title": "Base de datos sincronizable",
+    "Database_ConnectionOk": "¡Base de datos conectada exitosamente!",
+    "Database_ConnectFail": "Falla al conectar a la base de datos, mira los errores a continuación:",
+    "Database_Toggle": "Habilitar Base de datos en línea",
+    "Database_Url": "URL Base de datos",
+    "Database_Url_Example": "Ejemplo: https://db-collapse.turso.io",
+    "Database_Token": "Token",
+    "Database_UserId": "ID Usuario",
+    "Database_GenerateGuid": "Generar UID",
+    "Database_Validate": "Validar y Guardar Ajustes",
+    "Database_Error_EmptyUri": "¡URL no puede estar vacía!",
+    "Database_Error_EmptyToken": "¡Token no puede estar vacío!"
   },
 
   "_Misc": {
@@ -655,6 +670,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "¡Todo Bien!",
     "Cancel": "Cancelar",
     "Close": "Cerrar",
     "UseCurrentDir": "Usar directorio actual",
@@ -946,7 +962,10 @@
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
 
     "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
-    "CloseOverlay": "Cerrar Superposición (Overlay)"
+    "CloseOverlay": "Cerrar Superposición (Overlay)",
+    
+    "DbGenerateUid_Title": "¿Estas seguro que quieres cambiar tu ID de Usuario?",
+    "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes."
   },
 
   "_FileMigrationProcess": {
