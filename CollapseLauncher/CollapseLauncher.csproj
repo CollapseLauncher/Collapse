@@ -31,7 +31,7 @@
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
         <!-- AoT Configs -->
-		<PublishAot>false</PublishAot>
+		<PublishAot>true</PublishAot>
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -52,6 +52,12 @@
     <PropertyGroup Condition="'$(PublishAot)' == 'true'">
         <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
+    
+    <ItemGroup Condition="'$(PublishAot)' == 'true'">
+        <DirectPInvoke Include="Lib\\waifu2x-ncnn-vulkan" />
+        <!-- DLL for LibSqlite -->
+        <DirectPInvoke Include="csharp_bindings" />
+    </ItemGroup>
 
 <!--
   Constants List:
