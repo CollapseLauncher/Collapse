@@ -202,30 +202,48 @@ namespace CollapseLauncher.Helper.Image
         #region Misc
         public static Waifu2XStatus VulkanTest()
         {
-            if (CheckD3DMappingLayersPackageInstalled())
+            try
             {
-                Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
-                return Waifu2XStatus.D3DMappingLayers;
+                if (CheckD3DMappingLayersPackageInstalled())
+                {
+                    Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
+                    return Waifu2XStatus.D3DMappingLayers;
+                }
+                var status = waifu2x_self_test(0);
+                switch (status)
+                {
+                    case Waifu2XStatus.CpuMode:
+                        Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
+                        break;
+                    case Waifu2XStatus.NotAvailable:
+                        Logger.LogWriteLine("An error occurred while initializing Vulkan. Fallback to CPU mode.", LogType.Warning, true);
+                        status = Waifu2XStatus.CpuMode;
+                        break;
+                    case Waifu2XStatus.Ok:
+                        Logger.LogWriteLine("Vulkan test passes and GPU mode can be used.", LogType.Default, true);
+                        break;
+                    default:
+                        Logger.LogWriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
+                        status = Waifu2XStatus.NotAvailable;
+                        break;
+                }
+                return status;
             }
-            var status = waifu2x_self_test(0);
-            switch (status)
+            catch (FileLoadException ex)
             {
-                case Waifu2XStatus.CpuMode:
-                    Logger.LogWriteLine("No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.", LogType.Warning, true);
-                    break;
-                case Waifu2XStatus.NotAvailable:
-                    Logger.LogWriteLine("An error occurred while initializing Vulkan. Fallback to CPU mode.", LogType.Warning, true);
-                    status = Waifu2XStatus.CpuMode;
-                    break;
-                case Waifu2XStatus.Ok:
-                    Logger.LogWriteLine("Vulkan test passes and GPU mode can be used.", LogType.Default, true);
-                    break;
-                default:
-                    Logger.LogWriteLine("Waifu2X: Unknown return value from waifu2x_self_test.", LogType.Error, true);
-                    status = Waifu2XStatus.NotAvailable;
-                    break;
+                return ReturnAsFailedDllInit(ex);
             }
-            return status;
+            catch (DllNotFoundException ex)
+            {
+                return ReturnAsFailedDllInit(ex);
+            }
+
+            Waifu2XStatus ReturnAsFailedDllInit<T>(T ex)
+                where T : Exception
+            {
+                Logger.LogWriteLine($"Cannot load Waifu2X as the library failed to load!\r\n{ex}", LogType.Error, true);
+                return Waifu2XStatus.Error;
+            }
         }
 
         private bool ProcessTest()
