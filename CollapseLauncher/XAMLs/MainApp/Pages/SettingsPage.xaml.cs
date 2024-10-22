@@ -1070,7 +1070,15 @@ namespace CollapseLauncher.Pages
         private double HttpClientTimeout
         {
             get => GetAppConfigValue("HttpClientTimeout").ToDouble();
-            set => SetAndSaveConfigValue("HttpClientTimeout", value);
+            set
+            {
+                if (double.IsNaN(value))
+                {
+                    value = HttpClientTimeoutNumberBox.Minimum;
+                    HttpClientTimeoutNumberBox.Value = value;
+                }
+                SetAndSaveConfigValue("HttpClientTimeout", value);
+            }
         }
 
         private string? HttpProxyUrl

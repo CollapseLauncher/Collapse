@@ -577,13 +577,13 @@
                                           IsOn="{x:Bind IsAllowUntrustedCert, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                            <NumberBox HorizontalAlignment="Left"
+                            <NumberBox x:Name="HttpClientTimeoutNumberBox"
+                                       HorizontalAlignment="Left"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_Timeout}"
                                        Maximum="3600"
                                        Minimum="10"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind HttpClientTimeout, Mode=TwoWay}" />
-
                             <StackPanel Margin="0,16,0,0"
                                         Orientation="Horizontal">
                                 <TextBlock FontSize="16"
@@ -965,7 +965,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                        Maximum="16"
                                        Minimum="2"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
                             <NumberBox x:Name="ExtractionThreadsNumBox"
                                        Width="128"
@@ -974,7 +974,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}"
                                        Maximum="128"
                                        Minimum="0"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" />
                         </StackPanel>
                         <ToggleSwitch x:Name="OldDownloadChunksMergingToggle"
@@ -1069,7 +1069,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                        Maximum="64"
                                        Minimum="0"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind SophonDownThread, Mode=TwoWay}" />
                             <NumberBox x:Name="SophonHttpConnNumBox"
                                        Width="128"
@@ -1078,7 +1078,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.SophonHttpNumberBox}"
                                        Maximum="128"
                                        Minimum="0"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind SophonHttpConn, Mode=TwoWay}" />
                         </StackPanel>
                         <ToggleSwitch Margin="0,4"
