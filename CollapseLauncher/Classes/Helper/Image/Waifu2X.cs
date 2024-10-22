@@ -1,6 +1,8 @@
 using Hi3Helper;
+using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CollapseLauncher.Helper.Image
@@ -28,6 +30,38 @@ namespace CollapseLauncher.Helper.Image
     public class Waifu2X : IDisposable
     {
         public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
+
+#nullable enable
+        private static string? appDirPath = null;
+#nullable restore
+
+        static Waifu2X()
+        {
+            // Use custom Dll import resolver
+            NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
+        }
+
+        private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+        {
+            appDirPath ??= LauncherConfig.AppFolder;
+
+            if (libraryName.EndsWith(DllName, StringComparison.OrdinalIgnoreCase))
+            {
+                string dllPath = Path.Combine(appDirPath, DllName);
+                return LoadInternal(libraryName, assembly, null);
+            }
+
+            return LoadInternal(libraryName, assembly, searchPath);
+        }
+
+        private static IntPtr LoadInternal(string path, Assembly assembly, DllImportSearchPath? searchPath)
+        {
+            bool isLoadSuccessful = NativeLibrary.TryLoad(path, assembly, null, out IntPtr pResult);
+            if (!isLoadSuccessful || pResult == IntPtr.Zero)
+                throw new FileLoadException($"Failed while loading library from this path: {path} with Search Path: {searchPath}\r\nMake sure that the library/.dll is a valid Win32 library and not corrupted!");
+
+            return pResult;
+        }
 
         #region DllImports
         [DllImport(DllName, ExactSpelling = true)]
