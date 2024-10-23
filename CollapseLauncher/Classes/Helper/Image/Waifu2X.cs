@@ -134,8 +134,6 @@ namespace CollapseLauncher.Helper.Image
 
         #region Properties
         private IntPtr _context;
-        private byte[] _paramBuffer;
-        private byte[] _modelBuffer;
         private Waifu2XStatus _status;
         #endregion
 
@@ -191,19 +189,10 @@ namespace CollapseLauncher.Helper.Image
             if (_context == 0) throw new NotSupportedException();
             try
             {
-                using (var ms = new MemoryStream())
-                    using (var fs = new FileStream(paramPath, FileMode.Open))
-                    {
-                        fs.CopyTo(ms);
-                        _paramBuffer = ms.ToArray();
-                    }
+                byte[] paramBuffer = File.ReadAllBytes(paramPath);
+                byte[] modelBuffer = File.ReadAllBytes(modelPath);
 
-                using (var ms = new MemoryStream())
-                    using (var fs = new FileStream(modelPath, FileMode.Open))
-                    {
-                        fs.CopyTo(ms);
-                        _modelBuffer = ms.ToArray();
-                    }
+                return Load(paramBuffer, modelBuffer);
             }
             catch (IOException)
             {
@@ -211,8 +200,6 @@ namespace CollapseLauncher.Helper.Image
                 Logger.LogWriteLine("Waifu2X model file can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
                 return false;
             }
-
-            return Load(_paramBuffer, _modelBuffer);
         }
         #endregion
 
