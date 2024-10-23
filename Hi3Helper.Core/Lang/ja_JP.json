@@ -157,6 +157,7 @@
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "プレイ時間をデータベースと同期させる",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
 
@@ -165,6 +166,7 @@
     "GamePlaytime_Idle_Panel1Minutes": "分",
     "GamePlaytime_Idle_ResetBtn": "リセット",
     "GamePlaytime_Idle_ChangeBtn": "変更",
+    "GamePlaytime_Idle_SyncDb": "同期",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
     "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断されます。（閉じた瞬間までのプレイ時間が記録されます）",
     "GamePlaytime_Display": "{0}時間 {1}分",
@@ -635,7 +637,20 @@
     "FileDownloadSettings_BurstDownloadHelp4": "のダウンロードプロセスが並行して行われるようになり、より効率的になります。",
     "FileDownloadSettings_BurstDownloadHelp5": "機能を無効化すると、",
     "FileDownloadSettings_BurstDownloadHelp6": "と",
-    "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。"
+    "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。",
+    
+    "Database_Title": "ユーザーデータベースと同期",
+    "Database_ConnectionOk": "データベースとの接続に成功しました！",
+    "Database_ConnectFail": "データベースに接続できませんでした。エラーを参照してください:",
+    "Database_Toggle": "オンラインデータベースを使用する",
+    "Database_Url": "データベースのURL",
+    "Database_Url_Example": "サンプル: https://db-collapse.turso.io",
+    "Database_Token": "トークン",
+    "Database_UserId": "ユーザーID",
+    "Database_GenerateGuid": "UID生成",
+    "Database_Validate": "設定を検証＆保存",
+    "Database_Error_EmptyUri": "データベースのURLが空です！",
+    "Database_Error_EmptyToken": "データベースのトークンが空です！"
   },
 
   "_Misc": {
@@ -655,6 +670,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "これでヨシ！",
     "Cancel": "キャンセル",
     "Close": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
@@ -946,7 +962,10 @@
     "DownloadSettingsOption1": "インストール完了後にゲームを起動",
 
     "OpenInExternalBrowser": "外部ブラウザで開く",
-    "CloseOverlay": "閉じる"
+    "CloseOverlay": "閉じる",
+    
+    "DbGenerateUid_Title": "本当にユーザーIDを変更しますか？",
+    "DbGenerateUid_Content": "現在のユーザーIDを変更すると、ユーザーIDを紛失した場合にその関連データも失われます。"
   },
 
   "_FileMigrationProcess": {
