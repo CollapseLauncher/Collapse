@@ -3,40 +3,23 @@ using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static CollapseLauncher.Helper.Image.Waifu2X;
 
 namespace CollapseLauncher.Helper.Image
 {
-    #region ncnn Defines
-    public static class Ncnn
+    #region PInvokes
+    internal static partial class Waifu2XPInvoke
     {
-        public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern int ncnn_get_default_gpu_index();
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern IntPtr ncnn_get_gpu_name(int gpuId);
-
-        public static int DefaultGpuIndex => ncnn_get_default_gpu_index();
-
-        public static string GetGpuName(int gpuId)
-        {
-            return Marshal.PtrToStringUTF8(ncnn_get_gpu_name(gpuId));
-        }
-    }
-    #endregion
-
-    public class Waifu2X : IDisposable
-    {
-        public const string DllName = "Lib\\waifu2x-ncnn-vulkan.dll";
+        private const string DllName = "Lib\\waifu2x-ncnn-vulkan.dll";
 
 #nullable enable
         private static string? appDirPath = null;
         private static string? waifu2xLibPath = null;
 #nullable restore
 
-        static Waifu2X()
+        static Waifu2XPInvoke()
         {
             // Use custom Dll import resolver
             NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
@@ -46,7 +29,8 @@ namespace CollapseLauncher.Helper.Image
         {
             appDirPath ??= LauncherConfig.AppFolder;
 
-            if (libraryName.EndsWith(DllName, StringComparison.OrdinalIgnoreCase))
+            if (DllImportSearchPath.AssemblyDirectory == searchPath
+             || DllImportSearchPath.ApplicationDirectory == searchPath)
             {
                 waifu2xLibPath ??= Path.Combine(appDirPath, DllName);
                 return LoadInternal(waifu2xLibPath, assembly, null);
@@ -64,36 +48,67 @@ namespace CollapseLauncher.Helper.Image
             return pResult;
         }
 
-        #region DllImports
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern IntPtr waifu2x_create(int gpuId = 0, bool ttaMode = false, int numThreads = 0);
+        #region ncnn PInvokes
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial int ncnn_get_default_gpu_index();
 
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern void waifu2x_destroy(IntPtr context);
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern unsafe int waifu2x_load(IntPtr context, byte* param, byte* model);
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern unsafe int waifu2x_process(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern unsafe int waifu2x_process_cpu(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern void waifu2x_set_param(IntPtr context, Param param, int value);
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern int waifu2x_get_param(IntPtr context, Param param);
-
-        [DllImport(DllName, ExactSpelling = true)]
-        private static extern Waifu2XStatus waifu2x_self_test(IntPtr context);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        private static extern long GetPackagesByPackageFamily(string packageFamilyName, ref uint count, [Out] IntPtr packageFullNames, ref uint bufferLength, [Out] IntPtr buffer);
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial IntPtr ncnn_get_gpu_name(int gpuId);
         #endregion
 
+        #region Waifu2X PInvokes
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial IntPtr waifu2x_create(int gpuId, [MarshalAs(UnmanagedType.Bool)] bool ttaMode, int numThreads);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial void waifu2x_destroy(IntPtr context);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static unsafe partial int waifu2x_load(IntPtr context, byte* param, byte* model);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static unsafe partial int waifu2x_process(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static unsafe partial int waifu2x_process_cpu(IntPtr context, int w, int h, int c, byte* inData, byte* outData);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial void waifu2x_set_param(IntPtr context, Param param, int value);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial int waifu2x_get_param(IntPtr context, Param param);
+
+        [LibraryImport(DllName)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
+        internal static partial Waifu2XStatus waifu2x_self_test(IntPtr context);
+
+        [LibraryImport("kernel32.dll", StringMarshalling = StringMarshalling.Utf16)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        internal static unsafe partial long GetPackagesByPackageFamily(string packageFamilyName, ref uint count, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPWStr, SizeParamIndex = 1)] out string[] packageFullNames, ref uint bufferLength, void* buffer);
+        #endregion
+    }
+    #endregion
+
+    #region ncnn Defines
+    public static class Ncnn
+    {
+        public static int DefaultGpuIndex => Waifu2XPInvoke.ncnn_get_default_gpu_index();
+
+        public static string GetGpuName(int gpuId) => Marshal.PtrToStringUTF8(Waifu2XPInvoke.ncnn_get_gpu_name(gpuId));
+    }
+    #endregion
+
+    public partial class Waifu2X : IDisposable
+    {
         #region Enums
         public enum Param
         {
@@ -135,7 +150,7 @@ namespace CollapseLauncher.Helper.Image
                 _status = VulkanTest();
                 if (_status == Waifu2XStatus.Ok)
                     gpuId = Ncnn.DefaultGpuIndex;
-                _context = waifu2x_create(gpuId);
+                _context = Waifu2XPInvoke.waifu2x_create(gpuId, false, 0);
                 Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
             }
             catch ( DllNotFoundException )
@@ -154,19 +169,20 @@ namespace CollapseLauncher.Helper.Image
         {
             if (_context != 0)
             {
-                waifu2x_destroy(_context);
+                Waifu2XPInvoke.waifu2x_destroy(_context);
                 _context = 0;
                 _status = Waifu2XStatus.NotInitialized;
                 Logger.LogWriteLine("Waifu2X is destroyed!");
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe bool Load(ReadOnlySpan<byte> param, ReadOnlySpan<byte> model)
         {
             if (_context == 0) throw new NotSupportedException();
-            fixed (byte* pParam = param, pModel = model)
+            fixed (byte* pParam = &MemoryMarshal.GetReference(param), pModel = &MemoryMarshal.GetReference(model))
             {
-                return waifu2x_load(_context, pParam, pModel) == 0 && ProcessTest();
+                return Waifu2XPInvoke.waifu2x_load(_context, pParam, pModel) == 0 && ProcessTest();
             }
         }
 
@@ -201,36 +217,32 @@ namespace CollapseLauncher.Helper.Image
         #endregion
 
         #region Process Methods
-        public unsafe int Process(int w, int h, int c, ReadOnlySpan<byte> inData, Span<byte> outData)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal unsafe int Process(int w, int h, int c, ReadOnlySpan<byte> inData, Span<byte> outData)
         {
             if (_context == 0) throw new NotSupportedException();
-            fixed (byte* pInData = inData, pOutData = outData)
+            fixed (byte* pInData = &MemoryMarshal.GetReference(inData), pOutData = &MemoryMarshal.GetReference(outData))
             {
-                return waifu2x_process(_context, w, h, c, pInData, pOutData);
-            }
-        }
-
-        public unsafe int ProcessCpu(int w, int h, int c, ReadOnlySpan<byte> inData, Span<byte> outData)
-        {
-            if (_context == 0) throw new NotSupportedException();
-            fixed (byte* pInData = inData, pOutData = outData)
-            {
-                return waifu2x_process_cpu(_context, w, h, c, pInData, pOutData);
+                return Waifu2XStatus.CpuMode == Status ?
+                    Waifu2XPInvoke.waifu2x_process_cpu(_context, w, h, c, pInData, pOutData) :
+                    Waifu2XPInvoke.waifu2x_process(_context, w, h, c, pInData, pOutData);
             }
         }
         #endregion
 
         #region Parameters
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetParam(Param param, int value)
         {
             if (_context == 0) throw new NotSupportedException();
-            waifu2x_set_param(_context, param, value);
+            Waifu2XPInvoke.waifu2x_set_param(_context, param, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetParam(Param param)
         {
             if (_context == 0) throw new NotSupportedException();
-            return waifu2x_get_param(_context, param);
+            return Waifu2XPInvoke.waifu2x_get_param(_context, param);
         }
         #endregion
 
@@ -244,7 +256,7 @@ namespace CollapseLauncher.Helper.Image
                     Logger.LogWriteLine("D3DMappingLayers package detected. Fallback to CPU mode.", LogType.Warning, true);
                     return Waifu2XStatus.D3DMappingLayers;
                 }
-                var status = waifu2x_self_test(0);
+                var status = Waifu2XPInvoke.waifu2x_self_test(0);
                 switch (status)
                 {
                     case Waifu2XStatus.CpuMode:
@@ -285,7 +297,7 @@ namespace CollapseLauncher.Helper.Image
         {
             if (Status < Waifu2XStatus.Error)
             {
-                _status = waifu2x_self_test(_context);
+                _status = Waifu2XPInvoke.waifu2x_self_test(_context);
                 switch (_status)
                 {
                     case Waifu2XStatus.TestNotPassed:
@@ -305,12 +317,13 @@ namespace CollapseLauncher.Helper.Image
             }
             return _status == Waifu2XStatus.Ok;
         }
-
-        private static bool CheckD3DMappingLayersPackageInstalled()
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe bool CheckD3DMappingLayersPackageInstalled()
         {
             const string FAMILY_NAME = "Microsoft.D3DMappingLayers_8wekyb3d8bbwe";
             uint count = 0, bufferLength = 0;
-            GetPackagesByPackageFamily(FAMILY_NAME, ref count, 0, ref bufferLength, 0);
+            Waifu2XPInvoke.GetPackagesByPackageFamily(FAMILY_NAME, ref count, out _, ref bufferLength, null);
             return count != 0;
         }
         #endregion
