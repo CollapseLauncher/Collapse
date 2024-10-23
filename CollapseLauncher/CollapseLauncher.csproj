@@ -52,12 +52,6 @@
     <PropertyGroup Condition="'$(PublishAot)' == 'true'">
         <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
-    
-    <ItemGroup Condition="'$(PublishAot)' == 'true'">
-        <DirectPInvoke Include="Lib\\waifu2x-ncnn-vulkan" />
-        <!-- DLL for LibSqlite -->
-        <DirectPInvoke Include="csharp_bindings" />
-    </ItemGroup>
 
 <!--
   Constants List:
