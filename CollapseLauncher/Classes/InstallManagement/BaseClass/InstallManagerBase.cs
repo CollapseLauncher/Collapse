@@ -44,6 +44,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -136,7 +137,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual bool _canDeltaPatch => false;
         protected virtual DeltaPatchProperty _gameDeltaPatchProperty => null;
 
-        protected List<GameInstallPackage> _gameDeltaPatchPreReqList = [];
+        protected List<GameInstallPackage> _gameDeltaPatchPreReqList { get; } = [];
         protected bool                     _forceIgnoreDeltaPatch;
         private   long                     _totalLastSizeCurrent;
 
@@ -397,7 +398,7 @@ namespace CollapseLauncher.InstallManager.Base
                                    HDiffPatch patch = new HDiffPatch();
                                    patch.Initialize(patchProperty!.PatchPath);
                                    patch.Patch(ingredientPath, previousPath, true, _token!.Token, false, true);
-                               });
+                               }).ConfigureAwait(false);
 
                 // Remove ingredient folder
                 Directory.Delete(ingredientPath, true);
@@ -415,12 +416,6 @@ namespace CollapseLauncher.InstallManager.Base
                 // Delete the necessary files after delta patch operation
                 // Delete the delta patch file
                 File.Delete(patchProperty!.PatchPath!);
-
-                // Delete the pre-req delta patch file if there's one
-                foreach (GameInstallPackage package in _gameDeltaPatchPreReqList!)
-                {
-                    DeleteSingleOrSegmentedDownloadStream(package);
-                }
 
                 // Then return
                 return true;
@@ -508,9 +503,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Start the download routine
             await StartDeltaPatchPreReqDownload(gamePackage);
-
-            // Start the install routine
-            await StartPackageInstallationInner(gamePackage, true, true)!;
 
             return true;
         }

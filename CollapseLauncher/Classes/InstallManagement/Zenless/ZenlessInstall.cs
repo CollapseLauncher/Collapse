@@ -102,9 +102,9 @@ namespace CollapseLauncher.InstallManager.Zenless
             // If the delta patch is performed, then return
             if (!isOnlyInstallPackage && await StartDeltaPatch(ZenlessGameRepairManager, false, true))
             {
-                // Update the audio package list after delta patch has been initiated
-                WriteAudioLangList(_gameDeltaPatchPreReqList);
-                return;
+                // Assign the game package to delta-patch requirement list
+                // and start the additional patching process (like Audio patch, etc)
+                gamePackage ??= _gameDeltaPatchPreReqList;
             }
 
             // Run the base installation process
