@@ -112,7 +112,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            ApplyDeleteFileAction();
+            await ApplyDeleteFileActionAsync(_token.Token);
 
             // Update the audio lang list if not in isOnlyInstallPackage mode
             if (!isOnlyInstallPackage)

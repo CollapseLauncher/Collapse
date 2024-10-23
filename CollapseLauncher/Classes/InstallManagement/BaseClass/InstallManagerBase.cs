@@ -2110,39 +2110,53 @@ namespace CollapseLauncher.InstallManager.Base
             return await Task.FromResult(false);
         }
 
-        public virtual void ApplyDeleteFileAction()
+        public virtual async Task ApplyDeleteFileActionAsync(CancellationToken token = default)
         {
-            foreach (string path in Directory.EnumerateFiles(_gamePath, "deletefiles_*", SearchOption.TopDirectoryOnly))
+            async IAsyncEnumerable<FileInfo> EnumerateFileInfoAsync([EnumeratorCancellation] CancellationToken innerToken)
             {
-                using StreamReader sw = new StreamReader(path,
-                                                         new FileStreamOptions
-                                                         {
-                                                             Mode   = FileMode.Open,
-                                                             Access = FileAccess.Read,
-                                                             Options = _canDeleteHdiffReference
-                                                                 ? FileOptions.DeleteOnClose
-                                                                 : FileOptions.None
-                                                         });
-                while (!sw.EndOfStream)
+                foreach (string path in Directory.EnumerateFiles(_gamePath, "deletefiles_*", SearchOption.TopDirectoryOnly))
                 {
-                    string   deleteFile = GetBasePersistentDirectory(_gamePath, sw.ReadLine());
-                    FileInfo fileInfo   = new FileInfo(deleteFile);
-
-                    try
+                    using StreamReader sw = new StreamReader(path,
+                                                             new FileStreamOptions
+                                                             {
+                                                                 Mode   = FileMode.Open,
+                                                                 Access = FileAccess.Read,
+                                                                 Options = _canDeleteHdiffReference
+                                                                     ? FileOptions.DeleteOnClose
+                                                                     : FileOptions.None
+                                                             });
+                    while (!sw.EndOfStream)
                     {
-                        if (fileInfo.Exists)
-                        {
-                            fileInfo.IsReadOnly = false;
-                            fileInfo.Delete();
-                            LogWriteLine($"Deleting old file: {deleteFile}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriteLine($"Failed deleting old file: {deleteFile}\r\n{ex}", LogType.Warning, true);
+                        string   deleteFile = GetBasePersistentDirectory(_gamePath, await sw.ReadLineAsync(innerToken));
+                        FileInfo fileInfo   = new FileInfo(deleteFile);
+                        yield return fileInfo;
                     }
                 }
             }
+
+            await Parallel.ForEachAsync(EnumerateFileInfoAsync(token), token, (fileInfo, innerToken) =>
+            {
+                return new ValueTask(Task.Run(() =>
+                {
+                    innerToken.ThrowIfCancellationRequested();
+
+                    try
+                    {
+                        if (!fileInfo.Exists)
+                        {
+                            return;
+                        }
+
+                        fileInfo.IsReadOnly = false;
+                        fileInfo.Delete();
+                        LogWriteLine($"Deleting old file: {fileInfo.FullName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed deleting old file: {fileInfo.FullName}\r\n{ex}", LogType.Warning, true);
+                    }
+                }, innerToken));
+            });
         }
 
         private string GetBasePersistentDirectory(string basePath, string input)
