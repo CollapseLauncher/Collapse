@@ -29,10 +29,11 @@ namespace CollapseLauncher.Helper.Image
 
     public class Waifu2X : IDisposable
     {
-        public const string DllName = "Lib\\waifu2x-ncnn-vulkan";
+        public const string DllName = "Lib\\waifu2x-ncnn-vulkan.dll";
 
 #nullable enable
         private static string? appDirPath = null;
+        private static string? waifu2xLibPath = null;
 #nullable restore
 
         static Waifu2X()
@@ -47,8 +48,8 @@ namespace CollapseLauncher.Helper.Image
 
             if (libraryName.EndsWith(DllName, StringComparison.OrdinalIgnoreCase))
             {
-                string dllPath = Path.Combine(appDirPath, DllName);
-                return LoadInternal(libraryName, assembly, null);
+                waifu2xLibPath ??= Path.Combine(appDirPath, DllName);
+                return LoadInternal(waifu2xLibPath, assembly, null);
             }
 
             return LoadInternal(libraryName, assembly, searchPath);
