@@ -85,6 +85,21 @@
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
 
+    <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+        <!-- Region: Libsql.Client -->
+        <DirectPInvoke Include="csharp_bindings" />
+        <NativeLibrary Include="StaticLib\csharp_bindings_msvc-release.lib" />
+        <!--
+        These libraries are required by csharp_bindings to resolve calls to:
+            - GetUserProfileDirectoryW function from Win32's userenv.dll
+            - SHGetKnownFolderPath function from Win32's shell32.dll
+        -->
+        <DirectPInvoke Include="UserEnv" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.22621.0_um_x64\UserEnv.lib" />
+        <DirectPInvoke Include="shell32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.22621.0_um_x64\shell32.lib" />
+    </ItemGroup>
+
     <ItemGroup>
 		<!--
 		Use Velopack if "USEVELOPACK" constant is used. Otherwise, use Squirrel.
