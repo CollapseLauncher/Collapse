@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -305,5 +305,9 @@
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
         <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
+    </Target>
+
+    <Target Name="PostPublish" AfterTargets="Publish">
+        <Delete Files="$(PublishDir)csharp_bindings.dll" />
     </Target>
 </Project>
