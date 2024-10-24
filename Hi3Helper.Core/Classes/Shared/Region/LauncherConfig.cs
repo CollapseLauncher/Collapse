@@ -137,7 +137,7 @@ namespace Hi3Helper.Shared.Region
               new CDNURLProperty
               {
                   Name = "GitHub",
-                  URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main",
+                  URLPrefix = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
                   Description = Lang!._Misc!.CDNDescription_Github,
                   PartialDownloadSupport = true
               },
@@ -347,6 +347,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("DownloadChunkSize", value);
         }
 
+        public static bool IsEnforceToUse7zipOnExtract
+        {
+            get => GetAppConfigValue("EnforceToUse7zipOnExtract").ToBool();
+            set => SetAndSaveConfigValue("EnforceToUse7zipOnExtract", value);
+        }
+
         private static long _downloadSpeedLimitCached = 0; // Default: 0 == Unlimited
         public static long DownloadSpeedLimitCached
         {
@@ -441,6 +447,8 @@ namespace Hi3Helper.Shared.Region
             { "SophonHttpConnInt", 0},
             { "SophonPreloadApplyPerfMode", false },
 
+            { "EnforceToUse7zipOnExtract", false },
+
             { "IsUseProxy", false },
             { "IsAllowHttpRedirections", true },
             { "IsAllowHttpCookies", false },
@@ -449,7 +457,7 @@ namespace Hi3Helper.Shared.Region
             { "IsUsePreallocatedDownloader", true },
             { "IsBurstDownloadModeEnabled", true },
             { "DownloadSpeedLimit", 0 },
-            { "DownloadChunkSize", 4 << 20 },
+            { "DownloadChunkSize", 20 << 20 },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },

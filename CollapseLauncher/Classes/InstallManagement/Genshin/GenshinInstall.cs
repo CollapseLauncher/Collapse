@@ -125,7 +125,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            ApplyDeleteFileAction();
+            await ApplyDeleteFileActionAsync(_token.Token);
         }
 
         protected void EnsureMoveOldToNewAudioDirectory()

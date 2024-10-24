@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangFileMigrationProcess _FileMigrationProcess { get; set; } = LangFallback?._FileMigrationProcess;
-            public sealed class LangFileMigrationProcess
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangFileMigrationProcess
             {
                 public string PathActivityPanelTitle { get; set; } = LangFallback?._FileMigrationProcess.PathActivityPanelTitle;
                 public string SpeedIndicatorTitle { get; set; } = LangFallback?._FileMigrationProcess.SpeedIndicatorTitle;

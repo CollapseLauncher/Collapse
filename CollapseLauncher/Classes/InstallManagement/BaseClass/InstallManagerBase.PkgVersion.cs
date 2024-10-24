@@ -357,7 +357,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Read line and deserialize
                 string?        line          = await reader.ReadLineAsync(token);
-                LocalFileInfo? localFileInfo = line?.Deserialize<LocalFileInfo>(InternalAppJSONContext.Default);
+                LocalFileInfo? localFileInfo = line?.Deserialize(InternalAppJSONContext.Default.LocalFileInfo);
 
                 // Assign the values
                 if (localFileInfo == null)

@@ -101,7 +101,7 @@ namespace CollapseLauncher
 
                 // or start asset download task
                 await RunDownloadTask(asset.AssetIndex.fileSize, assetPath, asset.AssetIndex.remoteURL, downloadClient, downloadProgress, token);
-                LogWriteLine($"File [T: {RepairAssetType.General}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
+                LogWriteLine($"File [T: {RepairAssetType.Generic}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry

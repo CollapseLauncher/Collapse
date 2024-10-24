@@ -10,6 +10,9 @@
       xmlns:page="using:CollapseLauncher.Pages"
       xmlns:type="using:CollapseLauncher.InstallManager.Base"
       mc:Ignorable="d">
+    <Page.Resources>
+        <page:FileSizeToStringLiteralConverter x:Key="FileSizeToStringConverter" />
+    </Page.Resources>
     <Grid Padding="32,32,32,32"
           Background="{ThemeResource WebView2GridBackground}">
         <Grid.RowDefinitions>
@@ -68,9 +71,6 @@
               Padding="16"
               Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
               CornerRadius="8">
-            <Grid.Resources>
-                <page:FileSizeToStringLiteralConverter x:Key="FileSizeToStringLiteralConverter" />
-            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
@@ -129,11 +129,11 @@
                         <datatable:DataRow>
                             <TextBlock Margin="0,0,16,0"
                                        VerticalAlignment="Center"
-                                       Text="{Binding RelativePath}"
+                                       Text="{x:Bind RelativePath}"
                                        TextTrimming="CharacterEllipsis" />
                             <TextBlock Margin="-30,0,56,0"
                                        VerticalAlignment="Center"
-                                       Text="{Binding FileSize, Converter={StaticResource FileSizeToStringLiteralConverter}}"
+                                       Text="{x:Bind FileSize, Converter={StaticResource FileSizeToStringConverter}}"
                                        TextAlignment="Right"
                                        TextTrimming="CharacterEllipsis" />
                         </datatable:DataRow>

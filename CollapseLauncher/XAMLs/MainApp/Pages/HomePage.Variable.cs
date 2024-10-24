@@ -98,6 +98,20 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsPlaytimeSyncDb
+        {
+            get => CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase;
+            set
+            {
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
+                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
+                SyncDbPlaytimeBtn.IsEnabled = value;
+                
+                // Run DbSync if toggle is changed to enable
+                if (value) CurrentGameProperty?._GamePlaytime.CheckDb();
+            }
+        }
+
         public string NoNewsSplashMascot
         {
             get

@@ -2,15 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
-    <ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
-  </ItemGroup>
 
 </Project>

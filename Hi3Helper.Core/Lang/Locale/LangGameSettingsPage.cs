@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangGameSettingsPage _GameSettingsPage { get; set; } = LangFallback?._GameSettingsPage;
-            public sealed class LangGameSettingsPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangGameSettingsPage
             {
                 public string PageTitle                       { get; set; } = LangFallback?._GameSettingsPage.PageTitle;
                 public string Graphics_Title                  { get; set; } = LangFallback?._GameSettingsPage.Graphics_Title;

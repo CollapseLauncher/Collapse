@@ -168,7 +168,7 @@
     "GamePlaytime_Running_Info1": "Tiến trình của trò chơi này hiện đang chạy, do đó không thể chỉnh sửa thời gian chơi.",
     "GamePlaytime_Running_Info2": "Xin lưu ý rằng việc đóng hoàn toàn Collapse sẽ tạm dừng theo dõi thời gian chơi (thời gian chơi cho đến thời điểm đóng lại) & Collapse sẽ tiếp tục theo dõi khi được mở lại.",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Lần cuối mở vào lúc {3:00}:{4:00} ngày {0:00}/{1:00}/{2:0000}",
+    "GamePlaytime_DateDisplay": "{3:00}:{4:00} {0:00}/{1:00}/{2:0000}",
 
     "PostPanel_Events": "Sự kiện",
     "PostPanel_Notices": "Thông báo",

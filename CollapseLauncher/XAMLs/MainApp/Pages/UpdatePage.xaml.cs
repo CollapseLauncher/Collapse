@@ -3,23 +3,26 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+#if !USEVELOPACK
 using Squirrel;
+#else
+using Velopack;
+#endif
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class UpdatePage : Page
     {
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
-        private MarkdownConfig _markdownConfig = new MarkdownConfig();
+        private readonly CancellationTokenSource _tokenSource    = new CancellationTokenSource();
+        private readonly MarkdownConfig          _markdownConfig = new MarkdownConfig();
 
         public UpdatePage()
         {
@@ -34,16 +37,20 @@ namespace CollapseLauncher.Pages
         {
             ChangeTitleDragArea.Change(DragAreaTemplate.Full);
 
-            string ChannelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
+            string channelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
             CurrentVersionLabel.Text = $"{LauncherUpdateHelper.LauncherCurrentVersionString}";
 
             if (!LauncherUpdateHelper.AppUpdateVersionProp?.Version.HasValue ?? false)
                 throw new NullReferenceException($"New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
 
-            GameVersion NewUpdateVersion = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value;
+            if (LauncherUpdateHelper.AppUpdateVersionProp != null && LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+            {
+                    GameVersion newUpdateVersion = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value;
 
-            NewVersionLabel.Text = NewUpdateVersion.VersionString;
-            UpdateChannelLabel.Text = ChannelName;
+                    NewVersionLabel.Text = newUpdateVersion.VersionString;
+            }
+
+            UpdateChannelLabel.Text = channelName;
             AskUpdateCheckbox.IsChecked = GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
             BuildTimestampLabel.Text = LauncherUpdateHelper.AppUpdateVersionProp?.TimeLocalTime?.ToString("f");
 
@@ -83,6 +90,10 @@ namespace CollapseLauncher.Pages
                             UpdateCountdownPanel.Visibility = Visibility.Collapsed;
                             UpdateBox.Visibility = Visibility.Visible;
                             return;
+                        case ContentDialogResult.Secondary:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
 
@@ -110,16 +121,15 @@ namespace CollapseLauncher.Pages
             AskUpdateCheckbox.Visibility = Visibility.Collapsed;
             UpdateProgressBox.Visibility = Visibility.Visible;
 
-            // Start Squirrel update routine
-            await GetSquirrelUpdate();
+            // Start Update manager check routine
+            await GetUpdateInformation();
         }
 
-        private async Task GetSquirrelUpdate()
+        private async Task GetUpdateInformation()
         {
-            string ChannelName = IsPreview ? "Preview" : "Stable";
+            string channelName = IsPreview ? "Preview" : "Stable";
 
-            string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            Updater updater = new Updater(ChannelName.ToLower());
+            Updater updater = new Updater(channelName.ToLower());
             updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
             updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
@@ -152,7 +162,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format("changelog_{0}.md", IsPreview ? "preview" : "stable"), _tokenSource.Token, true);
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token, true);
                 byte[] buffer = new byte[networkStream.Length];
                 await networkStream.ReadExactlyAsync(buffer, _tokenSource.Token);
 
@@ -166,8 +176,8 @@ namespace CollapseLauncher.Pages
 
         private void AskUpdateToggle(object sender, RoutedEventArgs e)
         {
-            bool AskForUpdateLater = (sender as CheckBox).IsChecked ?? false;
-            SetAndSaveConfigValue("DontAskUpdate", AskForUpdateLater);
+            bool askForUpdateLater = ((CheckBox)sender).IsChecked ?? false;
+            SetAndSaveConfigValue("DontAskUpdate", askForUpdateLater);
         }
 
         private async void DoUpdateClick(object sender, RoutedEventArgs e)
@@ -178,7 +188,7 @@ namespace CollapseLauncher.Pages
         private void CancelCountdownClick(object sender, RoutedEventArgs e)
         {
             _tokenSource.Cancel();
-            (sender as Button).Visibility = Visibility.Collapsed;
+            ((Button)sender).Visibility = Visibility.Collapsed;
             UpdateCountdownPanel.Visibility = Visibility.Collapsed;
             UpdateBox.Visibility = Visibility.Visible;
         }
@@ -195,11 +205,13 @@ namespace CollapseLauncher.Pages
             DispatcherQueue?.TryEnqueue(() =>
             {
                 Status.Text = e.status;
-                if (!string.IsNullOrEmpty(e.newver))
+                if (string.IsNullOrEmpty(e.newver))
                 {
-                    GameVersion Version = new GameVersion(e.newver);
-                    NewVersionLabel.Text = Version.VersionString;
+                    return;
                 }
+
+                GameVersion version = new GameVersion(e.newver);
+                NewVersionLabel.Text = version.VersionString;
             });
         }
 

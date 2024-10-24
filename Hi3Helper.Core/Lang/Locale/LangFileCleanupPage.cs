@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangFileCleanupPage _FileCleanupPage { get; set; } = LangFallback?._FileCleanupPage;
-            public sealed class LangFileCleanupPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangFileCleanupPage
             {
                 public string Title { get; set; } = LangFallback?._FileCleanupPage.Title;
                 public string TopButtonRescan { get; set; } = LangFallback?._FileCleanupPage.TopButtonRescan;

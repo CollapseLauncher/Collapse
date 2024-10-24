@@ -100,9 +100,9 @@ namespace CollapseLauncher.InstallManager.StarRail
             // If the delta patch is performed, then return
             if (!isOnlyInstallPackage && await StartDeltaPatch(_gameRepairManager, false, true))
             {
-                // Update the audio package list after delta patch has been initiated
-                WriteAudioLangList(_gameDeltaPatchPreReqList);
-                return;
+                // Assign the game package to delta-patch requirement list
+                // and start the additional patching process (like Audio patch, etc)
+                gamePackage ??= _gameDeltaPatchPreReqList;
             }
 
             // Run the base installation process
@@ -110,7 +110,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            ApplyDeleteFileAction();
+            await ApplyDeleteFileActionAsync(_token.Token);
 
             // Update the audio lang list if not in isOnlyInstallPackage mode
             if (!isOnlyInstallPackage)

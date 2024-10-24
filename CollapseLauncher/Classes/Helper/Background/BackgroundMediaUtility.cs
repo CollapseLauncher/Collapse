@@ -86,6 +86,14 @@ namespace CollapseLauncher.Helper.Background
                                                                                Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
                                                                                Grid              bgMediaPlayerGrid)
         {
+            CurrentAppliedMediaPath = null;
+            CurrentAppliedMediaType = MediaType.Unknown;
+            if (_alternativeFileStream != null)
+            {
+                await _alternativeFileStream.DisposeAsync();
+                _alternativeFileStream = null;
+            }
+
             // Set the parent UI
             FrameworkElement? ui = parentUI;
 

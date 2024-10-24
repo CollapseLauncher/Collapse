@@ -163,7 +163,7 @@
     "GamePlaytime_Running_Info1": "게임이 실행 중이므로 플레이 시간을 수정할 수 없어요.",
     "GamePlaytime_Running_Info2": "Collapse를 완전히 닫으면 플레이 시간 추적이 중지되고 (그 시점까지 플레이된 시간을 저장), Collapse를 통해 시작한 세션만 추적돼요.",
     "GamePlaytime_Display": "{0}시간 {1}분",
-    "GamePlaytime_ToolTipDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}에 마지막으로 열림",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}",
 
     "PostPanel_Events": "이벤트",
     "PostPanel_Notices": "공지사항",
