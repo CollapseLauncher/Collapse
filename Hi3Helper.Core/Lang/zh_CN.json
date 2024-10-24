@@ -157,6 +157,7 @@
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
     "GameSettings_Panel4ShowPlaytimeButton": "显示游戏时间",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "同步游戏时间到数据库",
     "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
 
@@ -165,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "分钟",
     "GamePlaytime_Idle_ResetBtn": "重置",
     "GamePlaytime_Idle_ChangeBtn": "更改",
+    "GamePlaytime_Idle_SyncDb": "同步",
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
-    "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 会导致游戏时间记录停止（之前的记录会被保存），并且时间会在下次 Collapse 启动时再次开始记录。",
+    "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 将停止游戏时间统计（将仅记录至退出的时刻）。",
     "GamePlaytime_Display": "{0}小时 {1}分钟",
-    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "游戏时间统计",
+    "GamePlaytime_Stats_NeverPlayed": "从未玩过",
+    "GamePlaytime_Stats_LastSession": "最近一次会话",
+    "GamePlaytime_Stats_LastSession_StartTime": "开始时间",
+    "GamePlaytime_Stats_LastSession_Duration": "持续时间",
+    "GamePlaytime_Stats_Daily": "今天",
+    "GamePlaytime_Stats_Weekly": "本周",
+    "GamePlaytime_Stats_Monthly": "本月",
 
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
@@ -534,6 +544,7 @@
 
     "EnableAcrylicEffect": "使用亚克力模糊效果",
     "EnableDownloadChunksMerging": "合并已下载的软件包块",
+    "Enforce7ZipExtract": "在游戏安装或更新时总是使用 7-zip",
     "UseExternalBrowser": "永远使用外部浏览器",
 
     "LowerCollapsePrioOnGameLaunch": "在游戏启动后降低 Collapse 进程的资源占用",
@@ -626,7 +637,20 @@
     "FileDownloadSettings_BurstDownloadHelp4": "功能的下载过程并行执行，以让下载过程更高效。",
     "FileDownloadSettings_BurstDownloadHelp5": "禁用后，",
     "FileDownloadSettings_BurstDownloadHelp6": "与",
-    "FileDownloadSettings_BurstDownloadHelp7": "功能的下载过程将会按顺序下载。"
+    "FileDownloadSettings_BurstDownloadHelp7": "功能的下载过程将会按顺序下载。",
+    
+    "Database_Title": "用户同步数据库",
+    "Database_ConnectionOk": "数据库连接成功！",
+    "Database_ConnectFail": "连接数据库失败，请参阅下面的错误：",
+    "Database_Toggle": "启用在线数据库",
+    "Database_Url": "数据库 URL",
+    "Database_Url_Example": "示例：https://db-collapse.turso.io",
+    "Database_Token": "令牌",
+    "Database_UserId": "用户 ID",
+    "Database_GenerateGuid": "生成 UID",
+    "Database_Validate": "验证并保存设置",
+    "Database_Error_EmptyUri": "数据库 URL 不能为空！",
+    "Database_Error_EmptyToken": "数据库令牌不能为空！"
   },
 
   "_Misc": {
@@ -646,6 +670,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "一切正常！",
     "Cancel": "取消",
     "Close": "关闭",
     "UseCurrentDir": "使用当前目录",
@@ -805,7 +830,7 @@
     "RepairCompletedSubtitle": "{0} 个文件已被修复。",
     "RepairCompletedSubtitleNoBroken": "未找到损坏的文件。",
     "ExtremeGraphicsSettingsWarnTitle": "您选择了“非常高”的设置预设！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "您将把设置预设为非常高！\n非常高的设置预设基本上是2倍的渲染比例，并启用了MSAA，它是非常不稳定的！（除非您有NASA的超级计算机来运行）。\n\n您确定您要使用这个设置吗？",
+    "ExtremeGraphicsSettingsWarnSubtitle": "您将把设置预设调整为非常高！\n非常高的设置预设基本上是 1.6 倍的渲染精度，并启用了 MSAA，而且没有启用优化！\n\n您确定您要使用这个设置吗？",
     "MigrateExistingMoveDirectoryTitle": "移动已存在的安装到：{0}",
     "MigrateExistingInstallChoiceTitle": "在 {0} 检测到到已存在的安装！",
     "MigrateExistingInstallChoiceSubtitle1": "您已经在这个目录中存在一个使用 {0} 安装了的游戏：",
@@ -870,7 +895,7 @@
     "ChangePlaytimeTitle": "是否确认更改游戏时间？",
     "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "ResetPlaytimeTitle": "是否确认更改游戏时间？",
-    "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间设置为 0。这是一个 ",
+    "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间和所有相关统计数据设置为 0。这是一个",
     "ResetPlaytimeSubtitle2": "破坏性的",
     "ResetPlaytimeSubtitle3": " 操作，一旦确认，此操作将无法撤销。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "InvalidPlaytimeTitle": "保存此会话的游戏时间时出现问题",
@@ -937,7 +962,10 @@
     "DownloadSettingsOption1": "安装后启动游戏",
 
     "OpenInExternalBrowser": "在外部浏览器中打开",
-    "CloseOverlay": "关闭"
+    "CloseOverlay": "关闭",
+    
+    "DbGenerateUid_Title": "您确定要更改用户 ID 吗？",
+    "DbGenerateUid_Content": "更改用户 ID 后，如果遗失了用户 ID，与之相关的数据将会丢失。"
   },
 
   "_FileMigrationProcess": {
