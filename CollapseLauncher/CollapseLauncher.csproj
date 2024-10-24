@@ -307,7 +307,7 @@
         <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
     </Target>
 
-    <Target Name="PostPublish" AfterTargets="Publish">
+    <Target Name="PostPublish" AfterTargets="Publish" Condition="'$(PublishAot)' == 'true'">
         <Delete Files="$(PublishDir)csharp_bindings.dll" />
     </Target>
 </Project>
