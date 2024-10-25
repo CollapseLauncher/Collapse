@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -94,10 +94,22 @@
             - GetUserProfileDirectoryW function from Win32's userenv.dll
             - SHGetKnownFolderPath function from Win32's shell32.dll
         -->
-        <DirectPInvoke Include="UserEnv" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.22621.0_um_x64\UserEnv.lib" />
-        <DirectPInvoke Include="shell32" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.22621.0_um_x64\shell32.lib" />
+        
+        <!-- Region: waifu2x-ncnn-vulkan -->
+        <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
+        <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan_msvc-release.lib" />
+        <!--
+        These libraries are required by waifu2x-ncnn-vulkan to resolve external calls.
+        -->
+        <NativeLibrary Include="StaticLib\Waifu2x\ncnn.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\SPIRV.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\glslang.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\OGLCompiler.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\MachineIndependent.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\GenericCodeGen.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\OSDependent.lib" />
     </ItemGroup>
 
     <ItemGroup>
@@ -309,5 +321,6 @@
 
     <Target Name="PostPublish" AfterTargets="Publish" Condition="'$(PublishAot)' == 'true'">
         <Delete Files="$(PublishDir)csharp_bindings.dll" />
+        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" />
     </Target>
 </Project>
