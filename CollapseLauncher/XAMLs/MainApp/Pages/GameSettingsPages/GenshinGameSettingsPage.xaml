@@ -14,7 +14,9 @@
       xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
       Loaded="InitializeSettings"
       Unloaded="OnUnload"
-      mc:Ignorable="d">
+      mc:Ignorable="d"
+      NavigationCacheMode="Enabled"
+      CacheMode="BitmapCache">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />

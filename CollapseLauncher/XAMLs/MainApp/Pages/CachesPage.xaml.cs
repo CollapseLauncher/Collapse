@@ -26,7 +26,6 @@
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
             this.InitializeComponent();
-            BackgroundImgChanger.ToggleBackground(true);
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -215,6 +214,7 @@
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            BackgroundImgChanger.ToggleBackground(true);
             if (m_appMode == AppMode.Hi3CacheUpdater) return;
 
             if (GameInstallationState == GameInstallStateEnum.NotInstalled

@@ -145,7 +145,12 @@ namespace CollapseLauncher
             PreviousTag = "launcher";
             PreviousTagString.Clear();
             PreviousTagString.Add(PreviousTag);
+
+            // Clear cache on navigation reset
             LauncherFrame.BackStack.Clear();
+            int cacheSizeOld = LauncherFrame.CacheSize;
+            LauncherFrame.CacheSize = 0;
+            LauncherFrame.CacheSize = cacheSizeOld;
         }
 
         private async Task DownloadBackgroundImage(CancellationToken Token)

@@ -23,7 +23,6 @@
         public RepairPage()
         {
             CurrentGameProperty = GetCurrentGameProperty();
-            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
         }
 
@@ -224,6 +223,7 @@
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            BackgroundImgChanger.ToggleBackground(true);
             if (GameInstallationState == GameInstallStateEnum.NotInstalled
                 || GameInstallationState == GameInstallStateEnum.NeedsUpdate
                 || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin

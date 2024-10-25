@@ -20,7 +20,9 @@
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       Unloaded="Page_Unloaded"
-      mc:Ignorable="d">
+      mc:Ignorable="d"
+      NavigationCacheMode="Enabled"
+      CacheMode="BitmapCache">
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow" />
         <s:AttachedDropShadow x:Key="SharedDropShadow"

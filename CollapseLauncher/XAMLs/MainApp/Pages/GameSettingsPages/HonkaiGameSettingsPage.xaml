@@ -10,7 +10,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Loaded="InitializeSettings"
       Unloaded="OnUnload"
-      mc:Ignorable="d">
+      mc:Ignorable="d"
+      NavigationCacheMode="Enabled"
+      CacheMode="BitmapCache">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />
