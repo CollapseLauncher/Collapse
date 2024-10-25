@@ -320,7 +320,11 @@
     </Target>
 
     <Target Name="PostPublish" AfterTargets="Publish" Condition="'$(PublishAot)' == 'true'">
+        <!-- Region: Libsql.Client -->
         <Delete Files="$(PublishDir)csharp_bindings.dll" />
+
+        <!-- Region: waifu2x-ncnn-vulkan -->
         <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" />
+        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" />
     </Target>
 </Project>
