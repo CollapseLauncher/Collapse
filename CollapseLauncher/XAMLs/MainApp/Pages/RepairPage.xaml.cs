@@ -22,6 +22,7 @@
         private GamePresetProperty CurrentGameProperty { get; set; }
         public RepairPage()
         {
+            BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GetCurrentGameProperty();
             this.InitializeComponent();
         }

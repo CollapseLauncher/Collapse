@@ -23,8 +23,8 @@
 
         public CachesPage()
         {
+            BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-
             this.InitializeComponent();
         }
 
