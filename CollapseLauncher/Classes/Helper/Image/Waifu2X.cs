@@ -15,8 +15,8 @@ namespace CollapseLauncher.Helper.Image
         private const string DllName = "Lib\\waifu2x-ncnn-vulkan.dll";
 
 #nullable enable
-        private static string? appDirPath = null;
-        private static string? waifu2xLibPath = null;
+        private static string? appDirPath;
+        private static string? waifu2xLibPath;
 #nullable restore
 
         static Waifu2XPInvoke()
@@ -29,14 +29,15 @@ namespace CollapseLauncher.Helper.Image
         {
             appDirPath ??= LauncherConfig.AppFolder;
 
-            if (DllImportSearchPath.AssemblyDirectory == searchPath
-             || DllImportSearchPath.ApplicationDirectory == searchPath)
+            if (DllImportSearchPath.AssemblyDirectory != searchPath
+             && DllImportSearchPath.ApplicationDirectory != searchPath)
             {
-                waifu2xLibPath ??= Path.Combine(appDirPath, DllName);
-                return LoadInternal(waifu2xLibPath, assembly, null);
+                return LoadInternal(libraryName, assembly, searchPath);
             }
 
-            return LoadInternal(libraryName, assembly, searchPath);
+            waifu2xLibPath ??= Path.Combine(appDirPath, DllName);
+            return LoadInternal(waifu2xLibPath, assembly, null);
+
         }
 
         private static IntPtr LoadInternal(string path, Assembly assembly, DllImportSearchPath? searchPath)
