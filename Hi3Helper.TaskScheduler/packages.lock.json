@@ -354,7 +354,7 @@
         "contentHash": "5zJ0XDxAIg8iy+t4aMnQAu0MqVbqyvfoUVl1yDV61xdo3Vth45oA2FoY4pPkxYAH5f8ixpmTqXeEIya95x0aCQ=="
       }
     },
-    ".NETFramework,Version=v4.6.2/win-x86": {
+    ".NETFramework,Version=v4.6.2/win-x64": {
       "System.Net.Http": {
         "type": "Direct",
         "requested": "[4.3.4, )",
