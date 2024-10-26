@@ -70,16 +70,22 @@
 		- USEVELOPACK : Use Velopack as the update manager
 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <!-- !! IMPORTANT !!-->
+        <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
 		<TrimMode>full</TrimMode>
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <!-- !! IMPORTANT !!-->
+        <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>True</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+        <!-- !! IMPORTANT !!-->
+        <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
