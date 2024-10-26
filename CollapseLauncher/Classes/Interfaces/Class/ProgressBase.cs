@@ -1130,7 +1130,7 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region DialogTools
-        protected async Task SpawnRepairDialog(List<T1> assetIndex, Action actionIfInteractiveCancel)
+        protected async Task SpawnRepairDialog(List<T1> assetIndex, Action? actionIfInteractiveCancel)
         {
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x.GetAssetSize());
@@ -1205,10 +1205,7 @@ namespace CollapseLauncher.Interfaces
 
             if (result == ContentDialogResult.None)
             {
-                if (actionIfInteractiveCancel != null)
-                {
-                    actionIfInteractiveCancel();
-                }
+                actionIfInteractiveCancel?.Invoke();
                 throw new OperationCanceledException();
             }
         }
