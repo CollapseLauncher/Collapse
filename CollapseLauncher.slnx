@@ -1,0 +1,59 @@
+﻿<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Publish" />
+    <BuildType Name="Release" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="CollapseLauncher\CollapseLauncher.csproj">
+    <Configuration Solution="Release|x64" Project="Release|x64|Deploy" />
+  </Project>
+  <Project Path="ColorThief\ColorThief\ColorThief.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="H.NotifyIcon\src\libs\H.GeneratedIcons.System.Drawing\H.GeneratedIcons.System.Drawing.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="H.NotifyIcon\src\libs\H.NotifyIcon\H.NotifyIcon.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.Core\Hi3Helper.Core.csproj" />
+  <Project Path="Hi3Helper.EncTool.Test\Hi3Helper.EncTool.Test.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64|NoBuild" />
+    <Configuration Solution="Release|x64" Project="Release|x64|NoBuild" />
+  </Project>
+  <Project Path="Hi3Helper.EncTool\Hi3Helper.EncTool.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.Http\Hi3Helper.Http.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.Sophon\Hi3Helper.Sophon.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64|NoBuild" />
+    <Configuration Solution="Release|x64" Project="Release|x64|NoBuild" />
+  </Project>
+  <Project Path="ImageEx\ImageEx\ImageEx.csproj" Type="Classic C#">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="InnoSetupHelper\InnoSetupHelper.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+  <Project Path="SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj">
+    <Configuration Solution="Publish|x64" Project="Release|x64" />
+  </Project>
+</Solution>
