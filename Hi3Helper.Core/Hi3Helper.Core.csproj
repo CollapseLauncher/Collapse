@@ -25,10 +25,6 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<Optimize>False</Optimize>
 	</PropertyGroup>
