@@ -220,6 +220,7 @@
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             CurrentGameProperty._GameRepair?.CancelRoutine();
+            CurrentGameProperty._GameRepair?.AssetEntry.Clear();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)

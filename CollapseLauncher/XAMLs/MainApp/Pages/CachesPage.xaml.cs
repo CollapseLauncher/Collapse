@@ -245,6 +245,7 @@
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             CurrentGameProperty._GameCache?.CancelRoutine();
+            CurrentGameProperty._GameCache?.AssetEntry.Clear();
         }
     }
 }
