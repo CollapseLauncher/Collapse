@@ -948,7 +948,14 @@ namespace CollapseLauncher.Interfaces
             {
                 try
                 {
-                    return info.Open(fileMode, fileAccess, fileShare);
+                    return info.Open(new FileStreamOptions
+                    {
+                        Options = FileOptions.Asynchronous,
+                        Mode = fileMode,
+                        Access = fileAccess,
+                        Share = fileShare,
+                        BufferSize = info.Length >= _bufferMediumLength ? _bufferMediumLength : _bufferLength
+                    });
                 }
                 catch
                 {

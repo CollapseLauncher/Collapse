@@ -131,16 +131,14 @@ namespace CollapseLauncher
             }
 
             // If above passes, then run the CRC check
-            using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
-            {
-                // Calculate the asset CRC (SHA1)
-                byte[] hashArray = await CheckHashAsync(fs, new HMACSHA1(_gameSalt!), token);
+            await using FileStream fs = await NaivelyOpenFileStreamAsync(fileInfo, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // Calculate the asset CRC (SHA1)
+            byte[] hashArray = await CheckHashAsync(fs, new HMACSHA1(_gameSalt!), token);
 
-                // If the asset CRC doesn't match, then add the file to asset index.
-                if (!IsArrayMatch(asset.CRCArray, hashArray))
-                {
-                    AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.CRCArray);
-                }
+            // If the asset CRC doesn't match, then add the file to asset index.
+            if (!IsArrayMatch(asset.CRCArray, hashArray))
+            {
+                AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.CRCArray);
             }
         }
 
