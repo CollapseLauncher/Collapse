@@ -56,10 +56,10 @@ namespace CollapseLauncher
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
-                            FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
-                            FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
-                            FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
-                            _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken)
+                            FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, innerToken),
+                            _ => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, innerToken)
                         };
 
                         // Await the task
@@ -80,10 +80,10 @@ namespace CollapseLauncher
                     // Assign a task depends on the asset type
                     Task assetTask = asset.AssetIndex.FT switch
                     {
-                        FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
+                        FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, token),
+                        FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, token),
+                        FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, token),
+                        _ => RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, token)
                     };
 
                     // Await the task
