@@ -19,10 +19,10 @@
       xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Sophon"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
-      Unloaded="Page_Unloaded"
-      mc:Ignorable="d"
+      CacheMode="BitmapCache"
       NavigationCacheMode="Enabled"
-      CacheMode="BitmapCache">
+      Unloaded="Page_Unloaded"
+      mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow" />
         <s:AttachedDropShadow x:Key="SharedDropShadow"
@@ -2410,65 +2410,74 @@
                                 <Button x:Name="ChangePlaytimeButton"
                                         Margin="-4,0"
                                         HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
+                                        HorizontalContentAlignment="Stretch"
                                         Click="ChangePlaytimeButton_Click"
                                         CornerRadius="14"
                                         Style="{ThemeResource AccentButtonStyle}">
-                                    <Grid Margin="4,0">
+                                    <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="18" />
                                             <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0"
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                  FontSize="16"
+                                                  FontSize="12"
                                                   Glyph="" />
-                                        <TextBlock Grid.Column="1"
-                                                   Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}"
-                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="0"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" />
                                     </Grid>
                                 </Button>
                                 <Button x:Name="ResetPlaytimeButton"
                                         Margin="-4,0"
                                         HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
+                                        HorizontalContentAlignment="Stretch"
                                         Click="ResetPlaytimeButton_Click"
                                         CornerRadius="14">
-                                    <Grid Margin="4,0">
+                                    <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="18" />
                                             <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0"
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                  FontSize="16"
+                                                  FontSize="12"
                                                   Glyph="" />
-                                        <TextBlock Grid.Column="1"
-                                                   Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}"
-                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="0"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" />
                                     </Grid>
                                 </Button>
                                 <Button x:Name="SyncDbPlaytimeBtn"
                                         Margin="-4,0,-4,-4"
                                         HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
+                                        HorizontalContentAlignment="Stretch"
                                         Click="SyncDbPlaytimeButton_Click"
                                         CornerRadius="14">
-                                    <Grid Margin="4,0">
+                                    <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="18" />
                                             <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0"
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                  FontSize="16"
+                                                  FontSize="12"
                                                   Glyph="" />
-                                        <TextBlock Grid.Column="1"
-                                                   Margin="8,0,0,0"
-                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_SyncDb}"
-                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="0"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_SyncDb}" />
                                     </Grid>
                                 </Button>
                             </StackPanel>

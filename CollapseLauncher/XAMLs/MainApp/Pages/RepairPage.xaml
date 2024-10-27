@@ -12,11 +12,11 @@
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       xmlns:local="using:CollapseLauncher"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      CacheMode="BitmapCache"
       Loaded="InitializeLoaded"
-      Unloaded="Page_Unloaded"
-      mc:Ignorable="d"
       NavigationCacheMode="Enabled"
-      CacheMode="BitmapCache">
+      Unloaded="Page_Unloaded"
+      mc:Ignorable="d">
     <Grid>
         <Grid x:Name="PageContent"
               Margin="32,40,32,18">

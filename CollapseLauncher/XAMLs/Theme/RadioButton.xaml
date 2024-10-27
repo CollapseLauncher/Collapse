@@ -2,8 +2,8 @@
 <!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
-<!-- ReSharper disable Xaml.InvalidResourceType -->
-<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<!--  ReSharper disable Xaml.InvalidResourceType  -->
+<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.ThemeDictionaries>
