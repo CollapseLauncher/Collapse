@@ -108,11 +108,9 @@
 
         private void LoadPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             Settings.ReloadSettings();
-
             this.InitializeComponent();
-            this.NavigationCacheMode = NavigationCacheMode.Disabled;
+
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
@@ -176,6 +174,7 @@
         {
             try
             {
+                BackgroundImgChanger.ToggleBackground(true);
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
                 if (CurrentGameProperty.IsGameRunning)

@@ -11,11 +11,11 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.Zenless"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      Unloaded="OnUnload"
-      mc:Ignorable="d"
       NavigationCacheMode="Enabled"
-      CacheMode="BitmapCache">
+      Unloaded="OnUnload"
+      mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />
@@ -488,7 +488,8 @@
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_GlobalIllumination, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Visibility="Collapsed" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"
+                                                      Visibility="Collapsed" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                     </ComboBox>

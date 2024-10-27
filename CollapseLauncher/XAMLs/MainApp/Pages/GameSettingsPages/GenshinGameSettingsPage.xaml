@@ -12,11 +12,11 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.Genshin"
       xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      Unloaded="OnUnload"
-      mc:Ignorable="d"
       NavigationCacheMode="Enabled"
-      CacheMode="BitmapCache">
+      Unloaded="OnUnload"
+      mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />

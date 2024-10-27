@@ -8,11 +8,11 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      Unloaded="OnUnload"
-      mc:Ignorable="d"
       NavigationCacheMode="Enabled"
-      CacheMode="BitmapCache">
+      Unloaded="OnUnload"
+      mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <conv:InverseBooleanConverter x:Key="BooleanInverse" />
