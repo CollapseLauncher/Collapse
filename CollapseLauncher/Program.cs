@@ -12,6 +12,7 @@ using NuGet.Versioning;
 using Velopack;
 #endif
 using System;
+using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -19,6 +20,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -130,6 +132,7 @@ public static class MainEntryPoint
             }
 
             _ = Helper.Database.DbHandler.Init();
+            CheckRuntimeFeatures();
             
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
@@ -319,7 +322,7 @@ public static class MainEntryPoint
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
+            LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
         }
 
         void RemoveSquirrelFilePath(string filePath)
@@ -327,7 +330,7 @@ public static class MainEntryPoint
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
-                Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!", LogType.Default, true);
+                LogWriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!", LogType.Default, true);
             }
         }
     }
@@ -348,6 +351,28 @@ public static class MainEntryPoint
         LogWriteLine($"Collapse stub does not exist, returning current executable path!\r\n\t{collapseStubPath}",
                      LogType.Default, true);
         return collapseMainPath;
+    }
+    
+    private static async void CheckRuntimeFeatures()
+    {
+        try
+        {
+            await Task.Run(() =>
+                { 
+                    // RuntimeFeature docs https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimefeature?view=net-9.0
+                    LogWriteLine($"Available Runtime Features:\r\n\t" +
+                                 $"PortablePdb: {RuntimeFeature.IsSupported(RuntimeFeature.PortablePdb)}\r\n\t" +
+                                 $"IsDynamicCodeCompiled:   {RuntimeFeature.IsDynamicCodeCompiled}\r\n\t" +
+                                 $"IsDynamicCodeSupported:  {RuntimeFeature.IsDynamicCodeSupported}\r\n\t" +
+                                 $"UnmanagedSignatureCallingConventions:    {RuntimeFeature.IsSupported(RuntimeFeature.UnmanagedSignatureCallingConvention)}",
+                       LogType.Debug, true);
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}", LogType.Error, true);
+        }
     }
 
     private static void InitializeAppSettings()
