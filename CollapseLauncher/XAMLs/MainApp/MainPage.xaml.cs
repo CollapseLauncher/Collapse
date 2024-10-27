@@ -512,7 +512,9 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex);
+                LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
+                             LogType.Error, true);
+                ErrorSender.SendException(new Exception($"An error occured while loading background {e.ImgPath}", ex));
             }
         }
 
