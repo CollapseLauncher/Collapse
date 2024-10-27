@@ -36,6 +36,7 @@ public static class MainEntryPoint
 #nullable enable
     public static int InstanceCount;
     public static App? CurrentAppInstance;
+    public static string[]? LastArgs = null;
 #nullable restore
 
     [DllImport("Microsoft.ui.xaml.dll")]
@@ -44,118 +45,124 @@ public static class MainEntryPoint
     [STAThread]
     public static void Main(params string[] args)
     {
+        LastArgs = args;
 #if PREVIEW
         IsPreview = true;
 #endif
 
-        try
+        Application.Start(_ =>
         {
-            AppCurrentArgument = args;
-
-            // Extract icons from the executable file
-            var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
-            var iconCount      = InvokeProp.ExtractIconEx(mainModulePath, -1, null, null, 0);
-            if (iconCount > 0)
+            try
             {
-                var largeIcons = new IntPtr[1];
-                var smallIcons = new IntPtr[1];
-                InvokeProp.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
-                AppIconLarge = largeIcons[0];
-                AppIconSmall = smallIcons[0];
-            }
+                AppCurrentArgument = args;
 
-            InitAppPreset();
-            var logPath = AppGameLogsFolder;
-            _log = IsConsoleEnabled
-                ? new LoggerConsole(logPath, Encoding.UTF8)
-                : new LoggerNull(logPath, Encoding.UTF8);
-            if (Directory.GetCurrentDirectory() != AppFolder)
-            {
-                LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
-                             LogType.Warning, true);
-                Directory.SetCurrentDirectory(AppFolder);
-            }
+                // Extract icons from the executable file
+                var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
+                var iconCount = InvokeProp.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                if (iconCount > 0)
+                {
+                    var largeIcons = new IntPtr[1];
+                    var smallIcons = new IntPtr[1];
+                    InvokeProp.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    AppIconLarge = largeIcons[0];
+                    AppIconSmall = smallIcons[0];
+                }
 
-            StartUpdaterHook();
+                InitAppPreset();
+                var logPath = AppGameLogsFolder;
+                _log = IsConsoleEnabled
+                    ? new LoggerConsole(logPath, Encoding.UTF8)
+                    : new LoggerNull(logPath, Encoding.UTF8);
+                if (Directory.GetCurrentDirectory() != AppFolder)
+                {
+                    LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
+                                 LogType.Warning, true);
+                    Directory.SetCurrentDirectory(AppFolder);
+                }
 
-            LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
-                                       LauncherUpdateHelper.LauncherCurrentVersionString,
-                                       GetVersionString(),
-                                       Environment.UserName,
-                                       IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
+                StartUpdaterHook();
 
-            var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
+                LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
+                                           LauncherUpdateHelper.LauncherCurrentVersionString,
+                                           GetVersionString(),
+                                           Environment.UserName,
+                                           IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
-            LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
-                         LogType.Scheme, true);
-            LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
-                         $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
-                         LogType.Scheme, true);
+                var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
 
-            Process.GetCurrentProcess().PriorityBoostEnabled = true;
+                LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
+                             LogType.Scheme, true);
+                LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
+                             $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
+                             LogType.Scheme, true);
 
-            ParseArguments(args);
-            InitializeAppSettings();
+                Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
-            // Initiate InnoSetupHelper's log event
-            InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
+                ParseArguments(args);
+                InitializeAppSettings();
 
-            HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
+                // Initiate InnoSetupHelper's log event
+                InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
 
-            switch (m_appMode)
-            {
-                case AppMode.ElevateUpdater:
-                    RunElevateUpdate();
-                    return;
-                case AppMode.InvokerTakeOwnership:
-                    new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
-                    return;
-                case AppMode.InvokerMigrate:
-                    if (m_arguments.Migrate.IsBHI3L)
-                        new Migrate().DoMigrationBHI3L(
-                                                       m_arguments.Migrate.GameVer,
-                                                       m_arguments.Migrate.RegLoc,
-                                                       m_arguments.Migrate.InputPath,
-                                                       m_arguments.Migrate.OutputPath);
-                    else
-                        new Migrate().DoMigration(
+                HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
+
+                switch (m_appMode)
+                {
+                    case AppMode.ElevateUpdater:
+                        RunElevateUpdate();
+                        return;
+                    case AppMode.InvokerTakeOwnership:
+                        new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
+                        return;
+                    case AppMode.InvokerMigrate:
+                        if (m_arguments.Migrate.IsBHI3L)
+                            new Migrate().DoMigrationBHI3L(
+                                                           m_arguments.Migrate.GameVer,
+                                                           m_arguments.Migrate.RegLoc,
+                                                           m_arguments.Migrate.InputPath,
+                                                           m_arguments.Migrate.OutputPath);
+                        else
+                            new Migrate().DoMigration(
+                                                      m_arguments.Migrate.InputPath,
+                                                      m_arguments.Migrate.OutputPath);
+                        return;
+                    case AppMode.InvokerMoveSteam:
+                        new Migrate().DoMoveSteam(
                                                   m_arguments.Migrate.InputPath,
-                                                  m_arguments.Migrate.OutputPath);
-                    return;
-                case AppMode.InvokerMoveSteam:
-                    new Migrate().DoMoveSteam(
-                                              m_arguments.Migrate.InputPath,
-                                              m_arguments.Migrate.OutputPath,
-                                              m_arguments.Migrate.GameVer,
-                                              m_arguments.Migrate.KeyName);
-                    return;
+                                                  m_arguments.Migrate.OutputPath,
+                                                  m_arguments.Migrate.GameVer,
+                                                  m_arguments.Migrate.KeyName);
+                        return;
+                }
+
+                InitDatabaseHandler();
+                CheckRuntimeFeatures();
+
+                AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
+
+                InstanceCount = InvokeProp.EnumerateInstances();
+
+                AppActivation.Enable();
+                if (!AppActivation.DecideRedirection())
+                {
+                    XamlCheckProcessRequirements();
+                    ComWrappersSupport.InitializeComWrappers();
+
+                    StartMainApplication();
+                }
             }
-
-            _ = Helper.Database.DbHandler.Init();
-            CheckRuntimeFeatures();
-            
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
-
-            InstanceCount = InvokeProp.EnumerateInstances();
-
-            AppActivation.Enable();
-            if (!AppActivation.DecideRedirection())
+            catch (Exception ex)
             {
-                XamlCheckProcessRequirements();
-                ComWrappersSupport.InitializeComWrappers();
-
-                StartMainApplication();
+                SpawnFatalErrorConsole(ex);
             }
-        }
-        catch (Exception ex)
-        {
-            SpawnFatalErrorConsole(ex);
-        }
-        finally
-        {
-            HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
-        }
+            finally
+            {
+                HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
+            }
+        });
     }
+
+    private static async void InitDatabaseHandler() => await Helper.Database.DbHandler.Init();
 
     private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e) =>
         LogWriteLine(
@@ -178,31 +185,38 @@ public static class MainEntryPoint
                                 "Press any key to exit or Press 'R' to restart the main thread app...");
 
 #if !DEBUG
-        try
+        if (ConsoleKey.R == Console.ReadKey().Key)
         {
-            if (ConsoleKey.R == Console.ReadKey().Key)
-                StartMainApplication();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = Process.GetCurrentProcess().MainModule?.FileName,
+                UseShellExecute = false
+            };
+            foreach (string arg in LastArgs)
+            {
+                startInfo.ArgumentList.Add(arg);
+            }
+            Process process = new Process()
+            {
+                StartInfo = startInfo
+            };
+            process.Start();
         }
 #endif
     }
 
     public static void StartMainApplication()
     {
-        Application.Start(_ =>
-        {
-            var context =
-                new DispatcherQueueSynchronizationContext(DispatcherQueue
-                   .GetForCurrentThread());
-            SynchronizationContext.SetSynchronizationContext(context);
+        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-            // ReSharper disable once ObjectCreationAsStatement
-            CurrentAppInstance = new App();
-        });
+        var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+        SynchronizationContext.SetSynchronizationContext(context);
+
+        // ReSharper disable once ObjectCreationAsStatement
+        CurrentAppInstance = new App()
+        {
+            HighContrastAdjustment = ApplicationHighContrastAdjustment.None
+        };
     }
 
     private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)

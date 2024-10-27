@@ -19,7 +19,7 @@ namespace CollapseLauncher
     public partial class App
     {
         public static bool IsAppKilled = false;
-        
+
         public App()
         {
             if (DebugSettings != null)
@@ -41,14 +41,14 @@ namespace CollapseLauncher
                 #endif
                     
                 };
-                DebugSettings.BindingFailed += (sender, args) =>
+                DebugSettings.BindingFailed += static (sender, args) =>
                 {
                     LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
                 #endif
                 };
-                UnhandledException += (sender, e) =>
+                UnhandledException += static (sender, e) =>
                 {
                     LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true);
                 #if !DEBUG

@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -246,6 +247,7 @@ namespace CollapseLauncher
         {
             _TrayIcon?.Dispose();
             Close();
+            Application.Current.Exit();
         }
         
         private void MainWindow_OnSizeChanged(object sender, WindowSizeChangedEventArgs args)
