@@ -331,7 +331,7 @@ namespace CollapseLauncher.Helper.Image
             };
             settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
-            await Task.Run(() =>
+            Task runTask = Task.Run(() =>
             {
                 var imageFileInfo = ImageFileInfo.Load(input!);
                 var frame = imageFileInfo.Frames[0];
@@ -348,6 +348,11 @@ namespace CollapseLauncher.Helper.Image
                     MagicImageProcessor.ProcessImage(input!, output!, settings);
                 }
             });
+
+            await runTask;
+
+            if (runTask.Exception != null)
+                throw runTask.Exception;
         }
 
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string filePath)
