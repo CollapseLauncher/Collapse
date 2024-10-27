@@ -638,7 +638,7 @@
     "FileDownloadSettings_BurstDownloadHelp5": "When disabled, the download process for",
     "FileDownloadSettings_BurstDownloadHelp6": "and",
     "FileDownloadSettings_BurstDownloadHelp7": "features will use a sequential download process.",
-    
+
     "Database_Title": "User Synchronizable Database",
     "Database_ConnectionOk": "Database connected successfully!",
     "Database_ConnectFail": "Failed to connect to the database, see error(s) below:",
@@ -650,7 +650,12 @@
     "Database_GenerateGuid": "Generate UID",
     "Database_Validate": "Validate & Save Settings",
     "Database_Error_EmptyUri": "Database URL cannot be empty!",
-    "Database_Error_EmptyToken": "Database token cannot be empty!"
+    "Database_Error_EmptyToken": "Database token cannot be empty!",
+    "Database_Error_InvalidGuid": "User ID is not a valid GUID!",
+    "Database_Warning_PropertyChanged": "Database settings has changed",
+    "Database_ValidationChecking": "Validating Settings...",
+    "Database_Placeholder_DbUserIdTextBox": "GUID Example: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Enter your authentication token here"
   },
 
   "_Misc": {

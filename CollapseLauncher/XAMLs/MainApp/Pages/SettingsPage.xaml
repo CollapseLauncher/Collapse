@@ -1096,91 +1096,230 @@
                                       IsOn="{x:Bind IsDbEnabled, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                        <TextBox x:Name="DbUriTextBox"
-                                 MaxWidth="400"
-                                 Margin="0,8,0,8"
-                                 HorizontalAlignment="Stretch"
-                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url}"
-                                 InputScope="Url"
-                                 IsEnabled="{Binding IsOn, ElementName=DbToggle}"
-                                 IsSpellCheckEnabled="False"
-                                 PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url_Example}"
-                                 Text="{x:Bind DbUrl, Mode=TwoWay}" />
-                        <PasswordBox x:Name="DbTokenPasswordBox"
-                                     MaxWidth="400"
-                                     Margin="0,8,0,8"
-                                     HorizontalAlignment="Stretch"
-                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Token}"
-                                     InputScope="Password"
-                                     IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
-                                     Password="{x:Bind DbToken, Mode=TwoWay}" />
-                        <TextBox x:Name="DbUserIdTextBox"
-                                 MaxWidth="400"
-                                 Margin="0,8,0,8"
-                                 HorizontalAlignment="Stretch"
-                                 GotFocus="DbUserIdTextBox_GotFocus"
-                                 Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_UserId}"
-                                 IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
-                                 IsSpellCheckEnabled="False"
-                                 LostFocus="DbUserIdTextBox_LostFocus"
-                                 Text="{x:Bind DbUserId, Mode=TwoWay}" />
-                        <Grid Margin="0,4,0,4">
+                        <Grid x:Name="DbPropertyGrid"
+                              Width="400"
+                              MaxWidth="400"
+                              HorizontalAlignment="Left"
+                              ColumnSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
+                            <TextBox x:Name="DbUriTextBox"
+                                     Grid.ColumnSpan="2"
+                                     Margin="0,8,0,8"
+                                     HorizontalAlignment="Stretch"
+                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url}"
+                                     InputScope="Url"
+                                     IsEnabled="{Binding IsOn, ElementName=DbToggle}"
+                                     IsSpellCheckEnabled="False"
+                                     PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url_Example}"
+                                     Text="{x:Bind DbUrl, Mode=TwoWay}" />
+                            <PasswordBox x:Name="DbTokenPasswordBox"
+                                         Grid.Row="1"
+                                         Grid.ColumnSpan="2"
+                                         Margin="0,8,0,8"
+                                         HorizontalAlignment="Stretch"
+                                         Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Token}"
+                                         InputScope="Password"
+                                         IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                         Password="{x:Bind DbToken, Mode=TwoWay}"
+                                         PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbTokenPasswordBox}" />
+                            <TextBox x:Name="DbUserIdTextBox"
+                                     Grid.Row="2"
+                                     Grid.ColumnSpan="2"
+                                     Margin="0,8,0,8"
+                                     HorizontalAlignment="Stretch"
+                                     GotFocus="DbUserIdTextBox_GotFocus"
+                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_UserId}"
+                                     IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                     IsSpellCheckEnabled="False"
+                                     LostFocus="DbUserIdTextBox_LostFocus"
+                                     PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbUserIdTextBox}"
+                                     Text="{x:Bind DbUserId, Mode=TwoWay}" />
                             <Button x:Name="GenerateGuidButton"
+                                    Grid.Row="3"
                                     Grid.Column="0"
-                                    Margin="6,0,0,0"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
                                     Click="GenerateGuidButton_Click"
                                     CornerRadius="14"
                                     Style="{ThemeResource AccentButtonStyle}">
-                                <Grid Margin="4,0"
-                                      HorizontalAlignment="Left">
+                                <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="18" />
                                         <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <FontIcon Grid.Column="0"
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
                                               FontFamily="{ThemeResource FontAwesomeSolid}"
                                               FontSize="16"
                                               Glyph="" />
-                                    <TextBlock Grid.Column="1"
-                                               Margin="8,0,0,0"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_GenerateGuid}"
-                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="0"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="SemiBold"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_GenerateGuid}" />
                                 </Grid>
                             </Button>
                             <Button x:Name="ValidateDbButton"
+                                    Grid.Row="3"
                                     Grid.Column="1"
-                                    Margin="6,0,0,0"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
                                     Click="ValidateAndSaveDbButton_Click"
                                     CornerRadius="14"
                                     Style="{ThemeResource AccentButtonStyle}">
-                                <Grid Margin="4,0"
-                                      HorizontalAlignment="Left">
+                                <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="18" />
                                         <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <FontIcon Grid.Column="0"
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
                                               FontFamily="{ThemeResource FontAwesomeSolid}"
                                               FontSize="16"
                                               Glyph="" />
-                                    <TextBlock Grid.Column="1"
-                                               Margin="8,0,0,0"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_Validate}"
-                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="0"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="SemiBold"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_Validate}" />
                                 </Grid>
                             </Button>
-                            <FontIcon x:Name="DbWarningSaveIcon"
-                                      Grid.Column="2"
-                                      FontFamily="{ThemeResource FontAwesomeSolid}"
-                                      FontSize="20"
-                                      Glyph=""
-                                      Visibility="Collapsed" />
                         </Grid>
+                        <StackPanel Width="400"
+                                    MaxWidth="400"
+                                    Margin="0,16,0,0"
+                                    HorizontalAlignment="Left"
+                                    Spacing="8">
+                            <Grid x:Name="DatabaseConnectivityTestTextChecking"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource AccentAcrylicInAppFillColorBaseBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ValidationChecking}" />
+                                <ProgressRing Grid.Column="1"
+                                              Width="18"
+                                              Height="18"
+                                              VerticalAlignment="Center"
+                                              IsIndeterminate="true" />
+                            </Grid>
+                            <Grid x:Name="DatabaseConnectivityTestTextSuccess"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ConnectionOk}" />
+                                <FontIcon Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="18"
+                                          Foreground="{ThemeResource SystemFillColorSuccess}"
+                                          Glyph="" />
+                            </Grid>
+                            <Grid x:Name="DatabaseConnectivityTestTextFailed"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ConnectFail}" />
+                                <FontIcon Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="18"
+                                          Foreground="{ThemeResource SystemFillColorCritical}"
+                                          Glyph="" />
+                                <TextBox Grid.Row="1"
+                                         Grid.ColumnSpan="2"
+                                         MaxHeight="300"
+                                         Margin="0,8,0,4"
+                                         HorizontalAlignment="Stretch"
+                                         AcceptsReturn="True"
+                                         FontSize="12"
+                                         IsReadOnly="True"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                            </Grid>
+                            <Grid x:Name="DatabaseWarningBox"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="" />
+                                <FontIcon Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="18"
+                                          Foreground="{ThemeResource SystemFillColorCaution}"
+                                          Glyph="" />
+                            </Grid>
+                        </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" />

@@ -20,6 +20,7 @@
     using Microsoft.UI.Input;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
     using Microsoft.UI.Xaml.Data;
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
@@ -1377,8 +1378,8 @@ namespace CollapseLauncher.Pages
 
                 DbUriTextBox.Text = value;
                 _dbUrl            = value;
-                
-                DbWarningSaveIcon.Visibility = Visibility.Visible;
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
             }
         }
 
@@ -1393,8 +1394,10 @@ namespace CollapseLauncher.Pages
             set
             {
                 _dbToken = value;
-                
-                DbWarningSaveIcon.Visibility = Visibility.Visible;
+                if (string.IsNullOrEmpty(value))
+                    return;
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
             }
         }
 
@@ -1426,6 +1429,12 @@ namespace CollapseLauncher.Pages
             var newGuid = t.Text;
             if (_currentDbGuid == newGuid) return; // Return if no change
             
+            if (!string.IsNullOrEmpty(newGuid) && !Guid.TryParse(newGuid, out _))
+            {
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Error_InvalidGuid);
+                return;
+            }
+
             if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
             {
                 t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
@@ -1434,21 +1443,39 @@ namespace CollapseLauncher.Pages
             {
                 _currentDbGuid = t.Text;
                 _dbUserId      = t.Text; // Store to temp prop
-                
-                DbWarningSaveIcon.Visibility = Visibility.Visible;
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
             }
+        }
+
+        private void ShowDbWarningStatus(string message)
+        {
+            DatabaseWarningBox.Visibility = Visibility.Visible;
+
+            TextBlock textBlock = DatabaseWarningBox.Children.OfType<TextBlock>().FirstOrDefault();
+            if (textBlock == null)
+                return;
+
+            textBlock.Text = message;
         }
 
         [DebuggerHidden]
         private async void ValidateAndSaveDbButton_Click(object sender, RoutedEventArgs e)
         {
+            // Disable the validation button while the check is happening
+            ButtonBase senderAsButtonBase = sender as ButtonBase;
+            senderAsButtonBase.IsEnabled = false;
+
             // Store current value in local vars
             var curUrl   = DbHandler.Uri;
             var curToken = DbHandler.Token;
             var curGuid  = DbHandler.UserId;
-            
+
             try
             {
+                // Show checking bar status
+                ShowChecking();
+
                 // Set the value from prop
                 DbHandler.Uri    = _dbUrl;
                 DbHandler.Token  = _dbToken;
@@ -1460,8 +1487,9 @@ namespace CollapseLauncher.Pages
                 await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
                 if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
                     throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
-                
-                DbWarningSaveIcon.Visibility = Visibility.Collapsed;
+
+                // Show success bar status
+                ShowSuccess();
                 await SpawnDialog(
                                   Lang._Misc.EverythingIsOkay,
                                   Lang._SettingsPage.Database_ConnectionOk,
@@ -1469,7 +1497,8 @@ namespace CollapseLauncher.Pages
                                   Lang._Misc.Close,
                                   null,
                                   null,
-                                  ContentDialogButton.Close
+                                  ContentDialogButton.Close,
+                                  CustomControls.ContentDialogTheme.Success
                                  ); // Show success dialog
             }
             catch (Exception ex)
@@ -1480,7 +1509,52 @@ namespace CollapseLauncher.Pages
                 DbHandler.UserId = curGuid;
                 
                 var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+
+                // Show exception
+                ShowFailed(ex);
                 ErrorSender.SendException(newEx); // Send error with dialog
+            }
+            finally
+            {
+                // Re-enable the validation button
+                senderAsButtonBase.IsEnabled = true;
+            }
+
+            void ShowChecking()
+            {
+                // Reset status
+                DatabaseConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                DatabaseConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+                DatabaseWarningBox.Visibility = Visibility.Collapsed;
+
+                // Show checking bar status
+                DatabaseConnectivityTestTextChecking.Visibility = Visibility.Visible;
+            }
+
+            async void ShowSuccess()
+            {
+                // Show success bar status
+                DatabaseConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                DatabaseConnectivityTestTextSuccess.Visibility = Visibility.Visible;
+
+                // Hide success bar status after 2 seconds
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                DatabaseConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+            }
+
+            void ShowFailed(Exception ex)
+            {
+                // Show failed bar status
+                DatabaseConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                DatabaseConnectivityTestTextFailed.Visibility = Visibility.Visible;
+
+                // Find the text box
+                TextBox textBox = DatabaseConnectivityTestTextFailed.Children.OfType<TextBox>().FirstOrDefault();
+                if (textBox == null)
+                    return;
+
+                // Set the exception text
+                textBox.Text = ex.ToString();
             }
         }
 
@@ -1491,7 +1565,8 @@ namespace CollapseLauncher.Pages
                 var g = Guid.CreateVersion7();
                 DbUserIdTextBox.Text         = g.ToString();
                 _dbUserId                    = g.ToString();
-                DbWarningSaveIcon.Visibility = Visibility.Visible;
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
             }
         }
         #endregion
