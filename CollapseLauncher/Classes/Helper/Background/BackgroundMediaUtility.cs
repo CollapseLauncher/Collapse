@@ -37,7 +37,7 @@ namespace CollapseLauncher.Helper.Background
         internal static readonly string[] SupportedMediaPlayerExt =
             [".mp4", ".mov", ".mkv", ".webm", ".avi", ".gif"];
 
-        private FrameworkElement?   _parentUI;
+        private static FrameworkElement?   _parentUI;
         private ImageUI?            _bgImageBackground;
         private ImageUI?            _bgImageBackgroundLast;
         private MediaPlayerElement? _bgMediaPlayerBackground;
@@ -72,6 +72,15 @@ namespace CollapseLauncher.Helper.Background
             BoundedCapacity = 1,
             TaskScheduler = TaskScheduler.Current
         });
+        internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
+                _parentUI?.DispatcherQueue.TryEnqueue(() => action.Invoke()),
+            new ExecutionDataflowBlockOptions
+            {
+                EnsureOrdered = true,
+                MaxMessagesPerTask = 1,
+                MaxDegreeOfParallelism = 1,
+                BoundedCapacity = 1
+            });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -305,7 +314,12 @@ namespace CollapseLauncher.Helper.Background
                                            ThrowExceptionAction? throwAction          = null,
                                            Action?               actionAfterLoaded    = null)
         {
-            await (SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded)) ?? Task.CompletedTask);
+            while (!await SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded))!)
+            {
+                // Delay the invoke 1/4 second and wait until the action can
+                // be sent again.
+                await Task.Delay(250);
+            }
         }
 
         private async Task LoadBackgroundInner(string mediaPath,                  bool                  isRequestInit = false,
@@ -393,8 +407,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Dimm()
         {
-            _loaderMediaPlayer?.Dimm();
-            _loaderStillImage?.Dimm();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.Dimm();
+                _loaderStillImage?.Dimm();
+            });
         }
 
         /// <summary>
@@ -402,8 +419,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Undimm()
         {
-            _loaderMediaPlayer?.Undimm();
-            _loaderStillImage?.Undimm();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.Undimm();
+                _loaderStillImage?.Undimm();
+            });
         }
 
         /// <summary>
@@ -411,8 +431,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Mute()
         {
-            _loaderMediaPlayer?.Mute();
-            _loaderStillImage?.Mute();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.Mute();
+                _loaderStillImage?.Mute();
+            });
         }
 
         /// <summary>
@@ -420,8 +443,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Unmute()
         {
-            _loaderMediaPlayer?.Unmute();
-            _loaderStillImage?.Unmute();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.Unmute();
+                _loaderStillImage?.Unmute();
+            });
         }
 
         /// <summary>
@@ -429,8 +455,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void SetVolume(double value)
         {
-            _loaderMediaPlayer?.SetVolume(value);
-            _loaderStillImage?.SetVolume(value);
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.SetVolume(value);
+                _loaderStillImage?.SetVolume(value);
+            });
         }
 
         /// <summary>
@@ -438,8 +467,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void WindowUnfocused()
         {
-            _loaderMediaPlayer?.WindowUnfocused();
-            _loaderStillImage?.WindowUnfocused();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.WindowUnfocused();
+                _loaderStillImage?.WindowUnfocused();
+            });
         }
 
         /// <summary>
@@ -447,8 +479,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void WindowFocused()
         {
-            _loaderMediaPlayer?.WindowFocused();
-            _loaderStillImage?.WindowFocused();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.WindowFocused();
+                _loaderStillImage?.WindowFocused();
+            });
         }
 
         /// <summary>
@@ -456,8 +491,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Play()
         {
-            _loaderMediaPlayer?.Play();
-            _loaderStillImage?.Play();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.Play();
+                _loaderStillImage?.Play();
+            });
         }
 
         /// <summary>
@@ -465,8 +503,11 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Pause()
         {
-            _loaderMediaPlayer?.Pause();
-            _loaderStillImage?.Pause();
+            SharedActionBlockQueueChange.Post(() =>
+            {
+                _loaderMediaPlayer?.Pause();
+                _loaderStillImage?.Pause();
+            });
         }
 
         public static FileStream? GetAlternativeFileStream()

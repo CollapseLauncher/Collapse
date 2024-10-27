@@ -457,8 +457,6 @@ namespace CollapseLauncher
         #region Background Image
         private void BackgroundImg_IsImageHideEvent(object sender, bool e)
         {
-            if (IsFirstStartup) return;
-
             if (e) CurrentBackgroundHandler?.Dimm();
             else CurrentBackgroundHandler?.Undimm();
         }
