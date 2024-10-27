@@ -463,49 +463,56 @@ namespace CollapseLauncher
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
-            var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
-            if (gameLauncherApi != null)
+            try
             {
-                gameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
-                IsCustomBG                             = e.IsCustom;
-
-                // if (e.IsCustom)
-                //     SetAndSaveConfigValue("CustomBGPath",
-                //                           gameLauncherApi.GameBackgroundImgLocal);
-
-                if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
+                var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+                if (gameLauncherApi != null)
                 {
-                    LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
-                    gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
-                }
+                    gameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
+                    IsCustomBG = e.IsCustom;
 
-                var mType = BackgroundMediaUtility.GetMediaType(gameLauncherApi.GameBackgroundImgLocal);
-                switch (mType)
-                {
-                    case BackgroundMediaUtility.MediaType.Media:
-                        BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
-                        BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
-                        break;
-                    case BackgroundMediaUtility.MediaType.StillImage:
-                        FileStream imgStream = await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
-                        BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
-                        BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
-                        BackgroundNewBackGrid.Visibility        = Visibility.Visible;
-                        break;
-                    case BackgroundMediaUtility.MediaType.Unknown:
-                    default:
-                        throw new InvalidCastException();
-                }
+                    // if (e.IsCustom)
+                    //     SetAndSaveConfigValue("CustomBGPath",
+                    //                           gameLauncherApi.GameBackgroundImgLocal);
 
-                await InitBackgroundHandler();
-                CurrentBackgroundHandler?.LoadBackground(gameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit,
-                                                         e.IsForceRecreateCache, ex =>
-                                                         {
-                                                             gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
-                                                             LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
-                                                                          LogType.Error, true);
-                                                             ErrorSender.SendException(ex);
-                                                         }, e.ActionAfterLoaded);
+                    if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
+                    {
+                        LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
+                        gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    }
+
+                    var mType = BackgroundMediaUtility.GetMediaType(gameLauncherApi.GameBackgroundImgLocal);
+                    switch (mType)
+                    {
+                        case BackgroundMediaUtility.MediaType.Media:
+                            BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
+                            BackgroundNewBackGrid.Visibility = Visibility.Collapsed;
+                            break;
+                        case BackgroundMediaUtility.MediaType.StillImage:
+                            FileStream imgStream = await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
+                            BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
+                            BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
+                            BackgroundNewBackGrid.Visibility = Visibility.Visible;
+                            break;
+                        case BackgroundMediaUtility.MediaType.Unknown:
+                        default:
+                            throw new InvalidCastException();
+                    }
+
+                    await InitBackgroundHandler();
+                    CurrentBackgroundHandler?.LoadBackground(gameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit,
+                                                             e.IsForceRecreateCache, ex =>
+                                                             {
+                                                                 gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                                                                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
+                                                                              LogType.Error, true);
+                                                                 ErrorSender.SendException(ex);
+                                                             }, e.ActionAfterLoaded);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
             }
         }
 
