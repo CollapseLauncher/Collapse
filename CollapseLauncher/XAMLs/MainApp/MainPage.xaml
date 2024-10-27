@@ -358,6 +358,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
+                <!-- ReSharper disable once Xaml.InvalidResourceType -->
                 <Image x:Name="GridBG_IconImg"
                        Width="Auto"
                        Margin="-2,-2,0,-2"

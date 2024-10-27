@@ -1,5 +1,7 @@
-<!--  ReSharper disable Xaml.RedundantNamespaceAlias  -->
+<!-- ReSharper disable Xaml.RedundantNamespaceAlias -->
 <!-- ReSharper disable XAML1103 -->
+<!-- ReSharper disable Xaml.InvalidResourceType -->
+<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:Hi3Helper.CommunityToolkit.WinUI.Controls">
