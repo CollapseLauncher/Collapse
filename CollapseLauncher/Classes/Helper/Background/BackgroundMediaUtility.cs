@@ -85,7 +85,7 @@ namespace CollapseLauncher.Helper.Background
         {
             try
             {
-                action.Invoke();
+                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
             }
             catch (Exception ex)
             {
@@ -426,11 +426,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Dimm()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.Dimm();
-                _loaderStillImage?.Dimm();
-            });
+            _loaderMediaPlayer?.Dimm();
+            _loaderStillImage?.Dimm();
         }
 
         /// <summary>
@@ -438,11 +435,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Undimm()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.Undimm();
-                _loaderStillImage?.Undimm();
-            });
+            _loaderMediaPlayer?.Undimm();
+            _loaderStillImage?.Undimm();
         }
 
         /// <summary>
@@ -450,11 +444,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Mute()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.Mute();
-                _loaderStillImage?.Mute();
-            });
+            _loaderMediaPlayer?.Mute();
+            _loaderStillImage?.Mute();
         }
 
         /// <summary>
@@ -462,11 +453,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Unmute()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.Unmute();
-                _loaderStillImage?.Unmute();
-            });
+            _loaderMediaPlayer?.Unmute();
+            _loaderStillImage?.Unmute();
         }
 
         /// <summary>
@@ -474,11 +462,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void SetVolume(double value)
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.SetVolume(value);
-                _loaderStillImage?.SetVolume(value);
-            });
+            _loaderMediaPlayer?.SetVolume(value);
+            _loaderStillImage?.SetVolume(value);
         }
 
         /// <summary>
@@ -486,11 +471,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void WindowUnfocused()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.WindowUnfocused();
-                _loaderStillImage?.WindowUnfocused();
-            });
+            _loaderMediaPlayer?.WindowUnfocused();
+            _loaderStillImage?.WindowUnfocused();
         }
 
         /// <summary>
@@ -498,11 +480,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void WindowFocused()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.WindowFocused();
-                _loaderStillImage?.WindowFocused();
-            });
+            _loaderMediaPlayer?.WindowFocused();
+            _loaderStillImage?.WindowFocused();
         }
 
         /// <summary>
@@ -510,11 +489,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Play()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.Play();
-                _loaderStillImage?.Play();
-            });
+            _loaderMediaPlayer?.Play();
+            _loaderStillImage?.Play();
         }
 
         /// <summary>
@@ -522,11 +498,8 @@ namespace CollapseLauncher.Helper.Background
         /// </summary>
         internal void Pause()
         {
-            SharedActionBlockQueueChange.Post(() =>
-            {
-                _loaderMediaPlayer?.Pause();
-                _loaderStillImage?.Pause();
-            });
+            _loaderMediaPlayer?.Pause();
+            _loaderStillImage?.Pause();
         }
 
         public static FileStream? GetAlternativeFileStream()
