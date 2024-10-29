@@ -338,7 +338,7 @@
         <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
     </Target>
 
-    <Target Name="PostPublish" AfterTargets="Publish" Condition="'$(PublishAot)' == 'true'">
+    <Target Name="PostPublish" AfterTargets="_CopyAotSymbols" Condition="'$(PublishAot)' == 'true'">
         <!-- Region: Libsql.Client -->
         <Delete Files="$(PublishDir)csharp_bindings.dll" />
 
@@ -371,6 +371,6 @@
     </Target>
 
 	<ItemGroup Condition="'$(PublishAot)' == 'true'">
-		<LinkerArg Include="/LTCG" />
+		<LinkerArg Include="/LTCG /DEBUG:NONE" />
 	</ItemGroup>
 </Project>
