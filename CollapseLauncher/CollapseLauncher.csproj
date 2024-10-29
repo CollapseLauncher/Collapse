@@ -115,6 +115,19 @@
         <NativeLibrary Include="StaticLib\Waifu2x\MachineIndependent.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\GenericCodeGen.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\OSDependent.lib" />
+		
+		<!-- Region: webp -->
+		<DirectPInvoke Include="webp" />
+		<NativeLibrary Include="StaticLib\libwebp_msvc-release.lib" />
+		<DirectPInvoke Include="webpdemux" />
+		<NativeLibrary Include="StaticLib\libwebpdemux_msvc-release.lib" />
+		<DirectPInvoke Include="webpmux" />
+		<NativeLibrary Include="StaticLib\libwebpmux_msvc-release.lib" />
+		<!--
+        These libraries are required by libwebp to resolve external calls.
+        -->
+		<NativeLibrary Include="StaticLib\libsharpyuv_msvc-release.lib" />
+		<NativeLibrary Include="StaticLib\libwebpdecoder_msvc-release.lib" />
     </ItemGroup>
 
     <ItemGroup>
@@ -350,6 +363,9 @@
 		<Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
 		<Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
 		<Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
+		<Delete Files="$(PublishDir)webp.dll" />
+		<Delete Files="$(PublishDir)webpdemux.dll" />
+		<Delete Files="$(PublishDir)webpmux.dll" />
 		<Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
 </Project>
