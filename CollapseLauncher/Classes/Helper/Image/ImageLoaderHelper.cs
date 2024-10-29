@@ -321,38 +321,30 @@ namespace CollapseLauncher.Helper.Image
 
         public static async Task ResizeImageStream(Stream input, Stream output, uint ToWidth, uint ToHeight)
         {
-            ProcessImageSettings settings = new()
+            await Task.Run(() =>
             {
-                Width = (int)ToWidth,
-                Height = (int)ToHeight,
-                HybridMode = HybridScaleMode.Off,
-                Interpolation = InterpolationSettings.CubicSmoother,
-                Anchor = CropAnchor.Bottom | CropAnchor.Center
-            };
-            settings.TrySetEncoderFormat(ImageMimeTypes.Png);
+                ProcessImageSettings settings = new()
+                {
+                    Width = (int)ToWidth,
+                    Height = (int)ToHeight,
+                    HybridMode = HybridScaleMode.Off,
+                    Interpolation = InterpolationSettings.CubicSmoother,
+                    Anchor = CropAnchor.Bottom | CropAnchor.Center
+                };
+                settings.TrySetEncoderFormat(ImageMimeTypes.Png);
 
-            Task runTask = Task.Run(() =>
-            {
                 var imageFileInfo = ImageFileInfo.Load(input!);
                 var frame = imageFileInfo.Frames[0];
                 input.Position = 0;
-                if (IsWaifu2XEnabled && (frame.Width < ToWidth || frame.Height < ToHeight))
-                {
-                    var pipeline = MagicImageProcessor.BuildPipeline(input, ProcessImageSettings.Default)
-                        .AddTransform(new Waifu2XTransform(_waifu2X));
-                    MagicImageProcessor.ProcessImage(pipeline.PixelSource!, output!, settings);
-                    pipeline.Dispose();
-                }
-                else
-                {
-                    MagicImageProcessor.ProcessImage(input!, output!, settings);
-                }
+
+                bool isUseWaifu2x = IsWaifu2XEnabled && (frame.Width < ToWidth || frame.Height < ToHeight);
+                using var pipeline = MagicImageProcessor.BuildPipeline(input, isUseWaifu2x ? ProcessImageSettings.Default : settings);
+
+                if (isUseWaifu2x)
+                    pipeline.AddTransform(new Waifu2XTransform(_waifu2X));
+
+                pipeline.WriteOutput(output);
             });
-
-            await runTask;
-
-            if (runTask.Exception != null)
-                throw runTask.Exception;
         }
 
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmapNew(string filePath)
