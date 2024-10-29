@@ -166,7 +166,7 @@ namespace CollapseLauncher
                 Directory.CreateDirectory(backgroundFolder);
 
             // Start downloading the background image
-            await ImageLoaderHelper.DownloadAndEnsureCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg, LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, Token);
+            await ImageLoaderHelper.DownloadAndEnsureCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg, LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, Token);
         }
 
         private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)

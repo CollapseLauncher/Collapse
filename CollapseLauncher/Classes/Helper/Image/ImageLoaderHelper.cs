@@ -16,9 +16,11 @@ using PhotoSauce.MagicScaler;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -377,24 +379,38 @@ namespace CollapseLauncher.Helper.Image
             return new Bitmap(image.AsStream()!);
         }
 
-        public static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, CancellationToken token)
+        public static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, bool checkIsHashable, CancellationToken token)
         {
             // Initialize the FileInfo and check if the file exist
-            FileInfo fI = new FileInfo(outputPath);
-            bool isFileExist = IsFileCompletelyDownloaded(fI);
+            FileInfo fileInfo = new FileInfo(outputPath);
+            bool isFileExist = IsFileCompletelyDownloaded(fileInfo, checkIsHashable);
 
             // If the file and the file assumed to exist, then return
             if (isFileExist) return;
 
             // If not, then try download the file
-            await TryDownloadToCompleteness(url, fI, token);
+            await TryDownloadToCompleteness(url, fileInfo, token);
         }
 
-        public static bool IsFileCompletelyDownloaded(FileInfo fileInfo)
+        public static bool IsFileCompletelyDownloaded(FileInfo fileInfo, bool checkIsHashable)
         {
             // Get the parent path and file name
             string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
             string outputFileName = Path.GetFileName(fileInfo.FullName);
+
+#nullable enable
+            // Try get a hash from filename if the checkIsHashable set to true and the file does exist
+            if (checkIsHashable && fileInfo.Exists && TryGetMd5HashFromFilename(outputFileName, out byte[]? hashFromFilename))
+            {
+                // Open the file and check for the hash
+                using FileStream fileStream = fileInfo.OpenRead();
+                ReadOnlySpan<byte> hashByte = MD5.HashData(fileStream);
+
+                // Check if the hash matches then return the completeness
+                bool isMatch = hashByte.SequenceEqual(hashFromFilename);
+                return isMatch;
+            }
+#nullable restore
 
             // Try to get the prop file which includes the filename + the suggested size provided
             // by the network stream if it has been downloaded before
@@ -419,6 +435,47 @@ namespace CollapseLauncher.Helper.Image
             return false;
         }
 
+#nullable enable
+        private static bool TryGetMd5HashFromFilename([NotNull] string fileName, out byte[]? hash)
+        {
+            // Set default value for out
+            hash = null;
+
+            // If the filename is null, then return false
+            if (string.IsNullOrEmpty(fileName))
+                return false;
+
+            // Assign range and try get the split
+            Span<Range> range = stackalloc Range[4];
+            ReadOnlySpan<char> fileNameSpan = fileName.AsSpan();
+            int len = fileNameSpan.Split(range, '_', StringSplitOptions.RemoveEmptyEntries);
+
+            // As per format should be "hash_number.ext", check that the range should have
+            // expected to return 2. If not, then return false as non hashable.
+            if (len != 2)
+                return false;
+
+            // Try get the span of the hash
+            ReadOnlySpan<char> hashSpan = fileNameSpan[range[0]];
+
+            // If the hashSpan is empty or the length is not even or it's not a MD5 Hex (32 chars), then return false
+            if (hashSpan.IsEmpty || hashSpan.Length % 2 != 0 || hashSpan.Length != 32)
+                return false;
+
+            // Try decode hash hex to find out if the string is actually a hex
+            Span<byte> dummy = stackalloc byte[16];
+            if (!HexTool.TryHexToBytesUnsafe(hashSpan, dummy))
+                return false;
+
+            // Copy hash from stackalloc to output array
+            hash = new byte[16];
+            dummy.CopyTo(hash);
+
+            // Return true as it's a valid MD5 hash
+            return true;
+        }
+#nullable restore
+
         public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
             => await TryDownloadToCompleteness(url, fileInfo, token);
 
@@ -427,34 +484,44 @@ namespace CollapseLauncher.Helper.Image
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
+                // Initialize file temporary name
+                FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp");
+                long fileLength = 0;
+
                 Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
+
 
                 // Try to get the remote stream and download the file
                 await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
-                await using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                await using (Stream outStream = fileInfoTemp.Open(new FileStreamOptions()
                 {
                     Access = FileAccess.Write,
                     Mode = FileMode.Create,
                     Share = FileShare.ReadWrite,
                     Options = FileOptions.Asynchronous
-                });
-
-                // Get the file length
-                long fileLength = netStream.Length;
-
-                // Create the prop file for download completeness checking
-                string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
-                string outputFilename = Path.GetFileName(fileInfo.FullName);
-                if (outputParentPath != null)
+                }))
                 {
-                    string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                    await File.Create(propFilePath).DisposeAsync();
+                    // Get the file length
+                    fileLength = netStream.Length;
+
+                    // Create the prop file for download completeness checking
+                    string outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
+                    string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                    if (outputParentPath != null)
+                    {
+                        string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                        await File.Create(propFilePath).DisposeAsync();
+                    }
+
+                    // Copy (and download) the remote streams to local
+                    int read;
+                    while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                        await outStream.WriteAsync(buffer, 0, read, token);
                 }
 
-                // Copy (and download) the remote streams to local
-                int read;
-                while ((read = await netStream.ReadAsync(buffer, token)) > 0)
-                    await outStream.WriteAsync(buffer, 0, read, token);
+                // If the file has already been downloaded, then move to its original filename
+                if (fileInfoTemp.Exists)
+                    fileInfoTemp.MoveTo(fileInfo.FullName, true);
 
                 Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
                     + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
@@ -485,7 +552,7 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (IsFileCompletelyDownloaded(fInfo))
+            if (IsFileCompletelyDownloaded(fInfo, true))
             {
                 return cachePath;
             }
@@ -504,7 +571,7 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (!IsFileCompletelyDownloaded(fInfo))
+            if (!IsFileCompletelyDownloaded(fInfo, true))
             {
                 await TryDownloadToCompleteness(URL, fInfo, token);
             }
