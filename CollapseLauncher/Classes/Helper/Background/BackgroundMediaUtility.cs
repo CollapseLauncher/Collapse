@@ -61,8 +61,17 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) => {
-            await action;
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) =>
+        {
+            try
+            {
+                await action;
+            }
+            catch (Exception ex)
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                    ErrorSender.SendException(ex));
+            }
         },
         new ExecutionDataflowBlockOptions
         {
@@ -73,7 +82,17 @@ namespace CollapseLauncher.Helper.Background
             TaskScheduler = TaskScheduler.Current
         });
         internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
-                _parentUI?.DispatcherQueue.TryEnqueue(() => action.Invoke()),
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception ex)
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                    ErrorSender.SendException(ex));
+            }
+        },
             new ExecutionDataflowBlockOptions
             {
                 EnsureOrdered = true,
