@@ -297,7 +297,7 @@ for:
           
           echo Install dotnet sdk
           
-          choco install dotnet-sdk
+          choco install dotnet-sdk --pre
           
           dotnet --version
           
