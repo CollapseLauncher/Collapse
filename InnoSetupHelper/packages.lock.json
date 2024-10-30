@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net9.0": {
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.2.24473.5, )",
+        "resolved": "9.0.0-rc.2.24473.5",
+        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA=="
+      },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
         "requested": "[9.0.0-rc.2.24473.5, )",

@@ -4,15 +4,15 @@
     "net9.0-windows10.0.22621": {
       "CommunityToolkit.Common": {
         "type": "Direct",
-        "requested": "[8.3.2, )",
-        "resolved": "8.3.2",
-        "contentHash": "DFk1MUDzCUZHWFGl33HQkD1XtHHKmgfnjJ6sD2JICDc6et4DaCxf6GBPCzAZ7jcgyy/BdUDk0DUztu1K+61Q6w=="
+        "requested": "[8.4.0-preview1, )",
+        "resolved": "8.4.0-preview1",
+        "contentHash": "Qp1MYyV3xdLZ8vrgSQRkpHQf90sI8VSp6Ty5KMjqMgojFOrd4Gg/Uu8cvWCQwUgDOS1VhVtWRQwsWFVYgnBukw=="
       },
       "CommunityToolkit.Mvvm": {
         "type": "Direct",
-        "requested": "[8.3.2, )",
-        "resolved": "8.3.2",
-        "contentHash": "m8EolE1A0Updj68WTsZSGI6VWb6mUqHPh7QFo0kt7+JPhYMNXRS1ch8TS/oITAdcxTLrwMOp3ku1KjeG1/Zdpg=="
+        "requested": "[8.4.0-preview1, )",
+        "resolved": "8.4.0-preview1",
+        "contentHash": "h5rKzgmLPu7fIbnytn5aCUsHVbNxRKYMr5h51COYYq99TkxwjQRWmGIoubVZ1c09qUtVpG9ChC0QsOB20ELtZA=="
       },
       "CommunityToolkit.WinUI.Behaviors": {
         "type": "Direct",

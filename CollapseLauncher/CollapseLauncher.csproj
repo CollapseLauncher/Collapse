@@ -41,7 +41,7 @@
         <!-- Other Settings -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <InvariantGlobalization>false</InvariantGlobalization>
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
@@ -51,6 +51,9 @@
 
     <PropertyGroup Condition="'$(PublishAot)' == 'true'">
         <RunAOTCompilation>true</RunAOTCompilation>
+        <OptimizationPreference>Speed</OptimizationPreference>
+        <StripSymbols>true</StripSymbols>
+        <EventSourceSupport>false</EventSourceSupport>
     </PropertyGroup>
 
 <!--
@@ -139,8 +142,8 @@
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
 		<PackageReference Include="Velopack" Version="0.0.626" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
-        <PackageReference Include="CommunityToolkit.Common" Version="8.3.2" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+        <PackageReference Include="CommunityToolkit.Common" Version="8.4.0-preview1" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview1" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240916" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240916" />
         <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.1.240916" />
