@@ -273,9 +273,9 @@ for:
     platform: x64
     clone_script:
       - cmd: >-
-          git clone -q --branch=preview https://github.com/CollapseLauncher/Collapse.git C:\projects\collapse
+          git clone -q --branch=nativeaot-test https://github.com/CollapseLauncher/Collapse.git C:\projects\collapse
           
-          git checkout origin/preview
+          git checkout origin/nativeaot-test
     install:
       - cmd: >-
           echo Init submodules
