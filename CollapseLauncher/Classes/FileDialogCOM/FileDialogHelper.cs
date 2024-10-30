@@ -21,14 +21,21 @@ namespace CollapseLauncher.Classes.FileDialogCOM
         /// Get only folder paths that's allowed by Collapse Launcher
         /// </summary>
         /// <param name="title">The title of the folder dialog</param>
+        /// <param name="checkOverride">Override path check and returns the actual string</param>
         /// <returns>If <seealso cref="string"/> is empty, then it's cancelled. Otherwise, returns a selected path</returns>
-        internal static async Task<string> GetRestrictedFolderPathDialog(string? title = null)
+        internal static async Task<string> GetRestrictedFolderPathDialog(string? title = null, Func<string, string>? checkOverride = null)
         {
         StartGet:
             string dirPath = await FileDialogNative.GetFolderPicker(title);
 
             if (string.IsNullOrEmpty(dirPath))
                 return dirPath;
+
+            string? existingCheckOverride;
+            if (checkOverride != null && !string.IsNullOrEmpty(existingCheckOverride = checkOverride(dirPath)))
+            {
+                return existingCheckOverride;
+            }
 
             if (!ConverterTool.IsUserHasPermission(dirPath))
             {
@@ -39,7 +46,7 @@ namespace CollapseLauncher.Classes.FileDialogCOM
                 goto StartGet;
             }
 
-            if (FileUtility.IsRootPath(dirPath))
+            if (IsRootPath(dirPath))
             {
                 await SpawnInvalidDialog(
                     Locale.Lang._Dialogs.InvalidGameDirNew3Title,
@@ -149,6 +156,17 @@ namespace CollapseLauncher.Classes.FileDialogCOM
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Determines if the path given is a drive root
+        /// </summary>
+        /// <param name="path">Path to check</param>
+        /// <returns>True if path is root of the drive</returns>
+        internal static bool IsRootPath(ReadOnlySpan<char> path)
+        {
+            ReadOnlySpan<char> rootPath = Path.GetPathRoot(path);
+            return rootPath.SequenceEqual(path);
         }
 
         private static bool CheckIfFolderIsValidLegacy(string basePath)

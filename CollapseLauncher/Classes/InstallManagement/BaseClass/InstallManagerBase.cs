@@ -3094,7 +3094,8 @@ namespace CollapseLauncher.InstallManager.Base
         #nullable disable
         }
 
-        private async Task<string> AskGameFolderDialog()
+#nullable enable
+        private async Task<string?> AskGameFolderDialog(Func<string, string>? checkExistingGameDelegate = null)
         {
             // Set initial folder variable as empty
             string folder = "";
@@ -3120,7 +3121,7 @@ namespace CollapseLauncher.InstallManager.Base
                         break;
                     // If secondary, then show folder picker dialog to choose the folder
                     case ContentDialogResult.Secondary:
-                        folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+                        folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1, checkExistingGameDelegate);
                         isChoosen = !string.IsNullOrEmpty(folder);
                         break;
                     case ContentDialogResult.None:
@@ -3130,6 +3131,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return folder;
         }
+#nullable restore
 
         private async Task GetLatestPackageList(List<GameInstallPackage> packageList, GameInstallStateEnum gameState,
                                                 bool                     usePreload)
@@ -3244,7 +3246,7 @@ namespace CollapseLauncher.InstallManager.Base
         private async ValueTask<int> CheckExistingOrAskFolderDialog()
         {
             // Try run the result and if it's null, then return -1 (Cancel the operation)
-            string result = await AskGameFolderDialog();
+            string result = await AskGameFolderDialog(_gameVersionManager.FindGameInstallationPath);
             if (result == null)
             {
                 return -1;

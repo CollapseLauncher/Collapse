@@ -61,17 +61,6 @@ namespace CollapseLauncher.Helper
                 }
             }
         }
-
-        /// <summary>
-        /// Determines if the path given is a drive root
-        /// </summary>
-        /// <param name="path">Path to check</param>
-        /// <returns>True if path is root of the drive</returns>
-        public static bool IsRootPath(ReadOnlySpan<char> path)
-        {
-            ReadOnlySpan<char> rootPath = Path.GetPathRoot(path);
-            return rootPath.SequenceEqual(path);
-        }
         
         /// <summary>
         /// Add a prefix to a filename
