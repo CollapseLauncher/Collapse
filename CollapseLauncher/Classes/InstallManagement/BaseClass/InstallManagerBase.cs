@@ -62,6 +62,7 @@ using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 using SophonManifest = Hi3Helper.Sophon.SophonManifest;
+using CollapseLauncher.Classes.FileDialogCOM;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -3119,22 +3120,8 @@ namespace CollapseLauncher.InstallManager.Base
                         break;
                     // If secondary, then show folder picker dialog to choose the folder
                     case ContentDialogResult.Secondary:
-                        folder = await FileDialogNative.GetFolderPicker();
-
-                        if (!string.IsNullOrEmpty(folder))
-                        {
-                            // Check for the write permission on the folder
-                            if (ConverterTool.IsUserHasPermission(folder))
-                            {
-                                isChoosen = true;
-                            }
-                            else
-                            {
-                                // If not, then show the Insufficient access dialog
-                                await Dialog_InsufficientWritePermission(_parentUI, folder);
-                            }
-                        }
-
+                        folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
+                        isChoosen = !string.IsNullOrEmpty(folder);
                         break;
                     case ContentDialogResult.None:
                         return null;
@@ -3261,11 +3248,6 @@ namespace CollapseLauncher.InstallManager.Base
             if (result == null)
             {
                 return -1;
-            }
-
-            if (FileUtility.IsRootPath(result))
-            {
-                throw new NotSupportedException();
             }
 
             // Check for existing installation and if it's found, then override result

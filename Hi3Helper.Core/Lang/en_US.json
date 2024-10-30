@@ -913,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "Folder is invalid!",
     "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
+    "InvalidGameDirNewTitleFormat": "Path is Invalid: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Selected Path:",
+    "InvalidGameDirNewSubtitleSelectOther": "Please select another folder/location!",
+    "InvalidGameDirNew1Title": "Folder is invalid!",
+    "InvalidGameDirNew1Subtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
+    "InvalidGameDirNew2Title": "Cannot access the selected folder",
+    "InvalidGameDirNew2Subtitle": "The launcher does not have permission to access this folder!",
+    "InvalidGameDirNew3Title": "Cannot select root drive",
+    "InvalidGameDirNew3Subtitle": "You have selected a path on top of the root drive, which is forbidden!",
+    "InvalidGameDirNew4Title": "Cannot select Windows folder",
+    "InvalidGameDirNew4Subtitle": "You cannot use Windows folder as Game Installation Location to avoid any unnecessary that might happen.",
+    "InvalidGameDirNew5Title": "Cannot select Program Data folder",
+    "InvalidGameDirNew5Subtitle": "You cannot use Program Data folder as Game Installation Location to avoid any unnecessary that might happen.",
+    "InvalidGameDirNew6Title": "Cannot select Program Files or Program Files (x86) folder",
+    "InvalidGameDirNew6Subtitle": "You cannot use Program Files or Program Files (x86) folder as Game Installation Location to avoid any unnecessary that might happen.",
+    "FolderDialogTitle1": "Select Game Installation Location",
 
     "StopGameTitle": "Force Stop Game",
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
@@ -968,7 +984,7 @@
 
     "OpenInExternalBrowser": "Open in External Browser",
     "CloseOverlay": "Close Overlay",
-    
+
     "DbGenerateUid_Title": "Are you sure you wish to change your user ID?",
     "DbGenerateUid_Content": "Changing the current user ID will cause the associated data to be lost if you lose it."
   },

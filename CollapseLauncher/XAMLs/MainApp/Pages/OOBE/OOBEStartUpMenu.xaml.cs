@@ -1,4 +1,5 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.Classes.FileDialogCOM;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -837,29 +838,17 @@ namespace CollapseLauncher.Pages.OOBE
                     selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    var folder = await FileDialogNative.GetFolderPicker();
+                    var folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
                     if (!string.IsNullOrEmpty(folder))
                     {
-                        if (!CheckIfFolderIsValid(folder))
-                        {
-                            await SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
-                            break;
-                        }
-
-                        if (ConverterTool.IsUserHasPermission(folder))
-                        {
-                            AppGameFolder = folder;
-                            SetAppConfigValue("GameFolder", AppGameFolder);
-                            selected = true;
-                            _log?.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
-                        }
-                        else
-                        {
-                            ErrMsg.Text = Lang._StartupPage.FolderInsufficientPermission;
-                        }
+                        AppGameFolder = folder;
+                        SetAppConfigValue("GameFolder", AppGameFolder);
+                        selected = true;
+                        _log?.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
                     }
                     else
                     {
+                        ToggleEnableNextPageButton(false);
                         ErrMsg.Text = Lang._StartupPage.FolderNotSelected;
                     }
 
@@ -880,27 +869,7 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private bool CheckIfFolderIsValid(string basePath)
-        {
-            bool isInAppFolderExist = File.Exists(Path.Combine(basePath,                       AppExecutableName))
-                                      || File.Exists(Path.Combine($"{basePath}\\..\\",         AppExecutableName))
-                                      || File.Exists(Path.Combine($"{basePath}\\..\\..\\",     AppExecutableName))
-                                      || File.Exists(Path.Combine($"{basePath}\\..\\..\\..\\", AppExecutableName));
-
-            string? driveLetter = Path.GetPathRoot(basePath);
-            if (string.IsNullOrEmpty(driveLetter))
-            {
-                return false;
-            }
-
-            bool isInAppFolderExist2 = basePath.EndsWith("Collapse Launcher")
-                                       || basePath.StartsWith(Path.Combine(driveLetter, "Program Files"))
-                                       || basePath.StartsWith(Path.Combine(driveLetter, "Program Files (x86)"))
-                                       || basePath.StartsWith(Path.Combine(driveLetter, "Windows"));
-
-            return !(isInAppFolderExist || isInAppFolderExist2);
-        }
-
+        
         #endregion
 
         #region Prepare Metadata and Settings Apply
