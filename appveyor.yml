@@ -346,7 +346,7 @@ for:
           
           mkdir DeployResource\app-%version%
           
-          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
+          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\" /E /K /Y /I
           
           
           echo Making innosetup file...
@@ -383,7 +383,7 @@ for:
         authorization:
           secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
         on:
-          branch: preview
+          branch: nativeaot-test
     notifications:
       - provider: Email
         to:
