@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
+using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 #if !USEVELOPACK
@@ -27,7 +28,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using InnoSetupHelper;
 
 namespace CollapseLauncher;
 
@@ -50,8 +50,6 @@ public static class MainEntryPoint
         IsPreview = true;
 #endif
 
-        Application.Start(_ =>
-        {
             try
             {
                 AppCurrentArgument = args;
@@ -135,6 +133,9 @@ public static class MainEntryPoint
                             m_arguments.Migrate.GameVer,
                             m_arguments.Migrate.KeyName);
                         return;
+                    case AppMode.GenerateVelopackMetadata:
+                        GenerateVelopackMetadata();
+                        return;
                 }
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -174,7 +175,6 @@ public static class MainEntryPoint
             {
                 HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
             }
-        });
     }
 
     private static async Task InitDatabaseHandler() => await Helper.Database.DbHandler.Init();
@@ -222,16 +222,19 @@ public static class MainEntryPoint
 
     public static void StartMainApplication()
     {
-        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-
-        var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
-        SynchronizationContext.SetSynchronizationContext(context);
-
-        // ReSharper disable once ObjectCreationAsStatement
-        CurrentAppInstance = new App()
+        Application.Start(_ =>
         {
-            HighContrastAdjustment = ApplicationHighContrastAdjustment.None
-        };
+            DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
+            var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+            SynchronizationContext.SetSynchronizationContext(context);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            CurrentAppInstance = new App()
+            {
+                HighContrastAdjustment = ApplicationHighContrastAdjustment.None
+            };
+        });
     }
 
     private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
@@ -441,6 +444,31 @@ public static class MainEntryPoint
             }
         };
         elevatedProc.Start();
+    }
+
+    private static void GenerateVelopackMetadata()
+    {
+        const string XmlTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
+<metadata>
+<id>CollapseLauncher</id>
+<title>Collapse</title>
+<description>Collapse</description>
+<authors>Collapse Project Team</authors>
+<version>{0}</version>
+<channel>{1}</channel>
+<mainExe>CollapseLauncher.exe</mainExe>
+<os>win</os>
+<rid>win</rid>
+<shortcutLocations>Desktop,StartMenuRoot</shortcutLocations>
+<shortcutAmuid>velopack.CollapseLauncher</shortcutAmuid>
+</metadata>
+</package>";
+        string currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
+        string xmlPath = Path.Combine(AppFolder, "sq.version");
+        string xmlContent = string.Format(XmlTemplate, currentVersion, IsPreview ? "preview" : "stable");
+        File.WriteAllText(xmlPath, xmlContent.ReplaceLineEndings("\n"));
+        LogWriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);
     }
 
     public static string GetVersionString()

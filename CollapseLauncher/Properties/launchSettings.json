@@ -43,6 +43,11 @@
       "commandName": "Project",
       "commandLineArgs": "tray",
       "nativeDebugging": false
+    },
+    "Generate Velopack Metadata": {
+      "commandName": "Project",
+      "commandLineArgs": "generatevelopackmetadata",
+      "nativeDebugging": false
     }
   }
 }
