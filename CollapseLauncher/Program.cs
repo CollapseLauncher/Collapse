@@ -75,26 +75,28 @@ public static class MainEntryPoint
                     : new LoggerNull(logPath, Encoding.UTF8);
                 if (Directory.GetCurrentDirectory() != AppFolder)
                 {
-                    LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
-                                 LogType.Warning, true);
+                    LogWriteLine(
+                        $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
+                        LogType.Warning, true);
                     Directory.SetCurrentDirectory(AppFolder);
                 }
 
                 StartUpdaterHook();
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
-                                           LauncherUpdateHelper.LauncherCurrentVersionString,
-                                           GetVersionString(),
-                                           Environment.UserName,
-                                           IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
+                    LauncherUpdateHelper.LauncherCurrentVersionString,
+                    GetVersionString(),
+                    Environment.UserName,
+                    IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
                 var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
 
-                LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
-                             LogType.Scheme, true);
+                LogWriteLine(
+                    $"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
+                    LogType.Scheme, true);
                 LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
-                             LogType.Scheme, true);
+                    LogType.Scheme, true);
 
                 Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
@@ -117,26 +119,30 @@ public static class MainEntryPoint
                     case AppMode.InvokerMigrate:
                         if (m_arguments.Migrate.IsBHI3L)
                             new Migrate().DoMigrationBHI3L(
-                                                           m_arguments.Migrate.GameVer,
-                                                           m_arguments.Migrate.RegLoc,
-                                                           m_arguments.Migrate.InputPath,
-                                                           m_arguments.Migrate.OutputPath);
+                                m_arguments.Migrate.GameVer,
+                                m_arguments.Migrate.RegLoc,
+                                m_arguments.Migrate.InputPath,
+                                m_arguments.Migrate.OutputPath);
                         else
                             new Migrate().DoMigration(
-                                                      m_arguments.Migrate.InputPath,
-                                                      m_arguments.Migrate.OutputPath);
+                                m_arguments.Migrate.InputPath,
+                                m_arguments.Migrate.OutputPath);
                         return;
                     case AppMode.InvokerMoveSteam:
                         new Migrate().DoMoveSteam(
-                                                  m_arguments.Migrate.InputPath,
-                                                  m_arguments.Migrate.OutputPath,
-                                                  m_arguments.Migrate.GameVer,
-                                                  m_arguments.Migrate.KeyName);
+                            m_arguments.Migrate.InputPath,
+                            m_arguments.Migrate.OutputPath,
+                            m_arguments.Migrate.GameVer,
+                            m_arguments.Migrate.KeyName);
                         return;
                 }
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                // Reason: These are methods that either has its own error handling and/or not that important,
+                // so the execution could continue without anything to worry about **technically**
                 InitDatabaseHandler();
                 CheckRuntimeFeatures();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
@@ -151,10 +157,19 @@ public static class MainEntryPoint
                     StartMainApplication();
                 }
             }
+            #if !DEBUG
             catch (Exception ex)
             {
                 SpawnFatalErrorConsole(ex);
             }
+            #else
+            // ReSharper disable once RedundantCatchClause
+            // Reason: warning shaddap-er
+            catch
+            {
+                throw;
+            }
+            #endif
             finally
             {
                 HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
@@ -162,7 +177,7 @@ public static class MainEntryPoint
         });
     }
 
-    private static async void InitDatabaseHandler() => await Helper.Database.DbHandler.Init();
+    private static async Task InitDatabaseHandler() => await Helper.Database.DbHandler.Init();
 
     private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e) =>
         LogWriteLine(
@@ -332,7 +347,7 @@ public static class MainEntryPoint
             }
 
             // Try to recreate shortcuts
-            TaskSchedulerHelper.RecreateIconShortcuts();
+            TaskSchedulerHelper.RecreateIconShortcuts().GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
@@ -367,7 +382,7 @@ public static class MainEntryPoint
         return collapseMainPath;
     }
     
-    private static async void CheckRuntimeFeatures()
+    private static async Task CheckRuntimeFeatures()
     {
         try
         {
