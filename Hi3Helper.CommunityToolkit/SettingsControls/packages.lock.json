@@ -13,12 +13,6 @@
           "Microsoft.WindowsAppSDK": "1.5.240311000"
         }
       },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.2.24473.5, )",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA=="
-      },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
         "requested": "[9.0.0-rc.2.24473.5, )",
@@ -80,15 +74,6 @@
       }
     },
     "net9.0-windows10.0.22621/win-x64": {
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.2.24473.5, )",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA==",
-        "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.0-rc.2.24473.5"
-        }
-      },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
         "requested": "[1.0.2895-prerelease, )",
@@ -104,11 +89,6 @@
           "Microsoft.Web.WebView2": "1.0.2651.64",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
-      },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Transitive",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "gtZORh0O2hlNn8D+ezseJs1SEAI83Ca+LC8vmAIqaYUbiAn5+6iqD+ytuztGo4Thjr/2qWXKn3l7GGQEQiCJMg=="
       }
     }
   }
