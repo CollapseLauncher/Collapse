@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
+using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 #if !USEVELOPACK
@@ -27,7 +28,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using InnoSetupHelper;
 
 namespace CollapseLauncher;
 
@@ -50,8 +50,6 @@ public static class MainEntryPoint
         IsPreview = true;
 #endif
 
-        Application.Start(_ =>
-        {
             try
             {
                 AppCurrentArgument = args;
@@ -75,26 +73,28 @@ public static class MainEntryPoint
                     : new LoggerNull(logPath, Encoding.UTF8);
                 if (Directory.GetCurrentDirectory() != AppFolder)
                 {
-                    LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
-                                 LogType.Warning, true);
+                    LogWriteLine(
+                        $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
+                        LogType.Warning, true);
                     Directory.SetCurrentDirectory(AppFolder);
                 }
 
                 StartUpdaterHook();
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
-                                           LauncherUpdateHelper.LauncherCurrentVersionString,
-                                           GetVersionString(),
-                                           Environment.UserName,
-                                           IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
+                    LauncherUpdateHelper.LauncherCurrentVersionString,
+                    GetVersionString(),
+                    Environment.UserName,
+                    IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
                 var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
 
-                LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
-                             LogType.Scheme, true);
+                LogWriteLine(
+                    $"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
+                    LogType.Scheme, true);
                 LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
-                             LogType.Scheme, true);
+                    LogType.Scheme, true);
 
                 Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
@@ -117,26 +117,33 @@ public static class MainEntryPoint
                     case AppMode.InvokerMigrate:
                         if (m_arguments.Migrate.IsBHI3L)
                             new Migrate().DoMigrationBHI3L(
-                                                           m_arguments.Migrate.GameVer,
-                                                           m_arguments.Migrate.RegLoc,
-                                                           m_arguments.Migrate.InputPath,
-                                                           m_arguments.Migrate.OutputPath);
+                                m_arguments.Migrate.GameVer,
+                                m_arguments.Migrate.RegLoc,
+                                m_arguments.Migrate.InputPath,
+                                m_arguments.Migrate.OutputPath);
                         else
                             new Migrate().DoMigration(
-                                                      m_arguments.Migrate.InputPath,
-                                                      m_arguments.Migrate.OutputPath);
+                                m_arguments.Migrate.InputPath,
+                                m_arguments.Migrate.OutputPath);
                         return;
                     case AppMode.InvokerMoveSteam:
                         new Migrate().DoMoveSteam(
-                                                  m_arguments.Migrate.InputPath,
-                                                  m_arguments.Migrate.OutputPath,
-                                                  m_arguments.Migrate.GameVer,
-                                                  m_arguments.Migrate.KeyName);
+                            m_arguments.Migrate.InputPath,
+                            m_arguments.Migrate.OutputPath,
+                            m_arguments.Migrate.GameVer,
+                            m_arguments.Migrate.KeyName);
+                        return;
+                    case AppMode.GenerateVelopackMetadata:
+                        GenerateVelopackMetadata();
                         return;
                 }
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                // Reason: These are methods that either has its own error handling and/or not that important,
+                // so the execution could continue without anything to worry about **technically**
                 InitDatabaseHandler();
                 CheckRuntimeFeatures();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
@@ -151,18 +158,26 @@ public static class MainEntryPoint
                     StartMainApplication();
                 }
             }
+            #if !DEBUG
             catch (Exception ex)
             {
                 SpawnFatalErrorConsole(ex);
             }
+            #else
+            // ReSharper disable once RedundantCatchClause
+            // Reason: warning shaddap-er
+            catch
+            {
+                throw;
+            }
+            #endif
             finally
             {
                 HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
             }
-        });
     }
 
-    private static async void InitDatabaseHandler() => await Helper.Database.DbHandler.Init();
+    private static async Task InitDatabaseHandler() => await Helper.Database.DbHandler.Init();
 
     private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e) =>
         LogWriteLine(
@@ -207,16 +222,19 @@ public static class MainEntryPoint
 
     public static void StartMainApplication()
     {
-        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-
-        var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
-        SynchronizationContext.SetSynchronizationContext(context);
-
-        // ReSharper disable once ObjectCreationAsStatement
-        CurrentAppInstance = new App()
+        Application.Start(_ =>
         {
-            HighContrastAdjustment = ApplicationHighContrastAdjustment.None
-        };
+            DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
+            var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+            SynchronizationContext.SetSynchronizationContext(context);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            CurrentAppInstance = new App()
+            {
+                HighContrastAdjustment = ApplicationHighContrastAdjustment.None
+            };
+        });
     }
 
     private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
@@ -332,7 +350,7 @@ public static class MainEntryPoint
             }
 
             // Try to recreate shortcuts
-            TaskSchedulerHelper.RecreateIconShortcuts();
+            TaskSchedulerHelper.RecreateIconShortcuts().GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
@@ -367,7 +385,7 @@ public static class MainEntryPoint
         return collapseMainPath;
     }
     
-    private static async void CheckRuntimeFeatures()
+    private static async Task CheckRuntimeFeatures()
     {
         try
         {
@@ -426,6 +444,31 @@ public static class MainEntryPoint
             }
         };
         elevatedProc.Start();
+    }
+
+    private static void GenerateVelopackMetadata()
+    {
+        const string XmlTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
+<metadata>
+<id>CollapseLauncher</id>
+<title>Collapse</title>
+<description>Collapse</description>
+<authors>Collapse Project Team</authors>
+<version>{0}</version>
+<channel>{1}</channel>
+<mainExe>CollapseLauncher.exe</mainExe>
+<os>win</os>
+<rid>win</rid>
+<shortcutLocations>Desktop,StartMenuRoot</shortcutLocations>
+<shortcutAmuid>velopack.CollapseLauncher</shortcutAmuid>
+</metadata>
+</package>";
+        string currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
+        string xmlPath = Path.Combine(AppFolder, "sq.version");
+        string xmlContent = string.Format(XmlTemplate, currentVersion, IsPreview ? "preview" : "stable");
+        File.WriteAllText(xmlPath, xmlContent.ReplaceLineEndings("\n"));
+        LogWriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);
     }
 
     public static string GetVersionString()

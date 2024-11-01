@@ -490,38 +490,36 @@ namespace CollapseLauncher.Helper.Image
 
                 Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
+                if (fileInfo.Exists)
+                    fileInfo.Delete();
 
                 // Try to get the remote stream and download the file
-                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
-                await using (Stream outStream = fileInfoTemp.Open(new FileStreamOptions()
+                await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token))
                 {
-                    Access = FileAccess.Write,
-                    Mode = FileMode.Create,
-                    Share = FileShare.ReadWrite,
-                    Options = FileOptions.Asynchronous
-                }))
-                {
-                    // Get the file length
-                    fileLength = netStream.Length;
-
-                    // Create the prop file for download completeness checking
-                    string outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
-                    string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
-                    if (outputParentPath != null)
+                    await using (Stream outStream = fileInfoTemp.Create())
                     {
-                        string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                        await File.Create(propFilePath).DisposeAsync();
-                    }
+                        // Get the file length
+                        fileLength = netStream.Length;
 
-                    // Copy (and download) the remote streams to local
-                    int read;
-                    while ((read = await netStream.ReadAsync(buffer, token)) > 0)
-                        await outStream.WriteAsync(buffer, 0, read, token);
+                        // Create the prop file for download completeness checking
+                        string outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
+                        string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                        if (outputParentPath != null)
+                        {
+                            string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                            await File.Create(propFilePath).DisposeAsync();
+                        }
+
+                        // Copy (and download) the remote streams to local
+                        int read;
+                        while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                            await outStream.WriteAsync(buffer, 0, read, token);
+                    }
                 }
 
-                // If the file has already been downloaded, then move to its original filename
-                if (fileInfoTemp.Exists)
-                    fileInfoTemp.MoveTo(fileInfo.FullName, true);
+                // Move to its original filename
+                fileInfoTemp.Refresh();
+                fileInfoTemp.MoveTo(fileInfo.FullName, true);
 
                 Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
                     + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);

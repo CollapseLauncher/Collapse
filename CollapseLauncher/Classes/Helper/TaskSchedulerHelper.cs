@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Helper
 {
@@ -18,7 +19,7 @@ namespace CollapseLauncher.Helper
         internal static bool IsOnTrayEnabled()
         {
             if (!IsInitialized)
-                InvokeGetStatusCommand();
+                InvokeGetStatusCommand().GetAwaiter().GetResult();
 
             return CachedIsOnTrayEnabled;
         }
@@ -26,25 +27,25 @@ namespace CollapseLauncher.Helper
         internal static bool IsEnabled()
         {
             if (!IsInitialized)
-                InvokeGetStatusCommand();
+                InvokeGetStatusCommand().GetAwaiter().GetResult();
 
             return CachedIsEnabled;
         }
 
-        internal static void InvokeGetStatusCommand()
+        private static async Task InvokeGetStatusCommand()
         {
             // Build the argument and mode to set
-            StringBuilder argumentBuilder = new StringBuilder();
+            var argumentBuilder = new StringBuilder();
             argumentBuilder.Append("IsEnabled");
 
             // Append task name and stub path
             AppendTaskNameAndPathArgument(argumentBuilder);
 
             // Store argument builder as string
-            string argumentString = argumentBuilder.ToString();
+            var argumentString = argumentBuilder.ToString();
 
             // Invoke command and get return code
-            int returnCode = GetInvokeCommandReturnCode(argumentString);
+            var returnCode = await GetInvokeCommandReturnCode(argumentString);
 
             (CachedIsEnabled, CachedIsOnTrayEnabled) = returnCode switch
             {
@@ -90,16 +91,16 @@ namespace CollapseLauncher.Helper
         internal static void ToggleTrayEnabled(bool isEnabled)
         {
             CachedIsOnTrayEnabled = isEnabled;
-            InvokeToggleCommand();
+            InvokeToggleCommand().GetAwaiter().GetResult();
         }
 
         internal static void ToggleEnabled(bool isEnabled)
         {
             CachedIsEnabled = isEnabled;
-            InvokeToggleCommand();
+            InvokeToggleCommand().GetAwaiter().GetResult();
         }
 
-        private static void InvokeToggleCommand()
+        private static async Task InvokeToggleCommand()
         {
             // Build the argument and mode to set
             StringBuilder argumentBuilder = new StringBuilder();
@@ -116,7 +117,7 @@ namespace CollapseLauncher.Helper
             string argumentString = argumentBuilder.ToString();
 
             // Invoke applet
-            int returnCode = GetInvokeCommandReturnCode(argumentString);
+            int returnCode = await GetInvokeCommandReturnCode(argumentString);
 
             // Print init determination
             CheckInitDetermination(returnCode);
@@ -138,7 +139,7 @@ namespace CollapseLauncher.Helper
             argumentBuilder.Append('"');
         }
 
-        internal static void RecreateIconShortcuts()
+        internal static async Task RecreateIconShortcuts()
         {
             // Build the argument and get the current executable path
             StringBuilder argumentBuilder = new StringBuilder();
@@ -154,15 +155,15 @@ namespace CollapseLauncher.Helper
             string argumentString = argumentBuilder.ToString();
 
             // Invoke applet
-            int returnCode = GetInvokeCommandReturnCode(argumentString);
+            int returnCode = await GetInvokeCommandReturnCode(argumentString);
 
             // Print init determination
             CheckInitDetermination(returnCode);
         }
 
-        private static int GetInvokeCommandReturnCode(string argument)
+        private static async Task<int> GetInvokeCommandReturnCode(string argument)
         {
-            const string returnvalmark = "RETURNVAL_";
+            const string retValMark = "RETURNVAL_";
 
             // Get the applet path and check if the file exist
             string appletPath = Path.Combine(LauncherConfig.AppFolder, "Lib", "win-x64", "Hi3Helper.TaskScheduler.exe");
@@ -189,22 +190,22 @@ namespace CollapseLauncher.Helper
                 process.Start();
                 while (!process.StandardOutput.EndOfStream)
                 {
-                    string consoleStdOut = process.StandardOutput.ReadLine();
+                    string consoleStdOut = await process.StandardOutput.ReadLineAsync();
                     Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
 
                     // Parse if it has RETURNVAL_
-                    if (consoleStdOut == null || !consoleStdOut.StartsWith(returnvalmark))
+                    if (consoleStdOut == null || !consoleStdOut.StartsWith(retValMark))
                     {
                         continue;
                     }
 
-                    ReadOnlySpan<char> span = consoleStdOut.AsSpan(returnvalmark.Length);
+                    ReadOnlySpan<char> span = consoleStdOut.AsSpan(retValMark.Length);
                     if (int.TryParse(span, null, out int resultReturnCode))
                     {
                         lastErrCode = resultReturnCode;
                     }
                 }
-                process.WaitForExit();
+                await process.WaitForExitAsync();
             }
             catch (Exception ex)
             {
