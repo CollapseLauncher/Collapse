@@ -335,7 +335,7 @@ for:
           
           set "velopackVendorPath="
 
-          for /d %%v in ("%vpkStorePath%\*") do (for /d %%s in ("%%v\vpk\*") do (set "potentialVendorPath=%%s\vendor" if exist "%potentialVendorPath%" (set "velopackVendorPath=%potentialVendorPath%" echo Vendor path found: %vendorPath%)))
+          for /d %%v in ("%vpkStorePath%\*") do for /d %%s in ("%%v\vpk\*") do (set "potentialVendorPath=%%s\vendor" & if exist "!potentialVendorPath!" (set "vendorPath=!potentialVendorPath!" & echo Vendor path found: !vendorPath!))
           
           
           echo Build app...
