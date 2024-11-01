@@ -1607,7 +1607,7 @@
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
-                    <Flyout>
+                    <Flyout Placement="TopEdgeAlignedRight">
                         <ScrollViewer MaxHeight="474"
                                       Margin="-16,-16"
                                       VerticalScrollBarVisibility="Auto"
