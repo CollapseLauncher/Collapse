@@ -45,7 +45,7 @@ Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\current\CollapseLau
 Name: "{userdesktop}\Collapse"; Filename: "{app}\current\CollapseLauncher.exe"; WorkingDir: "{app}\current"; IconFilename: "{app}\current\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
-Source: "..\DeployResource\*"; DestDir: "{app}\current"; Flags: ignoreversion createallsubdirs recursesubdirs    
+Source: "..\DeployResource\*"; DestDir: "{app}\"; Flags: ignoreversion createallsubdirs recursesubdirs    
 
 [Tasks]
 Name: StartAfterInstall; Description: Run application after install

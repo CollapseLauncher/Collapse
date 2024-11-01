@@ -273,9 +273,9 @@ for:
     platform: x64
     clone_script:
       - cmd: >-
-          git clone -q --branch=preview https://github.com/CollapseLauncher/Collapse.git C:\projects\collapse
+          git clone -q --branch=nativeaot-test https://github.com/CollapseLauncher/Collapse.git C:\projects\collapse
           
-          git checkout origin/preview
+          git checkout origin/nativeaot-test
     install:
       - cmd: >-
           echo Init submodules
@@ -297,7 +297,7 @@ for:
           
           echo Install dotnet sdk
           
-          choco install dotnet-sdk
+          choco install dotnet-sdk --pre
           
           dotnet --version
           
@@ -321,7 +321,6 @@ for:
           
           echo.
           
-          
           echo Build app...
           
           dotnet restore
@@ -344,9 +343,13 @@ for:
           
           mkdir DeployResource
           
-          mkdir DeployResource\app-%version%
+          mkdir DeployResource\current
           
-          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
+          CollapseLauncher\%channel%-build\CollapseLauncher.exe generatevelopackmetadata
+          
+          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\current\" /E /K /Y /I
+          
+          curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
           
           
           echo Making innosetup file...
@@ -383,7 +386,7 @@ for:
         authorization:
           secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
         on:
-          branch: preview
+          branch: nativeaot-test
     notifications:
       - provider: Email
         to:
