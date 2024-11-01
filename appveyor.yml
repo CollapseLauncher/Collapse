@@ -329,14 +329,13 @@ for:
           
           echo VPK path found: %vpkPath%
           
-          set "vpkStorePath=%USERPROFILE%\.dotnet\tools\.store\vpk"
-
-          REM Traverse directories to locate the final 'vendor' folder, handling double version directories
-          
           set "velopackVendorPath="
 
-          for /d %%v in ("%vpkStorePath%\*") do for /d %%s in ("%%v\vpk\*") do (set "potentialVendorPath=%%s\vendor" & if exist "!potentialVendorPath!" (set "velopackVendorPath=!potentialVendorPath!" & echo Vendor path found: !vendorPath!))
+          for %%d in ("%vpkPath%") do set "vpkBasePath=%%~dpd.store\vpk"
+
+          for /d %%v in ("!vpkBasePath!\*") do for /d %%s in ("%%v\vpk\*") do (if exist "%%s\vendor" (set "velopackVendorPath=%%s\vendor" & echo Vendor path found: !velopackVendorPath!))
           
+          echo velopackVendorPath %velopackVendorPath%
           
           echo Build app...
           
