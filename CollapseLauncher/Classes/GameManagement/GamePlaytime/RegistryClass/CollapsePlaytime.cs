@@ -119,7 +119,8 @@ namespace CollapseLauncher.GamePlaytime
                 playtimeInner._hashID       = hashID;
                 playtimeInner.TotalPlaytime = TimeSpan.FromSeconds(totalTime ?? 0);
                 playtimeInner.LastPlayed    = lastPlayed != null ? BaseDate.AddSeconds((int)lastPlayed) : null;
-
+                playtimeInner.CheckStatsReset();
+                
                 return playtimeInner;
             }
             catch (Exception ex)
@@ -190,7 +191,7 @@ namespace CollapseLauncher.GamePlaytime
         }
 
         /// <summary>
-        /// Updates the current Playtime TimeSpan to the provided value and saves to the Registry.<br/><br/>
+        /// Updates the current Playtime TimeSpan to the provided value and saves to the registry.<br/><br/>
         /// </summary>
         /// <param name="timeSpan">New playtime value</param>
         /// <param name="reset">Reset all other fields</param>
@@ -212,31 +213,41 @@ namespace CollapseLauncher.GamePlaytime
         }
 
         /// <summary>
+        /// Checks if any stats should be reset.<br/>
+        /// Afterwards, the values are saved to the registry.<br/><br/>
+        /// </summary>
+        private void CheckStatsReset()
+        {
+            DateTime today  = DateTime.Today;
+            
+            if (ControlDate == today)
+                return;
+            
+            DailyPlaytime = TimeSpan.Zero;
+            if (IsDifferentWeek(ControlDate, today))
+                WeeklyPlaytime = TimeSpan.Zero;
+            if (IsDifferentMonth(ControlDate, today))
+                MonthlyPlaytime = TimeSpan.Zero;
+            
+            ControlDate = today;
+        }
+
+        /// <summary>
         /// Adds a minute to all fields, and checks if any should be reset.<br/>
-        /// After it saves to the Registry.<br/><br/>
+        /// Afterwards, the values are saved to the registry.<br/><br/>
         /// </summary>
         public void AddMinute()
         {
             TimeSpan minute = TimeSpan.FromMinutes(1);
-            DateTime today  = DateTime.Today;
 
             TotalPlaytime = TotalPlaytime.Add(minute);
             LastSession   = LastSession.Add(minute);
             
-            if (ControlDate == today)
-            {
-                DailyPlaytime   = DailyPlaytime.Add(minute);
-                WeeklyPlaytime  = WeeklyPlaytime.Add(minute);
-                MonthlyPlaytime = MonthlyPlaytime.Add(minute);
-            }
-            else
-            {
-                DailyPlaytime   = minute;
-                WeeklyPlaytime  = IsDifferentWeek(ControlDate, today) ? minute : WeeklyPlaytime.Add(minute);
-                MonthlyPlaytime = IsDifferentMonth(ControlDate, today) ? minute : MonthlyPlaytime.Add(minute);
-                
-                ControlDate   = today;
-            }
+            CheckStatsReset();
+            
+            DailyPlaytime   = DailyPlaytime.Add(minute);
+            WeeklyPlaytime  = WeeklyPlaytime.Add(minute);
+            MonthlyPlaytime = MonthlyPlaytime.Add(minute);
 
             if (!_isDeserializing.Contains(_hashID)) Save();
         }
@@ -318,9 +329,13 @@ namespace CollapseLauncher.GamePlaytime
                     playtimeInner._gameSettings = _gameSettings;
                     playtimeInner._hashID       = _hashID;
                     playtimeInner._gameVersion  = _gameVersion;
+                    
+                    playtimeInner.CheckStatsReset();
+                    playtimeInner.Save();
+                    
                     DbConfig.SetAndSaveValue(KeyLastUpdated, _unixStampDb.ToString());
                     LastDbUpdate = DateTime.Now;
-                    playtimeInner.Save();
+                    
                     return (true, playtimeInner);
                 }
 
