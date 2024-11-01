@@ -638,7 +638,7 @@
     "FileDownloadSettings_BurstDownloadHelp5": "機能を無効化すると、",
     "FileDownloadSettings_BurstDownloadHelp6": "と",
     "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。",
-    
+
     "Database_Title": "ユーザーデータベースと同期",
     "Database_ConnectionOk": "データベースとの接続に成功しました！",
     "Database_ConnectFail": "データベースに接続できませんでした。エラーを参照してください:",
@@ -650,7 +650,12 @@
     "Database_GenerateGuid": "UID生成",
     "Database_Validate": "設定を検証＆保存",
     "Database_Error_EmptyUri": "データベースのURLが空です！",
-    "Database_Error_EmptyToken": "データベースのトークンが空です！"
+    "Database_Error_EmptyToken": "データベースのトークンが空です！",
+    "Database_Error_InvalidGuid": "ユーザーIDが有効なGUIDではありません！",
+    "Database_Warning_PropertyChanged": "データベースの設定が変更されました",
+    "Database_ValidationChecking": "設定を検証しています…",
+    "Database_Placeholder_DbUserIdTextBox": "GUIDサンプル: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください"
   },
 
   "_Misc": {
@@ -908,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "無効なフォルダーです！",
     "CannotUseAppLocationForGameDirSubtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+    "InvalidGameDirNewTitleFormat": "無効なパスです: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "選択したパス:",
+    "InvalidGameDirNewSubtitleSelectOther": "別のフォルダー/場所を選択してください！",
+    "InvalidGameDirNew1Title": "無効なフォルダーです！",
+    "InvalidGameDirNew1Subtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+    "InvalidGameDirNew2Title": "選択したフォルダーにアクセスできません",
+    "InvalidGameDirNew2Subtitle": "ランチャーにこのフォルダーへアクセスする権限がありません！",
+    "InvalidGameDirNew3Title": "ルートディレクトリは選択できません",
+    "InvalidGameDirNew3Subtitle": "選択したパスはルートディレクトリ上のパスであるため、使用できません！",
+    "InvalidGameDirNew4Title": "Windowsフォルダーは選択できません",
+    "InvalidGameDirNew4Subtitle": "無用なトラブルを避けるため、Windowsフォルダーをゲームのインストール先に選ぶことはできません。",
+    "InvalidGameDirNew5Title": "Program Dataフォルダーは選択できません",
+    "InvalidGameDirNew5Subtitle": "無用なトラブルを避けるため、Program Dataフォルダーをゲームのインストール先に選ぶことはできません。",
+    "InvalidGameDirNew6Title": "Program FilesおよびProgram Files (x86)フォルダーは選択できません",
+    "InvalidGameDirNew6Subtitle": "無用なトラブルを避けるため、Program FilesおよびProgram Files (x86)フォルダーをゲームのインストール先に選ぶことはできません。",
+    "FolderDialogTitle1": "ゲームのインストール位置を選択",
 
     "StopGameTitle": "ゲームを強制終了します",
     "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
@@ -963,7 +984,7 @@
 
     "OpenInExternalBrowser": "外部ブラウザで開く",
     "CloseOverlay": "閉じる",
-    
+
     "DbGenerateUid_Title": "本当にユーザーIDを変更しますか？",
     "DbGenerateUid_Content": "現在のユーザーIDを変更すると、ユーザーIDを紛失した場合にその関連データも失われます。"
   },
