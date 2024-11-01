@@ -321,22 +321,6 @@ for:
           
           echo.
           
-          echo Setting up Velopack environment...
-          
-          dotnet tool install -g vpk
-
-          for /f "usebackq" %%p in (`where vpk`) do set "vpkPath=%%p"
-          
-          echo VPK path found: %vpkPath%
-          
-          set "velopackVendorPath="
-
-          for %%d in ("%vpkPath%") do set "vpkBasePath=%%~dpd.store\vpk"
-
-          for /d %%v in ("!vpkBasePath!\*") do for /d %%s in ("%%v\vpk\*") do (if exist "%%s\vendor" (set "velopackVendorPath=%%s\vendor" & echo Vendor path found: !velopackVendorPath!))
-          
-          echo velopackVendorPath %velopackVendorPath%
-          
           echo Build app...
           
           dotnet restore
@@ -365,7 +349,7 @@ for:
           
           xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\current\" /E /K /Y /I
           
-          copy %velopackVendorPath%\update.exe DeployResource\update.exe
+          curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
           
           
           echo Making innosetup file...
