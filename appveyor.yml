@@ -321,6 +321,40 @@ for:
           
           echo.
           
+          echo Setting up Velopack environment...
+          
+          dotnet tool install -g vpk
+
+          for /f "usebackq" %%p in (`where vpk`) do set "vpkPath=%%p"
+          
+          echo VPK path found: %vpkPath%
+          
+          set "vpkStorePath=%USERPROFILE%\.dotnet\tools\.store\vpk"
+
+          REM Traverse directories to locate the final 'vendor' folder, handling double version directories
+          
+          set "velopackVendorPath="
+
+          for /d %%v in ("%vpkStorePath%\*") do (
+          
+              for /d %%s in ("%%v\vpk\*") do (
+          
+                  set "potentialVendorPath=%%s\vendor"
+          
+                  if exist "!potentialVendorPath!" (
+          
+                      set "velopackVendorPath=!potentialVendorPath!"
+          
+                      echo Vendor path found: !vendorPath!
+          
+                      goto :EOF
+          
+                  )
+          
+              )
+          
+          )
+          
           
           echo Build app...
           
@@ -344,9 +378,13 @@ for:
           
           mkdir DeployResource
           
-          mkdir DeployResource\app-%version%
+          mkdir DeployResource\current
           
-          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\" /E /K /Y /I
+          CollapseLauncher\%channel%-build\CollapseLauncher.exe generatevelopackmetadata
+          
+          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\current\" /E /K /Y /I
+          
+          copy %velopackVendorPath%\update.exe DeployResource\update.exe
           
           
           echo Making innosetup file...
