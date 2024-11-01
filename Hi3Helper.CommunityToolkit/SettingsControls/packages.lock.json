@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net9.0-windows10.0.22621": {
+      "CommunityToolkit.Common": {
+        "type": "Direct",
+        "requested": "[8.4.0-preview1, )",
+        "resolved": "8.4.0-preview1",
+        "contentHash": "Qp1MYyV3xdLZ8vrgSQRkpHQf90sI8VSp6Ty5KMjqMgojFOrd4Gg/Uu8cvWCQwUgDOS1VhVtWRQwsWFVYgnBukw=="
+      },
       "CommunityToolkit.WinUI.Triggers": {
         "type": "Direct",
         "requested": "[8.1.240916, )",
@@ -46,11 +52,6 @@
           "Microsoft.Web.WebView2": "1.0.2651.64",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
-      },
-      "CommunityToolkit.Common": {
-        "type": "Transitive",
-        "resolved": "8.2.1",
-        "contentHash": "LWuhy8cQKJ/MYcy3XafJ916U3gPH/YDvYoNGWyQWN11aiEKCZszzPOTJAOvBjP9yG8vHmIcCyPUt4L82OK47Iw=="
       },
       "CommunityToolkit.WinUI.Extensions": {
         "type": "Transitive",
