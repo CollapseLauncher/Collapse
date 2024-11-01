@@ -335,7 +335,7 @@ for:
           
           set "velopackVendorPath="
 
-          for /d %%v in ("%USERPROFILE%\.dotnet\tools\.store\vpk\*") do for /d %%s in ("%%v\vpk\*") do (call if exist "%%s\vendor" (set "velopackVendorPath=%%s\vendor" & echo Vendor path found: %%s\vendor))
+          for /d %%v in ("%vpkStorePath%\*") do for /d %%s in ("%%v\vpk\*") do (set "potentialVendorPath=%%s\vendor" & if exist "!potentialVendorPath!" (set "velopackVendorPath=!potentialVendorPath!" & echo Vendor path found: !vendorPath!))
           
           
           echo Build app...
